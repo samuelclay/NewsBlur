@@ -1,0 +1,509 @@
+/* ========== */
+/* = Global = */
+/* ========== */
+
+body {
+	/*resets*/margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none;
+	font-family: 'Lucida Grande',Helvetica, Arial;
+    font-size:62%;
+}
+
+a, a:active, a:hover, a:visited, button {
+    outline: none;
+}
+
+a img {
+    border: none;
+}
+
+/* =================== */
+/* = Resize Controls = */
+/* =================== */
+
+.ui-layout-resizer-west {
+    background: #e0e0e0 url(../img/reader/resize_west_small.png) repeat-y 50% 50%;
+}
+
+.ui-layout-resizer-north {
+    background: #e0e0e0 url(../img/reader/resize_north.png) repeat-x 50% 50%;
+}
+
+/* ============= */
+/* = Feed List = */
+/* ============= */
+
+#feed_list {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 220px;
+    background-color: #D7DDE6;
+    border-right: 1px solid #808080;
+    z-index: 20;
+    font-size: 1.05em;
+    overflow-y: auto;
+}
+
+#feed_list .folder {
+    margin: 6px 0px 4px;
+    background: transparent url(../img/icons/silk/folder.png) no-repeat 3px 1px;
+}
+
+#feed_list .folder .folder_title {
+    padding: 3px 0px 4px 22px;
+    font-weight: bold;    
+    display: block;
+    color: #404040;
+    text-transform: uppercase;
+}
+
+#feed_list .feed {
+    position: relative;
+    cursor: pointer;
+    border-top: 1px solid #D7DDE6;
+    border-bottom: 1px solid #D7DDE6;
+}
+
+#feed_list .feed_id {
+    display: none;
+}
+#feed_list img.feed_favicon {
+    position: absolute;
+    top: 2px;
+    left: 24px;
+}
+#feed_list .feed_title {
+    display: block;
+    font-weight: bold;
+    padding: 4px 42px 2px 45px;
+    text-decoration: none;
+    color: #272727;
+    line-height: 1.3em;
+}
+
+#feed_list .feed.no_unread_items .feed_title {
+    font-weight: normal;
+}
+
+#feed_list .feed.selected {
+    background: #f6a828 url(../theme/images/ui-bg_highlight-hard_35_f6a828_1x100.png) 0 50% repeat-x;
+    border-top: 1px solid #A8A8A8;
+    border-bottom: 1px solid #A8A8A8;
+}
+#feed_list .unread_count {
+    position: absolute;
+    top: 3px;
+    right: 7px;
+    font-weight: bold;
+    color: #FFF;
+    padding: 0 6px;
+    background-color: #8eb6e8;
+}
+
+
+/* ================ */
+/* = Story Titles = */
+/* ================ */
+
+#story_titles {
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 200px;
+    width: 100%;
+    overflow-y: scroll;
+    font-size: 1.1em;
+}
+
+#story_titles .wrapper {
+    margin-left: 220px;
+}
+
+#story_titles .feed_bar {
+    font-weight: bold;
+    font-size: 1.3em;
+    padding: 2px 140px 2px 28px;
+    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    border-bottom: 2px solid #404040;
+    position: relative;
+}
+
+#story_titles .feed_bar .feed_heading {
+    display: block;
+    text-align: center;
+}
+
+#story_titles .feed_bar .feed_heading .feed_favicon {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+#story_titles .feed_bar .unread_count {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+}
+
+#story_titles .feed_bar .feed_id {
+    display: none;
+}
+
+#story_titles .story {
+    position: relative;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0px 206px 0px 28px;
+    border-top: 1px solid #E7EDF6;
+    text-decoration: none;
+    color: #272727;
+    line-height: 1em;
+    background: transparent url(../img/icons/silk/bullet_orange.png) no-repeat 6px 50%;
+}
+
+#story_titles .story.NB-story-hover {
+    background-color: #f0f0f0;
+}
+
+#story_titles .story a.story_title {
+    text-decoration: none;
+    color: #272727;
+    display: block;
+    padding: 4px 0px;
+}
+#story_titles .story .story_id {
+    display: none;
+}
+
+#story_titles .story.read {
+    font-weight: normal;
+    background: none;
+}
+
+#story_titles .story .story_date {
+    position: absolute;
+    right: 4px;
+    width: 200px;
+    top: 4px;
+}
+#story_titles .story.selected {
+    color: #304080;
+    border-top: 1px solid #D7DDE6;
+    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+}
+#story_titles .story.after_selected {
+    border-top: 1px solid #D7DDE6;
+}
+
+/* =================== */
+/* = Story Navigator = */
+/* =================== */
+
+#story_pane .story_navigator {
+    position: absolute;
+    right: 4px;
+    top: 6px;
+}
+
+#story_pane a.button {
+    outline: none;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    vertical-align: middle;
+    display: -moz-inline-box;
+    display: inline-block;
+    overflow: visible;
+    color: #000;
+    background-color: #acc;
+    padding: 5px 7px;
+    margin: 0px 2px;
+}
+
+#story_pane a.button:hover {
+    background-color: #cee;
+}
+
+#story_pane a.button.next_unread {
+    float: right;
+    width: 24px;
+    height: 16px;
+    background: #acc url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
+}
+
+#story_pane a.button.next_unread:hover {
+    background: #cee url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
+}
+
+#story_pane a.button.previous_unread {
+    float: right;
+    width: 16px;
+    height: 16px;
+    background: #acc url(../img/icons/silk/arrow_up.png) no-repeat 50% 50%;
+}
+
+#story_pane a.button.previous_unread:hover {
+    background: #cee url(../img/icons/silk/arrow_up.png) no-repeat 50% 50%;
+}
+
+/* ================= */
+/* = Story Content = */
+/* ================= */
+
+#story_pane {
+    z-index: 10;
+    position: fixed;
+    top: 200px;
+    left: 0px;
+    width: 100%;
+    overflow-y: scroll;    
+    font-size: 1.2em;
+    line-height: 1.5em;
+    height: 315px;
+}
+
+#story_pane .wrapper {
+    margin-left: 220px;
+    position: relative;
+}
+
+
+#story_pane .story_title {
+    font-weight: bold;
+    font-size: 1.3em;
+    padding: 12px 140px 12px 28px;
+    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    border-top: 4px solid #404040;
+}
+
+#story_pane .story_title a {
+    text-decoration: none;
+    color: #101050;
+}
+
+#story_pane .story_title a:hover {
+    color: #1010A0;
+}
+
+#story_pane .story_meta {
+    color: #606060;
+    font-weight: bold;
+    font-size: .8em;
+    width: 6em;
+    line-height: 1.9em;
+    clear: both;
+    float: left;
+    text-transform: uppercase;
+    padding: 0px 4px 0px 0px;
+}
+
+#story_pane .story_feed {
+    padding: 4px 140px 0px 28px;
+}
+
+#story_pane .story_feed .feed_favicon {
+    position: absolute;
+    left: 0px;
+    top: -1px;
+}
+
+#story_pane .story_feed .data {
+    padding-left: 20px;
+    position: relative;
+}
+
+#story_pane .story_author {
+    padding: 0px 140px 0px 28px;
+}
+
+#story_pane .story_date {
+    padding: 0px 140px 0px 28px;
+}
+
+#story_pane .story_content {
+    border-top: 1px solid #909090;
+    margin: 12px 140px 24px 28px;
+    padding: 12px 0px;
+}
+
+#story_pane .story_endbar {
+    height: 8px;
+    border-top: 1px solid #404040;
+    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+}
+/* ======================= */
+/* = Story Modifications = */
+/* ======================= */
+
+#story_pane {
+    color: #2b2b2b;
+}
+
+#story_pane p {
+    clear: both;
+}
+
+#story_pane blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: .5em 2em;
+    margin: 0px;
+}
+
+/* ============ */
+/* = Task Bar = */
+/* ============ */
+
+#task_bar {
+    height: 29px;
+    background: #e0e0e0 url(../img/reader/taskbar_background.png) repeat-x top left;
+}
+
+/* ==================== */
+/* = OPML Import Form = */
+/* ==================== */
+
+form.opml_import_form {
+    
+}
+
+form.opml_import_form textarea {
+    width: 100%;
+    height: 200px;
+}
+
+form.opml_import_form .section {
+    clear: both;
+    margin: 2px 0px;
+}
+
+form.opml_import_form label {
+    display: block;
+}
+form.opml_import_form input {
+    display: block;
+    clear: both;
+    float: left;
+    margin: 0px 4px;
+}
+
+/* ============== */
+/* = Bottom Bar = */
+/* ============== */
+
+/*************************/
+/* Recommended for menus */
+/*************************/
+
+button.menu {
+    cursor: pointer;
+}
+
+div.menu {
+    display: none;
+    z-index: 99;
+    position: absolute;
+}
+
+div.menu.active {
+    z-index: 100;
+}
+
+/***********************/
+/* Completely optional */
+/***********************/
+
+.menu_button {
+    line-height: 1.8;
+    text-shadow: 1px 1px #ddd;
+    color: #222;
+    background: #a8acae;
+    margin: 3px 2em 0 0.5em;
+    padding: 0 0.8em;
+    border: 0;
+    border-bottom: 1px solid #686c6e;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    float: right;
+    position: relative;
+    cursor: pointer;
+}
+
+
+.menu_button img {
+    vertical-align: -3px;
+    margin-right: 0.2em;
+}
+
+.menu_button .menu {
+    display: none;
+    right: 0px;
+    bottom: 20px;
+    cursor: normal;
+}
+
+.menu_button.hover .menu {
+    display: block;
+}
+.menu_button.hover {
+    -webkit-border-top-left-radius: 0;
+    -webkit-border-top-right-radius: 0;
+    -moz-border-radius-topleft: 0;
+    -moz-border-radius-topright: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-color: #cacece;
+}
+
+button.menu:hover,
+button.menu.active {
+    background-color: #cacece;
+    text-shadow: 1px 1px #fff;
+}
+
+div.menu {
+    font-size: 88%;
+    color: #444;
+    background: #cacece;
+    padding: 1em;
+    border: 1px solid #cacece;
+    border-top-width: 3px;
+    -moz-border-radius: 0.5em;
+    -moz-border-radius-topleft: 0;
+    -webkit-border-radius: 0.5em;
+    -webkit-border-top-left-radius: 0;
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+}
+
+div.menu.active {
+    background-color: #eaeeee;
+}
+
+div.menu h3 {
+    font-size: 108%;
+    font-weight: bold;
+    color: #444;
+    margin: 0;
+}
+
+div.menu h4 {
+    font-size: 100%;
+    font-weight: normal;
+    line-height: 1.5;
+    color: #999;
+    margin: 0 0 0.5em 0;
+    white-space: nowrap;
+}
+
+div.menu hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #fff;
+}
+
+div.menu ul {
+    padding-left: 1.5em;
+}

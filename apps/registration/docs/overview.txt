@@ -1,0 +1,337 @@
+===================
+Django registration
+===================
+
+
+This is a fairly simple user-registration application for Django_,
+designed to make allowing user signups as painless as possible.
+
+.. _Django: http://www.djangoproject.com/
+
+
+Overview
+========
+
+This application enables a common user-registration workflow:
+
+1. User fills out a registration form, selecting a username and
+   password and entering an email address.
+
+2. An inactive account is created, and an activation link is sent to
+   the user's email address.
+
+3. User clicks the activation link, the account becomes active and the
+   user is able to log in and begin contributing to your site.
+
+Various methods of extending and customizing the registration process
+are also provided.
+
+
+Installation
+============
+
+In order to use django-registration, you will need to have a
+functioning installation of Django 1.0 or newer; due to changes needed
+to stabilize Django's APIs prior to the 1.0 release,
+django-registration will not work with older releases of Django.
+
+There are three basic ways to install django-registration:
+automatically installing a package using Python's package-management
+tools, manually installing a package, and installing from a Mercurial
+
+
+Using a package-management tool
+-------------------------------
+
+The easiest way by far to install django-registration and most other
+interesting Python software is by using an automated
+package-management tool, so if you're not already familiar with the
+available tools for Python, now's as good a time as any to get
+started.
+
+The most popular option currently is `easy_install`_; refer to its
+documentation to see how to get it set up. Once you've got it, you'll
+be able to simply type::
+
+    easy_install django-registration
+
+And it will handle the rest.
+
+Another option that's currently gaining steam (and which I personally
+prefer for Python package management) is `pip`_. Once again, you'll
+want to refer to its documentation to get up and running, but once you
+have you'll be able to type::
+
+    pip install django-registration
+
+And you'll be done.
+
+
+Manually installing the 0.7 package
+-----------------------------------
+
+If you'd prefer to do things the old-fashioned way, you can manually
+download the `django-registration 0.7 package`_ from the Python
+Package Index. This will get you a file named
+"django-registration-0.7.tar.gz" which you can unpack (double-click on
+the file on most operating systems) to create a directory named
+"django-registration-0.7". Inside will be a script named "setup.py";
+running::
+
+    python setup.py install
+
+will install django-registration (though keep in mind that this
+defaults to a system-wide installation, and so may require
+administrative privileges on your computer).
+
+
+Installing from a Mercurial checkout
+------------------------------------
+
+If you have `Mercurial`_ installed on your computer, you can also
+obtain a complete copy of django-registration by typing::
+
+    hg clone http://bitbucket.org/ubernostrum/django-registration/
+
+Inside the resulting "django-registration" directory will be a
+directory named "registration", which is the actual Python module for
+this application; you can symlink it from somewhere on your Python
+path. If you prefer, you can use the setup.py script in the
+"django-registration" directory to perform a normal installation, but
+using a symlink offers easy upgrades: simply running ``hg pull -u``
+inside the django-registration directory will fetch updates from the
+main repository and apply them to your local copy.
+
+
+.. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+.. _pip: http://pypi.python.org/pypi/pip/
+.. _django-registration 0.7 package: http://pypi.python.org/pypi/django-registration/0.7
+.. _Mercurial: http://www.selenic.com/mercurial/wiki/
+
+
+Basic use
+=========
+
+To use the registration system with all its default settings, you'll
+need to do the following:
+
+1. Add ``registration`` to the ``INSTALLED_APPS`` setting of your
+   Django project.
+
+2. Add the setting ``ACCOUNT_ACTIVATION_DAYS`` to your settings file;
+   this should be the number of days activation keys will remain valid
+   after an account is registered.
+
+3. Create the necessary templates (see the section on templates below
+   for details).
+
+4. Add this line to your site's root URLConf::
+   
+       (r'^accounts/', include('registration.urls')),
+
+5. Link people to ``/accounts/register/`` so they can start signing
+   up. Using the default URLConf will also automatically set up the
+   authentication-oriented views in ``django.contrib.auth`` for you,
+   so if you use it you can point people to, e.g.,
+   ``/accounts/login/`` to log in.
+
+
+Templates used by django-registration
+=====================================
+
+The views included in django-registration make use of five templates:
+
+* ``registration/registration_form.html`` displays the registration
+  form for users to sign up.
+
+* ``registration/registration_complete.html`` is displayed after the
+  activation email has been sent, to tell the new user to check
+  his/her email.
+
+* ``registration/activation_email_subject.txt`` is used for the
+  subject of the activation email.
+
+* ``registration/activation_email.txt`` is used for the body of the
+  activation email.
+
+* ``registration/activate.html`` is displayed when a user attempts to
+  activate his/her account.
+
+Examples of all of these templates are not provided; you will need to
+create them yourself. For views defined in this application, see the
+included `views documentation`_ for details on available context
+variables, and for details on the templates used by the activation
+email see the included `models documentation`_.
+
+Additionally, the URLConf provided with django-registration includes
+URL patterns for useful views in Django's built-in authentication
+application -- this means that a single ``include`` in your root
+URLConf can wire up registration and the auth application's login,
+logout, and password change/reset views. If you choose to use these
+views you will need to provide your own templates for them; consult
+`the Django authentication documentation`_ for details on the
+templates and contexts used by these views.
+
+.. _views documentation: views.txt
+.. _models documentation: models.txt
+.. _the Django authentication documentation: http://www.djangoproject.com/documentation/authentication/
+
+
+How it works
+============
+
+Using the recommended default configuration, the URL
+``/accounts/register/`` will map to the view
+``registration.views.register``, which displays a registration form
+(an instance of ``registration.forms.RegistrationForm``); this form
+asks for a username, email address and password, and verifies that the
+username is available and requires the password to be entered twice
+(to catch typos). It then does three things:
+
+1. Creates an instance of ``django.contrib.models.auth.User``, using
+   the supplied username, email address and password; the
+   ``is_active`` field on the new ``User`` will be set to ``False``,
+   meaning that the account is inactive and the user will not be able
+   to log in yet.
+
+2. Creates an instance of ``registration.models.RegistrationProfile``,
+   stores an activation key (a SHA1 hash generated from the new user's
+   username plus a randomly-generated "salt"), and relates that
+   ``RegistrationProfile`` to the ``User`` it just created.
+
+3. Sends an email to the user (at the address they supplied)
+   containing a link which can be clicked to activate the account.
+
+For details on customizing this process, including use of alternate
+registration form classes and automatic creation of a site-specific
+profile, see the sections on customization below.
+
+After the activation email has been sent,
+``registration.views.register`` issues a redirect to the URL
+``/accounts/register/complete/``. By default, this is mapped to the
+``direct_to_template`` generic view, and displays the template
+``registration/registration_complete.html``; this is intended to show
+a short message telling the user to check his/her email for the
+activation link.
+
+The activation link will map to the view
+``registration.views.activate``, which will attempt to activate the
+account by setting the ``is_active`` field on the ``User`` to
+``True``. If the activation key for the ``User`` has expired (this is
+controlled by the setting ``ACCOUNT_ACTIVATION_DAYS``, as described
+above), the account will not be activated (see the section on
+maintenance below for instructions on cleaning out expired accounts
+which have not been activated).
+
+
+Maintenance
+===========
+
+Inevitably, a site which uses a two-step process for user signup --
+registration followed by activation -- will accumulate a certain
+number of accounts which were registered but never activated. These
+accounts clutter up the database and tie up usernames which might
+otherwise be actively used, so it's desirable to clean them out
+periodically. For this purpose, a script,
+``registration/bin/deleted_expired_users.py``, is provided, which is
+suitable for use as a regular cron job. See that file for notes on how
+to add it to your crontab, and the included models documentation (see
+below) for discussion of how it works and some caveats.
+
+
+Where to go from here
+=====================
+
+Full documentation for all included components is bundled in the
+packaged release; see the following files for details:
+
+* `Forms documentation`_ for details on ``RegistrationForm``,
+  pre-packaged subclasses and available customizations.
+
+* `Models documentation`_ for details on ``RegistrationProfile`` and
+  its custom manager.
+
+* `Views documentation`_ for details on the ``register`` and
+  ``activate`` views, and methods for customizing them.
+
+.. _Forms documentation: forms.txt
+.. _Models documentation: models.txt
+.. _Views documentation: views.txt
+
+
+Development
+===========
+
+The `latest released version`_ of this application is 0.7, and is
+quite stable; it's already been deployed on a number of sites,
+including djangoproject.com. You can also obtain the absolute freshest
+code from `the development repository_`, but be warned that the
+development code may not always be backwards-compatible, and may well
+contain bugs that haven't yet been fixed.
+
+This document covers the 0.7 release of django-registration; new
+features introduced in the development trunk will be added to the
+documentation at the time of the next packaged release.
+
+.. _latest released version: http://pypi.python.org/pypi/django-registration/0.7
+.. _the development repository: http://www.bitbucket.org/ubernostrum/django-registration/src/
+
+
+Changes from previous versions
+==============================
+
+Several new features were added between version 0.2 and version 0.3;
+for details, see the CHANGELOG.txt file distributed with the packaged
+0.3 release.
+
+One important change to note before upgrading an installation of
+version 0.1 is a change to the ``RegistrationProfile`` model; the
+field ``key_generated`` has been removed, since it was redundant with
+the field ``date_joined`` on Django's bundled ``User`` model. Since
+this field became a ``NOT NULL`` column in the database, you will need
+to either drop the ``NOT NULL`` constraint or, preferably, simply drop
+the column. Consult your database's documentation for the correct way
+to handle this.
+
+Between version 0.3 and version 0.4, validation of the password fields
+was moved from ``clean_password2()`` to ``clean_password()``; this
+means that errors from mismatched passwords will now show up in
+``non_field_errors()`` instead of ``errors["password2"]``.
+
+Between version 0.6 and version 0.7, the script
+``registration/bin/delete_expired_users.py`` was removed, and replaced
+with a custom management command; you can now simply run ``manage.py
+cleanupregistration`` from any project which has django-registration
+installed.
+
+
+Dependencies
+============
+
+The only dependencies for this application are a functioning install
+of Django 1.0 or newer and, of course, a Django project in which you'd
+like to use it.
+
+Your Django project should have ``django.contrib.admin``,
+``django.contrib.auth`` and ``django.contrib.sites`` in its
+``INSTALLED_APPS`` setting.
+
+
+What this application does not do
+=================================
+
+This application does not integrate in any way with OpenID, nor should
+it; one of the key selling points of OpenID is that users **don't**
+have to walk through an explicit registration step for every site or
+service they want to use :)
+
+
+If you spot a bug
+=================
+
+Head over to this application's `project page on Bitbucket`_ and
+check `the issues list`_ to see if it's already been reported. If not,
+open a new issue and I'll do my best to respond quickly.
+
+.. _project page on Bitbucket: http://www.bitbucket.org/ubernostrum/django-registration/overview/
+.. _the issues list: http://www.bitbucket.org/ubernostrum/django-registration/issues/

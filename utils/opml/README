@@ -1,0 +1,78 @@
+Installation
+************
+
+The Python OPML package and its dependencies may be installed using
+`easy_install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_
+(recommended) :: 
+
+  $ easy_install opml
+
+or by using the standard distutils setup.py::
+
+  $ python setup.py install
+
+If installing using setup.py, `lxml <http://codespeak.net/lxml>`_ 
+will also need to be installed.  ``easy_install`` will manage this for you.
+
+
+Usage
+*****
+
+.. admonition:: Document Purpose
+
+     This document is intended to provide a set of literate tests
+     for the ``opml`` package; it is **not** intended to provide
+     thorough coverage of the OPML specification or semantics.  See
+     the `OPML 2 Specification <http://www.opml.org/spec2>`_ for
+     details on OPML.
+
+**opml** can parse OPML from a URI or from a local string.  For
+example, to parse an example from the OPML validator:
+
+  >>> import opml
+  >>> outline = opml.parse(
+  ... 'http://hosting.opml.org/dave/validatorTests/clean/subscriptionList.opml')
+
+Elements in the OPML header can be accessed as attributes:
+
+  >>> outline.title
+  'mySubscriptions.opml'
+  >>> outline.ownerName
+  'Dave Winer'
+  >>> outline.ownerEmail
+  'dave@scripting.com'
+
+Items in an OPML outline are stored in ``<outline>`` elements; these
+are accessible via the standard Python sequence operators:
+
+  >>> len(outline)
+  13
+  >>> outline[0]
+  <opml.OutlineElement object at ...>
+
+An ``OutlineElement`` object exposes the attributes associated with
+the element as properties:
+
+  >>> outline[0].text
+  'CNET News.com'
+  >>> outline[0].type
+  'rss'
+
+``outline`` elements may contain other outline elements:
+
+  >>> len(outline[0])
+  0
+
+When parsing a feed with nested items, the sub-items are accessible
+using the standard Python sequence operators:
+
+  >>> nested = \
+  ... opml.parse('http://hosting.opml.org/dave/spec/placesLived.opml')
+  >>> len(nested[0])
+  6
+  >>> nested[0][0].text
+  'Boston'
+  >>> len(nested[0][0])
+  2
+  >>> nested[0][0][0].text
+  'Cambridge'

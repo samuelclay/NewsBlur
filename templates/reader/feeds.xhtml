@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="feed_list"></div>
+
+<div class="center-pane">
+    <div id="story_titles" class="middle-north">
+    </div>
+
+    <div id="story_pane" class="middle-center ui-layout-content">
+            <div class="story_navigator">
+                <a href="#" class="rounded {transparent} button next_unread"></a>
+                <a href="#" class="rounded {transparent} button previous_unread"></a>
+            </div>
+            <div class="story_title"></div>
+            <div class="story_feed"><span class="story_meta">From: </span><span class="data"></span></div>
+            <div class="story_author"><span class="story_meta">Author: </span><span class="data"></span></div>
+            <div class="story_date"><span class="story_meta">Date: </span><span class="data"></span></div>
+            <div class="story_content"></div>
+            <div class="story_endbar"></div>
+    </div>
+</div>
+
+<div id="task_bar">
+
+    <div class="menu_button">
+        <img src="/media/img/reader/user.png" width="16" height="16" alt=""> {{ user_info.username }}
+        <div class="menu">
+        <h3>{{ user_info.username }}</h3> 
+        <h4>&mdash; 34 feeds, 95% intelligence</h4> 
+        <hr> 
+        <ul> 
+            <li><a href="#">Edit your profile</a></li> 
+            <li><a href="#">Change your password</a></li> 
+            <li><a href="#">Sign out</a></li> 
+        </ul> 
+        </div>
+    </div>
+</div>
+
+<div id="opml_import">
+    <a href="{% url apps.opml_import.views.opml_import %}" class="open_opml_import_facebox">Import Feeds</a>
+</div>
+
+{% endblock %}

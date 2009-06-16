@@ -1,0 +1,1 @@
+[django-registration] Activation email

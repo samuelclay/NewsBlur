@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>{% block title %}NewsBlur{% endblock %}</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    
+    <link rel="stylesheet" type="text/css" href="/media/css/reader.css" />
+    <link rel="stylesheet" type="text/css" href="/media/theme/ui.theme.css" />
+    <link rel="stylesheet" type="text/css" href="/media/js/facebox/facebox.css" />
+
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery.newsblur.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery.scrollTo.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery.corners.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery.hotkeys.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery-ui-personalized-1.6rc6.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/jquery.layout.js"></script>
+
+	<script type="text/javascript" charset="utf-8">
+
+		NEWSBLUR.Globals = {{ user_info|safe }};
+
+	</script>
+	
+    <script type="text/javascript" charset="utf-8" src="/media/js/newsblur/assetmodel.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/newsblur/reader.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/media/js/facebox/facebox.js"></script>
+
+    
+</head>
+
+<body>
+    {% block header %}{% endblock %}
+    {% block content %}{% endblock %}
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8371683-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>
