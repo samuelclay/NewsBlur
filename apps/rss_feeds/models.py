@@ -168,12 +168,11 @@ class Feed(models.Model):
         existing_story = Story.objects.filter(
             (
                Q(story_title__iexact=entry['title']) 
-               & Q(story_date__range=(start_date, end_date))
             )
             | (
                 Q(story_permalink__iexact=entry['link'])
-                & Q(story_date__range=(start_date, end_date))
             ), 
+            Q(story_date__range=(start_date, end_date)),
             story_feed = self
         )
         if len(existing_story):
