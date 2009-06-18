@@ -195,6 +195,6 @@ def _parse_user_info(user):
         'user_info': {
             'is_anonymous': json_encode(user.is_anonymous()),
             'is_authenticated': json_encode(user.is_authenticated()),
-            'username': user.username if user.is_authenticated() else 'Anonymous'
+            'username': json_encode(user.username) if user.is_authenticated() else 'Anonymous'
         }
     }
