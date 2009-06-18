@@ -22,6 +22,7 @@ if __file__.find('/home/conesus/webapps') == 0:
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_ROOT = '/home/conesus/webapps/newsblur/newsblur/media/'
+    MEDIA_URL = 'http://conesus.webfactional.com/media/media/'
     TEMPLATE_DIRS = (
         '/home/conesus/webapps/newsblur/newsblur/templates'
     )
@@ -37,6 +38,7 @@ else:
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_ROOT = '/Users/conesus/Projects/newsblur/media/'
+    MEDIA_URL = 'http://www.newsblur.com/media/'
     TEMPLATE_DIRS = (
         '/Users/conesus/Projects/newsblur/templates'
     )
@@ -58,12 +60,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
-
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://www.newsblur.com/media/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
