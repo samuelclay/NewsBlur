@@ -11,19 +11,19 @@ MANAGERS = ADMINS
 PRODUCTION = False
 DEVELOPMENT = False
 
-if __file__.find('/home/conesus') == 0:
+if __file__.find('/home/conesus/webapps') == 0:
     DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    DATABASE_NAME = 'newsblur'             # Or path to database file if using sqlite3.
-    DATABASE_USER = 'newsblur'             # Not used with sqlite3.
-    DATABASE_PASSWORD = ''         # Not used with sqlite3.
+    DATABASE_NAME = 'conesus_newsblur'             # Or path to database file if using sqlite3.
+    DATABASE_USER = 'conesus_newsblur'             # Not used with sqlite3.
+    DATABASE_PASSWORD = 'lapsak21'         # Not used with sqlite3.
     DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
     DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_ROOT = '/home/conesus/newsblur/media/'
+    MEDIA_ROOT = '/home/conesus/webapps/newsblur/newsblur/media/'
     TEMPLATE_DIRS = (
-        '/home/conesus/newsblur/templates'
+        '/home/conesus/webapps/newsblur/newsblur/templates'
     )
     PRODUCTION = True
 else:
@@ -57,13 +57,13 @@ SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = False
 
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://www.conesus.com/media'
+MEDIA_URL = 'http://www.newsblur.com/media'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -82,7 +82,6 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
     "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
     "django.core.context_processors.media"
 )
 
@@ -99,8 +98,8 @@ AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
 ROOT_URLCONF = 'urls'
 
 # CACHE_BACKEND = 'file:///var/tmp/django_cache'
-CACHE_BACKEND = 'dummy:///'
-# CACHE_BACKEND = 'locmem:///'
+# CACHE_BACKEND = 'dummy:///'
+CACHE_BACKEND = 'locmem:///'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
