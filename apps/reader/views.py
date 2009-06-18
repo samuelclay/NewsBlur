@@ -24,7 +24,7 @@ def index(request):
     context = {}
     
     user = request.user
-    user_info = _parse_user_info(user)
+    user_info = json_encode(_parse_user_info(user))
     context.update(user_info)
     return render_to_response('reader/feeds.xhtml', context,
                               context_instance=RequestContext(request))
@@ -43,7 +43,7 @@ def refresh_all_feeds(request):
     context = {}
     
     user = request.user
-    user_info = _parse_user_info(user)
+    user_info = json_encode(_parse_user_info(user))
     context.update(user_info)
     
     return render_to_response('reader/feeds.xhtml', context,
@@ -59,7 +59,7 @@ def refresh_feed(request):
     context = {}
     
     user = request.user
-    user_info = _parse_user_info(user)
+    user_info = json_encode(_parse_user_info(user))
     context.update(user_info)
     
     return render_to_response('reader/feeds.xhtml', context,
@@ -193,8 +193,8 @@ def get_read_feed_items(request, username):
 def _parse_user_info(user):
     return {
         'user_info': {
-            'is_anonymous': json_encode(user.is_anonymous()),
-            'is_authenticated': json_encode(user.is_authenticated()),
-            'username': json_encode(user.username) if user.is_authenticated() else 'Anonymous'
+            'is_anonymous': user.is_anonymous(),
+            'is_authenticated': user.is_authenticated(),
+            'username': user.username if user.is_authenticated() else 'Anonymous'
         }
     }
