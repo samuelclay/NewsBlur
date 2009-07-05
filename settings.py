@@ -1,4 +1,6 @@
 # Django settings for newsblur project.
+import sys
+sys.stdout = sys.stderr
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -30,16 +32,16 @@ if __file__.find('/home/conesus/webapps') == 0:
     PRODUCTION = True
 elif __file__.find('/home/conesus/newsblur') == 0:
     DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    DATABASE_NAME = 'conesus_newsblur'             # Or path to database file if using sqlite3.
-    DATABASE_USER = 'conesus_newsblur'             # Not used with sqlite3.
-    DATABASE_PASSWORD = 'lapsak21'         # Not used with sqlite3.
-    DATABASE_HOST = 'www.newsblur.com'             # Set to empty string for localhost. Not used with sqlite3.
+    DATABASE_NAME = 'newsblur'             # Or path to database file if using sqlite3.
+    DATABASE_USER = 'newsblur'             # Not used with sqlite3.
+    DATABASE_PASSWORD = ''         # Not used with sqlite3.
+    DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
     DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_ROOT = '/home/conesus/newsblur/media/'
-    MEDIA_URL = 'http://209.20.88.97/media/'
+    MEDIA_URL = 'http://www.newsblur.com/media/'
     TEMPLATE_DIRS = (
         '/home/conesus/newsblur/templates'
     )

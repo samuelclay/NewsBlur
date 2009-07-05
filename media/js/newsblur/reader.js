@@ -346,6 +346,7 @@
                                   .append($story_feed__list);
                                   
                 this.$story_pane.scrollTop('0px');
+                this.$story_pane.data('story_id', story_id);
             }
             this.mark_story_title_as_selected(story_id, $st);
             this.mark_story_as_read(story_id, $st);
@@ -382,7 +383,7 @@
             };
 
             $story_title.addClass('read');
-            if (NEWSBLUR.Globals.logged_in) {
+            if (NEWSBLUR.Globals.is_authenticated) {
                 this.model.mark_story_as_read(story_id, callback);
             }
         },
@@ -396,6 +397,37 @@
 
             this.model.mark_feed_as_read(feed_id, callback);
         },
+        
+        mark_story_as_like: function(story_id, $button) {
+            var self = this;
+
+            var callback = function() {
+                return;
+            };
+
+            $button.addClass('liked');
+            if (NEWSBLUR.Globals.is_authenticated) {
+                this.model.mark_story_as_like(story_id, callback);
+            }
+        },
+        
+        mark_story_as_dislike: function(story_id, $button) {
+            var self = this;
+
+            var callback = function() {
+                return;
+            };
+
+            $button.addClass('disliked');
+            if (NEWSBLUR.Globals.is_authenticated) {
+                this.model.mark_story_as_dislike(story_id, callback);
+            }            
+        },
+        
+        
+        // ========
+        // = OPML =
+        // ========
 
         load_opml_import_facebox: function() {
             $('a.open_opml_import_facebox').facebox();
@@ -450,6 +482,16 @@
                 e.preventDefault();
                 var story_id = $t.attr('href').slice(1).split('/');
                 self.mark_story_as_read(story_id, $t);
+            });
+            $.targetIs(e, { tagSelector: 'a.button.like' }, function($t, $p){
+                e.preventDefault();
+                var story_id = self.$story_pane.data('story_id');
+                self.mark_story_as_like(story_id, $t);
+            });
+            $.targetIs(e, { tagSelector: 'a.button.dislike' }, function($t, $p){
+                e.preventDefault();
+                var story_id = self.$story_pane.data('story_id');
+                self.mark_story_as_dislike(story_id, $t);
             });
         },
         

@@ -225,26 +225,26 @@ a img {
     background-color: #cee;
 }
 
-#story_pane a.button.next_unread {
+#story_pane a.button.like {
     float: right;
     width: 24px;
-    height: 16px;
-    background: #acc url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
-}
-
-#story_pane a.button.next_unread:hover {
-    background: #cee url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
-}
-
-#story_pane a.button.previous_unread {
-    float: right;
-    width: 16px;
     height: 16px;
     background: #acc url(../img/icons/silk/arrow_up.png) no-repeat 50% 50%;
 }
 
-#story_pane a.button.previous_unread:hover {
+#story_pane a.button.like:hover {
     background: #cee url(../img/icons/silk/arrow_up.png) no-repeat 50% 50%;
+}
+
+#story_pane a.button.dislike {
+    float: right;
+    width: 16px;
+    height: 16px;
+    background: #acc url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
+}
+
+#story_pane a.button.dislike:hover {
+    background: #cee url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
 }
 
 /* ================= */

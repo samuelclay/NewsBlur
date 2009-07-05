@@ -19,7 +19,11 @@
 
 	<script type="text/javascript" charset="utf-8">
 
-		NEWSBLUR.Globals = {{ user_info|safe }};
+		NEWSBLUR.Globals = {
+			'is_authenticated': {{ user_info.is_authenticated|safe }},
+			'is_anonymous': {{ user_info.is_anonymous|safe }},
+			'username': {{ user_info.username|safe }}
+		};
 
 	</script>
 	

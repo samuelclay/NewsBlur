@@ -69,6 +69,48 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
+    mark_story_as_like: function(story_id, callback) {
+        var self = this;
+        var like = false;
+        
+        for (s in this.stories) {
+            if (this.stories[s].id == story_id) {
+                like = this.stories[s].like;
+                this.stories[s].like = 1;
+                break;
+            }
+        }
+        
+        if (!like) {
+            this.make_request('/reader/mark_story_as_like',
+                {
+                    story_id: story_id
+                }, callback
+            );
+        }
+    },
+    
+    mark_story_as_dislike: function(story_id, callback) {
+        var self = this;
+        var dislike = false;
+        
+        for (s in this.stories) {
+            if (this.stories[s].id == story_id) {
+                dislike = this.stories[s].dislike;
+                this.stories[s].dislike = 1;
+                break;
+            }
+        }
+        
+        if (!dislike) {
+            this.make_request('/reader/mark_story_as_dislike',
+                {
+                    story_id: story_id
+                }, callback
+            );
+        }
+    },
+    
     mark_feed_as_read: function(feed_id, callback) {
         var self = this;
         

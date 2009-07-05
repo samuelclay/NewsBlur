@@ -193,8 +193,8 @@ def get_read_feed_items(request, username):
 def _parse_user_info(user):
     return {
         'user_info': {
-            'is_anonymous': user.is_anonymous(),
-            'is_authenticated': user.is_authenticated(),
-            'username': user.username if user.is_authenticated() else 'Anonymous'
+            'is_anonymous': json_encode(user.is_anonymous()),
+            'is_authenticated': json_encode(user.is_authenticated()),
+            'username': json_encode(user.username if user.is_authenticated() else 'Anonymous')
         }
     }
