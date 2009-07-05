@@ -97,6 +97,21 @@ class ReadStories(models.Model):
         verbose_name = "read story"
         unique_together = ("user", "story")
         
+class StoryOpinions(models.Model):
+    user = models.ForeignKey(User)
+    feed = models.ForeignKey(Feed)
+    story = models.ForeignKey(Story)
+    opinion = models.IntegerField(default=0)
+    
+    def __unicode__(self):
+        return ("%s [%s]: %s - %s" %
+                    (self.user.username, self.feed.feed_title, self.story.story_title, self.opinion))
+        
+    class Meta:
+        verbose_name_plural = "opinions"
+        verbose_name = "opinion"
+        unique_together = ("user", "story")
+        
 class UserSubscriptionFolders(models.Model):
     user = models.ForeignKey(User)
     user_sub = models.ForeignKey(UserSubscription)

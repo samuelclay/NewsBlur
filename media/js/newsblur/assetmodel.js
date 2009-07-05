@@ -71,17 +71,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     mark_story_as_like: function(story_id, callback) {
         var self = this;
-        var like = false;
+        var opinion;
         
         for (s in this.stories) {
             if (this.stories[s].id == story_id) {
-                like = this.stories[s].like;
-                this.stories[s].like = 1;
+                opinion = this.stories[s].opinion;
+                this.stories[s].opinion = 1;
                 break;
             }
         }
         
-        if (!like) {
+        NEWSBLUR.log(['Like', opinion, this.stories[s].opinion]);
+        if (opinion != 1) {
             this.make_request('/reader/mark_story_as_like',
                 {
                     story_id: story_id
@@ -92,17 +93,17 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     mark_story_as_dislike: function(story_id, callback) {
         var self = this;
-        var dislike = false;
+        var opinion;
         
         for (s in this.stories) {
             if (this.stories[s].id == story_id) {
-                dislike = this.stories[s].dislike;
-                this.stories[s].dislike = 1;
+                opinion = this.stories[s].opinion;
+                this.stories[s].opinion = -1;
                 break;
             }
         }
-        
-        if (!dislike) {
+        NEWSBLUR.log(['Dislike', opinion, this.stories[s].opinion]);
+        if (opinion != -1) {
             this.make_request('/reader/mark_story_as_dislike',
                 {
                     story_id: story_id
@@ -132,7 +133,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/load_feeds', {}, pre_callback);
     },
     
-    load_feed: function(feed_id, callback) {
+    load_feed: function(feed_id, page, callback) {
         var self = this;
         
         var pre_callback = function(stories) {
@@ -142,7 +143,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         this.make_request('/reader/load_single_feed',
             {
-                feed_id: feed_id
+                feed_id: feed_id,
+                page: page
             }, pre_callback
         );
     },

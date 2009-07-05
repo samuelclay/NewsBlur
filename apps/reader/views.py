@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response, get_list_or_404, get_object_or_
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from apps.rss_feeds.models import Feed, Story
-from apps.reader.models import UserSubscription, ReadStories, UserSubscriptionFolders
+from apps.reader.models import UserSubscription, ReadStories, UserSubscriptionFolders, StoryOpinions
 from utils.json import json_encode
 from utils.story_functions import format_story_link_date__short, format_story_link_date__long
 from utils.user_functions import get_user
@@ -105,11 +105,15 @@ def load_single_feed(request):
     
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 25))
+    page = int(request.REQUEST.get('page', 0))
+    if page:
+        offset = limit * page
     feed_id = request.REQUEST['feed_id']
     stories=Story.objects.filter(story_feed=feed_id)[offset:offset+limit]
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force', False)
     
+        
     if force_update:
         fetch_feeds(force_update, [feed])
     
@@ -122,12 +126,21 @@ def load_single_feed(request):
                 user=user, 
                 feed=feed
             )
+            story_opinions = StoryOpinions.objects.filter(
+                user=user,
+                feed=feed
+            )
             for story in stories:
                 story.short_parsed_date = format_story_link_date__short(story.story_date)
                 story.long_parsed_date = format_story_link_date__long(story.story_date)
                 story.story_feed_title = feed.feed_title
                 story.story_feed_link = mark_safe(feed.feed_link)
                 story.story_permalink = mark_safe(story.story_permalink)
+                if story in [o.story for o in story_opinions]:
+                    for o in story_opinions:
+                        if o.story == story:
+                            story.opinion = o.opinion
+                            break
                 if story.story_date < sub.mark_read_date:
                     story.read_status = 1
                 elif story.story_date > sub.last_read_date:
@@ -137,7 +150,6 @@ def load_single_feed(request):
                         print "READ: "
                         story.read_status = 1
                     else: 
-                        print "unread: "
                         story.read_status = 0
     
     context = stories
@@ -184,6 +196,35 @@ def mark_feed_as_read(request):
         m.save()
     except:
         data = json_encode(dict(code=1))
+    return HttpResponse(data)
+    
+@login_required
+def mark_story_as_like(request):
+    return mark_story_with_opinion(request, 1)
+
+@login_required
+def mark_story_as_dislike(request):
+    return mark_story_with_opinion(request, -1)
+
+@login_required
+def mark_story_with_opinion(request, opinion):
+    story_id = request.REQUEST['story_id']
+    story = Story.objects.select_related("story_feed").get(id=story_id)
+    
+    previous_opinion = StoryOpinions.objects.get(story=story, user=request.user, feed=story.story_feed)
+    if previous_opinion and previous_opinion.opinion != opinion:
+        previous_opinion.opinion = opinion
+        data = json_encode(dict(code=0))
+        previous_opinion.save()
+        print "Changed Opinion: " + str(previous_opinion.opinion) + ' ' + str(opinion)    
+    else:
+        print "Marked Opinion: " + str(story_id) + ' ' + str(opinion)    
+        m = StoryOpinions(story=story, user=request.user, feed=story.story_feed, opinion=opinion)
+        data = json_encode(dict(code=0))
+        try:
+            m.save()
+        except:
+            data = json_encode(dict(code=2))
     return HttpResponse(data)
     
 @login_required
