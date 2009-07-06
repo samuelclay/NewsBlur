@@ -34,7 +34,7 @@ def refresh_all_feeds(request):
     feeds = Feed.objects.all()
 
     # t = threading.Thread(target=refresh_feeds,
-                         args=[feeds])
+    #                     args=[feeds])
     # t.setDaemon(True)
     # t.start()
     refresh_feeds(feeds)
