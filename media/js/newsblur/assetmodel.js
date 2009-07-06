@@ -137,7 +137,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(stories) {
-            self.stories = stories;
+            if (feed_id != self.feed_id) {
+                self.stories = stories;
+                self.feed_id = feed_id;
+            } else {
+                $.merge(self.stories, stories);
+            }
             callback(stories);
         };
         

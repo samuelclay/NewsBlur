@@ -57,7 +57,7 @@ else:
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_ROOT = '/Users/conesus/Projects/newsblur/media/'
-    MEDIA_URL = 'http://www.newsblur.com/media/'
+    MEDIA_URL = '/media/'
     TEMPLATE_DIRS = (
         '/Users/conesus/Projects/newsblur/templates'
     )
