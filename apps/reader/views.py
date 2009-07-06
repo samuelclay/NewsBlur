@@ -33,11 +33,11 @@ def refresh_all_feeds(request):
     force_update = False # request.GET.get('force', False)
     feeds = Feed.objects.all()
 
-    t = threading.Thread(target=refresh_feeds,
+    # t = threading.Thread(target=refresh_feeds,
                          args=[feeds])
-    t.setDaemon(True)
-    t.start()
-
+    # t.setDaemon(True)
+    # t.start()
+    refresh_feeds(feeds)
     # feeds = fetch_feeds(force_update, feeds)
     
     context = {}
