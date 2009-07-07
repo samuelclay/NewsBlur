@@ -112,9 +112,9 @@ AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
 
 ROOT_URLCONF = 'urls'
 
-# CACHE_BACKEND = 'file:///var/tmp/django_cache'
+CACHE_BACKEND = 'file:///var/tmp/django_cache'
 # CACHE_BACKEND = 'dummy:///'
-CACHE_BACKEND = 'locmem:///'
+# CACHE_BACKEND = 'locmem:///'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
