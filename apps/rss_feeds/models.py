@@ -125,7 +125,7 @@ class Feed(models.Model):
                        story_permalink = story.get('link')
                 )
                 try:
-                    s.save()
+                    s.save(force_insert=True)
                 except:
                     pass
             elif existing_story.story_title != story.get('title') \
@@ -140,6 +140,7 @@ class Feed(models.Model):
                     original_content = existing_story.story_content
                 diff = HTMLDiff(original_content, story_content)
                 print "\t\tDiff: %s %s %s" % diff.getStats()
+                # print "\t\tDiff content: %s" % diff.getDiff()
                 print '\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title'))
 
                 s = Story(id = existing_story.id,
@@ -152,28 +153,27 @@ class Feed(models.Model):
                        story_permalink = story.get('link')
                 )
                 try:
-                    s.save()
+                    s.save(force_update=True)
                 except:
                     pass
-            # else:
-                # print "Unchanged story: %s " % story.get('title')
+            else:
+                print "Unchanged story: %s " % story.get('title')
             
         return
         
     def _exists_story(self, entry):
         pub_date = entry['published']
-        start_date = pub_date - datetime.timedelta(hours=12)
-        end_date = pub_date + datetime.timedelta(hours=12)
+        start_date = pub_date - datetime.timedelta(hours=4)
+        end_date = pub_date + datetime.timedelta(hours=4)
         # print "Dates: %s %s %s" % (pub_date, start_date, end_date)
         existing_story = Story.objects.filter(
             (
-               Q(story_title__iexact=entry['title']) 
-            )
-            | (
-                Q(story_permalink__iexact=entry['link'])
+               Q(story_title__iexact = entry['title']) 
+            ) | (
+                Q(story_permalink = entry['link'])
             ), 
             Q(story_date__range=(start_date, end_date)),
-            story_feed = self
+            Q(story_feed = self)
         )
         if len(existing_story):
             return existing_story[0]

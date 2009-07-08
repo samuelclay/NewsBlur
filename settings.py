@@ -115,6 +115,7 @@ ROOT_URLCONF = 'urls'
 CACHE_BACKEND = 'file:///var/tmp/django_cache'
 # CACHE_BACKEND = 'dummy:///'
 # CACHE_BACKEND = 'locmem:///'
+TEST_DATABASE_COLLATION = 'utf8_general_ci'
 
 INSTALLED_APPS = (
     'django.contrib.auth',

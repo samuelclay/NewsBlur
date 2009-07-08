@@ -30,15 +30,13 @@ def index(request):
                               context_instance=RequestContext(request))
     
 def refresh_all_feeds(request):
-    force_update = False # request.GET.get('force', False)
+    force_update = request.GET.get('force', False)
     feeds = Feed.objects.all()
 
     t = threading.Thread(target=refresh_feeds,
-                         args=[feeds])
+                         args=[feeds, force_update])
     t.setDaemon(True)
     t.start()
-
-    # feeds = fetch_feeds(force_update, feeds)
     
     context = {}
     
@@ -54,7 +52,7 @@ def refresh_feed(request):
     force_update = request.GET.get('force', False)
     feeds = Feed.objects.filter(id=feed_id)
 
-    feeds = fetch_feeds(force_update, feeds)
+    feeds = refresh_feeds(feeds, force_update)
     
     context = {}
     
@@ -65,9 +63,9 @@ def refresh_feed(request):
     return render_to_response('reader/feeds.xhtml', context,
                               context_instance=RequestContext(request))
 
-def refresh_feeds(feeds):
+def refresh_feeds(feeds, force=False):
     for f in feeds:
-        f.update()
+        f.update(force)
     return
 
 def load_feeds(request):

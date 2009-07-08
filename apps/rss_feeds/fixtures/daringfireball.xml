@@ -1,0 +1,1558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>Daring Fireball</title>
+<subtitle>Mac and web curmudgeonry/nerdery. By John Gruber.</subtitle>
+<link rel="alternate" type="text/html" href="http://daringfireball.net/" />
+<link rel="self" type="application/atom+xml" href="http://daringfireball.net/index.xml" />
+<id>http://daringfireball.net/feeds/combo</id>
+
+<updated>2009-07-07T00:19:45Z</updated><rights>Copyright © 2009, John Gruber</rights><entry>
+	<title>This is a test &amp; it's data</title>
+	<link rel="alternate" type="text/html" href="http://hsivonen.iki.fi/xhtml2-html5-q-and-a/" />
+	<link rel="shorturl" href="http://✪df.ws/df8" />
+	<id>tag:daringfireball.net,2009:/linked//6.17396</id>
+	<published>2009-07-06T22:39:01Z</published>
+	<updated>2009-07-07T00:06:23Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Like <a href="http://simonwillison.net/2009/Jul/6/xhtml/">Simon Willison</a>, I very much enjoy Sivonen&#8217;s distinction between &#8220;marketing&#8221; XHTML and technical &#8220;XHTML&#8221;:</p>
+
+<blockquote>
+  <p>There are two meanings to XHTML: technical and marketing. The technical kind (XHTML served using the application/xhtml xml MIME type) is a formulation of HTML as an XML vocabulary. The marketing kind (XHTML served using the text/html MIME type) is processed just like HTML by browsers but the authors attempt to observe slightly different syntax rules in order to make it seem that they are doing something newer and shinier compared to HTML.</p>
+</blockquote>
+
+<p><strong>Update:</strong> Fireballed. <a href="http://74.125.155.132/search?q=cache:http://hsivonen.iki.fi/xhtml2-html5-q-and-a/&amp;hl=en&amp;strip=1">Here&#8217;s the version in Google&#8217;s cache</a>.</p>
+
+<div>
+<a  title="Permanent link to ‘Henri Sivonen&#8217;s Unofficial Q&amp;A About the Discontinuation of the XHTML2 WG’"  href="http://daringfireball.net/linked/2009/07/06/sivonen-xhtml2">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Matt Mullenweg on the GPL and WordPress</title>
+	<link rel="alternate" type="text/html" href="http://ma.tt/2009/07/not-lonely-at-all/" />
+	<link rel="shorturl" href="http://✪df.ws/df7" />
+	<id>tag:daringfireball.net,2009:/linked//6.17395</id>
+	<published>2009-07-06T22:31:37Z</published>
+	<updated>2009-07-07T00:19:45Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Matt Mullenweg responds to <a href="http://www.red-sweater.com/blog/825/getting-pretty-lonely/">Daniel Jalkut&#8217;s argument</a> &#8220;that the GPL does more to harm collaborative development than it does to help it&#8221;:</p>
+
+<blockquote>
+  <ol>
+  <li><p>I’ve never encountered a serious client who chose not to use
+  WordPress because it was GPL-licensed, and I think it’s hard to
+  argue that WordPress’s license has had a dampening effect on its
+  adoption, given its success over competitors with widely varying
+  licenses.</p></li>
+  <li><p>I think we have an incredibly strong third-party extension,
+  plugin, and theme community that has flourished, not in spite of the
+  GPL license, but because of it.</p></li>
+  <li><p>I’ve seen the absence of GPL in practice; there have been times
+  in the WordPress world when parts of the community have “gone dark”
+  and claimed their code was under more restrictive licenses, like
+  used to be common with themes. Every time this cycle starts it
+  basically kills innovation in that part of the WordPress world until
+  people start opening up their code again or until a GPL equivalent
+  is available. I’ve seen this firsthand several times now.</p></li>
+  </ol>
+
+</blockquote>
+
+<p>I can&#8217;t speak for Jalkut, but none of these three points from Mullenweg address Jalkut&#8217;s argument.</p>
+
+<ol>
+<li><p>Jalkut wasn&#8217;t arguing about whether <em>users</em> will not use GPL software; his argument was about developers.</p></li>
+<li><p>Jalkut never argued that WordPress wasn&#8217;t popular or didn&#8217;t have a strong extension/plugin/theme community. Jalkut&#8217;s argument was that WordPress might have an even <em>stronger</em> extension/plugin/theme community if it were licensed under a BSD-style license.</p></li>
+
+<li><p>Jalkut wasn&#8217;t arguing in favor of more restrictive licenses; he was arguing in favor of <em>less</em> restrictive ones: BSD/MIT/Apache style ones.</p></li>
+</ol>
+
+<p>In some sense, Jalkut&#8217;s essay could be considered a big &#8220;Duh&#8221; &#8212; a statement of the obvious. To wit: that GPL-licensed software projects discourage participation from developers working on anything other than other GPL-licensed software projects. That&#8217;s pretty much the stated goal of the FSF. BSD-licensed projects encourage participation from developers working on just about anything.</p>
+
+<div>
+<a  title="Permanent link to ‘Matt Mullenweg on the GPL and WordPress’"  href="http://daringfireball.net/linked/2009/07/06/mullenweg-gpl">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Prowl: Growl Client for iPhone</title>
+	<link rel="alternate" type="text/html" href="http://prowl.weks.net/" />
+	<link rel="shorturl" href="http://✪df.ws/df6" />
+	<id>tag:daringfireball.net,2009:/linked//6.17394</id>
+	<published>2009-07-06T21:41:30Z</published>
+	<updated>2009-07-06T23:15:09Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>New $3 iPhone app by Zachary West:</p>
+
+<blockquote>
+  <p>Prowl is a Growl client for the iPhone. Notifications from your Mac can be sent to your iPhone over push, with a full range of customization and grace you expect.</p>
+</blockquote>
+
+<p>Great idea. This opens up iPhone push notifications for anything you can think of.</p>
+
+<div>
+<a  title="Permanent link to ‘Prowl: Growl Client for iPhone’"  href="http://daringfireball.net/linked/2009/07/06/prowl">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Eliss on Sale for $1</title>
+	<link rel="alternate" type="text/html" href="http://www.toucheliss.com/" />
+	<link rel="shorturl" href="http://✪df.ws/df5" />
+	<id>tag:daringfireball.net,2009:/linked//6.17393</id>
+	<published>2009-07-06T19:38:37Z</published>
+	<updated>2009-07-06T20:00:41Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Eliss, an innovative and clever musical (or <a href="http://twitter.com/dsandler/status/2502083716">not</a>?) iPhone puzzle game, is currently on sale for just $1.</p>
+
+<div>
+<a  title="Permanent link to ‘Eliss on Sale for $1’"  href="http://daringfireball.net/linked/2009/07/06/eliss">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Boston to Debut iPhone App for Municipal Complaints</title>
+	<link rel="alternate" type="text/html" href="http://www.boston.com/news/local/massachusetts/articles/2009/07/06/boston_to_debut_8216killer_app8217_for_municipal_complaints/" />
+	<link rel="shorturl" href="http://✪df.ws/df4" />
+	<id>tag:daringfireball.net,2009:/linked//6.17392</id>
+	<published>2009-07-06T19:07:17Z</published>
+	<updated>2009-07-06T19:07:18Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Michael Levenson, reporting for The Boston Globe:</p>
+
+<blockquote>
+  <p>City officials will soon debut Boston’s first official iPhone application, which will allow residents to snap photos of neighborhood nuisances - nasty potholes, graffiti-stained walls, blown street lights &#8212; and e-mail them to City Hall to be fixed.</p>
+</blockquote>
+
+<p>(a) This sounds like a neat idea. (b) The iPhone is turning into a de facto standard platform.</p>
+
+<div>
+<a  title="Permanent link to ‘Boston to Debut iPhone App for Municipal Complaints’"  href="http://daringfireball.net/linked/2009/07/06/boston-iphone-apps">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Incandescent Bulbs Return to the Cutting Edge</title>
+	<link rel="alternate" type="text/html" href="http://www.nytimes.com/2009/07/06/business/energy-environment/06bulbs.html?partner=rss&amp;emc=rss&amp;pagewanted=all" />
+	<link rel="shorturl" href="http://✪df.ws/df3" />
+	<id>tag:daringfireball.net,2009:/linked//6.17391</id>
+	<published>2009-07-06T19:00:33Z</published>
+	<updated>2009-07-06T19:00:36Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Leora Broydo Vestel reports for The New York Times on innovations in incandescent light bulbs, spurred by the tougher efficiency standards coming into effect in 2012:</p>
+
+<blockquote>
+  <p>“There’s a massive misperception that incandescents are going away quickly,” said Chris Calwell, a researcher with Ecos Consulting who studies the bulb market. “There have been more incandescent innovations in the last three years than in the last two decades.”</p>
+</blockquote>
+
+<p>Necessity, once again, is the mother of invention. (<a href="http://hivelogic.com/articles/view/incandescent-innovations">Via Dan Benjamin</a>.)</p>
+
+<div>
+<a  title="Permanent link to ‘Incandescent Bulbs Return to the Cutting Edge’"  href="http://daringfireball.net/linked/2009/07/06/incandescent">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Jon Stokes on the Palm Pre’s Battery Life</title>
+	<link rel="alternate" type="text/html" href="http://arstechnica.com/gadgets/news/2009/07/taking-flight-why-the-iphone-still-beats-pre-for-air-travel.ars" />
+	<link rel="shorturl" href="http://✪df.ws/df2" />
+	<id>tag:daringfireball.net,2009:/linked//6.17390</id>
+	<published>2009-07-06T18:36:14Z</published>
+	<updated>2009-07-06T20:17:36Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Jon Stokes, after using the Pre as his only computing device for two days in an airport:</p>
+
+<blockquote>
+  <p>There is one diversion on the Pre that&#8217;s really great, but you&#8217;ll definitely want to be plugged in while you use it: Sprint TV. The live TV streaming to the device works quite well, and I got a huge kick out of watching ABC News and some reality TV shows on my phone. But I estimate (I haven&#8217;t formally tested) that I could stream about 30 minutes of TV to the Pre before completely nuking the battery.</p>
+</blockquote>
+
+<p>Streaming video involves both playback <em>and</em> constant network use, but 30 minutes sounds shockingly low.</p>
+
+<div>
+<a  title="Permanent link to ‘Jon Stokes on the Palm Pre&#8217;s Battery Life’"  href="http://daringfireball.net/linked/2009/07/06/stokes-pre">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>David Carr: ‘The Unhealthy Fixation on Steve Jobs’s Health’</title>
+	<link rel="alternate" type="text/html" href="http://www.nytimes.com/2009/07/06/business/media/06carr.html?partner=rss&amp;emc=rss&amp;pagewanted=all" />
+	<link rel="shorturl" href="http://✪df.ws/df1" />
+	<id>tag:daringfireball.net,2009:/linked//6.17389</id>
+	<published>2009-07-06T17:15:10Z</published>
+	<updated>2009-07-06T17:15:12Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Well said:</p>
+
+<blockquote>
+  <p>Is anyone really confused about Mr. Jobs’s health status? I remain unconvinced, in part because I believe that prurience, not legitimate financial concerns, drives most people’s interest in the illness of others.</p>
+</blockquote>
+
+<div>
+<a  title="Permanent link to ‘David Carr: &#8216;The Unhealthy Fixation on Steve Jobs’s Health&#8217;’"  href="http://daringfireball.net/linked/2009/07/06/carr-jobs">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Decoding the HTML 5 Video Codec Debate</title>
+	<link rel="alternate" type="text/html" href="http://arstechnica.com/open-source/news/2009/07/decoding-the-html-5-video-codec-debate.ars" />
+	<link rel="shorturl" href="http://✪df.ws/df0" />
+	<id>tag:daringfireball.net,2009:/linked//6.17388</id>
+	<published>2009-07-06T16:27:28Z</published>
+	<updated>2009-07-06T16:28:03Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Good overview by Ryan Paul on the H.264 vs. Ogg Theora standoff between the major modern browser makers. With regard to Apple&#8217;s refusal to support Ogg Theora, though, I think he underplays the importance to Apple of H.264-decoding chipsets. That&#8217;s how iPhones and iPods get such long battery life for video playback. There are no such chipsets for Ogg Theora.</p>
+
+<div>
+<a  title="Permanent link to ‘Decoding the HTML 5 Video Codec Debate’"  href="http://daringfireball.net/linked/2009/07/06/html-5-video-codecs">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Disney World Monorail Crash Kills Driver</title>
+	<link rel="alternate" type="text/html" href="http://www.cnn.com/2009/US/07/05/u.s.disney.monorail/index.html" />
+	<link rel="shorturl" href="http://✪df.ws/dez" />
+	<id>tag:daringfireball.net,2009:/linked//6.17387</id>
+	<published>2009-07-05T15:08:50Z</published>
+	<updated>2009-07-05T20:58:28Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Yikes:</p>
+
+<blockquote>
+  <p>A monorail train at Walt Disney World crashed into the back of another train early Sunday, killing one driver, according to an amusement park spokesman and a witness interviewed by CNN.</p>
+</blockquote>
+
+<p>Here&#8217;s <a href="http://www.clickorlando.com/video/19956043/index.html">amateur video of the scene</a> just after the accident, shot from the passenger platform at the Ticket and Transportation Center.</p>
+
+<p><strong>Update:</strong> <a href="http://micechat.com/forums/news/119188-monorail-crash-kills-driver-stuns-passengers-disney-world.html#post1055420438">Here&#8217;s the best speculation</a> I&#8217;ve seen explaining how it could have happened, from someone who claims to be a former monorail employee.</p>
+
+<div>
+<a  title="Permanent link to ‘Disney World Monorail Crash Kills Driver’"  href="http://daringfireball.net/linked/2009/07/05/monorail">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Cabel Sasser’s Favorite Fireworks Packaging of 2009</title>
+	<link rel="alternate" type="text/html" href="http://www.cabel.name/2009/07/yay-fireworks-2009.html" />
+	<link rel="shorturl" href="http://✪df.ws/dey" />
+	<id>tag:daringfireball.net,2009:/linked//6.17386</id>
+	<published>2009-07-04T23:46:36Z</published>
+	<updated>2009-07-04T23:46:36Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>A great Independence Day tradition. My favorite this year is &#8220;Blond Joke&#8221;.</p>
+
+<div>
+<a  title="Permanent link to ‘Cabel Sasser&#8217;s Favorite Fireworks Packaging of 2009’"  href="http://daringfireball.net/linked/2009/07/04/cabel-fireworks">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Delicious Library</title>
+	<link rel="alternate" type="text/html" href="http://delicious-monster.com/" />
+	<link rel="shorturl" href="http://✪df.ws/dex" />
+	<id>tag:daringfireball.net,2009:/linked//6.17385</id>
+	<published>2009-07-04T01:21:38Z</published>
+	<updated>2009-07-04T01:25:06Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Delicious Library 2.1 is out, along with a <a href="http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=318472053&amp;mt=8"><em>free</em> iPhone companion in the App Store</a>. My thanks to Delicious Monster for sponsoring this week&#8217;s DF RSS feed to promote it. The iPhone app syncs with the Mac version and lets you view everything in your library, with the same intricate attention to UI design and experience that has made Delicious Monster famous. It&#8217;s good.</p>
+
+<p>If you need further convincing, check out <a href="http://lonelysandwich.com/post/122013190/delicious-video">the adorable guided tour video</a> they made to promote the iPhone  app&#8217;s release last month. <em>Hand-crafted stop-motion animation.</em> If this video doesn&#8217;t make you smile, you&#8217;re not hooked up right. Imagine how much work went into the app if they put this much work into the video.</p>
+
+<div>
+<a  title="Permanent link to ‘Delicious Library’"  href="http://daringfireball.net/linked/2009/07/03/delicious-library">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>‘2001: A Space Odyssey’ Icon Set</title>
+	<link rel="alternate" type="text/html" href="http://www.zyotism.com/aesthetics/iconsets/2001/" />
+	<link rel="shorturl" href="http://✪df.ws/dew" />
+	<id>tag:daringfireball.net,2009:/linked//6.17384</id>
+	<published>2009-07-03T19:15:24Z</published>
+	<updated>2009-07-03T19:15:25Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Nice set of icons by Mischa McLachlan.</p>
+
+<div>
+<a  title="Permanent link to ‘&#8216;2001: A Space Odyssey&#8217; Icon Set’"  href="http://daringfireball.net/linked/2009/07/03/2001-icons">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>‘Edge’ Is Back in the U.S. and U.K. App Stores</title>
+	<link rel="alternate" type="text/html" href="http://www.mobigame.net/" />
+	<link rel="shorturl" href="http://✪df.ws/dev" />
+	<id>tag:daringfireball.net,2009:/linked//6.17383</id>
+	<published>2009-07-03T19:01:55Z</published>
+	<updated>2009-07-03T19:01:56Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Remember Edge, the iPhone game that was forced out of the U.S. and U.K. App Stores after <a href="http://daringfireball.net/linked/2009/06/05/jackass-langdell">some jackass claimed a copyright</a> on the word &#8220;Edge&#8221;? Well, Edge is back. I bought it last night and I highly recommend it, as does my five-year-old son. Very fun.</p>
+
+<div>
+<a  title="Permanent link to ‘&#8216;Edge&#8217; Is Back in the U.S. and U.K. App Stores’"  href="http://daringfireball.net/linked/2009/07/03/edge">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Comments on Comments on Zeldman’s XHTML WTF</title>
+	<link rel="alternate" type="text/html" href="http://stoneship.org/journal/2009/comments-on-comments-on-zeldmans-xhtml-wtf/" />
+	<link rel="shorturl" href="http://✪df.ws/deu" />
+	<id>tag:daringfireball.net,2009:/linked//6.17382</id>
+	<published>2009-07-03T18:58:26Z</published>
+	<updated>2009-07-03T18:58:28Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>There are a lot of misunderstandings out there regarding HTML 5.</p>
+
+<div>
+<a  title="Permanent link to ‘Comments on Comments on Zeldman’s XHTML WTF’"  href="http://daringfireball.net/linked/2009/07/03/xhtml-wtf">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>The Setup: John Siracusa</title>
+	<link rel="alternate" type="text/html" href="http://john.siracusa.usesthis.com/" />
+	<link rel="shorturl" href="http://✪df.ws/det" />
+	<id>tag:daringfireball.net,2009:/linked//6.17381</id>
+	<published>2009-07-03T18:23:12Z</published>
+	<updated>2009-07-03T18:23:16Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Another great entry in Daniel Bogan&#8217;s excellent <a href="http://usesthis.com/">The Setup</a>.</p>
+
+<div>
+<a  title="Permanent link to ‘The Setup: John Siracusa’"  href="http://daringfireball.net/linked/2009/07/03/setup-siracusa">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Using Automator to Create a Simple Interface for ffmpeg2theora</title>
+	<link rel="alternate" type="text/html" href="http://systemsboy.com/2009/07/ogg-theora-converter.html" />
+	<link rel="shorturl" href="http://✪df.ws/des" />
+	<id>tag:daringfireball.net,2009:/linked//6.17380</id>
+	<published>2009-07-03T17:52:21Z</published>
+	<updated>2009-07-03T17:52:23Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>This lets you transcode video to Ogg Theora right from the Finder, either via the contextual menu or by drag-and-drop. Personally, I don&#8217;t mind using the Terminal for this, but Automator is a great solution for wrapping command-line tools.</p>
+
+<div>
+<a  title="Permanent link to ‘Using Automator to Create a Simple Interface for ffmpeg2theora’"  href="http://daringfireball.net/linked/2009/07/03/automator-ffmpeg2theora">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Email Full-Resolution Photos From the iPhone</title>
+	<link rel="alternate" type="text/html" href="http://geek.thinkunique.org/2009/07/02/email-full-resolution-photos-from-iphone-3g-s/" />
+	<link rel="shorturl" href="http://✪df.ws/der" />
+	<id>tag:daringfireball.net,2009:/linked//6.17379</id>
+	<published>2009-07-03T17:41:21Z</published>
+	<updated>2009-07-03T17:41:24Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Good tip: If you use copy-and-paste instead of the &#8220;Email Photo&#8221; button in the Camera app, you can email the full-resolution version of the photo.</p>
+
+<div>
+<a  title="Permanent link to ‘Email Full-Resolution Photos From the iPhone’"  href="http://daringfireball.net/linked/2009/07/03/email-iphone-photos">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+    <title>★ Creating Ogg Theora Files on Mac OS X With ffmpeg2theora</title>
+    <link rel="alternate" type="text/html" href="http://daringfireball.net/2009/07/ffmpeg2theora" />
+	<link rel="shorturl" href="http://✪df.ws/deq" />
+	<id>tag:daringfireball.net,2009://1.17378</id>
+	<published>2009-07-02T23:36:04Z</published>
+	<updated>2009-07-02T23:43:12Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+
+<summary type="html">I spent some time trying to find the best easy way to create Ogg Theora files on Mac OS X, and I think ffmpeg2theora is it.
+</summary>
+	<content type="html" xml:base="http://daringfireball.net/" xml:lang="en"><![CDATA[
+<p>To use the HTML 5 <code>&lt;video&gt;</code> tag in Firefox 3.5, you need video files encoded in the Ogg Theora format. Apple doesn&#8217;t support this format at all, so you can&#8217;t just export Ogg files from QuickTime like you can with H.264/MPEG-4. I spent some time trying to find the best easy way to create Ogg Theora files on Mac OS X, and I think <a href="http://v2v.cc/~j/ffmpeg2theora/">ffmpeg2theora</a> is it.</p>
+
+<p>In his &#8220;<a href="http://camendesign.com/code/video_for_everybody">Video for Everybody</a>&#8221; article I <a href="http://daringfireball.net/linked/2009/07/01/camen-video">linked to</a> yesterday, Kroc Camen suggests using <a href="http://handbrake.fr/">HandBrake</a> to create Ogg Theora files, but I couldn&#8217;t get it to work in HandBrake 0.9.3 (the current release version) without crashing. (Well, one time it created a file without crashing, but the file was corrupt.) It ends up that HandBrake&#8217;s broken Ogg support is a known issue with no easy solution, and so <a href="http://forum.handbrake.fr/viewtopic.php?f=5&amp;t=11201">Ogg support has been removed from the current branch of HandBrake</a>, and there are no plans to bring it back.</p>
+
+<p>Camen also linked to <a href="http://www.xiph.org/quicktime/">Xiph</a>, an open-source QuickTime component that adds Ogg Theora playback and export to QuickTime. I don&#8217;t want to install this, however. For one thing, the only open-source QuickTime component I&#8217;ve ever had a good experience with is <a href="http://perian.org/">Perian</a>. For another, I don&#8217;t want Ogg playback support in QuickTime. The <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-June/020620.html">fork in supported codecs</a> for the <code>&lt;video&gt;</code> tag &#8212; Safari won&#8217;t support Ogg Theora and Firefox and Opera won&#8217;t support H.264 &#8212; doesn&#8217;t mean you can&#8217;t support all three browsers. It just means that to support all three, you need to include at least two <code>&lt;source&gt;</code> elements within the <code>&lt;video&gt;</code> tag, one pointing to an H.264-encoded file, the other to an Ogg Theora file, like this:</p>
+
+<pre><code>&lt;video&gt;
+    &lt;source src="example-video.mp4" type="video/mp4" /&gt;
+    &lt;source src="example-video.ogv" type="video/ogg" /&gt;
+&lt;/video&gt;
+</code></pre>
+
+<p>This serves the H.264 to Safari, the Ogg Theora to Firefox. And for Chrome 3.0, which supports both formats, this should serve the H.264 version because it&#8217;s specified first.</p>
+
+<p><a href="http://v2v.cc/~j/ffmpeg2theora/">ffmpeg2theora</a> is the one tool I found that simply <em>just works</em> for transcoding to Ogg Theora. The downside to ffmpeg2theora is that it&#8217;s only available as a command-line tool. But:</p>
+
+<ol>
+<li><p>It has a nice Mac OS X .pkg installer. Launch it, authorize it with admin credentials, and it&#8217;ll install the <code>ffmpeg2theora</code> tool in <em>/usr/local/bin/</em>.</p></li>
+<li><p>The command-line syntax could not be simpler. You just type:</p>
+
+<pre><code>ffmpeg2theora example.m4v
+</code></pre>
+
+<p>and it gets to work, outputting a file named example.ogv right next to the .m4v file. It shows an updating progress message in Terminal while it&#8217;s working. There are more options (and it comes with a man page that documents them), but in my testing you can just use the defaults.</p></li>
+</ol>
+
+<p>ffmpeg2theora&#8217;s output looks good. I gave it a 3.9 MB H.264 file as input, and it created a 3.5 MB .ogv file that looked pretty good &#8212; way better than typical web video in a Flash player &#8212; when I played it back in <a href="http://www.videolan.org/vlc/">VLC</a> and Firefox 3.5.</p>
+
+
+
+    ]]></content>
+  </entry><entry>
+	<title>Modes, Quasi-Modes, and the iPhone</title>
+	<link rel="alternate" type="text/html" href="http://ignorethecode.net/blog/2009/07/02/modes-quasimodes-and-the-iphone/" />
+	<link rel="shorturl" href="http://✪df.ws/dep" />
+	<id>tag:daringfireball.net,2009:/linked//6.17377</id>
+	<published>2009-07-02T20:10:51Z</published>
+	<updated>2009-07-02T20:10:53Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Lukas Mathis has been writing some of the most insightful essays on UI design I&#8217;ve read in ages. He has a great piece today on modes and &#8220;quasi-modes&#8221;:</p>
+
+<blockquote>
+  <p>Quasimodes require the user to do several things at the same time, such as holding down the Shift key while typing. Modes, on the other hand, allow users to do things sequentially &#8212; hit Caps Lock, type, hit Caps Lock again. Sequential actions, especially if guided well, are often easier to execute than parallel actions.</p>
+</blockquote>
+
+<p>And he argues (correctly, I say) that the iPhone&#8217;s new modal interface for selecting text is superior to the WebOS&#8217;s quasi-modal interface.</p>
+
+<div>
+<a  title="Permanent link to ‘Modes, Quasi-Modes, and the iPhone’"  href="http://daringfireball.net/linked/2009/07/02/mathis-modes">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>XHTML 2 Is Dead, Long Live HTML 5</title>
+	<link rel="alternate" type="text/html" href="http://www.w3.org/News/2009#item119" />
+	<link rel="shorturl" href="http://✪df.ws/deo" />
+	<id>tag:daringfireball.net,2009:/linked//6.17376</id>
+	<published>2009-07-02T19:10:20Z</published>
+	<updated>2009-07-02T21:34:49Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>The W3C&#8217;s XHTML 2 effort is (thankfully) now officially dead, not just effectively dead. This is good news for HTML 5, as there&#8217;s no longer any dispute over which standard is the future of HTML.</p>
+
+<div>
+<a  title="Permanent link to ‘XHTML 2 Is Dead, Long Live HTML 5’"  href="http://daringfireball.net/linked/2009/07/02/xhtml-2">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Getting Pretty Lonely</title>
+	<link rel="alternate" type="text/html" href="http://www.red-sweater.com/blog/825/getting-pretty-lonely" />
+	<link rel="shorturl" href="http://✪df.ws/den" />
+	<id>tag:daringfireball.net,2009:/linked//6.17375</id>
+	<published>2009-07-02T18:38:35Z</published>
+	<updated>2009-07-02T22:01:48Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Smart essay from Daniel Jalkut on how the GPL discourages participation from many (if not most) developers.</p>
+
+<div>
+<a  title="Permanent link to ‘Getting Pretty Lonely’"  href="http://daringfireball.net/linked/2009/07/02/jalkut-gpl">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Apple Retail Stores Can Now Replace Broken iPhone Screens</title>
+	<link rel="alternate" type="text/html" href="http://www.loopinsight.com/2009/07/02/apple-retail-stores-can-now-replace-broken-iphone-screens/" />
+	<link rel="shorturl" href="http://✪df.ws/dem" />
+	<id>tag:daringfireball.net,2009:/linked//6.17374</id>
+	<published>2009-07-02T17:40:53Z</published>
+	<updated>2009-07-02T17:40:55Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Speaking of fixing cracked iPhone screens, Jim Dalrymple reports:</p>
+
+<blockquote>
+  <p>The Loop has confirmed that if your iPhone has a broken screen and you take it to an Apple retail relocation, they have the capability to fix it on the spot. The machine, which is located out of customer view in the back of the store, reportedly separates the iPhone from the screen, allowing a new one to be installed.</p>
+  
+  <p>Of course, your screen doesn’t have to be completely smashed to need some sort of replacement done. Some users have reported dust particles on the inside of the screen as well.</p>
+</blockquote>
+
+<div>
+<a  title="Permanent link to ‘Apple Retail Stores Can Now Replace Broken iPhone Screens’"  href="http://daringfireball.net/linked/2009/07/02/dalrymple">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>How to Replace a Cracked iPhone 3G Screen</title>
+	<link rel="alternate" type="text/html" href="http://db.tidbits.com/article/10389" />
+	<link rel="shorturl" href="http://✪df.ws/del" />
+	<id>tag:daringfireball.net,2009:/linked//6.17373</id>
+	<published>2009-07-02T16:20:35Z</published>
+	<updated>2009-07-02T16:20:37Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Step-by-step instructions, with photos, from Jeff Carlson.</p>
+
+<div>
+<a  title="Permanent link to ‘How to Replace a Cracked iPhone 3G Screen’"  href="http://daringfireball.net/linked/2009/07/02/carlson-iphone-screen">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Leaked AT&amp;T Memo: iPhone 3GS Generated ‘Best Ever Sales Day’</title>
+	<link rel="alternate" type="text/html" href="http://macdailynews.com/index.php/weblog/comments/21666/" />
+	<link rel="shorturl" href="http://✪df.ws/dek" />
+	<id>tag:daringfireball.net,2009:/linked//6.17372</id>
+	<published>2009-07-02T16:12:11Z</published>
+	<updated>2009-07-02T16:12:16Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>MacDailyNews has obtained an internal AT&amp;T memo:</p>
+
+<blockquote>
+  <p>On this year&#8217;s launch day, iPhone sales exceeded sales recorded on 2008&#8217;s iPhone launch day, Black Friday 2008 and Dec. 26, 2008 — all heavy-volume sales days. In fact, this year we surpassed 2008&#8217;s launch day sales at about noon Central time, and sustained our previous peak hour record, also set in 2008, for 11 straight hours.</p>
+</blockquote>
+
+<div>
+<a  title="Permanent link to ‘Leaked AT&amp;T Memo: iPhone 3GS Generated &#8216;Best Ever Sales Day&#8217;’"  href="http://daringfireball.net/linked/2009/07/02/att-3gs">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Kroc Camen: Video for Everybody</title>
+	<link rel="alternate" type="text/html" href="http://camendesign.com/code/video_for_everybody" />
+	<link rel="shorturl" href="http://✪df.ws/dej" />
+	<id>tag:daringfireball.net,2009:/linked//6.17371</id>
+	<published>2009-07-01T23:32:31Z</published>
+	<updated>2009-07-01T23:32:34Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>No-JavaScript HTML 5 markup from Kroc Camen that works across browsers and platforms and requires only two video source files: H.264 and Ogg Theora. (In browsers that don&#8217;t support HTML 5&#8217;s <code>&lt;video&gt;</code> tag, it falls back on Flash, QuickTime, and Windows Media.)</p>
+
+<div>
+<a  title="Permanent link to ‘Kroc Camen: Video for Everybody’"  href="http://daringfireball.net/linked/2009/07/01/camen-video">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Ian Hickson on Codecs for the HTML 5 ‘audio’ and ‘video’ Tags</title>
+	<link rel="alternate" type="text/html" href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-June/020620.html" />
+	<link rel="shorturl" href="http://✪df.ws/dei" />
+	<id>tag:daringfireball.net,2009:/linked//6.17370</id>
+	<published>2009-07-01T20:05:27Z</published>
+	<updated>2009-07-02T00:08:45Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>The goal was for there to be at least one standard video codec that would work across all HTML 5 browsers &#8212; one format that would work across browsers and platforms with no plugins.</p>
+
+<p>But, alas, the result is an impasse. Apple won&#8217;t support Ogg Theora, and Mozilla and Opera won&#8217;t support H.264. (Google, admirably, is willing to support both in Chrome, but they don&#8217;t consider Ogg good enough to use for YouTube.) So there will be no standard HTML 5 video codec. So it goes.</p>
+
+<p>(Let it be said that Ian Hickson is the Solomon of web standards; his summary of the situation is mind-bogglingly even-handed and fair-minded.)</p>
+
+<div>
+<a  title="Permanent link to ‘Ian Hickson on Codecs for the HTML 5 &#8216;audio&#8217; and &#8216;video&#8217; Tags’"  href="http://daringfireball.net/linked/2009/07/01/hickson-codecs">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>PragPub</title>
+	<link rel="alternate" type="text/html" href="http://www.pragprog.com/magazines" />
+	<link rel="shorturl" href="http://✪df.ws/deh" />
+	<id>tag:daringfireball.net,2009:/linked//6.17369</id>
+	<published>2009-07-01T18:24:58Z</published>
+	<updated>2009-07-01T18:24:59Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>The Pragmatic Programmers&#8217; new free monthly programming magazine, edited by Michael Swaine, former editor of Dr. Dobb&#8217;s Journal (and, once upon a time, an excellent columnist for the old MacUser magazine). Available in PDF, mobi, and epub formats. (<a href="http://mjtsai.com/blog/2009/07/01/pragpub/">Via Michael Tsai</a>.)</p>
+
+<div>
+<a  title="Permanent link to ‘PragPub’"  href="http://daringfireball.net/linked/2009/07/01/pragpub">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Chris Anderson’s ‘Free’ Contains Numerous Uncredited Passages From Wikipedia</title>
+	<link rel="alternate" type="text/html" href="http://www.vqronline.org/blog/2009/06/23/chris-anderson-free/" />
+	<link rel="shorturl" href="http://✪df.ws/deg" />
+	<id>tag:daringfireball.net,2009:/linked//6.17368</id>
+	<published>2009-07-01T18:22:03Z</published>
+	<updated>2009-07-01T18:22:04Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Waldo Jaquith, at The Virginia Quarterly Review:</p>
+
+<blockquote>
+  <p>In the course of reading Chris Anderson’s new book, Free: The Future of a Radical Price (Hyperion, $26.99), for a review in an upcoming issue of VQR, we have discovered almost a dozen passages that are reproduced nearly verbatim from uncredited sources. These instances were identified after a cursory investigation, after I checked by hand several dozen suspect passages in the whole of the 274-page book.</p>
+</blockquote>
+
+<p>Jaquith includes half a dozen incriminating examples. Plagiarism is a strong word, but there&#8217;s no other way to describe some of these passages.</p>
+
+<p><a href="http://www.longtail.com/the_long_tail/2009/06/corrections-in-the-digital-editions-of-free.html">Anderson has responded</a>, acknowledging it as a &#8220;screwup&#8221;, on his Long Tail weblog.</p>
+
+<div>
+<a  title="Permanent link to ‘Chris Anderson’s &#8216;Free&#8217; Contains Numerous Uncredited Passages From Wikipedia’"  href="http://daringfireball.net/linked/2009/07/01/anderson-free-vqr">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>An Ant, Close Up</title>
+	<link rel="alternate" type="text/html" href="http://www.gigapan.org/viewGigapan.php?id=27105&amp;window_height=870&amp;window_width=1663" />
+	<link rel="shorturl" href="http://✪df.ws/def" />
+	<id>tag:daringfireball.net,2009:/linked//6.17367</id>
+	<published>2009-07-01T16:35:45Z</published>
+	<updated>2009-07-01T16:35:47Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>GigaPan:</p>
+
+<blockquote>
+  <p>This ant is composed of 400 pictures, and it&#8217;s magnified 400x using a scanning electron microscope. The ant was given to us to image by Brian Fisher an entomologist at the California Academy of Sciences.</p>
+</blockquote>
+
+<p>The intersection of horrifying and wonderful.</p>
+
+<div>
+<a  title="Permanent link to ‘An Ant, Close Up’"  href="http://daringfireball.net/linked/2009/07/01/ant">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Layer Tennis 2009 Finals</title>
+	<link rel="alternate" type="text/html" href="http://layertennis.com/" />
+	<link rel="shorturl" href="http://✪df.ws/dee" />
+	<id>tag:daringfireball.net,2009:/linked//6.17366</id>
+	<published>2009-07-01T16:26:38Z</published>
+	<updated>2009-07-01T16:40:44Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>On the one side: Gregory Hubacek, who played his way out of the qualifiers and had the toughest draw in the playoffs. On the other: defending champion Shaun Inman. In the commentary booth: Jason Santa Maria and yours truly.</p>
+
+<p>See you next Friday, July 10.</p>
+
+<div>
+<a  title="Permanent link to ‘Layer Tennis 2009 Finals’"  href="http://daringfireball.net/linked/2009/07/01/layer-tennis-finals">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>The Em and En of iPhone 3.0</title>
+	<link rel="alternate" type="text/html" href="http://www.iphonejd.com/iphone_jd/2009/06/the-em-and-en-of-iphone-30.html" />
+	<link rel="shorturl" href="http://✪df.ws/ded" />
+	<id>tag:daringfireball.net,2009:/linked//6.17365</id>
+	<published>2009-07-01T16:06:56Z</published>
+	<updated>2009-07-01T16:06:58Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Jeff Richardson wonders why Apple didn&#8217;t also add the en-dash when they added the em-dash to the iPhone OS 3.0 keyboard.</p>
+
+<div>
+<a  title="Permanent link to ‘The Em and En of iPhone 3.0’"  href="http://daringfireball.net/linked/2009/07/01/en-em">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Meg Hourihan on the iPhone as a Computer</title>
+	<link rel="alternate" type="text/html" href="http://smarterware.org/2159/iphone-3gs-not-enough-to-justify-the-cost-and-att-sucks" />
+	<link rel="shorturl" href="http://✪df.ws/dec" />
+	<id>tag:daringfireball.net,2009:/linked//6.17364</id>
+	<published>2009-07-01T15:49:24Z</published>
+	<updated>2009-07-01T15:49:26Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Gina Trapani <a href="http://twitter.com/ginatrapani/status/2241944628">asked</a> her Twitter followers if they were planning to buy a 3GS, and she compiled the 175 answers into a single post for her weblog. I love the first one, from Meg Hourihan:</p>
+
+<blockquote>
+  <p>Yes, iPhone = my computer, and $399 is worth it. Haven’t bought new laptop
+  since late 06 and don’t plan to for long time.</p>
+</blockquote>
+
+<p>This, to me, gets to the heart of the revolution at hand. A decade ago, my first PowerBook was a secondary machine to the desktop anchored at my desk. Now, my main machine is my MacBook Pro, but it feels a bit like an anchor now. My mobile secondary computer is my iPhone.</p>
+
+<div>
+<a  title="Permanent link to ‘Meg Hourihan on the iPhone as a Computer’"  href="http://daringfireball.net/linked/2009/07/01/megnut-iphone">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>iPhone 3GS TV Ads</title>
+	<link rel="alternate" type="text/html" href="http://www.apple.com/iphone/gallery/ads/#copy-and-paste-large" />
+	<link rel="shorturl" href="http://✪df.ws/deb" />
+	<id>tag:daringfireball.net,2009:/linked//6.17363</id>
+	<published>2009-07-01T15:37:11Z</published>
+	<updated>2009-07-01T15:37:42Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>The iPhone&#8217;s new copy and paste is so good they&#8217;ve made a commercial about it.</p>
+
+<div>
+<a  title="Permanent link to ‘iPhone 3GS TV Ads’"  href="http://daringfireball.net/linked/2009/07/01/copy-paste">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>App Store WTF of the Week (App Store Link)</title>
+	<link rel="alternate" type="text/html" href="http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=317985107&amp;mt=8" />
+	<link rel="shorturl" href="http://✪df.ws/dea" />
+	<id>tag:daringfireball.net,2009:/linked//6.17362</id>
+	<published>2009-07-01T04:00:50Z</published>
+	<updated>2009-07-01T16:30:35Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>New iPhone game named &#8220;Mariolife&#8221;, featuring Mario. What makes it a WTF is that the game is clearly neither from nor licensed by Nintendo. It boggles the mind that this made it into the App Store.</p>
+
+<p>Can&#8217;t wait for the sequel starring Mickey Mouse. (<a href="http://brianford.newsvine.com/_news/2009/07/01/2986995-nintendo-brings-mario-to-the-iphone-no-wait">Via Brian Ford</a>.)</p>
+
+<p><strong>Update:</strong> Ends up the App Store review team simply doesn&#8217;t deal with copyright and trademark verification (with the exception of enforcing Apple&#8217;s own trademarks, of course). Any beef Nintendo has (and trust me, they&#8217;re going to have a beef with this app) is between Nintendo and Mariolife&#8217;s developer. Makes sense.</p>
+
+<div>
+<a  title="Permanent link to ‘App Store WTF of the Week (App Store Link)’"  href="http://daringfireball.net/linked/2009/07/01/mariolife">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Speaking of DF Advertising and Sponsorships</title>
+	<link rel="alternate" type="text/html" href="http://daringfireball.net/feeds/sponsors/" />
+	<link rel="shorturl" href="http://✪df.ws/de9" />
+	<id>tag:daringfireball.net,2009:/linked//6.17361</id>
+	<published>2009-06-30T23:44:46Z</published>
+	<updated>2009-06-30T23:44:47Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>A heads-up to anyone considering sponsoring the DF RSS feed: July is sold out, but most weeks in August are still available. If you have a product or service you’d like to promote to the DF audience, <a href="http://daringfireball.net/feeds/sponsors/">get in touch</a>.</p>
+
+<p>(And if display advertising is more your bag, <a href="http://twitter.com/Coudal/status/2407734437">this tweet</a> from my friend Jim Coudal may be of interest.)</p>
+
+<div>
+<a  title="Permanent link to ‘Speaking of DF Advertising and Sponsorships’"  href="http://daringfireball.net/linked/2009/06/30/df-ads-and-sponsors">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Seth Godin Says Malcolm Gladwell Is Wrong</title>
+	<link rel="alternate" type="text/html" href="http://sethgodin.typepad.com/seths_blog/2009/06/malcolm-is-wrong.html" />
+	<link rel="shorturl" href="http://✪df.ws/de8" />
+	<id>tag:daringfireball.net,2009:/linked//6.17360</id>
+	<published>2009-06-30T23:21:06Z</published>
+	<updated>2009-06-30T23:21:08Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Godin says he disagrees with Gladwell&#8217;s review of Chris Anderson&#8217;s <em>Free</em>, but it&#8217;s unclear to me exactly what he thinks Gladwell is wrong about. What I took away from <a href="http://www.newyorker.com/arts/critics/books/2009/07/06/090706crbo_books_gladwell?currentPage=all">Gladwell&#8217;s review</a> is that Anderson is wrong that free media alone will satisfy our demand, not an argument that existing not-free media institutions must somehow be preserved.</p>
+
+<p>On a related point, several readers have asked why I seem opposed to Anderson&#8217;s view, given that I&#8217;ve made a nice career for myself by giving away my own writing for free here on Daring Fireball. My answer to that is that Daring Fireball is decidedly <em>not</em> free. It&#8217;s simply a question of who gets charged. Readers don&#8217;t, but <a href="http://daringfireball.net/feeds/sponsors/">sponsors</a> and <a href="http://decknetwork.net/">advertisers</a> do. What makes it work so well (so far) is that this makes everyone happy. I&#8217;m earning a nice salary. Readers get to read my writing in exchange for a small portion of their attention which I direct toward ads. And sponsors and advertisers are happy to pay a fair price to reach an audience of good-looking, intelligent readers such as yourself. But there&#8217;s nothing free about it.</p>
+
+<div>
+<a  title="Permanent link to ‘Seth Godin Says Malcolm Gladwell Is Wrong’"  href="http://daringfireball.net/linked/2009/06/30/godin">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Clipstart 1.1</title>
+	<link rel="alternate" type="text/html" href="http://www.riverfold.com/software/clipstart/" />
+	<link rel="shorturl" href="http://✪df.ws/de7" />
+	<id>tag:daringfireball.net,2009:/linked//6.17359</id>
+	<published>2009-06-30T22:58:58Z</published>
+	<updated>2009-06-30T22:59:00Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Update to Manton Reece&#8217;s $29 video library app for the Mac adds support for importing clips directly from your iPhone 3GS. As I wrote in May, it&#8217;s like iPhoto or iTunes for the video clips you shoot with your camera.</p>
+
+<div>
+<a  title="Permanent link to ‘Clipstart 1.1’"  href="http://daringfireball.net/linked/2009/06/30/clipstart">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Craigslist Map Thingie</title>
+	<link rel="alternate" type="text/html" href="http://pdxpoeks.appspot.com/" />
+	<link rel="shorturl" href="http://✪df.ws/de6" />
+	<id>tag:daringfireball.net,2009:/linked//6.17358</id>
+	<published>2009-06-30T21:36:56Z</published>
+	<updated>2009-06-30T22:52:03Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Genius from Poeks:</p>
+
+<blockquote>
+  <p>Craigslist Map Thingie slurps housing listings from Craigslist and plots them on Google Maps, with a panorama view of the property, if available.</p>
+</blockquote>
+
+<p><strong>Update:</strong> It&#8217;s news to me, but a slew of DF readers emailed to point to <a href="http://www.housingmaps.com/">Housing Maps</a>, which does something similar.</p>
+
+<div>
+<a  title="Permanent link to ‘Craigslist Map Thingie’"  href="http://daringfireball.net/linked/2009/06/30/craiglist-map-thingie">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>WSJ: Dell Working on Android-Based iPod Touch Competitor</title>
+	<link rel="alternate" type="text/html" href="http://digitaldaily.allthingsd.com/20090629/dell-developing-mid-mobile-internet-disaster/" />
+	<link rel="shorturl" href="http://✪df.ws/de5" />
+	<id>tag:daringfireball.net,2009:/linked//6.17357</id>
+	<published>2009-06-30T21:33:02Z</published>
+	<updated>2009-07-01T02:51:13Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>John Paczkowski:</p>
+
+<blockquote>
+  <p>The consumer electronics wizards at Dell who brought us the now defunct DJ Ditty MP3 player and the Axim handheld are hard at work on another gadget, a mobile Internet device. Sources tell The Wall Street Journal that the MID uses an ARM-based chip, runs Google’s Android operating system and has been in development since last year.</p>
+</blockquote>
+
+<p>It&#8217;s funny, of course, because <a href="http://daringfireball.net/2003/10/dells_dud">the DJ</a> and <a href="http://daringfireball.net/2005/09/ditty">Ditty</a> were huge failures, but when they debuted, many pundits predicted they would topple the iPod. But I hope this rumor is true. I&#8217;d consider buying an iPod Touch-like Android device &#8212; something for $200 or so, without any sort of monthly phone contract.</p>
+
+<p><strong>Update:</strong> To be clear, the reason I&#8217;d consider buying a $200 non-phone Android device is so I could use, try, and write about Android apps. Same goes for WebOS, by the way.</p>
+
+<div>
+<a  title="Permanent link to ‘WSJ: Dell Working on Android-Based iPod Touch Competitor’"  href="http://daringfireball.net/linked/2009/06/30/paczkowski">&nbsp;★&nbsp;</a>
+</div>
+
+	]]></content>
+  </entry><entry>
+	<title>Jackass of the Week: Joe Wilcox</title>
+	<link rel="alternate" type="text/html" href="http://www.joewilcox.com/2009/06/a-personal-challenge-to-steve-jobs/" />
+	<link rel="shorturl" href="http://✪df.ws/de4" />
+	<id>tag:daringfireball.net,2009:/linked//6.17356</id>
+	<published>2009-06-30T19:07:55Z</published>
+	<updated>2009-06-30T20:07:21Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+	<content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+
+<p>Issues &#8220;personal challenge&#8221; to Steve Jobs to return to work in his &#8220;full capacity&#8221;; declares that Apple accomplished little during his medical leave:</p>
+
+<blockquote>
+  <p>Across product lines I see a consistent trend: More of the same, only better.</p>
+</blockquote>
+
+<p>With insight this deep it&#8217;s hard to believe Wilcox was laid off from eWeek.</p>
+
+<div>
+<a  title="Permanent link to ‘Jackass of the Week: Joe Wilcox’"  href="http://daringfireball.net/linked/2009/06/30/wilcox">&nbsp;★&nbsp;</a>
+
+</div>
+
+	]]></content>
+  </entry><entry>
+<title>[Sponsor] Delicious Library</title>
+<link rel="alternate" type="text/html" href="http://delicious-monster.com/" />
+<id>tag:daringfireball.net,2009:/feeds/sponsors//11.17352</id>
+<author>
+	<name>Daring Fireball Department of Commerce</name>
+</author>
+   
+<published>2009-06-30T13:03:09-04:00</published>
+<updated>2009-06-30T13:03:14-04:00</updated>
+   
+
+<content type="html" xml:base="http://daringfireball.net/feeds/sponsors/" xml:lang="en"><![CDATA[
+<p>Delicious Library 2.1 is out &#8212; now with a free iPhone companion app! Scan in all your books, CDs, DVDs, stuff, things, etc, and now view it all on-the-go, on your iPhone (or iPod touch, if you&#8217;re one of THOSE people).</p>
+
+]]></content>
+</entry><entry>
+    <title>★ Copy and Paste</title>
+    <link rel="alternate" type="text/html" href="http://daringfireball.net/2009/06/copy_and_paste" />
+	<link rel="shorturl" href="http://✪df.ws/dde" />
+	<id>tag:daringfireball.net,2009://1.17330</id>
+	<published>2009-06-26T19:34:22Z</published>
+	<updated>2009-06-26T23:53:19Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+
+<summary type="html">That we had to wait two years for the iPhone&apos;s text selection and pasteboard is a good example of one aspect of the Apple way: better nothing at all than something less than great.</summary>
+	<content type="html" xml:base="http://daringfireball.net/" xml:lang="en"><![CDATA[
+<p>My favorite new feature in iPhone OS 3.0 is the combination of text selection and cut/copy/paste pasteboard commands. I started using the developer program iPhone OS 3.0 seeds in March, but, initially, only on my old original iPhone. But by mid-April I had installed OS 3 on my primary iPhone 3G, warnings regarding relying on the beta OS be damned.<sup id="fnr1-2009-06-26"><a href="#fn1-2009-06-26">1</a></sup> The selection and pasteboard features were simply too good, too useful, to go back to using an iPhone without them.</p>
+
+<p>One way I use my iPhone to actually &#8220;work&#8221; is with Movable Type&#8217;s excellent <a href="http://plugins.movabletype.org/imt/">iPhone-optimized web app interface</a>, with which I can post and edit items to Daring Fireball. I wouldn&#8217;t want to write a full-length essay with my thumbs, but it works great for posting short Linked List items.</p>
+
+<p>I post new links to DF from my iPhone more frequently than you might imagine. I no longer lug my MacBook Pro around during the day at conferences such as WWDC, for one thing, and my iPhone is often all I have with me when I&#8217;m traveling with my family. Just about any time I&#8217;m out of my regular routine, it&#8217;s all iPhone, all day.</p>
+
+<p>The basic post-to-DF-from-my-iPhone workflow is like this:</p>
+
+<ol>
+<li><p>I have a page open in MobileSafari that I want to post as a link to DF.</p></li>
+<li><p>I invoke a customized bookmarklet in MobileSafari. This bookmarklet sends me to the &#8220;create new entry&#8221; page on my installation of Movable Type, with the fields for the entry title and link URL pre-populated with the title and URL of the page in MobileSafari to which I&#8217;m linking.</p></li>
+
+</ol>
+
+<p>I almost always edit the title, but the big score is having the URL field populated automatically by the bookmarklet. Prior to the arrival of copy-and-paste in OS 3.0, the only other way I could have gotten the URL from one page in MobileSafari to the link URL field in Movable Type in a second page in MobileSafari would have been to type it out by hand &#8212; painstaking and error-prone.</p>
+
+<p>And but then what about creating <em>additional</em> links within the body of the entry? In those cases I was stuck doing it the pain-in-the-ass way. More often than not, I&#8217;d just not add any additional links to the entry, even if I wanted to.</p>
+
+<p>And blockquotes &#8212; cited passages from the page being linked to &#8212; were pretty much out of the question. Without copy-and-paste, the only accurate way to quote even just a few sentences from one web page and insert them in the DF entry would have been to transcribe the passage by hand with paper and pen, then re-type the passage on the iPhone.</p>
+
+<p>The copy-and-paste implementation in iPhone OS 3 has put an end to that. It&#8217;s everything I hoped for, and I use it <em>all the time</em>.</p>
+
+<p>Do I wish this had been in the iPhone all along? Or that it had come a year ago in iPhone OS 2? Sure. But, <a href="http://daringfireball.net/2007/08/clipboard_and_arrows">as I wrote two years ago</a>, given the way that most simple gestures had already been assigned in the iPhone OS user interface, it wasn&#8217;t obvious or easy at all to see how text selection and copy/paste should have been added to the iPhone. (And as much as I wanted the feature, I fully realized that most iPhone users don&#8217;t publish full-time weblogs and therefore didn&#8217;t need the feature nearly as much as I do.)</p>
+
+<p>The two main problems Apple needed to solve were (a) how to allow for the selection of a range of text, and (b) how to invoke cut/copy/paste commands on a system without a keyboard and without a menu bar. Their solution to (a) was to make selection an extension of the existing magnifier loupe interface for placing the insertion point. Their solution to (b) was to present the commands in what is effectively a pop-up contextual menu that appears only when you have made a selection or moved the insertion point.</p>
+
+<p><img
+  src = "http://daringfireball.net/misc/2009/06/cut-copy-paste.png"
+  alt = "Screenshot of Cut/Copy/Paste menu in iPhone OS 3.0."
+/></p>
+
+<p>It all seems fairly obvious once you&#8217;ve used it, but there was nothing obvious about it before it was designed. This is one area where Palm, in designing the WebOS interface, couldn&#8217;t study what Apple had done (because Apple hadn&#8217;t shown it yet) and had to devise their own implementation. Despite the numerous fundamental similarities of the iPhone and WebOS interfaces, text selection and Cut/Copy/Paste are quite different on the Pre. (And, I must say, in my 30 minutes or so of tinkering on the Pre, inferior to the iPhone&#8217;s, especially with regard to selecting text.)</p>
+
+<p>That we had to wait two years for the iPhone&#8217;s text selection and pasteboard is a good example of one aspect of the Apple way: better nothing at all than something less than great. That&#8217;s not to say Apple never releases anything less than great, but they <em>try</em> not to.<sup id="fnr2-2009-06-26"><a href="#fn2-2009-06-26">2</a></sup> This is contrary to the philosophy of most other tech companies &#8212; and  diametrically opposed to the philosophy of Microsoft. And it is very much what drives some people crazy about Apple &#8212; it&#8217;s simply incomprehensible to some people that it might be better to have <em>no</em> text selection/pasteboard implementation while waiting for a great one than to have a poor implementation in the interim.</p>
+
+<p>It&#8217;s hard to prove that good is the enemy of great, but the evidence speaks for itself.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1-2009-06-26">
+<p>I wouldn&#8217;t recommend running beta iPhone OS releases on one&#8217;s main iPhone for the faint of heart. You get what you ask for if you run into trouble.&nbsp;<a href="#fnr1-2009-06-26"  class="footnoteBackLink"  title="Jump back to footnote 1 in the text.">&#8617;</a></p>
+</li>
+
+<li id="fn2-2009-06-26">
+<p>Cue your favorite clip of Orson Welles pitching Paul Masson wine: &#8220;<a href="http://www.google.com/search?hl=en&amp;q=orson+welles+sell+no+wine+before+its+time&amp;aq=f&amp;oq=&amp;aqi=">We will sell no wine before its time</a>&#8221;.&nbsp;<a href="#fnr2-2009-06-26"  class="footnoteBackLink"  title="Jump back to footnote 2 in the text.">&#8617;</a></p>
+
+</li>
+
+</ol>
+</div>
+
+
+
+    ]]></content>
+  </entry><entry>
+    <title>★ Apple’s Secrecy</title>
+    <link rel="alternate" type="text/html" href="http://daringfireball.net/2009/06/apples_secrecy" />
+	<link rel="shorturl" href="http://✪df.ws/dcs" />
+	<id>tag:daringfireball.net,2009://1.17308</id>
+	<published>2009-06-24T00:22:19Z</published>
+	<updated>2009-06-24T05:29:39Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+
+<summary type="html">Measured by profit and revenue and growth, wouldn&apos;t it make more sense to argue that most companies should act more like Apple, rather than the other way around?</summary>
+	<content type="html" xml:base="http://daringfireball.net/" xml:lang="en"><![CDATA[
+<p>This whole Jobs liver transplant story really hits the sweet spot for two of my obsessions: Apple (duh) and journalism. It&#8217;s the journalism angle that I find the most intriguing. The Wall Street Journal&#8217;s story Friday night was a huge scoop for them, and I noted <a href="http://daringfireball.net/2009/06/wsj_steve_jobs_liver_transplant">in my analysis of it</a> that The New York Times, when they finally <a href="http://www.nytimes.com/2009/06/21/business/21apple.html?partner=rss&amp;emc=rss&amp;pagewanted=all">ran their first story with the news</a> one day later, clearly could not find a source of their own, attributing the information only to the Journal&#8217;s original report. If you know anything at all about the culture of premier news organizations like the Journal and Times, you know how that hurt the Times.</p>
+
+<p>Today the Times has a follow-up by Brad Stone and Ashlee Vance, but rather than making the story about Jobs, it&#8217;s ostensibly <a href="http://www.nytimes.com/2009/06/23/technology/23apple.html?_r=1&amp;partner=rss&amp;emc=rss">about Apple&#8217;s company-wide &#8220;obsession with secrecy&#8221;</a>. Four paragraphs down, though, comes this:</p>
+
+<blockquote>
+  <p>But even by Apple’s standards, its handling of news about the
+  health of its chief executive and co-founder, Steven P. Jobs, who
+  has battled pancreatic cancer and recently had a liver transplant
+  while on a leave of absence, is unparalleled.</p>
+  
+  <p>Mr. Jobs received the liver transplant about two months ago,
+  according to people briefed on the matter by current and former
+  board members. Despite intense interest in Mr. Jobs’s condition
+  among the news media and investors, Apple representatives have
+  declined to address the matter, reciting with maddening discipline
+  only that Mr. Jobs is due back at the company by the end of June.</p>
+  
+  <p>Mr. Jobs was actually at work on Apple’s sprawling corporate
+  campus on Monday, according to a person who saw him there. Company
+  representatives would not say whether he had returned permanently.</p>
+</blockquote>
+
+<p>So, note that the Times <em>still</em> does not have a first-hand source for the news regarding Jobs&#8217;s purported liver transplant. Read the sourcing carefully: <em>according to people briefed on the matter by current and former board members</em>. That&#8217;s second-hand information &#8212; &#8220;people&#8221; who were told about it by board members who <em>know</em> about it. (I wonder who the <em>former</em> board member(s) could be? Apple hasn&#8217;t had much turnover on the board in recent years. And why would a former board member know about Jobs&#8217;s current health status? Curious.)</p>
+
+<p>I also don&#8217;t see how Apple&#8217;s handling of news related to Jobs&#8217;s health is &#8220;unparalleled&#8221;. They&#8217;re no more secretive about his health now than they have ever been. If anything, the low point was a year ago, when Apple PR stated that Jobs&#8217;s gauntness was the result of complications <a href="http://www.tomsguide.com/us/Steve-Jobs-Sick,news-1635.html">from &#8220;a common bug&#8221;</a>.</p>
+
+<p>And then this:</p>
+
+<blockquote>
+  <p>Even senior officials at Apple fear crossing Mr. Jobs. One
+  official, who is normally more open, when asked for a
+  deep-background briefing about Mr. Jobs’s health after the news of
+  the transplant had become public, replied: “Just can’t do it. Too
+  sensitive.”</p>
+
+</blockquote>
+
+<p>Translated into plain English, this is the Times&#8217;s acknowledgement that they couldn&#8217;t get anyone to talk to them about Jobs, even on &#8220;deep background&#8221;, which term Wikipedia describes thusly:</p>
+
+<blockquote>
+  <p>&#8220;Deep background&#8221; This term is used in the U.S., though not
+  consistently. Most journalists would understand &#8220;deep background&#8221;
+  to mean that the information may not be included in the article
+  but is used by the journalist to enhance his or her view of the
+  subject matter, or to act as a guide to other leads or sources.
+  Most deep background information is confirmed elsewhere before
+  being reported.</p>
+</blockquote>
+
+<p>In other words, no one at Apple would give reporters from the Times jack shit regarding Jobs&#8217;s health. And yet the Times story seems to portray this unwillingness on the part of top Apple executives to betray Jobs&#8217;s trust and privacy as something other than admirable.</p>
+
+<p>The rest of the article details specific examples of Apple&#8217;s policies for guarding the details of products in development; the implication is that Apple is a weird and creepy place because they try to keep a lid on secrets.</p>
+
+<p>Here&#8217;s one example:</p>
+
+<blockquote>
+  <p>Philip Schiller, Apple’s senior vice president for marketing, has
+  held internal meetings about new products and provided incorrect
+  information about a product’s price or features, according to a
+  former employee who signed an agreement not to discuss internal
+  matters. Apple then tries to track down the source of news reports
+  that include the incorrect details.</p>
+</blockquote>
+
+<p>I&#8217;m not disputing that Schiller and Apple do this. But, as someone who has published one or two original nuggets of information regarding upcoming Apple products, I can say that I&#8217;ve never seen evidence of it. I&#8217;ve never received information from an Apple employee that turned out to be false.<sup id="fnr1-2009-06-23"><a href="#fn1-2009-06-23">1</a></sup></p>
+
+<p>I can&#8217;t help but feel that this story is a rather transparent lashing out on the part of the Times. They couldn&#8217;t get any original information regarding the story they really want &#8212; Jobs&#8217;s liver transplant &#8212; and so like a child throwing a tantrum when it doesn&#8217;t get its way, they wrote a story about how there&#8217;s something wrong with Apple because its employees keep their mouths shut.</p>
+
+<blockquote>
+  <p>Apple’s decision to severely limit communication with the news
+  media, shareholders and the public is at odds with the approach
+  taken by many other companies, which are embracing online outlets
+  like blogs and Twitter and generally trying to be more open with
+  shareholders and more responsive to customers.</p>
+</blockquote>
+
+<p>So, yes, undeniably, Apple does not communicate via weblogs. I too think they should. I like <a href="http://googleblog.blogspot.com/">Google&#8217;s approach</a> to official blogging &#8212; they don&#8217;t write about <em>upcoming</em> products and services, but they do write about the new things they release, offering insight and tips into how and why to use them. (Google is pretty damn secretive about things like upcoming products and the details of its operation infrastructure.)</p>
+
+<p>But: what&#8217;s the argument for how Apple has suffered for its secrecy? Yes, Apple is far more secretive than most companies, but they&#8217;re also far more successful. Measured by profit and revenue and growth, wouldn&#8217;t it make more sense to argue that most companies should act more like Apple, rather than the other way around?</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1-2009-06-23">
+<p>False information I&#8217;ve received tends to come from third parties; for example, several iPhone case manufacturers were convinced that Apple was going to announce a smaller &#8220;iPhone Mini&#8221; at WWDC this month.&nbsp;<a href="#fnr1-2009-06-23"  class="footnoteBackLink"  title="Jump back to footnote 1 in the text.">&#8617;</a></p>
+
+</li>
+</ol>
+</div>
+
+
+
+    ]]></content>
+  </entry><entry>
+    <title>★ Regarding the WSJ’s Report That Steve Jobs Had a Liver Transplant</title>
+    <link rel="alternate" type="text/html" href="http://daringfireball.net/2009/06/wsj_steve_jobs_liver_transplant" />
+	<link rel="shorturl" href="http://✪df.ws/dcc" />
+	<id>tag:daringfireball.net,2009://1.17292</id>
+	<published>2009-06-21T07:25:07Z</published>
+	<updated>2009-07-01T21:15:37Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+
+<summary type="html">What&apos;s intriguing about this story is not the question of whether Jobs actually had a liver transplant. What is intriguing is the question of who leaked this information to the Journal and why.</summary>
+	<content type="html" xml:base="http://daringfireball.net/" xml:lang="en"><![CDATA[
+<p>[<em>This piece combines into a single narrative and expands upon three shorter pieces I posted immediately after this news broke Friday night.</em>]</p>
+
+<p>Friday night around midnight, The Wall Street Journal published a report headlined &#8220;<a href="http://www.google.com/url?q=http://online.wsj.com/article/SB124546193182433491.html">Jobs Had Liver Transplant</a>&#8221;<sup id="fnr1-2009-06-21"><a href="#fn1-2009-06-21">1</a></sup> by Yukari Iwatani Kane and Joann S. Lublin. It stated:</p>
+
+<blockquote>
+  <p>Steve Jobs, who has been on medical leave from Apple Inc. since
+  January to treat an undisclosed medical condition, received a
+  liver transplant in Tennessee about two months ago. The chief
+  executive has been recovering well and is expected to return to
+  work on schedule later this month, though he may work part-time
+  initially.</p>
+</blockquote>
+
+<p>What&#8217;s intriguing about this story is not the question of whether Jobs actually had a liver transplant. I do not doubt that (although I&#8217;d like to see better sources for it). What is intriguing is the question of who leaked this information to the Journal and why.</p>
+
+<h2>The WSJ&#8217;s Unusual Lack of Sourcing</h2>
+
+<p>There are several highly unusual aspects to the Journal&#8217;s story. First is that they offer no source for the information — not even an “according to sources familiar with the matter”. But yet they state it flatly as certain fact that Steve Jobs had a secret liver transplant in Tennessee. Blockbuster news with no sourcing whatsoever. To call that curious is an understatement. And, coming in the opening paragraph of a page one story, it could not be a careless omission.</p>
+
+<p>The basic tenets of journalism are simple. One reports facts <em>and</em> how one knows them. The principle is much like that of publishing scientific papers, where one describes not just the results, but also exactly how the results were obtained, so that others can reproduce them. This is why named sources are so much more valuable than anonymous sources; with a named source, other reporters can contact the source to verify the information.</p>
+
+<p>But there&#8217;s an apt <a href="http://thinkexist.com/quotation/news_is_what_somebody_somewhere_wants_to_suppress/214698.html">journalism adage from Lord Northcliffe</a>: &#8220;News is what somebody somewhere wants to suppress; all the rest is advertising.&#8221; And so sometimes the only sources for certain information are those who cannot or will not allow their names to be used. Most publications, and certainly all publications of the stature of The Wall Street Journal, have strict guidelines covering the use of anonymous sources. My friend Matt Deatherage (publisher of the estimable <a href="http://www.macjournals.com/">MacJournals</a>) quoted the following from the Journal&#8217;s own <em><a href="http://www.amazon.com/gp/product/0743212959?ie=UTF8&amp;tag=gcsfincorporated&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0743212959">Wall Street Journal Guide to Business Style and Usage</a></em> in a post to the MacJournals-Talk mailing list:</p>
+
+<blockquote>
+  <p><span class="caps">ANONYMOUS SOURCES</span>: Accepting a source&#8217;s
+  request for anonymity sometimes is the only practical way to
+  obtain important information, but we must be circumspect.
+  On-the-record sources are always preferable because they may be
+  held personally accountable for what they say and are therefore
+  generally more certain to be scrupulously accurate. Also, readers
+  are able to make judgments about the reliability of those whose
+  identities are provided.</p>
+  
+  <p>In cases where the person&#8217;s identity is to be protected, take pains
+  to indicate where his or her biases might lie: &#8220;an executive working
+  for a competitor … an executive who left the company in a
+  management shakeup … a laid-off employee …&#8221; or &#8220;a close relative
+  of the plaintiff.&#8221;</p>
+</blockquote>
+
+<p>Their story on Jobs&#8217;s purported liver transplant offers <em>no sourcing</em> for the reader to judge. It entirely hinges on the (admittedly significant) credibility of The Wall Street Journal itself.</p>
+
+<p>Again, I point all this out not to say that I don&#8217;t believe their report. I&#8217;m as big a cynic regarding anonymous sourcing as anyone, but I believe that Jobs indeed had a liver transplant in Tennessee simply because The Wall Street Journal has placed its credibility behind the story. There is no hedging or fudging in their report. If it&#8217;s not true, it would amount to one of the biggest mistakes in their esteemed history.</p>
+
+<p>But reputable news publications do not ordinarily report utterly unsourced news. (I cannot find another example of the Journal reporting completely unsourced page one news.) So: why?</p>
+
+<p>Most major news publications have picked up the story, but only by sourcing the information to the Journal itself. For example: <a href="http://www.bloomberg.com/apps/news?pid=newsarchive&amp;sid=aLFLSWRd27ro">Bloomberg</a>, <a href="http://www.mercurynews.com/ci_12653039">The San Jose Mercury News</a>, <a href="http://abcnews.go.com/Technology/story?id=7888162&amp;page=1">ABC News</a>, and <a href="http://news.bbc.co.uk/2/hi/americas/8110625.stm">The BBC</a>. Bloomberg&#8217;s report is indicative of this second-hand reporting:</p>
+
+<blockquote>
+  <p>Steve Jobs, co-founder and chief executive officer of Apple Inc.,
+  underwent a liver transplant two months ago, the Wall Street
+  Journal reported, without disclosing the source of the
+  information. </p>
+</blockquote>
+
+<p>Even The New York Times has published a piece (&#8220;<a href="http://www.nytimes.com/2009/06/21/business/21apple.html?partner=rss&amp;emc=rss&amp;pagewanted=all">Apple Chief Reportedly Had Liver Transplant</a>&#8221;) but they too have no source for the news other than the report in the Journal. (Surely the Times has reporters digging into this story; the aforelinked piece crediting only the Journal ran almost 24 hours after the Journal&#8217;s story, and as of this writing, four hours later, has not hit the front page of nytimes.com.)</p>
+
+<p>The only publication claiming independent verification <a href="http://www.cnbc.com/id/31456167">is CNBC</a>, late Saturday night:</p>
+
+<blockquote>
+  <p>Two sources confirmed to CNBC that Jobs had the surgery and
+  another confirmed that his plane flew from San Jose to Memphis in
+  late March.</p>
+</blockquote>
+
+<p>Further curiosity: whoever the Journal&#8217;s source, they didn’t give the WSJ any publishable information regarding <em>why</em> Jobs needed a new liver &#8212; that part of the article is pure speculation, quoting doctors who have never treated Jobs personally. Is it because the Journal&#8217;s source doesn&#8217;t know, or because the source wouldn&#8217;t tell? There&#8217;s a big difference.</p>
+
+<h2>Why Tennessee?</h2>
+
+<p>There have been rumors circulating for months that Steve Jobs had moved to Tennessee for some sort of medical treatment. <a href="http://blogs.barrons.com/techtraderdaily/2009/04/15/weird-steve-jobs-rumor-is-he-moving-to-memphis/">Here&#8217;s a rumor</a> Barron&#8217;s Tech Trader Daily published on April 15, which in turn cites a report by Alexander Haislip of the PEHub Blog (which does not have publicly available archives). Haislip wrote:</p>
+
+<blockquote>
+  <p>I spoke with a well-connected business person in Memphis this
+  morning who says that there is a house in a swank neighborhood there
+  that has been bought for a princely sum and is undergoing minor
+  renovations in preparation for its new resident.</p>
+  
+  <p>He says he has reason to believe Apple CEO Steve Jobs is moving to
+  the city to treat his pancreatic cancer.</p>
+</blockquote>
+
+<p>Several readers sent me this Barron&#8217;s link back when it was new, but I decided against linking to it because it was just so sketchily sourced. (And even now, if the WSJ report turns out to be completely accurate, the Barron&#8217;s rumor was wrong with regard to the treatment for which Jobs went to Tennessee.) I’ve ignored a slew of Jobs-related rumors over the past year because of the sourcing.</p>
+
+<p>One thing that struck me as wrong at the outset regarding these &#8220;Jobs-in-Tennessee&#8221; rumors is the question of why he&#8217;d bother going to Tennessee in the first place. Tennessee may be a lovely state, but, well, it doesn’t sound like Steve Jobs country. You don’t need to leave the Bay area to get world-class medical treatment. The <a href="http://www.google.com/url?q=http://online.wsj.com/article/SB124546193182433491.html">Journal&#8217;s report</a> has a good answer:<sup id="fnr2-2009-06-21"><a href="#fn2-2009-06-21">2</a></sup></p>
+
+<blockquote>
+  <p>The specifics of Mr. Jobs’s surgery couldn’t be established, but
+  according to the United Network for Organ Sharing, which manages
+  the transplant network in the U.S., there are no residency
+  requirements for transplants. Having the procedure done in
+  Tennessee makes sense because its list of patients waiting for
+  transplants is shorter than in many other states. According to
+  data provided by UNOS, in 2006, the median number of days from
+  joining the liver waiting list to transplant was 306 nationally.
+  In Tennessee, it was 48 days.</p>
+</blockquote>
+
+<p>But if the Journal <em>knows</em> that Jobs had a transplant, and <em>knows</em> that it was performed in Tennessee, why don&#8217;t they know which hospital? Again from their report:</p>
+
+<blockquote>
+  <p>Three hospitals in Tennessee — Le Bonheur Children’s Medical
+  Center in Memphis, Vanderbilt University Medical Center in
+  Nashville and Methodist University Hospital in Memphis — are
+  designated as liver-transplant centers, according to UNOS. A
+  spokeswoman for Le Bonheur said the hospital doesn’t perform liver
+  transplants in adults. A Vanderbilt spokesman said it didn’t treat
+  Mr. Jobs. A spokeswoman for Methodist University said Mr. Jobs
+  isn’t listed as a patient there.</p>
+</blockquote>
+
+<p>Reading between the lines, <em>if</em> Jobs had a liver transplant in Tennessee, it must have been at one of these three hospitals. Two flatly deny it, but the third, Methodist University, simply stated Jobs “isn’t listed as a patient” — <em>present</em> tense, not past tense. So it must have been performed there. But why can’t the Journal state that as fact as well?</p>
+
+<h2>Regarding the Timing and Source of the Leak</h2>
+
+<p>That this news broke months after the purported transplant, at midnight on the Friday of what appears to be the most successful new product launch in Apple history, strikes me as beyond coincidence. My first thought was that it must be a deliberate, timed leak from Apple. Assuming the story is true and that Apple felt the need to eventually release the news, when better to release it than on the very day when it most appears that Apple has continued to thrive while Jobs was on medical leave? MG Siegler at TechCrunch <a href="http://www.techcrunch.com/2009/06/19/not-only-was-steve-jobs-sick-he-had-a-liver-transplant/">speculates similarly</a>:</p>
+
+<blockquote>
+  <p>We’d be remiss if we didn’t note that the timing of this story
+  appears favorable for Apple. This news breaks late on a Friday,
+  after Apple has just held a successful launch of a very high
+  profile new product, the iPhone 3GS, that sent the stock soaring
+  today. Obviously, the market won’t be open again until Monday.</p>
+</blockquote>
+
+<p>I don&#8217;t see how the leak could have come from someone with a competitive interest against Apple. The timing is completely favorable to Apple; if the leak had come from someone wishing ill against Apple, it would have come at some time, <em>any time</em>, other than in the wake of the extremely successful iPhone 3GS launch. Plus, other than the surprise that Jobs had a liver transplant in the first place, the gist of the article is largely favorable to Apple. It emphasizes that Jobs is recovering, is still set to return to work this month, and has already been seen on Apple&#8217;s campus recently. It is also the case that it would be unconscionable for the information to come from someone with a position against Apple and for the Journal not to describe the source as such.</p>
+
+<p>Thus I see only three possible sources for the leak.</p>
+
+<p><strong>Theory 1:</strong> That the information came <em>without</em> Jobs&#8217;s permission or knowledge, from a healthcare provider with knowledge of Jobs&#8217;s medical situation. Presumably, given the Journal&#8217;s report, from someone at Methodist University Hospital in Memphis. Such a leak would clearly be a violation of <a href="http://www.hhs.gov/ocr/privacy/index.html">HIPAA</a> privacy laws. This might explain the utter lack of sourcing and the certainty as to the veracity of the information, but it would not explain the perfect-for-Apple timing of the leak, which timing I firmly believe is simply too convenient to be coincidence. It would also raise serious questions regarding the ethics of the Wall Street Journal. I therefore discount this possibility.</p>
+
+<p><strong>Theory 2:</strong> That the leak was authorized by Jobs himself. I doubt Jobs personally spoke to the Journal reporters (see below), but it could have been someone close to him (if so, I&#8217;d guess Katie Cotton or someone else high up in <a href="http://www.apple.com/pr/contacts/">Apple Communications</a>) doing it with his permission. The thinking behind this theory would be that if the information was going to become public eventually, why not control it and have it come out at the most advantageous time possible. This scenario would explain the certainty of the information, but not the odd lack of sourcing.</p>
+
+<p>My thoughts then ran to the possibility that perhaps Jobs himself is the source &#8212; he has occasionally <a href="http://daringfireball.net/linked/2008/07/26/nocera-jobs">called reporters</a> personally. And if he offered the information only on the condition that it not be sourced to him by name, perhaps the Journal couldn&#8217;t bring themselves to describe Jobs himself as merely &#8220;a source familiar with the situation&#8221; or somesuch. But the second paragraph in the Journal story seems to preclude Jobs personally as the source:</p>
+
+<blockquote>
+  <p>Mr. Jobs didn&#8217;t respond to an email requesting comment. &#8220;Steve
+  continues to look forward to returning at the end of June, and
+  there&#8217;s nothing further to say,&#8221; said Apple spokeswoman Katie
+  Cotton.</p>
+</blockquote>
+
+<p>That language leaves the clear impression that Jobs did not personally contribute to the report, and it implies that Katie Cotton did not either. It&#8217;s one thing for reporters to omit information; it is something else entirely to purposefully mislead readers.</p>
+
+<p>There are also certain implications in the Journal&#8217;s story that cast Jobs in an unflattering light.</p>
+
+<blockquote>
+  <p>William Hawkins, a doctor specializing in pancreatic and
+  gastrointestinal surgery at Washington University in St. Louis,
+  Mo., said that the type of slow-growing pancreatic tumor Mr. Jobs
+  had will commonly metastasize in another organ during a patient&#8217;s
+  lifetime, and that the organ is usually the liver. &#8220;All total, 75%
+  of patients are going to have the disease spread over the course
+  of their life,&#8221; said Dr. Hawkins, who has not treated Mr. Jobs.</p>
+  
+  <p>Getting a liver transplant to treat a metastasized neuroendocrine
+  tumor is controversial because livers are scarce and the surgery&#8217;s
+  efficacy as a cure hasn&#8217;t been proved, Dr. Hawkins added. He said
+  that patients whose tumors have metastasized can live for as many
+  as 10 years without any treatment so it is hard to determine how
+  successful a transplant has been in curing the disease.</p>
+</blockquote>
+
+<p>This is ugly business. They&#8217;re quoting a doctor who specializes in pancreatic and gastrointestinal surgery as saying (1) that it&#8217;s common for someone who had the cancer Jobs had to subsequently get cancer in their liver; (2) that liver transplants are not proven to help in such cases; and (3) obtaining a liver transplant in such cases is therefore controversial because it&#8217;s taking a liver that could otherwise have been put to better use by someone with some other type of liver ailment. There is no other way to read this than as an implication that Steve Jobs may have gotten a liver that should have gone to someone else. Keep in mind that this entire ugly implication is not stated as fact and is attributed as speculation from a doctor who admittedly has not treated Steve Jobs. But the fact that it is in the story at all makes me question whether any of the information in the story came with Steve Jobs&#8217;s permission, tacit or otherwise.</p>
+
+<p><strong>Theory 3:</strong> That a member of Apple&#8217;s board of directors leaked the information to the Journal <em>without Jobs&#8217;s permission or knowledge</em>, or perhaps, if the matter of public disclosure had been posed to and dismissed by Jobs at a board meeting, <em>expressly against Jobs&#8217;s wishes</em>. The scenario I am imagining here is that Jobs does not wish to reveal anything regarding his medical situation, but that a member (or contingent) of Apple&#8217;s board believes it is in the company&#8217;s interest to release the basic gist of the story, regardless of Jobs&#8217;s wishes. This scenario would explain the timing, the certainty, and perhaps even the lack of sourcing. (Although if this scenario is the case, certainly Jobs himself must suspect the source of the leak is from the board.)</p>
+
+<p>Note also that some portions of Kane and Lublin&#8217;s WSJ report <em>must</em> have been sourced from someone on, or very close to, Apple&#8217;s board of directors:</p>
+
+<blockquote>
+  <p>When he does return, Mr. Jobs may be encouraged by his physicians to
+  initially &#8220;work part-time for a month or two,&#8221; a person familiar
+  with the thinking at Apple said. That may lead Tim Cook, Apple&#8217;s
+  chief operating officer, to take &#8220;a more encompassing role,&#8221; this
+  person said. The person added that Mr. Cook may be appointed to
+  Apple&#8217;s board in the not-too-distant future. [&#8230;]</p>
+  
+  <p>At least some Apple directors were aware of the CEO&#8217;s surgery. As
+  part of an agreement with Mr. Jobs in place before he went on
+  leave, some board members have been briefed weekly on the CEO&#8217;s
+  condition by his physician.</p>
+</blockquote>
+
+<p>Who else other than a source on Apple&#8217;s board would know that Tim Cook may soon join the board, or that some board members were briefed weekly?<sup id="fnr3-2009-06-21"><a href="#fn3-2009-06-21">3</a></sup></p>
+
+<p>This third scenario is my best guess as to the Journal&#8217;s source. It sounds sensational to speculate that there is conflict in this regard between Jobs and at least some contingent of Apple&#8217;s board of directors, but sensational or not, it makes more sense to me than any other scenario.</p>
+
+<p>It also fits with my belief that Steve Jobs does not want to disclose anything about his health whatsoever.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1-2009-06-21">
+<p>As usual, I&#8217;m linking to a Google redirection to the WSJ story. If I link directly to the WSJ web site, only paid WSJ subscribers will be able to read the story. The WSJ allows referrals from Google to see full article content.&nbsp;<a href="#fnr1-2009-06-21"  class="footnoteBackLink"  title="Jump back to footnote 1 in the text.">&#8617;</a></p>
+
+</li>
+
+<li id="fn2-2009-06-21">
+<p>Apple board member and Jobs confidant Al Gore is from Tennessee. But his home <a href="http://www.usatoday.com/news/opinion/editorials/2006-08-09-gore-green_x.htm">is in Nashville</a>, not Memphis, so I can&#8217;t think of any reason Gore would have played a role in Jobs&#8217;s decision to go there.&nbsp;<a href="#fnr2-2009-06-21"  class="footnoteBackLink"  title="Jump back to footnote 2 in the text.">&#8617;</a></p>
+</li>
+
+<li id="fn3-2009-06-21">
+<p>In theory the Journal&#8217;s source could be Tim Cook, but that goes against <em>everything</em> I have ever heard about Cook. I believe him to be loyal, honest, and to have deservedly earned Steve Jobs&#8217;s full trust. I truly believe that Cook would much prefer to continue in his current role in an Apple with Jobs as CEO than to be CEO of a Jobs-less Apple. Plus, Cook doesn&#8217;t need to angle through the press for anything. If Jobs steps down as CEO any time in the foreseeable future, the CEO job goes to Cook. No one whose opinion I value doubts this. It&#8217;s simply a question of whether Cook runs operations as &#8220;COO&#8221; with Steve Jobs overseeing product development, or as &#8220;CEO&#8221; without Steve Jobs overseeing product development.&nbsp;<a href="#fnr3-2009-06-21"  class="footnoteBackLink"  title="Jump back to footnote 3 in the text.">&#8617;</a></p>
+
+</li>
+
+</ol>
+</div>
+
+
+
+    ]]></content>
+  </entry><entry>
+    <title>★ WWDC 2009 Wrap-Up</title>
+    <link rel="alternate" type="text/html" href="http://daringfireball.net/2009/06/wwdc09_wrapup" />
+	<link rel="shorturl" href="http://✪df.ws/db0" />
+	<id>tag:daringfireball.net,2009://1.17244</id>
+	<published>2009-06-17T08:19:22Z</published>
+	<updated>2009-06-17T16:40:06Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+
+<summary type="html">To crudely paraphrase Dylan, a conference not busy being born is busy dying. WWDC is busy being born.</summary>
+	<content type="html" xml:base="http://daringfireball.net/" xml:lang="en"><![CDATA[
+<p>Across the street from Moscone West on the first day of WWDC, there remained banners from Sun&#8217;s JavaOne conference the week prior &#8212; a touching reminder that times and fortunes change, and that annual conferences often serve as markers of the state of the industry.</p>
+
+<p>JavaOne is an enormous conference. Apple reported 5,200 WWDC attendees this year, and, to me, it once again felt more crowded than ever before. Sun reported <em>three times as many</em> attendees for JavaOne. Comparing any two conferences, especially long-standing ones such as JavaOne and WWDC, is apples-to-oranges, but there&#8217;s no denying that JavaOne has been at least as big a deal for Sun&#8217;s developer community as WWDC has been for Apple&#8217;s.</p>
+
+<p>But now that Sun is in the midst of being <a href="http://www.sun.com/third-party/global/oracle/">folded into Oracle</a>, it&#8217;s an open question as to whether there will even be another JavaOne. Even if there is another, it will surely be different, coming as it must in a future where Sun is a subsidiary of Oracle rather than a standalone industry titan. (As a complete outsider to the Sun and Java communities, I found <a href="http://www.tbray.org/ongoing/When/200x/2009/06/02/JavaOne-2009-Day-1">Tim Bray&#8217;s elegiac JavaOne coverage</a> to be compelling.)</p>
+
+<p>To crudely <a href="http://www.bobdylan.com/songs/its-alright-ma-im-only-bleeding">paraphrase Dylan</a>, a conference not busy being born is busy dying. WWDC is busy being born. The gestalt of the conference, and of Apple&#8217;s developer community, is very much in flux. Not just changing but growing. Between the Newton and iPhone eras, WWDC was effectively a <em>Mac</em> developer conference. That&#8217;s no longer the case, and with each passing year there&#8217;s a palpable difference to the vibe. (And it&#8217;s not just because of the iPhone, either. There are now a series of good sessions each year for web developers targeting WebKit.)</p>
+
+<p>Two years ago, on the cusp of the iPhone&#8217;s release, was the last of the mostly-all-Mac WWDCs. The <a href="http://daringfireball.net/2007/06/wwdc_2007_keynote">vibe that year</a> boiled down to &#8220;I hope they let us write native apps for this thing.&#8221;</p>
+
+<p>Both this year and last, there have been single sessions whose titles epitomized that year&#8217;s conference. Last year, the first year with an iPhone development track, that session was titled &#8220;Intro to Mac OS X&#8221;. It&#8217;s hard to imagine such a session title even one year earlier at WWDC, but I walked by that session last year just to see how crowded it was, and the line to get in ran out the door and down the hall all the way to the escalators. They had to turn people away. (Apple replayed the session on video later in the week and the replay filled to capacity, too.)</p>
+
+<p>This year, the emblematic session was titled &#8220;Mac Programming for iPhone Developers&#8221;. I&#8217;m not even sure what to say about that, other than to confirm that anecdotal evidence suggests that new-to-Apple iPhone developers are indeed very much interested in developing for the Mac now, too.</p>
+
+<p>On the whole, there was a palpable sense that the iPhone is a peer to the Mac in Apple&#8217;s eyes. This isn&#8217;t about counting how many sessions were devoted to each. Nor is it an indication that the Mac as a platform is slowing. Quite the opposite in fact &#8212; Apple is selling more Macs than ever, and, knock on wood, there&#8217;s a strong consensus amongst developers that Snow Leopard is going to be the best release of Mac OS X yet. It&#8217;s simply that for however fast the Mac is growing, the iPhone is growing far faster.</p>
+
+<p>But the two platforms are symbiotically intertwined. The Monday schedule at WWDC is static. In the morning comes the keynote, which the press attends and where all public announcements are made. After lunch, though, there comes what is effectively a second keynote, this time with material aimed squarely at developers. A technical keynote, as compared to the morning&#8217;s marketing keynote, if you will. This technical keynote has for as long as I can remember been titled &#8220;Mac OS X State of the Union&#8221;. This year the title changed to &#8220;Core OS State of the Union&#8221;.</p>
+
+<p>Hence the symbiosis: Apple now has two full-fledged developer platforms, Mac OS X and iPhone OS, derived from one core system. Neither felt more important than the other this year at WWDC, which is remarkable considering that one of them hadn&#8217;t even shipped two years ago.</p>
+
+<p>But look at their vectors &#8212; their relative rates of growth &#8212; and ponder how much longer until WWDC begins to feel like an iPhone developer conference with a Mac developer track. My answer: next year. In other words, I think it will have taken just three years for the iPhone to supplant the Mac as Apple&#8217;s primary platform. By 2011 it will be obvious.</p>
+
+<p>It&#8217;s simply a matter of users. During Phil Schiller&#8217;s keynote, he showed a graph of the &#8220;OS X&#8221; user base over time, with steady growth over the first part of this decade followed by a sharp jump from 25 to 75 million over the past two years. This figure was <a href="http://www.google.com/search?q=wwdc+schiller+os+x+users+75+million">widely mis-cited</a>, however, as showing growth in &#8220;Mac OS X&#8221; users. It did not. The graph said &#8220;OS X&#8221;, not &#8220;<em>Mac</em> OS X&#8221;, and what Apple meant to show were the combined number of users of Mac OS X and iPhone OS. It was a very misleading and poorly-designed chart.</p>
+
+<p>The other relevant number from the keynote: 40 million total iPhones and iPod Touches sold to date. Clearly that&#8217;s not quite the same thing as 40 million iPhone OS <em>users</em>, given that some of us have already bought several devices, but it&#8217;s in the ballpark. So, as of last week, Apple estimates that there are about the same number of iPhone OS users as Mac OS X users.</p>
+
+<p>Now consider what those numbers will look like a year from now, 12 months after the iPhone&#8217;s entry price dropped to $99.</p>
+
+
+
+    ]]></content>
+  </entry><entry>
+    <title>★ WWDC 2009 Predictions</title>
+    <link rel="alternate" type="text/html" href="http://daringfireball.net/2009/06/wwdc_2009_predictions" />
+	<link rel="shorturl" href="http://✪df.ws/d95" />
+	<id>tag:daringfireball.net,2009://1.17177</id>
+	<published>2009-06-07T20:05:00Z</published>
+	<updated>2009-06-07T20:05:02Z</updated>
+	<author>
+		<name>John Gruber</name>
+		<uri>http://daringfireball.net/</uri>
+	</author>
+
+<summary type="html">What I know, don&apos;t know, and know I don&apos;t know about tomorrow&apos;s WWDC announcements. As usual, please, no wagering.</summary>
+	<content type="html" xml:base="http://daringfireball.net/" xml:lang="en"><![CDATA[
+<p>What I know, don&#8217;t know, and know I don&#8217;t know about tomorrow&#8217;s WWDC announcements. As usual, please, no wagering.</p>
+
+<h2>iPhone 3GS</h2>
+
+<p>Everything I wrote about last month in &#8220;<a href="http://daringfireball.net/2009/05/the_next_iphone">The Next iPhone</a>&#8221; still stands. I expect Apple to announce updated iPhones with significantly faster processors, twice the RAM, and twice the storage. I expected prices to remain the same as the current lineup: $199/299 for 16/32 GB, respectively. The video camera is going to be a major selling point.</p>
+
+<p>One additional tidbit I&#8217;ve heard is the new hardware&#8217;s code name: iPhone 3GS. I&#8217;m not certain that&#8217;s what it&#8217;ll be officially named, but my hunch is yes. I have no idea what the S stands for.<sup id="fnr1-2009-06-07"><a href="#fn1-2009-06-07">1</a></sup></p>
+
+<p>The other new tidbit is battery life: 15-20 percent longer than the iPhone 3G.</p>
+
+<p>As for form factor, I believe the 3GS will have the same or very similar dimensions as the 3G; the screen size is unchanged and existing cases might fit the 3GS. I assume that the new models must look different &#8212; newer, cooler &#8212; in some way, but I don&#8217;t know how.</p>
+
+<h2>Lower-Priced iPhones</h2>
+
+<p>There are pervasive rumors that Apple is also set to announce lower price points for the iPhone. The Financial Times, citing anonymous sources &#8220;familiar with the initiative&#8221;, <a href="http://www.ft.com/cms/s/0/c9169840-5157-11de-84c3-00144feabdc0.html?ftcamp=rss&amp;nclick_check=1">reported it as fact</a>.</p>
+
+<p>I believe this is true, and the new price will be $99. But since I expect the new top-of-the-line iPhone 3GS to start at $199, that means the $99 iPhone must be something else. I see two possibilities: (a) a new device, something that is to the iPhone what the iPod Mini was to the original iPod; or (b) the existing 8 GB iPhone 3G, unchanged but reduced in price.</p>
+
+<p>I would wager heavily on (b) &#8212; that the new iPhone 3GS models will not replace the 3G, but rather assume the flagship position while the year-old 3G slides down to the second spot in the product lineup. I believe Apple will eventually create an iPhone Mini or Nano or Junior &#8212; something that is smaller and thinner, in an array of colors but with fewer features and lower tech specs, at lower prices. And when they do, they will promote it heavily in a major play for raw mobile phone market share.</p>
+
+<p>I don&#8217;t think that time is now, though, which is why I believe the imminent $99 iPhone will simply be the existing 3G at a reduced price. I&#8217;m not even sure this $99 iPhone will be announced at WWDC &#8212; Apple may well wait until the new iPhones are available for sale to announce it. In fact, if I&#8217;m right that the $99 iPhone will simply be a reduced-price 3G, I wouldn&#8217;t be surprised if it were something Apple sold only through its own stores, and perhaps only for a limited time until their stock of old 3G models is gone.</p>
+
+<h2>iPhone Tethering</h2>
+
+<p>It&#8217;s no secret that iPhone OS 3.0 supports tethering: sharing the phone&#8217;s 3G internet connection with your computer. What we don&#8217;t know yet is how this will work with Apple&#8217;s various carrier partners around the world. It&#8217;d be nice if it just worked, with no additional charge over the current data plan. But &#8220;it&#8217;d be nice&#8221; seldom happens with phone carriers. So I expect we&#8217;ll be charged for this feature; the question is how much.</p>
+
+<p>At a fair price and assuming the feature works well, iPhone tethering could obviate the need for something like <a href="http://www.suntimes.com/business/1584745,ihnatko-verizon-mifi-review-052009.article">Verizon&#8217;s MiFi</a>. I look forward to never paying for hotel or airport Wi-Fi service again.</p>
+
+<h2>Snow Leopard</h2>
+
+<p>The big question with Snow Leopard isn&#8217;t with regard to technical details, but its marketing. Starting with version 10.2, previous major updates to Mac OS X have sold for $129, and were marketed almost entirely based on their new features. Apple has explicitly made clear that with Snow Leopard its focus was not on adding new features but rather on improving and optimizing existing ones &#8212; shoring up the foundation of the core OS shared by the Mac, iPhone, Apple TV, and future products to be named later. I think this was a great idea. OS X is here for the long haul &#8212; it is the foundation of Apple&#8217;s entire business for the foreseeable future.</p>
+
+<p>But how do they sell Mac OS X 10.6 to consumers if it doesn&#8217;t bring major new features? Here are the options I see:</p>
+
+<ol>
+<li><p>Sell it for $129, just like previous major updates. Advertise it as faster and better. If it doesn&#8217;t sell as well as 10.5 Leopard did, well, so what? Slow uptake would be an irritation for developers who want to ship software that depends on 10.6-specific APIs, but it wouldn&#8217;t be the end of the world. And who knows? Apple has never tried selling a full-priced OS update based on something other than new features &#8212; it might sell as well or better than 10.5 did. Maybe it&#8217;s not true that people only pay for features upgrades.</p></li>
+
+<li><p>Sell it for a lower price, say $59.</p></li>
+<li><p>Sell it for a nominal price, say $19. I think free is out of the question, if only because of Apple&#8217;s interpretation of U.S. accounting regulations. They give iPhone owners free OS updates because they use subscription-based accounting for iPhones. They charge iPod Touch owners for the same OS updates, because iPod Touches aren&#8217;t accounted for on a subscription basis. The Mac is like the iPod Touch in this regard, so I think a free Snow Leopard isn&#8217;t possible.</p></li>
+</ol>
+
+<p>The risk with options 2 and 3 is that it might make it more difficult for Apple to go back to charging $129 for 10.7 and beyond. But Apple is not Microsoft. OS upgrade revenue is a nice extra for Apple, not a core part of its business.</p>
+
+<p>The wildcard with Snow Leopard would be if Apple were set to unveil some sort of heretofore secret new features, features which they could then use as the basis for an advertising campaign and the regular $129 price. But from everything I&#8217;ve heard, Snow Leopard development is winding down &#8212; they&#8217;re tying off loose ends and fixing bugs.</p>
+
+<p>I have no idea how Apple is going to play this.</p>
+
+<h2>Marble</h2>
+
+<p>The other X-factor is &#8220;<a href="http://daringfireball.net/2009/01/macworld_expo_predictions">Marble</a>&#8221;, the rumored redesign of the entire OS&#8217;s visual appearance. Could that be the secret Snow Leopard &#8220;feature&#8221;? Six months ago that&#8217;s what I was expecting: that from an engineering point of view, Snow Leopard&#8217;s changes would be low-level, but that by making everything <em>look</em> all-new, Apple would have an obvious way to sell it to consumers as something worth paying for. If it looks new it is new, from a normal person&#8217;s perspective.</p>
+
+<p>But while I am convinced that &#8220;Marble&#8221; is a real design project at Apple, I no longer believe it is slated for Snow Leopard. A new visual appearance isn&#8217;t something Apple can spring on third-party developers at the last moment. If they plan to ship Snow Leopard soon &#8212; say, by the end of August &#8212; that just isn&#8217;t enough time to allow developers to update their software to look good under a new UI theme. (There&#8217;s also the problem of creating software that looks good under both the new and <em>old</em> themes.)</p>
+
+<p>So my hunch is no Marble for Snow Leopard &#8212; that it&#8217;s now a 10.7 thing. But I&#8217;d never bet too much money on the side of Apple accommodating the needs of third-party developers.</p>
+
+<h2>The Tablet</h2>
+
+<p>I&#8217;m completely convinced that the tablet is real. But I am almost just as convinced that it is not ready to be announced. Patience on this one.</p>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1-2009-06-07">
+<p><a>Speed</a>?&nbsp;<a href="#fnr1-2009-06-07"  class="footnoteBackLink"  title="Jump back to footnote 1 in the text.">&#8617;</a></p>
+</li>
+</ol>
+
+</div>
+
+
+
+    ]]></content>
+  </entry></feed>
