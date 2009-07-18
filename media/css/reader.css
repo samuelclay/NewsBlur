@@ -195,6 +195,11 @@ a img {
     border-top: 1px solid #D7DDE6;
 }
 
+#story_titles .NB-story-titles-end-stories-line {
+    height: 8px;
+    border-top: 1px solid #404040;
+    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+}
 /* =================== */
 /* = Story Navigator = */
 /* =================== */

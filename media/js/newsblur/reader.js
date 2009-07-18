@@ -279,6 +279,15 @@
                 }
                 $story_titles.append($story_title);
             }
+            if (!stories || stories.length == 0) {
+                var $end_stories_line = $.make('div', { 
+                    className: 'NB-story-titles-end-stories-line'
+                });
+                
+                if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
+                    $story_titles.append($end_stories_line);
+                }
+            }
             this.hover_over_story_titles($story_titles);
         },
         
