@@ -174,7 +174,7 @@ class Feed(models.Model):
             ), 
             Q(story_date__range=(start_date, end_date)),
             Q(story_feed = self)
-        )
+        )[:1]
         if len(existing_story):
             return existing_story[0]
         else:
@@ -239,5 +239,5 @@ class Story(models.Model):
         verbose_name_plural = "stories"
         verbose_name = "story"
         db_table="stories"
-        ordering=["-story_date", "story_feed"]
+        ordering=["-story_date"]
         

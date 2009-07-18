@@ -71,7 +71,7 @@ def refresh_feeds(feeds, force=False):
 def load_feeds(request):
     user = get_user(request)
         
-    us =    UserSubscriptionFolders.objects.select_related().filter(
+    us =    UserSubscriptionFolders.objects.filter(
                 user=user
             )
             
@@ -107,7 +107,7 @@ def load_single_feed(request):
     if page:
         offset = limit * page
     feed_id = request.REQUEST['feed_id']
-    stories=Story.objects.filter(story_feed=feed_id)[offset:offset+limit]
+    stories=Story.objects.filter(story_feed=feed_id).values('story_feed', 'story_date', 'story_permalink', 'story_title', 'story_content', 'story_author', 'id')[offset:offset+limit]
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force', False)
     
@@ -115,40 +115,41 @@ def load_single_feed(request):
     if force_update:
         fetch_feeds(force_update, [feed])
     
-    us = UserSubscription.objects.select_related("feed").filter(user=user)
+    us = UserSubscription.objects.filter(user=user)
     for sub in us:
-        if sub.feed_id == feed.id:
+        if sub.feed_id == feed_id:
 
             print "Feed: " + feed.feed_title
             user_readstories = ReadStories.objects.filter(
                 user=user, 
-                feed=feed
+                feed=feed_id
             )
             story_opinions = StoryOpinions.objects.filter(
                 user=user,
-                feed=feed
+                feed=feed_id
             )
             for story in stories:
-                story.short_parsed_date = format_story_link_date__short(story.story_date)
-                story.long_parsed_date = format_story_link_date__long(story.story_date)
-                story.story_feed_title = feed.feed_title
-                story.story_feed_link = mark_safe(feed.feed_link)
-                story.story_permalink = mark_safe(story.story_permalink)
+                story['short_parsed_date'] = format_story_link_date__short(story.story_date)
+                story['long_parsed_date'] = format_story_link_date__long(story.story_date)
+                story['story_feed_title'] = feed.feed_title
+                story['story_feed_link'] = mark_safe(feed.feed_link)
+                story['story_permalink'] = mark_safe(story.story_permalink)
                 if story in [o.story for o in story_opinions]:
                     for o in story_opinions:
                         if o.story == story:
-                            story.opinion = o.opinion
+                            story['opinion'] = o.opinion
                             break
                 if story.story_date < sub.mark_read_date:
-                    story.read_status = 1
+                    story['read_status'] = 1
                 elif story.story_date > sub.last_read_date:
-                    story.read_status = 0
+                    story['read_status'] = 0
                 else:
                     if story.id in [u_rs.story_id for u_rs in user_readstories]:
                         print "READ: "
-                        story.read_status = 1
+                        story['read_status'] = 1
                     else: 
-                        story.read_status = 0
+                        story['read_status'] = 0
+                print story
     
     context = stories
     data = json_encode(context)

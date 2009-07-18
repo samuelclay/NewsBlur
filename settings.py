@@ -14,6 +14,10 @@ PRODUCTION = False
 STAGING = False
 DEVELOPMENT = False
 
+CACHE_BACKEND = 'file:///var/tmp/django_cache'
+# CACHE_BACKEND = 'dummy:///'
+# CACHE_BACKEND = 'locmem:///'
+
 if __file__.find('/home/conesus/webapps') == 0:
     DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
     DATABASE_NAME = 'conesus_newsblur'             # Or path to database file if using sqlite3.
@@ -30,6 +34,7 @@ if __file__.find('/home/conesus/webapps') == 0:
         '/home/conesus/webapps/newsblur/newsblur/templates'
     )
     PRODUCTION = True
+    DEBUG = True
 elif __file__.find('/home/conesus/newsblur') == 0:
     DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
     DATABASE_NAME = 'newsblur'             # Or path to database file if using sqlite3.
@@ -63,9 +68,14 @@ else:
     )
     DEVELOPMENT = True
 
+if DEVELOPMENT:
+    # CACHE_BACKEND = 'file:///var/tmp/django_cache'
+    # CACHE_BACKEND = 'dummy:///'
+    CACHE_BACKEND = 'locmem:///'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
+# although not all choices may be available on all operating systems
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'America/New_York'
@@ -112,9 +122,6 @@ AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
 
 ROOT_URLCONF = 'urls'
 
-CACHE_BACKEND = 'file:///var/tmp/django_cache'
-# CACHE_BACKEND = 'dummy:///'
-# CACHE_BACKEND = 'locmem:///'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
 
 INSTALLED_APPS = (
