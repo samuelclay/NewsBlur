@@ -40,7 +40,10 @@
                 ? ' read'
                 : '';
             var $story_title = $.make('div', { className: 'story' + read }, [
-                $.make('a', { href: story.story_permalink, className: 'story_title' }, story.story_title),
+                $.make('a', { href: story.story_permalink, className: 'story_title' }, [
+                    story.story_title,
+                    $.make('span', { className: 'NB-storytitles-author'}, story.story_author)
+                ]),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id)
             ]);

@@ -74,25 +74,32 @@ def load_feeds(request):
     us =    UserSubscriptionFolders.objects.filter(
                 user=user
             )
-            
+
     feeds = []
     folders = []
     for sub in us:
-        sub.feed.unread_count = sub.user_sub.count_unread()
-        if sub.folder not in folders:
-            folders.append(sub.folder)
-            feeds.append({'folder': sub.folder, 'feeds': []})
-        for folder in feeds:
-            if folder['folder'] == sub.folder:
-                folder['feeds'].append(sub.feed)
-    
+        print sub.__dict__
+        print sub.user_sub_id
+        try:
+            sub.feed.unread_count = sub.user_sub.count_unread()
+        except:
+            print "Subscription %s does not exist outside of Folder." % (sub.feed)
+        else:
+            if sub.folder not in folders:
+                folders.append(sub.folder)
+                feeds.append({'folder': sub.folder, 'feeds': []})
+            for folder in feeds:
+                if folder['folder'] == sub.folder:
+                    folder['feeds'].append(sub.feed)
+
+    print feeds
     # Alphabetize folders, then feeds inside folders
     feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
     for feed in feeds:
         feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
         for f in feed['feeds']:
             f.feed_address = mark_safe(f.feed_address)
-    
+
     context = feeds
     
     data = json_encode(context)
