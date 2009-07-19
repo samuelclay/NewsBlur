@@ -41,16 +41,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             type: 'POST',
             success: function(o) {
                 var log_regex = /\s+<div id="django_log"([\s|\S])*$/m;
-                var log = o.match(log_regex);
-                var data = eval('(' + o.replace(log_regex, '') + ')');
+                var log_index = o.indexOf('<div id="django_log"');
+                var log = o.substring(log_index);
+                var raw_data = o.substring(0, log_index);
+                var data = eval('(' + raw_data + ')');
                 if(callback && typeof callback == 'function'){
                     callback(data);
                 }
-                if (log && log.length) {
-                    var log_js = log[0].match(/<script.*?>([\s|\S]*?)<\/script>/m);
-                    var log_html = log[0].replace(/<script.*?>[\s|\S]*?<\/script>/m, '');
+                if (log) {
+                    var log_js_index_begin = log.indexOf('<script type="text/javascript">');
+                    var log_js_index_end = log.indexOf('</script>');
+                    var log_html = log.substring(0, log_js_index_begin);
+                    var log_js = log.substring(log_js_index_begin+31, log_js_index_end);
                     $('#django_log').replaceWith(log_html);
-                    var js = eval(log_js[1]);
+                    var js = eval(log_js);
                 }
             }
         });    

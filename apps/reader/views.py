@@ -71,13 +71,14 @@ def refresh_feeds(feeds, force=False):
 def load_feeds(request):
     user = get_user(request)
         
-    us =    UserSubscriptionFolders.objects.filter(
+    us =    UserSubscriptionFolders.objects.select_related('feed', 'usersubscription').filter(
                 user=user
             )
-
+    logging.info('UserSubs: %s' % us)
     feeds = []
     folders = []
     for sub in us:
+        logging.info("UserSub: %s" % sub)
         try:
             sub.feed.unread_count = sub.user_sub.count_unread()
         except:
@@ -101,7 +102,7 @@ def load_feeds(request):
     context = feeds
     
     data = json_encode(context)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, mimetype='text/html')
 
 def load_single_feed(request):
     user = get_user(request)

@@ -171,6 +171,13 @@ a img {
     display: block;
     padding: 4px 0px;
 }
+
+#story_titles .story .story_title .NB-storytitles-author {
+    padding-left: 12px;
+    color: #808080;
+    font-size: 9px;
+}
+
 #story_titles .story .story_id {
     display: none;
 }
@@ -280,12 +287,6 @@ a img {
     padding: 12px 140px 12px 28px;
     background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
     border-top: 4px solid #404040;
-}
-
-#story_pane .story_title .NB-storytitles-author {
-    padding-left: 4px;
-    color: #808080;
-    font-size: 12px;
 }
 
 #story_pane .story_title a {
