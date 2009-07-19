@@ -34,7 +34,7 @@ if PRODUCTION:
     CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.WARN,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='myapp.log',
+                    filename='/home/conesus/newsblur/logs/newsblur.log',
                     filemode='w')
 elif STAGING:
     DATABASE_ENGINE = 'mysql'
@@ -55,7 +55,7 @@ elif STAGING:
     CACHE_BACKEND = 'file:///var/tmp/django_cache'
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='myapp.log',
+                    filename='/home/conesus/newsblur/logs/newsblur.log',
                     filemode='w')
 else:
     DATABASE_ENGINE = 'mysql'
@@ -76,7 +76,7 @@ else:
     CACHE_BACKEND = 'dummy:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='myapp.log',
+                    filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',
                     filemode='w')
 
 TIME_ZONE = 'America/New_York'
