@@ -551,14 +551,16 @@
         
         handle_scroll: function(elem, e) {
             var self = this;
+
+            if (!($('.NB-story-titles-end-stories-line', this.$story_titles).length)) {
+                var full_height = $('#story_titles .story:last').offset().top + $('#story_titles .story:last').height();
+                var visible_height = $('#story_titles').height();
+                // var scroll_y = $('#story_titles').scrollTop();
+                // NEWSBLUR.log(['Story_titles Scroll', full_height, visible_height, scroll_y]);
             
-            var full_height = $('#story_titles .story:last').offset().top + $('#story_titles .story:last').height();
-            var visible_height = $('#story_titles').height();
-            // var scroll_y = $('#story_titles').scrollTop();
-            // NEWSBLUR.log(['Story_titles Scroll', full_height, visible_height, scroll_y]);
-            
-            if (full_height <= visible_height) {
-                this.load_page_of_feed_stories();
+                if (full_height <= visible_height) {
+                    this.load_page_of_feed_stories();
+                }
             }
         },
         

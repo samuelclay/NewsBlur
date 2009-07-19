@@ -1,6 +1,9 @@
 # Django settings for newsblur project.
 import sys
 sys.stdout = sys.stderr
+import logging
+
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -9,26 +12,30 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-PRODUCTION = __file__.find('/home/conesus/webapps') == 0
-STAGING = __file__.find('/home/conesus/newsblur') == 0
+PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
+STAGING = __file__.find('/home/conesus/webapps') == 0
 DEVELOPMENT = __file__.find('/Users/conesus/Projects/newsblur') == 0
 
 if PRODUCTION:
     DATABASE_ENGINE = 'mysql'
-    DATABASE_NAME = 'conesus_newsblur'
-    DATABASE_USER = 'conesus_newsblur'
-    DATABASE_PASSWORD = 'lapsak21'
+    DATABASE_NAME = 'newsblur'
+    DATABASE_USER = 'newsblur'
+    DATABASE_PASSWORD = ''
     DATABASE_HOST = 'localhost'
     DATABASE_PORT = ''
-
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_ROOT = '/home/conesus/webapps/newsblur/newsblur/media/'
-    MEDIA_URL = 'http://conesus.webfactional.com/media/media/'
+    MEDIA_ROOT = '/home/conesus/newsblur/media/'
+    MEDIA_URL = 'http://www.newsblur.com/media/'
     TEMPLATE_DIRS = (
-        '/home/conesus/webapps/newsblur/newsblur/templates'
+        '/home/conesus/newsblur/templates'
     )
     DEBUG = True
+    CACHE_BACKEND = 'locmem:///'
+    logging.basicConfig(level=logging.WARN,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='myapp.log',
+                    filemode='w')
 elif STAGING:
     DATABASE_ENGINE = 'mysql'
     DATABASE_NAME = 'newsblur'
@@ -39,12 +46,17 @@ elif STAGING:
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_ROOT = '/home/conesus/newsblur/media/'
-    MEDIA_URL = 'http://www.newsblur.com/media/'
+    MEDIA_ROOT = '/home/conesus/webapps/newsblur/newsblur/media/'
+    MEDIA_URL = 'http://conesus.webfactional.com/media/media/'
     TEMPLATE_DIRS = (
-        '/home/conesus/newsblur/templates'
+        '/home/conesus/webapps/newsblur/newsblur/templates'
     )
     DEBUG = True
+    CACHE_BACKEND = 'file:///var/tmp/django_cache'
+    logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='myapp.log',
+                    filemode='w')
 else:
     DATABASE_ENGINE = 'mysql'
     DATABASE_NAME = 'newsblur'
@@ -61,6 +73,11 @@ else:
         '/Users/conesus/Projects/newsblur/templates'
     )
     DEBUG = True
+    CACHE_BACKEND = 'dummy:///'
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='myapp.log',
+                    filemode='w')
 
 TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en-us'
@@ -90,16 +107,16 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.CacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware'
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'djangologging.middleware.LoggingMiddleware',
 )
 
 AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
 ROOT_URLCONF = 'urls'
+INTERNAL_IPS = ('127.0.0.1',)
+LOGGING_LOG_SQL = True
 
-CACHE_BACKEND = 'file:///var/tmp/django_cache'
-# CACHE_BACKEND = 'dummy:///'
-# CACHE_BACKEND = 'locmem:///'
 
 INSTALLED_APPS = (
     'django.contrib.auth',

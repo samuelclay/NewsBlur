@@ -9,9 +9,9 @@ from utils.user_functions import get_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpRequest
 from django.core import serializers 
-from pprint import pprint
 from django.utils.safestring import mark_safe
 from utils.feedcache.threading_model import fetch_feeds
+import logging
 import datetime
 import threading
 
@@ -78,12 +78,11 @@ def load_feeds(request):
     feeds = []
     folders = []
     for sub in us:
-        print sub.__dict__
-        print sub.user_sub_id
         try:
             sub.feed.unread_count = sub.user_sub.count_unread()
         except:
-            print "Subscription %s does not exist outside of Folder." % (sub.feed)
+            logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
+            sub.delete()
         else:
             if sub.folder not in folders:
                 folders.append(sub.folder)
@@ -92,7 +91,6 @@ def load_feeds(request):
                 if folder['folder'] == sub.folder:
                     folder['feeds'].append(sub.feed)
 
-    print feeds
     # Alphabetize folders, then feeds inside folders
     feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
     for feed in feeds:
@@ -126,7 +124,7 @@ def load_single_feed(request):
     for sub in us:
         if sub.feed_id == feed_id:
 
-            print "Feed: " + feed.feed_title
+            logging.debug("Feed: " + feed.feed_title)
             user_readstories = ReadStories.objects.filter(
                 user=user, 
                 feed=feed_id
@@ -152,15 +150,15 @@ def load_single_feed(request):
                     story['read_status'] = 0
                 else:
                     if story.id in [u_rs.story_id for u_rs in user_readstories]:
-                        print "READ: "
+                        logging.debug("READ: ")
                         story['read_status'] = 1
                     else: 
                         story['read_status'] = 0
-                print story
+                logging.debug("Story: %s" % story)
     
     context = stories
     data = json_encode(context)
-    return HttpResponse(data, mimetype='text/plain')
+    return HttpResponse(data, mimetype='text/html')
 
     
 @login_required
@@ -170,7 +168,7 @@ def mark_story_as_read(request):
     
     read_story = ReadStories.objects.filter(story=story_id, user=request.user, feed=story.story_feed).count()
     
-    print read_story
+    logging.debug('Marking as read: %s' % read_story)
     if read_story:
         data = json_encode(dict(code=1))
     else:
@@ -179,7 +177,7 @@ def mark_story_as_read(request):
             user=request.user
         )
         us.mark_read()
-        print "Marked Read: " + str(story_id) + ' ' + str(story.id)    
+        logging.debug("Marked Read: " + str(story_id) + ' ' + str(story.id))
         m = ReadStories(story=story, user=request.user, feed=story.story_feed)
         data = json_encode(dict(code=0))
         try:
@@ -222,9 +220,9 @@ def mark_story_with_opinion(request, opinion):
         previous_opinion.opinion = opinion
         data = json_encode(dict(code=0))
         previous_opinion.save()
-        print "Changed Opinion: " + str(previous_opinion.opinion) + ' ' + str(opinion)    
+        logging.debug("Changed Opinion: " + str(previous_opinion.opinion) + ' ' + str(opinion))
     else:
-        print "Marked Opinion: " + str(story_id) + ' ' + str(opinion)    
+        logging.debug("Marked Opinion: " + str(story_id) + ' ' + str(opinion))
         m = StoryOpinions(story=story, user=request.user, feed=story.story_feed, opinion=opinion)
         data = json_encode(dict(code=0))
         try:

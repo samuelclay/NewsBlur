@@ -282,6 +282,12 @@ a img {
     border-top: 4px solid #404040;
 }
 
+#story_pane .story_title .NB-storytitles-author {
+    padding-left: 4px;
+    color: #808080;
+    font-size: 12px;
+}
+
 #story_pane .story_title a {
     text-decoration: none;
     color: #101050;
@@ -511,4 +517,23 @@ div.menu hr {
 
 div.menu ul {
     padding-left: 1.5em;
+}
+
+/* ================== */
+/* = Django Logging = */
+/* ================== */
+
+#django_log {
+    position: absolute;
+    bottom: 30px;
+    width: 850px;
+    right: 20px;
+    z-index: 10000;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+#django_log h1:hover {
+    background-color: #FFFFA0;
+    cursor: pointer;
 }
