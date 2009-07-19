@@ -73,7 +73,7 @@ else:
         '/Users/conesus/Projects/newsblur/templates'
     )
     DEBUG = True
-    CACHE_BACKEND = 'dummy:///'
+    CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',

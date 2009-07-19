@@ -148,7 +148,7 @@ var DjangoLogging = function() {
 	} else {
 		span.appendChild(document.createTextNode('{% trans "Hide" %}'))
 	}
-	addEventListener(h1.parentNode, 'click', function(event) {
+	addEventListener(h1, 'click', function(event) {
 		var target = event.target || event.srcElement;
 		if (django_log.className == 'collapsed') {
 			django_log.className = ' ';
