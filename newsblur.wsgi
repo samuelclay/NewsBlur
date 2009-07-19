@@ -7,6 +7,7 @@ sys.path.append(workspace)
    
 sys.path.append('/home/conesus/django/')
 sys.path.append('/home/conesus/newsblur/')
+sys.path.append('/home/conesus/newsblur/utils')
    
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 import django.core.handlers.wsgi
