@@ -1,0 +1,251 @@
+<style type="text/css">
+<!--
+
+	#django_log {
+		background: #ffc;
+		border: 1px solid #ccc;
+		clear: both;
+		color: #000;
+		font: small sans-serif;
+		padding: 0;
+	}
+
+	#django_log h1 {
+		border: none;
+		font-size: 150%;
+		font-weight: normal;
+		float: left;
+		margin: 0;
+		padding: 10px 20px;
+	}
+
+	#django_log h1 span {
+		color: #00c;
+		cursor: pointer;
+		font-size: 60%;
+		margin-left: 1em;
+		text-decoration: underline;
+	}
+
+	#django_log hr {
+		display: none;
+	}
+
+	#django_log p {
+		margin: 0;
+	}
+
+	#django_log .metrics {
+		margin-top: 10px;
+	}
+
+	#django_log fieldset {
+		border: none;
+		float: right;
+		padding: 10px 20px;
+	}
+
+	#django_log fieldset label {
+		margin-left: 1em;
+		border-left: 1px solid #ccc;
+		padding-left: 1em;
+	}
+
+	#django_log fieldset label.first {
+		border: none;
+	}
+
+	#django_log fieldset input {
+		margin-left: 1em;
+		vertical-align: middle;
+	}
+
+	#django_log fieldset select {
+		font-family: sans-serif;
+	}
+
+	#django_log .django_log_messages {
+		background: #eee;
+		border-top: 1px solid #ccc;
+		clear: both;
+		padding: 10px 20px;
+	}
+
+	#django_log table {
+		background: #eee;
+		border: none;
+		border-collapse: separate;
+		clear: both;
+		font-size: 100%;
+	}
+
+	#django_log th {
+		display: none;
+	}
+
+	#django_log td {
+		background: #ddd;
+		border: solid #eee;
+		border-width: 1px 0;
+		padding: .2em 1em;
+		vertical-align: top;
+	}
+
+	#django_log tr:hover td {
+		background: #ccc;
+	}
+
+	#django_log table .level {
+		background: #ccc;
+		text-align: center;
+	}
+	
+	#django_log table .location a {
+		color: #009;
+		text-decoration: underline;
+		display: block;
+	}
+
+	#django_log table .message {
+		width: 100%;
+	}
+
+	#django_log table .time {
+		text-align: right;
+		white-space: nowrap;
+	}
+
+	#django_log tr.critical .level {
+		background: #f00;
+	}
+
+	#django_log tr.error .level {
+		background: #f93;
+	}
+
+	#django_log tr.warning .level {
+		background: #ff0;
+	}
+
+	#django_log tr.info .level {
+		background: #9f9;
+	}
+
+	#django_log tr.sql .level {
+		background: #99f;
+	}
+	
+	#django_log .trace {
+		background: #eee;
+	}
+	#django_log tr:hover .trace {
+		background: #eee;
+	}
+
+	#django_log table .timestamp {
+		font-style: italic;
+		text-align: center;
+		width: 8em;
+	}
+
+	#django_log.collapsed table {
+		display: none;
+	}
+
+	#django_log.collapsed div {
+		display: none;
+	}
+
+	#django_log.collapsed h1 {
+		float: none;
+	}
+
+	#django_log.collapsed fieldset {
+		display: none;
+	}
+	
+	#django_log .trace-hidden {
+		display: none;
+	}
+	#django_log .trace .source pre {
+		background: #fff;
+		padding: .5em;
+	}
+	#django_log .trace .source h3 {
+		white-space: nowrap;
+		margin: 0;
+	}
+	#django_log .trace .local_variables {
+		font-family: monospace;
+	}
+	#django_log .trace .local_variables dt {
+		font-weight: bold;
+	}
+	#django_log .sql_highlight pre {
+		margin: 0;
+		white-space: normal;
+	}
+	
+	#django_log .hll { background-color: #ffffcc; border: 1px solid red; }
+	#django_log .c { color: #408080; font-style: italic } /* Comment */
+	#django_log .k { color: #008000; font-weight: bold } /* Keyword */
+	#django_log .o { color: #666666 } /* Operator */
+	#django_log .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+	#django_log .cp { color: #BC7A00 } /* Comment.Preproc */
+	#django_log .c1 { color: #408080; font-style: italic } /* Comment.Single */
+	#django_log .cs { color: #408080; font-style: italic } /* Comment.Special */
+	#django_log .gd { color: #A00000 } /* Generic.Deleted */
+	#django_log .ge { font-style: italic } /* Generic.Emph */
+	#django_log .gr { color: #FF0000 } /* Generic.Error */
+	#django_log .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+	#django_log .gi { color: #00A000 } /* Generic.Inserted */
+	#django_log .go { color: #808080 } /* Generic.Output */
+	#django_log .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+	#django_log .gs { font-weight: bold } /* Generic.Strong */
+	#django_log .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+	#django_log .gt { color: #0040D0 } /* Generic.Traceback */
+	#django_log .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+	#django_log .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+	#django_log .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+	#django_log .kp { color: #008000 } /* Keyword.Pseudo */
+	#django_log .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+	#django_log .kt { color: #B00040 } /* Keyword.Type */
+	#django_log .m { color: #666666 } /* Literal.Number */
+	#django_log .s { color: #BA2121 } /* Literal.String */
+	#django_log .na { color: #7D9029 } /* Name.Attribute */
+	#django_log .nb { color: #008000 } /* Name.Builtin */
+	#django_log .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+	#django_log .no { color: #880000 } /* Name.Constant */
+	#django_log .nd { color: #AA22FF } /* Name.Decorator */
+	#django_log .ni { color: #999999; font-weight: bold } /* Name.Entity */
+	#django_log .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+	#django_log .nf { color: #0000FF } /* Name.Function */
+	#django_log .nl { color: #A0A000 } /* Name.Label */
+	#django_log .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+	#django_log .nt { color: #008000; font-weight: bold } /* Name.Tag */
+	#django_log .nv { color: #19177C } /* Name.Variable */
+	#django_log .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+	#django_log .w { color: #bbbbbb } /* Text.Whitespace */
+	#django_log .mf { color: #666666 } /* Literal.Number.Float */
+	#django_log .mh { color: #666666 } /* Literal.Number.Hex */
+	#django_log .mi { color: #666666 } /* Literal.Number.Integer */
+	#django_log .mo { color: #666666 } /* Literal.Number.Oct */
+	#django_log .sb { color: #BA2121 } /* Literal.String.Backtick */
+	#django_log .sc { color: #BA2121 } /* Literal.String.Char */
+	#django_log .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+	#django_log .s2 { color: #BA2121 } /* Literal.String.Double */
+	#django_log .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+	#django_log .sh { color: #BA2121 } /* Literal.String.Heredoc */
+	#django_log .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+	#django_log .sx { color: #008000 } /* Literal.String.Other */
+	#django_log .sr { color: #BB6688 } /* Literal.String.Regex */
+	#django_log .s1 { color: #BA2121 } /* Literal.String.Single */
+	#django_log .ss { color: #19177C } /* Literal.String.Symbol */
+	#django_log .bp { color: #008000 } /* Name.Builtin.Pseudo */
+	#django_log .vc { color: #19177C } /* Name.Variable.Class */
+	#django_log .vg { color: #19177C } /* Name.Variable.Global */
+	#django_log .vi { color: #19177C } /* Name.Variable.Instance */
+	#django_log .il { color: #666666 } /* Literal.Number.Integer.Long */
+
+-->
+</style>

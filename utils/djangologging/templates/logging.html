@@ -1,0 +1,273 @@
+{% load i18n %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+<div id="django_log" lang="{{ LANGUAGE_CODE|escape }}">
+
+	<hr />
+	<h1>{% trans "Request Log" %}</h1>
+
+	<div class="django_log_messages">
+
+	{% if records %}
+		<table cellspacing="0">
+			<thead>
+				<tr>
+					<th>{% trans "Level" %}</th>
+					<th>{% trans "Timestamp" %}</th>
+					<th>{% trans "Location" %}</th>
+					<th>{% trans "Message" %}</th>
+					<th>{% trans "Time" %}</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for record in records %}
+				<tr class="{{ record.levelname|lower|escape }}">
+					<td class="level" rowspan="2">{{ record.levelname|escape }}</td>
+					<td class="timestamp" rowspan="2">{{ record.formatted_timestamp|escape }}</td>
+					<td class="location"><a href="#">&#x25b6;&nbsp;{{ record.module|escape }}{% if record.funcName %}.{{ record.funcName|escape }}{% endif %}:{{ record.lineno|escape }}</a></td>
+					{% if record.sqltime %}
+						<td class="message">{{ record.formatted_message }}</td>
+						<td class="time">{{ record.sqltime }} <abbr title="milliseconds">ms</abbr></td>
+					{% else %}
+						<td class="message">{{ record.formatted_message }}</td>
+						<td class="time">&nbsp;</td>
+					{% endif %}
+				</tr>
+				<tr class="{{ record.levelname|lower|escape }}">
+					<td class="trace trace-hidden" colspan="3">
+						<div class="source">
+							<h3>{{ record.pathname|escape|addslashes }} {% if record.funcName %}: {{ record.funcName|escape }} {% endif %}: {{ record.lineno|escape }}</h3>
+							{{ record.source_lines }}
+							<h3>Local variables</h3>
+							<dl class="local_variables">
+								{% for var in record.local_variables %}
+									<dt>{{ var.0|escape }}</dt>
+									<dd>{{ var.1|pprint|escape }}</dd>
+								{% endfor %}
+							</dl>
+						</div>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+
+		{% if logging_show_metrics %}		
+			<div class="metrics">
+				{% blocktrans with elapsed_time|floatformat as elapsed_time %}Completed in {{ elapsed_time }} <abbr title="milliseconds">ms</abbr>{% endblocktrans %}
+				{% ifnotequal query_count -1 %}
+					{% blocktrans count query_count as query_count %}with {{ query_count }} database query{% plural %}with {{ query_count }} database queries{% endblocktrans %}
+					{% if query_count %}
+						{% blocktrans with query_time|floatformat as query_time and query_percentage|floatformat as query_percentage %}which took {{ query_time }} <abbr title="milliseconds">ms</abbr> ({{ query_percentage }}&#37; of total time){% endblocktrans %}{% endif %}{% if not logging_log_sql %}.
+					{% blocktrans %}If you set <code>LOGGING_LOG_SQL</code> to <code>True</code> in your Django settings file, you'll see all the individual database queries{% endblocktrans %}{% endif %}{% endifnotequal %}.
+			</div>
+		{% endif %}
+		{% if logging_show_hints and hints %}
+			<div class="hints">
+				<h3><strong>{% blocktrans %}Did you know?{% endblocktrans %}</strong></h3>
+				<ul>
+					{% if hints.pygments %}
+						<li>{% blocktrans %}To have your SQL pretty printed, simply install <a href="http://pygments.org/">pygments</a>.{% endblocktrans %}</li>
+					{% endif %}
+				</ul>
+			</div>
+		{% endif %}
+
+	{% else %}
+
+		<p>{% trans "No log entries." %}</p>
+
+	{% endif %}
+	</div>
+
+</div>
+
+{% if records %}
+<script type="text/javascript">
+<!--
+
+// Wrap all this Javascript in a function to give a faux-namespace
+var DjangoLogging = function() {
+
+	function addEventListener(element, event, handler) {
+		if (element.addEventListener) {
+			element.addEventListener(event, handler, false);
+		} else {
+			element.attachEvent('on' + event, handler);
+		}
+	}
+	
+	function createCheckbox(checked) {
+		var input;
+		if (navigator.userAgent.indexOf('MSIE') != -1) {
+			input = document.createElement('<input type="checkbox"' + (checked ? ' checked="checked"' : '') + ' />');
+		} else {
+			input = document.createElement('input');
+			input.setAttribute('type', 'checkbox');
+			input.checked = checked;
+		}
+		return input;
+	}
+
+	function writeCookie(key, value) {
+		document.cookie = key + '=' + escape(value);
+	}
+
+	function readCookie(key, defaultValue) {
+		var s = document.cookie.indexOf(key + '=');
+		if (s == -1) {
+			return defaultValue;
+		} else {
+			s += key.length + 1
+			var e = document.cookie.indexOf(';', s);
+			if (e == -1) e = document.cookie.length;
+			return unescape(document.cookie.substring(s, e));
+		}
+	}
+
+	var levelCookieName = 'django_log_selectedLevel';
+	var classCookieName = 'django_log_className';
+	var locationCookieName = 'django_log_showLocation';
+
+	var levels = {{% for level in levels %}
+		'{{ level.1 }}': {{ level.0 }}{% if not forloop.last %},{% endif %}{% endfor %}
+	};
+	var selectedLevel = parseInt(readCookie(levelCookieName, levels.NOTSET));
+	
+	var showLocation = (readCookie(locationCookieName, '1') == '1');
+
+	var django_log = document.getElementById('django_log');
+	django_log.className = 'collapsed';//readCookie(classCookieName, 'collapsed');
+
+	var h1 = django_log.getElementsByTagName('h1')[0];
+	var span = document.createElement('span');
+	h1.appendChild(span);
+	if (django_log.className == 'collapsed') {
+		span.appendChild(document.createTextNode('{% trans "Show" %}'))
+	} else {
+		span.appendChild(document.createTextNode('{% trans "Hide" %}'))
+	}
+	addEventListener(h1.parentNode, 'click', function(event) {
+		var target = event.target || event.srcElement;
+		if (django_log.className == 'collapsed') {
+			django_log.className = ' ';
+			span.childNodes[0].nodeValue = '{% trans "Hide" %}';
+		} else {
+			django_log.className = 'collapsed';
+			span.childNodes[0].nodeValue = '{% trans "Show" %}';
+		}
+		writeCookie(classCookieName, django_log.className);
+	});
+
+	var messages = django_log.getElementsByTagName('div')[0];
+	var table = django_log.getElementsByTagName('table')[0];
+	var tbody = table.getElementsByTagName('tbody')[0];
+	var fieldset = document.createElement('fieldset');
+
+	function showHideLocation(show) {
+		table.getElementsByTagName('th')[2].style.display = (show ? '' : 'none');
+		var records = tbody.getElementsByTagName('tr');
+		for (var i = 0; i < records.length; i++) {
+			if (i % 2 == 0) {
+				records[i].getElementsByTagName('td')[2].style.display = (show ? '' : 'none');
+			} else {
+				records[i].getElementsByTagName('td')[0].style.display = (show ? '' : 'none');
+			}
+		}
+		writeCookie(locationCookieName, show ? '1' : '0');
+	}
+
+	function setLevel(level) {
+		var ps = django_log.getElementsByTagName('p');
+		for (var i = 0; i < ps.length; i++) {
+			ps[i].parentNode.removeChild(ps[i]);
+		}
+		table.style.display = '';
+		var records = tbody.getElementsByTagName('tr');
+		var visibleCount = 0;
+		for (var i = 0; i < records.length; i+=2) {
+			var recordLevel = records[i].getElementsByTagName('td')[0].childNodes[0].nodeValue.split(' ')[0];
+			if (levels[recordLevel] >= level) {
+				records[i].style.display = '';
+				visibleCount++;
+			} else {
+				records[i].style.display = 'none';
+			}
+		}
+		if (visibleCount == 0) {
+			var p = document.createElement('p');
+			p.appendChild(document.createTextNode('{% trans "No log messages matching filter." %}'));
+			messages.insertBefore(p, table.nextSibling);
+			table.style.display = 'none';
+		}
+		writeCookie(levelCookieName, level);
+	}
+	
+	var label = document.createElement('label');
+	var input = createCheckbox(showLocation);
+	label.className = 'first';
+	label.appendChild(input);
+	label.appendChild(document.createTextNode(' {% trans "Show location" %}'));
+	fieldset.appendChild(label);
+	label = document.createElement('label');
+	label.appendChild(document.createTextNode('{% trans "Filter" %}: '));
+
+	showHideLocation(showLocation);
+	addEventListener(input, 'click', function() {
+		showHideLocation(input.checked);
+	});
+
+	var select = document.createElement('select');
+	label.appendChild(select);
+	fieldset.appendChild(label);
+
+	for (var level in levels) {
+		var option = document.createElement('option');
+		option.setAttribute('value', levels[level]);
+		var text;
+		if (levels[level] == 0) {
+			text = '{% trans "No filter (show all)" %}';
+		} else {
+			text = (levels[level] > 0 ? '\u2265 ' : '') + level;
+		}
+		option.appendChild(document.createTextNode(text));
+		select.appendChild(option);
+	}
+
+	select.value = selectedLevel;
+	setLevel(selectedLevel);
+
+	addEventListener(select, 'change', function() {
+		setLevel(select.value);
+	});
+
+	django_log.insertBefore(fieldset, messages);
+
+	var records = tbody.getElementsByTagName('tr');
+	for (var i = 0; i < records.length; i+=2) {
+		var html = records[i].getElementsByTagName('td')[3].innerHTML;
+		records[i].getElementsByTagName('td')[3].innerHTML = html.replace(/(&[^;]+;|\\b)/g, '\u200B$1');
+		addEventListener(records[i].getElementsByTagName('a')[0], 'click', function(e) {
+			var link = e.srcElement || e.target;
+			var next = link.parentNode.parentNode.nextSibling;
+			if (next.nodeName != 'TR') next = next.nextSibling;
+			var td = next.getElementsByTagName('td')[0];
+			if (this.className == 'open') {
+				this.className = '';	
+				td.className = 'trace trace-hidden';
+				link.innerHTML = '&#x25b6;' + link.innerHTML.substring(1)
+			} else {
+				this.className = 'open';
+				td.className = 'trace';
+				link.innerHTML = '&#x25bc;' + link.innerHTML.substring(1)
+			}
+			(window.event || e).returnValue = false;
+		});
+	}
+
+}();
+
+//-->
+</script>
+{% endif %}

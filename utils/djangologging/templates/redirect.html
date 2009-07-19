@@ -1,0 +1,56 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<html lang="{{ LANGUAGE_CODE|escape }}">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>{{ status_code|escape }} {{ status_name|escape }}</title>
+	<style type="text/css">
+	<!--
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		body * { padding:10px 20px; }
+		body * * { padding:0; }
+		body { font:small sans-serif; background:#f6f6f6; }
+		h1 {
+			background: #ffc;
+			border-bottom:1px solid #ddd;
+			font-weight:normal;
+			margin: 0 0 .4em;
+		}
+		h1 span { font-size:60%; color:#666; font-weight:normal; }
+		
+		dl {
+			font-weight: bold;
+		}
+		dt {
+			float: left;
+			padding-right: 2em;
+		}
+		#explanation {
+			background: #eee;
+			border-top: 1px solid #ddd;
+		}
+	-->
+	</style>
+</head>
+<body>
+	<h1>{{ status_name|escape }} <span>({{ status_code|escape }})</span></h1>
+	<dl>
+		<dt>{% trans "Location" %}:</dt>
+		<dd><a href="{{ location|escape }}">{{ location|escape }}</a></dd>
+	</dl>
+	<p>
+		{% trans "You would normally have been redirected to the above location automatically, but some log messages are available to read below." %}
+	</p>
+	<div id="explanation">
+		<p>
+			{% trans "You're seeing this page because amongst other things you have <code>LOGGING_INTERCEPT_REDIRECTS = True</code> in your Django settings file. Change that to <code>False</code>, and Django will redirect you properly, discarding any messages logged in the process." %}
+		</p>
+	</div>
+</body>
+</html>
