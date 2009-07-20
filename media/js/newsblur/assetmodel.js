@@ -42,13 +42,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             success: function(o) {
                 var log_regex = /\s+<div id="django_log"([\s|\S])*$/m;
                 var log_index = o.indexOf('<div id="django_log"');
+                var data;
+                
                 if (log_index != -1) { // Debug is True
                     var log = o.substring(log_index);
                     var raw_data = o.substring(0, log_index);
-                    var data = eval('(' + raw_data + ')');
-                    if(callback && typeof callback == 'function'){
-                        callback(data);
-                    }
+                    data = eval('(' + raw_data + ')');
                     if (log) {
                         var log_js_index_begin = log.indexOf('<script type="text/javascript">');
                         var log_js_index_end = log.indexOf('</script>');
@@ -57,6 +56,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                         $('#django_log').replaceWith(log_html);
                         var js = eval(log_js);
                     }
+                } else {
+                    data = eval('(' + raw_data + ')');
+                }
+                
+                if (callback && typeof callback == 'function'){
+                    callback(data);
                 }
             }
         });    
