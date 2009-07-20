@@ -57,7 +57,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                         var js = eval(log_js);
                     }
                 } else {
-                    data = eval('(' + raw_data + ')');
+                    data = eval('(' + o + ')');
                 }
                 
                 if (callback && typeof callback == 'function'){
