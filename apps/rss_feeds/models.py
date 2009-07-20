@@ -6,10 +6,10 @@ from utils import feedparser, object_manager
 from utils.dateutil.parser import parse as dateutil_parse
 from utils.feed_functions import encode, prints, mtime
 import time, datetime, random
-from pprint import pprint
 from django.utils.http import urlquote
 from django.db.models import Q
 from utils.diff import HTMLDiff
+import logging
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
@@ -43,19 +43,19 @@ class Feed(models.Model):
         
     def update(self, force=False, feed=None):
         if (self.last_updated() / 60) < (self.min_to_decay + (random.random()*self.min_to_decay)) and not force:
-            print 'Feed unchanged: ' + self.feed_title
+            logging.debug('Feed unchanged: ' + self.feed_title)
             return
             
         feed_updated, feed = cache.get("feed:" + self.feed_address, (None, None,))
         if feed and not force:
-            print 'Feed Cached: ' + self.feed_title
+            logging.debug('Feed Cached: ' + self.feed_title)
         if not feed or force:
             last_modified = None
             now = datetime.datetime.now()
             if self.last_modified:
                 last_modified = datetime.datetime.timetuple(self.last_modified)
             if not feed:
-                print '[%d] Retrieving Feed: %s %s' % (self.id, self.feed_title, last_modified)
+                logging.debug('[%d] Retrieving Feed: %s %s' % (self.id, self.feed_title, last_modified))
                 feed = feedparser.parse(self.feed_address,
                                         etag=self.etag,
                                         modified=last_modified,
@@ -115,7 +115,7 @@ class Feed(models.Model):
             existing_story = self._exists_story(story)
             if not existing_story:
                 pub_date = datetime.datetime.timetuple(story.get('published'))
-                print '- New story: %s %s' % (pub_date, story.get('title'))
+                logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
 
                 s = Story(story_feed = self,
                        story_date = story.get('published'),
@@ -131,7 +131,7 @@ class Feed(models.Model):
             elif existing_story.story_title != story.get('title') \
               or existing_story.story_content != story_content:
                 # update story
-                print '- Updated story in feed (%s): %s / %s' % (self.feed_title, len(existing_story.story_content), len(story_content))
+                logging.debug('- Updated story in feed (%s): %s / %s' % (self.feed_title, len(existing_story.story_content), len(story_content)))
                 
                 original_content = None
                 if existing_story.story_original_content:
@@ -139,9 +139,9 @@ class Feed(models.Model):
                 else:
                     original_content = existing_story.story_content
                 diff = HTMLDiff(original_content, story_content)
-                print "\t\tDiff: %s %s %s" % diff.getStats()
-                # print "\t\tDiff content: %s" % diff.getDiff()
-                print '\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title'))
+                logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
+                # logging.debug("\t\tDiff content: %s" % diff.getDiff())
+                logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
 
                 s = Story(id = existing_story.id,
                        story_feed = self,
@@ -157,7 +157,7 @@ class Feed(models.Model):
                 except:
                     pass
             else:
-                print "Unchanged story: %s " % story.get('title')
+                logging.debug("Unchanged story: %s " % story.get('title'))
             
         return
         
@@ -165,7 +165,7 @@ class Feed(models.Model):
         pub_date = entry['published']
         start_date = pub_date - datetime.timedelta(hours=4)
         end_date = pub_date + datetime.timedelta(hours=4)
-        # print "Dates: %s %s %s" % (pub_date, start_date, end_date)
+        # logging.debug("Dates: %s %s %s" % (pub_date, start_date, end_date))
         existing_story = Story.objects.filter(
             (
                Q(story_title__iexact = entry['title']) 
