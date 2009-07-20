@@ -5,8 +5,7 @@ import logging
 
 
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+DEBUG = False
 ADMINS = (
     ('Robert Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
@@ -72,13 +71,14 @@ else:
     TEMPLATE_DIRS = (
         '/Users/conesus/Projects/newsblur/templates'
     )
-    DEBUG = True
+    DEBUG = False
     CACHE_BACKEND = 'dummy:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',
                     filemode='w')
 
+TEMPLATE_DEBUG = DEBUG
 TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1

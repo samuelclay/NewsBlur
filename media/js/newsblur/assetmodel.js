@@ -42,7 +42,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             success: function(o) {
                 var log_regex = /\s+<div id="django_log"([\s|\S])*$/m;
                 var log_index = o.indexOf('<div id="django_log"');
-                if (log_index) { // Debug is True
+                if (log_index != -1) { // Debug is True
                     var log = o.substring(log_index);
                     var raw_data = o.substring(0, log_index);
                     var data = eval('(' + raw_data + ')');
