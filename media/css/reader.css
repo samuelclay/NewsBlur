@@ -170,6 +170,9 @@ a img {
     display: block;
     padding: 4px 0px;
 }
+#story_titles .story.read a.story_title {
+    color: #575757;
+}
 
 #story_titles .story .story_title .NB-storytitles-author {
     padding-left: 12px;

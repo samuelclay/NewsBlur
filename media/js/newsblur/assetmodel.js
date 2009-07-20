@@ -42,19 +42,21 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             success: function(o) {
                 var log_regex = /\s+<div id="django_log"([\s|\S])*$/m;
                 var log_index = o.indexOf('<div id="django_log"');
-                var log = o.substring(log_index);
-                var raw_data = o.substring(0, log_index);
-                var data = eval('(' + raw_data + ')');
-                if(callback && typeof callback == 'function'){
-                    callback(data);
-                }
-                if (log) {
-                    var log_js_index_begin = log.indexOf('<script type="text/javascript">');
-                    var log_js_index_end = log.indexOf('</script>');
-                    var log_html = log.substring(0, log_js_index_begin);
-                    var log_js = log.substring(log_js_index_begin+31, log_js_index_end);
-                    $('#django_log').replaceWith(log_html);
-                    var js = eval(log_js);
+                if (log_index) { // Debug is True
+                    var log = o.substring(log_index);
+                    var raw_data = o.substring(0, log_index);
+                    var data = eval('(' + raw_data + ')');
+                    if(callback && typeof callback == 'function'){
+                        callback(data);
+                    }
+                    if (log) {
+                        var log_js_index_begin = log.indexOf('<script type="text/javascript">');
+                        var log_js_index_end = log.indexOf('</script>');
+                        var log_html = log.substring(0, log_js_index_begin);
+                        var log_js = log.substring(log_js_index_begin+31, log_js_index_end);
+                        $('#django_log').replaceWith(log_html);
+                        var js = eval(log_js);
+                    }
                 }
             }
         });    

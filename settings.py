@@ -30,7 +30,7 @@ if PRODUCTION:
     TEMPLATE_DIRS = (
         '/home/conesus/newsblur/templates'
     )
-    DEBUG = True
+    DEBUG = False
     CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.WARN,
                     format='%(asctime)s %(levelname)s %(message)s',
