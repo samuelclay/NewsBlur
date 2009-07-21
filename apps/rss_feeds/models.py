@@ -13,6 +13,7 @@ import logging
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
+
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
     feed_link = models.URLField(max_length=200, blank=True)

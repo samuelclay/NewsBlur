@@ -64,7 +64,7 @@
         	outerLayout = $('body').layout({ 
         	    closable: false,
     			center__paneSelector:	".center-pane",
-    			south__paneSelector:	"#task_bar",
+    			south__paneSelector:	"#taskbar",
     			south__size:            29,
     			south__resizable:       false,
     			south__spacing_open:    0,
@@ -531,6 +531,16 @@
                 var story_id = self.$story_pane.data('story_id');
                 self.mark_story_as_dislike(story_id, $t);
             });
+            
+            // ===========
+            // = Taskbar =
+            // ===========
+            
+            $.targetIs(e, { tagSelector: '.task_button' }, function($t, $p){
+                e.preventDefault();
+                self.open_taskbar_menu($t);
+            });
+            
         },
         
         handle_dblclicks: function(elem, e) {
@@ -589,6 +599,15 @@
             };
             
             $menu.hover(menuOver, menuOut);
+        },
+        
+        setup_taskbar_leftnav: function() {
+            var $task_buttons = $('#taskbar .taskbar_leftnav .task_button');
+            
+        },
+        
+        open_taskbar_menu: function($taskbar_button) {
+            $taskbar_button.toggleClass('active');
         }
     };
 

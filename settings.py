@@ -13,7 +13,8 @@ MANAGERS = ADMINS
 
 PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
 STAGING = __file__.find('/home/conesus/webapps') == 0
-DEVELOPMENT = __file__.find('/Users/conesus/Projects/newsblur') == 0
+DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
+DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 
 if PRODUCTION:
     DATABASE_ENGINE = 'mysql'
@@ -56,7 +57,8 @@ elif STAGING:
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/home/conesus/newsblur/logs/newsblur.log',
                     filemode='w')
-else:
+elif DEV_SERVER1:
+    DEVELOPMENT = True
     DATABASE_ENGINE = 'mysql'
     DATABASE_NAME = 'newsblur'
     DATABASE_USER = 'newsblur'
@@ -76,6 +78,28 @@ else:
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',
+                    filemode='w')
+elif DEV_SERVER2:
+    DEVELOPMENT = True
+    DATABASE_ENGINE = 'mysql'
+    DATABASE_NAME = 'newsblur'
+    DATABASE_USER = 'newsblur'
+    DATABASE_PASSWORD = ''    
+    DATABASE_HOST = 'localhost'
+    DATABASE_PORT = ''         
+
+    # Absolute path to the directory that holds media.
+    # Example: "/Users/media/media.lawrence.com/"
+    MEDIA_ROOT = '/Users/conesus/newsblur/media/'
+    MEDIA_URL = '/media/'
+    TEMPLATE_DIRS = (
+        '/Users/conesus/newsblur/templates'
+    )
+    DEBUG = True
+    CACHE_BACKEND = 'dummy:///'
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='/Users/conesus/newsblur/logs/newsblur.log',
                     filemode='w')
 
 TEMPLATE_DEBUG = DEBUG

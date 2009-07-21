@@ -369,10 +369,58 @@ a img {
 /* = Task Bar = */
 /* ============ */
 
-#task_bar {
+#taskbar {
     height: 29px;
     background: #e0e0e0 url(../img/reader/taskbar_background.png) repeat-x top left;
 }
+
+#taskbar ul {
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+}
+
+#taskbar .taskbar_leftnav {
+    float:left;
+    height:29px;
+    margin: 0;
+    padding: 0;
+    position:relative;    
+}
+
+#taskbar .taskbar_leftnav .task_button {
+    height: 29px;
+    margin: 0px;
+    width: 36px;
+    display: block;
+    position: relative;
+    border-right: 1px solid #828282;
+}
+
+#taskbar .taskbar_leftnav .task_button:hover {
+    background-color: #A0A7B1;
+}
+
+#taskbar .taskbar_leftnav .task_button.active .taskbar_menu {
+    display: block;
+}
+#taskbar .taskbar_leftnav .task_button .taskbar_menu {
+    display: none;
+    background-color:#D9E2F7;
+    bottom:29px;
+    left:0px;
+    position:absolute;
+    width:200px;
+    border-right: 1px solid #828282;
+    border-top: 1px solid #828282;
+}
+
+
+
+#taskbar .task_button.task_add {
+    background: transparent url(../img/icons/silk/add.png) no-repeat center center;
+}
+
 
 /* ==================== */
 /* = OPML Import Form = */
@@ -533,8 +581,12 @@ div.menu ul {
     width: 850px;
     right: 20px;
     z-index: 10000;
-    max-height: 600px;
+    max-height: 400px;
     overflow-y: scroll;
+}
+
+#django_log.collapsed {
+    width: 210px;
 }
 
 #django_log h1:hover {

@@ -22,9 +22,16 @@
     </div>
 </div>
 
-<div id="task_bar">
+<div id="taskbar">
+	<ul class="taskbar_leftnav">
+		<li class="task_button task_add">
+			<ul class="taskbar_menu">
+				<li><a href="{% url apps.opml_import.views.opml_import %}" class="open_opml_import_facebox ">Import OPML</a></li>
+			</ul>
+		</li>
+	</ul>
 
-    <div class="menu_button">
+    <div class="task_button menu_button">
         <img src="/media/img/reader/user.png" width="16" height="16" alt=""> {{ user_info.username }}
         <div class="menu">
         <h3>{{ user_info.username }}</h3> 
@@ -39,8 +46,5 @@
     </div>
 </div>
 
-<div id="opml_import">
-    <a href="{% url apps.opml_import.views.opml_import %}" class="open_opml_import_facebox">Import Feeds</a>
-</div>
 
 {% endblock %}

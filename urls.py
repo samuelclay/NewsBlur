@@ -22,5 +22,5 @@ urlpatterns = patterns('',
 if settings.DEVELOPMENT:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': '/Users/conesus/Projects/newsblur/media'}),
+            {'document_root': settings.MEDIA_ROOT}),
     )
