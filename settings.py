@@ -15,6 +15,7 @@ PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
 STAGING = __file__.find('/home/conesus/webapps') == 0
 DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
+DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
 if PRODUCTION:
     DATABASE_ENGINE = 'mysql'
@@ -58,7 +59,6 @@ elif STAGING:
                     filename='/home/conesus/newsblur/logs/newsblur.log',
                     filemode='w')
 elif DEV_SERVER1:
-    DEVELOPMENT = True
     DATABASE_ENGINE = 'mysql'
     DATABASE_NAME = 'newsblur'
     DATABASE_USER = 'newsblur'
@@ -80,7 +80,6 @@ elif DEV_SERVER1:
                     filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',
                     filemode='w')
 elif DEV_SERVER2:
-    DEVELOPMENT = True
     DATABASE_ENGINE = 'mysql'
     DATABASE_NAME = 'newsblur'
     DATABASE_USER = 'newsblur'
