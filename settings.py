@@ -147,7 +147,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'utils.django_command_extensions.django_extensions',
+    'utils.django_extensions',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',

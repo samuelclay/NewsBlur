@@ -1,3 +1,0 @@
-recursive-include django_extensions/conf *.tmpl
-recursive-include django_extensions/templates *.html
-recursive-include django_extensions/media *
