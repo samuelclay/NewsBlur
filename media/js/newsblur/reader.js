@@ -26,7 +26,7 @@
         });
         this.cornerize_buttons();
         this.handle_keystrokes();
-        this.setup_account_menu(this.$account_menu);
+        this.setup_taskbar_leftnav();
     };
 
     NEWSBLUR.reader.prototype = {
@@ -538,7 +538,7 @@
             
             $.targetIs(e, { tagSelector: '.task_button' }, function($t, $p){
                 e.preventDefault();
-                self.open_taskbar_menu($t);
+                self.open_taskbar_menu($t, e);
             });
             
         },
@@ -574,40 +574,50 @@
             }
         },
         
-        // ==============
-        // = Bottom Bar =
-        // ==============
+        // ===================
+        // = Bottom Task Bar =
+        // ===================
 
-        setup_account_menu: function($menu) {
-            var menuOver = function() {
-                var self = this;
-                clearTimeout(self.out_id);
-                self.over_id = setTimeout(function() {
-                    $(self).addClass('hover');
-                    $(self).siblings('.hover').removeClass('hover');
-                    self = null;
-                }, 20);
-            };
-
-            var menuOut = function() {
-                var self = this;
-                clearTimeout(self.over_id);
-                self.out_id = setTimeout(function() {
-                    $(self).removeClass('hover');
-                    self = null;
-                }, 400);
-            };
-            
-            $menu.hover(menuOver, menuOut);
-        },
-        
         setup_taskbar_leftnav: function() {
             var $task_buttons = $('#taskbar .taskbar_leftnav .task_button');
+            var $taskbar_menu = $('#taskbar .taskbar_leftnav .taskbar_menu li span').corners('2px');
             
+            $task_buttons.each(function() {
+                var $this = $(this);
+                
+                $this.hover(function() {
+                    if ($this.hasClass('active')) {
+                        $this.stopTime('task');
+                        $('.taskbar_menu', $this)
+                            .stop()
+                            .animate({ opacity: 1 }, 350);
+                    }
+                }, function() {
+                    if ($this.hasClass('active')) {
+                        $this.stopTime('task')
+                            .oneTime(250, 'task', function() {
+                            $('.taskbar_menu', $this).animate({ opacity: 0 }, 1500, 'easeInQuad', function() {
+                                $this.removeClass('active');
+                                $('.taskbar_menu', $this).css({ opacity: 1 });
+                            })
+                        });
+                    }
+                });
+            });
         },
         
-        open_taskbar_menu: function($taskbar_button) {
-            $taskbar_button.toggleClass('active');
+        open_taskbar_menu: function($taskbar_button, e) {
+            e.stopPropagation();
+            $('.taskbar_menu', $taskbar_button).css({ opacity: 1 });
+            if ($taskbar_button.hasClass('active')) {
+                $taskbar_button.removeClass('active');
+            } else {
+                $taskbar_button.addClass('active');
+                $(document).bind('click.taskbar_menu', function() {
+                    $taskbar_button.removeClass('active');
+                    $(document).unbind('click.taskbar_menu');
+                })
+            }
         }
     };
 

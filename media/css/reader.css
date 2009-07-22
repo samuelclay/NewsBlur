@@ -3,8 +3,14 @@
 /* ========== */
 
 body {
-	/*resets*/margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none;  list-style: none;
-	font-family: 'Lucida Grande',Helvetica, Arial;
+    /*resets*/margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    line-height: 1.3;
+    text-decoration: none;
+    list-style: none;
+    font-family: 'Lucida Grande',Helvetica, Arial;
 }
 
 a, a:active, a:hover, a:visited, button {
@@ -50,7 +56,7 @@ a img {
 
 #feed_list .folder .folder_title {
     padding: 3px 0px 4px 22px;
-    font-weight: bold;    
+    font-weight: bold;
     display: block;
     color: #404040;
     text-transform: uppercase;
@@ -271,7 +277,7 @@ a img {
     top: 200px;
     left: 0px;
     width: 100%;
-    overflow-y: scroll;    
+    overflow-y: scroll;
     font-size: 12px;
     line-height: 1.5em;
     height: 315px;
@@ -375,17 +381,17 @@ a img {
 }
 
 #taskbar ul {
-    list-style-image:none;
-    list-style-position:outside;
-    list-style-type:none;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
 }
 
 #taskbar .taskbar_leftnav {
-    float:left;
-    height:29px;
+    float: left;
+    height: 29px;
     margin: 0;
     padding: 0;
-    position:relative;    
+    position: relative;
 }
 
 #taskbar .taskbar_leftnav .task_button {
@@ -404,21 +410,45 @@ a img {
 #taskbar .taskbar_leftnav .task_button.active .taskbar_menu {
     display: block;
 }
+
 #taskbar .taskbar_leftnav .task_button .taskbar_menu {
     display: none;
-    background-color:#D9E2F7;
-    bottom:29px;
-    left:0px;
-    position:absolute;
-    width:200px;
+    background-color: #D9E2F7;
+    bottom: 29px;
+    left: -1px;
+    position: absolute;
+    width: 299px;
+    font-size: 13px;
+    padding: 0;
     border-right: 1px solid #828282;
+    border-left: 1px solid #828282;
     border-top: 1px solid #828282;
 }
 
+#taskbar .taskbar_leftnav .task_button .taskbar_menu li {
+    margin: 0;
+    padding: 4px;
+    cursor: pointer;
+}
+
+#taskbar .taskbar_leftnav .task_button .taskbar_menu li span {
+    padding: 4px 29px;
+    margin: 0;
+    display: block;
+    color: #203060;
+}
+
+#taskbar .taskbar_leftnav .task_button .taskbar_menu li:hover span {
+    background-color: #96B6E6;
+    color: #405090;
+}
 
 
 #taskbar .task_button.task_add {
     background: transparent url(../img/icons/silk/add.png) no-repeat center center;
+}
+#taskbar .task_button.task_profile {
+    background: transparent url(../img/icons/silk/user.png) no-repeat center center;
 }
 
 
@@ -427,7 +457,6 @@ a img {
 /* ==================== */
 
 form.opml_import_form {
-    
 }
 
 form.opml_import_form textarea {
@@ -448,127 +477,6 @@ form.opml_import_form input {
     clear: both;
     float: left;
     margin: 0px 4px;
-}
-
-/* ============== */
-/* = Bottom Bar = */
-/* ============== */
-
-/*************************/
-/* Recommended for menus */
-/*************************/
-
-button.menu {
-    cursor: pointer;
-}
-
-div.menu {
-    display: none;
-    z-index: 99;
-    position: absolute;
-}
-
-div.menu.active {
-    z-index: 100;
-}
-
-/***********************/
-/* Completely optional */
-/***********************/
-
-.menu_button {
-    line-height: 1.8;
-    text-shadow: 1px 1px #ddd;
-    color: #222;
-    background: #a8acae;
-    margin: 3px 2em 0 0.5em;
-    padding: 0 0.8em;
-    border: 0;
-    border-bottom: 1px solid #686c6e;
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
-    float: right;
-    position: relative;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-
-.menu_button img {
-    vertical-align: -3px;
-    margin-right: 0.2em;
-}
-
-.menu_button .menu {
-    display: none;
-    right: 0px;
-    bottom: 20px;
-    cursor: normal;
-}
-
-.menu_button.hover .menu {
-    display: block;
-}
-.menu_button.hover {
-    -webkit-border-top-left-radius: 0;
-    -webkit-border-top-right-radius: 0;
-    -moz-border-radius-topleft: 0;
-    -moz-border-radius-topright: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top-color: #cacece;
-}
-
-button.menu:hover,
-button.menu.active {
-    background-color: #cacece;
-    text-shadow: 1px 1px #fff;
-}
-
-div.menu {
-    font-size: 9px;
-    color: #444;
-    background: #cacece;
-    padding: 1em;
-    border: 1px solid #cacece;
-    border-top-width: 3px;
-    -moz-border-radius: 0.5em;
-    -moz-border-radius-topleft: 0;
-    -webkit-border-radius: 0.5em;
-    -webkit-border-top-left-radius: 0;
-    border-radius: 0.5em;
-    border-top-left-radius: 0;
-}
-
-div.menu.active {
-    background-color: #eaeeee;
-}
-
-div.menu h3 {
-    font-size: 11px;
-    font-weight: bold;
-    color: #444;
-    margin: 0;
-}
-
-div.menu h4 {
-    font-size: 10px;
-    font-weight: normal;
-    line-height: 1.5;
-    color: #999;
-    margin: 0 0 0.5em 0;
-    white-space: nowrap;
-}
-
-div.menu hr {
-    border: 0;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #fff;
-}
-
-div.menu ul {
-    padding-left: 1.5em;
 }
 
 /* ================== */
