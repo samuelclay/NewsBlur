@@ -428,7 +428,6 @@ a img {
 #taskbar .taskbar_leftnav .task_button .taskbar_menu li {
     margin: 0;
     padding: 4px;
-    cursor: pointer;
 }
 
 #taskbar .taskbar_leftnav .task_button .taskbar_menu li span {
@@ -436,6 +435,7 @@ a img {
     margin: 0;
     display: block;
     color: #203060;
+    cursor: pointer;
 }
 
 #taskbar .taskbar_leftnav .task_button .taskbar_menu li:hover span {
@@ -451,6 +451,19 @@ a img {
     background: transparent url(../img/icons/silk/user.png) no-repeat center center;
 }
 
+/* ================ */
+/* = Modal Dialog = */
+/* ================ */
+
+#simplemodal-overlay {
+    background-color: #101030;
+}
+
+#simplemodal-container {
+    width: 500px;
+    background-color: white;
+    padding: 8px;
+}
 
 /* ==================== */
 /* = OPML Import Form = */
