@@ -71,6 +71,7 @@ try:
     logging_output_enabled = settings.LOGGING_OUTPUT_ENABLED
 except AttributeError:
     logging_output_enabled = settings.DEBUG
+    logging.warn('DEBUG: %s' % logging_output_enabled)
 
 try:
     logging_show_metrics = settings.LOGGING_SHOW_METRICS

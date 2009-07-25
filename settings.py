@@ -12,10 +12,10 @@ ADMINS = (
 MANAGERS = ADMINS
 
 PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
-STAGING = __file__.find('/home/conesus/webapps') == 0
+STAGING = __file__.find('/home/conesus/stg-newsblur') == 0
 DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
-DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
+DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2 or STAGING
 
 if PRODUCTION:
     DATABASE_ENGINE = 'mysql'
@@ -32,7 +32,7 @@ if PRODUCTION:
         '/home/conesus/newsblur/templates'
     )
     DEBUG = False
-    CACHE_BACKEND = 'locmem:///'
+    CACHE_BACKEND = 'file:///var/tmp/django_cache'
     logging.basicConfig(level=logging.WARN,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/home/conesus/newsblur/logs/newsblur.log',
@@ -47,16 +47,16 @@ elif STAGING:
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_ROOT = '/home/conesus/webapps/newsblur/newsblur/media/'
-    MEDIA_URL = 'http://conesus.webfactional.com/media/media/'
+    MEDIA_ROOT = '/home/conesus/stg-newsblur/media/'
+    MEDIA_URL = '/media/'
     TEMPLATE_DIRS = (
-        '/home/conesus/webapps/newsblur/newsblur/templates'
+        '/home/conesus/stg-newsblur/templates'
     )
     DEBUG = True
     CACHE_BACKEND = 'file:///var/tmp/django_cache'
-    logging.basicConfig(level=logging.INFO,
+    logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='/home/conesus/newsblur/logs/newsblur.log',
+                    filename='/home/conesus/stg-newsblur/logs/newsblur.log',
                     filemode='w')
 elif DEV_SERVER1:
     DATABASE_ENGINE = 'mysql'
