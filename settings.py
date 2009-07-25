@@ -73,8 +73,8 @@ elif DEV_SERVER1:
     TEMPLATE_DIRS = (
         '/Users/conesus/Projects/newsblur/templates'
     )
-    DEBUG = False
-    CACHE_BACKEND = 'dummy:///'
+    DEBUG = True
+    CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',

@@ -252,7 +252,7 @@
                     }
                     $feed_list.append($folder);
                 }
-                $('#feed_list .unread_count').corners('8px');
+                $('.unread_count', $feed_list).corners('4px');
             };
             
             if ($('#feed_list').length) {

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
+from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story
 from utils import feedparser, object_manager
 

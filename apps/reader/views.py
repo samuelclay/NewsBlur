@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response, get_list_or_404, get_object_or_
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from apps.rss_feeds.models import Feed, Story
+from django.core.cache import cache
 from apps.reader.models import UserSubscription, ReadStories, UserSubscriptionFolders, StoryOpinions
 from utils.json import json_encode
 from utils.story_functions import format_story_link_date__short, format_story_link_date__long
@@ -11,6 +12,7 @@ from django.http import HttpResponse, HttpRequest
 from django.core import serializers 
 from django.utils.safestring import mark_safe
 from utils.feedcache.threading_model import fetch_feeds
+from django.views.decorators.cache import cache_page
 import logging
 import datetime
 import threading
