@@ -244,8 +244,7 @@ class LoggingMiddleware(object):
     def process_response(self, request, response):
 
         if logging_output_enabled and \
-                # request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS and \
-                not getattr(response, SUPPRESS_OUTPUT_ATTR, False):
+            not getattr(response, SUPPRESS_OUTPUT_ATTR, False):
 
             if intercept_redirects and \
                     response.status_code in _redirect_statuses and \
