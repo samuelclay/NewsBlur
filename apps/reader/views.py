@@ -71,16 +71,16 @@ def refresh_feeds(feeds, force=False):
 def load_feeds(request):
     user = get_user(request)
         
-    us =    UserSubscriptionFolders.objects.select_related('feed', 'usersubscription').filter(
+    us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
                 user=user
             )
-    logging.info('UserSubs: %s' % us)
+    # logging.info('UserSubs: %s' % us)
     feeds = []
     folders = []
     for sub in us:
-        logging.info("UserSub: %s" % sub)
+        # logging.info("UserSub: %s" % sub)
         try:
-            sub.feed.unread_count = sub.user_sub.count_unread()
+            sub.feed.unread_count = sub.user_sub.unread_count
         except:
             logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
             sub.delete()

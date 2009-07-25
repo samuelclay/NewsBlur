@@ -15,7 +15,7 @@ class UserSubscription(models.Model):
                            )
 
     def __unicode__(self):
-        return self.user.username + ': [' + self.feed.feed_title + '] '
+        return '[' + self.feed.feed_title + '] '
 
     def save(self, force_insert=False, force_update=False):
         self.unread_count_updated = datetime.datetime.now()
@@ -89,7 +89,7 @@ class ReadStories(models.Model):
     read_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
-        return (self.user.username + ': [' + self.feed.feed_title + '] '
+        return ('[' + self.feed.feed_title + '] '
                 + self.story.story_title)
         
     class Meta:
@@ -119,7 +119,7 @@ class UserSubscriptionFolders(models.Model):
     folder = models.CharField(max_length=255)
     
     def __unicode__(self):
-        return (self.user.username + ': [' + self.feed.feed_title + '] '
+        return ('[' + self.feed.feed_title + '] '
                 + self.folder)
         
     class Meta:
