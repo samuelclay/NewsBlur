@@ -427,7 +427,7 @@ a img {
 
 #taskbar .taskbar_leftnav .task_button .taskbar_menu li {
     margin: 0;
-    padding: 4px;
+    padding: 2px 4px;
 }
 
 #taskbar .taskbar_leftnav .task_button .taskbar_menu li span {
@@ -438,7 +438,7 @@ a img {
     cursor: pointer;
 }
 
-#taskbar .taskbar_leftnav .task_button .taskbar_menu li:hover span {
+#taskbar .taskbar_leftnav .task_button .taskbar_menu li span:hover {
     background-color: #96B6E6;
     color: #405090;
 }
@@ -490,6 +490,31 @@ form.opml_import_form input {
     clear: both;
     float: left;
     margin: 0px 4px;
+}
+
+#progress_container {
+    font-size: .9em;
+    width: 100%;
+    height: 1.25em;
+    position: relative;
+    margin: 3em 0;
+    display: none;
+}
+
+#progress_filename {
+    font-size: .9em;
+    width: 100%;
+}
+
+#progress_bar {
+    width: 100%;
+    border: 1px solid #999;
+}
+
+#progress_indicator {
+    background: #8a9;
+    width: 0;
+    height: 4px;
 }
 
 /* ================== */

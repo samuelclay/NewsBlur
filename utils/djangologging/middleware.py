@@ -24,7 +24,7 @@ from django.template import loader
 from django.utils.cache import add_never_cache_headers
 from django.utils.html import escape
 try:
-    from django.utils.encoding import smart_str
+    from django.utils.encoding import smart_str, smart_unicode
 except ImportError:
     # Older versions of Django don't have smart_str, but because they don't
     # require Unicode, we can simply fake it with an identify function.
@@ -294,7 +294,7 @@ class LoggingMiddleware(object):
                 context['query_percentage'] = context['query_time'] / context['elapsed_time'] * 100
 
         header = smart_str(loader.render_to_string('logging.css'))
-        footer = smart_str(loader.render_to_string('logging.html', context))
+        footer = smart_unicode(loader.render_to_string('logging.html', context))
 
         if close_head_re.search(response.content) and close_body_re.search(response.content):
             def safe_prepend(prependant):

@@ -287,6 +287,26 @@
 	};
 
 
+	$.fn.hideShadow = function()
+	{
+		return this.each(function()
+		{
+			var shadowId = $(this).shadowId();
+			$("div#" + shadowId).hide();
+		});
+	};
+
+
+	$.fn.showShadow = function()
+	{
+		return this.each(function()
+		{
+			var shadowId = $(this).shadowId();
+			$("div#" + shadowId).show();
+		});
+	};
+
+
 	$.fn.shadowId = function()
 	{
 		return $.data(this[0], "shadowId");

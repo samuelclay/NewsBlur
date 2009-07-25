@@ -57,6 +57,8 @@
         },
         
         apply_resizable_layout: function() {
+            var outerLayout, middleLayout;
+            
         	outerLayout = $('body').layout({ 
         	    closable: false,
     			center__paneSelector:	".center-pane",
@@ -67,8 +69,8 @@
     			west__paneSelector:		"#feed_list",
     			west__size:				300,
     			spacing_open:			4,
-    			onresize:		"middleLayout.resizeAll",
-    			resizerDragOpacity:     .6
+    			center__onresize:		"middleLayout.resizeAll",
+    			resizerDragOpacity:     0.6
     		}); 
 
     		middleLayout = $('.center-pane').layout({ 
@@ -76,7 +78,8 @@
     			north__paneSelector:	".middle-north",
     			north__size:			208,
     			spacing_open:			10,
-    			resizerDragOpacity:     .6
+    			center__onresize:		"middleLayout.resizeAll",
+    			resizerDragOpacity:     0.6
     		}); 
         },
         
@@ -136,11 +139,11 @@
             });
             $(document).bind('keydown', { combi: 'space', disableInInput: true }, function(e) {
                 e.preventDefault();
-                self.page_in_story(.4, 1);
+                self.page_in_story(0.4, 1);
             });
             $(document).bind('keydown', { combi: 'shift+space', disableInInput: true }, function(e) {
                 e.preventDefault();
-                self.page_in_story(.4, -1);
+                self.page_in_story(0.4, -1);
             });
         },
         
@@ -150,13 +153,15 @@
         
         show_next_story: function(direction) {
             var $current_story = $('.selected', this.$story_titles);
+            var $next_story;
+            
             if (!$current_story.length) {
                 $current_story = $('.story:first', this.$story_titles);
-                var $next_story = $current_story;
+                $next_story = $current_story;
             } else if (direction == 1) {
-                var $next_story = $current_story.next('.story');
+                $next_story = $current_story.next('.story');
             } else if (direction == -1) {
-                var $next_story = $current_story.prev('.story');
+                $next_story = $current_story.prev('.story');
             }
             
             var story_id = $('.story_id', $next_story).text();
@@ -170,13 +175,16 @@
         
         show_next_feed: function(direction) {
             var $current_feed = $('.selected', this.$feed_list);
+            var $next_feed,
+                scroll;
+            
             if (!$current_feed.length) {
                 $current_feed = $('.feed:first', this.$feed_list);
-                var $next_feed = $current_feed;
+                $next_feed = $current_feed;
             } else if (direction == 1) {
-                var $next_feed = $current_feed.next('.feed');
+                $next_feed = $current_feed.next('.feed');
             } else if (direction == -1) {
-                var $next_feed = $current_feed.prev('.feed');
+                $next_feed = $current_feed.prev('.feed');
             }
             
             if (!$next_feed.length) {
@@ -192,9 +200,9 @@
                 var position = this.$feed_list.scrollTop() + $next_feed.offset().top - $next_feed.outerHeight();
                 var showing = this.$feed_list.height();
                 if (position > showing) {
-                    var scroll = position;
+                    scroll = position;
                 } else {
-                    var scroll = 0;
+                    scroll = 0;
                 }
                 this.$feed_list.scrollTop(scroll);
                 this.open_feed(feed_id, $next_feed);
@@ -247,7 +255,9 @@
                 $('#feed_list .unread_count').corners('8px');
             };
             
-            this.model.load_feeds(callback);
+            if ($('#feed_list').length) {
+                this.model.load_feeds(callback);
+            }
         },
         
         // =====================
@@ -462,9 +472,20 @@
         // ========
         // = OPML =
         // ========
-
+        
         open_opml_import_modal_form: function() {
-            var $opml = $.make('div', 'Lala');
+            var self = this;
+            
+            var $opml = $.make('div', { className: 'NB-opml-upload' }, [
+                $.make('form', { enctype: 'multipart/form-data', method: 'post' }, [
+                    $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
+                    $.make('input', { type: 'submit', value: 'Upload OPML File' })
+                ]).bind('submit', function(e) {
+                    e.preventDefault();
+                    self.handle_opml_upload();
+                    return false;
+                })
+            ]);
             
             $opml.modal({
                 'overlayClose': true,
@@ -472,6 +493,32 @@
                     $('#simplemodal-container').corners('8px');
                 }
             });
+        },
+        
+        handle_opml_upload: function() {
+            NEWSBLUR.log(['Uploading']);
+            $.ajaxFileUpload({
+				url: '/opml/opml_upload', 
+				secureuri: false,
+				fileElementId: 'opml_file_input',
+				dataType: 'json',
+				success: function (data, status)
+				{
+					if (typeof data.code != 'undefined') {
+						if (data.code <= 0) {
+							NEWSBLUR.log(['Success - Error', data.code]);
+						} else {
+							NEWSBLUR.log(['Success', data]);
+						}
+					}
+				},
+				error: function (data, status, e)
+				{
+					NEWSBLUR.log(['Error', data, status, e]);
+				}
+			});
+			
+			return false;
         },
         
         handle_opml_form: function() {
@@ -593,24 +640,30 @@
             
             $task_buttons.each(function() {
                 var $this = $(this);
+                var $menu = $('.taskbar_menu', $this);
                 
                 $this.hover(function() {
                     if ($this.hasClass('active')) {
                         $this.stopTime('task');
-                        $('.taskbar_menu', $this).dropShadow();
-                        $('.taskbar_menu', $this)
+                        if ($menu.shadowId()) {
+                            $menu.showShadow();
+                        } else {
+                            $menu.dropShadow();
+                        }
+                        $menu
                             .stop()
                             .css({ opacity: 1 });
                     }
                 }, function() {
                     if ($this.hasClass('active')) {
-                        $('.taskbar_menu', $this).removeShadow();
+                        $menu.hideShadow();
                         
                         $this.stopTime('task')
                         .oneTime(750, 'task', function() {
                             $('.taskbar_menu', $this).animate({ opacity: 0 }, 1500, 'easeInQuad', function() {
                                 self.close_taskbar_menu($this);
-                            })
+                                $menu.removeShadow();
+                            });
                         });
                     }
                 });
@@ -637,7 +690,7 @@
                 
                 $(document).bind('click.taskbar_menu', function() {
                     self.close_taskbar_menu($taskbar_button);
-                })
+                });
                 $('.taskbar_menu', $taskbar_button).bind('click.taskbar_menu', function(e) {
                     // e.stopPropagation();
                 });

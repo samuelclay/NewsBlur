@@ -12,17 +12,27 @@ from pprint import pprint
 import datetime
 
 
-def opml_import(request):
-    context = None
-    return render_to_response('opml_import/import.xhtml', context,
-                              context_instance=RequestContext(request))
+def opml_upload(request):
+    xml_opml = None
+    
+    if request.method == 'POST':
+        if 'file' in request.FILES:
+            file = request.FILES['file']
+            xml_opml = file.read()
+            
+    data = opml_import(xml_opml, request.user).encode('utf-8')
+    return HttpResponse(data, mimetype='text/plain')
 
-def process(request):
+def opml_import(xml_opml, user):
     context = None
-    outline = opml.from_string(request.POST['opml'])
+    outline = opml.from_string(xml_opml)
     feeds = []
+    message = "OK"
+    code = 1
     for folder in outline:
+        print folder.text
         for feed in folder:
+            print '.'
             feed_data = dict(feed_address=feed.xmlUrl, feed_link=feed.htmlUrl, feed_title=feed.title)
             feeds.append(feed_data)
             new_feed = Feed(**feed_data)
@@ -30,15 +40,16 @@ def process(request):
                 new_feed.save()
             except:
                 new_feed = Feed.objects.get(**feed_data)
-            us = UserSubscription(feed=new_feed, user=request.user)
+            us = UserSubscription(feed=new_feed, user=user)
             try:
                 us.save()
             except:
-                us = UserSubscription.objects.get(feed=new_feed, user=request.user)
-            user_sub_folder = UserSubscriptionFolders(user=request.user, feed=new_feed, user_sub=us, folder=folder.text)
+                us = UserSubscription.objects.get(feed=new_feed, user=user)
+            user_sub_folder = UserSubscriptionFolders(user=user, feed=new_feed, user_sub=us, folder=folder.text)
             try:
                 user_sub_folder.save()
             except:
-                pass
-    data = json_encode(feeds)
-    return HttpResponse(data, mimetype='application/json')
+                print 'Can\'t save user_sub_folder'
+    data = json_encode(dict(message=message, code=code, payload=dict(feeds=feeds, feed_count=len(feeds))))
+    
+    return data
