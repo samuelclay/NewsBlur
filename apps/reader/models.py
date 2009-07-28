@@ -67,7 +67,7 @@ class UserSubscription(models.Model):
                             story_date__lte=self.last_read_date,
                             story_feed=self.feed
                         ).count()
-        read_count =    ReadStories.objects.filter(
+        read_count =    UserStory.objects.filter(
                             feed=self.feed, 
                             read_date__gte=self.mark_read_date,
                             read_date__lte=self.last_read_date
@@ -83,35 +83,21 @@ class UserSubscription(models.Model):
         unique_together = ("user", "feed")
         
         
-class ReadStories(models.Model):
+class UserStory(models.Model):
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     story = models.ForeignKey(Story)
     read_date = models.DateTimeField(auto_now=True)
+    opinion = models.IntegerField(default=0)
     
     def __unicode__(self):
         return ('[' + self.feed.feed_title + '] '
                 + self.story.story_title)
         
     class Meta:
-        verbose_name_plural = "read stories"
-        verbose_name = "read story"
-        unique_together = ("user", "story")
-        
-class StoryOpinions(models.Model):
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
-    story = models.ForeignKey(Story)
-    opinion = models.IntegerField(default=0)
-    
-    def __unicode__(self):
-        return ("%s [%s]: %s - %s" %
-                    (self.user.username, self.feed.feed_title, self.story.story_title, self.opinion))
-        
-    class Meta:
-        verbose_name_plural = "opinions"
-        verbose_name = "opinion"
-        unique_together = ("user", "story")
+        verbose_name_plural = "user stories"
+        verbose_name = "user story"
+        unique_together = ("user", "feed", "story")
         
 class UserSubscriptionFolders(models.Model):
     user = models.ForeignKey(User)

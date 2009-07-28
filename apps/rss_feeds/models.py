@@ -7,6 +7,9 @@ from utils.dateutil.parser import parse as dateutil_parse
 from utils.feed_functions import encode, prints, mtime
 import time, datetime, random
 from django.utils.http import urlquote
+from django.utils.safestring import mark_safe
+from utils.story_functions import format_story_link_date__short
+from utils.story_functions import format_story_link_date__long
 from django.db.models import Q
 from utils.diff import HTMLDiff
 import logging
@@ -43,7 +46,9 @@ class Feed(models.Model):
         print locals()
         
     def update(self, force=False, feed=None):
-        if (self.last_updated() / 60) < (self.min_to_decay + (random.random()*self.min_to_decay)) and not force:
+        last_updated = self.last_updated() / 60
+        min_to_decay = self.min_to_decay + (random.random()*self.min_to_decay)
+        if last_updated < min_to_decay and not force:
             logging.debug('Feed unchanged: ' + self.feed_title)
             return
             
@@ -56,15 +61,13 @@ class Feed(models.Model):
             if self.last_modified:
                 last_modified = datetime.datetime.timetuple(self.last_modified)
             if not feed:
-                logging.debug('[%d] Retrieving Feed: %s %s' % (self.id, self.feed_title, last_modified))
+                logging.debug('[%d] Retrieving Feed: %s %s'
+                              % (self.id, self.feed_title, last_modified))
                 feed = feedparser.parse(self.feed_address,
                                         etag=self.etag,
                                         modified=last_modified,
                                         agent=USER_AGENT)
-                cache.set("feed:" + self.feed_address, (now, feed),
-                          self.min_to_decay * 60 * 5)
-                                
-        self.last_update = datetime.datetime.now()
+                cache.set("feed:" + self.feed_address, (now, feed), min_to_decay)
         
         # check for movement or disappearance
         if hasattr(feed, 'status'):
@@ -77,16 +80,13 @@ class Feed(models.Model):
 
         # Fill in optional fields
         if not self.feed_title:
-            self.feed_title = feed.feed.get('title', 
-                                            feed.feed.get('link', 'No Title'))
+            self.feed_title = feed.feed.get('title', feed.feed.get('link', 'No Title'))
         if not self.feed_link:
             self.feed_link = feed.feed.get('link', 'null:')
-            
         self.etag = feed.get('etag', '')
-        if not self.etag:
-            self.etag = ''
-
-        self.last_modified = mtime(feed.get('modified', datetime.datetime.timetuple(datetime.datetime.now())))
+        self.last_update = datetime.datetime.now()
+        self.last_modified = mtime(feed.get('modified',
+                                        datetime.datetime.timetuple(datetime.datetime.now())))
                                  
         self.save()
         
@@ -162,6 +162,22 @@ class Feed(models.Model):
             
         return
         
+    def get_stories(self, offset=0, limit=25):
+        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit))
+    
+        if stories is None:
+            stories = Story.objects.filter(story_feed=self).values()[offset:offset+limit]
+            for story in stories:
+                story['short_parsed_date'] = format_story_link_date__short(story['story_date'])
+                story['long_parsed_date'] = format_story_link_date__long(story['story_date'])
+                story['story_feed_title'] = self.feed_title
+                story['story_feed_link'] = mark_safe(self.feed_link)
+                story['story_permalink'] = mark_safe(story['story_permalink'])
+            cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
+            print 'Set feed_stories:%s-%s-%s' % (self.id, offset, limit)
+        
+        return stories
+    
     def _exists_story(self, entry):
         pub_date = entry['published']
         start_date = pub_date - datetime.timedelta(hours=4)

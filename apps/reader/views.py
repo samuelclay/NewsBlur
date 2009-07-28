@@ -3,9 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from apps.rss_feeds.models import Feed, Story
 from django.core.cache import cache
-from apps.reader.models import UserSubscription, ReadStories, UserSubscriptionFolders, StoryOpinions
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
 from utils.json import json_encode
-from utils.story_functions import format_story_link_date__short, format_story_link_date__long
 from utils.user_functions import get_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpRequest
@@ -17,6 +16,7 @@ import logging
 import datetime
 import threading
 
+SINGLE_DAY = 60*60*24
 def index(request):
     # feeds = Feed.objects.filter(usersubscription__user=request.user)
     # for f in feeds:
@@ -68,42 +68,49 @@ def refresh_feed(request):
 def refresh_feeds(feeds, force=False):
     for f in feeds:
         f.update(force)
+        usersubs = UserSubscription.objects.filter(
+            feed=f.id
+        )
+        for us in usersubs:
+            us.count_unread()
     return
 
 def load_feeds(request):
     user = get_user(request)
-        
-    us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
-                user=user
-            )
-    # logging.info('UserSubs: %s' % us)
-    feeds = []
-    folders = []
-    for sub in us:
-        # logging.info("UserSub: %s" % sub)
-        try:
-            sub.feed.unread_count = sub.user_sub.unread_count
-        except:
-            logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
-            sub.delete()
-        else:
-            if sub.folder not in folders:
-                folders.append(sub.folder)
-                feeds.append({'folder': sub.folder, 'feeds': []})
-            for folder in feeds:
-                if folder['folder'] == sub.folder:
-                    folder['feeds'].append(sub.feed)
 
-    # Alphabetize folders, then feeds inside folders
-    feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
-    for feed in feeds:
-        feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
-        for f in feed['feeds']:
-            f.feed_address = mark_safe(f.feed_address)
+    feeds = cache.get('usersub:%s' % user)
+    if feeds is None:
+        us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
+                    user=user
+                )
+        # logging.info('UserSubs: %s' % us)
+        feeds = []
+        folders = []
+        for sub in us:
+            # logging.info("UserSub: %s" % sub)
+            try:
+                sub.feed.unread_count = sub.user_sub.unread_count
+            except:
+                logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
+                sub.delete()
+            else:
+                if sub.folder not in folders:
+                    folders.append(sub.folder)
+                    feeds.append({'folder': sub.folder, 'feeds': []})
+                for folder in feeds:
+                    if folder['folder'] == sub.folder:
+                        folder['feeds'].append(sub.feed)
 
-    context = feeds
-    
-    data = json_encode(context)
+        # Alphabetize folders, then feeds inside folders
+        feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
+        for feed in feeds:
+            feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
+            for f in feed['feeds']:
+                f.feed_address = mark_safe(f.feed_address)
+
+        cache.set('usersub:%s' % user, feeds, SINGLE_DAY)
+
+    data = json_encode(feeds)
     return HttpResponse(data, mimetype='text/html')
 
 def load_single_feed(request):
@@ -115,49 +122,38 @@ def load_single_feed(request):
     if page:
         offset = limit * page
     feed_id = request.REQUEST['feed_id']
-    stories=Story.objects.filter(story_feed=feed_id).values('story_feed', 'story_date', 'story_permalink', 'story_title', 'story_content', 'story_author', 'id')[offset:offset+limit]
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force', False)
     
+    stories = feed.get_stories(offset, limit)
         
     if force_update:
         fetch_feeds(force_update, [feed])
     
-    us = UserSubscription.objects.filter(user=user)
-    for sub in us:
-        if sub.feed_id == feed_id:
-
-            logging.debug("Feed: " + feed.feed_title)
-            user_readstories = ReadStories.objects.filter(
-                user=user, 
-                feed=feed_id
-            )
-            story_opinions = StoryOpinions.objects.filter(
-                user=user,
-                feed=feed_id
-            )
-            for story in stories:
-                story['short_parsed_date'] = format_story_link_date__short(story.story_date)
-                story['long_parsed_date'] = format_story_link_date__long(story.story_date)
-                story['story_feed_title'] = feed.feed_title
-                story['story_feed_link'] = mark_safe(feed.feed_link)
-                story['story_permalink'] = mark_safe(story.story_permalink)
-                if story in [o.story for o in story_opinions]:
-                    for o in story_opinions:
-                        if o.story == story:
-                            story['opinion'] = o.opinion
-                            break
-                if story.story_date < sub.mark_read_date:
-                    story['read_status'] = 1
-                elif story.story_date > sub.last_read_date:
-                    story['read_status'] = 0
-                else:
-                    if story.id in [u_rs.story_id for u_rs in user_readstories]:
-                        logging.debug("READ: ")
-                        story['read_status'] = 1
-                    else: 
-                        story['read_status'] = 0
-                logging.debug("Story: %s" % story)
+    usersub = UserSubscription.objects.get(user=user, feed=feed.id)
+            
+    # print "Feed: %s %s" % (feed, usersub)
+    logging.debug("Feed: " + feed.feed_title)
+    userstory = UserStory.objects.filter(
+        user=user, 
+        feed=feed.id
+    ).values()
+    for story in stories:
+        for o in userstory:
+            if o['story_id'] == story:
+                story['opinion'] = o['opinion']
+                break
+        if story['story_date'] < usersub.mark_read_date:
+            story['read_status'] = 1
+        elif story['story_date'] > usersub.last_read_date:
+            story['read_status'] = 0
+        else:
+            if story['id'] in [u_rs['story_id'] for u_rs in userstory]:
+                logging.debug("READ: ")
+                story['read_status'] = 1
+            else: 
+                story['read_status'] = 0
+        # logging.debug("Story: %s" % story)
     
     context = stories
     data = json_encode(context)
@@ -169,7 +165,7 @@ def mark_story_as_read(request):
     story_id = request.REQUEST['story_id']
     story = Story.objects.select_related("story_feed").get(id=story_id)
     
-    read_story = ReadStories.objects.filter(story=story_id, user=request.user, feed=story.story_feed).count()
+    read_story = UserStory.objects.filter(story=story_id, user=request.user, feed=story.story_feed).count()
     
     logging.debug('Marking as read: %s' % read_story)
     if read_story:
@@ -181,7 +177,7 @@ def mark_story_as_read(request):
         )
         us.mark_read()
         logging.debug("Marked Read: " + str(story_id) + ' ' + str(story.id))
-        m = ReadStories(story=story, user=request.user, feed=story.story_feed)
+        m = UserStory(story=story, user=request.user, feed=story.story_feed)
         data = json_encode(dict(code=0))
         try:
             m.save()
@@ -197,7 +193,7 @@ def mark_feed_as_read(request):
     us = UserSubscription.objects.get(feed=feed, user=request.user)
     us.mark_feed_read()
     
-    ReadStories.objects.filter(user=request.user, feed=feed_id).delete()
+    UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     data = json_encode(dict(code=0))
     try:
         m.save()
@@ -218,7 +214,9 @@ def mark_story_with_opinion(request, opinion):
     story_id = request.REQUEST['story_id']
     story = Story.objects.select_related("story_feed").get(id=story_id)
     
-    previous_opinion = StoryOpinions.objects.get(story=story, user=request.user, feed=story.story_feed)
+    previous_opinion = StoryOpinions.objects.get(story=story, 
+                                                 user=request.user, 
+                                                 feed=story.story_feed)
     if previous_opinion and previous_opinion.opinion != opinion:
         previous_opinion.opinion = opinion
         data = json_encode(dict(code=0))

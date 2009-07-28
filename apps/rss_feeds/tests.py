@@ -13,5 +13,5 @@ class FeedTest(unittest.TestCase):
         response = self.client.get('/reader/refresh_feed', { "feed_id": 19, "force": True })
         response = self.client.get('/reader/refresh_feed', { "feed_id": 19, "force": True })
         response = self.client.get('/reader/load_single_feed', { "feed_id": 19 })
-        
+        print response.content
         print json.loads(response.content)[0]

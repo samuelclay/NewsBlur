@@ -301,8 +301,8 @@ class LoggingMiddleware(object):
                 def _prepend(match):
                     return '%s%s' % (prependant, match.group(0)) 
                 return _prepend
-            response.content = close_head_re.sub(safe_prepend(header), response.content)
-            response.content = close_body_re.sub(safe_prepend(footer), response.content)
+            response.content = close_head_re.sub(safe_prepend(smart_str(header)), smart_str(response.content))
+            response.content = close_body_re.sub(safe_prepend(smart_str(footer)), smart_str(response.content))
         else:
             # Despite a Content-Type of text/html, the content doesn't seem to
             # be sensible HTML, so just append the log to the end of the

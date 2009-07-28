@@ -15,7 +15,7 @@ PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
 STAGING = __file__.find('/home/conesus/stg-newsblur') == 0
 DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
-DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2 or STAGING
+DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
 if PRODUCTION:
     DATABASE_ENGINE = 'mysql'
@@ -74,7 +74,7 @@ elif DEV_SERVER1:
         '/Users/conesus/Projects/newsblur/templates'
     )
     DEBUG = True
-    CACHE_BACKEND = 'locmem:///'
+    CACHE_BACKEND = 'dummy:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename='/Users/conesus/Projects/newsblur/logs/newsblur.log',

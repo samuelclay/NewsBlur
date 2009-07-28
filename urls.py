@@ -14,12 +14,7 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root)
 )
 
-# if settings.DEBUG and settings.PRODUCTION:
-#     urlpatterns += patterns('',
-#         (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-#             {'document_root': '/home/conesus/newsblur/media'}),
-#     )
-if settings.DEBUG:
+if settings.DEVELOPMENT:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),

@@ -1,8 +1,9 @@
 from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from apps.rss_feeds.models import Feed, Story
-from apps.reader.models import UserSubscription, ReadStories, UserSubscriptionFolders
+from django.core.cache import cache
+from apps.rss_feeds.models import Feed
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils.json import json_encode
 import utils.opml as opml
 from django.contrib.auth.models import User
@@ -51,5 +52,6 @@ def opml_import(xml_opml, user):
             except:
                 print 'Can\'t save user_sub_folder'
     data = json_encode(dict(message=message, code=code, payload=dict(feeds=feeds, feed_count=len(feeds))))
-    
+    cache.delete('usersub:%s' % user)
+
     return data
