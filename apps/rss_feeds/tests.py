@@ -1,15 +1,15 @@
-import unittest
 from django.utils import simplejson as json
 from django.test.client import Client
+from django.test import TestCase
 
-class FeedTest(unittest.TestCase):
-    fixtures = ['feeds.json']
+class FeedTest(TestCase):
+    fixtures = ['rss_feeds.json']
     
     def setUp(self):
         self.client = Client()
 
     def test_load_feeds(self):
-        self.client.login(userame='conesus', password='test')
+        self.client.login(userame='test', password='test')
         response = self.client.get('/reader/refresh_feed', { "feed_id": 19, "force": True })
         response = self.client.get('/reader/refresh_feed', { "feed_id": 19, "force": True })
         response = self.client.get('/reader/load_single_feed', { "feed_id": 19 })

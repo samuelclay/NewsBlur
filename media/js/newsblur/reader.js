@@ -228,7 +228,7 @@
             var self = this;
             
             var callback = function() {
-                var $feed_list = self.$feed_list;
+                var $feed_list = self.$feed_list.empty();
                 var folders = self.model.folders;
                 NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
                 for (fo in folders) {
@@ -496,6 +496,8 @@
         },
         
         handle_opml_upload: function() {
+            var self = this;
+            
             NEWSBLUR.log(['Uploading']);
             $.ajaxFileUpload({
 				url: '/opml/opml_upload', 
@@ -509,6 +511,7 @@
 							NEWSBLUR.log(['Success - Error', data.code]);
 						} else {
 							NEWSBLUR.log(['Success', data]);
+							self.load_feeds();
 						}
 					}
 				},

@@ -53,7 +53,7 @@
         "pk": 1, 
         "model": "auth.user", 
         "fields": {
-            "username": "conesus", 
+            "username": "test", 
             "first_name": "", 
             "last_name": "", 
             "is_active": 1, 

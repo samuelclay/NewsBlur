@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpRequest
 from django.core import serializers 
 from pprint import pprint
+from django.db import IntegrityError
 import datetime
 
 
@@ -33,23 +34,23 @@ def opml_import(xml_opml, user):
     for folder in outline:
         print folder.text
         for feed in folder:
-            print '.'
+            print '\t%s' % (feed.title,)
             feed_data = dict(feed_address=feed.xmlUrl, feed_link=feed.htmlUrl, feed_title=feed.title)
             feeds.append(feed_data)
             new_feed = Feed(**feed_data)
             try:
                 new_feed.save()
-            except:
+            except IntegrityError:
                 new_feed = Feed.objects.get(**feed_data)
             us = UserSubscription(feed=new_feed, user=user)
             try:
                 us.save()
-            except:
+            except IntegrityError:
                 us = UserSubscription.objects.get(feed=new_feed, user=user)
             user_sub_folder = UserSubscriptionFolders(user=user, feed=new_feed, user_sub=us, folder=folder.text)
             try:
                 user_sub_folder.save()
-            except:
+            except IntegrityError:
                 print 'Can\'t save user_sub_folder'
     data = json_encode(dict(message=message, code=code, payload=dict(feeds=feeds, feed_count=len(feeds))))
     cache.delete('usersub:%s' % user)
