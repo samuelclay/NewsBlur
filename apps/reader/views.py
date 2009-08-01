@@ -76,6 +76,7 @@ def refresh_feeds(feeds, force=False):
         )
         for us in usersubs:
             us.count_unread()
+            cache.delete('usersub:%s' % us.user_id)
     return
 
 def load_feeds(request):
