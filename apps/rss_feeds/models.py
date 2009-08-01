@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from utils import feedparser, object_manager
 from utils.dateutil.parser import parse as dateutil_parse
-from utils.feed_functions import encode, prints, mtime
+from utils.feed_functions import encode, prints, mtime, levenshtein_distance
 import time, datetime, random
 from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
@@ -61,8 +61,8 @@ class Feed(models.Model):
             if self.last_modified:
                 last_modified = datetime.datetime.timetuple(self.last_modified)
             if not feed:
-                logging.debug('[%d] Retrieving Feed: %s %s'
-                              % (self.id, self.feed_title, last_modified))
+                logging.debug('[%d] Retrieving Feed: %s'
+                              % (self.id, self.feed_title))
                 feed = feedparser.parse(self.feed_address,
                                         etag=self.etag,
                                         modified=last_modified,
@@ -80,87 +80,93 @@ class Feed(models.Model):
 
         # Fill in optional fields
         if not self.feed_title:
-            self.feed_title = feed.feed.get('title', feed.feed.get('link', 'No Title'))
+            self.feed_title = feed.feed.get('title', feed.feed.get('link'))
         if not self.feed_link:
-            self.feed_link = feed.feed.get('link', 'null:')
+            self.feed_link = feed.feed.get('link')
         self.etag = feed.get('etag', '')
         self.last_update = datetime.datetime.now()
         self.last_modified = mtime(feed.get('modified',
                                         datetime.datetime.timetuple(datetime.datetime.now())))
-                                 
         self.save()
         
-        for story in feed['entries']:
-            self.save_story(story)
+        num_entries = len(feed['entries'])
+        # Compare new stories to existing stories, adding and updating
+        existing_stories = Story.objects.filter(
+            story_feed=self
+        ).order_by('-story_date').values()[:num_entries]
+        
+        self.add_update_stories(feed['entries'], existing_stories)
 
         self.trim_feed();
 
         return
 
+    def add_update_stories(self, stories, existing_stories):
+        for story in stories:
+            story = self._pre_process_story(story)
+
+            if story.get('title'):
+                story_contents = story.get('content')
+                if story_contents is not None:
+                    story_content = story_contents[0]['value']
+                else:
+                    story_content = story.get('summary')
+                existing_story, is_different = self._exists_story(story, story_content, existing_stories)
+                if existing_story is None:
+                    pub_date = datetime.datetime.timetuple(story.get('published'))
+                    logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
+                
+                    s = Story(story_feed = self,
+                           story_date = story.get('published'),
+                           story_title = story.get('title'),
+                           story_content = story_content,
+                           story_author = story.get('author'),
+                           story_permalink = story.get('link')
+                    )
+                    try:
+                        s.save(force_insert=True)
+                    except:
+                        pass
+                elif existing_story and is_different:
+                    # update story
+                    logging.debug('- Updated story in feed (%s - %s/%s): %s / %s' % (self.feed_title, len(existing_story['story_content']), len(story.get('title')), len(existing_story['story_content']), len(story_content)))
+                
+                    original_content = None
+                    if existing_story['story_original_content']:
+                        original_content = existing_story['story_original_content']
+                    else:
+                        original_content = existing_story['story_content']
+                    diff = HTMLDiff(original_content, story_content)
+                    # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
+                    # logging.debug("\t\tDiff content: %s" % diff.getDiff())
+                    if existing_story['story_title'] != story.get('title'):
+                        logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story['story_title'], story.get('title')))
+
+                    s = Story(id = existing_story['id'],
+                           story_feed = self,
+                           story_date = story.get('published'),
+                           story_title = story.get('title'),
+                           story_content = diff.getDiff(),
+                           story_original_content = original_content,
+                           story_author = story.get('author'),
+                           story_permalink = story.get('link')
+                    )
+                    try:
+                        s.save(force_update=True)
+                    except:
+                        pass
+                # else:
+                    # logging.debug("Unchanged story: %s " % story.get('title'))
+            
+        return
+        
+            
     def trim_feed(self):
         date_diff = datetime.datetime.now() - datetime.timedelta(self.days_to_trim)
         stories = Story.objects.filter(story_feed=self, story_date__lte=date_diff)
         for story in stories:
             story.story_past_trim_date = True
             story.save()
-        
-    def save_story(self, story):
-        story = self._pre_process_story(story)
-
-        if story.get('title'):
-            story_contents = story.get('content')
-            if story_contents is not None:
-                story_content = story_contents[0]['value']
-            else:
-                story_content = story.get('summary')
-            existing_story = self._exists_story(story)
-            if not existing_story:
-                pub_date = datetime.datetime.timetuple(story.get('published'))
-                logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
-
-                s = Story(story_feed = self,
-                       story_date = story.get('published'),
-                       story_title = story.get('title'),
-                       story_content = story_content,
-                       story_author = story.get('author'),
-                       story_permalink = story.get('link')
-                )
-                try:
-                    s.save(force_insert=True)
-                except:
-                    pass
-            elif existing_story.story_title != story.get('title') \
-              or existing_story.story_content != story_content:
-                # update story
-                logging.debug('- Updated story in feed (%s): %s / %s' % (self.feed_title, len(existing_story.story_content), len(story_content)))
-                
-                original_content = None
-                if existing_story.story_original_content:
-                    original_content = existing_story.story_original_content
-                else:
-                    original_content = existing_story.story_content
-                diff = HTMLDiff(original_content, story_content)
-                logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
-                # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-
-                s = Story(id = existing_story.id,
-                       story_feed = self,
-                       story_date = story.get('published'),
-                       story_title = story.get('title'),
-                       story_content = diff.getDiff(),
-                       story_original_content = original_content,
-                       story_author = story.get('author'),
-                       story_permalink = story.get('link')
-                )
-                try:
-                    s.save(force_update=True)
-                except:
-                    pass
-            else:
-                logging.debug("Unchanged story: %s " % story.get('title'))
-            
-        return
         
     def get_stories(self, offset=0, limit=25):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit))
@@ -178,24 +184,31 @@ class Feed(models.Model):
         
         return stories
     
-    def _exists_story(self, entry):
-        pub_date = entry['published']
-        start_date = pub_date - datetime.timedelta(hours=4)
-        end_date = pub_date + datetime.timedelta(hours=4)
-        # logging.debug("Dates: %s %s %s" % (pub_date, start_date, end_date))
-        existing_story = Story.objects.filter(
-            (
-               Q(story_title__iexact = entry['title']) 
-            ) | (
-                Q(story_permalink = entry['link'])
-            ), 
-            Q(story_date__range=(start_date, end_date)),
-            Q(story_feed = self)
-        )[:1]
-        if len(existing_story):
-            return existing_story[0]
-        else:
-            return None
+    def _exists_story(self, story=None, story_content=None, existing_stories=None):
+        same_story = None
+        is_different = False
+        story_pub_date = story.get('published')
+        start_date = story_pub_date - datetime.timedelta(hours=8)
+        end_date = story_pub_date + datetime.timedelta(hours=8)
+
+        for existing_story in existing_stories:
+            if story_pub_date > start_date and story_pub_date < end_date:
+                if story.get('link') == existing_story['story_permalink']:
+                    same_story = existing_story
+                    
+                story_title_difference = levenshtein_distance(story.get('title'),
+                                                              existing_story['story_title'])
+                if same_story and story_title_difference < 10:
+                    same_story = existing_story
+                    if story_title_difference > 0:
+                        is_different = True
+                                        
+                if same_story:
+                    if story_content != existing_story['story_content']:
+                        is_different = True
+                    break
+
+        return same_story, is_different
         
     def _pre_process_story(self, entry):
         date_published = entry.get('published', entry.get('updated'))

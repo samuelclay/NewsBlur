@@ -35,11 +35,13 @@ def refresh_all_feeds(request):
     force_update = request.GET.get('force', False)
     feeds = Feed.objects.all()
 
-    t = threading.Thread(target=refresh_feeds,
-                         args=[feeds, force_update])
-    t.setDaemon(True)
-    t.start()
+    # t = threading.Thread(target=refresh_feeds,
+    #                      args=[feeds, force_update])
+    # t.setDaemon(True)
+    # t.start()
+    # t.join()
     
+    refresh_feeds(feeds, force_update)
     context = {}
     
     user = request.user
@@ -67,6 +69,7 @@ def refresh_feed(request):
 
 def refresh_feeds(feeds, force=False):
     for f in feeds:
+        logging.debug('Feed Updating: %s' % f)
         f.update(force)
         usersubs = UserSubscription.objects.filter(
             feed=f.id
@@ -117,18 +120,18 @@ def load_single_feed(request):
     user = get_user(request)
     
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 25))
+    limit = int(request.REQUEST.get('limit', 50))
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
     feed_id = request.REQUEST['feed_id']
     feed = Feed.objects.get(id=feed_id)
-    force_update = request.GET.get('force', False)
+    force_update = request.GET.get('force_update', False)
     
     stories = feed.get_stories(offset, limit)
         
     if force_update:
-        fetch_feeds(force_update, [feed])
+        feed.update(force_update)
     
     usersub = UserSubscription.objects.get(user=user, feed=feed.id)
             
@@ -142,17 +145,14 @@ def load_single_feed(request):
         for o in userstory:
             if o['story_id'] == story:
                 story['opinion'] = o['opinion']
+                story['read_status'] = (o['read_date'] is not None)
                 break
         if story['story_date'] < usersub.mark_read_date:
+            print 'Read by last mark %s %s' % (story['story_date'], usersub.mark_read_date)
             story['read_status'] = 1
         elif story['story_date'] > usersub.last_read_date:
+            print 'Read by last_read_date %s %s' % (story['story_date'], usersub.last_read_date)
             story['read_status'] = 0
-        else:
-            if story['id'] in [u_rs['story_id'] for u_rs in userstory]:
-                logging.debug("READ: ")
-                story['read_status'] = 1
-            else: 
-                story['read_status'] = 0
         # logging.debug("Story: %s" % story)
     
     context = stories

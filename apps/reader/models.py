@@ -8,8 +8,8 @@ from utils import feedparser, object_manager
 class UserSubscription(models.Model):
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
-    last_read_date = models.DateTimeField(default=datetime.datetime(2000,1,1))
-    mark_read_date = models.DateTimeField(default=datetime.datetime(2000,1,1))
+    last_read_date = models.DateTimeField(default=datetime.datetime.now()-datetime.timedelta(days=7))
+    mark_read_date = models.DateTimeField(default=datetime.datetime.now()-datetime.timedelta(days=7))
     unread_count = models.IntegerField(default=0)
     unread_count_updated = models.DateTimeField(
                                default=datetime.datetime(2000,1,1)

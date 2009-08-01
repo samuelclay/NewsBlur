@@ -3,7 +3,7 @@ from django.test.client import Client
 from django.test import TestCase
 
 class FeedTest(TestCase):
-    fixtures = ['rss_feeds.json']
+    fixtures = ['fixtures/rss_feeds.json']
     
     def setUp(self):
         self.client = Client()

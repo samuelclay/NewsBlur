@@ -41,7 +41,7 @@ def opml_import(xml_opml, user):
             try:
                 new_feed.save()
             except IntegrityError:
-                new_feed = Feed.objects.get(**feed_data)
+                new_feed = Feed.objects.get(feed_address=feed.xmlUrl)
             us = UserSubscription(feed=new_feed, user=user)
             try:
                 us.save()
