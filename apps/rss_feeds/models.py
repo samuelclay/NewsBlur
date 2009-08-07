@@ -180,7 +180,6 @@ class Feed(models.Model):
                 story['story_feed_link'] = mark_safe(self.feed_link)
                 story['story_permalink'] = mark_safe(story['story_permalink'])
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
-            print 'Set feed_stories:%s-%s-%s' % (self.id, offset, limit)
         
         return stories
     

@@ -149,10 +149,8 @@ def load_single_feed(request):
                 story['read_status'] = (o['read_date'] is not None)
                 break
         if story['story_date'] < usersub.mark_read_date:
-            print 'Read by last mark %s %s' % (story['story_date'], usersub.mark_read_date)
             story['read_status'] = 1
         elif story['story_date'] > usersub.last_read_date:
-            print 'Read by last_read_date %s %s' % (story['story_date'], usersub.last_read_date)
             story['read_status'] = 0
         # logging.debug("Story: %s" % story)
     

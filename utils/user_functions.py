@@ -9,7 +9,6 @@ def get_user(request):
     else:
         user = cache.get('user:%s' % DEFAULT_USER, None)
         if not user:
-            print "USER CACHE MISS"
             user = User.objects.get(username=DEFAULT_USER)
             cache.set('user:%s' % user, user)
     return user
