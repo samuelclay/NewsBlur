@@ -10,13 +10,13 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpRequest
 from django.core import serializers 
 from django.utils.safestring import mark_safe
-from utils.feedcache.threading_model import fetch_feeds
 from django.views.decorators.cache import cache_page
 import logging
 import datetime
 import threading
 
 SINGLE_DAY = 60*60*24
+
 def index(request):
     # feeds = Feed.objects.filter(usersubscription__user=request.user)
     # for f in feeds:
@@ -76,6 +76,7 @@ def refresh_feeds(feeds, force=False):
         )
         for us in usersubs:
             us.count_unread()
+            logging.info('Deleteing user sub cache: %s' % us.user_id)
             cache.delete('usersub:%s' % us.user_id)
     return
 

@@ -1,0 +1,19 @@
+[
+    {
+        "pk": 1, 
+        "model": "rss_feeds.feed", 
+        "fields": {            
+            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/gawker1.xml", 
+            "days_to_trim": 90, 
+            "feed_link": "http://gawker.com", 
+            "num_subscribers": 0, 
+            "creation": "2009-01-12", 
+            "feed_title": "Gawker", 
+            "last_update": "2009-07-06 22:30:03", 
+            "min_to_decay": 1, 
+            "etag": "", 
+            "last_modified": "2009-07-06 22:30:03", 
+            "active": 1
+        }
+    }
+]

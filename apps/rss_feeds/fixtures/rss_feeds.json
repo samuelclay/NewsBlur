@@ -1,8 +1,11 @@
 [
+
+
+
     {
-        "pk": 3, 
+        "pk": 1, 
         "model": "rss_feeds.feed", 
-        "fields": {            "feed_address": "/Users/conesus/Projects/newsblur/apps/rss_feeds/fixtures/gawker1.xml", 
+        "fields": {            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/gawker1.xml", 
             "days_to_trim": 90, 
             "feed_link": "http://gawker.com", 
             "num_subscribers": 0, 
@@ -18,7 +21,7 @@
     {
         "pk": 2, 
         "model": "rss_feeds.feed", 
-        "fields": {            "feed_address": "/Users/conesus/Projects/newsblur/apps/rss_feeds/fixtures/brownstoner.xml", 
+        "fields": {            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/brownstoner.xml", 
             "days_to_trim": 90, 
             "feed_link": "http://www.brownstoner.com/", 
             "num_subscribers": 0, 
@@ -32,10 +35,10 @@
         }
     }, 
     {
-        "pk": 19, 
+        "pk": 3, 
         "model": "rss_feeds.feed", 
         "fields": {
-            "feed_address": "/Users/conesus/Projects/newsblur/apps/rss_feeds/fixtures/daringfireball.xml", 
+            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/daringfireball.xml", 
             "days_to_trim": 90, 
             "feed_link": "http://daringfireball.net/", 
             "num_subscribers": 0, 
@@ -48,12 +51,86 @@
             "active": 1
         }
     },
-    
+
+
+
+    {
+        "pk": 1,
+        "model": "reader.usersubscriptionfolders",
+        "fields": {
+            "feed": 1,
+            "user_sub": 1,
+            "folder": "Blogs",
+            "user": 1
+        }
+    },
+
+    {
+        "pk": 1,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 1,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "reader.usersubscriptionfolders",
+        "fields": {
+            "feed": 2,
+            "user_sub": 2,
+            "folder": "Blogs",
+            "user": 1
+        }
+    },
+
+    {
+        "pk": 2,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 2,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "reader.usersubscriptionfolders",
+        "fields": {
+            "feed": 3,
+            "user_sub": 3,
+            "folder": "Blogs",
+            "user": 1
+        }
+    },
+
+    {
+        "pk": 3,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 3,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
+
+
+
     {
         "pk": 1, 
         "model": "auth.user", 
         "fields": {
-            "username": "test", 
+            "username": "conesus", 
             "first_name": "", 
             "last_name": "", 
             "is_active": 1, 
