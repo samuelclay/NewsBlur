@@ -9,7 +9,7 @@ class FeedTest(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_load_feeds(self):
+    def test_load_feeds__changed_story_title(self):
         self.client.login(userame='conesus', password='test')
         
         management.call_command('loaddata', 'gawker1.json', verbosity=0)

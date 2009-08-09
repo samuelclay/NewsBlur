@@ -26,6 +26,7 @@ if PRODUCTION:
     DATABASE_PORT = ''
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
+    NEWSBLUR_DIR = '/home/conesus/newsblur/'
     MEDIA_ROOT = '/home/conesus/newsblur/media/'
     MEDIA_URL = 'http://www.newsblur.com/media/'
     TEMPLATE_DIRS = (
@@ -47,6 +48,7 @@ elif STAGING:
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
+    NEWSBLUR_DIR = '/home/conesus/stg-newsblur/'
     MEDIA_ROOT = '/home/conesus/stg-newsblur/media/'
     MEDIA_URL = '/media/'
     TEMPLATE_DIRS = (
@@ -68,6 +70,7 @@ elif DEV_SERVER1:
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
+    NEWSBLUR_DIR = '/Users/conesus/Projects/newsblur/'
     MEDIA_ROOT = '/Users/conesus/Projects/newsblur/media/'
     MEDIA_URL = '/media/'
     TEMPLATE_DIRS = (
@@ -89,6 +92,7 @@ elif DEV_SERVER2:
 
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
+    NEWSBLUR_DIR = '/Users/conesus/newsblur/'
     MEDIA_ROOT = '/Users/conesus/newsblur/media/'
     MEDIA_URL = '/media/'
     TEMPLATE_DIRS = (

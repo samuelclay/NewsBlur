@@ -12,6 +12,7 @@ from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from django.db.models import Q
 from utils.diff import HTMLDiff
+import settings
 import logging
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
@@ -46,6 +47,7 @@ class Feed(models.Model):
         print locals()
         
     def update(self, force=False, feed=None):
+        self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         last_updated = self.last_updated() / 60
         min_to_decay = self.min_to_decay + (random.random()*self.min_to_decay)
         if last_updated < min_to_decay and not force:
