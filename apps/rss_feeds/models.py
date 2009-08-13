@@ -12,6 +12,7 @@ from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from django.db.models import Q
 from utils.diff import HTMLDiff
+from apps.rss_feeds.importer import PageImporter
 import settings
 import logging
 
@@ -30,6 +31,7 @@ class Feed(models.Model):
     creation = models.DateField(auto_now_add=True)
     etag = models.CharField(max_length=50, blank=True)
     last_modified = models.DateTimeField(null=True, blank=True)
+    page_data = models.TextField(blank=True)
     
     
     def __unicode__(self):
@@ -89,6 +91,10 @@ class Feed(models.Model):
         self.last_update = datetime.datetime.now()
         self.last_modified = mtime(feed.get('modified',
                                         datetime.datetime.timetuple(datetime.datetime.now())))
+
+        page_importer = PageImporter(self.feed_link, self)
+        self.page = page_importer.fetch_page()
+        
         self.save()
         
         num_entries = len(feed['entries'])

@@ -56,8 +56,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                         $('#django_log').replaceWith(log_html);
                         var js = eval(log_js);
                     }
-                } else {
+                } else if (o.indexOf('{') == 0) {
                     data = eval('(' + o + ')');
+                } else {
+                    data = o;
                 }
                 
                 if (callback && typeof callback == 'function'){
@@ -170,6 +172,17 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 feed_id: feed_id,
                 page: page
             }, pre_callback
+        );
+    },
+    
+    load_feed_page: function(feed_id, page, callback) {
+        var self = this;
+        
+        this.make_request('/reader/load_feed_page',
+            {
+                feed_id: feed_id,
+                page: page
+            }, callback
         );
     },
     

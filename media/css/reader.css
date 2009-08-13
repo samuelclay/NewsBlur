@@ -539,3 +539,13 @@ form.opml_import_form input {
     background-color: #FFFFA0;
     cursor: pointer;
 }
+
+
+/* ============== */
+/* = Feed Frame = */
+/* ============== */
+
+.NB-feed-frame {
+    width: 100%;
+    height: 100%;
+}

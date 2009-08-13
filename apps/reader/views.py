@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpRequest
 from django.core import serializers 
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
+from djangologging.decorators import suppress_logging_output
 import logging
 import datetime
 import threading
@@ -112,6 +113,7 @@ def load_feeds(request):
             feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
             for f in feed['feeds']:
                 f.feed_address = mark_safe(f.feed_address)
+                f.page_data = None
 
         cache.set('usersub:%s' % user, feeds, SINGLE_DAY)
 
@@ -159,6 +161,12 @@ def load_single_feed(request):
     data = json_encode(context)
     return HttpResponse(data, mimetype='text/html')
 
+@suppress_logging_output
+def load_feed_page(request):
+    feed = Feed.objects.get(id=request.REQUEST.get('feed_id'))
+    data = feed.page_data
+    
+    return HttpResponse(data, mimetype='text/html')
     
 @login_required
 def mark_story_as_read(request):
