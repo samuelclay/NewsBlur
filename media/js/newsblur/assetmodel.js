@@ -56,10 +56,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                         $('#django_log').replaceWith(log_html);
                         var js = eval(log_js);
                     }
-                } else if (o.indexOf('{') == 0) {
-                    data = eval('(' + o + ')');
                 } else {
-                    data = o;
+                    try {
+                        data = eval('(' + o + ')');
+                    } catch(e) {
+                        data = o;   
+                    }
                 }
                 
                 if (callback && typeof callback == 'function'){

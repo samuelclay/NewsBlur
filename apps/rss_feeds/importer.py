@@ -1,7 +1,6 @@
 import urllib2
 import logging
 import re
-import urlparse
 
 class PageImporter(object):
     
