@@ -53,12 +53,13 @@ class Feed(models.Model):
         last_updated = self.last_updated() / 60
         min_to_decay = self.min_to_decay + (random.random()*self.min_to_decay)
         if last_updated < min_to_decay and not force:
-            logging.debug('Feed unchanged: ' + self.feed_title)
+            # logging.debug('Feed unchanged: ' + self.feed_title)
             return
             
         feed_updated, feed = cache.get("feed:" + self.feed_address, (None, None,))
         if feed and not force:
-            logging.debug('Feed Cached: ' + self.feed_title)
+            # logging.debug('Feed Cached: ' + self.feed_title)
+            pass
         if not feed or force:
             last_modified = None
             now = datetime.datetime.now()
@@ -122,7 +123,7 @@ class Feed(models.Model):
                 existing_story, is_different = self._exists_story(story, story_content, existing_stories)
                 if existing_story is None:
                     pub_date = datetime.datetime.timetuple(story.get('published'))
-                    logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
+                    # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
                 
                     s = Story(story_feed = self,
                            story_date = story.get('published'),
@@ -148,7 +149,8 @@ class Feed(models.Model):
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
                     if existing_story['story_title'] != story.get('title'):
-                        logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story['story_title'], story.get('title')))
+                        # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story['story_title'], story.get('title')))
+                        pass
 
                     s = Story(id = existing_story['id'],
                            story_feed = self,
