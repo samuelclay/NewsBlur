@@ -312,8 +312,7 @@
         
         show_feed_page_contents: function(feed_id) {
             var $story_pane = this.$story_pane;
-            var $story_iframe = $.make('iframe', { className: 'NB-feed-frame' });
-            $story_pane.html($story_iframe);
+            var $story_iframe = $('.NB-feed-frame', $story_pane);
             $story_iframe.attr({src: '/reader/load_feed_page?feed_id='+feed_id});
         },
         

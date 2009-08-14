@@ -240,7 +240,7 @@ class Feed(models.Model):
 
         entry['published'] = date_published
 
-        protocol_index = entry['link'].find("://")
+        protocol_index = entry.get('link', '').find("://")
         if protocol_index != -1:
             entry['link'] = (entry['link'][:protocol_index+3]
                             + urlquote(entry['link'][protocol_index+3:]))
