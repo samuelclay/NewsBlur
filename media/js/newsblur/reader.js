@@ -72,7 +72,6 @@
     			north__paneSelector:	".middle-north",
     			north__size:			208,
     			spacing_open:			10,
-    			center__onresize:		"middleLayout.resizeAll",
     			resizerDragOpacity:     0.6
     		}); 
     		
