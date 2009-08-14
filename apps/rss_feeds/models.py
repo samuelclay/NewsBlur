@@ -49,7 +49,11 @@ class Feed(models.Model):
         print locals()
         
     def update(self, force=False, feed=None):
-        self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
+        try:
+            self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
+        except:
+            pass
+            
         last_updated = self.last_updated() / 60
         min_to_decay = self.min_to_decay + (random.random()*self.min_to_decay)
         if last_updated < min_to_decay and not force:
