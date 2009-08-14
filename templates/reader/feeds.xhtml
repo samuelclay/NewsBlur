@@ -2,9 +2,37 @@
 
 {% block content %}
 
-<div id="feed_list"></div>
+<div class="left-pane">
+    <div class="left-center" id="feed_list"></div>
+    
+    <div id="taskbar" class="left-south">
+    	<ul class="taskbar_leftnav">
+    		<li class="task_button task_add">
+    			<ul class="taskbar_menu">
+    				<li>Import</li>
+    				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
+    				<li><span>From NetNewsWire (NewsGator)</span></li>
+    				<li><span>From Google Reader</span></li>
+    			</ul>
+    		</li>
+    	</ul>
+    	<ul class="taskbar_leftnav">
+    		<li class="task_button task_profile">
+    			<ul class="taskbar_menu">
+    				<li>{{ user_info.username }}</li>
+    				<li><span>View my feed preferences</span></li>
+    				<li><span>Change NewsBlur options</span></li>
+    			</ul>
+    		</li>
+    	</ul>
+    </div>
+
+</div>
 
 <div class="center-pane">
+    <div id="NB-splash">
+        <div class="NB-splash-title"></div>
+    </div>
     <div id="story_titles" class="middle-north">
     </div>
 
@@ -24,27 +52,6 @@
 
 {# {% url apps.opml_import.views.opml_import %} #}
 
-<div id="taskbar">
-	<ul class="taskbar_leftnav">
-		<li class="task_button task_add">
-			<ul class="taskbar_menu">
-				<li>Import</li>
-				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
-				<li><span>From NetNewsWire (NewsGator)</span></li>
-				<li><span>From Google Reader</span></li>
-			</ul>
-		</li>
-	</ul>
-	<ul class="taskbar_leftnav">
-		<li class="task_button task_profile">
-			<ul class="taskbar_menu">
-				<li>{{ user_info.username }}</li>
-				<li><span>View my feed preferences</span></li>
-				<li><span>Change NewsBlur options</span></li>
-			</ul>
-		</li>
-	</ul>
-</div>
 
 
 {% endblock %}

@@ -38,17 +38,10 @@ a img {
 /* ============= */
 
 #feed_list {
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    width: 220px;
     background-color: #D7DDE6;
-    border-right: 1px solid #808080;
-    z-index: 20;
-    font-size: 11px;
     overflow-y: auto;
+    font-size: 11px;
 }
-
 #feed_list .folder {
     margin: 6px 0px 4px;
     background: transparent url(../img/icons/silk/folder.png) no-repeat 3px 1px;
@@ -551,4 +544,23 @@ form.opml_import_form input {
     border: 0;
     margin: 0;
     padding: 0;
+}
+
+/* =============== */
+/* = Splash Pane = */
+/* =============== */
+
+#NB-splash {
+    width: 100%;   
+    height: 100%;
+    z-index: 100;
+    position: relative;
+    background-color: white;
+}
+
+#NB-splash .NB-splash-title {
+    margin: 0 auto;
+    height: 376px;
+    width: 600px;
+    background: transparent url(../img/reader/newsblur_splash_logo.png) no-repeat 0 0;
 }
