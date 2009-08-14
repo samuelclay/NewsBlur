@@ -31,55 +31,6 @@ def index(request):
     context.update(user_info)
     return render_to_response('reader/feeds.xhtml', context,
                               context_instance=RequestContext(request))
-    
-def refresh_all_feeds(request):
-    force_update = request.GET.get('force', False)
-    feeds = Feed.objects.all()
-
-    # t = threading.Thread(target=refresh_feeds,
-    #                      args=[feeds, force_update])
-    # t.setDaemon(True)
-    # t.start()
-    # t.join()
-    
-    refresh_feeds(feeds, force_update)
-    context = {}
-    
-    user = request.user
-    user_info = _parse_user_info(user)
-    context.update(user_info)
-    
-    return render_to_response('reader/feeds.xhtml', context,
-                              context_instance=RequestContext(request))
-
-def refresh_feed(request):
-    feed_id = request.REQUEST['feed_id']
-    force_update = request.GET.get('force', False)
-    feeds = Feed.objects.filter(id=feed_id)
-
-    feeds = refresh_feeds(feeds, force_update)
-    
-    context = {}
-    
-    user = request.user 
-    user_info = _parse_user_info(user)
-    context.update(user_info)
-    
-    return render_to_response('reader/feeds.xhtml', context,
-                              context_instance=RequestContext(request))
-
-def refresh_feeds(feeds, force=False):
-    for f in feeds:
-        logging.debug('Feed Updating: %s' % f)
-        f.update(force)
-        usersubs = UserSubscription.objects.filter(
-            feed=f.id
-        )
-        for us in usersubs:
-            us.count_unread()
-            logging.info('Deleteing user sub cache: %s' % us.user_id)
-            cache.delete('usersub:%s' % us.user_id)
-    return
 
 def load_feeds(request):
     user = get_user(request)
