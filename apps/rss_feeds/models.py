@@ -239,13 +239,14 @@ class Feed(models.Model):
             date_published = date_published.replace(tzinfo=None)
 
         entry['published'] = date_published
-
-        protocol_index = entry.get('link', '').find("://")
+        
+        entry_link = entry.get('link', '')
+        protocol_index = entry_link.find("://")
         if protocol_index != -1:
-            entry['link'] = (entry['link'][:protocol_index+3]
-                            + urlquote(entry['link'][protocol_index+3:]))
+            entry['link'] = (entry_link[:protocol_index+3]
+                            + urlquote(entry_link[protocol_index+3:]))
         else:
-            entry['link'] = urlquote(entry['link'])
+            entry['link'] = urlquote(entry_link)
         return entry
             
     class Meta:

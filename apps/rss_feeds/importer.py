@@ -13,9 +13,9 @@ class PageImporter(object):
         
         try:
             response = urllib2.urlopen(request)
-        except HTTPError, e:
+        except urllib2.HTTPError, e:
             logging.error('The server couldn\'t fulfill the request. Error: %s' % e.code)
-        except URLError, e:
+        except urllib2.URLError, e:
             logging.error('Failed to reach server. Reason: %s' % e.reason)
         else:
             data = response.read()

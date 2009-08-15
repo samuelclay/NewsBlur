@@ -69,6 +69,7 @@
 
     		middleLayout = $('.center-pane').layout({ 
     			center__paneSelector:	".middle-center",
+    			center__onresize:		"middleLayout.resizeAll",
     			north__paneSelector:	".middle-north",
     			north__size:			208,
     			spacing_open:			10,
@@ -77,6 +78,7 @@
     		
     		leftLayout = $('.left-pane').layout({
         	    closable: false,
+    			center__onresize:		"middleLayout.resizeAll",
     		    center__paneSelector:   ".left-center",
     			south__paneSelector:	".left-south",
     			south__size:            29,
@@ -421,7 +423,7 @@
             
             $iframe.contents().find(':contains('+title+')').each(function(){
                 if($(this).children().length < 1) {
-                    $iframe.scrollTo(this, 1000);
+                    $iframe.scrollTo(this, 850, { axis: 'y' });
                     return false;
                 }
             });  
