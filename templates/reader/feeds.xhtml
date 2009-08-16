@@ -5,7 +5,7 @@
 <div class="left-pane">
     <div class="left-center" id="feed_list"></div>
     
-    <div id="taskbar" class="left-south">
+    <div class="NB-taskbar left-south">
     	<ul class="taskbar_leftnav">
     		<li class="task_button task_add">
     			<ul class="taskbar_menu">
@@ -29,28 +29,62 @@
 
 </div>
 
-<div class="center-pane">
+
+
+<div class="right-pane">
+    
     <div id="NB-splash">
         <div class="NB-splash-title"></div>
     </div>
-    <div id="story_titles" class="middle-north">
-    </div>
+    
+    <div id="story_titles" class="right-north"></div>
 
-    <div id="story_pane" class="middle-center ui-layout-content">
-		<iframe class="NB-feed-frame"></iframe>
-		<div class="NB-feed-story-view">
-            <div class="story_navigator">
-            	<a href="#" class="rounded {transparent} button like"></a>
-                <a href="#" class="rounded {transparent} button dislike"></a>
-            </div>
-            <div class="story_title"></div>
-            <div class="story_feed"><span class="story_meta">From: </span><span class="data"></span></div>
-            <div class="story_author"><span class="story_meta">Author: </span><span class="data"></span></div>
-            <div class="story_date"><span class="story_meta">Date: </span><span class="data"></span></div>
-            <div class="story_content"></div>
-            <div class="story_endbar"></div>
-		</div>
-    </div>
+    <div class="content-pane">
+        <div id="story_taskbar" class="NB-taskbar content-north">
+            
+        	<ul class="taskbar_leftnav">
+        		<li class="task_button task_add">
+        			<ul class="taskbar_menu">
+        				<li>Import</li>
+        				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
+        				<li><span>From NetNewsWire (NewsGator)</span></li>
+        				<li><span>From Google Reader</span></li>
+        			</ul>
+        		</li>
+        	</ul>
+        	<ul class="taskbar_leftnav">
+        		<li class="task_button task_add">
+        			<ul class="taskbar_menu">
+        				<li>Import</li>
+        				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
+        				<li><span>From NetNewsWire (NewsGator)</span></li>
+        				<li><span>From Google Reader</span></li>
+        			</ul>
+        		</li>
+        	</ul>
+    	
+        </div>
+    
+        <div id="story_pane" class="content-center">
+        
+    		<iframe class="NB-feed-frame"></iframe>
+		
+    		<div class="NB-feed-story-view">
+                <div class="story_navigator">
+                	<a href="#" class="rounded {transparent} button like"></a>
+                    <a href="#" class="rounded {transparent} button dislike"></a>
+                </div>
+                <div class="story_title"></div>
+                <div class="story_feed"><span class="story_meta">From: </span><span class="data"></span></div>
+                <div class="story_author"><span class="story_meta">Author: </span><span class="data"></span></div>
+                <div class="story_date"><span class="story_meta">Date: </span><span class="data"></span></div>
+                <div class="story_content"></div>
+                <div class="story_endbar"></div>
+    		</div>
+		
+        </div>
+    </div>    
+    
 </div>
 
 {# {% url apps.opml_import.views.opml_import %} #}

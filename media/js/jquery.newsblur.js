@@ -1,7 +1,9 @@
 if (typeof NEWSBLUR == 'undefined') NEWSBLUR = {};
 
+/* ============================ */
+/* = Core NewsBlur Javascript = */
+/* ============================ */
 
-// ------- CORE EXTENSIONS -------- //
 NEWSBLUR.log = function(msg) {
     try {
         if (typeof o == "object")
@@ -28,15 +30,6 @@ NEWSBLUR.log = function(msg) {
 
     $.extend({
 
-		parseSubdomain: function(href){
-			var match = href.match('://([^\.]+).');
-			if(match && match[1]){
-				return match[1];
-			}else{
-				return false;
-			}
-		},
-
 		deepCopy: function(obj) {
 			var type = $.typeOf(obj);
 			switch (type) {
@@ -55,20 +48,6 @@ NEWSBLUR.log = function(msg) {
 				default:
 					return obj;
 			};
-		},
-
-		serializeSearch: function(){
-			var data = {};
-			if(window.location.search){
-				var ary = window.location.search.replace('?','').split('&');
-				for (var i = ary.length - 1; i >= 0; i--){
-					var kv = ary[i].split('=')
-					if(kv.length == 2){
-						data[kv[0]] = decodeURI(kv[1]);
-					}
-				};
-			}
-			return data;
 		},
 
 		typeOf: function(value) {
@@ -181,49 +160,7 @@ NEWSBLUR.log = function(msg) {
     			return $elem;
     		}
 		},
-
-		querystring_to_hash: function(str){ // redundant with serializeSearch; should merge them at some point
-			if(str.charAt(0) == '?'){
-				str = str.substr(1);
-			}
-			var hash = {};
-			var kvs = str.split('&');
-			for(var i in kvs){
-				var kvary = kvs[i].split('=');
-				if(hash[kvary[0]] && kvary[0].indexOf('[]') != -1){
-					hash[kvary[0]].push(kvary[1]);
-				} else if (kvary[0].indexOf('[]') != -1) {
-				    hash[kvary[0]] = [kvary[1]];
-				} else {
-					hash[kvary[0]] = kvary[1];
-				}
-			}
-			return hash;
-		},
-
-		hash_to_querystring: function(hash){
-			var counter = 0;
-			var pieces = ['?'];
-			for(var key in hash){
-			    DAYLIFE.log(['H2Q', key, typeof hash[key], $.typeOf(hash[key])]);
-				if(counter > 0){
-					pieces.push('&');
-				}
-				if(typeof hash[key] == 'string'){
-					pieces.push(encodeURIComponent(key) + '=' + encodeURIComponent(hash[key]));
-				}else if($.typeOf(hash[key]) == 'array'){
-					for(var i=0;i<hash[key].length;i++){
-						if(i > 0){
-							pieces.push('&');
-						}
-						pieces.push(encodeURIComponent(key) + '[]=' + encodeURIComponent(hash[key][i]));
-					}
-				}
-				counter++;
-			}
-			return pieces.join('');
-		},
-
+		
 		rescope: function(func, thisArg){
 			return function(a, b, c, d, e, f){
 				func.call(thisArg, this, a, b, c, d, e, f);

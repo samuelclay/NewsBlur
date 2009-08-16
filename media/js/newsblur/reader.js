@@ -55,24 +55,15 @@
         },
         
         apply_resizable_layout: function() {
-            var outerLayout, middleLayout, leftLayout;
+            var outerLayout, rightLayout, contentLayout, leftLayout;
             
         	outerLayout = $('body').layout({ 
         	    closable: false,
-    			center__paneSelector:	".center-pane",
+    			center__paneSelector:	".right-pane",
     			west__paneSelector:		".left-pane",
     			west__size:				300,
+    			center__onresize:       "rightLayout.resizeAll",
     			spacing_open:			4,
-    			center__onresize:		"middleLayout.resizeAll",
-    			resizerDragOpacity:     0.6
-    		}); 
-
-    		middleLayout = $('.center-pane').layout({ 
-    			center__paneSelector:	".middle-center",
-    			center__onresize:		"middleLayout.resizeAll",
-    			north__paneSelector:	".middle-north",
-    			north__size:			208,
-    			spacing_open:			10,
     			resizerDragOpacity:     0.6
     		}); 
     		
@@ -85,6 +76,22 @@
     			south__resizable:       false,
     			south__spacing_open:    0
     		});
+
+    		rightLayout = $('.right-pane').layout({ 
+    			north__paneSelector:	".right-north",
+    			center__paneSelector:	".content-pane",
+    			north__size:			208,
+    			spacing_open:			10,
+    			resizerDragOpacity:     0.6
+    		}); 
+
+    		contentLayout = $('.content-pane').layout({ 
+    			center__paneSelector:	".content-center",
+    			north__paneSelector:	".content-north",
+    			north__size:            30,
+    			spacing_open:           0,
+    			resizerDragOpacity:     0.6
+    		}); 
         },
         
         resize_story_content_pane: function() {
@@ -423,7 +430,7 @@
             
             $iframe.contents().find(':contains('+title+')').each(function(){
                 if($(this).children().length < 1) {
-                    $iframe.scrollTo(this, 850, { axis: 'y' });
+                    $iframe.scrollTo(this, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24 });
                     return false;
                 }
             });  
@@ -671,8 +678,8 @@
 
         setup_taskbar_leftnav: function() {
             var self = this;
-            var $task_buttons = $('#taskbar .taskbar_leftnav .task_button');
-            var $taskbar_menu = $('#taskbar .taskbar_leftnav .taskbar_menu li span').corners('2px');
+            var $task_buttons = $('.NB-taskbar .taskbar_leftnav .task_button');
+            var $taskbar_menu = $('.NB-taskbar .taskbar_leftnav .taskbar_menu li span').corners('2px');
             
             $task_buttons.each(function() {
                 var $this = $(this);
@@ -708,7 +715,7 @@
         
         open_taskbar_menu: function($taskbar_button, e) {
             var self = this;
-            var $task_buttons = $('#taskbar .taskbar_leftnav .task_button');
+            var $task_buttons = $('.NB-taskbar .taskbar_leftnav .task_button');
             
             if ($taskbar_button.hasClass('active')) {
                 // Close
