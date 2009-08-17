@@ -276,7 +276,6 @@ a img {
     left: 0;
     width: 100%;
     height: 100%;
-    display: none;
 }
 
 #story_pane .NB-feed-frame {
@@ -413,10 +412,12 @@ a img {
 .NB-taskbar .taskbar_leftnav .task_button {
     height: 29px;
     margin: 0px;
-    width: 36px;
     display: block;
     position: relative;
     border-right: 1px solid #828282;
+    float: left;
+    padding: 0px 8px 0 32px;
+    font-size: 13px;
 }
 
 .NB-taskbar .taskbar_leftnav .task_button:hover {
@@ -461,10 +462,35 @@ a img {
 
 
 .NB-taskbar .task_button.task_add {
-    background: transparent url(../img/icons/silk/add.png) no-repeat center center;
+    background: transparent url(../img/icons/silk/add.png) no-repeat center 8px;
 }
 .NB-taskbar .task_button.task_profile {
-    background: transparent url(../img/icons/silk/user.png) no-repeat center center;
+    background: transparent url(../img/icons/silk/user.png) no-repeat center 8px;
+}
+
+/* =================== */
+/* = Taskbar - Story = */
+/* =================== */
+
+.NB-taskbar .NB-task-title {
+    padding: 7px 0 0 0;
+    display: block;
+    cursor: pointer;
+}
+.NB-taskbar .task_button.task_view_page {
+    cursor: pointer;
+    background: transparent url(../img/icons/silk/application_view_tile.png) no-repeat 8px 8px;
+}
+.NB-taskbar .task_button.task_view_feed {
+    cursor: pointer;
+    background: transparent url(../img/icons/silk/application_view_columns.png) no-repeat 8px 8px;
+}
+.NB-taskbar .task_button_view.NB-active {
+    background-color: #A0A7B1;
+}
+.NB-view-hidden {
+    position: absolute !important;
+    left: -9999em !important;
 }
 
 /* ================ */

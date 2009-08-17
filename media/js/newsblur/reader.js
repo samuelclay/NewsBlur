@@ -10,6 +10,7 @@
         this.model = NEWSBLUR.AssetModel.reader();
         this.options = {};
         this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
+        this.story_view = 'page';
         
         $('body').live('click', $.rescope(this.handle_clicks, this));
         $('body').live('dblclick', $.rescope(this.handle_dblclicks, this));
@@ -58,7 +59,7 @@
             var outerLayout, rightLayout, contentLayout, leftLayout;
             
         	outerLayout = $('body').layout({ 
-        	    closable: false,
+        	    closable: true,
     			center__paneSelector:	".right-pane",
     			west__paneSelector:		".left-pane",
     			west__size:				300,
@@ -377,6 +378,33 @@
             $feed_link.parent('.feed').next('.feed').children('a').addClass('after_selected');
         },
         
+        // ===================
+        // = Taskbar - Story =
+        // ===================
+        
+        switch_taskbar_view: function($button) {
+            
+            if (!($button.hasClass('NB-active'))) {
+                var $taskbar_buttons = $('.NB-taskbar .task_button_view');
+                var $feed_view = $('.NB-feed-story-view');
+                var $page_view = $('.NB-feed-frame');
+                
+                $taskbar_buttons.removeClass('NB-active');
+                $button.addClass('NB-active');
+                
+                if ($button.hasClass('task_view_page')) {
+                    $feed_view.addClass('NB-view-hidden');
+                    $page_view.removeClass('NB-view-hidden');
+                    this.story_view = 'page';
+                } else if ($button.hasClass('task_view_feed')) {
+                    $page_view.addClass('NB-view-hidden');
+                    $feed_view.removeClass('NB-view-hidden');
+                    this.story_view = 'feed';
+                }
+            }
+            
+        },
+        
         // ==============
         // = Story Pane =
         // ==============
@@ -423,6 +451,7 @@
         },
         
         scroll_to_story_in_story_frame: function(story_title) {
+            var self = this;
             var $iframe = $('.NB-feed-frame');
             var title = story_title.replace('^\s+|\s+$', '');
             
@@ -430,7 +459,11 @@
             
             $iframe.contents().find(':contains('+title+')').each(function(){
                 if($(this).children().length < 1) {
-                    $iframe.scrollTo(this, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24 });
+                    if (self.story_view == 'feed') {
+                        $iframe.scrollTo(this, 0, { axis: 'y', offset: -24 });
+                    } else if (self.story_view == 'page') {
+                        $iframe.scrollTo(this, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24 });
+                    }
                     return false;
                 }
             });  
@@ -629,9 +662,13 @@
             // = Taskbar =
             // ===========
             
-            $.targetIs(e, { tagSelector: '.task_button' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.task_button_menu' }, function($t, $p){
                 e.preventDefault();
                 self.open_taskbar_menu($t, e);
+            });
+            $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
+                e.preventDefault();
+                self.switch_taskbar_view($t, e);
             });
             $.targetIs(e, { tagSelector: '.NB-task-import-upload-opml' }, function($t, $p){
                 e.preventDefault();

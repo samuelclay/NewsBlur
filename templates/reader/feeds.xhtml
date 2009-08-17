@@ -7,7 +7,7 @@
     
     <div class="NB-taskbar left-south">
     	<ul class="taskbar_leftnav">
-    		<li class="task_button task_add">
+    		<li class="task_button task_button_menu task_add">
     			<ul class="taskbar_menu">
     				<li>Import</li>
     				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
@@ -17,7 +17,7 @@
     		</li>
     	</ul>
     	<ul class="taskbar_leftnav">
-    		<li class="task_button task_profile">
+    		<li class="task_button task_button_menu task_profile">
     			<ul class="taskbar_menu">
     				<li>{{ user_info.username }}</li>
     				<li><span>View my feed preferences</span></li>
@@ -43,24 +43,8 @@
         <div id="story_taskbar" class="NB-taskbar content-north">
             
         	<ul class="taskbar_leftnav">
-        		<li class="task_button task_add">
-        			<ul class="taskbar_menu">
-        				<li>Import</li>
-        				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
-        				<li><span>From NetNewsWire (NewsGator)</span></li>
-        				<li><span>From Google Reader</span></li>
-        			</ul>
-        		</li>
-        	</ul>
-        	<ul class="taskbar_leftnav">
-        		<li class="task_button task_add">
-        			<ul class="taskbar_menu">
-        				<li>Import</li>
-        				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
-        				<li><span>From NetNewsWire (NewsGator)</span></li>
-        				<li><span>From Google Reader</span></li>
-        			</ul>
-        		</li>
+    			<li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Page</span></li>
+	    		<li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
         	</ul>
     	
         </div>
@@ -69,7 +53,7 @@
         
     		<iframe class="NB-feed-frame"></iframe>
 		
-    		<div class="NB-feed-story-view">
+    		<div class="NB-feed-story-view NB-view-hidden">
                 <div class="story_navigator">
                 	<a href="#" class="rounded {transparent} button like"></a>
                     <a href="#" class="rounded {transparent} button dislike"></a>
