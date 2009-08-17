@@ -6,6 +6,8 @@
         this.$story_titles = $('#story_titles');
         this.$story_pane = $('#story_pane');
         this.$account_menu = $('.menu_button');
+        this.$feed_view = $('.NB-feed-story-view');
+        this.$page_view = $('.NB-feed-frame');
 
         this.model = NEWSBLUR.AssetModel.reader();
         this.options = {};
@@ -293,6 +295,24 @@
             this.model.load_feed(feed_id, 0, $.rescope(this.create_story_titles, this));
             // this.model.load_feed_page(feed_id, 0, $.rescope(this.show_feed_page_contents, this));
             this.show_feed_page_contents(feed_id);
+            this.show_correct_story_view(feed_id);
+        },
+        
+        show_correct_story_view: function(feed_id) {
+            var $feed_view = this.$feed_view;
+            var $page_view = this.$page_view;
+            
+            // TODO: Assume page view until user prefs override
+            if (this.story_view == 'feed') {
+                $page_view.css({
+                    'left': -1 * $page_view.width()
+                });
+            } else if (this.story_view == 'page') {
+                $feed_view.css({
+                    'left': $feed_view.width()
+                });
+            }
+            
         },
         
         create_story_titles: function(e, stories) {
@@ -386,19 +406,39 @@
             
             if (!($button.hasClass('NB-active'))) {
                 var $taskbar_buttons = $('.NB-taskbar .task_button_view');
-                var $feed_view = $('.NB-feed-story-view');
-                var $page_view = $('.NB-feed-frame');
+                var $feed_view = this.$feed_view;
+                var $page_view = this.$page_view;
                 
                 $taskbar_buttons.removeClass('NB-active');
                 $button.addClass('NB-active');
                 
                 if ($button.hasClass('task_view_page')) {
-                    $feed_view.addClass('NB-view-hidden');
-                    $page_view.removeClass('NB-view-hidden');
+                    $feed_view.animate({
+                        'left': $feed_view.width()
+                    }, {
+                        'easing': 'easeInOutQuint',
+                        'duration': 750
+                    });
+                    $page_view.animate({
+                        'left': 0
+                    }, {
+                        'easing': 'easeInOutQuint',
+                        'duration': 750
+                    });
                     this.story_view = 'page';
                 } else if ($button.hasClass('task_view_feed')) {
-                    $page_view.addClass('NB-view-hidden');
-                    $feed_view.removeClass('NB-view-hidden');
+                    $page_view.animate({
+                        'left': -1 * $page_view.width()
+                    }, {
+                        'easing': 'easeInOutQuint',
+                        'duration': 750
+                    })
+                    $feed_view.animate({
+                        'left': 0
+                    }, {
+                        'easing': 'easeInOutQuint',
+                        'duration': 750
+                    })
                     this.story_view = 'feed';
                 }
             }

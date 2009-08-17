@@ -286,6 +286,7 @@ a img {
     padding: 0 !important;
     overflow: auto !important;
     display: block;
+    position: absolute;
 }
 
 /* ================= */
@@ -487,10 +488,6 @@ a img {
 }
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
-}
-.NB-view-hidden {
-    position: absolute !important;
-    left: -9999em !important;
 }
 
 /* ================ */
