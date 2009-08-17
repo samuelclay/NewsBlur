@@ -447,26 +447,60 @@
             this.mark_story_title_as_selected(story_id, $st);
             this.mark_story_as_read(story_id, $st);
             
-            this.scroll_to_story_in_story_frame(story.story_title);
+            this.scroll_to_story_in_story_frame(story.story_title, story.story_content);
         },
         
-        scroll_to_story_in_story_frame: function(story_title) {
+        scroll_to_story_in_story_frame: function(story_title, story_content) {
             var self = this;
             var $iframe = $('.NB-feed-frame');
             var title = story_title.replace('^\s+|\s+$', '');
-            
-            NEWSBLUR.log(['Title', title]);
-            
+            var $story, $stories = [], title_words;
+
             $iframe.contents().find(':contains('+title+')').each(function(){
-                if($(this).children().length < 1) {
-                    if (self.story_view == 'feed') {
-                        $iframe.scrollTo(this, 0, { axis: 'y', offset: -24 });
-                    } else if (self.story_view == 'page') {
-                        $iframe.scrollTo(this, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24 });
-                    }
-                    return false;
-                }
+                $stories.push(this);
             });  
+            
+            if (!$stories.length) {
+                // Try slicing words off the title, from the end.
+                title_words = title.match(/[^ ]+/g);
+                if (title_words.length > 2) {
+                    var shortened_title = title_words.slice(0,-1).join(' ');
+                    $iframe.contents().find(':contains('+shortened_title+')').each(function(){
+                        $stories.push(this);
+                    });  
+                }
+            }
+            
+            if (!$stories.length) {
+                // Try slicing words off the title, from the beginning.
+                title_words = title.match(/[^ ]+/g);
+                if (title_words.length > 2) {
+                    var shortened_title = title_words.slice(1).join(' ');
+                    $iframe.contents().find(':contains('+shortened_title+')').each(function(){
+                        $stories.push(this);
+                    });  
+                }
+            }
+            
+            if (!$stories.length) {
+                // Try using story content instead of title.
+                content_words = story_content.match(/[^ ]+/g);
+                if (content_words.length > 2) {
+                    var shortened_content = content_words.slice(0, 6).join(' ');
+                    $iframe.contents().find(':contains('+shortened_content+')').each(function(){
+                        $stories.push(this);
+                    });  
+                }
+            }
+            
+            $story = $($stories.slice(-1));
+            if ($story && $story.length) {
+                if (self.story_view == 'feed') {
+                    $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
+                } else if (self.story_view == 'page') {
+                    $iframe.scrollTo($story, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24 });
+                }
+            }
         },
         
         open_story_link: function(story_id, $st) {
