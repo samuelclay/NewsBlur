@@ -494,11 +494,25 @@
             var self = this;
             var $iframe = $('.NB-feed-frame');
             var title = story_title.replace('^\s+|\s+$', '');
-            var $story, $stories = [], title_words;
-
-            $iframe.contents().find(':contains('+title+')').each(function(){
-                $stories.push(this);
-            });  
+            var $story, $stories = [], title_words, $reduced_stories = [];
+            
+            NEWSBLUR.log(['SS:', story_title, title]);
+            $stories = $iframe.contents().find(':contains('+title+')');
+            NEWSBLUR.log(['SS 1:', {'stories': $stories}, $stories.slice(-1), $stories.length]);
+            
+            if ($stories.length) {
+                // Reduce stories down to children only
+                $stories.each(function() {
+                    var $parent = $(this);
+                    
+                    if ($stories.not($parent.parents()).length) {
+                        NEWSBLUR.log(['P/C:', $stories, $parent, $stories.not($parent.parents())]);
+                        $reduced_stories.push($parent);
+                    }
+                });
+            }
+            $stories = $reduced_stories;
+            NEWSBLUR.log(['SS 2:', {'stories': $stories}, $stories.slice(-1), $stories.length]);
             
             if (!$stories.length) {
                 // Try slicing words off the title, from the end.
@@ -506,7 +520,7 @@
                 if (title_words.length > 2) {
                     var shortened_title = title_words.slice(0,-1).join(' ');
                     $iframe.contents().find(':contains('+shortened_title+')').each(function(){
-                        $stories.push(this);
+                        $stories.push($(this));
                     });  
                 }
             }
@@ -517,7 +531,7 @@
                 if (title_words.length > 2) {
                     var shortened_title = title_words.slice(1).join(' ');
                     $iframe.contents().find(':contains('+shortened_title+')').each(function(){
-                        $stories.push(this);
+                        $stories.push($(this));
                     });  
                 }
             }
@@ -528,7 +542,7 @@
                 if (content_words.length > 2) {
                     var shortened_content = content_words.slice(0, 6).join(' ');
                     $iframe.contents().find(':contains('+shortened_content+')').each(function(){
-                        $stories.push(this);
+                        $stories.push($(this));
                     });  
                 }
             }
