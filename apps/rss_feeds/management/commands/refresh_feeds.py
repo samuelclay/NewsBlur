@@ -13,7 +13,6 @@ import logging
 import errno
 import datetime
 import threading
-import threadpool
 import traceback
 import socket
 
@@ -215,9 +214,13 @@ class Dispatcher:
     def add_job(self, feed):
         """ adds a feed processing job to the pool
         """
-        req = threadpool.WorkRequest(self.process_feed_wrapper,
-            (feed,))
-        self.tpool.putRequest(req)
+        if self.tpool:
+            req = threadpool.WorkRequest(self.process_feed_wrapper,
+                (feed,))
+            self.tpool.putRequest(req)
+        else:
+            # no threadpool module, just run the job
+            self.process_feed_wrapper(feed)
 
     def process_feed_wrapper(self, feed):
         """ wrapper for ProcessFeed
