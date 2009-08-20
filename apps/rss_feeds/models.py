@@ -18,11 +18,13 @@ import logging
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
+ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
     feed_link = models.URLField(max_length=200, blank=True)
     feed_title = models.CharField(max_length=255, blank=True)
+    feed_tagline = models.CharField(max_length=1024, blank=True)
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True, default=0)
@@ -76,6 +78,8 @@ class Feed(models.Model):
                                         etag=self.etag,
                                         modified=last_modified,
                                         agent=USER_AGENT)
+                logging.debug('\t- [%d] Retrieved Feed: %s'
+                              % (self.id, self.feed_title))
                 cache.set("feed:" + self.feed_address, (now, feed), min_to_decay)
         
         # check for movement or disappearance
@@ -115,6 +119,13 @@ class Feed(models.Model):
         return
 
     def add_update_stories(self, stories, existing_stories):
+        ret_values = {
+            ENTRY_NEW:0,
+            ENTRY_UPDATED:0,
+            ENTRY_SAME:0,
+            ENTRY_ERR:0
+        }
+        
         for story in stories:
             story = self._pre_process_story(story)
 
@@ -137,8 +148,10 @@ class Feed(models.Model):
                            story_permalink = story.get('link')
                     )
                     try:
+                        ret_values[ENTRY_NEW] += 1
                         s.save(force_insert=True)
                     except:
+                        ret_values[ENTRY_ERR] += 1
                         pass
                 elif existing_story and is_different:
                     # update story
@@ -166,13 +179,15 @@ class Feed(models.Model):
                            story_permalink = story.get('link')
                     )
                     try:
+                        ret_values[ENTRY_UPDATED] += 1
                         s.save(force_update=True)
                     except:
                         pass
-                # else:
+                else:
+                    ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
             
-        return
+        return ret_values
         
             
     def trim_feed(self):
