@@ -37,15 +37,15 @@ def mtime(ttime):
     """ datetime auxiliar function.
     """
     return datetime.datetime.fromtimestamp(time.mktime(ttime))
-    
+
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-f", "--feed", dest="feed", default=None),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
-        make_option('-V', '--verbose', action='store_true',
-            dest='verbose', default=False, help='Verbose output.'),
         make_option('-t', '--timeout', type='int', default=10,
             help='Wait timeout in seconds when connecting to feeds.'),
+        make_option('-V', '--verbose', action='store_true',
+            dest='verbose', default=False, help='Verbose output.'),
         make_option('-w', '--workerthreads', type='int', default=4,
             help='Worker threads that will fetch feeds in parallel.'),
     )
@@ -53,6 +53,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['daemonize']:
             daemonize()
+        
+        # settting socket timeout (default= 10 seconds)
+        socket.setdefaulttimeout(options['timeout'])
         
         disp = Dispatcher(options, options['workerthreads'])        
         
@@ -62,8 +65,8 @@ class Command(BaseCommand):
         
         disp.poll()
         
-        return
-        
+
+
 class ProcessFeed:
     def __init__(self, feed, options):
         self.feed = feed
@@ -211,17 +214,6 @@ class Dispatcher:
         self.time_start = datetime.datetime.now()
 
 
-    def add_job(self, feed):
-        """ adds a feed processing job to the pool
-        """
-        if self.tpool:
-            req = threadpool.WorkRequest(self.process_feed_wrapper,
-                (feed,))
-            self.tpool.putRequest(req)
-        else:
-            # no threadpool module, just run the job
-            self.process_feed_wrapper(feed)
-
     def process_feed_wrapper(self, feed):
         """ wrapper for ProcessFeed
         """
@@ -257,6 +249,18 @@ class Dispatcher:
 
         return ret_feed, ret_entries
 
+
+    def add_job(self, feed):
+        """ adds a feed processing job to the pool
+        """
+        if self.tpool:
+            req = threadpool.WorkRequest(self.process_feed_wrapper,
+                (feed,))
+            self.tpool.putRequest(req)
+        else:
+            # no threadpool module, just run the job
+            self.process_feed_wrapper(feed)
+            
     def poll(self):
         """ polls the active threads
         """
@@ -281,6 +285,8 @@ class Dispatcher:
                               for key in self.entry_keys)
                     ))
                 break
+            except:
+                logging.error(u'I DONT KNOW')
                 
 class FeedFetcher(threading.Thread):
 
