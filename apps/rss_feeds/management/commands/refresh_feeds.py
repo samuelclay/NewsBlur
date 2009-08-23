@@ -16,6 +16,8 @@ import threading
 import traceback
 import socket
 
+threadpool = None
+
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
@@ -40,7 +42,7 @@ def mtime(ttime):
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option("-f", "--feed", dest="feed", default=None),
+        make_option("-f", "--feed", default=None),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
         make_option('-t', '--timeout', type='int', default=10,
             help='Wait timeout in seconds when connecting to feeds.'),
@@ -67,11 +69,50 @@ class Command(BaseCommand):
         
 
 
-class ProcessFeed:
+class FetchFeed:
     def __init__(self, feed, options):
         self.feed = feed
         self.options = options
         self.fpf = None
+
+    def fetch(self):
+        """ Downloads and parses a feed.
+        """
+
+        logging.debug(u'[%d] Fetching %s' % (self.feed.id,
+                                             self.feed.feed_title))
+
+        # we check the etag and the modified time to save bandwith and
+        # avoid bans
+        try:
+            self.fpf = feedparser.parse(self.feed.feed_address,
+                                        agent=USER_AGENT,
+                                        etag=self.feed.etag)
+        except:
+            logging.error('! ERROR: feed cannot be parsed')
+            return FEED_ERRPARSE
+        
+        return self.fpf
+
+class FetchPage:
+    def __init__(self, feed, options):
+        self.feed = feed
+        self.options = options
+        
+    def fetch(self):
+        logging.debug(u'[%d] Fetching page from %s' % (self.feed.id,
+                                                       self.feed.feed_title))
+                                                       
+        page_importer = PageImporter(self.feed.feed_link, self.feed)
+        self.feed.page = page_importer.fetch_page()
+        
+        self.feed.save()
+        
+class ProcessFeed:
+    def __init__(self, feed, fpf, options):
+        self.feed = feed
+        self.options = options
+        self.fpf = fpf
 
     def process(self):
         """ Downloads and parses a feed.
@@ -85,16 +126,6 @@ class ProcessFeed:
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
                                              self.feed.feed_title))
-
-        # we check the etag and the modified time to save bandwith and
-        # avoid bans
-        try:
-            self.fpf = feedparser.parse(self.feed.feed_address,
-                                        agent=USER_AGENT,
-                                        etag=self.feed.etag)
-        except:
-            logging.error('! ERROR: feed cannot be parsed')
-            return FEED_ERRPARSE, ret_values
         
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -157,9 +188,6 @@ class ProcessFeed:
                 guids.append(entry.link)
                 
         
-        page_importer = PageImporter(self.feed.feed_link, self.feed)
-        self.feed.page = page_importer.fetch_page()
-        
         self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
@@ -219,9 +247,18 @@ class Dispatcher:
         """
         start_time = datetime.datetime.now()
         try:
-            pfeed = ProcessFeed(feed, self.options)
+            ffeed = FetchFeed(feed, self.options)
+            fetched_feed = ffeed.fetch()
+            
+            pfeed = ProcessFeed(feed, fetched_feed, self.options)
             ret_feed, ret_entries = pfeed.process()
+            
+            fpage = FetchPage(feed, self.options)
+            fpage.fetch()
+            
+            del ffeed
             del pfeed
+            del fpage
         except:
             (etype, eobj, etb) = sys.exc_info()
             print '[%d] ! -------------------------' % (feed.id,)
@@ -285,7 +322,7 @@ class Dispatcher:
                               for key in self.entry_keys)
                     ))
                 break
-            except:
+            except Exception:
                 logging.error(u'I DONT KNOW')
                 
 class FeedFetcher(threading.Thread):
