@@ -102,11 +102,11 @@ class FetchPage:
     def fetch(self):
         logging.debug(u'[%d] Fetching page from %s' % (self.feed.id,
                                                        self.feed.feed_title))
-                                                       
-        page_importer = PageImporter(self.feed.feed_link, self.feed)
-        self.feed.page = page_importer.fetch_page()
+        if self.feed.feed_link:
+            page_importer = PageImporter(self.feed.feed_link, self.feed)
+            self.feed.page = page_importer.fetch_page()
         
-        self.feed.save()
+            self.feed.save()
         
 class ProcessFeed:
     def __init__(self, feed, fpf, options):
