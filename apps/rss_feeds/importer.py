@@ -24,13 +24,12 @@ class PageImporter(object):
             self.save_page(html)
     
     def rewrite_page(self, response):
-        head = response.find('<head>') + 6
         base_code = u'<base href="%s" />' % (self.feed.feed_link,)
         try:
-            html = u''.join([response[:head], base_code, response[head:]])
+            html = re.sub(r'<head(.*?\>)', r'<head\1 '+base_code, response)
         except:
             response = response.decode('latin1').encode('utf-8')
-            html = u''.join([response[:head], base_code, response[head:]])
+            html = re.sub(r'<head(.*?\>)', r'<head\1 '+base_code, response)
         
         return html
         

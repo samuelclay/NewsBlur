@@ -356,7 +356,7 @@
             $taskbar_view_page.removeClass('NB-inactive');
             $taskbar_return.css({'display': 'none'});
             
-            $story_iframe.attr({src: '/reader/load_feed_page?feed_id='+feed_id});
+            $story_iframe.removeAttr('src').attr({src: '/reader/load_feed_page?feed_id='+feed_id});
             $story_iframe.ready(function() {
                 if ($story_iframe.attr('src').indexOf('/reader/load_feed_page?feed_id='+feed_id) != -1) {
                     self.iframe_link_attacher = setInterval(function() {
