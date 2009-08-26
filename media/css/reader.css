@@ -402,15 +402,19 @@ a img {
     list-style-type: none;
 }
 
-.NB-taskbar .taskbar_leftnav {
-    float: left;
+.NB-taskbar .taskbar_nav {
     height: 29px;
     margin: 0;
     padding: 0;
     position: relative;
+    display: inline;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button {
+.NB-taskbar .taskbar_nav_left {
+    float: left;
+}
+
+.NB-taskbar .taskbar_nav .task_button {
     height: 29px;
     margin: 0px;
     display: block;
@@ -421,15 +425,15 @@ a img {
     font-size: 13px;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button:hover {
+.NB-taskbar .taskbar_nav .task_button:hover {
     background-color: #A0A7B1;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button.active .taskbar_menu {
+.NB-taskbar .taskbar_nav .task_button.active .taskbar_menu {
     display: block;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button .taskbar_menu {
+.NB-taskbar .taskbar_nav .task_button .taskbar_menu {
     display: none;
     background-color: #D9E2F7;
     bottom: 29px;
@@ -443,12 +447,12 @@ a img {
     border-top: 1px solid #828282;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button .taskbar_menu li {
+.NB-taskbar .taskbar_nav .task_button .taskbar_menu li {
     margin: 0;
     padding: 2px 4px;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button .taskbar_menu li span {
+.NB-taskbar .taskbar_nav .task_button .taskbar_menu li span {
     padding: 4px 29px;
     margin: 0;
     display: block;
@@ -456,7 +460,7 @@ a img {
     cursor: pointer;
 }
 
-.NB-taskbar .taskbar_leftnav .task_button .taskbar_menu li span:hover {
+.NB-taskbar .taskbar_nav .task_button .taskbar_menu li span:hover {
     background-color: #96B6E6;
     color: #405090;
 }
@@ -488,6 +492,15 @@ a img {
 }
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
+}
+.NB-taskbar .task_button_view.NB-inactive {
+    opacity: .15;
+}
+
+.NB-taskbar .task_button.task_return {
+    cursor: pointer;
+    display: none;
+    background: transparent url(../img/icons/silk/arrow_undo.png) no-repeat 8px 8px;
 }
 
 /* ================ */

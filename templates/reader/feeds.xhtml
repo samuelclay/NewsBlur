@@ -6,7 +6,7 @@
     <div class="left-center" id="feed_list"></div>
     
     <div class="NB-taskbar left-south">
-    	<ul class="taskbar_leftnav">
+    	<ul class="taskbar_nav taskbar_nav_left">
     		<li class="task_button task_button_menu task_add">
     			<ul class="taskbar_menu">
     				<li>Import</li>
@@ -15,8 +15,6 @@
     				<li><span>From Google Reader</span></li>
     			</ul>
     		</li>
-    	</ul>
-    	<ul class="taskbar_leftnav">
     		<li class="task_button task_button_menu task_profile">
     			<ul class="taskbar_menu">
     				<li>{{ user_info.username }}</li>
@@ -42,9 +40,13 @@
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar content-north">
             
-        	<ul class="taskbar_leftnav">
+        	<ul class="taskbar_nav taskbar_nav_left">
     			<li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Page</span></li>
 	    		<li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
+        	</ul>
+
+        	<ul class="taskbar_nav taskbar_nav_return">
+    			<li class="task_button task_return"><span class="NB-task-title">Return to <span class="NB-task-return-feed">Page</span></span></li>
         	</ul>
     	
         </div>

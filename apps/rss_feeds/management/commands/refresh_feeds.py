@@ -322,7 +322,7 @@ class Dispatcher:
                               for key in self.entry_keys)
                     ))
                 break
-            except Exception:
+            except Exception, e:
                 logging.error(u'I DONT KNOW')
                 
 class FeedFetcher(threading.Thread):
