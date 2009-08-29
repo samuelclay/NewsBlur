@@ -297,6 +297,8 @@
             // this.model.load_feed_page(feed_id, 0, $.rescope(this.show_feed_page_contents, this));
             this.show_feed_page_contents(feed_id);
             this.show_correct_story_view(feed_id);
+            
+            this.active_feed = feed_id;
         },
         
         show_correct_story_view: function(feed_id) {
@@ -548,7 +550,6 @@
             var title = story_title.replace('^\s+|\s+$', '');
             var $story, $stories = [], title_words, shortened_title, $reduced_stories = [];
             
-            NEWSBLUR.log(['SS:', story_title, title]);
             $stories = $iframe.contents().find(':contains('+title+')');
             NEWSBLUR.log(['SS 1:', {'stories': $stories}, $stories.slice(-1), $stories.length]);
             
@@ -634,6 +635,7 @@
         
         mark_story_as_read: function(story_id, $story_title) {
             var self = this;
+            var feed_id = this.active_feed;
 
             var callback = function() {
                 return;
@@ -641,7 +643,7 @@
 
             $story_title.addClass('read');
             if (NEWSBLUR.Globals.is_authenticated) {
-                this.model.mark_story_as_read(story_id, callback);
+                this.model.mark_story_as_read(story_id, feed_id, callback);
             }
         },
         

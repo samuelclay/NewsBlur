@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
+import random
 from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story
-from utils import feedparser, object_manager
+from utils import feedparser, object_manager, json
 
 class UserSubscription(models.Model):
     user = models.ForeignKey(User)
@@ -14,6 +15,7 @@ class UserSubscription(models.Model):
     unread_count_updated = models.DateTimeField(
                                default=datetime.datetime(2000,1,1)
                            )
+    scores = models.CharField(max_length=256)
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
@@ -79,6 +81,21 @@ class UserSubscription(models.Model):
         new_subscription = UserSubscription(user=self.user, feed=feed)
         new_subscription.save()
     
+    def calculate_feed_scores(self):
+        scores = []
+        for i in range(20):
+            # [0, 0, 2, 4, 5 ..]
+            scores.append(random.randint(0, 20))
+        
+        self.scores = json.encode(scores)
+        self.save()
+        
+        return scores
+        
+    def get_scores(self):
+        scores = json.decode(self.scores)
+        return scores
+        
     class Meta:
         unique_together = ("user", "feed")
         

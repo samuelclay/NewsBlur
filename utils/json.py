@@ -5,6 +5,11 @@ from django.utils.encoding import force_unicode
 from django.utils import simplejson as json
 from decimal import Decimal
 
+def decode(data):
+    return json.loads(data)
+    
+def encode(data):
+    return json_encode(data)
 
 def json_encode(data):
     """

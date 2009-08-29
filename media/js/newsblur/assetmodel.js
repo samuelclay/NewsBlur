@@ -49,7 +49,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     var raw_data = o.substring(0, log_index);
                     data = eval('(' + raw_data + ')');
                     if (log) {
-                        var log_js_index_begin = log.indexOf('<script type="text/javascript">');
+                        var log_js_index_begin = log.indexOf('<script type=\"text\/javascript\">');
                         var log_js_index_end = log.indexOf('</script>');
                         var log_html = log.substring(0, log_js_index_begin);
                         var log_js = log.substring(log_js_index_begin+31, log_js_index_end);
@@ -71,7 +71,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });    
     },
     
-    mark_story_as_read: function(story_id, callback) {
+    mark_story_as_read: function(story_id, feed_id, callback) {
         var self = this;
         var read = false;
         
@@ -86,7 +86,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         if (!read) {
             this.make_request('/reader/mark_story_as_read',
                 {
-                    story_id: story_id
+                    story_id: story_id,
+                    feed_id: feed_id
                 }, callback
             );
         }
@@ -233,6 +234,7 @@ NEWSBLUR.AssetModel.Preferences.prototype = {
     },
     
     make_request: function(url, data, callback) {
+        $.ajaxStop();
         $.ajax({
             url: url,
             data: data,

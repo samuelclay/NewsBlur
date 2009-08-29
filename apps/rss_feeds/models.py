@@ -11,10 +11,9 @@ from django.utils.safestring import mark_safe
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from django.db.models import Q
-from utils.diff import HTMLDiff
-from apps.rss_feeds.importer import PageImporter
 import settings
 import logging
+from utils.diff import HTMLDiff
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
@@ -51,70 +50,19 @@ class Feed(models.Model):
         print locals()
         
     def update(self, force=False, feed=None):
+        from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         except:
             pass
-            
-        last_updated = self.last_updated() / 60
-        min_to_decay = self.min_to_decay + (random.random()*self.min_to_decay)
-        if last_updated < min_to_decay and not force:
-            # logging.debug('Feed unchanged: ' + self.feed_title)
-            return
-            
-        feed_updated, feed = cache.get("feed:" + self.feed_address, (None, None,))
-        if feed and not force:
-            # logging.debug('Feed Cached: ' + self.feed_title)
-            pass
-        if not feed or force:
-            last_modified = None
-            now = datetime.datetime.now()
-            if self.last_modified:
-                last_modified = datetime.datetime.timetuple(self.last_modified)
-            if not feed:
-                logging.debug('[%d] Retrieving Feed: %s'
-                              % (self.id, self.feed_title))
-                feed = feedparser.parse(self.feed_address,
-                                        etag=self.etag,
-                                        modified=last_modified,
-                                        agent=USER_AGENT)
-                logging.debug('\t- [%d] Retrieved Feed: %s'
-                              % (self.id, self.feed_title))
-                cache.set("feed:" + self.feed_address, (now, feed), min_to_decay)
         
-        # check for movement or disappearance
-        if hasattr(feed, 'status'):
-            if feed.status == 301:
-                self.feed_url = feed.href
-            if feed.status == 410:
-                self.active = False
-            if feed.status >= 400:
-                return
-
-        # Fill in optional fields
-        if not self.feed_title:
-            self.feed_title = feed.feed.get('title', feed.feed.get('link'))
-        if not self.feed_link:
-            self.feed_link = feed.feed.get('link')
-        self.etag = feed.get('etag', '')
-        self.last_update = datetime.datetime.now()
-        self.last_modified = mtime(feed.get('modified',
-                                        datetime.datetime.timetuple(datetime.datetime.now())))
-
-        page_importer = PageImporter(self.feed_link, self)
-        self.page = page_importer.fetch_page()
-        
-        self.save()
-        
-        num_entries = len(feed['entries'])
-        # Compare new stories to existing stories, adding and updating
-        existing_stories = Story.objects.filter(
-            story_feed=self
-        ).order_by('-story_date').values()[:num_entries]
-        
-        self.add_update_stories(feed['entries'], existing_stories)
-
-        self.trim_feed();
+        options = {
+            'verbose': 0,
+            'timeout': 10
+        }
+        disp = feed_fetcher.Dispatcher(options, 1)        
+        disp.add_job(self)
+        disp.poll()
 
         return
 
@@ -155,7 +103,7 @@ class Feed(models.Model):
                         pass
                 elif existing_story and is_different:
                     # update story
-                    logging.debug('- Updated story in feed (%s - %s/%s): %s / %s' % (self.feed_title, len(existing_story['story_content']), len(story.get('title')), len(existing_story['story_content']), len(story_content)))
+                    logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story['story_content']), len(story_content)))
                 
                     original_content = None
                     if existing_story['story_original_content']:

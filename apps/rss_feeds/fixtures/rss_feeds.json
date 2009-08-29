@@ -123,6 +123,29 @@
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
+    {
+        "pk": 4,
+        "model": "reader.usersubscriptionfolders",
+        "fields": {
+            "feed": 4,
+            "user_sub": 4,
+            "folder": "Blogs",
+            "user": 1
+        }
+    },
+
+    {
+        "pk": 4,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 4,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
 
 
 
