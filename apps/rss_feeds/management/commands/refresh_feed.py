@@ -4,6 +4,7 @@ from apps.rss_feeds.models import Feed, Story
 from django.core.cache import cache
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
 from optparse import OptionParser, make_option
+from utils.management_functions import daemonize
 import os
 import logging
 import errno
@@ -30,24 +31,3 @@ class Command(BaseCommand):
             for us in usersubs:
                 us.count_unread()
                 cache.delete('usersub:%s' % us.user_id)
-        
-def daemonize():
-    """
-    Detach from the terminal and continue as a daemon.
-    """
-    # swiped from twisted/scripts/twistd.py
-    # See http://www.erlenstar.demon.co.uk/unix/faq_toc.html#TOC16
-    if os.fork():   # launch child and...
-        os._exit(0) # kill off parent
-    os.setsid()
-    if os.fork():   # launch child and...
-        os._exit(0) # kill off parent again.
-    os.umask(077)
-    null = os.open("/dev/null", os.O_RDWR)
-    for i in range(3):
-        try:
-            os.dup2(null, i)
-        except OSError, e:
-            if e.errno != errno.EBADF:
-                raise
-    os.close(null)

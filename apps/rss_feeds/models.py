@@ -13,6 +13,7 @@ from utils.story_functions import format_story_link_date__long
 from django.db.models import Q
 import settings
 import logging
+import difflib
 from utils.diff import HTMLDiff
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
@@ -83,7 +84,7 @@ class Feed(models.Model):
                     story_content = story_contents[0]['value']
                 else:
                     story_content = story.get('summary')
-                existing_story, is_different = self._exists_story(story, story_content, existing_stories)
+                existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
                 if existing_story is None:
                     pub_date = datetime.datetime.timetuple(story.get('published'))
                     # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
@@ -101,7 +102,7 @@ class Feed(models.Model):
                     except:
                         ret_values[ENTRY_ERR] += 1
                         pass
-                elif existing_story and is_different:
+                elif existing_story and story_has_changed:
                     # update story
                     logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story['story_content']), len(story_content)))
                 
@@ -161,30 +162,47 @@ class Feed(models.Model):
         return stories
     
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
-        same_story = None
-        is_different = False
+        story_in_system = None
+        story_has_changed = False
         story_pub_date = story.get('published')
         start_date = story_pub_date - datetime.timedelta(hours=8)
         end_date = story_pub_date + datetime.timedelta(hours=8)
-
+        
         for existing_story in existing_stories:
+            content_ratio = 0
+            
             if story_pub_date > start_date and story_pub_date < end_date:
                 if story.get('link') == existing_story['story_permalink']:
-                    same_story = existing_story
-                    
+                    story_in_system = existing_story
+                
+                # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
                                                               existing_story['story_title'])
-                if same_story and story_title_difference < 10:
-                    same_story = existing_story
-                    if story_title_difference > 0:
-                        is_different = True
-                                        
-                if same_story:
-                    if story_content != existing_story['story_content']:
-                        is_different = True
+                seq = difflib.SequenceMatcher(None, story_content, existing_story['story_content'])
+                
+                if seq.real_quick_ratio() > .9 and seq.quick_ratio() > .95:
+                    content_ratio = seq.ratio()
+                    
+                if story_title_difference > 0 and story_title_difference < 5 and content_ratio > .98:
+                    story_in_system = existing_story
+                    if story_title_difference > 0 or content_ratio < 1.0:
+                        # print "Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story['story_title'], story_title_difference, content_ratio)
+                        story_has_changed = True
+                        break
+                
+                # More restrictive content distance, still no story match
+                if not story_in_system and content_ratio > .99:
+                    # print "Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story['story_title'], story_title_difference, content_ratio)
+                    story_in_system = existing_story
+                    story_has_changed = True
                     break
-
-        return same_story, is_different
+                                        
+                if story_in_system:
+                    if story_content != existing_story['story_content']:
+                        story_has_changed = True
+                    break
+                    
+        return story_in_system, story_has_changed
         
     def _pre_process_story(self, entry):
         date_published = entry.get('published', entry.get('updated'))
