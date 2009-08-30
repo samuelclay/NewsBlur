@@ -49,7 +49,8 @@ def load_feeds(request):
         folders = []
         for sub in us:
             # logging.info("UserSub Scores: %s" % sub.user_sub.scores)
-            sub.feed.scores = json.decode(sub.user_sub.scores)
+            feed_scores = sub.user_sub.scores or "[]"
+            sub.feed.scores = json.decode(feed_scores)
             try:
                 sub.feed.unread_count = sub.user_sub.unread_count
             except:
