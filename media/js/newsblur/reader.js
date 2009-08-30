@@ -550,42 +550,49 @@
             var title = story_title.replace('^\s+|\s+$', '');
             var $story, $stories = [], title_words, shortened_title, $reduced_stories = [];
             
-            $stories = $iframe.contents().find(':contains('+title+')');
-            NEWSBLUR.log(['SS 1:', {'stories': $stories}, $stories.slice(-1), $stories.length]);
-            
-            if ($stories.length) {
-                // Reduce stories down to children only
-                $stories.each(function() {
-                    var $parent = $(this);
-                    
-                    if ($stories.not($parent.parents()).length) {
-                        NEWSBLUR.log(['P/C:', $stories, $parent, $stories.not($parent.parents())]);
-                        $reduced_stories.push($parent);
-                    }
-                });
-            }
-            $stories = $reduced_stories;
-            NEWSBLUR.log(['SS 2:', {'stories': $stories}, $stories.slice(-1), $stories.length]);
+            $stories = $iframe.contents()
+                            .find(':contains("'+title+'")')
+                            .filter(function() {
+                                return !$(this).find(':contains("'+title+'")').length;
+                            });
+            // NEWSBLUR.log(['SS 1:', $stories, $stories.eq(0), $stories.length]);
             
             if (!$stories.length) {
                 // Try slicing words off the title, from the end.
                 title_words = title.match(/[^ ]+/g);
                 if (title_words.length > 2) {
                     shortened_title = title_words.slice(0,-1).join(' ');
-                    $iframe.contents().find(':contains('+shortened_title+')').each(function(){
-                        $stories.push($(this));
-                    });  
+                    $iframe.contents().find(':contains('+shortened_title+')')
+                        .filter(function() {
+                            return !$(this).find(':contains("'+shortened_title+'")').length;
+                        })
+                        .each(function(){
+                            $stories.push(this);
+                        });  
                 }
             }
             
             if (!$stories.length) {
                 // Try slicing words off the title, from the beginning.
                 title_words = title.match(/[^ ]+/g);
-                if (title_words.length > 2) {
-                    shortened_title = title_words.slice(1).join(' ');
-                    $iframe.contents().find(':contains('+shortened_title+')').each(function(){
-                        $stories.push($(this));
-                    });  
+                // NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')])
+                if (title_words.length >= 2) {
+                    for (i in [true, true, true]) {
+                        if (i==0) shortened_title = title_words.slice(1).join(' ');
+                        if (i==1) shortened_title = title_words.slice(0, -1).join(' ');
+                        if (i==2) shortened_title = title_words.slice(1, -1).join(' ');
+                        if (!shortened_title) break;
+                    
+                        $iframe.contents().find(':contains("'+shortened_title+'")')
+                            .filter(function() {
+                                return !$(this).find(':contains("'+shortened_title+'")').length;
+                            })
+                            .each(function(){
+                                $stories.push(this);
+                            });  
+                        // NEWSBLUR.log(['Cutting words off title', $stories.length, $stories]);
+                        if ($stories.length) break;
+                    }
                 }
             }
             
@@ -594,13 +601,18 @@
                 content_words = story_content.match(/[^ ]+/g);
                 if (content_words.length > 2) {
                     var shortened_content = content_words.slice(0, 6).join(' ');
-                    $iframe.contents().find(':contains('+shortened_content+')').each(function(){
-                        $stories.push($(this));
-                    });  
+                    $iframe.contents().find(':contains('+shortened_content+')')
+                        .filter(function() {
+                            return !$(this).find(':contains("'+shortened_content+'")').length;
+                        })
+                        .each(function(){
+                            $stories.push(this);
+                        });  
                 }
             }
             
-            $story = $($stories.slice(-1));
+            $story = $stories.eq(0);
+            // NEWSBLUR.log(['Found story', $story]);
             if ($story && $story.length) {
                 if (self.story_view == 'feed') {
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
