@@ -458,14 +458,21 @@
         // = Taskbar - Story =
         // ===================
         
-        switch_taskbar_view: function($button) {
-            if (!($button.hasClass('NB-active'))) {
+        switch_taskbar_view: function($button, story_not_found) {
+            if (!($button.hasClass('NB-active')) || this.page_view_showing_feed_view) {
                 var $taskbar_buttons = $('.NB-taskbar .task_button_view');
                 var $feed_view = this.$feed_view;
                 var $page_view = this.$page_view;
+                var $page_to_feed_arrow = $('.NB-taskbar .NB-task-view-page-to-feed-arrow');
                 
-                $taskbar_buttons.removeClass('NB-active');
-                $button.addClass('NB-active');
+                if (story_not_found) {
+                    $page_to_feed_arrow.show();
+                } else {
+                    $taskbar_buttons.removeClass('NB-active');
+                    $button.addClass('NB-active');
+                    $page_to_feed_arrow.hide();
+                    this.page_view_showing_feed_view = false;
+                }
                 
                 if ($button.hasClass('task_view_page')) {
                     $feed_view.animate({
@@ -480,7 +487,9 @@
                         'easing': 'easeInOutQuint',
                         'duration': 750
                     });
-                    this.story_view = 'page';
+                    if (!story_not_found) {
+                        this.story_view = 'page';
+                    }
                 } else if ($button.hasClass('task_view_feed')) {
                     $page_view.animate({
                         'left': -1 * $page_view.width()
@@ -494,7 +503,9 @@
                         'easing': 'easeInOutQuint',
                         'duration': 750
                     });
-                    this.story_view = 'feed';
+                    if (!story_not_found) {
+                        this.story_view = 'feed';
+                    }
                 }
             }
         },
@@ -545,7 +556,6 @@
         },
         
         scroll_to_story_in_story_frame: function(story_title, story_content) {
-            var self = this;
             var $iframe = $('.NB-feed-frame');
             var title = story_title.replace('^\s+|\s+$', '');
             var $story, $stories = [], title_words, shortened_title, $reduced_stories = [];
@@ -612,12 +622,23 @@
             }
             
             $story = $stories.eq(0);
-            // NEWSBLUR.log(['Found story', $story]);
+            NEWSBLUR.log(['Found story', $story, this.story_view, this.page_view_showing_feed_view]);
             if ($story && $story.length) {
-                if (self.story_view == 'feed') {
+                if (this.story_view == 'feed') {
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
-                } else if (self.story_view == 'page') {
+                } else if (this.story_view == 'page') {
+                    var $button = $('.NB-taskbar .task_view_page');
+                    this.switch_taskbar_view($button);
                     $iframe.scrollTo($story, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24 });
+                }
+            } else {
+                // Story not found, show in feed view with link to page view
+                if (this.story_view == 'feed') {
+                    
+                } else if (this.story_view == 'page') {
+                    var $button = $('.NB-taskbar .task_view_feed');
+                    this.page_view_showing_feed_view = true;
+                    this.switch_taskbar_view($button, true);
                 }
             }
         },
@@ -818,11 +839,11 @@
             
             $.targetIs(e, { tagSelector: '.task_button_menu' }, function($t, $p){
                 e.preventDefault();
-                self.open_taskbar_menu($t, e);
+                self.open_taskbar_menu($t);
             });
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
                 e.preventDefault();
-                self.switch_taskbar_view($t, e);
+                self.switch_taskbar_view($t);
             });
             $.targetIs(e, { tagSelector: '.task_return', childOf: '.NB-taskbar' }, function($t, $p){
                 e.preventDefault();

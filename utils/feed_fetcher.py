@@ -160,7 +160,7 @@ class ProcessFeed:
             num_entries = len(self.fpf.entries)
             existing_stories = Story.objects.filter(
                 story_feed=self.feed
-            ).order_by('-story_date').values()[:num_entries]
+            ).order_by('-story_date').values()[:num_entries*2]
         
             ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
         except:

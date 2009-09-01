@@ -394,6 +394,18 @@ a img {
 .NB-taskbar {
     height: 29px;
     background: #e0e0e0 url(../img/reader/taskbar_background.png) repeat-x top left;
+    position: relative;
+}
+
+.NB-taskbar .NB-task-view-page-to-feed-arrow {
+    position: absolute;
+    top: 8px;
+    left: 64px;
+    width: 16px;
+    height: 16px;
+    background: transparent url(../img/icons/silk/arrow_switch.png) no-repeat center 0px;
+    display: none;
+    z-index: 1;
 }
 
 .NB-taskbar ul {
