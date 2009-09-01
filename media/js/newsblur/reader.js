@@ -287,6 +287,8 @@
             var self = this;
             var $story_titles = this.$story_titles;
             $story_titles.empty().scrollTop('0px');
+            
+            this.active_feed = feed_id;
             this.hide_splash_page();
             this.$story_titles.data('page', 0);
             this.$story_titles.data('feed_id', feed_id);
@@ -298,24 +300,27 @@
             this.show_feed_page_contents(feed_id);
             this.show_correct_story_view(feed_id);
             
-            this.active_feed = feed_id;
         },
         
         show_correct_story_view: function(feed_id) {
             var $feed_view = this.$feed_view;
             var $page_view = this.$page_view;
+            var $taskbar_view_button;
             
             // TODO: Assume page view until user prefs override
             if (this.story_view == 'feed') {
                 $page_view.css({
                     'left': -1 * $page_view.width()
                 });
+                $taskbar_view_button = $('.NB-taskbar .task_view_feed');
             } else if (this.story_view == 'page') {
                 $feed_view.css({
                     'left': $feed_view.width()
                 });
+                $taskbar_view_button = $('.NB-taskbar .task_view_page');
             }
             
+            this.switch_taskbar_view($taskbar_view_button);
         },
         
         create_story_titles: function(e, stories) {
