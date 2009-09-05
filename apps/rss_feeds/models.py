@@ -174,9 +174,9 @@ class Feed(models.Model):
             content_ratio = 0
             
             if story_pub_date > start_date and story_pub_date < end_date:
-                if story.get('id') == existing_story['story_guid']:
+                if story.get('id') and story.get('id') == existing_story['story_guid']:
                     story_in_system = existing_story
-                elif story.get('link') == existing_story['story_permalink']:
+                elif story.get('link') and story.get('link') == existing_story['story_permalink']:
                     story_in_system = existing_story
                 
                 # Title distance + content distance, checking if story changed
