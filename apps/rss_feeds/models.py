@@ -94,7 +94,8 @@ class Feed(models.Model):
                            story_title = story.get('title'),
                            story_content = story_content,
                            story_author = story.get('author'),
-                           story_permalink = story.get('link')
+                           story_permalink = story.get('link'),
+                           story_guid = story.get('id')
                     )
                     try:
                         ret_values[ENTRY_NEW] += 1
@@ -125,7 +126,8 @@ class Feed(models.Model):
                            story_content = diff.getDiff(),
                            story_original_content = original_content,
                            story_author = story.get('author'),
-                           story_permalink = story.get('link')
+                           story_permalink = story.get('link'),
+                           story_guid = story.get('id')
                     )
                     try:
                         ret_values[ENTRY_UPDATED] += 1
@@ -172,7 +174,9 @@ class Feed(models.Model):
             content_ratio = 0
             
             if story_pub_date > start_date and story_pub_date < end_date:
-                if story.get('link') == existing_story['story_permalink']:
+                if story.get('id') == existing_story['story_guid']:
+                    story_in_system = existing_story
+                elif story.get('link') == existing_story['story_permalink']:
                     story_in_system = existing_story
                 
                 # Title distance + content distance, checking if story changed
@@ -254,6 +258,7 @@ class Story(models.Model):
                                           blank=True)
     story_author = models.CharField(max_length=255, null=True, blank=True)
     story_permalink = models.CharField(max_length=1000)
+    story_guid = models.CharField(max_length=1000)
     story_past_trim_date = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag)
 
