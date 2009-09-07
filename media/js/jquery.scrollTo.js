@@ -176,9 +176,6 @@
 			animate( settings.onAfter );			
 
 			function animate( callback ){
-			    if (!settings.queue) {
-			        $elem.stop();
-		        }
 				$elem.animate( attr, {
 			        'duration': duration, 
 			        'easing': settings.easing, 

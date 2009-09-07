@@ -350,7 +350,7 @@
         },
         
         make_story_feed_entries: function(stories, first_load) {
-            var $story_pane = $('.NB-feed-story-view', this.$story_pane);
+            var $feed_view = this.$feed_view;
             
             var $stories = $.make('ul', { className: 'NB-feed-stories' });
             for (s in stories) {
@@ -373,16 +373,16 @@
             $stories.append($endbar);
             
             if (first_load) {
-                $story_pane.empty();
+                $feed_view.empty();
             }
-            $story_pane.scrollTop('0px');
-            $story_pane.append($stories);
+            $feed_view.scrollTop('0px');
+            $feed_view.append($stories);
         },
         
         show_feed_page_contents: function(feed_id) {
             var self = this;
-            var $story_pane = this.$story_pane;
-            var $story_iframe = $('.NB-feed-frame', $story_pane);
+            var $feed_view = this.$story_pane;
+            var $story_iframe = $('.NB-feed-frame', $feed_view);
             var $taskbar_view_page = $('.NB-taskbar .task_view_page');
             var $taskbar_return = $('.NB-taskbar .task_return');
             
@@ -495,8 +495,9 @@
         // = Taskbar - Story =
         // ===================
         
-        switch_taskbar_view: function($button, story_not_found) {
-            if (!($button.hasClass('NB-active')) || this.page_view_showing_feed_view) {
+        switch_taskbar_view: function($button, story_not_found, story_found) {
+            if (!($button.hasClass('NB-active')) || story_not_found || story_found) {
+                // NEWSBLUR.log(['$button', $button, this.page_view_showing_feed_view, $button.hasClass('NB-active'), story_not_found]);
                 var $taskbar_buttons = $('.NB-taskbar .task_button_view');
                 var $feed_view = this.$feed_view;
                 var $page_view = this.$page_view;
@@ -563,12 +564,36 @@
             this.mark_story_title_as_selected(story_id, $st);
             this.mark_story_as_read(story_id, $st);
             
-            this.scroll_to_story_in_story_feed(story);
-            this.scroll_to_story_in_story_frame(story.story_title, story.story_content);
+            var found_in_page = this.scroll_to_story_in_story_frame(story.story_title, story.story_content);
+            this.scroll_to_story_in_story_feed(story, found_in_page);
         },
         
-        scroll_to_story_in_story_feed: function(story) {
+        scroll_to_story_in_story_feed: function(story, found_in_page) {
+            var $story;
+            var $feed_view = this.$feed_view;
             
+            var $stories = $('.NB-feed-story', $feed_view);
+            for (var s=0, s_count = $stories.length; s < s_count; s++) {
+                if ($stories.eq(s).data('story') == story.id) {
+                    $story = $stories.eq(s);
+                    break;
+                }
+            }
+            
+            if ($story) {
+                if (found_in_page) {
+                    this.page_view_showing_feed_view = false;
+                }
+                if (this.story_view == 'feed' || this.page_view_showing_feed_view) {
+                    $feed_view.scrollable().stop();
+                    $feed_view.scrollTo($story, 600, { axis: 'y', easing: 'easeInOutQuint', offset: 0, queue: false });
+                } else if (this.story_view == 'page') {
+                    $feed_view.scrollTo($story, 0, { axis: 'y', offset: 0 });
+                }
+                if (!found_in_page) {
+                    this.page_view_showing_feed_view = true;
+                }
+            }
         },
         
         scroll_to_story_in_story_frame: function(story_title, story_content) {
@@ -608,7 +633,7 @@
                 // Try slicing words off the title, from the beginning.
                 title_words = title.match(/[^ ]+/g);
                 // NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')])
-                if (title_words.length >= 2) {
+                if (title_words.length > 2) {
                     for (i in [true, true, true]) {
                         if (i==0) shortened_title = title_words.slice(1).join(' ');
                         if (i==1) shortened_title = title_words.slice(0, -1).join(' ');
@@ -652,32 +677,36 @@
                 if (!$story && $(this).parents('h1,h2,h3').length) {
                     $story = $(this);
                     return;
-                } else if (!story && $(this).parents('h4, h5, h6').length) {
+                } else if (!$story && $(this).parents('h4, h5, h6').length) {
                     $story = $(this);
                     return;
                 }
             });
-            if (!$story.length) $story = $stories.eq(0);
+            if (!$story) $story = $stories.eq(0);
             
             NEWSBLUR.log(['Found story', $story, this.story_view, this.page_view_showing_feed_view]);
             if ($story && $story.length) {
-                if (this.story_view == 'feed') {
+                if (this.story_view == 'feed' || this.page_view_showing_feed_view) {
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
                 } else if (this.story_view == 'page') {
-                    var $button = $('.NB-taskbar .task_view_page');
-                    this.switch_taskbar_view($button);
+                    $iframe.scrollable().stop();
                     $iframe.scrollTo($story, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24, queue: false });
+                }
+                if (this.story_view == 'page' && this.page_view_showing_feed_view) {
+                    var $button = $('.NB-taskbar .task_view_page');
+                    this.switch_taskbar_view($button, false, true);
                 }
             } else {
                 // Story not found, show in feed view with link to page view
                 if (this.story_view == 'feed') {
-                    
+                    // Nowhere to scroll to
                 } else if (this.story_view == 'page') {
                     var $button = $('.NB-taskbar .task_view_feed');
-                    this.page_view_showing_feed_view = true;
                     this.switch_taskbar_view($button, true);
                 }
             }
+            
+            return $story && $story.length > 0;
         },
         
         open_story_link: function(story_id, $st) {
@@ -835,7 +864,6 @@
             
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();
-                NEWSBLUR.log(['Feed click', $('.feed_id', $t), $t]);
                 var feed_id = $('.feed_id', $t).text();
                 self.open_feed(feed_id, $t);
             });

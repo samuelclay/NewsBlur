@@ -317,6 +317,7 @@ a img {
     padding: 0 140px 0 28px;
     background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
     border-top: 4px solid #404040;
+    border-bottom: 1px solid #ADADAD;
     position: relative;
     overflow: hidden;
 }
