@@ -104,7 +104,6 @@
             var story_content_top = parseInt(this.$story_titles.css('top'), 10);
             
             var new_story_pane_height = doc_height - (stories_pane_height + story_content_top);
-            // NEWSBLUR.log(['Height', doc_height, stories_pane_height, story_content_top]);
             this.$story_pane.css('height', new_story_pane_height);
         },
         
@@ -113,7 +112,6 @@
             var feed_list_top = parseInt($('#feed_list').css('top'), 10);
             
             var new_feed_list_height = doc_height - feed_list_top;
-            // NEWSBLUR.log(['Height', doc_height, feed_list_top, new_feed_list_height]);
             $('#feed_list').css('height', new_feed_list_height);
         },
         
@@ -191,7 +189,6 @@
                     var scroll = $next_story.position().top;
                     var container = this.$story_titles.scrollTop();
                     var height = this.$story_titles.outerHeight();
-                    // NEWSBLUR.log(['Moving', scroll, container, container_offset, scroll-container_offset+20, height]);
                     this.$story_titles.scrollTop(scroll+container-height/5);
                 }
                 this.open_story(story_id, $next_story);
@@ -239,7 +236,6 @@
             var page_height = this.$story_pane.height();
             var scroll_height = parseInt(page_height * amount, 10);
             var dir = '+';
-            NEWSBLUR.log(['page', page_height, scroll_height, this.$story_pane]);
             if (direction == -1) {
                 dir = '-';
             }
@@ -611,11 +607,11 @@
             $stories = $iframe.contents()
                             .find(':contains("'+title+'")')
                             .filter(function() {
-                                return !$(this).find(':contains("'+title+'")').length;
+                                return !$(this).find(':contains("'+title+'")').length && $(this).is(':visible');
                             })
                             .not('script')
                             .each(function() {
-                                 // NEWSBLUR.log(['Accepted 1 $elem', $(this)]);
+                                NEWSBLUR.log(['Accepted 1 $elem', $(this), $(this).is(':visible')]);
                             });
             // NEWSBLUR.log(['SS 1:', $stories, $stories.eq(0), $stories.length]);
             
@@ -630,8 +626,10 @@
                         })
                         .not('script')
                         .each(function(){
-                            $stories.push(this);
-                            // NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
+                            if ($(this).is(':visible')) {
+                                $stories.push(this);
+                            }
+                            NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
                         });  
                 }
             }
@@ -653,8 +651,10 @@
                             })
                             .not('script')
                             .each(function(){
-                                $stories.push(this);
-                                // NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
+                                if ($(this).is(':visible')) {
+                                    $stories.push(this);
+                                }
+                                NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
                             });  
                         // NEWSBLUR.log(['Cutting words off title', $stories.length, $stories]);
                         if ($stories.length) break;
@@ -664,7 +664,10 @@
             
             if (!$stories.length) {
                 // Try using story content instead of title.
-                content_words = story_content.match(/[^ ]+/g);
+                content_words = story_content.replace(/<([^<>\s]*)(\s[^<>]*)?>/, '')
+                                             .replace(/\(.*?\)/, '')
+                                             .match(/[^ ]+/g);
+                // NEWSBLUR.log(['content_words', content_words]);
                 if (content_words.length > 2) {
                     var shortened_content = content_words.slice(0, 6).join(' ');
                     $iframe.contents().find(':contains('+shortened_content+')')
@@ -673,8 +676,10 @@
                         })
                         .not('script')
                         .each(function(){
-                            $stories.push(this);
-                            // NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
+                            if ($(this).is(':visible')) {
+                                $stories.push(this);
+                            }
+                            NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
                         });  
                 }
             }
@@ -691,7 +696,7 @@
             });
             if (!$story) $story = $stories.eq(0);
             
-            // NEWSBLUR.log(['Found story', $story, this.story_view, this.page_view_showing_feed_view]);
+            NEWSBLUR.log(['Found story', $story, this.story_view, this.page_view_showing_feed_view]);
             if ($story && $story.length) {
                 if (this.story_view == 'feed' || this.page_view_showing_feed_view) {
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
