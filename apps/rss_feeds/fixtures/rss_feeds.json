@@ -3,58 +3,6 @@
 
 
     {
-        "pk": 1, 
-        "model": "rss_feeds.feed", 
-        "fields": {            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/gawker1.xml", 
-            "days_to_trim": 90, 
-            "feed_link": "http://gawker.com", 
-            "num_subscribers": 0, 
-            "creation": "2009-01-12", 
-            "feed_title": "Gawker", 
-            "last_update": "2009-07-06 22:30:03", 
-            "min_to_decay": 1, 
-            "etag": "", 
-            "last_modified": "2009-07-06 22:30:03", 
-            "active": 1
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "rss_feeds.feed", 
-        "fields": {            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/brownstoner.xml", 
-            "days_to_trim": 90, 
-            "feed_link": "http://www.brownstoner.com/", 
-            "num_subscribers": 0, 
-            "creation": "2009-01-12", 
-            "feed_title": "Brownstoner", 
-            "last_update": "2009-07-06 22:30:01", 
-            "min_to_decay": 1, 
-            "etag": "\"ba36f-69d9-46e0f5f94e180\"", 
-            "last_modified": "2009-07-06 22:30:01", 
-            "active": 1
-        }
-    }, 
-    {
-        "pk": 3, 
-        "model": "rss_feeds.feed", 
-        "fields": {
-            "feed_address": "/Users/conesus/newsblur/apps/rss_feeds/fixtures/daringfireball.xml", 
-            "days_to_trim": 90, 
-            "feed_link": "http://daringfireball.net/", 
-            "num_subscribers": 0, 
-            "creation": "2009-02-10", 
-            "feed_title": "Daring Fireball", 
-            "last_update": "2009-07-06 22:18:34", 
-            "min_to_decay": 15, 
-            "etag": "\"918ddfd6a7ab64936cdb17fc9fe07834\"-gzip", 
-            "last_modified": "2009-07-07 01:20:00", 
-            "active": 1
-        }
-    },
-
-
-
-    {
         "pk": 1,
         "model": "reader.usersubscriptionfolders",
         "fields": {
@@ -139,6 +87,32 @@
         "model": "reader.usersubscription",
         "fields": {
             "feed": 4,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
+
+
+
+    {
+        "pk": 5,
+        "model": "reader.usersubscriptionfolders",
+        "fields": {
+            "feed": 5,
+            "user_sub": 5,
+            "folder": "Blogs",
+            "user": 1
+        }
+    },
+
+    {
+        "pk": 5,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 5,
             "unread_count_updated": "2009-08-01 00:23:42",
             "mark_read_date": "2009-07-28 23:17:27",
             "unread_count": 0,

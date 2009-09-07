@@ -59,7 +59,8 @@
 
 	$scrollTo.defaults = {
 		axis:'xy',
-		duration: parseFloat($.fn.jquery) >= 1.3 ? 0 : 1
+		duration: parseFloat($.fn.jquery) >= 1.3 ? 0 : 1,
+		queue: true
 	};
 
 	// Returns the element that needs to be animated to scroll the window.
@@ -175,9 +176,17 @@
 			animate( settings.onAfter );			
 
 			function animate( callback ){
-				$elem.animate( attr, duration, settings.easing, callback && function(){
-					callback.call(this, target, settings);
-				});
+			    if (!settings.queue) {
+			        $elem.stop();
+		        }
+				$elem.animate( attr, {
+			        'duration': duration, 
+			        'easing': settings.easing, 
+			        'complete': callback && function(){
+				        callback.call(this, target, settings);
+    				},
+    				'queue': settings.queue
+        		});
 			};
 
 			// Max scrolling position, works on quirks mode

@@ -179,6 +179,8 @@ class Feed(models.Model):
                 elif story.get('link') and story.get('link') == existing_story['story_permalink']:
                     story_in_system = existing_story
                 
+                # import pdb
+                # pdb.set_trace()
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
                                                               existing_story['story_title'])
@@ -195,7 +197,7 @@ class Feed(models.Model):
                         break
                 
                 # More restrictive content distance, still no story match
-                if not story_in_system and content_ratio > .99:
+                if not story_in_system and content_ratio > .98:
                     # print "Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story['story_title'], story_title_difference, content_ratio)
                     story_in_system = existing_story
                     story_has_changed = True

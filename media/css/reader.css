@@ -29,7 +29,7 @@ a img {
     background: #e0e0e0 url(../img/reader/resize_west_small.png) repeat-y 50% 50%;
 }
 
-.ui-layout-resizer-north {
+.ui-layout-resizer-south {
     background: #e0e0e0 url(../img/reader/resize_north.png) repeat-x 50% 50%;
 }
 
@@ -305,69 +305,63 @@ a img {
 }
 
 
-#story_pane .story_title {
+#story_pane .NB-feed-stories {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#story_pane .NB-feed-story-header {
     font-weight: bold;
     font-size: 16px;
-    padding: 12px 140px 12px 28px;
+    padding: 0 140px 0 28px;
     background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
     border-top: 4px solid #404040;
+    position: relative;
+    overflow: hidden;
 }
 
-#story_pane .story_title a {
+#story_pane a.NB-feed-story-title {
+    display: block;
     text-decoration: none;
     color: #101050;
+    margin: 6px 0 6px;
 }
 
-#story_pane .story_title a:hover {
+#story_pane a.NB-feed-story-title:hover {
     color: #1010A0;
 }
 
-#story_pane .story_meta {
-    color: #606060;
-    font-weight: bold;
+#story_pane .NB-feed-story-author {
+    color: #808080;
     font-size: 9px;
-    width: 6em;
-    line-height: 1.9em;
-    clear: both;
-    float: left;
     text-transform: uppercase;
-    padding: 0px 4px 0px 0px;
+    margin: 4px 0 -6px;
 }
 
-#story_pane .story_feed {
-    padding: 4px 140px 0px 28px;
-}
-
-#story_pane .story_feed .feed_favicon {
+#story_pane .NB-feed-story-header .NB-feed-story-date {
     position: absolute;
-    left: 0px;
-    top: -1px;
+    right: 28px;
+    top: 6px;
+    font-size: 11px;
 }
 
-#story_pane .story_feed .data {
-    padding-left: 20px;
-    position: relative;
-}
-
-#story_pane .story_author {
-    padding: 0px 140px 0px 28px;
-}
-
-#story_pane .story_date {
-    padding: 0px 140px 0px 28px;
-}
-
-#story_pane .story_content {
-    border-top: 1px solid #909090;
-    margin: 12px 140px 24px 28px;
+#story_pane .NB-feed-story-content {
+    margin: 0 140px 32px 28px;
     padding: 12px 0px;
 }
 
-#story_pane .story_endbar {
+#story_pane .NB-feed-story-endbar {
     height: 8px;
     border-top: 1px solid #404040;
     background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
 }
+
+#story_pane .NB-feed-stories .NB-feed-story {
+    padding: 0;
+    margin: 0;
+}
+
 /* ======================= */
 /* = Story Modifications = */
 /* ======================= */
@@ -392,9 +386,9 @@ a img {
 /* ============ */
 
 .NB-taskbar {
-    height: 29px;
     background: #e0e0e0 url(../img/reader/taskbar_background.png) repeat-x top left;
     position: relative;
+    border-top: 1px solid #7d7d7d;
 }
 
 .NB-taskbar .NB-task-view-page-to-feed-arrow {
@@ -415,7 +409,6 @@ a img {
 }
 
 .NB-taskbar .taskbar_nav {
-    height: 29px;
     margin: 0;
     padding: 0;
     position: relative;
