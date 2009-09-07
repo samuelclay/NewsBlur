@@ -185,11 +185,18 @@
             
             var story_id = $('.story_id', $next_story).text();
             if (story_id) {
-                var next_offset = this.$story_titles.scrollTop() + $next_story.offset().top - $next_story.outerHeight();
-                var scroll = Math.max(0, next_offset);
-                this.$story_titles.scrollTop(scroll);
+                var story_title_visisble = this.$story_titles.isScrollVisible($next_story);
+                if (!story_title_visisble) {
+                    var container_offset = this.$story_titles.position().top;
+                    var scroll = $next_story.position().top;
+                    var container = this.$story_titles.scrollTop();
+                    var height = this.$story_titles.outerHeight();
+                    // NEWSBLUR.log(['Moving', scroll, container, container_offset, scroll-container_offset+20, height]);
+                    this.$story_titles.scrollTop(scroll+container-height/5);
+                }
                 this.open_story(story_id, $next_story);
             }
+            
         },
         
         show_next_feed: function(direction) {
@@ -608,7 +615,7 @@
                             })
                             .not('script')
                             .each(function() {
-                                 NEWSBLUR.log(['Accepted 1 $elem', $(this)]);
+                                 // NEWSBLUR.log(['Accepted 1 $elem', $(this)]);
                             });
             // NEWSBLUR.log(['SS 1:', $stories, $stories.eq(0), $stories.length]);
             
@@ -624,7 +631,7 @@
                         .not('script')
                         .each(function(){
                             $stories.push(this);
-                            NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
+                            // NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
                         });  
                 }
             }
@@ -647,7 +654,7 @@
                             .not('script')
                             .each(function(){
                                 $stories.push(this);
-                                NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
+                                // NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
                             });  
                         // NEWSBLUR.log(['Cutting words off title', $stories.length, $stories]);
                         if ($stories.length) break;
@@ -667,7 +674,7 @@
                         .not('script')
                         .each(function(){
                             $stories.push(this);
-                            NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
+                            // NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
                         });  
                 }
             }
@@ -684,7 +691,7 @@
             });
             if (!$story) $story = $stories.eq(0);
             
-            NEWSBLUR.log(['Found story', $story, this.story_view, this.page_view_showing_feed_view]);
+            // NEWSBLUR.log(['Found story', $story, this.story_view, this.page_view_showing_feed_view]);
             if ($story && $story.length) {
                 if (this.story_view == 'feed' || this.page_view_showing_feed_view) {
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });

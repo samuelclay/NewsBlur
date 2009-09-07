@@ -28,6 +28,23 @@ NEWSBLUR.log = function(msg) {
 
 (function($) {
 
+    $.fn.extend({
+        
+        isScrollVisible: function($elem) {
+            var docViewTop = 0; // $(this).scrollTop();
+            var docViewBottom = docViewTop + $(this).height();
+            var docOffset = $(this).offset().top;
+
+            var elemTop = $elem.offset().top - docOffset;
+            var elemBottom = elemTop + $elem.outerHeight();
+
+            // NEWSBLUR.log(['isScrollVisible', docViewTop, docViewBottom, docOffset, elemTop, elemBottom]);
+            
+            return ((elemTop >= docViewTop) && (elemBottom <= docViewBottom));
+        }
+        
+    });
+    
     $.extend({
 
 		deepCopy: function(obj) {
@@ -67,14 +84,14 @@ NEWSBLUR.log = function(msg) {
 		},
 
 		targetIs: function(e, opts, callback){
-			if(!e || !opts){ return false }
+			if(!e || !opts){ return false; }
 			// defaults
 			// (want to make this explicit, since it's a little weird)
 			opts = {
 				childOf: opts.childOf || null,
 				tagSelector: opts.tagSelector || null,
 				cancelBubbling: opts.cancelBubbling || false
-			}
+			};
 			var target = e.target;
 			var $t = $(target);
 			var $p = null;
@@ -195,7 +212,7 @@ NEWSBLUR.log = function(msg) {
 			}
 			_$ied.find('ol').append($.make('li', msg).css({
 				'borderBottom': '1px solid #999999'
-			}))
+			}));
 		}
 	});
 })(jQuery);
