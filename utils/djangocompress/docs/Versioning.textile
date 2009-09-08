@@ -1,0 +1,67 @@
+h1. Versioning
+
+There are several ways for generating version strings. Basically, two types are available. These are: mtime version strings and hash version strings.
+
+h3. mtime version strings (default)
+
+This is the default method for generating version strings. In short, when invoked, it checks whether any of the source files system timestamps (mtime) is newer than the version string of the corresponding compressed file. If that is the case, the compressed output file version string will be the mtime of the most recent source file.
+
+h3. hash version strings
+
+Hash-based versioning works by generating a hash string based on the contents of the source files. Available hash-based versioning methods are MD5 and SHA-1.
+
+h4. MD5 version strings
+
+To generate MD5 version strings, put this in your settings.py:
+
+<pre><code>
+COMPRESS_VERSIONING = 'compress.versioning.hash.MD5Versioning'
+</code></pre>
+
+h4. SHA-1 version string
+
+To generate SHA-1 version strings, put this in your settings.py:
+
+<pre><code>
+COMPRESS_VERSIONING = 'compress.versioning.hash.SHA1Versioning'
+</code></pre>
+
+h3. Write your own versioning class
+
+To write your own versioning class, you can subclass one of the available versioning classes.
+
+h4. Example
+
+For example, you want a short version string based on the SHA-1 version string. You can do this by subclassing the SHA1Versioning class and overriding its get_version() method, like this:
+
+<pre><code>
+from compress.versioning.hash import SHA1Versioning
+
+class ShortSHA1Versioning(SHA1Versioning):
+    """Custom SHA1Versioning class"""
+    
+    def get_version(self, source_files):
+        """Return the first 10 characters of the SHA-1 version string"""
+        version = super(ShortSHA1Versioning, self).get_version(source_files)
+        return version[:10]
+</code></pre>
+
+In your settings.py add:
+
+<pre><code>
+COMPRESS_VERSIONING = 'app.module.ShortSHA1Versioning'
+</code></pre>
+
+N.B. replace _app_ and _module_ by the app and module that contains your versioning class
+
+h3. Production environment
+
+You probably do not want the source files to be evaluated and (if needed) regenerated on every request in a production environment. Especially when calculating a hash on every request could be expensive.
+To avoid this, make sure your source files are compressed before deployment, and put the following settings in your production environment's settings.py:
+
+<pre><code>
+COMPRESS_AUTO = False
+COMPRESS_VERSION = True
+</code></pre>
+
+This way, the names of the compressed files will be looked up in the file system, instead of being evaluated and (if needed) regenerated on every request.

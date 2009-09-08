@@ -26,11 +26,11 @@ a img {
 /* =================== */
 
 .ui-layout-resizer-west {
-    background: #e0e0e0 url(../img/reader/resize_west_small.png) repeat-y 50% 50%;
+    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
 }
 
 .ui-layout-resizer-south {
-    background: #e0e0e0 url(../img/reader/resize_north.png) repeat-x 50% 50%;
+    background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
 }
 
 /* ============= */
@@ -44,7 +44,7 @@ a img {
 }
 #feed_list .folder {
     margin: 6px 0px 4px;
-    background: transparent url(../img/icons/silk/folder.png) no-repeat 3px 1px;
+    background: transparent url('../img/icons/silk/folder.png') no-repeat 3px 1px;
 }
 
 #feed_list .folder .folder_title {
@@ -86,7 +86,7 @@ a img {
 }
 
 #feed_list .feed.selected {
-    background: #f6a828 url(../theme/images/ui-bg_highlight-hard_35_f6a828_1x100.png) 0 50% repeat-x;
+    background: #f6a828 url('../theme/images/ui-bg_highlight-hard_35_f6a828_1x100.png') 0 50% repeat-x;
     border-top: 1px solid #A8A8A8;
     border-bottom: 1px solid #A8A8A8;
 }
@@ -124,7 +124,7 @@ a img {
     font-weight: bold;
     font-size: 13px;
     padding: 2px 140px 2px 28px;
-    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-bottom: 2px solid #404040;
     position: relative;
 }
@@ -158,7 +158,7 @@ a img {
     text-decoration: none;
     color: #272727;
     line-height: 1em;
-    background: transparent url(../img/icons/silk/bullet_orange.png) no-repeat 6px 50%;
+    background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 6px 50%;
 }
 
 #story_titles .story.NB-story-hover {
@@ -199,7 +199,7 @@ a img {
 #story_titles .story.selected {
     color: #304080;
     border-top: 1px solid #D7DDE6;
-    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
 }
 #story_titles .story.after_selected {
     border-top: 1px solid #D7DDE6;
@@ -208,7 +208,7 @@ a img {
 #story_titles .NB-story-titles-end-stories-line {
     height: 8px;
     border-top: 1px solid #404040;
-    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
 }
 /* =================== */
 /* = Story Navigator = */
@@ -227,8 +227,6 @@ a img {
     cursor: pointer;
     white-space: nowrap;
     vertical-align: middle;
-    display: -moz-inline-box;
-    display: inline-block;
     overflow: visible;
     color: #000;
     background-color: #acc;
@@ -244,22 +242,22 @@ a img {
     float: right;
     width: 24px;
     height: 16px;
-    background: #acc url(../img/icons/silk/arrow_up.png) no-repeat 50% 50%;
+    background: #acc url('../img/icons/silk/arrow_up.png') no-repeat 50% 50%;
 }
 
 #story_pane a.button.like:hover {
-    background: #cee url(../img/icons/silk/arrow_up.png) no-repeat 50% 50%;
+    background: #cee url('../img/icons/silk/arrow_up.png') no-repeat 50% 50%;
 }
 
 #story_pane a.button.dislike {
     float: right;
     width: 16px;
     height: 16px;
-    background: #acc url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
+    background: #acc url('../img/icons/silk/arrow_down.png') no-repeat 50% 50%;
 }
 
 #story_pane a.button.dislike:hover {
-    background: #cee url(../img/icons/silk/arrow_down.png) no-repeat 50% 50%;
+    background: #cee url('../img/icons/silk/arrow_down.png') no-repeat 50% 50%;
 }
 
 /* ================= */
@@ -317,7 +315,7 @@ a img {
     font-weight: bold;
     font-size: 16px;
     padding: 0 140px 0 28px;
-    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-top: 4px solid #404040;
     border-bottom: 1px solid #ADADAD;
     position: relative;
@@ -357,7 +355,7 @@ a img {
 #story_pane .NB-feed-story-endbar {
     height: 8px;
     border-top: 1px solid #404040;
-    background: #dadada url(../theme/images/dadada_40x100_textures_03_highlight_soft_75.png) 0 50% repeat-x;
+    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
 }
 
 #story_pane .NB-feed-stories .NB-feed-story {
@@ -389,7 +387,7 @@ a img {
 /* ============ */
 
 .NB-taskbar {
-    background: #e0e0e0 url(../img/reader/taskbar_background.png) repeat-x top left;
+    background: #e0e0e0 url('../img/reader/taskbar_background.png') repeat-x top left;
     position: relative;
     border-top: 1px solid #7d7d7d;
 }
@@ -400,7 +398,7 @@ a img {
     left: 64px;
     width: 16px;
     height: 16px;
-    background: transparent url(../img/icons/silk/arrow_switch.png) no-repeat center 0px;
+    background: transparent url('../img/icons/silk/arrow_switch.png') no-repeat center 0px;
     display: none;
     z-index: 1;
 }
@@ -475,10 +473,10 @@ a img {
 
 
 .NB-taskbar .task_button.task_add {
-    background: transparent url(../img/icons/silk/add.png) no-repeat center 8px;
+    background: transparent url('../img/icons/silk/add.png') no-repeat center 8px;
 }
 .NB-taskbar .task_button.task_profile {
-    background: transparent url(../img/icons/silk/user.png) no-repeat center 8px;
+    background: transparent url('../img/icons/silk/user.png') no-repeat center 8px;
 }
 
 /* =================== */
@@ -496,11 +494,11 @@ a img {
 }
 .NB-taskbar .task_button.task_view_page {
     cursor: pointer;
-    background: transparent url(../img/icons/silk/application_view_tile.png) no-repeat 8px 8px;
+    background: transparent url('../img/icons/silk/application_view_tile.png') no-repeat 8px 8px;
 }
 .NB-taskbar .task_button.task_view_feed {
     cursor: pointer;
-    background: transparent url(../img/icons/silk/application_view_columns.png) no-repeat 8px 8px;
+    background: transparent url('../img/icons/silk/application_view_columns.png') no-repeat 8px 8px;
 }
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
@@ -512,7 +510,7 @@ a img {
 .NB-taskbar .task_button.task_return {
     cursor: pointer;
     display: none;
-    background: transparent url(../img/icons/silk/arrow_undo.png) no-repeat 8px 8px;
+    background: transparent url('../img/icons/silk/arrow_undo.png') no-repeat 8px 8px;
 }
 
 /* ================ */
@@ -628,5 +626,5 @@ form.opml_import_form input {
     margin: 0 auto;
     height: 376px;
     width: 600px;
-    background: transparent url(../img/reader/newsblur_splash_logo.png) no-repeat 0 0;
+    background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 0;
 }

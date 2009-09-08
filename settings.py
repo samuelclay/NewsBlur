@@ -187,16 +187,15 @@ COMPRESS_CSS = {
     }
 }
 
-COMPRESS = True
+# COMPRESS = True
 COMPRESS_AUTO = True
 COMPRESS_VERSION = True
-YUI_DIR = ''.join([UTILS_ROOT, '/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'])
 COMPRESS_JS_FILTERS = ['compress.filters.yui.YUICompressorFilter']
+COMPRESS_CSS_FILTERS = []
+
+YUI_DIR = ''.join([UTILS_ROOT, '/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'])
 COMPRESS_YUI_BINARY = 'java -jar ' + YUI_DIR
 # COMPRESS_YUI_JS_ARGUMENTS = '--preserve-semi --nomunge --disable-optimizations'
-
-
-COMPRESS_CSS_FILTERS = []
 
 # ==========================
 # = Miscellaneous Settings =
