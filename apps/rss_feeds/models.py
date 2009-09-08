@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
@@ -88,21 +89,21 @@ class Feed(models.Model):
                 if existing_story is None:
                     pub_date = datetime.datetime.timetuple(story.get('published'))
                     # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
-                
+
                     s = Story(story_feed = self,
                            story_date = story.get('published'),
                            story_title = story.get('title'),
                            story_content = story_content,
                            story_author = story.get('author'),
                            story_permalink = story.get('link'),
-                           story_guid = story.get('id')
+                           story_guid = story.get('id') or story.get('link')
                     )
                     try:
                         ret_values[ENTRY_NEW] += 1
                         s.save(force_insert=True)
-                    except:
+                    except IntegrityError, e:
                         ret_values[ENTRY_ERR] += 1
-                        pass
+                        logging.error('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
                     # update story
                     logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story['story_content']), len(story_content)))
@@ -127,13 +128,14 @@ class Feed(models.Model):
                            story_original_content = original_content,
                            story_author = story.get('author'),
                            story_permalink = story.get('link'),
-                           story_guid = story.get('id')
+                           story_guid = story.get('id') or story.get('link')
                     )
                     try:
                         ret_values[ENTRY_UPDATED] += 1
                         s.save(force_update=True)
-                    except:
-                        pass
+                    except IntegrityError, e:
+                        ret_values[ENTRY_ERR] += 1
+                        logging.error('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))

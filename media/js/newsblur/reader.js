@@ -141,6 +141,14 @@
             $(document).bind('keydown', { combi: 'up', disableInInput: true }, function(e) {
                 e.preventDefault();
                 self.show_next_story(-1);
+            });                                                           
+            $(document).bind('keydown', { combi: 'j', disableInInput: true }, function(e) {
+                e.preventDefault();
+                self.show_next_story(-1);
+            });
+            $(document).bind('keydown', { combi: 'k', disableInInput: true }, function(e) {
+                e.preventDefault();
+                self.show_next_story(1);
             });
             $(document).bind('keydown', { combi: 'left', disableInInput: true }, function(e) {
                 e.preventDefault();
@@ -723,7 +731,7 @@
         
         open_story_link: function(story_id, $st) {
             var story = this.model.get_story(story_id);
-            window.open(story['story_permalink'], '_blank');
+            window.open(unescape(story['story_permalink']), '_blank');
             window.focus();
         },
         

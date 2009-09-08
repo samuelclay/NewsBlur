@@ -91,7 +91,7 @@ class ProcessFeed:
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
                                              self.feed.feed_title))
-        
+
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 logging.debug(u'[%d] HTTP status %d: %s' % (self.feed.id,

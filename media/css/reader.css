@@ -77,6 +77,8 @@ a img {
     text-decoration: none;
     color: #272727;
     line-height: 1.3em;
+    height: 1.2em;
+    overflow: hidden;
 }
 
 #feed_list .feed.no_unread_items .feed_title {
