@@ -57,8 +57,8 @@ class UserSubscription(models.Model):
         self.unread_count = 0
         self.unread_count_updated = datetime.datetime.now()
         self.save()
-        readstories = ReadStories.objects.filter(user=self.user, feed=self.feed)
-        readstories.delete()
+        # readstories = ReadStories.objects.filter(user=self.user, feed=self.feed)
+        # readstories.delete()
         
     def stories_newer_lastread(self):
         return self.feed.new_stories_since_date(self.last_read_date)

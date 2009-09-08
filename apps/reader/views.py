@@ -173,16 +173,19 @@ def mark_story_as_read(request):
 def mark_feed_as_read(request):
     feed_id = int(request.REQUEST['feed_id'])
     feed = Feed.objects.get(id=feed_id)
+    code = 0
     
     us = UserSubscription.objects.get(feed=feed, user=request.user)
-    us.mark_feed_read()
-    
-    UserStory.objects.filter(user=request.user, feed=feed_id).delete()
-    data = json.encode(dict(code=0))
     try:
-        m.save()
+        us.mark_feed_read()
     except IntegrityError, e:
-        data = json.encode(dict(code=1))
+        code = -1
+    else:
+        code = 1
+        
+    data = json.encode(dict(code=code))
+
+    # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return HttpResponse(data)
     
 @login_required

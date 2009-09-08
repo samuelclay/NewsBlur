@@ -226,7 +226,7 @@
                 }
             }
             
-            var feed_id = $('.feed_id', $next_feed).text();
+            var feed_id = $next_feed.data('feed_id');
             if (feed_id) {
                 var position = this.$feed_list.scrollTop() + $next_feed.offset().top - $next_feed.outerHeight();
                 var showing = this.$feed_list.height();
@@ -273,9 +273,8 @@
                         var $feed = $.make('div', { className: 'feed' }, [
                             $.make('span', { className: 'unread_count' }, ''+feeds[f].unread_count),
                             $.make('img', { className: 'feed_favicon', src: self.google_favicon_url + feeds[f].feed_link }),
-                            $.make('span', { className: 'feed_title' }, feeds[f].feed_title),
-                            $.make('span', { className: 'feed_id' }, ''+feeds[f].id)
-                        ]);
+                            $.make('span', { className: 'feed_title' }, feeds[f].feed_title)
+                        ]).data('feed_id', feeds[f].id);
                         if (feeds[f].unread_count <= 0) {
                             $('.unread_count', $feed).css('display', 'none');
                             $feed.addClass('no_unread_items');
@@ -911,12 +910,12 @@
             
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();
-                var feed_id = $('.feed_id', $t).text();
+                var feed_id = $t.data('feed_id');
                 self.open_feed(feed_id, $t);
             });
             $.targetIs(e, { tagSelector: 'a.mark_feed_as_read' }, function($t, $p){
                 e.preventDefault();
-                var feed_id = $t.attr('href').slice(1).split('/');
+                var feed_id = $t.data('feed_id');
                 self.mark_feed_as_read(feed_id, $t);
             });
             
@@ -981,6 +980,7 @@
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();
                 NEWSBLUR.log(['Feed dblclick', $('.feed_id', $t), $t]);
+                var feed_id = $t.data('feed_id');
                 self.open_feed_link(feed_id, $t);
             });
         },
