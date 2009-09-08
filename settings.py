@@ -20,8 +20,8 @@ LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
 # = PYTHONPATH =
 # ==============
 
-COMPRESS_DIR = ''.join([CURRENT_DIR, '/utils/django-compress'])
-if 'django-compress' not in ' '.join(sys.path):
+COMPRESS_DIR = ''.join([CURRENT_DIR, '/utils/djangocompress'])
+if 'djangocompress' not in ' '.join(sys.path):
     sys.path.append(COMPRESS_DIR)
 
 # ===================
