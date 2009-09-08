@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.db import IntegrityError
 try:
     from apps.rss_feeds.models import Feed, Story
 except:
@@ -104,13 +105,13 @@ def load_single_feed(request):
     ).values()
     for story in stories:
         for o in userstory:
-            if o['story_id'] == story:
+            if o['story_id'] == story.get('id'):
                 story['opinion'] = o['opinion']
                 story['read_status'] = (o['read_date'] is not None)
                 break
-        if story['story_date'] < usersub.mark_read_date:
+        if not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
             story['read_status'] = 1
-        elif story['story_date'] > usersub.last_read_date:
+        elif not story.get('read_status') and story['story_date'] > usersub.last_read_date:
             story['read_status'] = 0
         # logging.debug("Story: %s" % story)
     
@@ -164,7 +165,7 @@ def mark_story_as_read(request):
     data = json.encode(dict(code=0))
     try:
         m.save()
-    except:
+    except IntegrityError, e:
         data = json.encode(dict(code=2))
     return HttpResponse(data)
     
@@ -180,7 +181,7 @@ def mark_feed_as_read(request):
     data = json.encode(dict(code=0))
     try:
         m.save()
-    except:
+    except IntegrityError, e:
         data = json.encode(dict(code=1))
     return HttpResponse(data)
     
