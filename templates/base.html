@@ -4,27 +4,15 @@
 <head>
     <title>{% block title %}NewsBlur{% endblock %}</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reader.css" />
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}theme/ui.theme.css" />
+
+    <link rel="shortcut icon" HREF="/media/img/favicon.png">
+    <!-- <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}theme/ui.theme.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-theme/jquery-ui-1.7.2.custom.css" /> -->
 
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery-1.3.2.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.easing.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.newsblur.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.scrollTo.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.timers.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.corners.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.hotkeys.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.dropshadow.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.ajaxupload.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.simplemodal-1.3.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.color.js"></script>
-   	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/jquery.layout.js"></script>
 
 	<script type="text/javascript" charset="utf-8">
 
+		var NEWSBLUR = {};
 		NEWSBLUR.Globals = {
 			'is_authenticated': {{ user_info.is_authenticated|safe }},
 			'is_anonymous': {{ user_info.is_anonymous|safe }},
@@ -33,8 +21,10 @@
 
 	</script>
 	
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/newsblur/assetmodel.js"></script>
-    <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/newsblur/reader.js"></script>
+
+	{% load compressed %}
+	{% compressed_css 'all' %}
+	{% compressed_js 'all' %}
 
     
 </head>

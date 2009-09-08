@@ -1,0 +1,161 @@
+* {margin: 0; padding: 0;}
+body {font: 0.8125em Verdana, sans-serif; line-height: 1; color: #333; background: #FFF;}
+
+a {text-decoration: none;}
+a img {border: none;}
+a:link, a:visited {color: #555; border-bottom: 1px solid #555;}
+html body a:hover {color: #000; background-color: #F4F2E4;
+  border-bottom: 1px solid #9A8E51;}
+#masthead a, #ish a, #navbar a, #banners a, a.button, #main h1 a, .title a:link, .title a:visited, .byline a:link, .byline a:visited {border-bottom-width: 0;}
+#main h1 a:hover, .title a:hover, .byline a:hover {border-bottom-width: 1px;}
+
+h2 {font: 1.5em Georgia, "Times New Roman", serif; letter-spacing: 1px;}
+h3 {font: bold 1em Verdana, Arial, sans-serif; letter-spacing: 2px;
+  text-transform: uppercase;}
+h4 {font: bold 1.1em Georgia, "Times New Roman", serif; letter-spacing: 1px;}
+
+ul, ol {list-style: none;}
+blockquote, pre {padding: 0.25em 40px;}
+blockquote {font: italic 1.05em Georgia, Times, serif;
+  background: url(/pix/quote_wh.gif) 10px 0.75em no-repeat;
+  margin: 0.25em 0;}
+pre, code {font: 1.05em Courier, monospace;}
+pre {line-height: 1.5em;}
+pre strong {font-size: 1em; font-weight: bold;}
+
+pre code {font-size: 1em; line-height: 1.5em;} /* handle legacy articles until markup gets a scrubbing */
+
+table {border-bottom: 3px solid #B2B2B2; margin: 0 0 2em;}
+caption {padding: 0.75em; font: 1.5em Georgia, Times, serif;
+  border: 1px solid #B2B2B2; border-width: 1px 0 2px;
+  background: #EEE;}
+th, td {padding: 0.5em 1em;
+  border: 1px solid #CCC;
+  border-width: 0 0 1px 1px;}
+th.first, td.first, tbody th {border-left: none;}
+thead th {text-transform: uppercase; text-align: left;}
+tbody th {width: 20%;}
+tfoot {display: none;}
+
+#masthead {position: absolute; z-index: 5; top: 0; left: 22px;}
+#masthead a {display: block; background: #81817C; width: 156px;}
+#masthead a:hover {background: #000;}
+#ish {position: relative; z-index: 10; border-top: 1px solid #666;
+  font: bold 10px Arial, sans-serif; letter-spacing: 1px;}
+#ish a:link, #ish a:visited {position: absolute; top: -33px; left: 150px;
+  width: 65px; height: 52px; padding-top: 13px; text-align: center;
+  background: url(/pix/ishbug.gif) top left no-repeat;
+  color: #FFF;}
+#ish a:hover {background-position: bottom right;}
+#ish a em {display: block; margin-top: -0.2em;
+  font: 2.33em Georgia, Times, serif; letter-spacing: 0;}
+
+#content .ishinfo {font: 0.9em Verdana, sans-serif;
+  text-transform: uppercase; letter-spacing: 0.33em;}
+#content .ishinfo b {font: 1.2em Georgia, Times, serif; letter-spacing: 1px;}
+
+#navbar {height: 2.4em;
+  padding: 0 0 0 215px;
+  background: #FBFAF4;
+  border-top: 5px solid #333;
+  font: 18px Georgia, Times, serif; overflow: hidden;
+  min-width: 750px;}
+#navbar li {float: left; padding: 0 23px 0 13px; margin-right: 5px;
+  background: url(/pix/diamond-black.gif) 100% 66% no-repeat;}
+#navbar li a {display: block; padding: 0.75em 0 0.25em;
+  text-transform: uppercase; color: #000;}
+#navbar #feed {background: none;}
+#navbar a:hover,
+  .articles #navbar #articles a,
+  .topics #navbar #topics a,
+  .about #navbar #about a,
+  .contact #navbar #contact a,
+  .contribute #navbar #contribute a,
+  .feed #navbar #feed a {
+ background: url(/pix/navbarlinkbg.gif) top left repeat-x; color: #555;
+}
+
+#main {float: left; font-size: 0.88em;
+  width: 750px; padding: 1.5em 0 1.5em 210px;
+  background: url(/pix/threecolbg.gif) 794px 0 repeat-y;}
+#main p {text-align: left; line-height: 1.8em;
+  margin: 0 0 1em;}
+
+.column {float: left;}
+
+#content {width: 540px; padding: 0 25px 0 20px;}
+#content .title {font: 1.8em Georgia, Times, serif; margin-bottom: 0.5em;}
+.title {text-transform: none; letter-spacing: 1px;}
+.title a:link, .title a:visited {color: #333;}
+.title a:hover {color: #000;}
+.byline {font: italic 1.1em Times, serif; letter-spacing: 1px; margin: 0 0 1.5em;}
+.byline a:link, .byline a:visited {font: bold 0.85em Verdana, sans-serif;
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-left: 0.25em;}
+
+#secondary {width: 215px;}
+#secondary .title {margin-bottom: 0.25em;}
+
+#choice {border-top: 1px solid #D9D9D9;
+  padding: 1.5em 20px;}
+#choice h3 {color: #333; font: 0.9em Verdana, sans-serif;
+  text-transform: uppercase; letter-spacing: 0.33em;}
+#choice .info {font-style: italic; font-size: 0.9em;
+  color: #666;}
+
+#sidebar {width: 140px; padding-left: 15px;}
+#sidebar h3 {font: 1.5em Georgia, Times, serif; letter-spacing: 0; text-transform: none;
+  margin-bottom: 0.25em; color: #333;}
+
+#search {width: 80px;}
+#search, #submit {vertical-align: bottom;}
+
+#sidebar div {border-bottom: 1px dashed #B2B2B2; padding: 10px 0.5em;}
+#sidebar div.first {padding-top: 0;}
+#sidebar li {padding: 0.5em 0 0.5em;}
+#sidebar li a:link, #sidebar li a:visited {padding-left: 12px;
+  background: url(/pix/diamond-gray.gif) 0 0.4em no-repeat;}
+#sidebar p {font-size: 0.85em; margin-top: 0.25em;}
+
+#lucre, #lucre p {margin: 0.5em 0 0;}
+#lucre p {text-align: center;}
+#lucre p.ads {text-align: left; line-height: 1.5;}
+#lucre p a:link, #lucre p a:visited {color: #666;}
+#lucre p a:hover {color: #000; border-bottom-width: 1px;}
+
+#sidebar #colophon {border-bottom-width: 0;}
+#colophon p {text-transform: uppercase; letter-spacing: 0.25em; text-align: right;
+  width: 121px; margin: 0 auto; color: #666;}
+#colophon img {background: #333;}
+#colophon a:hover img {background: #555;}
+
+#topiclist a, #lucre a, #colophon a {border-bottom-width: 0;}
+
+#footer {clear: both; border: 1px solid #666; border-width: 1px 0;
+  margin-bottom: 3em; font-size: 0.85em;
+  background: #FBFAF4 url(/pix/pixelstoprose.gif) 20px 50% no-repeat;}
+#footer p {margin-left: 200px; padding: 1em 20px; border-left: 1px solid #666;
+  background: #FFF;}
+#footer a:link, #footer a:visited {border-bottom-width: 0;}
+#footer a:hover {border-bottom-width: 1px;}
+
+.issn {font: 0.9em Verdana, sans-serif; text-transform: uppercase; letter-spacing: 0.33em;}
+.issn b {font: 1.2em Georgia, Times, serif; letter-spacing: 1px;}
+
+#footer .copyright {padding-left: 25px; background: url(/pix/diamond-gray.gif) 10px 50% no-repeat;}
+
+#search, input[type="text"], input[type="password"], textarea { background: #FBFAF4;
+  border: 2px solid; border-color: #999 #D9D9D9 #D9D9D9 #999;}
+
+/* IE5.x/Win hacks */
+
+#main {width: 960px; voice-family: "\"}\""; voice-family: inherit; width: 750px;}
+#content {width: 585px; voice-family: "\"}\""; voice-family: inherit; width: 540px;}
+#sidebar {width: 155px; voice-family: "\"}\""; voice-family: inherit; width: 140px;}
+#ish a:link, #ish a:visited {height: 65px; voice-family: "\"}\""; voice-family: inherit; height: 52px;}
+
+/* IE5/Mac hacks */
+/*\*//*/
+#navbar {padding-top: 0.75em; height: 1.66em;}
+#navbar li a {display: inline;}
+/**/

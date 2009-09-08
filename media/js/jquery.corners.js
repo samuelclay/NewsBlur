@@ -402,4 +402,4 @@ jQuery.fn.corners = function(options) {
   }
 
 
-}
+};

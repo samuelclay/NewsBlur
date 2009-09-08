@@ -1064,9 +1064,9 @@ $.fn.layout = function (opts) {
 			}
 			else if (dir == "vert") { // east or west pane
 				if (size === 0 || size == "auto") {
-					$P.css({ width: "auto", float: "left" }); // float = FORCE pane to auto-size
+					$P.css({ width: "auto", 'float': "left" }); // float = FORCE pane to auto-size
 					size = $P.outerWidth();
-					$P.css({ float: "none" }); // RESET
+					$P.css({ 'float': "none" }); // RESET
 				}
 				size = max(size, minSize);
 				size = min(size, maxSize);

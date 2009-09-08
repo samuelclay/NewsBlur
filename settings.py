@@ -13,7 +13,16 @@ CURRENT_DIR = os.path.dirname(__file__)
 NEWSBLUR_DIR = CURRENT_DIR
 TEMPLATE_DIRS = (''.join([CURRENT_DIR, '/templates']),)
 MEDIA_ROOT = ''.join([CURRENT_DIR, '/media'])
+UTILS_ROOT = ''.join([CURRENT_DIR, '/utils'])
 LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
+
+# ==============
+# = PYTHONPATH =
+# ==============
+
+COMPRESS_DIR = ''.join([CURRENT_DIR, '/utils/django-compress'])
+if 'django-compress' not in ' '.join(sys.path):
+    sys.path.append(COMPRESS_DIR)
 
 # ===================
 # = Global Settings =
@@ -140,6 +149,55 @@ MIDDLEWARE_CLASSES = (
     'djangologging.middleware.LoggingMiddleware',
 )
 
+
+# =====================
+# = Media Compression =
+# =====================
+
+COMPRESS_JS = {
+    'all': {
+        'source_filenames': (
+            'js/jquery-1.3.2.js',
+            'js/jquery.easing.js',
+            'js/jquery.newsblur.js',
+            'js/jquery.scrollTo.js',
+            'js/jquery.timers.js',
+            'js/jquery.corners.js',
+            'js/jquery.hotkeys.js',
+            'js/jquery.dropshadow.js',
+            'js/jquery.ajaxupload.js',
+            'js/jquery.simplemodal-1.3.js',
+            'js/jquery.color.js',
+            'js/jquery-ui-1.7.2.custom.min.js',
+            'js/jquery.layout.js',
+            
+            'js/newsblur/assetmodel.js',
+            'js/newsblur/reader.js'
+        ),
+        'output_filename': 'js/all-compressed-?.js'
+    }
+}
+
+COMPRESS_CSS = {
+    'all': {
+        'source_filenames': (
+            'css/reader.css',
+        ),
+        'output_filename': 'css/all-compressed-?.css'
+    }
+}
+
+COMPRESS = True
+COMPRESS_AUTO = True
+COMPRESS_VERSION = True
+YUI_DIR = ''.join([UTILS_ROOT, '/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'])
+COMPRESS_JS_FILTERS = ['compress.filters.yui.YUICompressorFilter']
+COMPRESS_YUI_BINARY = 'java -jar ' + YUI_DIR
+# COMPRESS_YUI_JS_ARGUMENTS = '--preserve-semi --nomunge --disable-optimizations'
+
+
+COMPRESS_CSS_FILTERS = []
+
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -161,6 +219,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'utils.django_extensions',
+    'compress',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
