@@ -157,7 +157,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/load_feeds', {}, pre_callback);
     },
     
-    load_feed: function(feed_id, page, callback) {
+    load_feed: function(feed_id, page, first_load, callback) {
         var self = this;
         
         var pre_callback = function(stories) {
@@ -167,7 +167,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             } else {
                 $.merge(self.stories, stories);
             }
-            callback(stories);
+            callback(stories, first_load);
         };
         
         this.make_request('/reader/load_single_feed',

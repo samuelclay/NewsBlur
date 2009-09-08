@@ -485,6 +485,10 @@ a img {
 /* = Taskbar - Story = */
 /* =================== */
 
+#story_taskbar {
+    display: none;
+}
+
 .NB-taskbar .NB-task-title {
     padding: 7px 0 0 0;
     display: block;
