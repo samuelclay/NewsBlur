@@ -174,7 +174,7 @@ COMPRESS_JS = {
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js'
         ),
-        'output_filename': 'js/all-compressed-?.js'
+        'output_filename': 'release/all-compressed-?.js'
     }
 }
 
@@ -183,7 +183,7 @@ COMPRESS_CSS = {
         'source_filenames': (
             'css/reader.css',
         ),
-        'output_filename': 'css/all-compressed-?.css'
+        'output_filename': 'release/all-compressed-?.css'
     }
 }
 
