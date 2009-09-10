@@ -31,6 +31,9 @@ class Command(BaseCommand):
         disp = feed_fetcher.Dispatcher(options, options['workerthreads'])        
         
         feeds = Feed.objects.all()
+        
+        disp.run_jobs()
+        
         for feed in feeds:
             disp.add_job(feed)
         
