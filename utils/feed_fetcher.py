@@ -173,7 +173,7 @@ class ProcessFeed:
         except:
             (etype, eobj, etb) = sys.exc_info()
             print '[%d] ! -------------------------' % (self.feed.id,)
-            print traceback.format_exception(etype, eobj, etb)
+            # print traceback.format_exception(etype, eobj, etb)
             traceback.print_exception(etype, eobj, etb)
             print '[%d] ! -------------------------' % (self.feed.id,)
         
