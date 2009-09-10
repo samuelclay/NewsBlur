@@ -213,13 +213,15 @@ class Dispatcher:
         else:
             self.tpool = None
         self.time_start = datetime.datetime.now()
+        self.feed_queue = Queue()
 
 
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
         while True:
-            feed = feed_queue.get()
+            
+            feed = feed_queue.get(block=False)
             start_time = datetime.datetime.now()
         
             ### Uncomment to test feed fetcher
@@ -281,8 +283,6 @@ class Dispatcher:
             # self.process_feed_wrapper(feed)
             
     def run_jobs(self):
-        self.feed_queue = Queue()
-        
         for i in range(self.num_threads):
             worker = threading.Thread(target=self.process_feed_wrapper, args=(self.feed_queue,))
             worker.setDaemon(True)

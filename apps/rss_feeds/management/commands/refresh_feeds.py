@@ -17,7 +17,7 @@ class Command(BaseCommand):
             help='Wait timeout in seconds when connecting to feeds.'),
         make_option('-V', '--verbose', action='store_true',
             dest='verbose', default=False, help='Verbose output.'),
-        make_option('-w', '--workerthreads', type='int', default=20,
+        make_option('-w', '--workerthreads', type='int', default=4,
             help='Worker threads that will fetch feeds in parallel.'),
     )
 
@@ -32,11 +32,11 @@ class Command(BaseCommand):
         
         feeds = Feed.objects.all()
         
-        disp.run_jobs()
         
         for feed in feeds:
             disp.add_job(feed)
         
+        disp.run_jobs()
         disp.poll()
         
         os._exit(1)
