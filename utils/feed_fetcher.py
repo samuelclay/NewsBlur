@@ -3,6 +3,7 @@ from django.core.cache import cache
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser, threadpool
+from django.db import transaction
 import sys
 import time
 import logging
@@ -10,12 +11,12 @@ import datetime
 import threading
 import traceback
 
-threadpool = None
+# threadpool = None
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.2'
+VERSION = '0.8'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
@@ -44,11 +45,12 @@ class FetchFeed:
         """ Downloads and parses a feed.
         """
 
-        logging.debug(u'[%d] Fetching %s' % (self.feed.id,
-                                             self.feed.feed_title))
-
-        # we check the etag and the modified time to save bandwith and
-        # avoid bans
+        log_msg = u'[%d] Fetching %s' % (self.feed.id,
+                                             self.feed.feed_title)
+        logging.info(log_msg)
+        print(log_msg)
+        
+        # we check the etag and the modified time to save bandwith and avoid bans
         try:
             self.fpf = feedparser.parse(self.feed.feed_address,
                                         agent=USER_AGENT,
@@ -63,7 +65,8 @@ class FetchPage:
     def __init__(self, feed, options):
         self.feed = feed
         self.options = options
-        
+
+    @transaction.autocommit
     def fetch(self):
         logging.debug(u'[%d] Fetching page from %s' % (self.feed.id,
                                                        self.feed.feed_title))
@@ -79,6 +82,7 @@ class ProcessFeed:
         self.options = options
         self.fpf = fpf
 
+    @transaction.commit_on_success
     def process(self):
         """ Downloads and parses a feed.
         """
@@ -211,6 +215,12 @@ class Dispatcher:
         """ wrapper for ProcessFeed
         """
         start_time = datetime.datetime.now()
+        
+        ### Uncomment to test feed fetcher
+        # from random import randint
+        # if randint(0,10) < 10:
+        #     return 5, {}
+        
         try:
             ffeed = FetchFeed(feed, self.options)
             fetched_feed = ffeed.fetch()
@@ -238,13 +248,14 @@ class Dispatcher:
             comment = u' (SLOW FEED!)'
         else:
             comment = u''
-        logging.debug(u'[%d] Processed %s in %s [%s] [%s]%s' % (
+        done = (u'[%d] Processed %s in %s [%s] [%s]%s' % (
             feed.id, feed.feed_title, unicode(delta),
             self.feed_trans[ret_feed],
             u' '.join(u'%s=%d' % (self.entry_trans[key],
                       ret_entries[key]) for key in self.entry_keys),
             comment))
-
+        logging.debug(done)
+        print(done)
         self.feed_stats[ret_feed] += 1
         for key, val in ret_entries.items():
             self.entry_stats[key] += val
@@ -277,7 +288,7 @@ class Dispatcher:
                 logging.debug('! Cancelled by user')
                 break
             except threadpool.NoResultsPending:
-                logging.info(u'* DONE in %s\n* Feeds: %s\n* Entries: %s' % (
+                done = (u'* DONE in %s\n* Feeds: %s\n* Entries: %s' % (
                     unicode(datetime.datetime.now() - self.time_start),
                     u' '.join(u'%s=%d' % (self.feed_trans[key],
                               self.feed_stats[key])
@@ -286,9 +297,13 @@ class Dispatcher:
                               self.entry_stats[key])
                               for key in self.entry_keys)
                     ))
+                print done
+                logging.info(done)
                 break
             except Exception, e:
-                logging.error(u'I DONT KNOW')
+                print(u'I DONT KNOW: %s - %s' % (e, locals()))
+            except:
+                print(u'I REALLY DONT KNOW: %s - %s' % (e, locals()))
                 
 class FeedFetcher(threading.Thread):
 

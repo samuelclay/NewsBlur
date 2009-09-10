@@ -6,6 +6,7 @@ from utils import feed_fetcher
 from utils.management_functions import daemonize
 import logging
 import socket
+import os
 
 
 class Command(BaseCommand):
@@ -16,7 +17,7 @@ class Command(BaseCommand):
             help='Wait timeout in seconds when connecting to feeds.'),
         make_option('-V', '--verbose', action='store_true',
             dest='verbose', default=False, help='Verbose output.'),
-        make_option('-w', '--workerthreads', type='int', default=4,
+        make_option('-w', '--workerthreads', type='int', default=20,
             help='Worker threads that will fetch feeds in parallel.'),
     )
 
@@ -34,5 +35,7 @@ class Command(BaseCommand):
             disp.add_job(feed)
         
         disp.poll()
+        
+        os._exit(1)
         
         

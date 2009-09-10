@@ -67,10 +67,11 @@ if PRODUCTION:
     MEDIA_URL = 'http://www.newsblur.com/media/'
     DEBUG = False
     CACHE_BACKEND = 'file:///var/tmp/django_cache'
-    logging.basicConfig(level=logging.WARN,
+    logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
                     filemode='w')
+    PREPEND_WWW = True
 elif STAGING:
     DATABASE_ENGINE = 'mysql'
     DATABASE_NAME = 'newsblur'
@@ -117,7 +118,8 @@ elif DEV_SERVER2:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = '/media/'
     DEBUG = True
-    CACHE_BACKEND = 'dummy:///'
+    # CACHE_BACKEND = 'dummy:///'
+    CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -142,9 +144,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.CacheMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'djangologging.middleware.LoggingMiddleware',
 )
@@ -206,6 +209,8 @@ TEST_DATABASE_COLLATION = 'utf8_general_ci'
 ROOT_URLCONF = 'urls'
 INTERNAL_IPS = ('127.0.0.1',)
 LOGGING_LOG_SQL = True
+APPEND_SLASH = True
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 # ===============
 # = Django Apps =
