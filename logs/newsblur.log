@@ -1,0 +1,184 @@
+2009-09-09 23:50:48,390 INFO [1] Fetching 43 Folders
+2009-09-09 23:50:48,391 INFO [5] Fetching Ajaxian » Front Page
+2009-09-09 23:50:48,395 INFO [22] Fetching Brokelyn
+2009-09-09 23:50:48,400 INFO [23] Fetching Brownstoner
+2009-09-09 23:50:49,065 DEBUG [23] Processing Brownstoner
+2009-09-09 23:50:49,065 DEBUG [23] Fetching page from Brownstoner
+2009-09-09 23:50:49,295 DEBUG [22] Processing Brokelyn
+2009-09-09 23:50:49,295 DEBUG [22] Fetching page from Brokelyn
+2009-09-09 23:50:49,459 DEBUG [5] Processing Ajaxian » Front Page
+2009-09-09 23:50:49,459 DEBUG [5] Fetching page from Ajaxian » Front Page
+2009-09-09 23:50:49,632 DEBUG [1] Processing 43 Folders
+2009-09-09 23:50:49,632 DEBUG [1] Fetching page from 43 Folders
+2009-09-09 23:50:50,320 DEBUG [22] Processed Brokelyn in 0:00:01.924733 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:50,320 INFO [24] Fetching c a s a C A R A ~ OLD HOUSES FOR FUN & PROFIT ~
+2009-09-09 23:50:50,568 DEBUG [1] Processed 43 Folders in 0:00:02.177405 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:50,568 INFO [6] Fetching Coding Horror
+2009-09-09 23:50:50,826 DEBUG [24] Processing c a s a C A R A ~ OLD HOUSES FOR FUN & PROFIT ~
+2009-09-09 23:50:50,827 DEBUG [24] Fetching page from c a s a C A R A ~ OLD HOUSES FOR FUN & PROFIT ~
+2009-09-09 23:50:50,950 DEBUG [6] Processing Coding Horror
+2009-09-09 23:50:50,950 DEBUG [6] Fetching page from Coding Horror
+2009-09-09 23:50:51,042 DEBUG [23] Processed Brownstoner in 0:00:02.641870 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:51,042 INFO [7] Fetching Daring Fireball
+2009-09-09 23:50:51,530 DEBUG [5] Processed Ajaxian » Front Page in 0:00:03.139568 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:51,531 INFO [8] Fetching David Cramer's Blog
+2009-09-09 23:50:51,863 DEBUG [24] Processed c a s a C A R A ~ OLD HOUSES FOR FUN & PROFIT ~ in 0:00:01.542788 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:51,863 INFO [9] Fetching Devthought
+2009-09-09 23:50:52,020 DEBUG [8] Processing David Cramer's Blog
+2009-09-09 23:50:52,020 DEBUG [8] !BOZO! Feed is not well formed: http://www.davidcramer.net/feed
+2009-09-09 23:50:52,180 DEBUG [8] Fetching page from David Cramer's Blog
+2009-09-09 23:50:52,553 DEBUG [9] Processing Devthought
+2009-09-09 23:50:52,553 DEBUG [9] Fetching page from Devthought
+2009-09-09 23:50:52,623 DEBUG [7] Processing Daring Fireball
+2009-09-09 23:50:52,632 DEBUG [6] Processed Coding Horror in 0:00:02.064162 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:52,633 INFO [31] Fetching FAIL Blog: Pictures and Videos of Owned, Pwnd and Fail Moments
+2009-09-09 23:50:52,943 DEBUG [31] Processing FAIL Blog: Pictures and Videos of Owned, Pwnd and Fail Moments
+2009-09-09 23:50:52,943 DEBUG [31] Fetching page from FAIL Blog: Pictures and Videos of Owned, Pwnd and Fail Moments
+2009-09-09 23:50:53,041 DEBUG [8] Processed David Cramer's Blog in 0:00:01.510402 [ok] [new=0 updated=0 same=10 error=0]
+2009-09-09 23:50:53,051 INFO [34] Fetching FMyLife
+2009-09-09 23:50:53,166 DEBUG [9] Processed Devthought in 0:00:01.303460 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:53,167 INFO [25] Fetching Gawker
+2009-09-09 23:50:53,297 DEBUG [34] Processing FMyLife
+2009-09-09 23:50:53,299 DEBUG [34] Fetching page from FMyLife
+2009-09-09 23:50:53,497 DEBUG - Updated story in feed (Daring Fireball - John Nack on Snow Leopard’s New Default Gamma Setting): 589 / 287
+2009-09-09 23:50:53,519 DEBUG [25] Processing Gawker
+2009-09-09 23:50:53,521 DEBUG [25] Fetching page from Gawker
+2009-09-09 23:50:53,607 DEBUG - Updated story in feed (Daring Fireball - Commodore 64 Emulator for iPhone Approved by Apple): 1184 / 1086
+2009-09-09 23:50:53,721 DEBUG - Updated story in feed (Daring Fireball - Spotify Mobile App Released for Both iPhone and Android): 456 / 382
+2009-09-09 23:50:53,946 DEBUG [31] Processed FAIL Blog: Pictures and Videos of Owned, Pwnd and Fail Moments in 0:00:01.313149 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:53,954 INFO [26] Fetching Gothamist
+2009-09-09 23:50:54,578 DEBUG - Updated story in feed (Daring Fireball - ★ More on the Snow Leopard/Old Version of Flash Brouhaha): 12297 / 11446
+2009-09-09 23:50:55,049 DEBUG [25] Processed Gawker in 0:00:01.882219 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:55,055 INFO [10] Fetching Hacker News
+2009-09-09 23:50:56,088 DEBUG [34] Processed FMyLife in 0:00:03.037382 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:50:56,096 INFO [11] Fetching James Padolsey
+2009-09-09 23:50:57,220 DEBUG [7] Fetching page from Daring Fireball
+2009-09-09 23:50:58,127 DEBUG [11] Processing James Padolsey
+2009-09-09 23:50:58,127 DEBUG [11] Fetching page from James Padolsey
+2009-09-09 23:50:58,272 DEBUG [26] Processing Gothamist
+2009-09-09 23:50:58,315 DEBUG - Updated story in feed (Gothamist - Extra, Extra): 4815 / 4740
+2009-09-09 23:51:01,714 DEBUG [7] Processed Daring Fireball in 0:00:10.672159 [ok] [new=0 updated=4 same=43 error=0]
+2009-09-09 23:51:01,784 INFO [12] Fetching Joel on Software
+2009-09-09 23:51:01,823 DEBUG [10] Processing Hacker News
+2009-09-09 23:51:02,228 DEBUG [11] Processed James Padolsey in 0:00:06.131567 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:02,284 INFO [13] Fetching John Resig
+2009-09-09 23:51:04,554 DEBUG [12] Processing Joel on Software
+2009-09-09 23:51:04,598 DEBUG [12] Fetching page from Joel on Software
+2009-09-09 23:51:04,678 DEBUG [13] Processing John Resig
+2009-09-09 23:51:04,685 DEBUG [13] Fetching page from John Resig
+2009-09-09 23:51:06,745 DEBUG [13] Processed John Resig in 0:00:04.461315 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:06,755 INFO [14] Fetching jQuery Blog
+2009-09-09 23:51:09,321 DEBUG [12] Processed Joel on Software in 0:00:07.537334 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:09,361 INFO [35] Fetching kottke.org
+2009-09-09 23:51:10,363 DEBUG [14] Processing jQuery Blog
+2009-09-09 23:51:10,374 DEBUG [14] Fetching page from jQuery Blog
+2009-09-09 23:51:12,194 DEBUG [26] Fetching page from Gothamist
+2009-09-09 23:51:13,629 DEBUG [10] Fetching page from Hacker News
+2009-09-09 23:51:14,413 DEBUG [14] Processed jQuery Blog in 0:00:07.658036 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:14,414 INFO [32] Fetching Loldogs, Dogs 'n' Puppy Dog Pictures - I Has A Hotdog!
+2009-09-09 23:51:15,582 DEBUG [35] Processing kottke.org
+2009-09-09 23:51:16,257 DEBUG [32] Processing Loldogs, Dogs 'n' Puppy Dog Pictures - I Has A Hotdog!
+2009-09-09 23:51:16,257 DEBUG [32] Fetching page from Loldogs, Dogs 'n' Puppy Dog Pictures - I Has A Hotdog!
+2009-09-09 23:51:16,321 DEBUG [10] Processed Hacker News in 0:00:21.266030 [ok] [new=0 updated=0 same=30 error=0] (SLOW FEED!)
+2009-09-09 23:51:16,330 INFO [15] Fetching MacRumors : Mac News and Rumors
+2009-09-09 23:51:16,416 DEBUG [26] Processed Gothamist in 0:00:22.461716 [ok] [new=0 updated=1 same=41 error=0] (SLOW FEED!)
+2009-09-09 23:51:16,444 INFO [16] Fetching MacRumors Page 2
+2009-09-09 23:51:17,510 DEBUG [15] Processing MacRumors : Mac News and Rumors
+2009-09-09 23:51:17,510 DEBUG [15] Fetching page from MacRumors : Mac News and Rumors
+2009-09-09 23:51:17,668 DEBUG [16] Processing MacRumors Page 2
+2009-09-09 23:51:17,668 DEBUG [16] Fetching page from MacRumors Page 2
+2009-09-09 23:51:17,970 DEBUG [35] Fetching page from kottke.org
+2009-09-09 23:51:18,647 DEBUG [32] Processed Loldogs, Dogs 'n' Puppy Dog Pictures - I Has A Hotdog! in 0:00:04.233482 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:18,647 INFO [33] Fetching nerdboyfriend
+2009-09-09 23:51:19,217 DEBUG [33] Processing nerdboyfriend
+2009-09-09 23:51:19,217 DEBUG [33] Fetching page from nerdboyfriend
+2009-09-09 23:51:19,648 DEBUG [16] Processed MacRumors Page 2 in 0:00:03.203274 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:19,648 INFO [39] Fetching Philip Greenspun's Weblog
+2009-09-09 23:51:19,978 DEBUG [35] Processed kottke.org in 0:00:10.617256 [ok] [new=0 updated=0 same=40 error=0]
+2009-09-09 23:51:19,978 INFO [30] Fetching Rands In Repose
+2009-09-09 23:51:20,021 DEBUG [15] Processed MacRumors : Mac News and Rumors in 0:00:03.691452 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:20,023 INFO [29] Fetching Savory Sweet Life - Easy Recipes For Everyday Cooking by
+2009-09-09 23:51:20,169 DEBUG [39] Processing Philip Greenspun's Weblog
+2009-09-09 23:51:20,519 DEBUG [39] Fetching page from Philip Greenspun's Weblog
+2009-09-09 23:51:20,521 DEBUG [30] Processing Rands In Repose
+2009-09-09 23:51:20,521 DEBUG [30] Fetching page from Rands In Repose
+2009-09-09 23:51:20,698 DEBUG [33] Processed nerdboyfriend in 0:00:02.050336 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:20,698 INFO [17] Fetching Slashdot
+2009-09-09 23:51:20,993 DEBUG [29] Processing Savory Sweet Life - Easy Recipes For Everyday Cooking by
+2009-09-09 23:51:20,993 DEBUG [29] Fetching page from Savory Sweet Life - Easy Recipes For Everyday Cooking by
+2009-09-09 23:51:21,088 DEBUG [17] Processing Slashdot
+2009-09-09 23:51:21,088 DEBUG [17] Fetching page from Slashdot
+2009-09-09 23:51:22,796 DEBUG [30] Processed Rands In Repose in 0:00:02.817376 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:22,796 INFO [18] Fetching TechCrunch
+2009-09-09 23:51:23,937 DEBUG [18] Processing TechCrunch
+2009-09-09 23:51:23,937 DEBUG [18] Fetching page from TechCrunch
+2009-09-09 23:51:23,981 DEBUG [29] Processed Savory Sweet Life - Easy Recipes For Everyday Cooking by in 0:00:03.958385 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:23,981 INFO [19] Fetching Ted Dziuba
+2009-09-09 23:51:24,624 DEBUG [17] Processed Slashdot in 0:00:03.925935 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:24,624 INFO [2] Fetching The Ampersand
+2009-09-09 23:51:25,269 DEBUG [19] Processing Ted Dziuba
+2009-09-09 23:51:25,269 DEBUG [19] Fetching page from Ted Dziuba
+2009-09-09 23:51:25,896 DEBUG [39] Processed Philip Greenspun's Weblog in 0:00:06.247739 [ok] [new=0 updated=0 same=10 error=0]
+2009-09-09 23:51:25,896 INFO [36] Fetching The Cellar - Image of the Day
+2009-09-09 23:51:26,364 DEBUG [2] Processing The Ampersand
+2009-09-09 23:51:26,364 DEBUG [2] Fetching page from The Ampersand
+2009-09-09 23:51:27,454 DEBUG [18] Processed TechCrunch in 0:00:04.658444 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:27,455 INFO [27] Fetching The Doree Chronicles
+2009-09-09 23:51:28,020 DEBUG [19] Processed Ted Dziuba in 0:00:04.038535 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:28,020 INFO [37] Fetching The Lens and the Eyebrow
+2009-09-09 23:51:29,222 DEBUG [27] Processing The Doree Chronicles
+2009-09-09 23:51:29,858 DEBUG [27] Fetching page from The Doree Chronicles
+2009-09-09 23:51:30,201 DEBUG [2] Processed The Ampersand in 0:00:05.577195 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:30,202 INFO [3] Fetching The Sartorialist
+2009-09-09 23:51:30,767 DEBUG [3] Processing The Sartorialist
+2009-09-09 23:51:30,767 DEBUG [3] Fetching page from The Sartorialist
+2009-09-09 23:51:31,524 DEBUG [36] Processing The Cellar - Image of the Day
+2009-09-09 23:51:31,932 DEBUG [36] Fetching page from The Cellar - Image of the Day
+2009-09-09 23:51:31,933 DEBUG [27] Processed The Doree Chronicles in 0:00:04.478204 [ok] [new=0 updated=0 same=20 error=0]
+2009-09-09 23:51:31,933 INFO [4] Fetching the selby - photos in your space
+2009-09-09 23:51:32,199 DEBUG [3] Processed The Sartorialist in 0:00:01.997706 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:32,200 INFO [28] Fetching The SunRayLab Project
+2009-09-09 23:51:32,549 DEBUG [4] Processing the selby - photos in your space
+2009-09-09 23:51:32,550 DEBUG [4] Fetching page from the selby - photos in your space
+2009-09-09 23:51:32,917 DEBUG [28] Processing The SunRayLab Project
+2009-09-09 23:51:33,558 DEBUG [28] Fetching page from The SunRayLab Project
+2009-09-09 23:51:34,855 DEBUG [4] Processed the selby - photos in your space in 0:00:02.922016 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:34,856 INFO [20] Fetching wonko.com
+2009-09-09 23:51:35,949 DEBUG [37] Processing The Lens and the Eyebrow
+2009-09-09 23:51:36,329 DEBUG [20] Processing wonko.com
+2009-09-09 23:51:37,473 DEBUG [20] Fetching page from wonko.com
+2009-09-09 23:51:37,724 DEBUG [28] Processed The SunRayLab Project in 0:00:05.524612 [ok] [new=0 updated=0 same=13 error=0]
+2009-09-09 23:51:37,726 INFO [21] Fetching Yahoo! User Interface Blog
+2009-09-09 23:51:38,526 DEBUG [21] Processing Yahoo! User Interface Blog
+2009-09-09 23:51:38,526 DEBUG [21] Fetching page from Yahoo! User Interface Blog
+2009-09-09 23:51:38,654 DEBUG [36] Processed The Cellar - Image of the Day in 0:00:12.758042 [ok] [new=0 updated=0 same=14 error=0] (SLOW FEED!)
+2009-09-09 23:51:38,659 INFO [38] Fetching You Look Nice Today
+2009-09-09 23:51:38,843 DEBUG [37] Fetching page from The Lens and the Eyebrow
+2009-09-09 23:51:39,051 DEBUG [20] Processed wonko.com in 0:00:04.194910 [ok] [new=0 updated=0 same=10 error=0]
+2009-09-09 23:51:45,147 DEBUG [21] Processed Yahoo! User Interface Blog in 0:00:07.420348 [unchanged] [new=0 updated=0 same=0 error=0]
+2009-09-09 23:51:46,018 DEBUG [37] Processed The Lens and the Eyebrow in 0:00:17.997827 [ok] [new=0 updated=0 same=20 error=0] (SLOW FEED!)
+2009-09-09 23:51:48,183 DEBUG [38] Processing You Look Nice Today
+2009-09-09 23:51:48,205 DEBUG - Updated story in feed (You Look Nice Today - East Arcadia State: 2009 MindSetter Sheet): 91 / 91
+2009-09-09 23:51:48,217 DEBUG - Updated story in feed (You Look Nice Today - Visit Hernes!): 91 / 91
+2009-09-09 23:51:48,223 DEBUG - Updated story in feed (You Look Nice Today - Monsters): 91 / 91
+2009-09-09 23:51:48,239 DEBUG - Updated story in feed (You Look Nice Today - The Noises Rest): 91 / 91
+2009-09-09 23:51:48,246 DEBUG - Updated story in feed (You Look Nice Today - Our Theme Music): 91 / 91
+2009-09-09 23:51:48,256 DEBUG - Updated story in feed (You Look Nice Today - VSOP Roundup): 91 / 91
+2009-09-09 23:51:48,280 DEBUG - Updated story in feed (You Look Nice Today - Production Journal: "Selfish Express"): 91 / 91
+2009-09-09 23:51:48,297 DEBUG - Updated story in feed (You Look Nice Today - Satisfaction Island (YLNT Forum)): 91 / 91
+2009-09-09 23:51:48,359 DEBUG - Updated story in feed (You Look Nice Today - Neglected Originals): 91 / 91
+2009-09-09 23:51:48,381 DEBUG - Updated story in feed (You Look Nice Today - Some Notable Failures: An August Diary): 91 / 91
+2009-09-09 23:51:48,388 DEBUG - Updated story in feed (You Look Nice Today - The Situation): 91 / 91
+2009-09-09 23:51:48,411 DEBUG - Updated story in feed (You Look Nice Today - Rumor of a Leak): 91 / 91
+2009-09-09 23:51:48,419 DEBUG - Updated story in feed (You Look Nice Today - Estelle Getty, 1923-2008): 91 / 91
+2009-09-09 23:51:48,426 DEBUG - Updated story in feed (You Look Nice Today - A Ringtone Tragedy): 91 / 91
+2009-09-09 23:51:48,528 DEBUG - Updated story in feed (You Look Nice Today - Challenge: What's Your Latte Name?): 91 / 91
+2009-09-09 23:51:48,602 DEBUG - Updated story in feed (You Look Nice Today - Career-Confused? WE CAN HELP): 91 / 91
+2009-09-09 23:51:48,651 DEBUG - Updated story in feed (You Look Nice Today - Challenge: Design a Uniform for The YLNT Talent): 91 / 91
+2009-09-09 23:51:48,681 DEBUG - Updated story in feed (You Look Nice Today - Snare!® marketing materials arrive): 91 / 91
+2009-09-09 23:51:48,708 DEBUG - Updated story in feed (You Look Nice Today - Select nuts unboxing video): 91 / 91
+2009-09-09 23:51:48,775 DEBUG [38] Fetching page from You Look Nice Today
+2009-09-09 23:51:53,512 DEBUG [38] Processed You Look Nice Today in 0:00:14.852975 [ok] [new=0 updated=19 same=33 error=0] (SLOW FEED!)
+2009-09-09 23:51:53,514 INFO * DONE in 0:01:05.150474
+* Feeds: ok=12 unchanged=27 cant_parse=0 http_error=0 exception=0
+* Entries: new=0 updated=24 same=284 error=0

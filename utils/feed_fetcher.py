@@ -10,7 +10,7 @@ import logging
 import datetime
 import threading
 import traceback
-from Queue import Queue
+from Queue import Queue, Empty as EmptyQueue
 
 threadpool = None
 
@@ -221,7 +221,12 @@ class Dispatcher:
         """
         while True:
             
-            feed = feed_queue.get(block=False)
+            try:
+                feed = feed_queue.get(block=False)
+            except EmptyQueue, e:
+                print 'Queue empty...'
+                break
+                
             start_time = datetime.datetime.now()
         
             ### Uncomment to test feed fetcher
