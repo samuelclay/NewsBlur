@@ -40,5 +40,5 @@ class Command(BaseCommand):
         disp.poll()
         
         os._exit(1)
-        
+        sys.exit()
         
