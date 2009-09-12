@@ -225,6 +225,7 @@ class Dispatcher:
                 feed = feed_queue.get(block=False)
             except EmptyQueue, e:
                 print 'Queue empty...'
+                sys.exit()
                 break
                 
             start_time = datetime.datetime.now()
