@@ -219,12 +219,20 @@ class Dispatcher:
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
+        current_thread = threading.current_thread()
+
         while True:
-            
             try:
                 feed = feed_queue.get(block=False)
+                print current_thread.getName()
             except EmptyQueue, e:
                 print 'Queue empty...'
+                sys.exit()
+                break
+            except KeyboardInterrupt:
+                logging.debug('! Cancelled by user')
+                print "Cancelled"
+                print current_thread.getName()
                 sys.exit()
                 break
                 
@@ -238,10 +246,15 @@ class Dispatcher:
             try:
                 ffeed = FetchFeed(feed, self.options)
                 fetched_feed = ffeed.fetch()
-            
-                pfeed = ProcessFeed(feed, fetched_feed, self.options)
-                ret_feed, ret_entries = pfeed.process()
-            
+                
+                lock = threading.Lock()
+                lock.acquire()
+                try:
+                    pfeed = ProcessFeed(feed, fetched_feed, self.options)
+                    ret_feed, ret_entries = pfeed.process()
+                finally:
+                    lock.release()
+                
                 fpage = FetchPage(feed, self.options)
                 fpage.fetch()
             
@@ -291,6 +304,7 @@ class Dispatcher:
     def run_jobs(self):
         for i in range(self.num_threads):
             worker = threading.Thread(target=self.process_feed_wrapper, args=(self.feed_queue,))
+            worker.setName("Thread #%s" % (i+1))
             worker.setDaemon(True)
             worker.start()
         
@@ -337,18 +351,3 @@ class Dispatcher:
             except:
                 print(u'I REALLY DONT KNOW: %s - %s' % (e, locals()))
                 
-class FeedFetcher(threading.Thread):
-
-    def __init__(self, feed):
-        threading.Thread.__init__(self)
-        self.feed = feed
-        
-    def run(self):
-        print self.feed
-        self.feed.update(True)
-        usersubs = UserSubscription.objects.filter(
-            feed=self.feed.id
-        )
-        for us in usersubs:
-            us.count_unread()
-            cache.delete('usersub:%s' % us.user_id)

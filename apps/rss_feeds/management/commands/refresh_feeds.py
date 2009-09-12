@@ -17,7 +17,7 @@ class Command(BaseCommand):
             help='Wait timeout in seconds when connecting to feeds.'),
         make_option('-V', '--verbose', action='store_true',
             dest='verbose', default=False, help='Verbose output.'),
-        make_option('-w', '--workerthreads', type='int', default=1,
+        make_option('-w', '--workerthreads', type='int', default=4,
             help='Worker threads that will fetch feeds in parallel.'),
     )
 
