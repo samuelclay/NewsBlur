@@ -8,9 +8,10 @@ import sys
 import time
 import logging
 import datetime
-import threading
+# import threading
 import traceback
-from Queue import Queue, Empty as EmptyQueue
+import multiprocessing
+import Queue
 
 threadpool = None
 
@@ -213,26 +214,26 @@ class Dispatcher:
         else:
             self.tpool = None
         self.time_start = datetime.datetime.now()
-        self.feed_queue = Queue()
+        self.feed_queue = multiprocessing.JoinableQueue()
+        self.lock = multiprocessing.Lock()
 
 
-    def process_feed_wrapper(self, feed_queue):
+    def process_feed_wrapper(self):
         """ wrapper for ProcessFeed
         """
-        current_thread = threading.current_thread()
+        current_process = multiprocessing.current_process()
 
         while True:
             try:
-                feed = feed_queue.get(block=False)
-                print current_thread.getName()
-            except EmptyQueue, e:
+                feed = self.feed_queue.get()
+                print current_process.name
+            except Queue.Empty, e:
                 print 'Queue empty...'
-                sys.exit()
                 break
             except KeyboardInterrupt:
                 logging.debug('! Cancelled by user')
                 print "Cancelled"
-                print current_thread.getName()
+                print current_process.name
                 sys.exit()
                 break
                 
@@ -247,13 +248,12 @@ class Dispatcher:
                 ffeed = FetchFeed(feed, self.options)
                 fetched_feed = ffeed.fetch()
                 
-                lock = threading.Lock()
-                lock.acquire()
+                self.lock.acquire()
                 try:
                     pfeed = ProcessFeed(feed, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                 finally:
-                    lock.release()
+                    self.lock.release()
                 
                 fpage = FetchPage(feed, self.options)
                 fpage.fetch()
@@ -287,14 +287,13 @@ class Dispatcher:
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
 
-            feed_queue.task_done()
+            self.feed_queue.task_done()
 
     def add_job(self, feed):
         """ adds a feed processing job to the pool
         """
         if self.tpool:
-            req = threadpool.WorkRequest(self.process_feed_wrapper,
-                (feed,))
+            req = threadpool.WorkRequest(self.process_feed_wrapper)
             self.tpool.putRequest(req)
         else:
             # no threadpool module, just run the job
@@ -303,9 +302,9 @@ class Dispatcher:
             
     def run_jobs(self):
         for i in range(self.num_threads):
-            worker = threading.Thread(target=self.process_feed_wrapper, args=(self.feed_queue,))
-            worker.setName("Thread #%s" % (i+1))
-            worker.setDaemon(True)
+            worker = multiprocessing.Process(target=self.process_feed_wrapper, args=())
+            # worker.setName("Thread #%s" % (i+1))
+            # worker.setDaemon(True)
             worker.start()
         
     def poll(self):
