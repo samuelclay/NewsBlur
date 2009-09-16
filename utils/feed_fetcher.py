@@ -225,6 +225,10 @@ class Dispatcher:
     def process_feed_wrapper(self):
         """ wrapper for ProcessFeed
         """
+        # Close the DB so the connection can be re-opened on a per-process basis
+        from django.db import connection
+        connection.close()
+        
         current_process = multiprocessing.current_process()
 
         while True:
