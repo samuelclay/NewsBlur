@@ -37,8 +37,8 @@ class PageImporter(object):
         
     def save_page(self, html):
         self.feed.page_data = html
-        self.lock.acquire()
-        try:
-            self.feed.save()
-        finally:
-            self.lock.release()
+        # self.lock.acquire()
+        # try:
+        self.feed.save()
+        # finally:
+        #     self.lock.release()

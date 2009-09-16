@@ -7,6 +7,7 @@ from utils.management_functions import daemonize
 import logging
 import socket
 import os
+import math
 
 
 class Command(BaseCommand):
@@ -25,18 +26,29 @@ class Command(BaseCommand):
         if options['daemonize']:
             daemonize()
         
+        feeds = Feed.objects.all()
+        num_workers = min(len(feeds), options['workerthreads'])
+        
         # settting socket timeout (default= 10 seconds)
         socket.setdefaulttimeout(options['timeout'])
         
-        disp = feed_fetcher.Dispatcher(options, options['workerthreads'])        
-        
-        feeds = Feed.objects.all()
+        disp = feed_fetcher.Dispatcher(options, num_workers)        
         
         
+        
+        feeds_queue = []
+        for _ in range(num_workers):
+            feeds_queue.append([])
+        i = 0
         for feed in feeds:
-            disp.add_job(feed)
+            feeds_queue[i%num_workers].append(feed)
+            i += 1
+        disp.add_jobs(feeds_queue)
         
+        print "Running jobs..."
         disp.run_jobs()
+        
+        print "Polling..."
         disp.poll()
         
         os._exit(1)

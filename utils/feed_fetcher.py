@@ -47,7 +47,8 @@ class FetchFeed:
         """ Downloads and parses a feed.
         """
 
-        log_msg = u'[%d] Fetching %s' % (self.feed.id,
+        current_process = multiprocessing.current_process()
+        log_msg = u'[%d-%s] Fetching %s' % (self.feed.id, current_process.name,
                                              self.feed.feed_title)
         logging.info(log_msg)
         print(log_msg)
@@ -161,11 +162,11 @@ class ProcessFeed:
             elif entry.link:
                 guids.append(entry.link)
                 
-        self.lock.acquire()
-        try:
-            self.feed.save()
-        finally:
-            self.lock.release()
+        # self.lock.acquire()
+        # try:
+        self.feed.save()
+        # finally:
+        #     self.lock.release()
 
 
         # Compare new stories to existing stories, adding and updating
@@ -219,10 +220,10 @@ class Dispatcher:
         else:
             self.tpool = None
         self.time_start = datetime.datetime.now()
-        self.feed_queue = multiprocessing.JoinableQueue()
+        self.workers = []
 
 
-    def process_feed_wrapper(self):
+    def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
         # Close the DB so the connection can be re-opened on a per-process basis
@@ -230,27 +231,16 @@ class Dispatcher:
         connection.close()
         
         current_process = multiprocessing.current_process()
-
-        while True:
-            try:
-                feed = self.feed_queue.get()
-                print current_process.name
-            except Queue.Empty, e:
-                print 'Queue empty...'
-                break
-            except KeyboardInterrupt:
-                logging.debug('! Cancelled by user')
-                print "Cancelled"
-                print current_process.name
-                sys.exit()
-                break
+        # print feed_queue
+        for feed in feed_queue:
+            # print "Process Feed: [%s] %s" % (current_process.name, feed)
                 
             start_time = datetime.datetime.now()
         
             ### Uncomment to test feed fetcher
-            # from random import randint
-            # if randint(0,10) < 10:
-            #     return 5, {}
+            from random import randint
+            if randint(0,10) < 10:
+                continue
         
             try:
                 ffeed = FetchFeed(feed, self.options)
@@ -279,8 +269,8 @@ class Dispatcher:
                 comment = u' (SLOW FEED!)'
             else:
                 comment = u''
-            done = (u'[%d] Processed %s in %s [%s] [%s]%s' % (
-                feed.id, feed.feed_title, unicode(delta),
+            done = (u'[%d-%s] Processed %s in %s [%s] [%s]%s' % (
+                feed.id, current_process.name, feed.feed_title, unicode(delta),
                 self.feed_trans[ret_feed],
                 u' '.join(u'%s=%d' % (self.entry_trans[key],
                           ret_entries[key]) for key in self.entry_keys),
@@ -290,10 +280,10 @@ class Dispatcher:
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
+        print "DONE WITH PROCESS: %s" % current_process.name
+        sys.exit()
 
-            self.feed_queue.task_done()
-
-    def add_job(self, feed):
+    def add_jobs(self, feeds_queue):
         """ adds a feed processing job to the pool
         """
         if self.tpool:
@@ -301,22 +291,24 @@ class Dispatcher:
             self.tpool.putRequest(req)
         else:
             # no threadpool module, just run the job
-            self.feed_queue.put(feed)
+            self.feeds_queue = feeds_queue
             # self.process_feed_wrapper(feed)
             
     def run_jobs(self):
         for i in range(self.num_threads):
-            worker = multiprocessing.Process(target=self.process_feed_wrapper, args=())
+            feed_queue = self.feeds_queue[i]
+            self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper, args=(feed_queue,)))
             # worker.setName("Thread #%s" % (i+1))
             # worker.setDaemon(True)
-            worker.start()
-        
+        for i in range(self.num_threads):
+            self.workers[i].start()
+            
     def poll(self):
         """ polls the active threads
         """
         if not self.tpool:
-            # no thread pool, nothing to poll
-            self.feed_queue.join()
+            for i in range(self.num_threads):
+                self.workers[i].join()
             done = (u'* DONE in %s\n* Feeds: %s\n* Entries: %s' % (
                     unicode(datetime.datetime.now() - self.time_start),
                     u' '.join(u'%s=%d' % (self.feed_trans[key],
