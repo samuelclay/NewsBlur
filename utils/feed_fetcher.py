@@ -162,11 +162,11 @@ class ProcessFeed:
             elif entry.link:
                 guids.append(entry.link)
                 
-        # self.lock.acquire()
-        # try:
-        self.feed.save()
-        # finally:
-        #     self.lock.release()
+        self.lock.acquire()
+        try:
+            self.feed.save()
+        finally:
+            self.lock.release()
 
 
         # Compare new stories to existing stories, adding and updating
