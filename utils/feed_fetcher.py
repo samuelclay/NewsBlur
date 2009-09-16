@@ -86,6 +86,7 @@ class ProcessFeed:
         self.feed = feed
         self.options = options
         self.fpf = fpf
+        self.lock = multiprocessing.Lock()
 
     def process(self):
         """ Downloads and parses a feed.
@@ -160,8 +161,12 @@ class ProcessFeed:
             elif entry.link:
                 guids.append(entry.link)
                 
-        
-        self.feed.save()
+        self.lock.acquire()
+        try:
+            self.feed.save()
+        finally:
+            self.lock.release()
+
 
         # Compare new stories to existing stories, adding and updating
         try:
@@ -215,7 +220,6 @@ class Dispatcher:
             self.tpool = None
         self.time_start = datetime.datetime.now()
         self.feed_queue = multiprocessing.JoinableQueue()
-        self.lock = multiprocessing.Lock()
 
 
     def process_feed_wrapper(self):
@@ -248,12 +252,8 @@ class Dispatcher:
                 ffeed = FetchFeed(feed, self.options)
                 fetched_feed = ffeed.fetch()
                 
-                self.lock.acquire()
-                try:
-                    pfeed = ProcessFeed(feed, fetched_feed, self.options)
-                    ret_feed, ret_entries = pfeed.process()
-                finally:
-                    self.lock.release()
+                pfeed = ProcessFeed(feed, fetched_feed, self.options)
+                ret_feed, ret_entries = pfeed.process()
                 
                 fpage = FetchPage(feed, self.options)
                 fpage.fetch()

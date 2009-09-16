@@ -1,12 +1,14 @@
 import urllib2
 import logging
 import re
+import multiprocessing
 
 class PageImporter(object):
     
     def __init__(self, url, feed):
         self.url = url
         self.feed = feed
+        self.lock = multiprocessing.Lock()
     
     def fetch_page(self):
         request = urllib2.Request(self.url)
@@ -35,4 +37,8 @@ class PageImporter(object):
         
     def save_page(self, html):
         self.feed.page_data = html
-        self.feed.save()
+        self.lock.acquire()
+        try:
+            self.feed.save()
+        finally:
+            self.lock.release()
