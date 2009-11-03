@@ -14,8 +14,8 @@
         this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
         this.story_view = 'page';
         
-        $('body').live('click', $.rescope(this.handle_clicks, this));
-        $('body').live('dblclick', $.rescope(this.handle_dblclicks, this));
+        $('body').bind('click', $.rescope(this.handle_clicks, this));
+        $('body').bind('dblclick', $.rescope(this.handle_dblclicks, this));
         $('#story_titles').scroll($.rescope(this.handle_scroll, this));
         
         this.load_page();
@@ -43,8 +43,10 @@
                     $.make('span', { className: 'NB-storytitles-author'}, story.story_author)
                 ]),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
-                $.make('span', { className: 'story_id' }, ''+story.id)
-            ]);
+                $.make('span', { className: 'story_id' }, ''+story.id),
+                $.make('div', { className: 'NB-story-sentiment NB-story-like' }),
+                $.make('div', { className: 'NB-story-sentiment NB-story-dislike' })
+            ]).data('story_id', story.id);
             
             return $story_title;
         },
@@ -941,6 +943,16 @@
             $.targetIs(e, { tagSelector: 'a.button.dislike' }, function($t, $p){
                 e.preventDefault();
                 var story_id = self.$story_pane.data('story_id');
+                self.mark_story_as_dislike(story_id, $t);
+            });
+            $.targetIs(e, { tagSelector: '.NB-story-like' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.parents('.story').data('story_id');
+                self.mark_story_as_like(story_id, $t);
+            });
+            $.targetIs(e, { tagSelector: '.NB-story-dislike' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.parents('.story').data('story_id');
                 self.mark_story_as_dislike(story_id, $t);
             });
             

@@ -185,6 +185,28 @@ a img {
     display: none;
 }
 
+#story_titles .NB-story-sentiment {
+    position: absolute;
+    width: 24px;
+    height: 16px;
+    top: 2px;
+    display: none;
+}
+
+#story_titles .NB-story-hover .NB-story-sentiment {
+    display: block;
+}
+
+#story_titles .NB-story-like {
+    right: 24px;
+    background: transparent url('../img/icons/silk/arrow_up.png') no-repeat 0 0;
+}
+
+#story_titles .NB-story-dislike {
+    right: 4px;
+    background: transparent url('../img/icons/silk/arrow_down.png') no-repeat 0 0;
+}
+
 #story_titles .story.read {
     font-weight: normal;
     background: none;
