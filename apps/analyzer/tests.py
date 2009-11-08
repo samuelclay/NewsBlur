@@ -17,8 +17,6 @@ class ClassifierTest(TestCase):
     def test_train(self):
         user = User.objects.all()
         feed = Feed.objects.all()
-        print user
-        print feed
         classifier = FisherClassifier(user[0], feed[0])
         
         classifier.train('House of the Day: 393 Pacific St.', 'good')

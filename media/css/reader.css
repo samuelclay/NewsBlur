@@ -237,9 +237,15 @@ a img {
 /* =================== */
 
 #story_pane .story_navigator {
+    position: relative;
+}
+
+#story_pane .NB-story-pane-container {
     position: absolute;
-    right: 4px;
-    top: 6px;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 #story_pane a.button {
