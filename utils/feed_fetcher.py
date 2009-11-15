@@ -137,7 +137,7 @@ class ProcessFeed:
             self.feed.last_modified = mtime(self.fpf.modified)
         except:
             pass
-        
+            
         self.feed.feed_title = self.fpf.feed.get('title', '')[0:254]
         self.feed.feed_tagline = self.fpf.feed.get('tagline', '')
         self.feed.feed_link = self.fpf.feed.get('link', '')

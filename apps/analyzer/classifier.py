@@ -2,24 +2,29 @@ from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed, Story
 from apps.reader.models import UserSubscription, UserStory
 from apps.analyzer.models import Category, FeatureCategory
+from django.db.models.aggregates import Sum
 import datetime
 import re
 import math
 
 class Classifier:
     
-    def __init__(self, user, feed):
+    def __init__(self, user, feed, phrases):
         self.user = user
         self.feed = feed
+        self.phrases = phrases
 
     def get_features(self, doc):
-        splitter=re.compile('\\W*')
-        # Split the words by non-alpha characters
-        words=[s.lower() for s in splitter.split(doc) 
-              if len(s)>2 and len(s)<20]
-  
-        # Return the unique set of words only
-        return dict([(w,1) for w in words])
+        found = {}
+        
+        for phrase in self.phrases:
+            if phrase in doc:
+                if phrase in found:
+                    found[phrase] += 1
+                else:
+                    found[phrase] = 1
+
+        return found
         
     def increment_feature(self, feature, category):
         count = self.feature_count(feature,category)
@@ -32,6 +37,9 @@ class Classifier:
             fc.save()
               
     def feature_count(self, feature, category):
+        if isinstance(category, Category):
+            category = category.category
+           
         try:
             feature_count = FeatureCategory.objects.get(user=self.user, feed=self.feed, feature=feature, category=category)
         except FeatureCategory.DoesNotExist:
@@ -50,20 +58,23 @@ class Classifier:
             category.save()
 
     def category_count(self, category):
-        try:
-            category_count = Category.objects.get(user=self.user, feed=self.feed, category=category)
-        except Category.DoesNotExist:
-            return 0
+        if not isinstance(category, Category):
+            try:
+                category_count = Category.objects.get(user=self.user, feed=self.feed, category=category)
+            except Category.DoesNotExist:
+                return 0
         else:
-            return float(category_count.count)
+            category_count = category
+
+        return float(category_count.count)
 
     def categories(self):
         categories = Category.objects.all()
         return categories
 
     def totalcount(self):
-        categories = Category.objects.filter(user=self.user, feed=self.feed).aggregate(sum=Sum(count))
-        return categories.sum
+        categories = Category.objects.filter(user=self.user, feed=self.feed).aggregate(sum=Sum('count'))
+        return categories['sum']
 
     def train(self, item, category):
         features = self.get_features(item)
@@ -78,7 +89,6 @@ class Classifier:
     def feature_probability(self, feature, category):
         if self.category_count(category) == 0:
             return 0
-
         # The total number of times this feature appeared in this 
         # category divided by the total number of items in this category
         return self.feature_count(feature, category) / self.category_count(category)
@@ -88,7 +98,7 @@ class Classifier:
         basic_prob = prf(feature, category)
 
         # Count the number of times this feature has appeared in all categories
-        totals = sum([self.feature_count(feature, category) for c in self.categories()])
+        totals = sum([self.feature_count(feature, c) for c in self.categories()])
 
         # Calculate the weighted average
         bp = ((weight*ap) + (totals*basic_prob)) / (weight+totals)
@@ -98,8 +108,8 @@ class Classifier:
 
 class FisherClassifier(Classifier):
  
-    def __init__(self, user, feed):
-        Classifier.__init__(self, user, feed)
+    def __init__(self, user, feed, phrases):
+        Classifier.__init__(self, user, feed, phrases)
         self.minimums = {}
         
     def category_probability(self, feature, category):
@@ -119,9 +129,12 @@ class FisherClassifier(Classifier):
         
     def fisher_probability(self, item, category):
         # Multiply all the probabilities together
-        p = 1
+        p = .5
         features = self.get_features(item)
         
+        if features:
+            p = 1
+            
         for feature in features:
             p *= (self.weighted_probability(feature, category, self.category_probability))
 

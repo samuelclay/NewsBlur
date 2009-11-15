@@ -40,7 +40,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             data: data,
             type: 'POST',
             success: function(o) {
-                var log_index = o.indexOf('<div id="django_log"');
+                var log_index = o.indexOf('<div id="django_debug"');
                 var data;
                 
                 if (log_index != -1) { // Debug is True
@@ -48,18 +48,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     var raw_data = o.substring(0, log_index);
                     data = eval('(' + raw_data + ')');
                     if (log) {
-                        var log_js_index_begin = log.indexOf('<script type=\"text\/javascript\">');
-                        var log_js_index_end = log.indexOf('</script>');
-                        var log_html, log_js;
-                        
-                        if (log_js_index_begin != -1) {
-                            log_html = log.substring(0, log_js_index_begin);
-                            log_js = log.substring(log_js_index_begin+31, log_js_index_end);
-                            $('#django_log').replaceWith(log_html);
-                            var js = eval(log_js);
-                        } else {
-                            $('#django_log').replaceWith(log);
-                        }
+                        $('#django_debug').remove();
+                        $('body').append(log);
                     }
                 } else {
                     try {

@@ -59,11 +59,12 @@ class Feed(models.Model):
             pass
         
         options = {
-            'verbose': 0,
+            'verbose': 2,
             'timeout': 10
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
-        disp.add_job(self)
+        disp.add_jobs([[self]])
+        disp.run_jobs()
         disp.poll()
 
         return
