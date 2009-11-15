@@ -651,8 +651,17 @@ form.opml_import_form input {
 }
 
 #NB-splash .NB-splash-title {
+    position: absolute;
+    bottom: 0;
+    margin: 0 auto;
+    height: 300px;
+    width: 600px;
+    background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 0;
+}
+
+#NB-splash .NB-splash-image {
     margin: 0 auto;
     height: 376px;
     width: 600px;
-    background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 0;
+    background: transparent url('../img/reader/newsblur_splash_image.png') no-repeat 0 0;
 }
