@@ -236,6 +236,9 @@ class StoryAuthor(models.Model):
     feed = models.ForeignKey(Feed)
     author_name = models.CharField(max_length=255, null=True, blank=True)
         
+    def __unicode__(self):
+        return '%s - %s' % (self.feed, self.author_name)
+        
 class Story(models.Model):
     '''A feed item'''
     story_feed = models.ForeignKey(Feed)

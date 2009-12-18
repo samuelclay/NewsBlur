@@ -155,7 +155,6 @@ MIDDLEWARE_CLASSES = (
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-
 # =====================
 # = Media Compression =
 # =====================
@@ -238,7 +237,7 @@ ROOT_URLCONF = 'urls'
 INTERNAL_IPS = ('127.0.0.1',)
 LOGGING_LOG_SQL = True
 APPEND_SLASH = True
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 # ===============
 # = Django Apps =

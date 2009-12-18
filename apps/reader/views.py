@@ -30,7 +30,7 @@ def index(request):
         
     # context = feeds
     context = {}
-    
+    print request.user
     user = request.user
     user_info = _parse_user_info(user)
     context.update(user_info)
