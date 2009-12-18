@@ -23,14 +23,17 @@ LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
 COMPRESS_DIR = ''.join([CURRENT_DIR, '/utils/djangocompress'])
 if 'djangocompress' not in ' '.join(sys.path):
     sys.path.append(COMPRESS_DIR)
+DJANGO_DEBUG_DIR = ''.join([CURRENT_DIR, '/utils/django-debug-toolbar'])
+if 'debug-toolbar' not in ' '.join(sys.path):
+    sys.path.append(DJANGO_DEBUG_DIR)
 
 # ===================
 # = Global Settings =
 # ===================
 
-DEBUG = False
+DEBUG = True
 ADMINS = (
-    ('Robert Samuel Clay', 'samuel@ofbrooklyn.com'),
+    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
 MANAGERS = ADMINS
 
@@ -65,7 +68,7 @@ if PRODUCTION:
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = 'http://www.newsblur.com/media/'
-    DEBUG = False
+    DEBUG = True
     CACHE_BACKEND = 'file:///var/tmp/django_cache'
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
@@ -118,8 +121,8 @@ elif DEV_SERVER2:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = '/media/'
     DEBUG = True
-    # CACHE_BACKEND = 'dummy:///'
-    CACHE_BACKEND = 'locmem:///'
+    CACHE_BACKEND = 'dummy:///'
+    # CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -149,7 +152,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.cache.CacheMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'djangologging.middleware.LoggingMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 
@@ -200,6 +203,31 @@ COMPRESS_CSS_FILTERS = []
 # COMPRESS_YUI_BINARY = 'java -jar ' + YUI_DIR
 # COMPRESS_YUI_JS_ARGUMENTS = '--preserve-semi --nomunge --disable-optimizations'
 
+# ========================
+# = Django Debug Toolbar =
+# ========================
+
+DEBUG_TOOLBAR_PANELS = (
+    'debug_toolbar.panels.version.VersionDebugPanel',
+    'debug_toolbar.panels.timer.TimerDebugPanel',
+    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+    'debug_toolbar.panels.headers.HeaderDebugPanel',
+    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+    'debug_toolbar.panels.template.TemplateDebugPanel',
+    'debug_toolbar.panels.sql.SQLDebugPanel',
+    'debug_toolbar.panels.cache.CacheDebugPanel',
+    'debug_toolbar.panels.signals.SignalDebugPanel',
+    'debug_toolbar.panels.logger.LoggingPanel',
+)
+
+def custom_show_toolbar(request):
+    return DEBUG
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': True,
+    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
+    'HIDE_DJANGO_SQL': False,
+}
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -230,4 +258,5 @@ INSTALLED_APPS = (
     'apps.registration',
     'apps.opml_import',
     'apps.profile',
+    # 'debug_toolbar'
 )
