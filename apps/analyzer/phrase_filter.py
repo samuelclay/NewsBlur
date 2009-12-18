@@ -13,15 +13,15 @@ class PhraseFilter:
     def print_phrases(self):
         pprint(self.phrases)
         
-    def phrases(self):
-        return self.phrases
+    def get_phrases(self):
+        return self.phrases.keys()
         
     # ===========
     # = Chunker =
     # ===========
     
     def chunk(self, text):
-        chunks = re.split('[^a-zA-Z-]+', text)[:-1]
+        chunks = [t.strip() for t in re.split('[^a-zA-Z-]+', text) if t]
         # chunks = self._lowercase(chunks)
         return chunks
         
@@ -33,7 +33,7 @@ class PhraseFilter:
     # ==================
     
     def count_phrases(self, chunks, storyid):
-        for l in range(1, len(chunks)):
+        for l in range(1, len(chunks)+1):
             combinations = self._get_combinations(chunks, l)
             # print "Combinations: %s" % combinations
             for phrase in combinations:
@@ -63,6 +63,10 @@ class PhraseFilter:
         for phrase, counts in self.phrases.items():
             if len(counts) < 2:
                 del self.phrases[phrase]
+                continue
+            if len(phrase) < 4:
+                del self.phrases[phrase]
+                continue
                 
         # Kill repeats
         for phrase in self.phrases.keys():
@@ -72,15 +76,18 @@ class PhraseFilter:
         
 if __name__ == '__main__':
     phrasefilter = PhraseFilter()
-    # phrasefilter.run('House of the Day: 123 Atlantic Ave. #3', 1)
-    # phrasefilter.run('House of the Day: 456 Plankton St. #3', 4)
-    # phrasefilter.run('Coop of the Day: 321 Pacific Ave.', 2)
-    # phrasefilter.run('Coop of the Day: 456 Jefferson Ave.', 3)
-    phrasefilter.run('Extra, Extra', 1)
-    phrasefilter.run('Extra, Extra', 2)
-    phrasefilter.run('Early Addition', 3)
-    phrasefilter.run('Early Addition', 4)
-
+    phrasefilter.run('House of the Day: 123 Atlantic Ave. #3', 1)
+    phrasefilter.run('House of the Day: 456 Plankton St. #3', 4)
+    phrasefilter.run('Coop of the Day: 321 Pacific St.', 2)
+    phrasefilter.run('Streetlevel: 393 Pacific St.', 11)
+    phrasefilter.run('Coop of the Day: 456 Jefferson Ave.', 3)
+    phrasefilter.run('Extra, Extra', 5)
+    phrasefilter.run('Extra, Extra', 6)
+    phrasefilter.run('Early Addition', 7)
+    phrasefilter.run('Early Addition', 8)
+    phrasefilter.run('Development Watch', 9)
+    phrasefilter.run('Streetlevel', 10)
+    
     phrasefilter.pare_phrases()
     phrasefilter.print_phrases()
     
