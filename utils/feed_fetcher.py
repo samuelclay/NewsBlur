@@ -185,7 +185,9 @@ class ProcessFeed:
             story_feed=self.feed,
             story_date__gte=start_date,
             story_date__lte=end_date,
-        ).order_by('-story_date').values()[:100]
+        ).order_by('-story_date').values()
+        if len(existing_stories) > 100:
+            existing_stories = existing_stories[:10] + existing_stories[-100:]
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
         
         return FEED_OK, ret_values
