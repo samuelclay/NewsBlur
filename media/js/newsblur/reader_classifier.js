@@ -116,11 +116,10 @@ NEWSBLUR.ReaderClassifier.prototype = {
                 NEWSBLUR.log(['Dialog Close', dialog]);
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
-                dialog.orig.appendTo(dialog.parentNode);
                 dialog.overlay.fadeOut(200, function() {
                     dialog.overlay.empty().remove();
+                    $.modal.close();
                 });
-                dialog = {};
                 $('.NB-classifier-holder').empty().remove();
             }
         });
