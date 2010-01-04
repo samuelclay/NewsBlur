@@ -68,7 +68,7 @@ if PRODUCTION:
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = 'http://www.newsblur.com/media/'
-    DEBUG = True
+    DEBUG = False
     CACHE_BACKEND = 'file:///var/tmp/django_cache'
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
@@ -179,7 +179,7 @@ COMPRESS_JS = {
             
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
-            'js/newsblur/reader_classifier.js'
+            'js/newsblur/reader_classifier.js',
         ),
         'output_filename': 'release/all-compressed-?.js'
     }
