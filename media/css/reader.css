@@ -199,12 +199,12 @@ a img {
 
 #story_titles .NB-story-like {
     right: 24px;
-    background: transparent url('../img/icons/silk/arrow_up.png') no-repeat 0 0;
+    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
 }
 
 #story_titles .NB-story-dislike {
     right: 4px;
-    background: transparent url('../img/icons/silk/arrow_down.png') no-repeat 0 0;
+    background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 -4px;
 }
 
 #story_titles .story.read {
@@ -701,6 +701,7 @@ form.opml_import_form input {
 .NB-classifier .NB-classifier-field {
     margin: 0 0 0 24px;
     position: relative;
+    clear: both;
 }
 
 .NB-classifier .NB-classifier-field input[type=text] {
@@ -709,7 +710,7 @@ form.opml_import_form input {
 }
 
 .NB-classifier .NB-classifier-field input[type=checkbox] {
-    margin: 5px 0 0 -20px;
+    margin: 4px 0 0 -20px;
     float: left;
 }
 
@@ -737,4 +738,29 @@ form.opml_import_form input {
 .NB-classifier img.feed_favicon {
     margin: 0 6px 0 0;
     vertical-align: middle;
+}
+
+.NB-classifier-title-display {
+    margin: 6px 0 0 0;
+}
+
+.NB-classifier .NB-classifier-tag {
+    background-color: #E0E0FF;
+    white-space: nowrap;
+    float: left;
+    display: block;
+    padding: 2px 6px 2px 0px;
+    margin: 2px 6px 2px 0;
+}
+
+.NB-classifier .NB-classifier-tag input[type=checkbox] {
+    margin: 0px 4px 0px;
+    float: none;
+}
+
+.NB-classifier .NB-classifier-tag label {
+}
+
+.simplemodal-wrap {
+    overflow: auto;
 }

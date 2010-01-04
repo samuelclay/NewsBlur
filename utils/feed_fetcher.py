@@ -192,7 +192,6 @@ class ProcessFeed:
         
         return FEED_OK, ret_values
 
-
 class Dispatcher:
     def __init__(self, options, num_threads):
         self.options = options

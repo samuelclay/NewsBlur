@@ -30,6 +30,9 @@ NEWSBLUR.ReaderClassifier.prototype = {
         var story = this.story;
         var feed = this.feed;
         
+        // HTML entities decoding.
+        story.story_title = $('<div/>').html(story.story_title).text();
+        
         this.$classifier = $.make('div', { className: 'NB-classifier' }, [
             $.make('h2', 'What do you like about this story?'),
             $.make('form', { method: 'post' }, [
@@ -38,7 +41,7 @@ NEWSBLUR.ReaderClassifier.prototype = {
                     $.make('input', { type: 'checkbox', name: 'facet', value: 'title', id: 'classifier_title' }),
                     $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
                     $.make('label', { 'for': 'classifier_title' }, [
-                        $.make('div', [
+                        $.make('div', { className: 'NB-classifier-title-display' }, [
                             'Look for: ',
                             $.make('span', { className: 'NB-classifier-title NB-classifier-facet-disabled' }, 'Highlight phrases to look for in future stories')
                         ])
@@ -51,8 +54,12 @@ NEWSBLUR.ReaderClassifier.prototype = {
                         $.make('b', story.story_authors)
                     ])
                 ])),
+                (story.story_tags.length && $.make('div', { className: 'NB-classifier-field' }, [
+                    $.make('h5', 'Story Categories &amp; Tags'),
+                    $.make('div', { className: 'NB-classifier-tags' })
+                ])),
                 $.make('div', { className: 'NB-classifier-field' }, [
-                    $.make('h5', 'The Publisher'),
+                    $.make('h5', 'Everything by This Publisher'),
                     $.make('input', { type: 'checkbox', name: 'facet', value: 'publisher', id: 'classifier_publisher' }),
                     $.make('label', { 'for': 'classifier_publisher' }, [
                         $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
@@ -70,11 +77,30 @@ NEWSBLUR.ReaderClassifier.prototype = {
                 return false;
             })
         ]);
+        
+        for (var t in story.story_tags) {
+            var tag = story.story_tags[t];
+            var $tag = $.make('span', { className: 'NB-classifier-tag' }, [
+                $.make('input', { type: 'checkbox', name: 'tag', value: tag, id: 'classifier_tag_'+t }),
+                $.make('label', { 'for': 'classifier_tag_'+t }, [
+                    $.make('b', tag)
+                ])
+            ]);
+            $('.NB-classifier-tags', this.$classifier).append($tag);
+        }
     },
     
     open_modal: function() {
+        var self = this;
+
+        var $holder = $.make('div', { className: 'NB-classifier-holder' }).append(this.$classifier).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
+        var height = $('.NB-classifier', $holder).outerHeight(true);
+        NEWSBLUR.log(['Classifier height', height]);
+        $holder.css({'visibility': 'visible', 'display': 'none'});
+        
         this.$classifier.modal({
-            'minWidth': 550,
+            'minWidth': 600,
+            'minHeight': height,
             'overlayClose': true,
             'onOpen': function (dialog) {
 	            dialog.overlay.fadeIn(200, function () {
@@ -82,9 +108,20 @@ NEWSBLUR.ReaderClassifier.prototype = {
 		            dialog.data.fadeIn(400);
 	            });
             },
-            'onShow': function() {
-                $('#simplemodal-container').corners('4px')
-                                           .css({'height': 'auto', 'width': '550px'});
+            'onShow': function(dialog) {
+                $('#simplemodal-container').corners('4px').css({'width': 600, 'height': height});
+                $('.NB-classifier-tag', self.$classifier).corners('4px');
+            },
+            'onClose': function(dialog) {
+                NEWSBLUR.log(['Dialog Close', dialog]);
+                dialog.data.hide().empty().remove();
+                dialog.container.hide().empty().remove();
+                dialog.orig.appendTo(dialog.parentNode);
+                dialog.overlay.fadeOut(200, function() {
+                    dialog.overlay.empty().remove();
+                });
+                dialog = {};
+                $('.NB-classifier-holder').empty().remove();
             }
         });
     },

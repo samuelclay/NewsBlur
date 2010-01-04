@@ -816,7 +816,7 @@
         mark_story_as_like: function(story_id, $button) {
             var feed_id = this.active_feed;
             
-            var classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id);
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id);
         },
         
         mark_story_as_dislike: function(story_id, $button) {

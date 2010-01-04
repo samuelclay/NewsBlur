@@ -81,13 +81,16 @@ class Feed(models.Model):
         
         for story in stories:
             story = pre_process_story(story)
-
+            
             if story.get('title'):
                 story_contents = story.get('content')
+                story_tags = self.get_tags(story)
+                
                 if story_contents is not None:
                     story_content = story_contents[0]['value']
                 else:
                     story_content = story.get('summary')
+                    
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
                 story_author, _ = self._save_story_author(story.get('author'))
                 if existing_story is None:
@@ -108,6 +111,7 @@ class Feed(models.Model):
                     except IntegrityError, e:
                         ret_values[ENTRY_ERR] += 1
                         print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                    [s.tags.add(tcat) for tcat in story_tags]
                 elif existing_story and story_has_changed:
                     # update story
                     logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story['story_content']), len(story_content)))
@@ -134,6 +138,8 @@ class Feed(models.Model):
                            story_permalink = story.get('link'),
                            story_guid = story.get('id') or story.get('link')
                     )
+                    s.tags.clear()
+                    [s.tags.add(tcat) for tcat in story_tags]
                     try:
                         ret_values[ENTRY_UPDATED] += 1
                         s.save(force_update=True)
@@ -164,6 +170,8 @@ class Feed(models.Model):
             stories_db = Story.objects.filter(story_feed=self).select_related('story_author')[offset:offset+limit]
             for story_db in stories_db:
                 story = story_db.__dict__
+                story_tags = story_db.tags.all()
+                story['story_tags'] = [tag.name for tag in story_tags]
                 story['short_parsed_date'] = format_story_link_date__short(story['story_date'])
                 story['long_parsed_date'] = format_story_link_date__long(story['story_date'])
                 story['story_authors'] = story_db.story_author.author_name
@@ -172,6 +180,32 @@ class Feed(models.Model):
         
         return stories
     
+    def get_tags(self, entry):
+        fcat = []
+        if entry.has_key('tags'):
+            for tcat in entry.tags:
+                if tcat.label != None:
+                    term = tcat.label
+                else:
+                    term = tcat.term
+                qcat = term.strip()
+                if ',' in qcat or '/' in qcat:
+                    qcat = qcat.replace(',', '/').split('/')
+                else:
+                    qcat = [qcat]
+                for zcat in qcat:
+                    tagname = zcat.lower()
+                    while '  ' in tagname:
+                        tagname = tagname.replace('  ', ' ')
+                    tagname = tagname.strip()
+                    if not tagname or tagname == ' ':
+                        continue
+                    if not Tag.objects.filter(name=tagname, feed=self):
+                        cobj = Tag(name=tagname, feed=self)
+                        cobj.save()
+                    fcat.append(Tag.objects.get(name=tagname, feed=self))
+        return fcat
+
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
         story_in_system = None
         story_has_changed = False
@@ -225,10 +259,11 @@ class Feed(models.Model):
         ordering=["feed_title"]
         
 class Tag(models.Model):
-    name = models.CharField(max_length=100)
+    feed = models.ForeignKey(Feed)
+    name = models.CharField(max_length=255)
 
     def __unicode__(self):
-        return self.name
+        return '%s - %s' % (self.feed, self.name)
     
     def save(self):
         super(Tag, self).save()
@@ -239,9 +274,6 @@ class StoryAuthor(models.Model):
         
     def __unicode__(self):
         return '%s - %s' % (self.feed, self.author_name)
-    
-    def natural_keys(self):
-        return (self.author_name,)
         
 class Story(models.Model):
     '''A feed item'''
