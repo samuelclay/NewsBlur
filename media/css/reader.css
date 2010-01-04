@@ -665,3 +665,76 @@ form.opml_import_form input {
     width: 600px;
     background: transparent url('../img/reader/newsblur_splash_image.png') no-repeat 0 0;
 }
+
+/* ============== */
+/* = Classifier = */
+/* ============== */
+
+.NB-classifier {
+    padding: 12px;
+}
+
+.NB-classifier h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 130%;
+}
+
+.NB-classifier h2.NB-like {
+    color: #007000;
+}
+
+.NB-classifier h2.NB-dislike {
+    color: #700000;
+}
+
+.NB-classifier h5 {
+    border-bottom: 1px solid #A0A0A0;
+    padding: 16px 0 0px;
+    margin: 0 0 6px -24px;
+    color: #808080;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-size: 70%;
+}
+
+.NB-classifier .NB-classifier-field {
+    margin: 0 0 0 24px;
+    position: relative;
+}
+
+.NB-classifier .NB-classifier-field input[type=text] {
+    width: 446px;
+    font-size: 14px;
+}
+
+.NB-classifier .NB-classifier-field input[type=checkbox] {
+    margin: 5px 0 0 -20px;
+    float: left;
+}
+
+.NB-classifier .NB-classifier-title {
+    font-weight: bold;
+}
+
+.NB-classifier .NB-classifier-facet-disabled {
+    color: #A0A0A0;
+}
+
+.NB-disabled {
+    color: #A0A0A0;
+}
+
+.NB-classifier .NB-classifier-submit {
+    margin: 16px 0 0 0;
+    font-size: 13px;
+}
+
+.NB-classifier .NB-classifier-submit input[type=submit] {
+    font-size: 14px;
+}
+
+.NB-classifier img.feed_favicon {
+    margin: 0 6px 0 0;
+    vertical-align: middle;
+}

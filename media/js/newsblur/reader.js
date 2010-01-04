@@ -42,7 +42,7 @@
             var $story_title = $.make('div', { className: 'story' + read }, [
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     story.story_title,
-                    $.make('span', { className: 'NB-storytitles-author'}, story.story_author)
+                    $.make('span', { className: 'NB-storytitles-author'}, story.story_authors)
                 ]),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
@@ -388,8 +388,8 @@
                 
                 var $story = $.make('li', { className: 'NB-feed-story' }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
-                        ( story.story_author &&
-                            $.make('div', { className: 'NB-feed-story-author' }, story.story_author)),
+                        ( story.story_authors &&
+                            $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
                         $.make('a', { className: 'NB-feed-story-title', href: unescape(story.story_permalink) }, story.story_title),
                         ( story.long_parsed_date &&
                             $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date))
@@ -695,7 +695,7 @@
             if (!$stories.length) {
                 // Try slicing words off the title, from the beginning.
                 title_words = title.match(/[^ ]+/g);
-                NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')])
+                NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')]);
                 if (title_words.length > 2) {
                     for (var i=0; i < 3; i++) {
                         if (i==0) shortened_title = title_words.slice(1).join(' ');
@@ -814,16 +814,9 @@
         },
         
         mark_story_as_like: function(story_id, $button) {
-            var self = this;
-
-            var callback = function() {
-                return;
-            };
-
-            $button.addClass('liked');
-            if (NEWSBLUR.Globals.is_authenticated) {
-                this.model.mark_story_as_like(story_id, callback);
-            }
+            var feed_id = this.active_feed;
+            
+            var classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id);
         },
         
         mark_story_as_dislike: function(story_id, $button) {

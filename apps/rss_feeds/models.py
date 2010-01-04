@@ -2,6 +2,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.core import serializers
 from django.core.cache import cache
 from utils import feedparser, object_manager
 from utils.dateutil.parser import parse as dateutil_parse
@@ -157,16 +158,16 @@ class Feed(models.Model):
             story.save()
         
     def get_stories(self, offset=0, limit=25):
-        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit))
+        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
     
-        if stories is None:
-            stories = Story.objects.filter(story_feed=self).values()[offset:offset+limit]
-            for story in stories:
+        if not stories:
+            stories_db = Story.objects.filter(story_feed=self).select_related('story_author')[offset:offset+limit]
+            for story_db in stories_db:
+                story = story_db.__dict__
                 story['short_parsed_date'] = format_story_link_date__short(story['story_date'])
                 story['long_parsed_date'] = format_story_link_date__long(story['story_date'])
-                story['story_feed_title'] = self.feed_title
-                story['story_feed_link'] = mark_safe(self.feed_link)
-                story['story_permalink'] = mark_safe(story['story_permalink'])
+                story['story_authors'] = story_db.story_author.author_name
+                stories.append(story)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
         return stories
@@ -238,6 +239,9 @@ class StoryAuthor(models.Model):
         
     def __unicode__(self):
         return '%s - %s' % (self.feed, self.author_name)
+    
+    def natural_keys(self):
+        return (self.author_name,)
         
 class Story(models.Model):
     '''A feed item'''

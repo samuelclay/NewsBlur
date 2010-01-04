@@ -175,9 +175,11 @@ COMPRESS_JS = {
             'js/jquery.color.js',
             'js/jquery-ui-1.7.2.custom.min.js',
             'js/jquery.layout.js',
+            'js/jquery.fieldselection.js',
             
             'js/newsblur/assetmodel.js',
-            'js/newsblur/reader.js'
+            'js/newsblur/reader.js',
+            'js/newsblur/reader_classifier.js'
         ),
         'output_filename': 'release/all-compressed-?.js'
     }
