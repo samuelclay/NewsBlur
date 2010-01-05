@@ -1,8 +1,9 @@
-NEWSBLUR.ReaderClassifier = function(story_id, feed_id, options) {
+NEWSBLUR.ReaderClassifier = function(story_id, feed_id, score, options) {
     var defaults = {};
     
     this.story_id = story_id;
     this.feed_id = feed_id;
+    this.score = score;
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
@@ -17,6 +18,7 @@ NEWSBLUR.ReaderClassifier.prototype = {
         this.handle_text_highlight();
         this.handle_select_checkboxes();
         this.handle_cancel();
+        this.handle_select_title();
         this.open_modal();
     },
     
@@ -34,7 +36,7 @@ NEWSBLUR.ReaderClassifier.prototype = {
         story.story_title = $('<div/>').html(story.story_title).text();
         
         this.$classifier = $.make('div', { className: 'NB-classifier' }, [
-            $.make('h2', 'What do you like about this story?'),
+            $.make('h2', { className: 'NB-classifier-modal-title' }),
             $.make('form', { method: 'post' }, [
                 (story.story_title && $.make('div', { className: 'NB-classifier-field' }, [
                     $.make('h5', 'Story Title'),
@@ -43,7 +45,8 @@ NEWSBLUR.ReaderClassifier.prototype = {
                     $.make('label', { 'for': 'classifier_title' }, [
                         $.make('div', { className: 'NB-classifier-title-display' }, [
                             'Look for: ',
-                            $.make('span', { className: 'NB-classifier-title NB-classifier-facet-disabled' }, 'Highlight phrases to look for in future stories')
+                            $.make('span', { className: 'NB-classifier-title NB-classifier-facet-disabled' }, 'Highlight phrases to look for in future stories'),
+                            $.make('input', { name: 'title', value: '', type: 'hidden', className: 'NB-classifier-title-hidden' })
                         ])
                     ])
                 ])),
@@ -67,6 +70,9 @@ NEWSBLUR.ReaderClassifier.prototype = {
                     ])
                 ]),
                 $.make('div', { className: 'NB-classifier-submit' }, [
+                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
+                    $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
+                    $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-classifier-cancel' }, 'cancel')
@@ -88,6 +94,13 @@ NEWSBLUR.ReaderClassifier.prototype = {
             ]);
             $('.NB-classifier-tags', this.$classifier).append($tag);
         }
+        
+        var $modal_title = $('.NB-classifier-modal-title', this.$classifier);
+        if (this.score == 1) {
+            $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this story?');
+        } else if (this.score == -1) {
+            $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this story?');
+        }
     },
     
     open_modal: function() {
@@ -104,12 +117,12 @@ NEWSBLUR.ReaderClassifier.prototype = {
             'overlayClose': true,
             'onOpen': function (dialog) {
 	            dialog.overlay.fadeIn(200, function () {
-		            dialog.container.fadeIn(400);
-		            dialog.data.fadeIn(400);
+		            dialog.container.fadeIn(200);
+		            dialog.data.fadeIn(200);
 	            });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corners('4px').css({'width': 600, 'height': height});
+                $('#simplemodal-container').corners('6px').css({'width': 600, 'height': height});
                 $('.NB-classifier-tag', self.$classifier).corners('4px');
             },
             'onClose': function(dialog) {
@@ -128,6 +141,7 @@ NEWSBLUR.ReaderClassifier.prototype = {
     handle_text_highlight: function() {
         var $title_highlight = $('.NB-classifier-title-highlight', this.$classifier);
         var $title = $('.NB-classifier-title', this.$classifier);
+        var $title_hidden = $('.NB-classifier-title-hidden', this.$classifier);
         var $title_checkbox = $('#classifier_title', this.$classifier);
         
         var update = function() {
@@ -136,10 +150,26 @@ NEWSBLUR.ReaderClassifier.prototype = {
             if ($title.text() != text && text.length) {
                 $title_checkbox.attr('checked', 'checked').change();
                 $title.text(text).removeClass('NB-classifier-facet-disabled');
+                $title_hidden.val(text);
             }
         };
         
         $title_highlight.keydown(update).keyup(update).mousedown(update).mouseup(update).mousemove(update);
+    },
+    
+    handle_select_title: function() {
+        var $title_checkbox = $('#classifier_title', this.$classifier);
+        var $title = $('.NB-classifier-title', this.$classifier);
+        var $title_hidden = $('.NB-classifier-title-hidden', this.$classifier);
+        var $title_highlight = $('.NB-classifier-title-highlight', this.$classifier);
+        
+        $title_checkbox.change(function() {;
+            if ($title.hasClass('NB-classifier-facet-disabled')) {
+                var text = $title_highlight.val();
+                $title.text(text).removeClass('NB-classifier-facet-disabled');
+                $title_hidden.val(text);
+            }
+        });
     },
     
     handle_select_checkboxes: function() {
@@ -166,8 +196,21 @@ NEWSBLUR.ReaderClassifier.prototype = {
         });
     },
     
-    save: function() {
+    serialize_classifier: function() {
+        var data = $('.NB-classifier form input').serialize();
         
+        return data;
+    },
+    
+    save: function() {
+        var $save = $('.NB-classifier input[type=submit]');
+        var story_id = this.story_id;
+        var data = this.serialize_classifier();
+        
+        $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
+        this.model.save_classifier(story_id, data, function() {
+            $.modal.close();
+        });
     }
     
 };

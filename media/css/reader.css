@@ -761,6 +761,18 @@ form.opml_import_form input {
 .NB-classifier .NB-classifier-tag label {
 }
 
+.NB-classifier .NB-classifier-tags {
+    margin-left: -24px;
+}
+
+.NB-classifier .NB-classifier-modal-title .NB-classifier-like {
+    color: #3D931B;
+}
+
+.NB-classifier .NB-classifier-modal-title .NB-classifier-dislike {
+    color: #932C15;
+}
+
 .simplemodal-wrap {
     overflow: auto;
 }

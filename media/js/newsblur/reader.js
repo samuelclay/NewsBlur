@@ -816,20 +816,13 @@
         mark_story_as_like: function(story_id, $button) {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id);
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id, 1);
         },
         
         mark_story_as_dislike: function(story_id, $button) {
-            var self = this;
-
-            var callback = function() {
-                return;
-            };
-
-            $button.addClass('disliked');
-            if (NEWSBLUR.Globals.is_authenticated) {
-                this.model.mark_story_as_dislike(story_id, callback);
-            }            
+            var feed_id = this.active_feed;
+            
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id, -1);
         },
         
         

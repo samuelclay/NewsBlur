@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     (r'^$', include('apps.reader.urls')),
     (r'^accounts/', include('apps.registration.urls')),
     (r'^reader/', include('apps.reader.urls')),
+    (r'^classifier/', include('apps.analyzer.urls')),
     (r'^opml/', include('apps.opml_import.urls')),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/(.*)', admin.site.root)

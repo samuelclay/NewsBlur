@@ -35,6 +35,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     make_request: function(url, data, callback) {
+        // $('body').ajaxStop();
         $.ajax({
             url: url,
             data: data,
@@ -211,6 +212,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         this.make_request('/opml_import/process', data, callback);
+    },
+    
+    save_classifier: function(story_id, data, callback) {
+        this.make_request('/classifier/save', data, callback);
     }
     
 };
@@ -229,7 +234,6 @@ NEWSBLUR.AssetModel.Preferences.prototype = {
     },
     
     make_request: function(url, data, callback) {
-        $.ajaxStop();
         $.ajax({
             url: url,
             data: data,
@@ -241,5 +245,7 @@ NEWSBLUR.AssetModel.Preferences.prototype = {
                 }
             }
         });    
-    },
+    }
+    
 };
+
