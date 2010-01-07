@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.db import IntegrityError
 try:
-    from apps.rss_feeds.models import Feed, Story
+    from apps.rss_feeds.models import Feed, Story, Tag
 except:
     pass
 from django.core.cache import cache
+from django.db.models.aggregates import Count
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
 from utils import json
 from utils.user_functions import get_user
@@ -115,9 +116,14 @@ def load_single_feed(request):
             story['read_status'] = 0
         # logging.debug("Story: %s" % story)
     
-    context = stories
+    all_tags = Tag.objects.filter(feed=feed)\
+                          .annotate(stories_count=Count('story'))\
+                          .order_by('-stories_count')[:20]
+    tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
+    
+    context = dict(stories=stories, tags=tags, intelligence={})
     data = json.encode(context)
-    return HttpResponse(data, mimetype='text/html')
+    return HttpResponse(data, mimetype='application/json')
 
 def refresh_feed(request):
     feed_id = request.REQUEST['feed_id']

@@ -31,9 +31,11 @@ def save_classifier(request):
     payload = {}
     feed = Feed.objects.get(pk=post['feed_id'])
     story = Story.objects.get(pk=post['story_id'])
+    score = int(post['score'])
 
     if 'title' in post and 'title' in facets:
         ClassifierTitle.objects.create(user=request.user,
+                                       score=score,
                                        title=post['title'],
                                        feed=feed,
                                        original_story=story)
@@ -41,12 +43,14 @@ def save_classifier(request):
     if 'author' in facets:
         author = story.story_author
         ClassifierAuthor.objects.create(user=request.user,
+                                        score=score,
                                         author=author,
                                         feed=feed,
                                         original_story=story)
                          
     if 'publisher' in facets:
         ClassifierFeed.objects.create(user=request.user,
+                                      score=score,
                                       feed=feed,
                                       original_story=story)
     
@@ -55,6 +59,7 @@ def save_classifier(request):
         for tag_name in tags:
             tag = Tag.objects.get(name=tag_name, feed=feed)
             ClassifierTag.objects.create(user=request.user,
+                                         score=score,
                                          tag=tag,
                                          feed=feed,
                                          original_story=story)

@@ -156,14 +156,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     load_feed: function(feed_id, page, first_load, callback) {
         var self = this;
         
-        var pre_callback = function(stories) {
+        var pre_callback = function(data) {
             if (feed_id != self.feed_id) {
-                self.stories = stories;
+                self.stories = data.stories;
                 self.feed_id = feed_id;
             } else {
-                $.merge(self.stories, stories);
+                $.merge(self.stories, data.stories);
             }
-            callback(stories, first_load);
+            callback(data, first_load);
         };
         
         this.make_request('/reader/load_single_feed',

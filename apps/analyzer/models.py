@@ -25,8 +25,10 @@ class Category(models.Model):
     def __unicode__(self):
         return '%s (%s)' % (self.category, self.count)
         
+        
 class ClassifierTitle(models.Model):
     user = models.ForeignKey(User)
+    score = models.SmallIntegerField()
     title = models.CharField(max_length=255)
     feed = models.ForeignKey(Feed)
     original_story = models.ForeignKey(Story)
@@ -37,6 +39,7 @@ class ClassifierTitle(models.Model):
         
 class ClassifierAuthor(models.Model):
     user = models.ForeignKey(User)
+    score = models.SmallIntegerField()
     author = models.ForeignKey(StoryAuthor)
     feed = models.ForeignKey(Feed)
     original_story = models.ForeignKey(Story)
@@ -47,6 +50,7 @@ class ClassifierAuthor(models.Model):
     
 class ClassifierFeed(models.Model):
     user = models.ForeignKey(User)
+    score = models.SmallIntegerField()
     feed = models.ForeignKey(Feed)
     original_story = models.ForeignKey(Story)
     creation_date = models.DateTimeField(auto_now=True)
@@ -56,6 +60,7 @@ class ClassifierFeed(models.Model):
         
 class ClassifierTag(models.Model):
     user = models.ForeignKey(User)
+    score = models.SmallIntegerField()
     tag = models.ForeignKey(Tag)
     feed = models.ForeignKey(Feed)
     original_story = models.ForeignKey(Story)

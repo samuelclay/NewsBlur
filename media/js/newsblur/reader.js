@@ -340,12 +340,14 @@
             this.switch_taskbar_view($taskbar_view_button);
         },
         
-        create_story_titles: function(e, stories, first_load) {
+        create_story_titles: function(e, data, first_load) {
             var $story_titles = this.$story_titles;
+            var stories = data.stories;
+            var tags = data.tags;
             
             this.story_titles_clear_loading_endbar();
             
-            NEWSBLUR.log(['Sample story: ', stories[0], stories.length]);
+            NEWSBLUR.log(['Sample story: ', stories[0], stories.length, tags]);
             for (s in stories) {
                 var story = stories[s];
                 var $story_title = this.make_story_title(story);
@@ -509,7 +511,10 @@
             var feed = this.model.get_feed(feed_id);
 
             var $feed_bar = $.make('div', { className: 'feed_bar' }, [
-                $.make('span', { className: 'unread_count' }, ''+feed.unread_count),
+                $.make('div', { className: 'NB-feedbar-intelligence' }, [
+                    $.make('a', { href: '#', className: 'NB-button-intelligence' }, 'Intelligence'),
+                    $.make('span', { className: 'unread_count' }, ''+feed.unread_count)
+                ]),
                 $.make('span', { className: 'feed_heading' }, [
                     $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                     $.make('span', { className: 'feed_title' }, feed.feed_title)
