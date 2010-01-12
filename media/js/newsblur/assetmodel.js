@@ -159,6 +159,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             if (feed_id != self.feed_id) {
                 self.stories = data.stories;
+                self.feed_tags = data.feed_tags;
+                self.feed_authors = data.feed_authors;
                 self.feed_id = feed_id;
             } else {
                 $.merge(self.stories, data.stories);
@@ -198,6 +200,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return null;
     },
     
+    get_feed_tags: function() {
+        return this.feed_tags;
+    },
+    
+    get_feed_authors: function() {
+        return this.feed_authors;
+    },
+    
     get_story: function(story_id, callback) {
         var self = this;
         for (s in this.stories) {
@@ -214,8 +224,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/opml_import/process', data, callback);
     },
     
-    save_classifier: function(story_id, data, callback) {
-        this.make_request('/classifier/save', data, callback);
+    save_classifier_story: function(story_id, data, callback) {
+        this.make_request('/classifier/save/story/', data, callback);
+    },
+    
+    save_classifier_publisher: function(data, callback) {
+        this.make_request('/classifier/save/publisher', data, callback);
     }
     
 };

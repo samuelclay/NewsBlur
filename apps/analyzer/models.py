@@ -31,7 +31,7 @@ class ClassifierTitle(models.Model):
     score = models.SmallIntegerField()
     title = models.CharField(max_length=255)
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story)
+    original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
@@ -42,7 +42,7 @@ class ClassifierAuthor(models.Model):
     score = models.SmallIntegerField()
     author = models.ForeignKey(StoryAuthor)
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story)
+    original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
@@ -52,7 +52,7 @@ class ClassifierFeed(models.Model):
     user = models.ForeignKey(User)
     score = models.SmallIntegerField()
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story)
+    original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
@@ -63,7 +63,7 @@ class ClassifierTag(models.Model):
     score = models.SmallIntegerField()
     tag = models.ForeignKey(Tag)
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story)
+    original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):

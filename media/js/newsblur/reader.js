@@ -39,10 +39,18 @@
             var read = story.read_status
                 ? ' read'
                 : '';
+            var $story_tags = $.make('span', { className: 'NB-storytitles-tags'});
+            for (var t in story.story_tags) {
+                var tag = story.story_tags[t];
+                var $tag = $.make('span', { className: 'NB-storytitles-tag'}, tag).corners('4px');
+                $story_tags.append($tag);
+                break;
+            }
             var $story_title = $.make('div', { className: 'story' + read }, [
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
-                    story.story_title,
-                    $.make('span', { className: 'NB-storytitles-author'}, story.story_authors)
+                    $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
+                    $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
+                    $story_tags
                 ]),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
@@ -266,7 +274,7 @@
                 var folders = self.model.folders;
                 
                 $('#story_taskbar').css({'display': 'block'});
-                NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
+                // NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
                 for (fo in folders) {
                     var feeds = folders[fo].feeds;
                     var $folder = $.make('div', { className: 'folder' }, [
@@ -540,6 +548,12 @@
             $feed_link.parent('.feed').next('.feed').children('a').addClass('after_selected');
         },
         
+        open_feed_intelligence_modal: function() {
+            var feed_id = this.active_feed;
+
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, 1);
+        },
+        
         // ===================
         // = Taskbar - Story =
         // ===================
@@ -675,7 +689,7 @@
                 })
                 .not('script')
                 .each(function() {
-                    NEWSBLUR.log(['Accepted 1 $elem', $(this), $(this).is(':visible')]);
+                    // NEWSBLUR.log(['Accepted 1 $elem', $(this), $(this).is(':visible')]);
                 });
             
             if (!$stories.length) {
@@ -692,7 +706,7 @@
                             if ($(this).is(':visible')) {
                                 $stories.push(this);
                             }
-                            NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
+                            // NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
                         });  
                 }
             }
@@ -700,7 +714,7 @@
             if (!$stories.length) {
                 // Try slicing words off the title, from the beginning.
                 title_words = title.match(/[^ ]+/g);
-                NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')]);
+                // NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')]);
                 if (title_words.length > 2) {
                     for (var i=0; i < 3; i++) {
                         if (i==0) shortened_title = title_words.slice(1).join(' ');
@@ -717,7 +731,7 @@
                                 if ($(this).is(':visible')) {
                                     $stories.push(this);
                                 }
-                                NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
+                                // NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
                             });  
                         // NEWSBLUR.log(['Cutting words off title', $stories.length, $stories]);
                         if ($stories.length) break;
@@ -730,7 +744,7 @@
                 content_words = story_content.replace(/<([^<>\s]*)(\s[^<>]*)?>/, '')
                                              .replace(/\(.*?\)/, '')
                                              .match(/[^ ]+/g);
-                NEWSBLUR.log(['content_words', content_words]);
+                // NEWSBLUR.log(['content_words', content_words]);
                 if (content_words.length > 2) {
                     var shortened_content = content_words.slice(0, 8).join(' ');
                     $iframe_contents.find(':contains('+shortened_content+')')
@@ -742,7 +756,7 @@
                             if ($(this).is(':visible')) {
                                 $stories.push(this);
                             }
-                            NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
+                            // NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
                         });  
                 }
             }
@@ -821,13 +835,13 @@
         mark_story_as_like: function(story_id, $button) {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id, 1);
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, 1);
         },
         
         mark_story_as_dislike: function(story_id, $button) {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifier(story_id, feed_id, -1);
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, -1);
         },
         
         
@@ -860,7 +874,7 @@
         handle_opml_upload: function() {
             var self = this;
             
-            NEWSBLUR.log(['Uploading']);
+            // NEWSBLUR.log(['Uploading']);
             $.ajaxFileUpload({
 				url: '/opml/opml_upload', 
 				secureuri: false,
@@ -870,9 +884,9 @@
 				{
 					if (typeof data.code != 'undefined') {
 						if (data.code <= 0) {
-							NEWSBLUR.log(['Success - Error', data.code]);
+                            // NEWSBLUR.log(['Success - Error', data.code]);
 						} else {
-							NEWSBLUR.log(['Success', data]);
+                            // NEWSBLUR.log(['Success', data]);
 							self.load_feeds();
 						}
 					}
@@ -890,10 +904,10 @@
             var self = this;
             var $form = $('form.opml_import_form');
             
-            NEWSBLUR.log(['OPML Form:', $form]);
+            // NEWSBLUR.log(['OPML Form:', $form]);
             
             var callback = function(e) {
-                NEWSBLUR.log(['OPML Callback', e]);
+                // NEWSBLUR.log(['OPML Callback', e]);
             };
             
             $form.submit(function() {
@@ -919,6 +933,15 @@
                 e.preventDefault();
                 var feed_id = $t.data('feed_id');
                 self.mark_feed_as_read(feed_id, $t);
+            });
+            
+            // ============
+            // = Feed Bar =
+            // ============
+            
+            $.targetIs(e, { tagSelector: '.NB-button-intelligence' }, function($t, $p){
+                e.preventDefault();
+                self.open_feed_intelligence_modal();
             });
             
             // ===========
@@ -993,13 +1016,13 @@
             
             $.targetIs(e, { tagSelector: '#story_titles .story' }, function($t, $p){
                 e.preventDefault();
-                NEWSBLUR.log(['Story dblclick', $t]);
+                // NEWSBLUR.log(['Story dblclick', $t]);
                 var story_id = $('.story_id', $t).text();
                 self.open_story_link(story_id, $t);
             });
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();
-                NEWSBLUR.log(['Feed dblclick', $('.feed_id', $t), $t]);
+                // NEWSBLUR.log(['Feed dblclick', $('.feed_id', $t), $t]);
                 var feed_id = $t.data('feed_id');
                 self.open_feed_link(feed_id, $t);
             });

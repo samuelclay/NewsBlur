@@ -23,7 +23,7 @@ def index(requst):
     pass
     
 @require_POST
-def save_classifier(request):
+def save_classifier_story(request):
     post = request.POST
     facets = post.getlist('facet')
     code = 0
@@ -63,6 +63,42 @@ def save_classifier(request):
                                          tag=tag,
                                          feed=feed,
                                          original_story=story)
+    
+    response = dict(code=code, message=message, payload=payload)
+    return HttpResponse(response)
+    
+@require_POST
+def save_classifier_publisher(request):
+    post = request.POST
+    facets = post.getlist('facet')
+    code = 0
+    message = 'OK'
+    payload = {}
+    feed = Feed.objects.get(pk=post['feed_id'])
+    score = int(post['score'])
+
+    if 'author' in post:
+        authors = post.getlist('authors')
+        for author_name in authors:
+            author = StoryAuthor.objects.get(author_name=author_name, feed=feed)
+            ClassifierAuthor.objects.create(user=request.user,
+                                            score=score,
+                                            author=author,
+                                            feed=feed)
+                         
+    if 'publisher' in facets:
+        ClassifierFeed.objects.create(user=request.user,
+                                      score=score,
+                                      feed=feed)
+    
+    if 'tag' in post:
+        tags = post.getlist('tag')
+        for tag_name in tags:
+            tag = Tag.objects.get(name=tag_name, feed=feed)
+            ClassifierTag.objects.create(user=request.user,
+                                         score=score,
+                                         tag=tag,
+                                         feed=feed)
     
     response = dict(code=code, message=message, payload=payload)
     return HttpResponse(response)

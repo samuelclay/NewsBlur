@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.db import IntegrityError
 try:
-    from apps.rss_feeds.models import Feed, Story, Tag
+    from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor
 except:
     pass
 from django.core.cache import cache
@@ -119,9 +119,15 @@ def load_single_feed(request):
     all_tags = Tag.objects.filter(feed=feed)\
                           .annotate(stories_count=Count('story'))\
                           .order_by('-stories_count')[:20]
-    tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
+    feed_tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
     
-    context = dict(stories=stories, tags=tags, intelligence={})
+    all_authors = StoryAuthor.objects.filter(feed=feed)\
+                          .annotate(stories_count=Count('story'))\
+                          .order_by('-stories_count')[:20]
+    feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
+                                                               if author.stories_count > 1]
+    
+    context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, intelligence={})
     data = json.encode(context)
     return HttpResponse(data, mimetype='application/json')
 
