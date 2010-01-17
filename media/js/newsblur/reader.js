@@ -446,36 +446,62 @@
             }
             
             
-            for (s in stories) {
-                var story = stories[s];
-                
-                var $story = $.make('li', { className: 'NB-feed-story' }, [
-                    $.make('div', { className: 'NB-feed-story-header' }, [
-                        ( story.story_authors &&
-                            $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
-                        $.make('a', { className: 'NB-feed-story-title', href: unescape(story.story_permalink) }, story.story_title),
-                        ( story.long_parsed_date &&
-                            $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date))
-                    ]),
-                    $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
-                ]).data('story', story.id);
-                
-                $stories.append($story);
-                
-
-                this.cache.feed_view_stories[story.id] = $story;
-                var position_original = parseInt($story.offset().top, 10);
-                var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
-                var position = position_original + position_offset;
-                this.cache.feed_view_story_positions[position] = story;
-                this.cache.feed_view_story_positions_keys.push(position);
-                this.cache.feed_view_story_positions_keys.sort(function(a,b) {return a>b;});
-                // NEWSBLUR.log(['Positioning story', position, $story, story, this.cache.feed_view_story_positions_keys]);
-            }
+            this.load_story_feed_view_entry($stories, stories, 0, 0);
             
             var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
             $stories.append($endbar);
             
+        },
+        
+        load_story_feed_view_entry: function($stories, stories, story_index, timeout) {
+            var self = this;
+            if (stories[story_index]) {
+                setTimeout(function() {
+                    var story = stories[story_index];
+                
+                    var $story = $.make('li', { className: 'NB-feed-story' }, [
+                        $.make('div', { className: 'NB-feed-story-header' }, [
+                            ( story.story_authors &&
+                                $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
+                            $.make('a', { className: 'NB-feed-story-title', href: unescape(story.story_permalink) }, story.story_title),
+                            ( story.long_parsed_date &&
+                                $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date))
+                        ]),
+                        $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
+                    ]).data('story', story.id);
+                    $stories.append($story);
+
+                    self.cache.feed_view_stories[story.id] = $story;
+                    var image_count = $('img', $story).length;
+                    if (!image_count) {
+                        self.determine_feed_view_story_position($story, story);
+                        self.load_story_feed_view_entry($stories, stories, story_index+1, 0);
+                    } else {
+                        (function(image_count, $story, story) {
+                            $('img', $story).load(function() {
+                                // NEWSBLUR.log(['Loaded image', $story, story, image_count]);
+                                if (image_count == 1) {
+                                    NEWSBLUR.log(['Determining story position', $story, story]);
+                                    self.determine_feed_view_story_position($story, story);
+                                    self.load_story_feed_view_entry($stories, stories, story_index+1, 500);
+                                } else {
+                                    image_count--;
+                                }
+                            });
+                        })(image_count, $story, story);
+                    }
+                }, timeout);
+            }
+        },
+        
+        determine_feed_view_story_position: function($story, story) {
+            var position_original = parseInt($story.offset().top, 10);
+            var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
+            var position = position_original + position_offset;
+            this.cache.feed_view_story_positions[position] = story;
+            this.cache.feed_view_story_positions_keys.push(position);
+            this.cache.feed_view_story_positions_keys.sort(function(a,b) {return a>b;});    
+            // NEWSBLUR.log(['Positioning story', position, $story, story, this.cache.feed_view_story_positions_keys]);
         },
         
         show_feed_page_contents: function(feed_id) {
@@ -810,7 +836,7 @@
                         NEWSBLUR.log(['Found '+(s-2)+' stories on page.', self.cache.iframe_stories]);
                         self.flags.story_frame_prefetched = true;
                     }
-                }, 100);
+                }, 200);
             }
         },
         
