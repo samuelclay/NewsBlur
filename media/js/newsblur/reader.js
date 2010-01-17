@@ -433,7 +433,7 @@
         
         make_story_feed_entries: function(stories, first_load) {
             var $feed_view = this.$feed_view;
-            
+            var self = this;
             
             if (first_load) {
                 var $stories = $.make('ul', { className: 'NB-feed-stories' });
@@ -462,13 +462,15 @@
                 
                 $stories.append($story);
                 
+
                 this.cache.feed_view_stories[story.id] = $story;
                 var position_original = parseInt($story.offset().top, 10);
                 var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
                 var position = position_original + position_offset;
                 this.cache.feed_view_story_positions[position] = story;
                 this.cache.feed_view_story_positions_keys.push(position);
-                // NEWSBLUR.log(['Positioning story', position, $story, story]);
+                this.cache.feed_view_story_positions_keys.sort(function(a,b) {return a>b;});
+                // NEWSBLUR.log(['Positioning story', position, $story, story, this.cache.feed_view_story_positions_keys]);
             }
             
             var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
@@ -676,31 +678,34 @@
             var self = this;
             var story = this.find_story_in_stories(story_id);
             
-            this.active_story = story;
-            // NEWSBLUR.log(['Story', story, this.flags.feed_frame_loaded_with_iframe]);
+            if (this.active_story != story) {
+                this.active_story = story;
+                // NEWSBLUR.log(['Story', story, this.flags.feed_frame_loaded_with_iframe, skip_scrolls]);
             
-            this.mark_story_title_as_selected(story_id, $st);
-            this.mark_story_as_read(story_id, $st);
+                this.mark_story_title_as_selected(story_id, $st);
+                this.mark_story_as_read(story_id, $st);
             
-            if (!skip_scrolls) {
                 this.flags.scrolling_by_selecting_story_title = true;
-                
-                if (!this.flags.feed_frame_loaded_with_iframe) {
-                    this.switch_to_correct_view(false);
-                    this.scroll_to_story_in_story_feed(story);
+
+                if (!skip_scrolls) {
+                    if (!this.flags.feed_frame_loaded_with_iframe) {
+                        this.switch_to_correct_view(false);
+                        this.scroll_to_story_in_story_feed(story);
+                    } else {
+                        var found_story_in_page = this.scroll_to_story_in_story_frame(story);
+                        this.switch_to_correct_view(found_story_in_page);
+                        this.scroll_to_story_in_story_feed(story);
+                    }
                 } else {
-                    var found_story_in_page = this.scroll_to_story_in_story_frame(story);
-                    this.switch_to_correct_view(found_story_in_page);
-                    this.scroll_to_story_in_story_feed(story);
-                }
-            } else {
-                // User is scrolling. Just scroll in opposite view.
-                if (this.story_view == 'page' && !this.page_view_showing_feed_view) {
-                    this.scroll_to_story_in_story_feed(story);
-                } else if (this.story_view == 'page' && this.page_view_showing_feed_view) {
+                    // User is scrolling. Just scroll in opposite view.
+                    if (this.story_view == 'page' && !this.page_view_showing_feed_view) {
+                        this.scroll_to_story_in_story_feed(story);
+                    } else if (this.story_view == 'page' && this.page_view_showing_feed_view) {
                     
-                } else if (this.story_view == 'feed') {
-                    var found_story_in_page = this.scroll_to_story_in_story_frame(story);
+                    } else if (this.story_view == 'feed') {
+                        var found_story_in_page = this.scroll_to_story_in_story_frame(story);
+                    }
+                    this.flags.scrolling_by_selecting_story_title = false;
                 }
             }
         },
@@ -740,7 +745,7 @@
             clearInterval(this.locks.scrolling);
             this.locks.scrolling = setTimeout(function() {
                 self.flags.scrolling_by_selecting_story_title = false;
-            }, 600);
+            }, 1000);
                 // if (!found_in_page) {
                     // this.page_view_showing_feed_view = true;
                 // }
@@ -769,6 +774,7 @@
 
             if ($story && $story.length) {
                 if (this.story_view == 'feed' || this.page_view_showing_feed_view) {
+                    // NEWSBLUR.log(['scroll_to_story_in_story_frame', story]);
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
                 } else if (this.story_view == 'page') {
                     $iframe.scrollable().stop();
@@ -1220,9 +1226,12 @@
         
         closest: function(value, array) {
             var index = 0;
+            var closest = Math.abs(array[index] - value);
             for (var i in array) {
-                if (Math.abs(array[i] - value) < Math.abs(array[index] - value)) {
+                var next_value = array[i] - value;
+                if (50 >= next_value && Math.abs(next_value) < closest) {
                     index = i;
+                    closest = Math.abs(array[index] - value);
                 }
             }
             return index;
@@ -1234,9 +1243,9 @@
             if (!this.flags.scrolling_by_selecting_story_title) {
                 var from_top = this.$feed_view.scrollTop();
                 var positions = this.cache.feed_view_story_positions_keys;
-                var closest = this.closest(from_top, positions);
+                var closest = parseInt(this.closest(from_top, positions), 10);
                 var story = this.cache.feed_view_story_positions[positions[closest]];
-                // NEWSBLUR.log(['Scroll feed view', from_top, closest, positions[closest], this.cache.feed_view_story_positions[positions[closest]]]);
+                // NEWSBLUR.log(['Scroll feed view', from_top, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
                 this.navigate_story_titles_to_story(story);
             }
         },
