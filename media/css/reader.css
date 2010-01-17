@@ -120,7 +120,7 @@ a img {
     margin-left: 220px;
 }
 
-#story_titles .feed_bar {
+#story_titles .NB-feedbar {
     font-weight: bold;
     font-size: 13px;
     padding: 2px 28px 2px 4px;
@@ -129,32 +129,55 @@ a img {
     position: relative;
 }
 
-#story_titles .feed_bar .feed_heading {
+#story_titles .NB-feedbar .feed_heading {
     display: block;
 }
 
-#story_titles .feed_bar .feed_heading .feed_favicon {
+#story_titles .NB-feedbar .feed_heading .feed_favicon {
     margin-right: 8px;
     vertical-align: top;
 }
 
-#story_titles .feed_bar .NB-feedbar-intelligence {
+#story_titles .NB-feedbar .NB-feedbar-intelligence {
     position: absolute;
     right: 4px;
     top: 2px;
 }
 
-#story_titles .feed_bar .unread_count {
+#story_titles .NB-feedbar .unread_count {
     float: right;
     padding: 0 8px;
 }
 
-#story_titles .feed_bar .NB-button-intelligence {
+#story_titles .NB-feedbar .NB-button-intelligence {
     float: right;
 }
 
-#story_titles .feed_bar .feed_id {
+#story_titles .NB-feedbar .feed_id {
     display: none;
+}
+
+#story_titles .NB-feedbar .NB-feed-sentiment {
+    position: absolute;
+    width: 24px;
+    height: 16px;
+    top: 2px;
+    display: none;
+}
+
+#story_titles .NB-feedbar.NB-feedbar-hover .NB-feed-sentiment {
+    display: block;
+}
+
+
+#story_titles .NB-feedbar .NB-feed-like {
+    right: 24px;
+    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+}
+
+#story_titles .NB-feedbar .NB-feed-dislike {
+    right: 4px;
+    background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 -4px;
 }
 
 #story_titles .story {

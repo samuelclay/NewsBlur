@@ -35,34 +35,42 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     make_request: function(url, data, callback) {
-        // $('body').ajaxStop();
         $.ajax({
             url: url,
             data: data,
             type: 'POST',
+            dataType: 'json',
+            complete: function(a) {
+                // NEWSBLUR.log(['make_request complete', a]);
+            },
             success: function(o) {
-                var log_index = o.indexOf('<div id="django_debug"');
+                // NEWSBLUR.log(['make_request 1', o]);
+                // var log_index = o.indexOf('<div id="django_debug"');
                 var data;
                 
-                if (log_index != -1) { // Debug is True
-                    var log = o.substring(log_index);
-                    var raw_data = o.substring(0, log_index);
-                    data = eval('(' + raw_data + ')');
-                    if (log) {
-                        $('#django_debug').remove();
-                        $('body').append(log);
-                    }
-                } else {
+                // if (log_index != -1) { // Debug is True
+                //     var log = o.substring(log_index);
+                //     var raw_data = o.substring(0, log_index);
+                //     data = eval('(' + raw_data + ')');
+                //     if (log) {
+                //         $('#django_debug').remove();
+                //         $('body').append(log);
+                //     }
+                // } else {
                     try {
+                        // NEWSBLUR.log(['make_request 2', o, data]);
                         data = eval('(' + o + ')');
                     } catch(e) {
                         data = o;   
                     }
-                }
+                // }
                 
                 if (callback && typeof callback == 'function'){
                     callback(data);
                 }
+            },
+            error: function(e) {
+                NEWSBLUR.log(['AJAX Error', e]);
             }
         });    
     },
@@ -157,6 +165,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
+            // NEWSBLUR.log(['pre_callback', data]);
             if (feed_id != self.feed_id) {
                 self.stories = data.stories;
                 self.feed_tags = data.feed_tags;
@@ -168,6 +177,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             callback(data, first_load);
         };
         
+        // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
         this.make_request('/reader/load_single_feed',
             {
                 feed_id: feed_id,

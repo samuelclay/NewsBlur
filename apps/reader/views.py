@@ -77,7 +77,7 @@ def load_feeds(request):
         cache.set('usersub:%s' % user, feeds, SINGLE_DAY)
 
     data = json.encode(feeds)
-    return HttpResponse(data, mimetype='text/html')
+    return HttpResponse(data, mimetype='application/json')
 
 def load_single_feed(request):
     user = get_user(request)

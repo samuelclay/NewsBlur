@@ -22,7 +22,7 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, score, options) {
     this.runner_story();
 };
 
-NEWSBLUR.ReaderClassifierStory.prototype = {
+var classifier = {
     
     runner_feed: function() {
         this.find_story_and_feed();
@@ -62,11 +62,13 @@ NEWSBLUR.ReaderClassifierStory.prototype = {
         if (this.feed_authors) {
             for (var fa in this.feed_authors) {
                 var feed_author = this.feed_authors[fa];
-                var $author = $.make('span', { className: 'NB-classifier-author' }, [
-                    $.make('input', { type: 'checkbox', name: 'author', value: feed_author[0], id: 'classifier_author_'+fa }),
-                    $.make('label', { 'for': 'classifier_author_'+fa }, feed_author[0])
-                ]);
-                $feed_authors.push($author);
+                if (feed_author[0]) {
+                    var $author = $.make('span', { className: 'NB-classifier-author' }, [
+                        $.make('input', { type: 'checkbox', name: 'author', value: feed_author[0], id: 'classifier_author_'+fa }),
+                        $.make('label', { 'for': 'classifier_author_'+fa }, feed_author[0])
+                    ]);
+                    $feed_authors.push($author);
+                }
             }
         }
         
@@ -127,7 +129,7 @@ NEWSBLUR.ReaderClassifierStory.prototype = {
         if (this.score == 1) {
             $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this publisher?');
         } else if (this.score == -1) {
-            $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about publisher?');
+            $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this publisher?');
         }
     },
         
@@ -331,5 +333,5 @@ NEWSBLUR.ReaderClassifierStory.prototype = {
     
 };
 
-
-NEWSBLUR.ReaderClassifierFeed.prototype = NEWSBLUR.ReaderClassifierStory.prototype;
+NEWSBLUR.ReaderClassifierStory.prototype = classifier;
+NEWSBLUR.ReaderClassifierFeed.prototype = classifier;
