@@ -91,18 +91,18 @@ var classifier = {
             }
         }
         
-        this.$classifier = $.make('div', { className: 'NB-classifier' }, [
-            $.make('h2', { className: 'NB-classifier-modal-title' }),
+        this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
+            $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post', className: 'NB-publisher' }, [
-                ($feed_authors.length && $.make('div', { className: 'NB-classifier-field' }, [
+                ($feed_authors.length && $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Authors'),
                     $.make('div', { className: 'NB-classifier-authors' }, $feed_authors)
                 ])),
-                ($feed_tags.length && $.make('div', { className: 'NB-classifier-field' }, [
+                ($feed_tags.length && $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Categories &amp; Tags'),
                     $.make('div', { className: 'NB-classifier-tags' }, $feed_tags)
                 ])),
-                $.make('div', { className: 'NB-classifier-field' }, [
+                $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Everything by This Publisher'),
                     $.make('input', { type: 'checkbox', name: 'facet', value: 'publisher', id: 'classifier_publisher' }),
                     $.make('label', { 'for': 'classifier_publisher' }, [
@@ -110,13 +110,13 @@ var classifier = {
                         $.make('span', { className: 'feed_title' }, feed.feed_title)
                     ])
                 ]),
-                $.make('div', { className: 'NB-classifier-submit' }, [
+                $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
                     ' or ',
-                    $.make('a', { href: '#', className: 'NB-classifier-cancel' }, 'cancel')
+                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
             ]).bind('submit', function(e) {
                 e.preventDefault();
@@ -125,7 +125,7 @@ var classifier = {
             })
         ]);
         
-        var $modal_title = $('.NB-classifier-modal-title', this.$classifier);
+        var $modal_title = $('.NB-modal-title', this.$classifier);
         if (this.score == 1) {
             $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this publisher?');
         } else if (this.score == -1) {
@@ -155,10 +155,10 @@ var classifier = {
             $story_tags.push($tag);
         }
         
-        this.$classifier = $.make('div', { className: 'NB-classifier' }, [
-            $.make('h2', { className: 'NB-classifier-modal-title' }),
+        this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
+            $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post' }, [
-                (story.story_title && $.make('div', { className: 'NB-classifier-field' }, [
+                (story.story_title && $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Story Title'),
                     $.make('input', { type: 'checkbox', name: 'facet', value: 'title', id: 'classifier_title' }),
                     $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
@@ -170,18 +170,18 @@ var classifier = {
                         ])
                     ])
                 ])),
-                (story.story_authors && $.make('div', { className: 'NB-classifier-field' }, [
+                (story.story_authors && $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Story Author'),
                     $.make('input', { type: 'checkbox', name: 'facet', value: 'author', id: 'classifier_author' }),
                     $.make('label', { 'for': 'classifier_author' }, [
                         $.make('b', story.story_authors)
                     ])
                 ])),
-                ($story_tags.length && $.make('div', { className: 'NB-classifier-field' }, [
+                ($story_tags.length && $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Story Categories &amp; Tags'),
                     $.make('div', { className: 'NB-classifier-tags' }, $story_tags)
                 ])),
-                $.make('div', { className: 'NB-classifier-field' }, [
+                $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Everything by This Publisher'),
                     $.make('input', { type: 'checkbox', name: 'facet', value: 'publisher', id: 'classifier_publisher' }),
                     $.make('label', { 'for': 'classifier_publisher' }, [
@@ -189,13 +189,13 @@ var classifier = {
                         $.make('span', { className: 'feed_title' }, feed.feed_title)
                     ])
                 ]),
-                $.make('div', { className: 'NB-classifier-submit' }, [
+                $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
                     ' or ',
-                    $.make('a', { href: '#', className: 'NB-classifier-cancel' }, 'cancel')
+                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
             ]).bind('submit', function(e) {
                 e.preventDefault();
@@ -204,7 +204,7 @@ var classifier = {
             })
         ]);
         
-        var $modal_title = $('.NB-classifier-modal-title', this.$classifier);
+        var $modal_title = $('.NB-modal-title', this.$classifier);
         if (this.score == 1) {
             $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this story?');
         } else if (this.score == -1) {
@@ -215,7 +215,7 @@ var classifier = {
     open_modal: function() {
         var self = this;
 
-        var $holder = $.make('div', { className: 'NB-classifier-holder' }).append(this.$classifier).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
+        var $holder = $.make('div', { className: 'NB-modal-holder' }).append(this.$classifier).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
         var height = $('.NB-classifier', $holder).outerHeight(true);
         $holder.css({'visibility': 'visible', 'display': 'none'});
         
@@ -240,7 +240,7 @@ var classifier = {
                     dialog.overlay.empty().remove();
                     $.modal.close();
                 });
-                $('.NB-classifier-holder').empty().remove();
+                $('.NB-modal-holder').empty().remove();
             }
         });
     },
@@ -295,7 +295,7 @@ var classifier = {
     },
     
     handle_cancel: function() {
-        var $cancel = $('.NB-classifier-cancel', this.$classifier);
+        var $cancel = $('.NB-modal-cancel', this.$classifier);
         
         $cancel.click(function(e) {
             e.preventDefault();

@@ -7,20 +7,7 @@
     
     <div class="NB-taskbar left-south">
     	<ul class="taskbar_nav taskbar_nav_left">
-    		<li class="task_button task_button_menu task_add">
-    			<ul class="taskbar_menu">
-    				<li>Import</li>
-    				<li><span class="NB-task-import-upload-opml">Upload an OPML file</span></li>
-    				<li><span>From NetNewsWire (NewsGator)</span></li>
-    				<li><span>From Google Reader</span></li>
-    			</ul>
-    		</li>
-    		<li class="task_button task_button_menu task_profile">
-    			<ul class="taskbar_menu">
-    				<li>{{ user_info.username }}</li>
-    				<li><span>View my feed preferences</span></li>
-    				<li><span>Change NewsBlur options</span></li>
-    			</ul>
+    		<li class="task_button task_button_menu task_add NB-task-add">
     		</li>
     	</ul>
     </div>
@@ -43,7 +30,9 @@
         {% if form.errors %}
         <p>{{ form.errors }}</p>
         {% endif %}
-
+        <div class="NB-login-label">Want an account?</div>
+        <div class="NB-login-text">Talk to <a href="http://twitter.com/samuelclay">@samuelclay</a>.</div>
+        
         <form method="post" action="{% url auth_login %}">
           <div>
             {{ form.username.label_tag }}

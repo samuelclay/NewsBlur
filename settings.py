@@ -180,6 +180,7 @@ COMPRESS_JS = {
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
             'js/newsblur/reader_classifier.js',
+            'js/newsblur/reader_add_feed.js',
         ),
         'output_filename': 'release/all-compressed-?.js'
     }

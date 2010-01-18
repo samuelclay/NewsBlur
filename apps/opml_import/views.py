@@ -37,21 +37,9 @@ def opml_import(xml_opml, user):
             print '\t%s' % (feed.title,)
             feed_data = dict(feed_address=feed.xmlUrl, feed_link=feed.htmlUrl, feed_title=feed.title)
             feeds.append(feed_data)
-            new_feed = Feed(**feed_data)
-            try:
-                new_feed.save()
-            except IntegrityError:
-                new_feed = Feed.objects.get(feed_address=feed.xmlUrl)
-            us = UserSubscription(feed=new_feed, user=user)
-            try:
-                us.save()
-            except IntegrityError:
-                us = UserSubscription.objects.get(feed=new_feed, user=user)
-            user_sub_folder = UserSubscriptionFolders(user=user, feed=new_feed, user_sub=us, folder=folder.text)
-            try:
-                user_sub_folder.save()
-            except IntegrityError:
-                print 'Can\'t save user_sub_folder'
+            new_feed, _ = Feed.objects.get_or_create(feed_address=feed.xmlUrl, defaults=feed_data)
+            us, _ = UserSubscription.objects.get_or_create(feed=new_feed, user=user)
+            user_sub_folder, _ = UserSubscriptionFolders.objects.get_or_create(user=user, feed=new_feed, user_sub=us, defaults=dict(folder=folder.text))
     data = json_encode(dict(message=message, code=code, payload=dict(feeds=feeds, feed_count=len(feeds))))
     cache.delete('usersub:%s' % user)
 

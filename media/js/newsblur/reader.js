@@ -1,6 +1,6 @@
 (function($) {
     
-    NEWSBLUR.reader = function() {
+    NEWSBLUR.Reader = function() {
         var self = this;
         this.$feed_list = $('#feed_list');
         this.$story_titles = $('#story_titles');
@@ -35,11 +35,11 @@
         this.apply_resizable_layout();
         this.cornerize_buttons();
         this.handle_keystrokes();
-        this.setup_taskbar_nav_left();
+        // this.setup_taskbar_nav_left();
         this.setup_feed_page_iframe_load();
     };
 
-    NEWSBLUR.reader.prototype = {
+    NEWSBLUR.Reader.prototype = {
         
         // =================
         // = Node Creation =
@@ -1190,10 +1190,10 @@
             // = Taskbar =
             // ===========
             
-            $.targetIs(e, { tagSelector: '.task_button_menu' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-task-add' }, function($t, $p){
                 e.preventDefault();
-                self.open_taskbar_menu($t);
-            });
+                self.open_add_modal();
+            });  
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
                 e.preventDefault();
                 self.switch_taskbar_view($t);
@@ -1201,12 +1201,7 @@
             $.targetIs(e, { tagSelector: '.task_return', childOf: '.NB-taskbar' }, function($t, $p){
                 e.preventDefault();
                 self.show_feed_page_contents();
-            });
-            $.targetIs(e, { tagSelector: '.NB-task-import-upload-opml' }, function($t, $p){
-                e.preventDefault();
-                self.open_opml_import_modal_form($t);
-            });
-            
+            });          
             
         },
         
@@ -1284,7 +1279,13 @@
         // ===================
         // = Bottom Task Bar =
         // ===================
-
+        
+        open_add_modal: function() {
+            var feed_id = this.active_feed;
+            
+            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
+        },
+        
         setup_taskbar_nav_left: function() {
             var self = this;
             var $task_buttons = $('.NB-taskbar .taskbar_nav_left .task_button');
@@ -1361,7 +1362,7 @@
 
 $(document).ready(function() {
 
-    var _Reader = new NEWSBLUR.reader();
+    NEWSBLUR.reader = new NEWSBLUR.Reader();
     
 
 });

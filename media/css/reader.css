@@ -85,12 +85,32 @@ a img {
     display: none;
 }
 
-.NB-login label {
+.NB-login label,
+.NB-login .NB-login-label {
     margin-top: 2px;
     color:#90A0B0;
     font-size:13px;
     display: block;
 /*    text-transform: uppercase;*/
+}
+
+.NB-login .NB-login-label {
+    font-weight: bold;
+}
+
+.NB-login .NB-login-text {
+    font-size: 13px;
+    color: #90A0B0;
+    margin-bottom: 30px;
+}
+
+.NB-login .NB-login-text a {
+    text-decoration: none;
+    color: #3E4773;
+}
+
+.NB-login .NB-login-text a:hover {
+    color: #0E1763;
 }
 
 /* ============= */
@@ -774,15 +794,67 @@ form.opml_import_form input {
 /* = Classifier = */
 /* ============== */
 
-.NB-classifier {
+.NB-modal {
     padding: 12px;
 }
 
-.NB-classifier h2 {
+.NB-modal h2 {
     margin: 0;
     padding: 0;
     font-size: 130%;
 }
+
+.NB-modal h5 {
+    border-bottom: 1px solid #A0A0A0;
+    padding: 16px 0 0px;
+    margin: 0 0 6px 0;
+    color: #808080;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-size: 70%;
+}
+
+.NB-modal .NB-modal-field {
+    margin: 0 0 0 24px;
+    position: relative;
+    clear: both;
+}
+
+.NB-modal .NB-modal-field input[type=text] {
+    width: 446px;
+    font-size: 14px;
+}
+
+.NB-modal .NB-modal-field input[type=checkbox] {
+    margin: 4px 0 0 -20px;
+    float: left;
+}
+
+.NB-modal .NB-modal-title {
+    font-weight: bold;
+}
+
+.NB-disabled {
+    color: #A0A0A0;
+}
+
+.NB-modal .NB-modal-submit {
+    margin: 16px 0 0 0;
+    font-size: 13px;
+}
+
+.NB-modal .NB-modal-submit input[type=submit] {
+    font-size: 14px;
+}
+
+.NB-modal img.feed_favicon {
+    margin: 0 6px 0 0;
+    vertical-align: middle;
+}
+
+/* ============== */
+/* = Classifier = */
+/* ============== */
 
 .NB-classifier h2.NB-like {
     color: #007000;
@@ -791,57 +863,8 @@ form.opml_import_form input {
 .NB-classifier h2.NB-dislike {
     color: #700000;
 }
-
-.NB-classifier h5 {
-    border-bottom: 1px solid #A0A0A0;
-    padding: 16px 0 0px;
-    margin: 0 0 6px -24px;
-    color: #808080;
-    text-transform: uppercase;
-    font-weight: normal;
-    font-size: 70%;
-}
-
-.NB-classifier .NB-classifier-field {
-    margin: 0 0 0 24px;
-    position: relative;
-    clear: both;
-}
-
-.NB-classifier .NB-classifier-field input[type=text] {
-    width: 446px;
-    font-size: 14px;
-}
-
-.NB-classifier .NB-classifier-field input[type=checkbox] {
-    margin: 4px 0 0 -20px;
-    float: left;
-}
-
-.NB-classifier .NB-classifier-title {
-    font-weight: bold;
-}
-
 .NB-classifier .NB-classifier-facet-disabled {
     color: #A0A0A0;
-}
-
-.NB-disabled {
-    color: #A0A0A0;
-}
-
-.NB-classifier .NB-classifier-submit {
-    margin: 16px 0 0 0;
-    font-size: 13px;
-}
-
-.NB-classifier .NB-classifier-submit input[type=submit] {
-    font-size: 14px;
-}
-
-.NB-classifier img.feed_favicon {
-    margin: 0 6px 0 0;
-    vertical-align: middle;
 }
 
 .NB-classifier-title-display {
