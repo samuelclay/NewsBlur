@@ -78,6 +78,11 @@
         load_page: function() {
             // this.resize_story_content_pane();
             // this.resize_feed_list_pane();
+            this.stylize_login_form();
+        },
+        
+        stylize_login_form: function() {
+            // DD_roundies.addRule('.NB-login form input', '4px');
         },
         
         apply_resizable_layout: function() {

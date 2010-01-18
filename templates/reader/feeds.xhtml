@@ -32,6 +32,33 @@
 <div class="right-pane">
     
     <div id="NB-splash">
+      {% if user.is_authenticated %}
+        <div class="NB-user">
+          Welcome, {{ user.username}}.
+          (<a href="{% url auth_logout %}?next=/">Logout</a>)
+        </div>
+      {% endif %}
+      {% if not user.is_authenticated %}
+      <div class="NB-login">
+        {% if form.errors %}
+        <p>{{ form.errors }}</p>
+        {% endif %}
+
+        <form method="post" action="{% url auth_login %}">
+          <div>
+            {{ form.username.label_tag }}
+            {{ form.username }}
+          </div>
+          <div>
+            {{ form.password.label_tag }}
+            {{ form.password }}
+          </div>
+
+          <input type="submit" value="login" />
+          <input type="hidden" name="next" value="/" />
+        </form>
+      </div>
+      {% endif %}
         {# <div class="NB-splash-image"></div> #}
         <div class="NB-splash-title"></div>
     </div>

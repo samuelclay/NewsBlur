@@ -12,7 +12,9 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserSt
 from utils import json
 from utils.user_functions import get_user
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpRequest
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.core import serializers 
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
@@ -32,12 +34,21 @@ def index(request):
     # context = feeds
     context = {}
     print request.user
+    form = AuthenticationForm(request.POST)
     user = request.user
     user_info = _parse_user_info(user)
-    context.update(user_info)
-    return render_to_response('reader/feeds.xhtml', context,
+    return render_to_response('reader/feeds.xhtml', {'form': form},
                               context_instance=RequestContext(request))
 
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+    return HttpResponseRedirect(reverse('index'))
+        
 def load_feeds(request):
     user = get_user(request)
 

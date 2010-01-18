@@ -33,6 +33,66 @@ a img {
     background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
 }
 
+/* =============== */
+/* = Splash page = */
+/* =============== */
+
+.NB-login {
+    position: absolute;
+    right: 0;
+    top: 40px;
+}
+
+.NB-login input[type=text],
+.NB-login input[type=password] {
+    border:1px solid #D3D5DE;
+    display:block;
+    font-size:13px;
+    margin:0 0 5px;
+    padding:5px;
+    width:100%;
+}
+
+.NB-login input[type=text]:focus,
+.NB-login input[type=password]:focus {
+    border-color: #739BBE;
+}
+
+.NB-login input[type=submit] {
+/*    height: 40px;*/
+    outline: none;
+    width: 100px;
+    margin: 4px 5px 0 0;
+    padding: 4px 10px 5px;
+    text-shadow: 0 -1px 0 #C7C9D2;
+    font-weight: bold;
+    font-size: 13px;
+    border: 1px solid #ABAEB5;
+    color: #202020;
+    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
+    cursor: pointer;
+}
+
+
+.NB-login input[type=submit]:hover {
+/*    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;*/
+    color: #000;
+    border-color: #6F7283;
+/*    font-weight: bold;*/
+}
+
+.NB-login input[type=hidden] {
+    display: none;
+}
+
+.NB-login label {
+    margin-top: 2px;
+    color:#90A0B0;
+    font-size:13px;
+    display: block;
+/*    text-transform: uppercase;*/
+}
+
 /* ============= */
 /* = Feed List = */
 /* ============= */
@@ -698,9 +758,9 @@ form.opml_import_form input {
     position: absolute;
     bottom: 0;
     margin: 0 auto;
-    height: 300px;
+    height: 100px;
     width: 600px;
-    background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 0;
+    background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 -200px;
 }
 
 #NB-splash .NB-splash-image {

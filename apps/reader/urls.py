@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from apps.reader import views
 
 urlpatterns = patterns('',
-    (r'^$', views.index),
+    url(r'^$', views.index, name='index'),
     (r'^load_single_feed', views.load_single_feed),
     (r'^load_feed_page', views.load_feed_page),
     (r'^load_feeds', views.load_feeds),

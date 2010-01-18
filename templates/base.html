@@ -14,9 +14,9 @@
 
 		var NEWSBLUR = {};
 		NEWSBLUR.Globals = {
-			'is_authenticated': {{ user_info.is_authenticated|safe }},
-			'is_anonymous': {{ user_info.is_anonymous|safe }},
-			'username': {{ user_info.username|safe }}
+			'is_authenticated': {% if user.is_authenticated %}true{% else %}false{% endif %},
+			'is_anonymous': {% if user.is_anonymous %}true{% else %}false{% endif %},
+			'username': "{{ user.username|safe }}"
 		};
 
 	</script>
