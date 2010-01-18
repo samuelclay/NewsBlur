@@ -454,8 +454,6 @@
             
             this.load_story_feed_view_entry($stories, stories, 0, 0);
             
-            var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
-            $stories.append($endbar);
             
         },
         
@@ -487,14 +485,15 @@
                         (function(image_count, $story, story) {
                             // In case the images don't load, move on to the next story
                             var story_load = setTimeout(function() {
+                                story_load = false;
                                 self.determine_feed_view_story_position($story, story);
                                 self.load_story_feed_view_entry($stories, stories, story_index+1, 0);
-                            }, image_count*250);
+                            }, Math.min(3000,image_count*250+1000));
                             
                             // Load each image, loading next story on last image
                             $('img', $story).load(function() {
                                 // NEWSBLUR.log(['Loaded image', $story, story, image_count]);
-                                if (image_count == 1) {
+                                if (image_count == 1 && story_load) {
                                     // NEWSBLUR.log(['Determining story position', $story, story]);
                                     clearTimeout(story_load);
                                     self.determine_feed_view_story_position($story, story);
@@ -506,6 +505,9 @@
                         })(image_count, $story, story);
                     }
                 }, timeout);
+            } else {
+                var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
+                $stories.append($endbar);
             }
         },
         
@@ -833,7 +835,7 @@
             if (story) {
                 var self = this;
                 var $story = this.find_story_in_story_frame(story);
-                // NEWSBLUR.log(['Prefetching story', s, story, $story]);
+                NEWSBLUR.log(['Prefetching story', s, story, $story]);
             
                 setTimeout(function() {
                     // NEWSBLUR.log(['Fetching next story', s]);
@@ -862,7 +864,10 @@
             var $story, $stories = [], title_words, shortened_title, $reduced_stories = [];
             
             if (story.id in this.cache.iframe_stories || this.flags.story_frame_prefetched) {
+                NEWSBLUR.log(['Cached story frame', this.cache.iframe_stories[story.id], story]);
                 return this.cache.iframe_stories[story.id];
+            } else {
+                NEWSBLUR.log(['Cache story frame miss', this.cache.iframe_stories, story]);
             }
             
             var $iframe_contents = $iframe.contents();
