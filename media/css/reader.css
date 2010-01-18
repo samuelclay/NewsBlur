@@ -820,6 +820,10 @@ form.opml_import_form input {
     clear: both;
 }
 
+.NB-modal .NB-modal-field h5 {
+    margin-left: -24px;
+}
+
 .NB-modal .NB-modal-field input[type=text] {
     width: 446px;
     font-size: 14px;
