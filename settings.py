@@ -173,7 +173,8 @@ COMPRESS_JS = {
             'js/jquery.ajaxupload.js',
             'js/jquery.simplemodal-1.3.js',
             'js/jquery.color.js',
-            'js/jquery-ui-1.7.2.custom.min.js',
+            'js/jquery.ui.core.js',
+            'js/jquery.ui.slider.js',
             'js/jquery.layout.js',
             'js/jquery.fieldselection.js',
             
@@ -190,6 +191,7 @@ COMPRESS_CSS = {
     'all': {
         'source_filenames': (
             'css/reader.css',
+            'css/jquery-ui/jquery.theme.css',
         ),
         'output_filename': 'release/all-compressed-?.css'
     }

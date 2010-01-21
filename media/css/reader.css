@@ -152,17 +152,12 @@ a img {
 }
 #feed_list .feed_title {
     display: block;
-    font-weight: bold;
     padding: 4px 42px 2px 45px;
     text-decoration: none;
     color: #272727;
     line-height: 1.3em;
     height: 1.2em;
     overflow: hidden;
-}
-
-#feed_list .feed.no_unread_items .feed_title {
-    font-weight: normal;
 }
 
 #feed_list .feed.selected {
@@ -178,8 +173,45 @@ a img {
     color: #FFF;
     padding: 0 6px;
     background-color: #8eb6e8;
+    display: none;
 }
 
+#feed_list .unread_count_positive {
+    background-color: #559F4D;
+}
+
+#feed_list .unread_count_neutral {
+    color: #303030;
+    background-color: #F9C72A;
+}
+
+#feed_list .unread_count_negative {
+    background-color: #CC2A2E;
+}
+
+#feed_list.unread_view_positive .feed.unread_positive .unread_count_positive {
+    display: block;
+}
+
+#feed_list.unread_view_neutral .feed.unread_neutral .unread_count_neutral {
+    display: block;
+}
+
+#feed_list.unread_view_negative .feed.unread_negative .unread_count_negative {
+    display: block;
+}
+
+#feed_list.unread_view_positive .feed.unread_positive {
+    font-weight: bold;
+}
+
+#feed_list.unread_view_neutral .feed.unread_neutral {
+    font-weight: bold;
+}
+
+#feed_list.unread_view_negative .feed.unread_negative {
+    font-weight: bold;
+}
 
 /* ================ */
 /* = Story Titles = */
@@ -270,6 +302,18 @@ a img {
     color: #272727;
     line-height: 1em;
     background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 6px 50%;
+}
+
+#story_titles .story.NB-story-positive {
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 6px 50%;
+}
+
+#story_titles .story.NB-story-neutral {
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 6px 50%;
+}
+
+#story_titles .story.NB-story-negative {
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 6px 50%;
 }
 
 #story_titles .story.NB-story-hover {
@@ -547,7 +591,7 @@ a img {
 .NB-taskbar .NB-task-view-page-to-feed-arrow {
     position: absolute;
     top: 8px;
-    left: 64px;
+    right: -8px;
     width: 16px;
     height: 16px;
     background: transparent url('../img/icons/silk/arrow_switch.png') no-repeat center 0px;
@@ -645,6 +689,7 @@ a img {
     cursor: pointer;
 }
 .NB-taskbar .task_button.task_view_page {
+    position: relative;
     cursor: pointer;
     background: transparent url('../img/icons/silk/application_view_tile.png') no-repeat 8px 8px;
 }
@@ -930,4 +975,41 @@ form.opml_import_form input {
 
 .simplemodal-wrap {
     overflow: auto;
+}
+
+/* ======================= */
+/* = Intelligence Slider = */
+/* ======================= */
+
+.NB-taskbar-intelligence {
+    width: 100px;
+    position: absolute;
+    right: 18px;
+    top: 16px;
+    font-size: .5em;
+}
+
+.NB-taskbar-intelligence .NB-taskbar-intelligence-indicator {
+    position: absolute;
+    top: -16px;
+    width: 12px;
+    height: 12px;
+}
+
+.NB-taskbar-intelligence .NB-taskbar-intelligence-negative {
+    right: 94px;
+    background: transparent url(../img/icons/silk/bullet_red.png) no-repeat 0 0;
+}
+
+.NB-taskbar-intelligence .NB-taskbar-intelligence-neutral {
+    right: 45px;
+    background: transparent url(../img/icons/silk/bullet_yellow.png) no-repeat 0 0;
+}
+
+.NB-taskbar-intelligence .NB-taskbar-intelligence-positive {
+    right: -4px;
+    background: transparent url(../img/icons/silk/bullet_green.png) no-repeat 0 0;
+}
+
+.NB-intelligence-slider {
 }

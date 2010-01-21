@@ -23,6 +23,7 @@ def index(requst):
     pass
     
 @require_POST
+@json.json_view
 def save_classifier_story(request):
     post = request.POST
     facets = post.getlist('facet')
@@ -65,9 +66,10 @@ def save_classifier_story(request):
                                          original_story=story)
     
     response = dict(code=code, message=message, payload=payload)
-    return HttpResponse(response)
+    return response
     
 @require_POST
+@json.json_view
 def save_classifier_publisher(request):
     post = request.POST
     facets = post.getlist('facet')
@@ -101,4 +103,4 @@ def save_classifier_publisher(request):
                                          feed=feed)
     
     response = dict(code=code, message=message, payload=payload)
-    return HttpResponse(response)
+    return response

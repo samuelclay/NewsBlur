@@ -190,6 +190,7 @@ class ProcessFeed:
         
         return FEED_OK, ret_values
 
+        
 class Dispatcher:
     def __init__(self, options, num_threads):
         self.options = options
@@ -254,10 +255,11 @@ class Dispatcher:
                 
                 fpage = FetchPage(feed, self.options)
                 fpage.fetch()
-            
-                del ffeed
-                del pfeed
-                del fpage
+                
+                if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
+                    user_subs = UserSubscription.objects.filter(feed=feed)
+                    for sub in user_subs:
+                        sub.calculate_feed_scores()
             except:
                 (etype, eobj, etb) = sys.exc_info()
                 print '[%d] ! -------------------------' % (feed.id,)
@@ -266,6 +268,12 @@ class Dispatcher:
                 print '[%d] ! -------------------------' % (feed.id,)
                 ret_feed = FEED_ERREXC
                 ret_entries = {}
+            finally:
+                del ffeed
+                del pfeed
+                del fpage
+                if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
+                    del user_subs
 
             delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:

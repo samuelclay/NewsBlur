@@ -19,6 +19,8 @@ from django.core import serializers
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
 from djangologging.decorators import suppress_logging_output
+from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
+from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 import logging
 import datetime
 import threading
@@ -61,11 +63,10 @@ def load_feeds(request):
         feeds = []
         folders = []
         for sub in us:
-            # logging.info("UserSub Scores: %s" % sub.user_sub.scores)
-            feed_scores = sub.user_sub.scores or "[]"
-            sub.feed.scores = json.decode(feed_scores)
             try:
-                sub.feed.unread_count = sub.user_sub.unread_count
+                sub.feed.unread_count_positive = sub.user_sub.unread_count_positive
+                sub.feed.unread_count_neutral = sub.user_sub.unread_count_positive + sub.user_sub.unread_count_neutral
+                sub.feed.unread_count_negative = sub.user_sub.unread_count_positive + sub.user_sub.unread_count_neutral + sub.user_sub.unread_count_negative
             except:
                 logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
                 sub.delete()
@@ -107,13 +108,20 @@ def load_single_feed(request):
     if force_update:
         feed.update(force_update)
     
-    usersub = UserSubscription.objects.get(user=user, feed=feed.id)
+    # Get intelligence classifier for user
+    classifier_feeds = ClassifierFeed.objects.filter(user=user, feed=feed)
+    classifier_authors = ClassifierAuthor.objects.filter(user=user, feed=feed)
+    classifier_titles = ClassifierTitle.objects.filter(user=user, feed=feed)
+    classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
+    
+    usersub = UserSubscription.objects.get(user=user, feed=feed)
             
     # print "Feed: %s %s" % (feed, usersub)
     logging.debug("Feed: " + feed.feed_title)
     userstory = UserStory.objects.filter(
         user=user, 
-        feed=feed.id
+        feed=feed.id,
+        read_date__gt=usersub.mark_read_date
     ).values()
     for story in stories:
         for o in userstory:
@@ -125,7 +133,15 @@ def load_single_feed(request):
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] > usersub.last_read_date:
             story['read_status'] = 0
+        story['intelligence'] = {
+            'feed': apply_classifier_feeds(classifier_feeds, feed),
+            'author': apply_classifier_authors(classifier_authors, story),
+            'tags': apply_classifier_tags(classifier_tags, story),
+            'title': apply_classifier_titles(classifier_titles, story),
+        }
         # logging.debug("Story: %s" % story)
+    
+    # Intelligence
     
     all_tags = Tag.objects.filter(feed=feed)\
                           .annotate(stories_count=Count('story'))\
@@ -138,7 +154,7 @@ def load_single_feed(request):
     feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
                                                                if author.stories_count > 1]
     
-    context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, intelligence={})
+    context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors)
     data = json.encode(context)
     return HttpResponse(data, mimetype='application/json')
 

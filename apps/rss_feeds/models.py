@@ -46,9 +46,9 @@ class Feed(models.Model):
         return time.time() - time.mktime(self.last_update.timetuple())
     
     def new_stories_since_date(self, date):
-        story_count = Story.objects.filter(story_date__gte=date,
-                                           story_feed=self).count()
-        return story_count
+        stories = Story.objects.filter(story_date__gte=date,
+                                       story_feed=self)
+        return stories
         
     def add_feed(self, feed_address, feed_link, feed_title):
         print locals()
@@ -165,21 +165,29 @@ class Feed(models.Model):
         
     def get_stories(self, offset=0, limit=25):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
-    
+
         if not stories:
-            stories_db = Story.objects.filter(story_feed=self).select_related('story_author')[offset:offset+limit]
-            for story_db in stories_db:
-                story = story_db.__dict__
-                story_tags = story_db.tags.all()
-                story['story_tags'] = [tag.name for tag in story_tags]
-                story['short_parsed_date'] = format_story_link_date__short(story['story_date'])
-                story['long_parsed_date'] = format_story_link_date__long(story['story_date'])
-                story['story_authors'] = story_db.story_author.author_name
-                stories.append(story)
+            stories_db = Story.objects.filter(story_feed=self)\
+                                      .select_related('story_author')[offset:offset+limit]
+            stories = self.format_stories(stories_db)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
         return stories
     
+    def format_stories(self, stories_db):
+        stories = []
+        
+        for story_db in stories_db:
+            story = story_db.__dict__
+            story_tags = story_db.tags.all()
+            story['story_tags'] = [tag.name for tag in story_tags]
+            story['short_parsed_date'] = format_story_link_date__short(story['story_date'])
+            story['long_parsed_date'] = format_story_link_date__long(story['story_date'])
+            story['story_authors'] = story_db.story_author.author_name
+            stories.append(story)
+            
+        return stories
+        
     def get_tags(self, entry):
         fcat = []
         if entry.has_key('tags'):

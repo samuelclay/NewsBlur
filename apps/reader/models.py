@@ -5,17 +5,22 @@ import random
 from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story
 from utils import feedparser, object_manager, json
+from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
+from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+
+DAYS_OF_UNREAD = 14
 
 class UserSubscription(models.Model):
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
-    last_read_date = models.DateTimeField(default=datetime.datetime.now()-datetime.timedelta(days=7))
-    mark_read_date = models.DateTimeField(default=datetime.datetime.now()-datetime.timedelta(days=7))
-    unread_count = models.IntegerField(default=0)
-    unread_count_updated = models.DateTimeField(
-                               default=datetime.datetime(2000,1,1)
-                           )
-    scores = models.CharField(max_length=256)
+    last_read_date = models.DateTimeField(default=datetime.datetime.now()
+                                                  - datetime.timedelta(days=DAYS_OF_UNREAD))
+    mark_read_date = models.DateTimeField(default=datetime.datetime.now()
+                                                 - datetime.timedelta(days=DAYS_OF_UNREAD))
+    unread_count_neutral = models.IntegerField(default=0)
+    unread_count_positive = models.IntegerField(default=0)
+    unread_count_negative = models.IntegerField(default=0)
+    unread_count_updated = models.DateTimeField(default=datetime.datetime(2000,1,1))
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
@@ -61,7 +66,7 @@ class UserSubscription(models.Model):
         # readstories.delete()
         
     def stories_newer_lastread(self):
-        return self.feed.new_stories_since_date(self.last_read_date)
+        return self.feed.new_stories_since_date(self.last_read_date).count()
         
     def stories_between_lastread_allread(self):
         story_count =   Story.objects.filter(
@@ -82,15 +87,51 @@ class UserSubscription(models.Model):
         new_subscription.save()
     
     def calculate_feed_scores(self):
-        scores = []
-        for i in range(20):
-            # [0, 0, 2, 4, 5 ..]
-            scores.append(random.randint(0, 20))
+        feed_scores = dict(negative=0, neutral=0, positive=0)
+        date_delta = datetime.datetime.now()-datetime.timedelta(days=DAYS_OF_UNREAD)
+        if date_delta < self.mark_read_date:
+            date_delta = self.mark_read_date
+        read_stories = UserStory.objects.select_related('story')\
+                                        .filter(user=self.user,
+                                                feed=self.feed,
+                                                story__story_date__gte=date_delta)
+        stories_db = Story.objects.filter(story_date__gte=date_delta,
+                                          story_feed=self.feed)\
+                                  .exclude(id__in=[rs.story.id for rs in read_stories])
+
+        stories = self.feed.format_stories(stories_db)
+        classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
+        classifier_authors = ClassifierAuthor.objects.filter(user=self.user, feed=self.feed)
+        classifier_titles = ClassifierTitle.objects.filter(user=self.user, feed=self.feed)
+        classifier_tags = ClassifierTag.objects.filter(user=self.user, feed=self.feed)
         
-        self.scores = json.encode(scores)
+        scores = {
+            'feed': apply_classifier_feeds(classifier_feeds, self.feed),
+        }
+        
+        for story in stories:
+            scores.update({
+                'author': apply_classifier_authors(classifier_authors, story),
+                'tags': apply_classifier_tags(classifier_tags, story),
+                'title': apply_classifier_titles(classifier_titles, story),
+            })
+            
+            max_score = max(scores['feed'], scores['author'], scores['tags'], scores['title'])
+            min_score = min(scores['feed'], scores['author'], scores['tags'], scores['title'])
+            if max_score > 0:
+                feed_scores['positive'] += 1
+            if min_score < 0:
+                feed_scores['negative'] += 1
+            if max_score == 0 and min_score == 0:
+                feed_scores['neutral'] += 1
+        
+        self.unread_count_positive = feed_scores['positive']
+        self.unread_count_neutral = feed_scores['neutral']
+        self.unread_count_negative = feed_scores['negative']
+        
         self.save()
         
-        return scores
+        return
         
     def get_scores(self):
         scores = json.decode(self.scores)

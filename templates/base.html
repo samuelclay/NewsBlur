@@ -16,7 +16,8 @@
 		NEWSBLUR.Globals = {
 			'is_authenticated': {% if user.is_authenticated %}true{% else %}false{% endif %},
 			'is_anonymous': {% if user.is_anonymous %}true{% else %}false{% endif %},
-			'username': "{{ user.username|safe }}"
+			'username': "{{ user.username|safe }}",
+			'unread_view': 0{# user.profile.unread_view|safe #}
 		};
 
 	</script>
