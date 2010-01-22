@@ -87,6 +87,7 @@ class UserSubscription(models.Model):
         new_subscription.save()
     
     def calculate_feed_scores(self):
+        print self
         feed_scores = dict(negative=0, neutral=0, positive=0)
         date_delta = datetime.datetime.now()-datetime.timedelta(days=DAYS_OF_UNREAD)
         if date_delta < self.mark_read_date:
