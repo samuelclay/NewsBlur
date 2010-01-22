@@ -256,6 +256,10 @@ class Dispatcher:
                 fpage = FetchPage(feed, self.options)
                 fpage.fetch()
                 
+                if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
+                    user_subs = UserSubscription.objects.filter(feed=feed)
+                    for sub in user_subs:
+                        sub.calculate_feed_scores()
             except:
                 (etype, eobj, etb) = sys.exc_info()
                 print '[%d] ! -------------------------' % (feed.id,)
