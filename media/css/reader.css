@@ -140,6 +140,7 @@ a img {
     cursor: pointer;
     border-top: 1px solid #D7DDE6;
     border-bottom: 1px solid #D7DDE6;
+    padding-right: 2px;
 }
 
 #feed_list .feed_id {
@@ -166,12 +167,11 @@ a img {
     border-bottom: 1px solid #A8A8A8;
 }
 #feed_list .unread_count {
-    position: absolute;
-    top: 3px;
-    right: 7px;
+    float: right;
     font-weight: bold;
     color: #FFF;
-    padding: 0 6px;
+    padding: 0 1px;
+    margin: 3px 1px 0;
     background-color: #8eb6e8;
     display: none;
 }
@@ -193,10 +193,13 @@ a img {
     display: block;
 }
 
+#feed_list.unread_view_neutral .feed.unread_positive .unread_count_positive,
 #feed_list.unread_view_neutral .feed.unread_neutral .unread_count_neutral {
     display: block;
 }
 
+#feed_list.unread_view_negative .feed.unread_positive .unread_count_positive,
+#feed_list.unread_view_negative .feed.unread_neutral .unread_count_neutral,
 #feed_list.unread_view_negative .feed.unread_negative .unread_count_negative {
     display: block;
 }
@@ -205,12 +208,23 @@ a img {
     font-weight: bold;
 }
 
+#feed_list.unread_view_neutral .feed.unread_positive,
 #feed_list.unread_view_neutral .feed.unread_neutral {
     font-weight: bold;
 }
 
+#feed_list.unread_view_negative .feed.unread_positive,
+#feed_list.unread_view_negative .feed.unread_neutral,
 #feed_list.unread_view_negative .feed.unread_negative {
     font-weight: bold;
+}
+
+#feed_list.unread_view_positive .unread_count {
+    padding: 0 6px;
+}
+
+#feed_list.unread_view_neutral .unread_count {
+    padding: 0 3px;
 }
 
 /* ================ */

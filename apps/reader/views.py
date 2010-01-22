@@ -65,8 +65,8 @@ def load_feeds(request):
         for sub in us:
             try:
                 sub.feed.unread_count_positive = sub.user_sub.unread_count_positive
-                sub.feed.unread_count_neutral = sub.user_sub.unread_count_positive + sub.user_sub.unread_count_neutral
-                sub.feed.unread_count_negative = sub.user_sub.unread_count_positive + sub.user_sub.unread_count_neutral + sub.user_sub.unread_count_negative
+                sub.feed.unread_count_neutral = sub.user_sub.unread_count_neutral
+                sub.feed.unread_count_negative = sub.user_sub.unread_count_negative
             except:
                 logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
                 sub.delete()
