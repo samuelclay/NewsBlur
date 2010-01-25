@@ -104,7 +104,7 @@ elif DEV_SERVER1:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = '/media/'
     DEBUG = True
-    CACHE_BACKEND = 'dummy:///'
+    CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -121,7 +121,7 @@ elif DEV_SERVER2:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = '/media/'
     DEBUG = True
-    CACHE_BACKEND = 'dummy:///'
+    CACHE_BACKEND = 'locmem:///'
     # CACHE_BACKEND = 'locmem:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',

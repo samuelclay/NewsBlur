@@ -34,7 +34,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return;
     },
     
-    make_request: function(url, data, callback) {
+    make_request: function(url, data, callback, error_callback) {
         $.ajax({
             url: url,
             data: data,
@@ -71,6 +71,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             },
             error: function(e) {
                 NEWSBLUR.log(['AJAX Error', e]);
+                error_callback();
             }
         });    
     },
@@ -87,13 +88,15 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }
         }
         
-        if (!read) {
+        if (!read && NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/mark_story_as_read',
                 {
                     story_id: story_id,
                     feed_id: feed_id
                 }, callback
             );
+        } else {
+            callback(read);
         }
     },
     
@@ -161,7 +164,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/load_feeds', {}, pre_callback);
     },
     
-    load_feed: function(feed_id, page, first_load, callback) {
+    load_feed: function(feed_id, page, first_load, callback, error_callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -182,7 +185,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             {
                 feed_id: feed_id,
                 page: page
-            }, pre_callback
+            }, pre_callback,
+            error_callback
         );
     },
     

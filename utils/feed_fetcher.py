@@ -259,6 +259,8 @@ class Dispatcher:
                 if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
                     user_subs = UserSubscription.objects.filter(feed=feed)
                     for sub in user_subs:
+                        logging.info('Deleteing user sub cache: %s' % sub.user_id)
+                        cache.delete('usersub:%s' % sub.user_id)
                         sub.calculate_feed_scores()
             except:
                 (etype, eobj, etb) = sys.exc_info()

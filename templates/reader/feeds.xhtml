@@ -28,7 +28,7 @@
       {% if user.is_authenticated %}
         <div class="NB-user">
           Welcome, {{ user.username}}.
-          (<a href="{% url auth_logout %}?next=/">Logout</a>)
+          (<a href="{% url logout %}?next=/">Logout</a>)
         </div>
       {% endif %}
       {% if not user.is_authenticated %}
@@ -39,7 +39,7 @@
         <div class="NB-login-label">Want an account?</div>
         <div class="NB-login-text">Talk to <a href="http://twitter.com/samuelclay">@samuelclay</a>.</div>
         
-        <form method="post" action="{% url auth_login %}">
+        <form method="post" action="{% url login %}">
           <div>
             {{ form.username.label_tag }}
             {{ form.username }}

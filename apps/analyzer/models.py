@@ -83,7 +83,7 @@ class ClassifierTag(models.Model):
         
 def apply_classifier_titles(classifiers, story):
     for classifier in classifiers:
-        if classifier.title in story['story_title']:
+        if classifier.title.lower() in story['story_title'].lower():
             # print 'Titles: (%s) %s -- %s' % (classifier.title in story['story_title'], classifier.title, story['story_title'])
             return classifier.score
     return 0

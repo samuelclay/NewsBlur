@@ -7,17 +7,18 @@ try:
 except:
     pass
 from django.core.cache import cache
+from django.views.decorators.cache import never_cache
 from django.db.models.aggregates import Count
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
 from utils import json
 from utils.user_functions import get_user
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.core import serializers 
 from django.utils.safestring import mark_safe
-from django.views.decorators.cache import cache_page
 from djangologging.decorators import suppress_logging_output
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -28,29 +29,32 @@ import random
 
 SINGLE_DAY = 60*60*24
 
+@never_cache
 def index(request):
-    # feeds = Feed.objects.filter(usersubscription__user=request.user)
-    # for f in feeds:
-    #     f.update()
-        
-    # context = feeds
-    context = {}
-    print request.user
+    print "User: %s" % request.user
     form = AuthenticationForm(request.POST)
-    user = request.user
-    user_info = _parse_user_info(user)
     return render_to_response('reader/feeds.xhtml', {'form': form},
                               context_instance=RequestContext(request))
 
+@never_cache
 def login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-    return HttpResponseRedirect(reverse('index'))
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            from django.contrib.auth import login
+            login(request, form.get_user())
+            return HttpResponseRedirect(reverse('index'))
+
+    return index(request)
         
+@never_cache
+def logout(request):
+    print "Logout: %s" % request.user
+    from django.contrib.auth import logout
+    logout(request)
+    
+    return HttpResponseRedirect(reverse('index'))
+    
 def load_feeds(request):
     user = get_user(request)
 
@@ -157,35 +161,6 @@ def load_single_feed(request):
     context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors)
     data = json.encode(context)
     return HttpResponse(data, mimetype='application/json')
-
-def refresh_feed(request):
-    feed_id = request.REQUEST['feed_id']
-    force_update = request.GET.get('force', False)
-    feeds = Feed.objects.filter(id=feed_id)
-
-    feeds = refresh_feeds(feeds, force_update)
-    
-    context = {}
-    
-    user = request.user 
-    user_info = _parse_user_info(user)
-    context.update(user_info)
-    
-    return render_to_response('reader/feeds.xhtml', context,
-                              context_instance=RequestContext(request))
-
-def refresh_feeds(feeds, force=False):
-    for f in feeds:
-        logging.debug('Feed Updating: %s' % f)
-        f.update(force)
-        usersubs = UserSubscription.objects.filter(
-            feed=f.id
-        )
-        for us in usersubs:
-            us.count_unread()
-            logging.info('Deleteing user sub cache: %s' % us.user_id)
-            cache.delete('usersub:%s' % us.user_id)
-    return
 
 @suppress_logging_output
 def load_feed_page(request):

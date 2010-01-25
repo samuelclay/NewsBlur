@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-
+from apps.reader import views as reader_views
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', include('apps.reader.urls')),
+    url(r'^$', reader_views.index, name='index'),
     (r'^accounts/', include('apps.registration.urls')),
     (r'^reader/', include('apps.reader.urls')),
     (r'^classifier/', include('apps.analyzer.urls')),
