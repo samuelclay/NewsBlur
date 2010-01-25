@@ -45,28 +45,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             },
             success: function(o) {
                 // NEWSBLUR.log(['make_request 1', o]);
-                // var log_index = o.indexOf('<div id="django_debug"');
-                var data;
-                
-                // if (log_index != -1) { // Debug is True
-                //     var log = o.substring(log_index);
-                //     var raw_data = o.substring(0, log_index);
-                //     data = eval('(' + raw_data + ')');
-                //     if (log) {
-                //         $('#django_debug').remove();
-                //         $('body').append(log);
-                //     }
-                // } else {
-                    try {
-                        // NEWSBLUR.log(['make_request 2', o, data]);
-                        data = eval('(' + o + ')');
-                    } catch(e) {
-                        data = o;   
-                    }
-                // }
-                
+
                 if (callback && typeof callback == 'function'){
-                    callback(data);
+                    callback(o);
                 }
             },
             error: function(e) {
@@ -82,22 +63,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         for (s in this.stories) {
             if (this.stories[s].id == story_id) {
-                read = this.stories[s].read_status;
-                this.stories[s].read_status = 1;
+                read = this.stories[s].read_status ? true : false;
+                this.stories[s].read_status = true;
                 break;
             }
         }
         
         if (!read && NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/mark_story_as_read',
-                {
-                    story_id: story_id,
-                    feed_id: feed_id
-                }, callback
-            );
-        } else {
-            callback(read);
+            this.make_request('/reader/mark_story_as_read', {
+                story_id: story_id,
+                feed_id: feed_id
+            });
         }
+        
+        callback(read);
     },
     
     mark_story_as_like: function(story_id, callback) {
