@@ -159,6 +159,7 @@ class Feed(models.Model):
     def trim_feed(self):
         from apps.reader.models import UserStory
         stories_deleted_count = 0
+        user_stories_count = 0
         stories = Story.objects.filter(story_feed=self).order_by('-story_date')
         print 'Found %s stories in %s. Trimming...' % (stories.count(), self)
         for story in stories[1000:]:
