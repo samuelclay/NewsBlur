@@ -160,6 +160,7 @@ class Feed(models.Model):
         from apps.reader.models import UserStory
         stories_deleted_count = 0
         stories = Story.objects.filter(story_feed=self).order_by('-story_date')
+        print 'Found %s stories in %s. Trimming...' % (stories.count(), self)
         for story in stories[1000:]:
             user_stories = UserStory.objects.filter(story=story)
             user_stories_count = user_stories.count()
