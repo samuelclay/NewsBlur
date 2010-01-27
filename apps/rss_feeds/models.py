@@ -157,12 +157,22 @@ class Feed(models.Model):
         return author, created
         
     def trim_feed(self):
-        date_diff = datetime.datetime.now() - datetime.timedelta(self.days_to_trim)
-        stories = Story.objects.filter(story_feed=self, story_date__lte=date_diff)
-        for story in stories:
-            story.story_past_trim_date = True
-            story.save()
+        from apps.reader.models import UserStory
+        stories_deleted_count = 0
+        stories = Story.objects.filter(story_feed=self).order_by('-story_date')
+        for story in stories[1000:]:
+            user_stories = UserStory.objects.filter(story=story)
+            user_stories_count = user_stories.count()
+            user_stories.delete()
+            story.delete()
+            stories_deleted_count += 1
         
+        if stories_deleted_count:
+            print "Trimming %s stories from %s. %s user stories." % (
+                stories_deleted_count, 
+                self, 
+                user_stories_count)
+                
     def get_stories(self, offset=0, limit=25):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
 
