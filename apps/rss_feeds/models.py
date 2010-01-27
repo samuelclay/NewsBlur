@@ -182,7 +182,7 @@ class Feed(models.Model):
             stories_db = Story.objects.filter(story_feed=self)\
                                       .select_related('story_author')[offset:offset+limit]
             stories = self.format_stories(stories_db)
-            cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
+            cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories, 600)
         
         return stories
     

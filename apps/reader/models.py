@@ -97,7 +97,7 @@ class UserSubscription(models.Model):
         #                                         story__story_date__gte=date_delta)
         # print "Read stories: %s " % read_stories.count()
         stories_db = Story.objects.filter(story_feed=self.feed,
-                                          story_date__gte=date_delta)[:100]
+                                          story_date__gte=date_delta)
                                   # .exclude(id__in=[rs.story.id for rs in read_stories])
         stories = self.feed.format_stories(stories_db)
         classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
