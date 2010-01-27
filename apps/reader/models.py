@@ -87,7 +87,7 @@ class UserSubscription(models.Model):
         new_subscription.save()
     
     def calculate_feed_scores(self):
-        print self
+        print '[%s]: %s' % (self.feed, self.user)
         feed_scores = dict(negative=0, neutral=0, positive=0)
         date_delta = datetime.datetime.now()-datetime.timedelta(days=DAYS_OF_UNREAD)
         if date_delta < self.mark_read_date:
@@ -96,12 +96,13 @@ class UserSubscription(models.Model):
                                                 feed=self.feed,
                                                 story__story_date__gte=date_delta)
         read_stories_ids = [rs.story.id for rs in read_stories]
-        # print "Read stories: %s " % read_stories.count()
         stories_db = Story.objects.filter(story_feed=self.feed,
                                           story_date__gte=date_delta)\
                                   .exclude(id__in=read_stories_ids)
         stories = self.feed.format_stories(stories_db)
-        # print 'Stories: %s' % stories_db.count()
+        # print '  Stories: %s\t' % stories_db.count(),
+        # if read_stories.count(): print '(%s read)' % (read_stories.count())
+        # else: print ''
         classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
         classifier_authors = ClassifierAuthor.objects.filter(user=self.user, feed=self.feed)
         classifier_titles = ClassifierTitle.objects.filter(user=self.user, feed=self.feed)
@@ -127,11 +128,14 @@ class UserSubscription(models.Model):
             if max_score == 0 and min_score == 0:
                 feed_scores['neutral'] += 1
         
+        # print '  Feed scores: %s' % feed_scores
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
         
         self.save()
+        
+        cache.delete('usersub:%s' % self.user.id)
         
         return
         

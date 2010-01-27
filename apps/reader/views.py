@@ -58,7 +58,7 @@ def logout(request):
 def load_feeds(request):
     user = get_user(request)
 
-    feeds = cache.get('usersub:%s' % user)
+    feeds = cache.get('usersub:%s' % user.id)
     if feeds is None:
         us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
                     user=user
