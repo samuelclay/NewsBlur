@@ -165,7 +165,10 @@ def load_single_feed(request):
 @suppress_logging_output
 def load_feed_page(request):
     feed = Feed.objects.get(id=request.REQUEST.get('feed_id'))
-    data = feed.page_data
+    if feed.page_data:
+        data = feed.page_data
+    else:
+        data = "Give it 10 minutes..."
     
     return HttpResponse(data, mimetype='text/html')
     

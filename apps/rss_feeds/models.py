@@ -13,6 +13,7 @@ from django.utils.safestring import mark_safe
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
+from utils.compressed_textfield import StoryField
 from django.db.models import Q
 import settings
 import logging
@@ -36,7 +37,7 @@ class Feed(models.Model):
     creation = models.DateField(auto_now_add=True)
     etag = models.CharField(max_length=50, blank=True)
     last_modified = models.DateTimeField(null=True, blank=True)
-    page_data = models.TextField(blank=True)
+    page_data = StoryField(null=True, blank=True)
     
     
     def __unicode__(self):
@@ -103,7 +104,7 @@ class Feed(models.Model):
                            story_content = story_content,
                            story_author = story_author,
                            story_permalink = story.get('link'),
-                           story_guid = story.get('id') or story.get('link')
+                           story_guid = story.get('guid') or story.get('id') or story.get('link')
                     )
                     try:
                         ret_values[ENTRY_NEW] += 1
@@ -114,21 +115,21 @@ class Feed(models.Model):
                     [s.tags.add(tcat) for tcat in story_tags]
                 elif existing_story and story_has_changed:
                     # update story
-                    logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story['story_content']), len(story_content)))
+                    logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
-                    if existing_story['story_original_content']:
-                        original_content = existing_story['story_original_content']
+                    if existing_story.story_original_content:
+                        original_content = existing_story.story_original_content
                     else:
-                        original_content = existing_story['story_content']
+                        original_content = existing_story.story_content
                     diff = HTMLDiff(original_content, story_content)
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    if existing_story['story_title'] != story.get('title'):
-                        # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story['story_title'], story.get('title')))
+                    if existing_story.story_title != story.get('title'):
+                        # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                         pass
 
-                    s = Story(id = existing_story['id'],
+                    s = Story(id = existing_story.id,
                            story_feed = self,
                            story_date = story.get('published'),
                            story_title = story.get('title'),
@@ -237,9 +238,9 @@ class Feed(models.Model):
             content_ratio = 0
             
             if story_pub_date > start_date and story_pub_date < end_date:
-                if story.get('id') and story.get('id') == existing_story['story_guid']:
+                if story.get('id') and story.get('id') == existing_story.story_guid:
                     story_in_system = existing_story
-                elif story.get('link') and story.get('link') == existing_story['story_permalink']:
+                elif story.get('link') and story.get('link') == existing_story.story_permalink:
                     story_in_system = existing_story
                 
                 # import pdb
@@ -247,8 +248,8 @@ class Feed(models.Model):
                 
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story['story_title'])
-                seq = difflib.SequenceMatcher(None, story_content, existing_story['story_content'])
+                                                              existing_story.story_title)
+                seq = difflib.SequenceMatcher(None, story_content, existing_story.story_content)
                 
                 if seq.real_quick_ratio() > .9 and seq.quick_ratio() > .95:
                     content_ratio = seq.ratio()
@@ -256,19 +257,19 @@ class Feed(models.Model):
                 if story_title_difference > 0 and story_title_difference < 5 and content_ratio > .98:
                     story_in_system = existing_story
                     if story_title_difference > 0 or content_ratio < 1.0:
-                        # print "Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story['story_title'], story_title_difference, content_ratio)
+                        # print "Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
                         story_has_changed = True
                         break
                 
                 # More restrictive content distance, still no story match
                 if not story_in_system and content_ratio > .98:
-                    # print "Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story['story_title'], story_title_difference, content_ratio)
+                    # print "Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
                     story_in_system = existing_story
                     story_has_changed = True
                     break
                                         
                 if story_in_system:
-                    if story_content != existing_story['story_content']:
+                    if story_content != existing_story.story_content:
                         story_has_changed = True
                     break
                     
@@ -300,8 +301,8 @@ class Story(models.Model):
     story_feed = models.ForeignKey(Feed)
     story_date = models.DateTimeField()
     story_title = models.CharField(max_length=255)
-    story_content = models.TextField(null=True, blank=True)
-    story_original_content = models.TextField(null=True, blank=True)
+    story_content = StoryField(null=True, blank=True)
+    story_original_content = StoryField(null=True, blank=True)
     story_content_type = models.CharField(max_length=255, null=True,
                                           blank=True)
     story_author = models.ForeignKey(StoryAuthor)

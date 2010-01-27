@@ -26,7 +26,7 @@ class Command(BaseCommand):
         if options['daemonize']:
             daemonize()
         
-        feeds = Feed.objects.all()
+        feeds = Feed.objects.all().order_by('?')
         num_workers = min(len(feeds), options['workerthreads'])
         
         # settting socket timeout (default= 10 seconds)
