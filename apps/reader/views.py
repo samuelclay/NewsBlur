@@ -90,7 +90,7 @@ def load_feeds(request):
                 f.feed_address = mark_safe(f.feed_address)
                 f.page_data = None
 
-        cache.set('usersub:%s' % user, feeds, SINGLE_DAY)
+        cache.set('usersub:%s' % user, feeds, 600)
 
     data = json.encode(feeds)
     return HttpResponse(data, mimetype='application/json')
