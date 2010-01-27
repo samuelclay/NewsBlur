@@ -4,6 +4,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserSt
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser, threadpool
 from django.db import transaction
+from django.db.models import Q
 from utils.dateutil.parser import parse as dateutil_parse
 from utils.story_functions import pre_process_story
 import sys
@@ -175,17 +176,21 @@ class ProcessFeed:
         num_entries = len(self.fpf.entries)
         start_date = datetime.datetime.now()
         end_date = datetime.datetime.now()
+        story_guids = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
             if story.get('published') < start_date or not start_date:
                 start_date = story.get('published')
             if story.get('published') > end_date or not end_date:
                 end_date = story.get('published')
+            story_guids.append(story.get('guid'))
+        # print 'Story GUIDs: %s' % story_guids
         existing_stories = Story.objects.filter(
-            story_feed=self.feed,
-            story_date__gte=start_date,
-            story_date__lte=end_date,
+            (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
+            | (Q(story_guid__in=story_guids)),
+            story_feed=self.feed
         ).order_by('-story_date')[:100].values()
+        # print 'Existing stories: %s' % existing_stories.count()
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
         
         return FEED_OK, ret_values
