@@ -122,7 +122,8 @@ class Feed(models.Model):
                         original_content = existing_story.story_original_content
                     else:
                         original_content = existing_story.story_content
-                    diff = HTMLDiff(original_content, story_content)
+                    # print 'Type: %s %s' % (type(original_content), type(story_content))
+                    diff = HTMLDiff(unicode(original_content), story_content)
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
                     if existing_story.story_title != story.get('title'):

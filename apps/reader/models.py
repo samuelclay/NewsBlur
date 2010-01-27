@@ -92,14 +92,16 @@ class UserSubscription(models.Model):
         date_delta = datetime.datetime.now()-datetime.timedelta(days=DAYS_OF_UNREAD)
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
-        # read_stories = UserStory.objects.filter(user=self.user,
-        #                                         feed=self.feed,
-        #                                         story__story_date__gte=date_delta)
+        read_stories = UserStory.objects.filter(user=self.user,
+                                                feed=self.feed,
+                                                story__story_date__gte=date_delta)
+        read_stories_ids = [rs.story.id for rs in read_stories]
         # print "Read stories: %s " % read_stories.count()
         stories_db = Story.objects.filter(story_feed=self.feed,
-                                          story_date__gte=date_delta)
-                                  # .exclude(id__in=[rs.story.id for rs in read_stories])
+                                          story_date__gte=date_delta)\
+                                  .exclude(id__in=read_stories_ids)
         stories = self.feed.format_stories(stories_db)
+        # print 'Stories: %s' % stories_db.count()
         classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
         classifier_authors = ClassifierAuthor.objects.filter(user=self.user, feed=self.feed)
         classifier_titles = ClassifierTitle.objects.filter(user=self.user, feed=self.feed)
