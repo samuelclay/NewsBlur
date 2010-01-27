@@ -27,7 +27,7 @@ class StoryField(models.TextField):
             
         # print 'From DB: %s %s' % (len(value), value[:25],)
         try:
-            return value.decode('base64').decode('zlib')
+            return unicode(value.decode('base64').decode('zlib'))
         except:
             return value
         
