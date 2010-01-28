@@ -34,6 +34,7 @@ def pre_process_story(entry):
     date_published = entry.get('published', entry.get('updated'))
     if not date_published:
         date_published = str(datetime.datetime.now())
+        entry['published_now'] = True
     if not isinstance(date_published, datetime.datetime):
         date_published = dateutil_parse(date_published)
     # Change the date to UTC and remove timezone info since 

@@ -179,12 +179,13 @@ class ProcessFeed:
         story_guids = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
-            if story.get('published') < start_date or not start_date:
+            if story.get('published') < start_date:
                 start_date = story.get('published')
-            if story.get('published') > end_date or not end_date:
+            if story.get('published') > end_date:
                 end_date = story.get('published')
-            story_guids.append(story.get('guid'))
+            story_guids.append(story.get('guid') or story.get('link'))
         # print 'Story GUIDs: %s' % story_guids
+        # print 'Story start/end: %s %s' % (start_date, end_date)
         existing_stories = Story.objects.filter(
             (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
             | (Q(story_guid__in=story_guids)),

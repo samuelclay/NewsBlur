@@ -138,7 +138,7 @@ class Feed(models.Model):
                            story_original_content = original_content,
                            story_author = story_author,
                            story_permalink = story.get('link'),
-                           story_guid = story.get('id') or story.get('link')
+                           story_guid = story.get('guid') or story.get('id') or story.get('link')
                     )
                     s.tags.clear()
                     [s.tags.add(tcat) for tcat in story_tags]
@@ -232,14 +232,16 @@ class Feed(models.Model):
         story_in_system = None
         story_has_changed = False
         story_pub_date = story.get('published')
+        story_published_now = story.get('published_now', False)
         start_date = story_pub_date - datetime.timedelta(hours=8)
         end_date = story_pub_date + datetime.timedelta(hours=8)
         
         for existing_story in existing_stories:
             content_ratio = 0
-            
-            if story_pub_date > start_date and story_pub_date < end_date:
-                if story.get('id') and story.get('id') == existing_story.story_guid:
+            # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
+            if story_published_now or\
+               (story_pub_date > start_date and story_pub_date < end_date):
+                if story.get('guid') and story.get('guid') == existing_story.story_guid:
                     story_in_system = existing_story
                 elif story.get('link') and story.get('link') == existing_story.story_permalink:
                     story_in_system = existing_story
@@ -273,7 +275,9 @@ class Feed(models.Model):
                     if story_content != existing_story.story_content:
                         story_has_changed = True
                     break
-                    
+        
+        if story_has_changed or not story_in_system:
+            print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
             
     class Meta:
