@@ -979,11 +979,11 @@ form.opml_import_form input {
     margin-left: -24px;
 }
 
-.NB-classifier .NB-classifier-modal-title .NB-classifier-like {
+.NB-classifier .NB-modal-title .NB-classifier-like {
     color: #3D931B;
 }
 
-.NB-classifier .NB-classifier-modal-title .NB-classifier-dislike {
+.NB-classifier .NB-modal-title .NB-classifier-dislike {
     color: #932C15;
 }
 

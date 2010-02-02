@@ -20,6 +20,9 @@ LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
 # = PYTHONPATH =
 # ==============
 
+UTILS_DIR = ''.join([CURRENT_DIR, '/utils'])
+if '/utils' not in ' '.join(sys.path):
+    sys.path.append(UTILS_DIR)
 COMPRESS_DIR = ''.join([CURRENT_DIR, '/utils/djangocompress'])
 if 'djangocompress' not in ' '.join(sys.path):
     sys.path.append(COMPRESS_DIR)
@@ -121,8 +124,8 @@ elif DEV_SERVER2:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = '/media/'
     DEBUG = True
-    CACHE_BACKEND = 'locmem:///'
     # CACHE_BACKEND = 'locmem:///'
+    CACHE_BACKEND = 'dummy:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,

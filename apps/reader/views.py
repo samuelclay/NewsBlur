@@ -58,39 +58,36 @@ def logout(request):
 def load_feeds(request):
     user = get_user(request)
 
-    feeds = cache.get('usersub:%s' % user.id)
-    if feeds is None:
-        us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
-                    user=user
-                )
-        # logging.info('UserSubs: %s' % us)
-        feeds = []
-        folders = []
-        for sub in us:
-            try:
-                sub.feed.unread_count_positive = sub.user_sub.unread_count_positive
-                sub.feed.unread_count_neutral = sub.user_sub.unread_count_neutral
-                sub.feed.unread_count_negative = sub.user_sub.unread_count_negative
-            except:
-                logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
-                sub.delete()
-            else:
-                if sub.folder not in folders:
-                    folders.append(sub.folder)
-                    feeds.append({'folder': sub.folder, 'feeds': []})
-                for folder in feeds:
-                    if folder['folder'] == sub.folder:
-                        folder['feeds'].append(sub.feed)
+    us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
+                user=user
+            )
+    # logging.info('UserSubs: %s' % us)
+    feeds = []
+    folders = []
+    for sub in us:
+        try:
+            sub.feed.unread_count_positive = sub.user_sub.unread_count_positive
+            sub.feed.unread_count_neutral = sub.user_sub.unread_count_neutral
+            sub.feed.unread_count_negative = sub.user_sub.unread_count_negative
+        except:
+            logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
+            sub.delete()
+        else:
+            if sub.folder not in folders:
+                folders.append(sub.folder)
+                feeds.append({'folder': sub.folder, 'feeds': []})
+            for folder in feeds:
+                if folder['folder'] == sub.folder:
+                    folder['feeds'].append(sub.feed)
 
-        # Alphabetize folders, then feeds inside folders
-        feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
-        for feed in feeds:
-            feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
-            for f in feed['feeds']:
-                f.feed_address = mark_safe(f.feed_address)
-                f.page_data = None
+    # Alphabetize folders, then feeds inside folders
+    feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
+    for feed in feeds:
+        feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
+        for f in feed['feeds']:
+            f.feed_address = mark_safe(f.feed_address)
+            f.page_data = None
 
-        cache.set('usersub:%s' % user, feeds, 600)
 
     data = json.encode(feeds)
     return HttpResponse(data, mimetype='application/json')

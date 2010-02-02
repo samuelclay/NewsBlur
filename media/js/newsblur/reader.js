@@ -877,7 +877,7 @@
         scroll_to_story_in_story_frame: function(story) {
             var $iframe = this.$story_iframe;
 
-            var $story = this.find_story_in_story_frame(story);
+            var $story = this.find_story_in_story_iframe(story);
 
             if ($story && $story.length) {
                 if (this.story_view == 'feed' || this.page_view_showing_feed_view) {
@@ -899,8 +899,8 @@
 
             if (story) {
                 var self = this;
-                var $story = this.find_story_in_story_frame(story);
-                NEWSBLUR.log(['Prefetching story', s, story, $story]);
+                var $story = this.find_story_in_story_iframe(story);
+                // NEWSBLUR.log(['Prefetching story', s, story, $story]);
             
                 setTimeout(function() {
                     // NEWSBLUR.log(['Fetching next story', s]);
@@ -917,119 +917,50 @@
                         NEWSBLUR.log(['Found '+(s-2)+' stories on page.', self.cache.iframe_stories]);
                         self.flags.story_frame_prefetched = true;
                     }
-                }, 200);
+                }, 100);
             }
         },
         
-        find_story_in_story_frame: function(story) {
-            var story_title = story.story_title;
-            var story_content = story.story_content;
-            var $iframe = this.$story_iframe;
-            var title = story_title.replace(/^\s+|\s+$/, '');
-            var $story, $stories = [], title_words, shortened_title, $reduced_stories = [];
+        find_story_in_story_iframe: function(story) {
+            var $iframe = this.$story_iframe.contents();
+            var $stories = $([]);
             
             if (story.id in this.cache.iframe_stories || this.flags.story_frame_prefetched) {
-                // NEWSBLUR.log(['Cached story frame', this.cache.iframe_stories[story.id], story]);
+                NEWSBLUR.log(['Cached', this.cache.iframe_stories[story.id], story]);
                 return this.cache.iframe_stories[story.id];
-            } else {
-                // NEWSBLUR.log(['Cache story frame miss', this.cache.iframe_stories, story]);
             }
             
-            var $iframe_contents = $iframe.contents();
-            
-            // Remove beginning quote, as it fucks up jQuery's PSUEDO expression regex.
-            if (title.indexOf('\"') == 0) title = title.substr(1);
-            
-            $stories = $iframe_contents
-                .find(':contains("'+title+'")')
-                .filter(function() {
-                    return !$(this).find(':contains("'+title+'")').length && $(this).is(':visible');
-                })
-                .not('script')
-                .each(function() {
-                    // NEWSBLUR.log(['Accepted 1 $elem', $(this), $(this).is(':visible')]);
-                });
-            
-            if (!$stories.length) {
-                // Try slicing words off the title, from the end.
-                title_words = title.match(/[^ ]+/g);
-                if (title_words.length > 2) {
-                    shortened_title = title_words.slice(0,-1).join(' ');
-                    $iframe_contents.find(':contains('+shortened_title+')')
-                        .filter(function() {
-                            return !$(this).find(':contains("'+shortened_title+'")').length;
-                        })
-                        .not('script')
-                        .each(function(){
-                            if ($(this).is(':visible')) {
-                                $stories.push(this);
-                            }
-                            // NEWSBLUR.log(['Accepted 2 $elem', $(this)]);
-                        });  
-                }
-            }
-            
-            if (!$stories.length) {
-                // Try slicing words off the title, from the beginning.
-                title_words = title.match(/[^ ]+/g);
-                // NEWSBLUR.log(['Words', title_words.length, title_words, title_words.slice(1).join(' '), title_words.slice(0, -1).join(' '), title_words.slice(1, -1).join(' ')]);
-                if (title_words.length > 2) {
-                    for (var i=0; i < 3; i++) {
-                        if (i==0) shortened_title = title_words.slice(1).join(' ');
-                        if (i==1) shortened_title = title_words.slice(0, -1).join(' ');
-                        if (i==2) shortened_title = title_words.slice(1, -1).join(' ');
-                        if (!shortened_title) break;
-                    
-                        $iframe_contents.find(':contains("'+shortened_title+'")')
-                            .filter(function() {
-                                return !$(this).find(':contains("'+shortened_title+'")').length;
-                            })
-                            .not('script')
-                            .each(function(){
-                                if ($(this).is(':visible')) {
-                                    $stories.push(this);
-                                }
-                                // NEWSBLUR.log(['Accepted 3 $elem', $(this)]);
-                            });  
-                        // NEWSBLUR.log(['Cutting words off title', $stories.length, $stories]);
-                        if ($stories.length) break;
+            var title = story.story_title.replace(/^\s+|\s+$/, '');
+                            
+            var search_document = function(node, title) {
+                var skip = 0;
+                if (node.nodeType == 3) {
+                    var pos = node.data.indexOf(title);
+                    if (pos >= 0) {
+                        $stories.push($(node).parent());
                     }
                 }
-            }
-            
-            if (!$stories.length) {
-                // Try using story content instead of title.
-                content_words = story_content.replace(/<([^<>\s]*)(\s[^<>]*)?>/, '')
-                                             .replace(/\(.*?\)/, '')
-                                             .match(/[^ ]+/g);
-                // NEWSBLUR.log(['content_words', content_words]);
-                if (content_words.length > 2) {
-                    var shortened_content = content_words.slice(0, 8).join(' ');
-                    $iframe_contents.find(':contains('+shortened_content+')')
-                        .filter(function() {
-                            return !$(this).find(':contains("'+shortened_content+'")').length;
-                        })
-                        .not('script')
-                        .each(function(){
-                            if ($(this).is(':visible')) {
-                                $stories.push(this);
-                            }
-                            // NEWSBLUR.log(['Accepted 4 $elem', $(this)]);
-                        });  
+                else if (node.nodeType == 1 && node.childNodes && !(/(script|style)/i.test(node.tagName))) {
+                    for (var i = 0; i < node.childNodes.length; ++i) {
+                        i += search_document(node.childNodes[i], title);
+                    }
                 }
-            }
+                return skip;
+            };
             
-            // If multiple $story's, find one under a <h#>
+            search_document($iframe.find('body')[0], title);
+            
+            // NEWSBLUR.log(['Found stories', $stories]);
+            
+            var max_size = 0;
+            var $story;
             $stories.each(function() {
-                if (!$story && $(this).parents('h1,h2,h3').length) {
+                var size = parseInt($(this).css('font-size'), 10);
+                if (size > max_size) {
+                    max_size = size;
                     $story = $(this);
-                    return;
-                } else if (!$story && $(this).parents('h4, h5, h6').length) {
-                    $story = $(this);
-                    return;
                 }
             });
-            if (!$story) $story = $stories.eq(0);
             
             if ($story && $story.length) {
                 this.cache.iframe_stories[story.id] = $story;
@@ -1040,7 +971,8 @@
                 this.cache.iframe_story_positions_keys.push(position);
             }
             
-            return $story;            
+            // NEWSBLUR.log(['Found story', $story]);
+            return $story;
         },
         
         open_story_link: function(story, $st) {
@@ -1354,13 +1286,17 @@
         
         handle_scroll_story_iframe: function(elem, e) {
             var self = this;
-            if (!this.flags.scrolling_by_selecting_story_title) {
+            if (!this.flags.scrolling_by_selecting_story_title && !this.flags.handled_scroll_story_iframe) {
                 var from_top = this.$story_iframe.contents().scrollTop();
                 var positions = this.cache.iframe_story_positions_keys;
                 var closest = this.closest(from_top, positions);
                 var story = this.cache.iframe_story_positions[positions[closest]];
                 // NEWSBLUR.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
                 this.navigate_story_titles_to_story(story);
+                this.flags.handled_scroll_story_iframe = false;
+                setTimeout(function() {
+                    self.flags.handled_scroll_story_iframe = false;
+                }, 50);
             }
         },
         

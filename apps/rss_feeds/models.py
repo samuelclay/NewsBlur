@@ -276,8 +276,8 @@ class Feed(models.Model):
                         story_has_changed = True
                     break
         
-        if story_has_changed or not story_in_system:
-            print 'New/updated story: %s' % (story), 
+        # if story_has_changed or not story_in_system:
+            # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
             
     class Meta:
