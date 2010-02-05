@@ -986,7 +986,11 @@
             
             search_document($iframe.find('body')[0], title);
             
-            // NEWSBLUR.log(['Found stories', $stories]);
+            $stories = $stories.filter(function() {
+                return $(this).is(':visible');
+            });
+            
+            NEWSBLUR.log(['Found stories', $stories, story.story_title]);
             
             var max_size = 0;
             var $story;
