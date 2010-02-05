@@ -72,7 +72,7 @@ if PRODUCTION:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = 'http://www.newsblur.com/media/'
     DEBUG = False
-    CACHE_BACKEND = 'file:///var/tmp/django_cache'
+    CACHE_BACKEND = 'memcached://127.0.0.1:11211'
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -107,7 +107,8 @@ elif DEV_SERVER1:
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = '/media/'
     DEBUG = True
-    CACHE_BACKEND = 'locmem:///'
+    # CACHE_BACKEND = 'locmem:///'
+    CACHE_BACKEND = 'memcached://127.0.0.1:11211'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -125,7 +126,8 @@ elif DEV_SERVER2:
     MEDIA_URL = '/media/'
     DEBUG = True
     # CACHE_BACKEND = 'locmem:///'
-    CACHE_BACKEND = 'dummy:///'
+    # CACHE_BACKEND = 'dummy:///'
+    CACHE_BACKEND = 'memcached://127.0.0.1:11211'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
