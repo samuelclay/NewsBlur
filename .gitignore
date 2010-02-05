@@ -1,2 +1,4 @@
 logs/*.log
+*.pycmedia/release/
 *.pyc
+media/release/*
