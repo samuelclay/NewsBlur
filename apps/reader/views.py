@@ -57,40 +57,23 @@ def logout(request):
     
 def load_feeds(request):
     user = get_user(request)
+    feeds = {}
+    
+    folders = UserSubscriptionFolders.objects.get(user=user)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
 
-    us =    UserSubscriptionFolders.objects.select_related('feed', 'user_sub').filter(
-                user=user
-            )
-    # logging.info('UserSubs: %s' % us)
-    feeds = []
-    folders = []
-    for sub in us:
-        try:
-            sub.feed.unread_count_positive = sub.user_sub.unread_count_positive
-            sub.feed.unread_count_neutral = sub.user_sub.unread_count_neutral
-            sub.feed.unread_count_negative = sub.user_sub.unread_count_negative
-        except:
-            logging.warn("Subscription %s does not exist outside of Folder." % (sub.feed))
-            sub.delete()
-        else:
-            if sub.folder not in folders:
-                folders.append(sub.folder)
-                feeds.append({'folder': sub.folder, 'feeds': []})
-            for folder in feeds:
-                if folder['folder'] == sub.folder:
-                    folder['feeds'].append(sub.feed)
+    for sub in user_subs:
+        feeds[sub.feed.pk] = {
+            'id': sub.feed.pk,
+            'feed_title': sub.feed.feed_title,
+            'feed_link': sub.feed.feed_link,
+            'unread_count_positive': sub.unread_count_positive,
+            'unread_count_neutral': sub.unread_count_neutral,
+            'unread_count_negative': sub.unread_count_negative,
+        }
 
-    # Alphabetize folders, then feeds inside folders
-    feeds.sort(lambda x, y: cmp(x['folder'].lower(), y['folder'].lower()))
-    for feed in feeds:
-        feed['feeds'].sort(lambda x, y: cmp(x.feed_title.lower(), y.feed_title.lower()))
-        for f in feed['feeds']:
-            f.feed_address = mark_safe(f.feed_address)
-            f.page_data = None
-
-
-    data = json.encode(feeds)
-    return HttpResponse(data, mimetype='application/json')
+    data = dict(feeds=feeds, folders=json.decode(folders.folders))
+    return HttpResponse(json.encode(data), mimetype='application/json')
 
 def load_single_feed(request):
     user = get_user(request)

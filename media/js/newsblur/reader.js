@@ -334,61 +334,83 @@
         load_feeds: function() {
             var self = this;
             
-            var callback = function() {
-                var $feed_list = self.$feed_list.empty();
-                var folders = self.model.folders;
-
-                $('#story_taskbar').css({'display': 'block'});
-                // NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
-                for (fo in folders) {
-                    var feeds = folders[fo].feeds;
-                    var $folder = $.make('div', { className: 'folder' }, [
-                        $.make('span', { className: 'folder_title' }, folders[fo].folder),
-                        $.make('div', { className: 'feeds' })
-                    ]);
-                    for (f in feeds) {
-                        var unread_class = '';
-                        if (feeds[f].unread_count_positive) {
-                            unread_class += ' unread_positive';
-                        }
-                        if (feeds[f].unread_count_neutral) {
-                            unread_class += ' unread_neutral';
-                        }
-                        if (feeds[f].unread_count_negative) {
-                            unread_class += ' unread_negative';
-                        }
-                        var $feed = $.make('div', { className: 'feed ' + unread_class }, [
-                            $.make('span', { 
-                                className: 'unread_count unread_count_positive '
-                                            + (feeds[f].unread_count_positive
-                                               ? "unread_count_full"
-                                               : "unread_count_empty")
-                            }, ''+feeds[f].unread_count_positive),
-                            $.make('span', { 
-                                className: 'unread_count unread_count_neutral '
-                                            + (feeds[f].unread_count_neutral
-                                               ? "unread_count_full"
-                                               : "unread_count_empty") 
-                            }, ''+feeds[f].unread_count_neutral),
-                            $.make('span', { 
-                                className: 'unread_count unread_count_negative '
-                                            + (feeds[f].unread_count_negative
-                                               ? "unread_count_full"
-                                               : "unread_count_empty")
-                            }, ''+feeds[f].unread_count_negative),
-                            $.make('img', { className: 'feed_favicon', src: self.google_favicon_url + feeds[f].feed_link }),
-                            $.make('span', { className: 'feed_title' }, feeds[f].feed_title)
-                        ]).data('feed_id', feeds[f].id);
-                        $('.feeds', $folder).append($feed);
-                    }
-                    $feed_list.append($folder);
-                }
-                $('.unread_count', $feed_list).corners('4px');
-            };
-            
             if ($('#feed_list').length) {
-                this.model.load_feeds(callback);
+                this.model.load_feeds($.rescope(this.make_feeds, this));
             }
+        },
+        
+        make_feeds: function() {
+            var $feed_list = this.$feed_list.empty();
+            var folders = this.model.folders;
+            var feeds = this.model.feeds;
+            NEWSBLUR.log(['Making feeds', {'folders': folders, 'feeds': feeds}]);
+            
+            $('#story_taskbar').css({'display': 'block'});
+            // NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
+            var $folder = this.make_feeds_folder(folders);
+            $feed_list.append($folder);
+            $('.unread_count', $feed_list).corners('4px');
+        },
+        
+        make_feeds_folder: function(items) {
+            var $feeds = $.make('div');
+            
+            for (var i in items) {
+                var item = items[i];
+
+                if (typeof item == "number") {
+                    var feed = this.model.feeds[item];
+                    
+                    var unread_class = '';
+                    if (feed.unread_count_positive) {
+                        unread_class += ' unread_positive';
+                    }
+                    if (feed.unread_count_neutral) {
+                        unread_class += ' unread_neutral';
+                    }
+                    if (feed.unread_count_negative) {
+                        unread_class += ' unread_negative';
+                    }
+                    var $feed = $.make('div', { className: 'feed ' + unread_class }, [
+                        $.make('span', { 
+                            className: 'unread_count unread_count_positive '
+                                        + (feed.unread_count_positive
+                                           ? "unread_count_full"
+                                           : "unread_count_empty")
+                        }, ''+feed.unread_count_positive),
+                        $.make('span', { 
+                            className: 'unread_count unread_count_neutral '
+                                        + (feed.unread_count_neutral
+                                           ? "unread_count_full"
+                                           : "unread_count_empty") 
+                        }, ''+feed.unread_count_neutral),
+                        $.make('span', { 
+                            className: 'unread_count unread_count_negative '
+                                        + (feed.unread_count_negative
+                                           ? "unread_count_full"
+                                           : "unread_count_empty")
+                        }, ''+feed.unread_count_negative),
+                        $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
+                        $.make('span', { className: 'feed_title' }, feed.feed_title)
+                    ]).data('feed_id', feed.id);
+                    
+                    $feeds.append($feed);
+                } else if (typeof item == "object") {
+                    for (var o in item) {
+                        var folder = item[o];
+                        var $folder = $.make('div', { className: 'folder' }, [
+                            $.make('span', { className: 'folder_title' }, o),
+                            $.make('div', { className: 'feeds' }, this.make_feeds_folder(folder))
+                        ]);
+                        $feeds.append($folder);
+                    }
+                }
+            }
+            
+            $('.feed', $feeds).tsort('.feed_title');
+            $('.folder', $feeds).tsort('.folder_title');
+            
+            return $feeds;
         },
         
         // =====================

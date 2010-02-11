@@ -3,7 +3,7 @@ from django.core.handlers.wsgi import WSGIHandler
 from apps.rss_feeds.models import Feed, Story
 from django.core.cache import cache
 from django.db.models import Q
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
+from apps.reader.models import UserSubscription, UserStory
 from optparse import OptionParser, make_option
 from utils.management_functions import daemonize
 import os

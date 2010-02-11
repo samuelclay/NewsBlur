@@ -108,7 +108,8 @@ elif DEV_SERVER1:
     MEDIA_URL = '/media/'
     DEBUG = True
     # CACHE_BACKEND = 'locmem:///'
-    CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+    # CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+    CACHE_BACKEND = 'dummy:///'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -181,6 +182,7 @@ COMPRESS_JS = {
             'js/jquery.ui.core.js',
             'js/jquery.ui.slider.js',
             'js/jquery.layout.js',
+            'js/jquery.tinysort.js',
             'js/jquery.fieldselection.js',
             
             'js/newsblur/assetmodel.js',
@@ -267,5 +269,16 @@ INSTALLED_APPS = (
     'apps.registration',
     'apps.opml_import',
     'apps.profile',
+    'devserver',
     # 'debug_toolbar'
+)
+
+DEVSERVER_MODULES = (
+#    'devserver.modules.sql.SQLRealTimeModule',
+    'devserver.modules.sql.SQLSummaryModule',
+    'devserver.modules.profile.ProfileSummaryModule',
+
+    # Modules not enabled by default
+    'devserver.modules.profile.MemoryUseModule',
+    'devserver.modules.cache.CacheSummaryModule',
 )
