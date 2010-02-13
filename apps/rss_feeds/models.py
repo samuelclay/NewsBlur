@@ -166,7 +166,7 @@ class Feed(models.Model):
         print 'Found %s stories in %s. Trimming...' % (stories.count(), self)
         if stories.count() > 1000:
             old_story = story[1000]
-            user_stories = UserStory.objects.filter(story=story,
+            user_stories = UserStory.objects.filter(feed=self,
                                                     read_date__lte=old_story.story_date)
             user_stories_count = user_stories.count()
             user_stories.delete()
