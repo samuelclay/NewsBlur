@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from apps.rss_feeds.models import Feed, Story, Tag
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
+from apps.reader.models import UserSubscription, UserStory
 from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag
 from utils import json
 from utils.user_functions import get_user

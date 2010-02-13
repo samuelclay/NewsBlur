@@ -165,15 +165,11 @@ class UserStory(models.Model):
         
 class UserSubscriptionFolders(models.Model):
     user = models.ForeignKey(User)
-    user_sub = models.ForeignKey(UserSubscription)
-    feed = models.ForeignKey(Feed)
-    folder = models.CharField(max_length=255)
+    folders = models.TextField(default="{}")
     
     def __unicode__(self):
-        return ('[' + self.feed.feed_title + '] '
-                + self.folder)
+        return "[%s]: %s" % (self.user, len(self.folders),)
         
     class Meta:
         verbose_name_plural = "folders"
         verbose_name = "folder"
-        unique_together = ("user", "user_sub")

@@ -135,6 +135,10 @@ a img {
     text-transform: uppercase;
 }
 
+#feed_list .feeds {
+    margin-left: 22px;
+}
+
 #feed_list .feed {
     position: relative;
     cursor: pointer;
@@ -149,11 +153,11 @@ a img {
 #feed_list img.feed_favicon {
     position: absolute;
     top: 2px;
-    left: 24px;
+    left: 2px;
 }
 #feed_list .feed_title {
     display: block;
-    padding: 4px 42px 2px 45px;
+    padding: 4px 42px 2px 23px;
     text-decoration: none;
     color: #272727;
     line-height: 1.3em;

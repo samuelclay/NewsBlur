@@ -1,6 +1,6 @@
 from apps.rss_feeds.models import Story
 from django.core.cache import cache
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
+from apps.reader.models import UserSubscription, UserStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser, threadpool
 from django.db import transaction
