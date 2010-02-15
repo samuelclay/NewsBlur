@@ -164,12 +164,16 @@ class Feed(models.Model):
         user_stories_count = 0
         stories = Story.objects.filter(story_feed=self).order_by('-story_date')
         print 'Found %s stories in %s. Trimming...' % (stories.count(), self)
-        for story in stories[1000:]:
-            user_stories = UserStory.objects.filter(story=story)
+        if stories.count() > 1000:
+            old_story = stories[1000]
+            user_stories = UserStory.objects.filter(feed=self,
+                                                    read_date__lte=old_story.story_date)
             user_stories_count = user_stories.count()
             user_stories.delete()
-            story.delete()
-            stories_deleted_count += 1
+            old_stories = Story.objects.filter(story_feed=self,
+                                               story_date__lte=old_story.story_date)
+            stories_deleted_count = old_stories.count()
+            old_stories.delete()
         
         if stories_deleted_count:
             print "Trimming %s stories from %s. %s user stories." % (

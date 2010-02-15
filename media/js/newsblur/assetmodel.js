@@ -25,6 +25,7 @@ NEWSBLUR.AssetModel = function() {
 
 NEWSBLUR.AssetModel.Reader = function() {
     this.feeds = {};
+    this.folders = [];
     this.stories = {};
 };
 
@@ -135,9 +136,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     load_feeds: function(callback) {
         var self = this;
         
-        var pre_callback = function(folders) {
-            self.folders = folders;
-            callback(folders);
+        var pre_callback = function(subscriptions) {
+            self.feeds = subscriptions.feeds;
+            self.folders = subscriptions.folders;
+            callback();
         };
         
         this.make_request('/reader/load_feeds', {}, pre_callback);
@@ -182,15 +184,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     get_feed: function(feed_id, callback) {
         var self = this;
-        for (fld in this.folders) {
-            var feeds = this.folders[fld].feeds;
-            for (f in feeds) {
-                if (feeds[f].id == feed_id) {
-                    return feeds[f];
-                }
-            }
-        }
-        return null;
+        
+        return this.feeds[feed_id];
     },
     
     get_feed_tags: function() {
