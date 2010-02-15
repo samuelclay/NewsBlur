@@ -26,7 +26,7 @@ A News/RSS Reader that controls the amount, relevancy, and interestingness of ne
 * Search
 * Feed discovery, ala *Give Me Something To Read*
 
-### version 3.0 ###
+## version 3.0 ##
 
 *Spring 2011*
 
