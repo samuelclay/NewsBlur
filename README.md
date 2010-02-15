@@ -1,8 +1,10 @@
+# Objective #
+
 A News/RSS Reader that controls the amount, relevancy, and interestingness of news subscriptions.
 
-== Roadmap ==
+# Roadmap #
 
-=== version 1.0 ===
+## version 1.0 ##
 
 *Spring 2010*
 
@@ -11,20 +13,20 @@ A News/RSS Reader that controls the amount, relevancy, and interestingness of ne
 * Feed view: Show all feed entries connected to rss stories
 * Intelligence: Red/Yellow/Green for Bad/Neutral/Good stories. Based on explicit user preferences.
 
-=== version 1.5 ===
+## version 1.5 ##
 
 *Summer 2010*
 
 * Google Reader import
 
-=== version 2.0 ===
+## version 2.0 ##
 
 *Winter 2010*
 
 * Search
 * Feed discovery, ala *Give Me Something To Read*
 
-=== version 3.0 ===
+### version 3.0 ###
 
 *Spring 2011*
 
