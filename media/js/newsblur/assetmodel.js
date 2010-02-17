@@ -27,34 +27,41 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.feeds = {};
     this.folders = [];
     this.stories = {};
+    this.read_stories = {};
 };
 
 NEWSBLUR.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
-        this.ajax['queue'] = $.manageAjax.create('queue', {queue: false}); 
-        this.ajax['queue_and_cancel'] = $.manageAjax.create('queue_and_cancel', {queue: 'clear', abortOld: true}); 
+        this.ajax['queue'] = $.manageAjax.create('queue', {queue: false, domSuccessTrigger: true, traditional: true}); 
+        this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear', domSuccessTrigger: true, traditional: true}); 
+        this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domSuccessTrigger: true, traditional: true}); 
+        this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domSuccessTrigger: true, domCompleteTrigger: true, traditional: true}); 
         return;
     },
     
     make_request: function(url, data, callback, error_callback, options) {
         var self = this;
         var options = $.extend({
-            'queue': 'queue'
+            'ajax_group': 'queue',
+            'traditional': true,
+            'preventDoubbleRequests': false
         }, options);
-
-        if (options['queue'] == 'queue_and_cancel') {
-            this.ajax[options['queue']].clear(true);
+        
+        if (options['ajax_group'] == 'feed') {
+            this.ajax[options['ajax_group']].clear(true);
         }
         
-        this.ajax[options['queue']].add({
+        this.ajax[options['ajax_group']].add({
             url: url,
             data: data,
             type: 'POST',
             dataType: 'json',
-            complete: function(a) {
-                // NEWSBLUR.log(['make_request complete', a]);
+            beforeSend: function() {
+                // NEWSBLUR.log(['beforeSend', options]);
+                $.isFunction(options['beforeSend']) && options['beforeSend']();
+                return true;
             },
             success: function(o) {
                 // NEWSBLUR.log(['make_request 1', o]);
@@ -86,9 +93,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         
         if (!read && NEWSBLUR.Globals.is_authenticated) {
+            if (!(feed_id in this.read_stories)) { this.read_stories[feed_id] = []; }
+            this.read_stories[feed_id].push(story_id);
+            NEWSBLUR.log(['Marking Read', this.read_stories, story_id]);
+            
+            var story_ids = new Array(this.read_stories[feed_id]);
             this.make_request('/reader/mark_story_as_read', {
-                story_id: story_id,
+                story_id: story_ids,
                 feed_id: feed_id
+            }, function() {}, function() {}, {
+                'ajax_group': 'queue_clear',
+                'traditional': true,
+                'beforeSend': function() {
+                    self.read_stories[feed_id] = [];
+                }
             });
         }
         
@@ -184,21 +202,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }, pre_callback,
             error_callback,
             {
-                'queue': 'queue_and_cancel'
-            }
-        );
-    },
-    
-    load_feed_page: function(feed_id, page, callback) {
-        var self = this;
-        
-        this.make_request('/reader/load_feed_page',
-            {
-                feed_id: feed_id,
-                page: page
-            }, callback, callback,
-            {
-                'queue': 'queue_and_cancel'
+                'ajax_group': (page ? 'feed_page' : 'feed')
             }
         );
     },

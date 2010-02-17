@@ -65,14 +65,15 @@
 				that 		= this,
 				ajaxFn 		= this._createAjax(xhrID, o, origSuc, origCom)
 			;
-			
 			if(this.requests[xhrID] && o.preventDoubbleRequests){
 				return;
 			}
 			ajaxFn.xhrID = xhrID;
 			o.xhrID = xhrID;
 			
+            // NEWSBLUR.log(['add', o, o.queue, this.opts, this.requests[xhrID], this.qName]);
 			o.beforeSend = function(xhr, opts){
+                // NEWSBLUR.log(['o.beforeSend', xhr, opts]);
 				var ret = beforeSend.call(this, xhr, opts);
 				if(ret === false){
 					that._removeXHR(xhrID);
@@ -81,17 +82,20 @@
 				return ret;
 			};
 			o.complete = function(xhr, status){
+                // NEWSBLUR.log(['o.complete', xhr, status, o]);
 				that._complete.call(that, this, origCom, xhr, status, xhrID, o);
 				xhr = null;
 			};
 			
 			o.success = function(data, status, xhr){
+                // NEWSBLUR.log(['o.success', data, status]);
 				that._success.call(that, this, origSuc, data, status, xhr, o);
 				xhr = null;
 			};
 						
 			//always add some error callback
 			o.error =  function(ahr, status, errorStr){
+                // NEWSBLUR.log(['o.error', errorStr, status]);
 				ahr = (ahr || {});
 				var httpStatus 	= ahr.status,
 					content 	= ahr.responseXML || ahr.responseText
@@ -111,6 +115,7 @@
 			}
 			
 			if(o.queue){
+                // NEWSBLUR.log(['Queueing', o.queue, this.qName]);
 				$.queue(document, this.qName, ajaxFn);
 				if(this.inProgress < o.maxRequests){
 					$.dequeue(document, this.qName);
@@ -131,6 +136,7 @@
 						that._success.call(that, o.context || o, origSuc, cache[id], 'success', {}, o);
 					}, 0);
 				} else {
+                    // NEWSBLUR.log(['create_ajax', o, o.complete, o.error, o.success]);
 					that.requests[id] = $.ajax(o);
 				}
 				if(that.inProgress === 1){
@@ -153,12 +159,12 @@
 			return ret;
 		},
 		_complete: function(context, origFn, xhr, status, xhrID, o){
+            // NEWSBLUR.log(['complete', o]);
 			if(this._isAbort(xhr, o)){
 				status = 'abort';
 				o.abort.call(context, xhr, status, o);
 			}
 			origFn.call(context, xhr, status, o);
-			
 			$.event.trigger(this.name +'AjaxComplete', [xhr, status, o]);
 			
 			if(o.domCompleteTrigger){
@@ -172,6 +178,7 @@
 			xhr = null;
 		},
 		_success: function(context, origFn, data, status, xhr, o){
+            // NEWSBLUR.log(['_success', data, status]);
 			var that = this;
 			if(this._isAbort(xhr, o)){
 				xhr = null;
@@ -196,6 +203,7 @@
 			xhr = null;
 		},
 		getData: function(id){
+            // NEWSBLUR.log(['getData', id]);
 			if( id ){
 				var ret = this.requests[id];
 				if(!ret && this.opts.queue) {
@@ -212,6 +220,7 @@
 			};
 		},
 		abort: function(id){
+            // NEWSBLUR.log(['abort', id]);
 			var xhr;
 			if(id){
 				xhr = this.getData(id);
@@ -242,6 +251,7 @@
 			});
 		},
 		clear: function(shouldAbort){
+            // NEWSBLUR.log(['clear', shouldAbort]);
 			$(document).clearQueue(this.qName); 
 			if(shouldAbort){
 				this.abort();

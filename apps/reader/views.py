@@ -87,7 +87,7 @@ def load_single_feed(request):
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force_update', False)
     
-    stories = feed.get_stories(offset, limit)
+    stories = feed.get_stories(offset, limit) 
         
     if force_update:
         feed.update(force_update)
@@ -139,7 +139,11 @@ def load_single_feed(request):
                                                                if author.stories_count > 1]
     
     context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors)
+    
+    print offset, limit, len(context['stories']), context
+    
     data = json.encode(context)
+    print data
     return HttpResponse(data, mimetype='application/json')
 
 @suppress_logging_output
@@ -154,17 +158,21 @@ def load_feed_page(request):
     
 @login_required
 def mark_story_as_read(request):
-    story_id = int(request.REQUEST['story_id'])
+    story_ids = request.REQUEST['story_id'].split(',')
     feed_id = int(request.REQUEST['feed_id'])
+
+    data = dict(code=0, payload=story_ids)
     
-    logging.debug("Marked Read: %s (%s)" % (story_id, feed_id))
-    m = UserStory(story_id=story_id, user=request.user, feed_id=feed_id)
-    data = json.encode(dict(code=0))
-    try:
-        m.save()
-    except IntegrityError, e:
-        data = json.encode(dict(code=2))
-    return HttpResponse(data)
+    for story_id in story_ids:
+        logging.debug("Marked Read: %s (%s)" % (story_id, feed_id))
+        m = UserStory(story_id=int(story_id), user=request.user, feed_id=feed_id)
+        try:
+            m.save()
+            data.update({'code': 1})
+        except IntegrityError, e:
+            data.update({'code': -1})
+    
+    return HttpResponse(json.encode(data))
     
 @login_required
 def mark_feed_as_read(request):
