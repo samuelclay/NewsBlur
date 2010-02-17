@@ -443,7 +443,6 @@
             this.mark_feed_as_selected(feed_id, $feed_link);
             this.show_feedbar_loading();
             this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
-            // this.model.load_feed_page(feed_id, 0, $.rescope(this.show_feed_page_contents, this));
             this.show_feed_page_contents(feed_id);
             this.show_correct_story_view(feed_id);
             
@@ -493,6 +492,7 @@
                 }
                 $story_titles.append($story_title);
             }
+            NEWSBLUR.log(['create_story_titles', stories]);
             if (!stories || stories.length == 0) {
                 var $end_stories_line = $.make('div', { 
                     className: 'NB-story-titles-end-stories-line'
