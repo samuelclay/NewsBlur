@@ -139,11 +139,7 @@ def load_single_feed(request):
                                                                if author.stories_count > 1]
     
     context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors)
-    
-    print offset, limit, len(context['stories']), context
-    
     data = json.encode(context)
-    print data
     return HttpResponse(data, mimetype='application/json')
 
 @suppress_logging_output
