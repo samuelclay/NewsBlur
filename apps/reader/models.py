@@ -89,9 +89,14 @@ class UserSubscription(models.Model):
     def calculate_feed_scores(self):
         print '[%s]: %s' % (self.feed, self.user)
         feed_scores = dict(negative=0, neutral=0, positive=0)
+        
+        # Two weeks in age. If mark_read_date is older, mark old stories as read.
         date_delta = datetime.datetime.now()-datetime.timedelta(days=DAYS_OF_UNREAD)
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
+        else:
+            self.mark_read_date = date_delta
+            
         read_stories = UserStory.objects.filter(user=self.user,
                                                 feed=self.feed,
                                                 story__story_date__gte=date_delta)

@@ -567,7 +567,7 @@
         load_story_feed_view_entry: function(stories, story_index) {
             var self = this;
 
-            if (stories[story_index]) {
+            if (stories[story_index] && stories[story_index]['story_feed_id'] == this.active_feed) {
                 var story = stories[story_index];
                 var $story = self.cache.feed_view_stories[story.id];
                 
@@ -605,6 +605,9 @@
                         
                     })($story, story, story_index);
                 }
+            } else if (stories[story_index] 
+                       && stories[story_index]['story_feed_id'] != this.active_feed) {
+                NEWSBLUR.log(['Switched off feed early']);
             } else {
                 NEWSBLUR.log(['Feed view entirely loaded', stories.length + " stories"]);
                 var $feed_view = this.$feed_view;
@@ -674,7 +677,9 @@
                     .bind('click.NB-taskbar', function() {
                     self.taskbar_show_return_to_page();
                 });
-                self.$story_iframe.contents().scroll($.rescope(self.handle_scroll_story_iframe, self));
+                self.$story_iframe.contents()
+                    .unbind('scroll')
+                    .scroll($.rescope(self.handle_scroll_story_iframe, self));
                 self.prefetch_story_locations_in_story_frame();
             });
         },
@@ -948,7 +953,7 @@
             if (!s) s = 0;
             var story = stories[s];
 
-            if (story) {
+            if (story && story['story_feed_id'] == this.active_feed) {
                 var self = this;
                 var $story = this.find_story_in_story_iframe(story);
                 // NEWSBLUR.log(['Prefetching story', s, story, $story]);
@@ -969,6 +974,8 @@
                         self.flags.story_frame_prefetched = true;
                     }
                 }, 100);
+            } else if (story && story['story_feed_id'] != this.active_feed) {
+                NEWSBLUR.log(['Switched off iframe early']);
             }
         },
         
@@ -1012,7 +1019,7 @@
                 return $(this).is(':visible');
             });
             
-            NEWSBLUR.log(['Found stories', $stories, story.story_title]);
+            // NEWSBLUR.log(['Found stories', $stories, story.story_title]);
             
             var max_size = 0;
             var $story;

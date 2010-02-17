@@ -177,6 +177,7 @@ COMPRESS_JS = {
             'js/jquery.hotkeys.js',
             'js/jquery.dropshadow.js',
             'js/jquery.ajaxupload.js',
+            'js/jquery.ajaxmanager.3.js',
             'js/jquery.simplemodal-1.3.js',
             'js/jquery.color.js',
             'js/jquery.ui.core.js',

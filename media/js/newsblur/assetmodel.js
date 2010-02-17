@@ -32,11 +32,23 @@ NEWSBLUR.AssetModel.Reader = function() {
 NEWSBLUR.AssetModel.Reader.prototype = {
     
     init: function() {
+        this.ajax = {};
+        this.ajax['queue'] = $.manageAjax.create('queue', {queue: false}); 
+        this.ajax['queue_and_cancel'] = $.manageAjax.create('queue_and_cancel', {queue: 'clear', abortOld: true}); 
         return;
     },
     
-    make_request: function(url, data, callback, error_callback) {
-        $.ajax({
+    make_request: function(url, data, callback, error_callback, options) {
+        var self = this;
+        var options = $.extend({
+            'queue': 'queue'
+        }, options);
+
+        if (options['queue'] == 'queue_and_cancel') {
+            this.ajax[options['queue']].clear(true);
+        }
+        
+        this.ajax[options['queue']].add({
             url: url,
             data: data,
             type: 'POST',
@@ -47,15 +59,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             success: function(o) {
                 // NEWSBLUR.log(['make_request 1', o]);
 
-                if (callback && typeof callback == 'function'){
+                if ($.isFunction(callback)) {
                     callback(o);
                 }
             },
             error: function(e) {
-                NEWSBLUR.log(['AJAX Error', e]);
-                error_callback();
+                // NEWSBLUR.log(['AJAX Error', e]);
+                if ($.isFunction(error_callback)) {
+                    error_callback();
+                }
             }
-        });    
+        }); 
+        
     },
     
     mark_story_as_read: function(story_id, feed_id, callback) {
@@ -167,7 +182,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 feed_id: feed_id,
                 page: page
             }, pre_callback,
-            error_callback
+            error_callback,
+            {
+                'queue': 'queue_and_cancel'
+            }
         );
     },
     
@@ -178,7 +196,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             {
                 feed_id: feed_id,
                 page: page
-            }, callback
+            }, callback, callback,
+            {
+                'queue': 'queue_and_cancel'
+            }
         );
     },
     
