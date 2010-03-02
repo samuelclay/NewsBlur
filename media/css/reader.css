@@ -170,7 +170,7 @@ a img {
     border-top: 1px solid #A8A8A8;
     border-bottom: 1px solid #A8A8A8;
 }
-#feed_list .unread_count {
+.feed .unread_count {
     float: right;
     font-weight: bold;
     color: #FFF;
@@ -180,16 +180,16 @@ a img {
     display: none;
 }
 
-#feed_list .unread_count_positive {
+.feed .unread_count_positive {
     background-color: #559F4D;
 }
 
-#feed_list .unread_count_neutral {
+.feed .unread_count_neutral {
     color: #303030;
     background-color: #F9C72A;
 }
 
-#feed_list .unread_count_negative {
+.feed .unread_count_negative {
     background-color: #CC2A2E;
 }
 
@@ -259,13 +259,24 @@ a img {
     position: relative;
 }
 
-#story_titles .NB-feedbar .feed_heading {
-    display: block;
-}
-
-#story_titles .NB-feedbar .feed_heading .feed_favicon {
+#story_titles .NB-feedbar .feed .feed_favicon {
     margin-right: 8px;
     vertical-align: top;
+}
+
+#story_titles .NB-feedbar .feed .feed_counts {
+    width: 200px;
+    position: absolute;
+    top: -1px;
+    right: 6px;
+}
+
+#story_titles .NB-feedbar .feed .feed_counts .feed_counts_floater {
+    float: left;
+}
+
+#story_titles .NB-feedbar .feed .feed_counts .unread_count {
+    float: right;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-intelligence {
@@ -310,32 +321,38 @@ a img {
     background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 -4px;
 }
 
+#story_titles .feed .unread_count.unread_count_full {
+    display: block;
+}
+
+
+
 #story_titles .story {
     position: relative;
     cursor: pointer;
     font-weight: bold;
-    padding: 0px 206px 0px 28px;
+    padding: 0px 206px 0px 44px;
     border-top: 1px solid #E7EDF6;
     text-decoration: none;
     color: #272727;
     line-height: 1em;
-    background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 6px 50%;
+    background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 14px 50%;
 }
 
 #story_titles .story.NB-story-positive {
-    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 6px 50%;
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 14px 50%;
 }
 
 #story_titles .story.NB-story-neutral {
-    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 6px 50%;
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 14px 50%;
 }
 
 #story_titles .story.NB-story-negative {
-    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 6px 50%;
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 14px 50%;
 }
 
 #story_titles .story.NB-story-hover {
-    background-color: #f0f0f0;
+    background: #f0f0f0;
 }
 
 #story_titles .story a.story_title {
@@ -384,12 +401,12 @@ a img {
 }
 
 #story_titles .NB-story-like {
-    right: 24px;
+    left: 24px;
     background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
 }
 
 #story_titles .NB-story-dislike {
-    right: 4px;
+    left: 4px;
     background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 -4px;
 }
 
