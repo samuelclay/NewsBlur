@@ -30,7 +30,7 @@ def opml_upload(request):
     opml_importer = OPMLImporter(xml_opml, request.user)
     folders = opml_importer.process()
 
-    feeds = UserSubscription.objects.filter(user=user).values()
+    feeds = UserSubscription.objects.filter(user=request.user).values()
     data = json.encode(dict(message=message, code=code, payload=dict(folders=folders, feeds=feeds)))
 
     return HttpResponse(data, mimetype='text/plain')
@@ -43,10 +43,15 @@ class OPMLImporter:
 
     def process(self):
         outline = opml.from_string(self.opml_xml)
+        self.clear_feeds()
         folders = self.process_outline(outline)
         UserSubscriptionFolders.objects.create(user=self.user, folders=json.encode(folders))
 
         return folders
+    
+    def clear_feeds(self):
+        UserSubscriptionFolders.objects.filter(user=self.user).delete()
+        UserSubscription.objects.filter(user=self.user).delete()
         
     def process_outline(self, outline):
         folders = []

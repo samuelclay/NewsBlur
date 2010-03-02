@@ -2,9 +2,6 @@ import sys
 import logging
 import os
 
-# Route all 'print' statements to Apache
-sys.stdout = sys.stderr
-
 # ===========================
 # = Directory Declaractions =
 # ===========================
@@ -23,12 +20,6 @@ LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
 UTILS_DIR = ''.join([CURRENT_DIR, '/utils'])
 if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_DIR)
-COMPRESS_DIR = ''.join([CURRENT_DIR, '/utils/djangocompress'])
-if 'djangocompress' not in ' '.join(sys.path):
-    sys.path.append(COMPRESS_DIR)
-DJANGO_DEBUG_DIR = ''.join([CURRENT_DIR, '/utils/django-debug-toolbar'])
-if 'debug-toolbar' not in ' '.join(sys.path):
-    sys.path.append(DJANGO_DEBUG_DIR)
 
 # ===================
 # = Global Settings =
@@ -127,8 +118,8 @@ elif DEV_SERVER2:
     MEDIA_URL = '/media/'
     DEBUG = True
     # CACHE_BACKEND = 'locmem:///'
-    # CACHE_BACKEND = 'dummy:///'
-    CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+    CACHE_BACKEND = 'dummy:///'
+    # CACHE_BACKEND = 'memcached://127.0.0.1:11211'
     logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s',
                     filename=LOG_FILE,
@@ -156,7 +147,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.cache.CacheMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
@@ -205,9 +195,8 @@ COMPRESS_CSS = {
     }
 }
 
-# COMPRESS = True
-COMPRESS_AUTO = True
-COMPRESS_VERSION = True
+COMPRESS = not DEBUG
+COMPRESS_VERSION = not DEBUG
 COMPRESS_JS_FILTERS = ['compress.filters.jsmin.JSMinFilter']
 COMPRESS_CSS_FILTERS = []
 
@@ -262,7 +251,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'utils.django_extensions',
+    'django_extensions',
     'compress',
     'apps.rss_feeds',
     'apps.reader',

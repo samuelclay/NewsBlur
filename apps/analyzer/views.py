@@ -14,7 +14,6 @@ from apps.reader.models import UserSubscription, UserStory
 from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag
 from utils import json
 from utils.user_functions import get_user
-from djangologging.decorators import suppress_logging_output
 import logging
 import datetime
 import random

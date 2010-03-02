@@ -19,7 +19,6 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.core import serializers 
 from django.utils.safestring import mark_safe
-from djangologging.decorators import suppress_logging_output
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 import logging
@@ -59,7 +58,12 @@ def load_feeds(request):
     user = get_user(request)
     feeds = {}
     
-    folders = UserSubscriptionFolders.objects.get(user=user)
+    try:
+        folders = UserSubscriptionFolders.objects.get(user=user)
+    except UserSubscriptionFolders.DoesNotExist:
+        data = dict(feeds=[], folders=[])
+        return HttpResponse(json.encode(data), mimetype='application/json')
+        
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
 
     for sub in user_subs:
@@ -142,7 +146,6 @@ def load_single_feed(request):
     data = json.encode(context)
     return HttpResponse(data, mimetype='application/json')
 
-@suppress_logging_output
 def load_feed_page(request):
     feed = Feed.objects.get(id=request.REQUEST.get('feed_id'))
     if feed.page_data:

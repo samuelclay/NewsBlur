@@ -1,4 +1,0 @@
-recursive-include compress/templates *.html
-include docs/*
-include AUTHORS
-include LICENSE

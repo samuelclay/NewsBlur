@@ -1,8 +1,0 @@
-.AppleDouble
-*.pyc
-:2e_*
-*.tmproj
-.*.swp
-build
-dist
-MANIFEST

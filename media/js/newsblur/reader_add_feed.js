@@ -129,6 +129,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 					} else {
                         // NEWSBLUR.log(['Success', data]);
 						NEWSBLUR.reader.load_feeds();
+						$.modal.close();
 					}
 				}
 			},
