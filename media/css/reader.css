@@ -11,6 +11,7 @@ body {
     text-decoration: none;
     list-style: none;
     font-family: 'Lucida Grande',Helvetica, Arial;
+    height: 100%;
 }
 
 a, a:active, a:hover, a:visited, button {
@@ -111,6 +112,22 @@ a img {
 
 .NB-login .NB-login-text a:hover {
     color: #0E1763;
+}
+
+/* ================ */
+/* = Content Pane = */
+/* ================ */
+
+.content-pane {
+    display: none;
+}
+
+.left-pane {
+    display: none;
+}
+
+.right-pane {
+    display: none;
 }
 
 /* ============= */
@@ -244,6 +261,7 @@ a img {
     width: 100%;
     overflow-y: scroll;
     font-size: 11px;
+    display: none;
 }
 
 #story_titles .wrapper {
@@ -847,17 +865,18 @@ form.opml_import_form input {
 /* =============== */
 
 #NB-splash {
-    width: 100%;   
     height: 100%;
-    z-index: 100;
-    position: relative;
-    background-color: white;
+    width: 100%;
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #NB-splash .NB-splash-title {
     position: absolute;
     bottom: 0;
-    margin: 0 auto;
+    margin-left: 244px;
     height: 100px;
     width: 600px;
     background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 -200px;

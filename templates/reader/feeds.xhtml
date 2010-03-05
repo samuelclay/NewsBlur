@@ -24,40 +24,6 @@
 
 <div class="right-pane">
     
-    <div id="NB-splash">
-      {% if user.is_authenticated %}
-        <div class="NB-user">
-          Welcome, {{ user.username}}.
-          (<a href="{% url logout %}?next=/">Logout</a>)
-        </div>
-      {% endif %}
-      {% if not user.is_authenticated %}
-      <div class="NB-login">
-        {% if form.errors %}
-        <p>{{ form.errors }}</p>
-        {% endif %}
-        <div class="NB-login-label">Want an account?</div>
-        <div class="NB-login-text">Talk to <a href="http://twitter.com/samuelclay">@samuelclay</a>.</div>
-        
-        <form method="post" action="{% url login %}">
-          <div>
-            {{ form.username.label_tag }}
-            {{ form.username }}
-          </div>
-          <div>
-            {{ form.password.label_tag }}
-            {{ form.password }}
-          </div>
-
-          <input type="submit" value="login" />
-          <input type="hidden" name="next" value="/" />
-        </form>
-      </div>
-      {% endif %}
-        {# <div class="NB-splash-image"></div> #}
-        <div class="NB-splash-title"></div>
-    </div>
-    
     <div id="story_titles" class="right-north"></div>
 
     <div class="content-pane">
@@ -87,8 +53,39 @@
     
 </div>
 
-{# {% url apps.opml_import.views.opml_import %} #}
+<div id="NB-splash">
+  {% if user.is_authenticated %}
+    <div class="NB-user">
+      Welcome, {{ user.username}}.
+      (<a href="{% url logout %}?next=/">Logout</a>)
+    </div>
+  {% endif %}
+  {% if not user.is_authenticated %}
+  <div class="NB-login">
+    {% if form.errors %}
+    <p>{{ form.errors }}</p>
+    {% endif %}
+    <div class="NB-login-label">Want an account?</div>
+    <div class="NB-login-text">Talk to <a href="http://twitter.com/samuelclay">@samuelclay</a>.</div>
+    
+    <form method="post" action="{% url login %}">
+      <div>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+      </div>
+      <div>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+      </div>
 
+      <input type="submit" value="login" />
+      <input type="hidden" name="next" value="/" />
+    </form>
+  </div>
+  {% endif %}
+    {# <div class="NB-splash-image"></div> #}
+    <div class="NB-splash-title"></div>
+</div>
 
 
 {% endblock %}

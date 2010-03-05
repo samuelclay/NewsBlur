@@ -153,6 +153,8 @@
     			spacing_open:           0,
     			resizerDragOpacity:     0.6
     		}); 
+    		
+    		$('.right-pane').hide();
         },
         
         resize_story_content_pane: function() {
@@ -226,7 +228,9 @@
         },
         
         hide_splash_page: function() {
+            $('.right-pane').show();
             $('#NB-splash').hide();
+            $('#NB-splash-overlay').hide();
         },
         
         // ==============
@@ -415,7 +419,7 @@
                                            ? "unread_count_full"
                                            : "unread_count_empty")
                         }, ''+feed.unread_count_negative)
-                    ]),
+                    ])
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, feed.feed_title)
