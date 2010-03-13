@@ -6,7 +6,7 @@
     <div class="left-center" id="feed_list"></div>
     
     <div class="NB-taskbar left-south">
-    	<ul class="taskbar_nav taskbar_nav_left">
+    	<ul class="taskbar_nav taskbar_nav_feeds">
     		<li class="task_button task_button_menu task_add NB-task-add">
     		</li>
     	</ul>
@@ -28,17 +28,29 @@
 
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar content-north">
-        	<ul class="taskbar_nav taskbar_nav_left">
-    			<li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
-            <div class="NB-task-view-page-to-feed-arrow"></div>
-          </li>
-	    		<li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
-        	</ul>
+          <ul class="taskbar_nav taskbar_nav_view">
+            <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
+              <div class="NB-task-view-page-to-feed-arrow"></div>
+            </li>
+            <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
+            <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
+          </ul>
 
-        	<ul class="taskbar_nav taskbar_nav_return">
-    			<li class="task_button task_return"><span class="NB-task-title">Return to <span class="NB-task-return-feed">Page</span></span></li>
-        	</ul>
-    	
+          <ul class="taskbar_nav taskbar_nav_return">
+            <li class="task_button task_return">
+              <span class="NB-task-title">
+                <div>Return to</div>
+                <div>Original</div>
+              </span>
+            </li>
+          </ul>
+
+          <ul class="taskbar_nav taskbar_nav_story first">
+            <li class="task_button task_button_story task_story_previous">
+            </li>
+            <li class="task_button task_button_story task_story_next task_story_next_positive"><span class="NB-task-title">Next Story</span></li>
+          </ul>
+        	
         </div>
     
         <div id="story_pane" class="content-center">

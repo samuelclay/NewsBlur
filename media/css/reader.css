@@ -134,6 +134,15 @@ a img {
 /* = Feed List = */
 /* ============= */
 
+
+#feed_list ::-moz-selection {
+background: transparent;
+} 
+
+#feed_list ::selection {
+background: transparent;
+}
+
 #feed_list {
     background-color: #D7DDE6;
     overflow-y: auto;
@@ -251,6 +260,15 @@ a img {
 /* ================ */
 /* = Story Titles = */
 /* ================ */
+
+
+#story_titles ::-moz-selection {
+background: transparent;
+} 
+
+#story_titles ::selection {
+background: transparent;
+}
 
 #story_titles {
     z-index: 10;
@@ -665,7 +683,12 @@ a img {
     display: inline;
 }
 
-.NB-taskbar .taskbar_nav_left {
+.NB-taskbar .taskbar_nav.first {
+    border-left: 1px solid #828282;
+}
+
+.NB-taskbar .taskbar_nav_feeds,
+.NB-taskbar .taskbar_nav_view, {
     float: left;
 }
 
@@ -728,9 +751,23 @@ a img {
     background: transparent url('../img/icons/silk/user.png') no-repeat center 8px;
 }
 
+.NB-taskbar .taskbar_nav_story {
+  right: 61px;
+  width: 200px;
+  position: absolute;
+}
+
 /* =================== */
 /* = Taskbar - Story = */
 /* =================== */
+
+.NB-taskbar ::-moz-selection {
+background: transparent;
+} 
+
+.NB-taskbar ::selection {
+background: transparent;
+}
 
 #story_taskbar {
     display: none;
@@ -740,15 +777,38 @@ a img {
     padding: 7px 0 0 0;
     display: block;
     cursor: pointer;
+    text-transform: uppercase;
+    color: #204046;
+    text-shadow: 0px 1px 1px #D0D0D0;
 }
 .NB-taskbar .task_button.task_view_page {
     position: relative;
     cursor: pointer;
-    background: transparent url('../img/icons/silk/application_view_tile.png') no-repeat 8px 8px;
+    background: transparent url('../img/icons/silk/application_view_tile.png') no-repeat 8px center;
 }
 .NB-taskbar .task_button.task_view_feed {
     cursor: pointer;
-    background: transparent url('../img/icons/silk/application_view_columns.png') no-repeat 8px 8px;
+    background: transparent url('../img/icons/silk/application_view_columns.png') no-repeat 8px center;
+}
+.NB-taskbar .task_button.task_view_story {
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/application_cascade.png') no-repeat 8px center;
+}
+.NB-taskbar .task_button.task_story_next_positive {
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 8px center;
+}
+.NB-taskbar .task_button.task_story_next_neutral {
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 8px center;
+}
+.NB-taskbar .task_button.task_story_next_negative {
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 8px center;
+}
+.NB-taskbar .task_button.task_story_previous {
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/arrow_up.png') no-repeat center center;
 }
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
@@ -761,7 +821,10 @@ a img {
     cursor: pointer;
     display: none;
     background: transparent url('../img/icons/silk/arrow_undo.png') no-repeat 8px 8px;
+    padding-top: 2px;
+    font-size: 12px;
 }
+
 
 /* ================ */
 /* = Modal Dialog = */
