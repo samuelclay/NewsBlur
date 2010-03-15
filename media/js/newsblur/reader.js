@@ -457,6 +457,7 @@
             this.hide_splash_page();
             this.$story_titles.data('page', 0);
             this.$story_titles.data('feed_id', feed_id);
+            $('.NB-task-manage').removeClass('NB-inactive');
             
             this.show_feed_title_in_stories($story_titles, feed_id);
             this.mark_feed_as_selected(feed_id, $feed_link);
@@ -1328,7 +1329,13 @@
             
             $.targetIs(e, { tagSelector: '.NB-task-add' }, function($t, $p){
                 e.preventDefault();
-                self.open_add_modal();
+                self.open_add_feed_modal();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-task-manage' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-inactive')) {
+                    self.open_manage_feed_modal();
+                }
             });  
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
                 e.preventDefault();
@@ -1438,10 +1445,16 @@
         // = Bottom Task Bar =
         // ===================
         
-        open_add_modal: function() {
+        open_add_feed_modal: function() {
             var feed_id = this.active_feed;
             
             NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
+        },
+        
+        open_manage_feed_modal: function() {
+            var feed_id = this.active_feed;
+            
+            NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
         },
         
         // ================

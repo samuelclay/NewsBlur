@@ -207,10 +207,22 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         );
     },
     
-    get_feed: function(feed_id, callback) {
+    get_feed: function(feed_id) {
         var self = this;
         
         return this.feeds[feed_id];
+    },
+    
+    get_feeds: function() {
+        var self = this;
+        
+        return this.feeds;
+    },
+    
+    get_folders: function() {
+        var self = this;
+        
+        return this.folders;
     },
     
     get_feed_tags: function() {

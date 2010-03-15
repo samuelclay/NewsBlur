@@ -628,6 +628,7 @@ background: transparent;
 #story_pane .NB-feed-stories .NB-feed-story {
     padding: 3px 0 0 0;
     margin: 0;
+    clear: both;
 }
 
 #story_pane .NB-feed-stories.NB-feed-view-story .NB-feed-story {
@@ -747,9 +748,15 @@ background: transparent;
     color: #405090;
 }
 
+.NB-taskbar .task_button {
+    cursor: pointer;
+}
 
-.NB-taskbar .task_button.task_add {
+.NB-taskbar .task_button.NB-task-add {
     background: transparent url('../img/icons/silk/add.png') no-repeat center 8px;
+}
+.NB-taskbar .task_button.NB-task-manage {
+    background: transparent url('../img/icons/silk/wrench.png') no-repeat center 8px;
 }
 .NB-taskbar .task_button.task_profile {
     background: transparent url('../img/icons/silk/user.png') no-repeat center 8px;
@@ -817,8 +824,8 @@ background: transparent;
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
 }
-.NB-taskbar .task_button_view.NB-inactive {
-    opacity: .15;
+.NB-taskbar .NB-inactive {
+    opacity: .3;
 }
 
 .NB-taskbar .task_button.task_return {
@@ -847,6 +854,8 @@ background: transparent;
     width: 500px;
     background-color: white;
     padding: 8px;
+    -moz-box-shadow: 3px 3px 5px #505050;
+    -webkit-box-shadow: 3px 3px 5px #505050;
 }
 
 /* ==================== */
@@ -1007,6 +1016,8 @@ form.opml_import_form input {
 
 .NB-modal .NB-modal-title {
     font-weight: bold;
+    color: #303030;
+    text-shadow: 1px 1px 0px #e0e0e0;
 }
 
 .NB-disabled {
@@ -1138,4 +1149,25 @@ form.opml_import_form input {
 }
 
 .NB-intelligence-slider {
+}
+
+/* ================ */
+/* = Manage Feeds = */
+/* ================ */
+
+.NB-manage .NB-manage-feed-chooser-container {
+    float: right;
+    width: 300px;
+}
+
+.NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser-previous {
+    float: left;
+}
+
+.NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser-next {
+    float: right;
+}
+
+.NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser {
+    width: 250px;
 }

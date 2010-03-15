@@ -157,6 +157,6 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             self.model.process_opml_import($form.serialize(), callback);
             return false;
         });
-    },
+    }
     
 };
