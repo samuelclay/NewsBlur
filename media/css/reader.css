@@ -426,7 +426,7 @@ background: transparent;
 
 #story_titles .NB-story-sentiment {
     position: absolute;
-    width: 24px;
+    width: 22px;
     height: 16px;
     top: 2px;
     display: none;
@@ -437,13 +437,13 @@ background: transparent;
 }
 
 #story_titles .NB-story-like {
-    left: 24px;
-    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+    left: 22px;
+    background: transparent url('../img/reader/thumbs-up.png') no-repeat 2px 0;
 }
 
 #story_titles .NB-story-dislike {
-    left: 4px;
-    background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 -4px;
+    left: 0px;
+    background: transparent url('../img/reader/thumbs-down.png') no-repeat 4px -4px;
 }
 
 #story_titles .story.read {
@@ -978,6 +978,17 @@ form.opml_import_form input {
     padding: 12px;
 }
 
+.NB-modal .NB-modal-loading {
+    width: 16px;
+    height: 16px;
+    float: right;
+    background: none;
+}
+
+.NB-modal .NB-modal-loading.NB-active {
+    background: transparent url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
+}
+
 .NB-modal h2 {
     margin: 0;
     padding: 0;
@@ -986,7 +997,7 @@ form.opml_import_form input {
 
 .NB-modal h5 {
     border-bottom: 1px solid #A0A0A0;
-    padding: 16px 0 0px;
+    padding: 18px 0 0px;
     margin: 0 0 6px 0;
     color: #808080;
     text-transform: uppercase;
@@ -1155,17 +1166,18 @@ form.opml_import_form input {
 /* = Manage Feeds = */
 /* ================ */
 
+.NB-manage .NB-manage-field {
+}
+
+.NB-manage .NB-manage-container {
+    height: 300px;
+    overflow-y: auto;
+    padding: 0 18px 18px 0;
+}
+
 .NB-manage .NB-manage-feed-chooser-container {
     float: right;
-    width: 300px;
-}
-
-.NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser-previous {
-    float: left;
-}
-
-.NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser-next {
-    float: right;
+    margin: 16px 0 0;
 }
 
 .NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser {

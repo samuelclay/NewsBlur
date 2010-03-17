@@ -7,41 +7,62 @@ NEWSBLUR.ReaderManageFeed = function(feed_id, options) {
     this.feed = this.model.get_feed(feed_id);
     this.feeds = this.model.get_feeds();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
-    this.runner();
+    this.runner(feed_id);
 };
 
 NEWSBLUR.ReaderManageFeed.prototype = {
     
     runner: function() {
         this.make_modal();
+        this.initialize_feed(this.feed_id);
         this.handle_cancel();
         this.open_modal();
+        this.load_feed_classifier();
+        
+        this.$manage.bind('change', $.rescope(this.handle_change, this));
+    },
+    
+    initialize_feed: function(feed_id) {
+        this.feed_id = feed_id;
+        this.feed = this.model.get_feed(feed_id);
+        $('.NB-modal-title', this.$manage).html(this.feed['feed_title']);
+        $('input[name=feed_id]', this.$manage).val(this.feed_id);
+        $('input[name=rename_title]', this.$manage).val(this.feed['feed_title']);
     },
     
     make_modal: function() {
         var self = this;
         
         this.$manage = $.make('div', { className: 'NB-manage NB-modal' }, [
-            $.make('div', { className: 'NB-manage-feed-chooser-container'}, [
-                $.make('a', { href: '#', className: 'NB-manage-feed-chooser-next' }, '&raquo;'),
-                $.make('a', { href: '#', className: 'NB-manage-feed-chooser-previous' }, '&laquo;'),
-                this.make_feed_chooser()
-            ]),
-            $.make('h2', { className: 'NB-modal-title' }, this.feed['feed_title']),
             $.make('form', { method: 'post', className: 'NB-manage-form' }, [
-                $.make('div', { className: 'NB-manage-field' }, [
-                    $.make('h5', [
-                        'What you ',
-                        $.make('span', { className: 'NB-classifier-like' }, 'like')
-                    ]),
-                    $.make('h5', [
-                        'What you ',
-                        $.make('span', { className: 'NB-classifier-like' }, 'dislike')
-                    ]),
-                    $.make('h5', 'Management')
+                $.make('div', { className: 'NB-manage-container'}, [
+                    $.make('div', { className: 'NB-modal-loading' }),
+                    $.make('h2', { className: 'NB-modal-title' }),
+                    $.make('div', { className: 'NB-manage-field' }, [
+                        $.make('h5', [
+                            'What you ',
+                            $.make('span', { className: 'NB-classifier-like' }, 'like')
+                        ]),
+                        $.make('div', { className: 'NB-manage-classifier-likes' }),
+                        $.make('h5', [
+                            'What you ',
+                            $.make('span', { className: 'NB-classifier-like' }, 'dislike')
+                        ]),
+                        $.make('div', { className: 'NB-manage-classifier-dislikes' }),
+                        $.make('h5', 'Management'),
+                        $.make('div', { className: 'NB-manage-management' }, [
+                            $.make('label', { className: 'NB-manage-rename-label', 'for': 'id_rename' }, "Title: "),
+                            $.make('input', { name: 'rename_title', id: 'id_rename' }),
+                            $.make('a', { className: 'NB-manage-delete'}, "Rename feed"),
+                            $.make('a', { className: 'NB-manage-delete'}, "Delete this feed")
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-manage-feed-chooser-container'}, [
+                    this.make_feed_chooser()
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
+                    $.make('input', { name: 'feed_id', type: 'hidden' }),
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
@@ -71,7 +92,19 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         $('option', $chooser).tsort();
         return $chooser;
     },
+    
+    load_feed_classifier: function() {
+        var $loading = $('.NB-modal-loading', this.$manage);
+        $loading.addClass('NB-active');
         
+        this.model.get_feed_classifier(this.feed_id, this.post_load_feed_classifier);
+    },
+    
+    post_load_feed_classifier: function(classifiers) {
+        var $loading = $('.NB-modal-loading', this.$manage);
+        $loading.removeClass('NB-active');
+    },
+    
     open_modal: function() {
         var self = this;
 
@@ -128,6 +161,16 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         this.model.save_classifier_publisher(data, function() {
             $.modal.close();
         });
+    },
+
+    handle_change: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-manage-feed-chooser' }, function($t, $p){
+            var feed_id = $t.val();
+            self.initialize_feed(feed_id);
+            self.load_feed_classifier();
+        });
+        
     }
-    
 };

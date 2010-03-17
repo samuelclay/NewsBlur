@@ -255,6 +255,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     save_classifier_publisher: function(data, callback) {
         this.make_request('/classifier/save/publisher', data, callback);
+    },
+    
+    get_feed_classifier: function(feed_id, callback) {
+        this.make_request('/classifier/get/publisher/', {
+            'feed_id': feed_id
+        }, callback, null, {
+            'ajax_group': 'feed'
+        });
     }
     
 };

@@ -103,3 +103,25 @@ def save_classifier_publisher(request):
     
     response = dict(code=code, message=message, payload=payload)
     return response
+    
+@json.json_view
+def get_classifiers_feed(request):
+    feed = request.POST['feed_id']
+    user = get_user(request)
+    code = 0
+    
+    classifier_feeds = ClassifierFeed.objects.filter(user=user, feed=feed)
+    classifier_authors = ClassifierAuthor.objects.filter(user=user, feed=feed)
+    classifier_titles = ClassifierTitle.objects.filter(user=user, feed=feed)
+    classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
+    
+    payload = {
+        'feeds': classifier_feeds,
+        'authors': dict([(a.author.pk, a.author.author_name) for a in classifier_authors]),
+        'titles': [t.title for t in classifier_titles],
+        'tags': dict([(t.tag.pk, t.tag.name) for t in classifier_tags]),
+    }
+    
+    response = dict(code=code, payload=payload)
+    
+    return response

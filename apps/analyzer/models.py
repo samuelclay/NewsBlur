@@ -97,7 +97,7 @@ def apply_classifier_feeds(classifiers, feed):
     
 def apply_classifier_authors(classifiers, story):
     for classifier in classifiers:
-        if classifier.author.id == story['story_author_id']:
+        if classifier.author.author_name in story.get('story_authors'):
             # print 'Authors: %s -- %s' % (classifier.author.id, story['story_author_id'])
             return classifier.score
     return 0
