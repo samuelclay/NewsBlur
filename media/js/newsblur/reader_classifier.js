@@ -75,9 +75,10 @@ var classifier = {
         if (this.feed_tags) {
             for (var t in this.feed_tags) {
                 var tag = this.feed_tags[t];
+                var checked = (tag[0] in this.model.classifiers.tags) ? 'checked' : 'false';
                 var $tag = $.make('span', { className: 'NB-classifier-tag-container' }, [
                     $.make('span', { className: 'NB-classifier-tag' }, [
-                        $.make('input', { type: 'checkbox', name: 'tag', value: tag[0], id: 'classifier_tag_'+t }),
+                        $.make('input', { type: 'checkbox', name: 'tag', value: tag[0], id: 'classifier_tag_'+t, checked: checked }),
                         $.make('label', { 'for': 'classifier_tag_'+t }, [
                             $.make('b', tag[0])
                         ])
@@ -138,21 +139,35 @@ var classifier = {
         var story = this.story;
         var feed = this.feed;
         var $story_tags = [];
+        var $story_author;
         
         // HTML entities decoding.
         story.story_title = $('<div/>').html(story.story_title).text();
 
         for (var t in story.story_tags) {
             var tag = story.story_tags[t];
+            var input_attrs = { type: 'checkbox', name: 'tag', value: tag, id: 'classifier_tag_'+t };
+            NEWSBLUR.log(['input_attrs', input_attrs, tag, this.model.classifiers.tags]);
+            if (tag in this.model.classifiers.tags && this.model.classifiers.tags[tag] == this.score) {
+                input_attrs['checked'] = 'checked';
+            }
             var $tag = $.make('span', { className: 'NB-classifier-tag-container' }, [
                 $.make('span', { className: 'NB-classifier-tag' }, [
-                    $.make('input', { type: 'checkbox', name: 'tag', value: tag, id: 'classifier_tag_'+t }),
+                    $.make('input', input_attrs),
                     $.make('label', { 'for': 'classifier_tag_'+t }, [
                         $.make('b', tag)
                     ])
                 ])
             ]);
             $story_tags.push($tag);
+        }
+        
+        if (story.story_authors) {
+            var input_attrs = { type: 'checkbox', name: 'author', value: story.story_authors, id: 'classifier_author' };
+            if (story.story_authors in this.model.classifiers.authors && this.model.classifiers.authors[story.story_authors] == this.score) {
+                input_attrs['checked'] = 'checked';
+            }
+            $story_author = $.make('input', input_attrs);
         }
         
         this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
@@ -172,7 +187,7 @@ var classifier = {
                 ])),
                 (story.story_authors && $.make('div', { className: 'NB-modal-field' }, [
                     $.make('h5', 'Story Author'),
-                    $.make('input', { type: 'checkbox', name: 'facet', value: 'author', id: 'classifier_author' }),
+                    $story_author,
                     $.make('label', { 'for': 'classifier_author' }, [
                         $.make('b', story.story_authors)
                     ])
@@ -230,8 +245,8 @@ var classifier = {
 	            });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corners('6px').css({'width': 600, 'height': height});
-                $('.NB-classifier-tag', self.$classifier).corners('4px');
+                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                $('.NB-classifier-tag', self.$classifier).corner('4px');
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();
@@ -309,6 +324,12 @@ var classifier = {
         return data;
     },
     
+    serialize_classifier_array: function() {
+        var data = $('.NB-classifier form input').serializeArray();
+        
+        return data;
+    },
+    
     save_publisher: function() {
         var $save = $('.NB-classifier input[type=submit]');
         var story_id = this.story_id;
@@ -324,6 +345,21 @@ var classifier = {
         var $save = $('.NB-classifier input[type=submit]');
         var story_id = this.story_id;
         var data = this.serialize_classifier();
+        var classifiers = this.serialize_classifier_array();
+        
+        for (var c in classifiers) {
+            var classifier = classifiers[c];
+            if (!classifier) continue;
+            if (classifier['name'] == 'tag') {
+                this.model.classifiers.tags[classifier['value']] = this.score;
+            } else if (classifier['name'] == 'title') {
+                this.model.classifiers.titles[classifier['value']] = this.score;
+            } else if (classifier['name'] == 'author') {
+                this.model.classifiers.authors[classifier['value']] = this.score;
+            } else if (classifier['name'] == 'facet' && classifier['value'] == 'publisher') {
+                this.model.classifiers.feeds[this.feed_id] = this.score;
+            }
+        }
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_story(story_id, data, function() {

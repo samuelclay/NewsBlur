@@ -61,7 +61,7 @@
             
             for (var t in story.story_tags) {
                 var tag = story.story_tags[t];
-                var $tag = $.make('span', { className: 'NB-storytitles-tag'}, tag).corners('4px');
+                var $tag = $.make('span', { className: 'NB-storytitles-tag'}, tag).corner('4px');
                 $story_tags.append($tag);
                 break;
             }
@@ -187,7 +187,7 @@
         },
         
         cornerize_buttons: function() {
-            $('.button').corners();
+            $('.button').corner();
         },
         
         handle_keystrokes: function() {      
@@ -358,7 +358,7 @@
             // NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
             var $folder = this.make_feeds_folder(folders);
             $feed_list.append($folder);
-            $('.unread_count', $feed_list).corners('4px');
+            $('.unread_count', $feed_list).corner('4px');
         },
         
         make_feeds_folder: function(items) {
@@ -786,7 +786,7 @@
             });
             
             $story_titles.prepend($feedbar);
-            $('.unread_count', $feedbar).corners('4px');
+            $('.unread_count', $feedbar).corner('4px');
         },
         
         open_feed_link: function(feed_id, $fd) {

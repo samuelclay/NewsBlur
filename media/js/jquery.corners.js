@@ -1,405 +1,239 @@
 /*!
- * jQuery Corners 0.3
- * Copyright (c) 2008 David Turnbull, Steven Wittens
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * jQuery corner plugin: simple corner rounding
+ * Examples and documentation at: http://jquery.malsup.com/corner/
+ * version 2.09 (11-MAR-2010)
+ * Requires jQuery v1.3.2 or later
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl.html
+ * Authors: Dave Methvin and Mike Alsup
  */
 
-jQuery.fn.corners = function(options) {
-  var doneClass = 'rounded_by_jQuery_corners'; /* To prevent double rounding */
-  var settings = parseOptions(options);
-  var webkitAvailable = false;
-  try {
-    webkitAvailable = (document.body.style.WebkitBorderRadius !== undefined);
-    /* Google Chrome corners look awful */
-    var versionIndex = navigator.userAgent.indexOf('Chrome');
-    if (versionIndex >= 0) webkitAvailable = false;
-  } catch(err) {}
-  var mozillaAvailable = false;
-  try {
-    mozillaAvailable = (document.body.style.MozBorderRadius !== undefined);
-    /* Firefox 2 corners look worse */
-    var versionIndex = navigator.userAgent.indexOf('Firefox');
-    if (versionIndex >= 0 && parseInt(navigator.userAgent.substring(versionIndex+8)) < 3) mozillaAvailable = false;
-  } catch(err) {}
-  return this.each(function(i,e){
-    $e = jQuery(e);
-    if ($e.hasClass(doneClass)) return;
-    $e.addClass(doneClass);
-    var classScan = /{(.*)}/.exec(e.className);
-    var s = classScan ? parseOptions(classScan[1], settings) : settings;
-    var nodeName = e.nodeName.toLowerCase();
-    if (nodeName=='input') e = changeInput(e);
-    if (webkitAvailable && s.webkit) roundWebkit(e, s);
-    else if(mozillaAvailable && s.mozilla && (s.sizex == s.sizey)) roundMozilla(e, s);
-    else {
-      var bgColor = backgroundColor(e.parentNode);
-      var fgColor = backgroundColor(e);
-      switch (nodeName) {
-        case 'a':
-        case 'input':
-          roundLink(e, s, bgColor, fgColor);
-          break;
-        default:
-          roundDiv(e, s, bgColor, fgColor);
-          break;
-      }
-    }
-  });
-  
-  function roundWebkit(e, s) {
-    var radius = '' + s.sizex + 'px ' + s.sizey + 'px';
-    var $e = jQuery(e);
-    if (s.tl) $e.css('WebkitBorderTopLeftRadius', radius);
-    if (s.tr) $e.css('WebkitBorderTopRightRadius', radius);
-    if (s.bl) $e.css('WebkitBorderBottomLeftRadius', radius);
-    if (s.br) $e.css('WebkitBorderBottomRightRadius', radius);
-  }
-  
-  function roundMozilla(e, s)
-  {  
-    var radius = '' + s.sizex + 'px';
-    var $e = jQuery(e);
-    if (s.tl) $e.css('-moz-border-radius-topleft', radius);
-    if (s.tr) $e.css('-moz-border-radius-topright', radius);
-    if (s.bl) $e.css('-moz-border-radius-bottomleft', radius);
-    if (s.br) $e.css('-moz-border-radius-bottomright', radius);  
-  }
-  
-  function roundLink(e, s, bgColor, fgColor) {
-    var table = tableElement("table");
-    var tbody = tableElement("tbody");
-    table.appendChild(tbody);
-    var tr1 = tableElement("tr");
-    var td1 = tableElement("td", "top");
-    tr1.appendChild(td1);
-    var tr2 = tableElement("tr");
-    var td2 = relocateContent(e, s, tableElement("td"));
-    tr2.appendChild(td2);
-    var tr3 = tableElement("tr");
-    var td3 = tableElement("td", "bottom");
-    tr3.appendChild(td3);
-    if (s.tl||s.tr) {
-      tbody.appendChild(tr1);
-      addCorners(td1, s, bgColor, fgColor, true);
-    }
-    tbody.appendChild(tr2);
-    if (s.bl||s.br) {
-      tbody.appendChild(tr3);
-      addCorners(td3, s, bgColor, fgColor, false);
-    }
-    e.appendChild(table);
-    /* Clicking on $('a>table') in IE will trigger onclick but not the href  */
-    if (jQuery.browser.msie) table.onclick = ieLinkBypass;
-    /* Firefox 2 will render garbage unless we hide the overflow here */
-    e.style.overflow = 'hidden';
-  }
-  
-  function ieLinkBypass() {
-    if (!this.parentNode.onclick) this.parentNode.click();
-  }
-  
-  function changeInput(e) {
-    var a1 = document.createElement("a");
-    a1.id = e.id;
-    a1.className = e.className;
-    if (e.onclick) {
-      a1.href = 'javascript:'
-      a1.onclick = e.onclick;
-    } else {
-      jQuery(e).parent('form').each(function() {a1.href = this.action;});
-      a1.onclick = submitForm;
-    }
-    var a2 = document.createTextNode(e.value);
-    a1.appendChild(a2);
-    e.parentNode.replaceChild(a1, e);
-    return a1;
-  }
+/**
+ *  corner() takes a single string argument:  $('#myDiv').corner("effect corners width")
+ *
+ *  effect:  name of the effect to apply, such as round, bevel, notch, bite, etc (default is round). 
+ *  corners: one or more of: top, bottom, tr, tl, br, or bl.  (default is all corners)
+ *  width:   width of the effect; in the case of rounded corners this is the radius. 
+ *           specify this value using the px suffix such as 10px (yes, it must be pixels).
+ */
+;(function($) { 
 
-  function submitForm() {
-    jQuery(this).parent('form').each(function() {this.submit()});
-    return false;
-  }
+var style = document.createElement('div').style;
+var moz = style['MozBorderRadius'] !== undefined;
+var webkit = style['WebkitBorderRadius'] !== undefined;
+var radius = style['borderRadius'] !== undefined || style['BorderRadius'] !== undefined;
+var mode = document.documentMode || 0;
+var noBottomFold = $.browser.msie && (($.browser.version < 8 && !mode) || mode < 8);
 
-  function roundDiv(e, s, bgColor, fgColor) {
-    var div = relocateContent(e, s, document.createElement('div'));
-    e.appendChild(div);
-    if (s.tl||s.tr) addCorners(e, s, bgColor, fgColor, true);
-    if (s.bl||s.br) addCorners(e, s, bgColor, fgColor, false);
-  }
-  
-  function relocateContent(e, s, d) {
-    var $e = jQuery(e);
-    var c;
-    while(c=e.firstChild) d.appendChild(c);
-    if (e.style.height) {
-      var h = parseInt($e.css('height'));
-      d.style.height = h + 'px';
-      h += parseInt($e.css('padding-top')) + parseInt($e.css('padding-bottom'));
-      e.style.height = h + 'px';
-    }
-    if (e.style.width) {
-      var w = parseInt($e.css('width'));
-      d.style.width = w + 'px';
-      w += parseInt($e.css('padding-left')) + parseInt($e.css('padding-right'));
-      e.style.width = w + 'px';
-    }
-    d.style.paddingLeft = $e.css('padding-left');
-    d.style.paddingRight = $e.css('padding-right');
-    if (s.tl||s.tr) {
-      d.style.paddingTop = adjustedPadding(e, s, $e.css('padding-top'), true);
-    } else {
-      d.style.paddingTop = $e.css('padding-top');
-    }
-    if (s.bl||s.br) {
-      d.style.paddingBottom = adjustedPadding(e, s, $e.css('padding-bottom'), false);
-    } else {
-      d.style.paddingBottom = $e.css('padding-bottom');
-    }
-    e.style.padding = 0;
-    return d;
-  }
-  
-  function adjustedPadding(e, s, pad, top) {
-    if (pad.indexOf("px") < 0) {
-      try {
-        //TODO Make this check work otherwise remove it
-        console.error('%s padding not in pixels', (top ? 'top' : 'bottom'), e);
-      }
-      catch(err) {}
-      pad = s.sizey + 'px';
-    }
-    pad = parseInt(pad);
-    if (pad - s.sizey < 0) {
-      try {
-        console.error('%s padding is %ipx for %ipx corner:', (top ? 'top' : 'bottom'), pad, s.sizey, e);
-      }
-      catch(err) {}
-      pad = s.sizey;
-    }
-    return pad - s.sizey + 'px';
-  }
-
-  function tableElement(kind, valign) {
-    var e = document.createElement(kind)
-    e.style.border = 'none';
-    e.style.borderCollapse = 'collapse';
-    e.style.borderSpacing = 0;
-    e.style.padding = 0;
-    e.style.margin = 0;
-    if (valign) e.style.verticalAlign = valign;
-    return e;
-  }
-  
-  function backgroundColor(e) {
-    try {
-      var c = jQuery.css(e, "background-color");
-      if ( c.match(/^(transparent|rgba\(0,\s*0,\s*0,\s*0\))$/i) && e.parentNode )
-         return backgroundColor(e.parentNode);
-      if (c==null)
-        return "#ffffff";
-      if (c.indexOf("rgb") > -1)
-    	  c = rgb2hex(c);
-      if (c.length == 4)
-  	    c = hexShort2hex(c);
-      return c;
-    } catch(err) {
-      return "#ffffff";
-    }
-  }
-  
-  function hexShort2hex(c) {
-    return '#' +
-    c.substring(1,2) +
-    c.substring(1,2) +
-    c.substring(2,3) +
-    c.substring(2,3) +
-    c.substring(3,4) +
-    c.substring(3,4);
-  }
-
-  function rgb2hex(c) {
-  	var x = 255;
-  	var hex = '';
-  	var i;
-  	var regexp=/([0-9]+)[, ]+([0-9]+)[, ]+([0-9]+)/;
-  	var array=regexp.exec(c);
-  	for(i=1;i<4;i++) hex += ('0'+parseInt(array[i]).toString(16)).slice(-2);
-  	return '#'+hex;
-  }
-  
-  function parseOptions(options, settings) {
-    var options = options || '';
-    var s = {sizex:5, sizey:5, tl: false, tr: false, bl: false, br: false, webkit:true, mozilla: true, transparent:false};
-    if (settings) {
-      s.sizex = settings.sizex;
-      s.sizey = settings.sizey;
-      s.webkit = settings.webkit;
-      s.transparent = settings.transparent;
-      s.mozilla = settings.mozilla;
-    }
-    var sizex_set = false;
-    var corner_set = false;
-    jQuery.each(options.split(' '), function(idx, option) {
-      option = option.toLowerCase();
-      var i = parseInt(option);
-      if (i > 0 && option == i + 'px') {
-        s.sizey = i;
-        if (!sizex_set) s.sizex = i;
-        sizex_set = true;
-      } else switch (option) {
-        case 'no-native': s.webkit = s.mozilla = false; break;
-        case 'webkit': s.webkit = true; break;
-        case 'no-webkit': s.webkit = false; break;
-        case 'mozilla': s.mozilla = true; break;
-        case 'no-mozilla': s.mozilla = false; break;
-        case 'anti-alias': s.transparent = false; break;
-        case 'transparent': s.transparent = true; break;
-        case 'top': corner_set = s.tl = s.tr = true; break;
-        case 'right': corner_set = s.tr = s.br = true; break;
-        case 'bottom': corner_set = s.bl = s.br = true; break;
-        case 'left': corner_set = s.tl = s.bl = true; break;
-        case 'top-left': corner_set = s.tl = true; break;
-        case 'top-right': corner_set = s.tr = true; break;
-        case 'bottom-left': corner_set = s.bl = true; break;
-        case 'bottom-right': corner_set = s.br = true; break;
-      }
-    });
-    if (!corner_set) {
-      if (!settings) {
-        s.tl = s.tr = s.bl = s.br = true;
-      } else {
-        s.tl = settings.tl;
-        s.tr = settings.tr;
-        s.bl = settings.bl;
-        s.br = settings.br;
-      }
-    }
-    return s;
-  }
-  
-  function alphaBlend(a, b, alpha) {
-    var ca = Array(
-      parseInt('0x' + a.substring(1, 3)),
-      parseInt('0x' + a.substring(3, 5)),
-      parseInt('0x' + a.substring(5, 7))
-    );
-    var cb = Array(
-      parseInt('0x' + b.substring(1, 3)),
-      parseInt('0x' + b.substring(3, 5)),
-      parseInt('0x' + b.substring(5, 7))
-    );
-    r = '0' + Math.round(ca[0] + (cb[0] - ca[0])*alpha).toString(16);
-    g = '0' + Math.round(ca[1] + (cb[1] - ca[1])*alpha).toString(16);
-    b = '0' + Math.round(ca[2] + (cb[2] - ca[2])*alpha).toString(16);
-    return '#'
-      + r.substring(r.length - 2)
-      + g.substring(g.length - 2)
-      + b.substring(b.length - 2);
-  }
-
-  function addCorners(e, s, bgColor, fgColor, top) {
-    if (s.transparent) addTransparentCorners(e, s, bgColor, top);
-    else addAntiAliasedCorners(e, s, bgColor, fgColor, top);
-  }
-  
-  function addAntiAliasedCorners(e, s, bgColor, fgColor, top) {
-    var i, j;
-    var d = document.createElement("div");
-    d.style.fontSize = '1px';
-    d.style.backgroundColor = bgColor;
-    var lastarc = 0;
-    for (i = 1; i <= s.sizey; i++) {
-      var coverage, arc2, arc3;
-      // Find intersection of arc with bottom of pixel row
-      arc = Math.sqrt(1.0 - Math.pow(1.0 - i / s.sizey, 2)) * s.sizex;
-      // Calculate how many pixels are bg, fg and blended.
-      var n_bg = s.sizex - Math.ceil(arc);
-      var n_fg = Math.floor(lastarc);
-      var n_aa = s.sizex - n_bg - n_fg;
-      // Create pixel row wrapper
-      var x = document.createElement("div");
-      var y = d;
-      x.style.margin = "0px " + n_bg + "px";
-      x.style.height = '1px';
-      x.style.overflow = 'hidden';
-      // Create the pixel divs for a row (at least one)
-      for (j = 1; j <= n_aa; j++) {
-        // Calculate coverage per pixel (approximates arc within the pixel)
-        if (j == 1) {
-          if (j == n_aa) {
-            // Single pixel
-            coverage = ((arc + lastarc) * .5) - n_fg;
-          }
-          else {
-            // First in a run
-            arc2 = Math.sqrt(1.0 - Math.pow(1.0 - (n_bg + 1) / s.sizex, 2)) * s.sizey;
-            coverage = (arc2 - (s.sizey - i)) * (arc - n_fg - n_aa + 1) * .5;
-          }
-        }
-        else if (j == n_aa) {
-          // Last in a run
-          arc2 = Math.sqrt(1.0 - Math.pow((s.sizex - n_bg - j + 1) / s.sizex, 2)) * s.sizey;
-          coverage = 1.0 - (1.0 - (arc2 - (s.sizey - i))) * (1.0 - (lastarc - n_fg)) * .5;
-        }
-        else {
-          // Middle of a run
-          arc3 = Math.sqrt(1.0 - Math.pow((s.sizex - n_bg - j) / s.sizex, 2)) * s.sizey;
-          arc2 = Math.sqrt(1.0 - Math.pow((s.sizex - n_bg - j + 1) / s.sizex, 2)) * s.sizey;
-          coverage = ((arc2 + arc3) * .5) - (s.sizey - i);
-        }
-        
-        addCornerDiv(s, x, y, top, alphaBlend(bgColor, fgColor, coverage));
-        y = x;
-        var x = y.cloneNode(false);
-        x.style.margin = "0px 1px";
-      }
-      addCornerDiv(s, x, y, top, fgColor);
-      lastarc = arc;
-    }
-    if (top)
-      e.insertBefore(d, e.firstChild);
-    else
-      e.appendChild(d);
-  }
-  
-  function addCornerDiv(s, x, y, top, color) {
-    if (top && !s.tl) x.style.marginLeft = 0;
-    if (top && !s.tr) x.style.marginRight = 0;
-    if (!top && !s.bl) x.style.marginLeft = 0;
-    if (!top && !s.br) x.style.marginRight = 0;
-    x.style.backgroundColor = color;
-    if (top)
-      y.appendChild(x);
-    else
-      y.insertBefore(x, y.firstChild);
-  }
-
-  function addTransparentCorners(e, s, bgColor, top) {
-    var d = document.createElement("div");
-    d.style.fontSize = '1px';
-    var strip = document.createElement('div');
-    strip.style.overflow = 'hidden';
-    strip.style.height = '1px';
-    strip.style.borderColor = bgColor;
-    strip.style.borderStyle = 'none solid';
-    var sizex = s.sizex-1;
-    var sizey = s.sizey-1;
-    if (!sizey) sizey = 1; /* hint for 1x1 */
-    for (var i=0; i < s.sizey; i++) {
-      var w = sizex - Math.floor(Math.sqrt(1.0 - Math.pow(1.0 - i / sizey, 2)) * sizex);
-      if (i==2 && s.sizex==6 && s.sizey==6) w = 2; /* hint for 6x6 */
-      var x = strip.cloneNode(false);
-      x.style.borderWidth = '0 '+ w +'px';
-      if (top) x.style.borderWidth = '0 '+(s.tr?w:0)+'px 0 '+(s.tl?w:0)+'px';
-      else x.style.borderWidth = '0 '+(s.br?w:0)+'px 0 '+(s.bl?w:0)+'px';
-      top ? d.appendChild(x) : d.insertBefore(x, d.firstChild);
-    } 
-    if (top)
-      e.insertBefore(d, e.firstChild);
-    else
-      e.appendChild(d);
-  }
-
-
+var expr = $.browser.msie && (function() {
+    var div = document.createElement('div');
+    try { div.style.setExpression('width','0+0'); div.style.removeExpression('width'); }
+    catch(e) { return false; }
+    return true;
+})();
+    
+function sz(el, p) { 
+    return parseInt($.css(el,p))||0; 
 };
+function hex2(s) {
+    var s = parseInt(s).toString(16);
+    return ( s.length < 2 ) ? '0'+s : s;
+};
+function gpc(node) {
+    while(node) {
+        var v = $.css(node,'backgroundColor');
+        if (v && v != 'transparent' && v != 'rgba(0, 0, 0, 0)') {
+	        if (v.indexOf('rgb') >= 0) { 
+	            var rgb = v.match(/\d+/g); 
+	            return '#'+ hex2(rgb[0]) + hex2(rgb[1]) + hex2(rgb[2]);
+	        }
+            return v;
+		}
+		node = node.parentNode; // keep walking if transparent
+    }
+    return '#ffffff';
+};
+
+function getWidth(fx, i, width) {
+    switch(fx) {
+    case 'round':  return Math.round(width*(1-Math.cos(Math.asin(i/width))));
+    case 'cool':   return Math.round(width*(1+Math.cos(Math.asin(i/width))));
+    case 'sharp':  return Math.round(width*(1-Math.cos(Math.acos(i/width))));
+    case 'bite':   return Math.round(width*(Math.cos(Math.asin((width-i-1)/width))));
+    case 'slide':  return Math.round(width*(Math.atan2(i,width/i)));
+    case 'jut':    return Math.round(width*(Math.atan2(width,(width-i-1))));
+    case 'curl':   return Math.round(width*(Math.atan(i)));
+    case 'tear':   return Math.round(width*(Math.cos(i)));
+    case 'wicked': return Math.round(width*(Math.tan(i)));
+    case 'long':   return Math.round(width*(Math.sqrt(i)));
+    case 'sculpt': return Math.round(width*(Math.log((width-i-1),width)));
+	case 'dogfold':
+    case 'dog':    return (i&1) ? (i+1) : width;
+    case 'dog2':   return (i&2) ? (i+1) : width;
+    case 'dog3':   return (i&3) ? (i+1) : width;
+    case 'fray':   return (i%2)*width;
+    case 'notch':  return width; 
+	case 'bevelfold':
+    case 'bevel':  return i+1;
+    }
+};
+
+$.fn.corner = function(options) {
+    // in 1.3+ we can fix mistakes with the ready state
+	if (this.length == 0) {
+        if (!$.isReady && this.selector) {
+            var s = this.selector, c = this.context;
+            $(function() {
+                $(s,c).corner(options);
+            });
+        }
+        return this;
+	}
+
+    return this.each(function(index){
+		var $this = $(this);
+		// meta values override options
+		var o = [$this.attr($.fn.corner.defaults.metaAttr) || '', options || ''].join(' ').toLowerCase();
+		var keep = /keep/.test(o);                       // keep borders?
+		var cc = ((o.match(/cc:(#[0-9a-f]+)/)||[])[1]);  // corner color
+		var sc = ((o.match(/sc:(#[0-9a-f]+)/)||[])[1]);  // strip color
+		var width = parseInt((o.match(/(\d+)px/)||[])[1]) || 10; // corner width
+		var re = /round|bevelfold|bevel|notch|bite|cool|sharp|slide|jut|curl|tear|fray|wicked|sculpt|long|dog3|dog2|dogfold|dog/;
+		var fx = ((o.match(re)||['round'])[0]);
+		var fold = /dogfold|bevelfold/.test(o);
+		var edges = { T:0, B:1 };
+		var opts = {
+			TL:  /top|tl|left/.test(o),       TR:  /top|tr|right/.test(o),
+			BL:  /bottom|bl|left/.test(o),    BR:  /bottom|br|right/.test(o)
+		};
+		if ( !opts.TL && !opts.TR && !opts.BL && !opts.BR )
+			opts = { TL:1, TR:1, BL:1, BR:1 };
+			
+		// support native rounding
+		if ($.fn.corner.defaults.useNative && fx == 'round' && (radius || moz || webkit) && !cc && !sc) {
+			if (opts.TL)
+				$this.css(radius ? 'border-top-left-radius' : moz ? '-moz-border-radius-topleft' : '-webkit-border-top-left-radius', width + 'px');
+			if (opts.TR)
+				$this.css(radius ? 'border-top-right-radius' : moz ? '-moz-border-radius-topright' : '-webkit-border-top-right-radius', width + 'px');
+			if (opts.BL)
+				$this.css(radius ? 'border-bottom-left-radius' : moz ? '-moz-border-radius-bottomleft' : '-webkit-border-bottom-left-radius', width + 'px');
+			if (opts.BR)
+				$this.css(radius ? 'border-bottom-right-radius' : moz ? '-moz-border-radius-bottomright' : '-webkit-border-bottom-right-radius', width + 'px');
+			return;
+		}
+			
+		var strip = document.createElement('div');
+		$(strip).css({
+			overflow: 'hidden',
+			height: '1px',
+			minHeight: '1px',
+			fontSize: '1px',
+			backgroundColor: sc || 'transparent',
+			borderStyle: 'solid'
+		});
+	
+        var pad = {
+            T: parseInt($.css(this,'paddingTop'))||0,     R: parseInt($.css(this,'paddingRight'))||0,
+            B: parseInt($.css(this,'paddingBottom'))||0,  L: parseInt($.css(this,'paddingLeft'))||0
+        };
+
+        if (typeof this.style.zoom != undefined) this.style.zoom = 1; // force 'hasLayout' in IE
+        if (!keep) this.style.border = 'none';
+        strip.style.borderColor = cc || gpc(this.parentNode);
+        var cssHeight = $(this).outerHeight();
+
+        for (var j in edges) {
+            var bot = edges[j];
+            // only add stips if needed
+            if ((bot && (opts.BL || opts.BR)) || (!bot && (opts.TL || opts.TR))) {
+                strip.style.borderStyle = 'none '+(opts[j+'R']?'solid':'none')+' none '+(opts[j+'L']?'solid':'none');
+                var d = document.createElement('div');
+                $(d).addClass('jquery-corner');
+                var ds = d.style;
+
+                bot ? this.appendChild(d) : this.insertBefore(d, this.firstChild);
+
+                if (bot && cssHeight != 'auto') {
+                    if ($.css(this,'position') == 'static')
+                        this.style.position = 'relative';
+                    ds.position = 'absolute';
+                    ds.bottom = ds.left = ds.padding = ds.margin = '0';
+                    if (expr)
+                        ds.setExpression('width', 'this.parentNode.offsetWidth');
+                    else
+                        ds.width = '100%';
+                }
+                else if (!bot && $.browser.msie) {
+                    if ($.css(this,'position') == 'static')
+                        this.style.position = 'relative';
+                    ds.position = 'absolute';
+                    ds.top = ds.left = ds.right = ds.padding = ds.margin = '0';
+                    
+                    // fix ie6 problem when blocked element has a border width
+                    if (expr) {
+                        var bw = sz(this,'borderLeftWidth') + sz(this,'borderRightWidth');
+                        ds.setExpression('width', 'this.parentNode.offsetWidth - '+bw+'+ "px"');
+                    }
+                    else
+                        ds.width = '100%';
+                }
+                else {
+                	ds.position = 'relative';
+                    ds.margin = !bot ? '-'+pad.T+'px -'+pad.R+'px '+(pad.T-width)+'px -'+pad.L+'px' : 
+                                        (pad.B-width)+'px -'+pad.R+'px -'+pad.B+'px -'+pad.L+'px';                
+                }
+
+                for (var i=0; i < width; i++) {
+                    var w = Math.max(0,getWidth(fx,i, width));
+                    var e = strip.cloneNode(false);
+                    e.style.borderWidth = '0 '+(opts[j+'R']?w:0)+'px 0 '+(opts[j+'L']?w:0)+'px';
+                    bot ? d.appendChild(e) : d.insertBefore(e, d.firstChild);
+                }
+				
+				if (fold && $.support.boxModel) {
+					if (bot && noBottomFold) continue;
+					for (var c in opts) {
+						if (!opts[c]) continue;
+						if (bot && (c == 'TL' || c == 'TR')) continue;
+						if (!bot && (c == 'BL' || c == 'BR')) continue;
+						
+						var common = { position: 'absolute', border: 'none', margin: 0, padding: 0, overflow: 'hidden', backgroundColor: strip.style.borderColor };
+						var $horz = $('<div/>').css(common).css({ width: width + 'px', height: '1px' });
+						switch(c) {
+						case 'TL': $horz.css({ bottom: 0, left: 0 }); break;
+						case 'TR': $horz.css({ bottom: 0, right: 0 }); break;
+						case 'BL': $horz.css({ top: 0, left: 0 }); break;
+						case 'BR': $horz.css({ top: 0, right: 0 }); break;
+						}
+						d.appendChild($horz[0]);
+						
+						var $vert = $('<div/>').css(common).css({ top: 0, bottom: 0, width: '1px', height: width + 'px' });
+						switch(c) {
+						case 'TL': $vert.css({ left: width }); break;
+						case 'TR': $vert.css({ right: width }); break;
+						case 'BL': $vert.css({ left: width }); break;
+						case 'BR': $vert.css({ right: width }); break;
+						}
+						d.appendChild($vert[0]);
+					}
+				}
+            }
+        }
+    });
+};
+
+$.fn.uncorner = function() { 
+	if (radius || moz || webkit)
+		this.css(radius ? 'border-radius' : moz ? '-moz-border-radius' : '-webkit-border-radius', 0);
+	$('div.jquery-corner', this).remove();
+	return this;
+};
+
+// expose options
+$.fn.corner.defaults = {
+	useNative: true, // true if plugin should attempt to use native browser support for border radius rounding
+	metaAttr:  'data-corner' // name of meta attribute to use for options
+};
+    
+})(jQuery);

@@ -28,6 +28,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.folders = [];
     this.stories = {};
     this.read_stories = {};
+    this.classifiers = {};
 };
 
 NEWSBLUR.AssetModel.Reader.prototype = {
@@ -188,6 +189,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 self.feed_tags = data.feed_tags;
                 self.feed_authors = data.feed_authors;
                 self.feed_id = feed_id;
+                self.classifiers = data.classifiers;
             } else {
                 $.merge(self.stories, data.stories);
             }

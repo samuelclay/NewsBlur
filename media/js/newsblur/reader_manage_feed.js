@@ -123,8 +123,8 @@ NEWSBLUR.ReaderManageFeed.prototype = {
 	            });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corners('6px').css({'width': 600, 'height': height});
-                // $('.NB-classifier-tag', self.$manage).corners('4px');
+                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                // $('.NB-classifier-tag', self.$manage).corner('4px');
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();

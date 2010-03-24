@@ -97,7 +97,7 @@ def apply_classifier_feeds(classifiers, feed):
     
 def apply_classifier_authors(classifiers, story):
     for classifier in classifiers:
-        if classifier.author.author_name in story.get('story_authors'):
+        if story.get('story_authors') and classifier.author.author_name in story.get('story_authors'):
             # print 'Authors: %s -- %s' % (classifier.author.id, story['story_author_id'])
             return classifier.score
     return 0
@@ -108,3 +108,22 @@ def apply_classifier_tags(classifiers, story):
             # print 'Tags: (%s) %s -- %s' % (classifier.tag.name in story['story_tags'], classifier.tag.name, story['story_tags'])
             return classifier.score
     return 0
+    
+def get_classifiers_for_user(user, feed, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
+    if not classifier_feeds:
+        classifier_feeds = ClassifierFeed.objects.filter(user=user, feed=feed)
+    if not classifier_authors:
+        classifier_authors = ClassifierAuthor.objects.filter(user=user, feed=feed)
+    if not classifier_titles:
+        classifier_titles = ClassifierTitle.objects.filter(user=user, feed=feed)
+    if not classifier_tags:
+        classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
+    
+    payload = {
+        'feeds': dict([(f.id, f.score) for f in classifier_feeds]),
+        'authors': dict([(a.author.author_name, a.score) for a in classifier_authors]),
+        'titles': dict([(t.title, t.score) for t in classifier_titles]),
+        'tags': dict([(t.tag.name, t.score) for t in classifier_tags]),
+    }
+    
+    return payload

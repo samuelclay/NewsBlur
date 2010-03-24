@@ -21,6 +21,7 @@ from django.core import serializers
 from django.utils.safestring import mark_safe
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.analyzer.models import get_classifiers_for_user
 import logging
 import datetime
 import threading
@@ -141,8 +142,10 @@ def load_single_feed(request):
                           .order_by('-stories_count')[:20]
     feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
                                                                if author.stories_count > 1]
+    classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
+                                           classifier_authors, classifier_titles, classifier_tags)
     
-    context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors)
+    context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, classifiers=classifiers)
     data = json.encode(context)
     return HttpResponse(data, mimetype='application/json')
 
