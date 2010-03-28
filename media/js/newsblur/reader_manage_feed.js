@@ -4,18 +4,19 @@ NEWSBLUR.ReaderManageFeed = function(feed_id, options) {
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.feed_id = feed_id;
-    this.feed = this.model.get_feed(feed_id);
-    this.feeds = this.model.get_feeds();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.counters = {
         'classifier': 0
     };
-    this.runner(feed_id);
+    this.runner();
 };
 
 NEWSBLUR.ReaderManageFeed.prototype = {
     
     runner: function() {
+        this.feed = this.model.get_feed(this.feed_id);
+        this.feeds = this.model.get_feeds();
+        
         this.make_modal();
         this.initialize_feed(this.feed_id);
         this.handle_cancel();

@@ -192,35 +192,35 @@
         
         handle_keystrokes: function() {      
             var self = this;                                                           
-            $(document).bind('keydown', { combi: 'down', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
             });
-            $(document).bind('keydown', { combi: 'up', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'up', function(e) {
                 e.preventDefault();
                 self.show_next_story(-1);
             });                                                           
-            $(document).bind('keydown', { combi: 'j', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'j', function(e) {
                 e.preventDefault();
                 self.show_next_story(-1);
             });
-            $(document).bind('keydown', { combi: 'k', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'k', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
             });
-            $(document).bind('keydown', { combi: 'left', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'left', function(e) {
                 e.preventDefault();
                 self.show_next_feed(-1);
             });
-            $(document).bind('keydown', { combi: 'right', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'right', function(e) {
                 e.preventDefault();
                 self.show_next_feed(1);
             });
-            $(document).bind('keydown', { combi: 'space', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'space', function(e) {
                 e.preventDefault();
                 self.page_in_story(0.4, 1);
             });
-            $(document).bind('keydown', { combi: 'shift+space', disableInInput: true }, function(e) {
+            $(document).bind('keydown', 'shift+space', function(e) {
                 e.preventDefault();
                 self.page_in_story(0.4, -1);
             });
@@ -255,7 +255,7 @@
             } else if (direction == -1) {
                 $next_story = $current_story.prevAll('.story:visible').eq(0);
             }
-            
+
             var story_id = $('.story_id', $next_story).text();
             if (story_id) {
                 var story_title_visisble = this.$story_titles.isScrollVisible($next_story);

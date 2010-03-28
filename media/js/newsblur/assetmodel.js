@@ -270,6 +270,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     delete_publisher: function(feed_id, callback) {
+        delete this.feeds[feed_id];
         this.make_request('/reader/delete_feed', {'feed_id': feed_id}, callback, null);
     }
     

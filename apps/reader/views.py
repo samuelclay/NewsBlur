@@ -243,10 +243,10 @@ def _parse_user_info(user):
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
-    # user_sub.delete()
+    user_sub.delete()
     
     user_stories = UserStory.objects.filter(user=request.user, feed=feed_id)
-    # user_stories.delete()
+    user_stories.delete()
     
     def _find_feed_in_folders(folders):
         for k, folder in enumerate(folders):
@@ -263,7 +263,7 @@ def delete_feed(request):
     user_sub_folders = json.decode(user_sub_folders_object.folders)
     user_sub_folders = _find_feed_in_folders(user_sub_folders)
     user_sub_folders_object.folders = json.encode(user_sub_folders)
-    # user_sub_folders_object.save()
+    user_sub_folders_object.save()
     
     data = json.encode(dict(code=1))
     return HttpResponse(data)
