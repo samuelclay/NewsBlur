@@ -1,7 +1,7 @@
 /*
 * jQuery TinySort - A plugin to sort child nodes by (sub) contents or attributes.
 *
-* Version: 1.0.3
+* Version: 1.0.4
 *
 * Copyright (c) 2008 Ron Valstar
 *
@@ -22,22 +22,22 @@
 *   $.tinysort.defaults.order = "desc";
 *
 * in this update:
+*	- changed setArray to pushStack
+*
+* in last update:
 *	- tested with jQuery 1.4.1
 *	- correct isNum return
 *
-* in last update:
-*	- matching numerics did not work for trailing zero's, replaced with regexp (which should now work for + and - signs as well)
-*
 * Todos
 *   - fix mixed literal/numeral values
-*   - determine if I have to use setArray or pushStack
+*   - determine if I have to use pushStack or pushStack
 *
 */
 ;(function($) {
 	// default settings
 	$.tinysort = {
 		 id: "TinySort"
-		,version: "1.0.3"
+		,version: "1.0.4"
 		,defaults: {
 			 order: "asc"	// order: asc, desc or rand
 			,attr: ""		// order by attribute value
@@ -106,7 +106,7 @@
 				}
 			}
 			//
-			return this.setArray(aNewOrder); // setArray or pushStack?
+			return this.pushStack(aNewOrder); // pushStack or pushStack?
 		}
 	});
 	// is numeric

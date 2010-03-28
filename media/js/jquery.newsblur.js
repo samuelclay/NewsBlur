@@ -1,4 +1,5 @@
 if (typeof NEWSBLUR == 'undefined') NEWSBLUR = {};
+if (typeof NEWSBLUR.Globals == 'undefined') NEWSBLUR.Globals = {};
 
 /* ============================ */
 /* = Core NewsBlur Javascript = */
