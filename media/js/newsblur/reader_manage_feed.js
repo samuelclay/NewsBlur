@@ -22,6 +22,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         this.open_modal();
         this.load_feed_classifier();
         
+        this.$manage.bind('click', $.rescope(this.handle_click, this));
         this.$manage.bind('change', $.rescope(this.handle_change, this));
     },
     
@@ -56,10 +57,13 @@ NEWSBLUR.ReaderManageFeed.prototype = {
                         $.make('div', { className: 'NB-manage-management' }, [
                             $.make('div', { className: 'NB-manage-rename' }, [
                                 $.make('label', { className: 'NB-manage-rename-label', 'for': 'id_rename' }, "Feed Title: "),
-                                $.make('input', { name: 'rename_title', id: 'id_rename' }),
+                                $.make('input', { name: 'rename_title', id: 'id_rename' })
                             ]),
-                            $.make('a', { className: 'NB-manage-delete'}, "Rename feed"),
-                            $.make('a', { className: 'NB-manage-delete'}, "Delete this feed")
+                            $.make('div', { className: 'NB-manage-delete' }, [
+                                $.make('a', { className: 'NB-delete', href: '#' }, "Delete this feed"),
+                                $.make('a', { className: 'NB-delete-confirm', href: '#' }, "Yes, delete this feed!"),
+                                $.make('a', { className: 'NB-delete-cancel', href: '#' }, "cancel")
+                            ])
                         ])
                     ])
                 ]),
@@ -286,7 +290,57 @@ NEWSBLUR.ReaderManageFeed.prototype = {
             $.modal.close();
         });
     },
+    
+    delete_feed: function() {
+        var $loading = $('.NB-modal-loading', this.$manage);
+        $loading.addClass('NB-active');
+        var feed_id = this.feed_id;
+        
+        this.model.delete_publisher(feed_id, function() {
+            NEWSBLUR.reader.delete_feed(feed_id);
+            $.modal.close();
+        });
+    },
 
+    handle_click: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-delete' }, function($t, $p){
+            e.preventDefault();
+            
+            var $confirm = $('.NB-delete-confirm', self.$manage);
+            var $cancel = $('.NB-delete-cancel', self.$manage);
+            var $delete = $('.NB-delete', self.$manage);
+            
+            $delete.animate({'opacity': 0}, {'duration': 500});
+            $confirm.fadeIn(500);
+            $cancel.fadeIn(500);
+        });
+        
+        $.targetIs(e, { tagSelector: '.NB-delete-cancel' }, function($t, $p){
+            e.preventDefault();
+            
+            var $confirm = $('.NB-delete-confirm', self.$manage);
+            var $cancel = $('.NB-delete-cancel', self.$manage);
+            var $delete = $('.NB-delete', self.$manage);
+            
+            $delete.css({'opacity': 1});
+            $confirm.css({'display': 'none'});
+            $cancel.css({'display': 'none'});
+        });
+        
+        $.targetIs(e, { tagSelector: '.NB-delete-confirm' }, function($t, $p){
+            e.preventDefault();
+            
+            self.delete_feed();
+        });
+        
+        $.targetIs(e, { tagSelector: 'input', childOf: '.NB-classifier' }, function($t, $p) {
+            var $submit = $('input[type=submit]', self.$manage);
+            $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
+        });
+    },
+    
     handle_change: function(elem, e) {
         var self = this;
         

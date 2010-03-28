@@ -197,16 +197,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         };
         
         // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
-        this.make_request('/reader/load_single_feed',
-            {
-                feed_id: feed_id,
-                page: page
-            }, pre_callback,
-            error_callback,
-            {
-                'ajax_group': (page ? 'feed_page' : 'feed')
-            }
-        );
+        if (feed_id) {
+            this.make_request('/reader/load_single_feed',
+                {
+                    feed_id: feed_id,
+                    page: page
+                }, pre_callback,
+                error_callback,
+                {
+                    'ajax_group': (page ? 'feed_page' : 'feed')
+                }
+            );
+        }
     },
     
     get_feed: function(feed_id) {
@@ -265,6 +267,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback, null, {
             'ajax_group': 'feed'
         });
+    },
+    
+    delete_publisher: function(feed_id, callback) {
+        this.make_request('/reader/delete_feed', {'feed_id': feed_id}, callback, null);
     }
     
 };

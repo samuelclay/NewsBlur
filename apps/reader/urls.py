@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     (r'^mark_feed_as_read', views.mark_feed_as_read),
     (r'^get_read_feed_items', views.get_read_feed_items),
     (r'^get_read_feed_items', views.get_read_feed_items),
+    (r'^delete_feed', views.delete_feed),
 )

@@ -856,6 +856,7 @@ background: transparent;
     padding: 8px;
     -moz-box-shadow: 3px 3px 5px #505050;
     -webkit-box-shadow: 3px 3px 5px #505050;
+    box-shadow: 3px 3px 5px #505050;
 }
 
 /* ==================== */
@@ -1255,4 +1256,49 @@ form.opml_import_form input {
     margin: 0 2px;
     vertical-align: -4px;
     opacity: .4;
+}
+
+.NB-manage .NB-manage-rename {
+    margin: 0 0 12px 12px;
+}
+
+.NB-manage .NB-manage-rename label {
+    font-size: 14px;
+    font-weight: bold;
+}
+.NB-manage .NB-manage-rename input {
+    font-size: 14px;
+    padding: 2px;
+    margin: 0 4px;
+    border: 1px solid #606060;
+    width: 400px;
+    -moz-box-shadow:1px 1px 1px #E0E0E0;
+    -webkit-box-shadow:1px 1px 1px #E0E0E0;
+    box-shadow:1px 1px 1px #E0E0E0;
+}
+
+.NB-manage .NB-manage-delete {
+    margin: 0 0 0 12px;
+    font-size: 12px;
+}
+
+.NB-manage .NB-manage-delete .NB-delete {
+    text-decoration: underline;
+    color: #AF1313;
+}
+
+
+.NB-manage .NB-manage-delete .NB-delete-confirm {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #DB1818;
+    margin: 0 12px 0 24px;
+    display: none;
+}
+
+.NB-manage .NB-manage-delete .NB-delete-cancel {
+    margin: 0;
+    text-decoration: underline;
+    color: #DBDBDB;
+    display: none;
 }

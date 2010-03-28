@@ -238,3 +238,32 @@ def _parse_user_info(user):
             'username': json.encode(user.username if user.is_authenticated() else 'Anonymous')
         }
     }
+
+@login_required
+def delete_feed(request):
+    feed_id = int(request.POST['feed_id'])
+    user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
+    # user_sub.delete()
+    
+    user_stories = UserStory.objects.filter(user=request.user, feed=feed_id)
+    # user_stories.delete()
+    
+    def _find_feed_in_folders(folders):
+        for k, folder in enumerate(folders):
+            if isinstance(folder, int):
+                if folder == feed_id:
+                    print "DEL'ED: %s'th item: %s" % (k, folders)
+                    del folders[k]
+            elif isinstance(folder, dict):
+                for f_k, f_v in folder.items():
+                    folders[k][f_k] = _find_feed_in_folders(f_v)
+        return folders
+        
+    user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
+    user_sub_folders = json.decode(user_sub_folders_object.folders)
+    user_sub_folders = _find_feed_in_folders(user_sub_folders)
+    user_sub_folders_object.folders = json.encode(user_sub_folders)
+    # user_sub_folders_object.save()
+    
+    data = json.encode(dict(code=1))
+    return HttpResponse(data)
