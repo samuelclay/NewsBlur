@@ -25,6 +25,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         this.$manage.bind('click', $.rescope(this.handle_click, this));
         this.$manage.bind('change', $.rescope(this.handle_change, this));
+        this.$manage.bind('keyup', $.rescope(this.handle_keyup, this));
     },
     
     initialize_feed: function(feed_id) {
@@ -354,6 +355,17 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         $.targetIs(e, { tagSelector: 'input', childOf: '.NB-classifier' }, function($t, $p) {
             var $submit = $('input[type=submit]', self.$manage);
             $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
+        });
+    },
+    
+    handle_keyup: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: 'input', childOf: '.NB-manage-rename' }, function($t, $p) {
+            if ($t.val() != self.feed.feed_title) {
+                var $submit = $('input[type=submit]', self.$manage);
+                $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
+            }
         });
     }
 };
