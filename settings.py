@@ -53,10 +53,15 @@ DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
 if PRODUCTION:
-    DATABASE_ENGINE = 'mysql'
-    DATABASE_NAME = 'newsblur'
-    DATABASE_USER = 'newsblur'
-    DATABASE_PASSWORD = ''
+    DATABASES = {
+        'default': {
+            'NAME': 'newsblur',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'newsblur',
+            'PASSWORD': '',
+            'HOST': 'localhost'
+        }
+    }
     DATABASE_HOST = 'localhost'
     DATABASE_PORT = ''
     # Absolute path to the directory that holds media.
@@ -70,10 +75,16 @@ if PRODUCTION:
                     filemode='w')
     PREPEND_WWW = True
 elif STAGING:
-    DATABASE_ENGINE = 'mysql'
-    DATABASE_NAME = 'newsblur'
-    DATABASE_USER = 'newsblur'
-    DATABASE_PASSWORD = ''    
+    DATABASES = {
+        'default': {
+            'NAME': 'newsblur',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'newsblur',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'HOST': 'localhost'
+        }
+    }
     DATABASE_HOST = 'localhost'
     DATABASE_PORT = ''         
 
@@ -87,10 +98,15 @@ elif STAGING:
                     filename=LOG_FILE,
                     filemode='w')
 elif DEV_SERVER1:
-    DATABASE_ENGINE = 'mysql'
-    DATABASE_NAME = 'newsblur'
-    DATABASE_USER = 'newsblur'
-    DATABASE_PASSWORD = ''    
+    DATABASES = {
+        'default': {
+            'NAME': 'newsblur',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'newsblur',
+            'PASSWORD': '',
+            'HOST': 'localhost'
+        }
+    }
     DATABASE_HOST = 'localhost'
     DATABASE_PORT = ''         
 
@@ -106,10 +122,15 @@ elif DEV_SERVER1:
                     filename=LOG_FILE,
                     filemode='w')
 elif DEV_SERVER2:
-    DATABASE_ENGINE = 'mysql'
-    DATABASE_NAME = 'newsblur'
-    DATABASE_USER = 'newsblur'
-    DATABASE_PASSWORD = ''    
+    DATABASES = {
+        'default': {
+            'NAME': 'newsblur',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'newsblur',
+            'PASSWORD': '',
+            'HOST': 'localhost'
+        }
+    }
     DATABASE_HOST = 'localhost'
     DATABASE_PORT = ''         
 
