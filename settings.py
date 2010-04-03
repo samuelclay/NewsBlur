@@ -79,7 +79,7 @@ elif STAGING:
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'newsblur',
             'PASSWORD': '',
-            'HOST': 'localhost',
+            'HOST': '127.0.0.1'
         }
     }
     DATABASE_HOST = 'localhost'
@@ -101,7 +101,7 @@ elif DEV_SERVER1:
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'newsblur',
             'PASSWORD': '',
-            'HOST': 'localhost'
+            'HOST': '127.0.0.1',
         }
     }
     DATABASE_HOST = 'localhost'
@@ -125,7 +125,7 @@ elif DEV_SERVER2:
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'newsblur',
             'PASSWORD': '',
-            'HOST': 'localhost'
+            'HOST': '127.0.0.1',
         }
     }
     DATABASE_HOST = 'localhost'

@@ -25,9 +25,9 @@ class UserSubscription(models.Model):
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
         self.unread_count_updated = datetime.datetime.now()
-        super(UserSubscription, self).save(force_insert, force_update)
+        super(UserSubscription, self).save(force_insert, force_update, *args, **kwargs)
         
     def get_user_feeds(self):
         return Feed.objects.get(user=self.user, feed=feeds)

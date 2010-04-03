@@ -80,7 +80,7 @@ var classifier = {
                     $.make('span', { className: 'NB-classifier-tag NB-classifier' }, [
                         $.make('input', { type: 'checkbox', name: 'tag', value: tag[0], id: 'classifier_tag_'+t, checked: checked }),
                         $.make('label', { 'for': 'classifier_tag_'+t }, [
-                            $.make('b', tag[0])
+                            tag[0]
                         ])
                     ]),
                     $.make('span', { className: 'NB-classifier-tag-count' }, [
@@ -158,7 +158,7 @@ var classifier = {
             var $tag = $.make('span', { className: 'NB-classifier-tag-container NB-classifier NB-classifier-tag' }, [
                 $.make('input', input_attrs),
                 $.make('label', { 'for': 'classifier_tag_'+t }, [
-                    $.make('b', tag)
+                    tag
                 ])
             ]);
             $story_tags.push($tag);
@@ -195,7 +195,7 @@ var classifier = {
                         $.make('div', { className: 'NB-classifier NB-classifier-author' }, [
                             $story_author,
                             $.make('label', { 'for': 'classifier_author' }, [
-                                $.make('b', story.story_authors)
+                                story.story_authors
                             ])
                         ])
                     ])
