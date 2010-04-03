@@ -139,8 +139,8 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         // Publisher
         var $publishers = $.make('div', { className: 'NB-classifiers NB-classifier-publishers'});
         for (var p in classifiers.feeds) {
-            if (classifiers.feeds[p] == score) {
-                var $publisher = this.make_tag(p, i++, opinion);
+            if (classifiers.feeds[p].score == score) {
+                var $publisher = this.make_publisher(classifiers.feeds[p], i++, opinion);
                 $publishers.append($publisher);
             }
         }
@@ -232,7 +232,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         var $classifiers_dislikes = this.make_classifiers(classifiers.payload, -1);
         $dislikes.empty().append($classifiers_dislikes);
         
-        $('.NB-classifier', this.$manage).corner('4px');
+        $('.NB-classifier', this.$manage).corner('14px');
     },
     
     open_modal: function() {

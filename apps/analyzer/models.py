@@ -120,7 +120,11 @@ def get_classifiers_for_user(user, feed, classifier_feeds=None, classifier_autho
         classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
     
     payload = {
-        'feeds': dict([(f.id, f.score) for f in classifier_feeds]),
+        'feeds': dict((f.feed.feed_link, {
+            'feed_title': f.feed.feed_title, 
+            'feed_link': f.feed.feed_link, 
+            'score': f.score
+        }) for f in classifier_feeds),
         'authors': dict([(a.author.author_name, a.score) for a in classifier_authors]),
         'titles': dict([(t.title, t.score) for t in classifier_titles]),
         'tags': dict([(t.tag.name, t.score) for t in classifier_tags]),

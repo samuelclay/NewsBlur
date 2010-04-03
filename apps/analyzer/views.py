@@ -76,8 +76,8 @@ def save_classifier_publisher(request):
     message = 'OK'
     payload = {}
 
-    def _save_classifier(opinions, ContentCls, ClassifierCls, content_type, post_content_field):
-        for opinion, score in opinions.items():
+    def _save_classifier(ClassifierCls, content_type, ContentCls=None, post_content_field=None):
+        for opinion, score in {'like_'+content_type: 1, 'dislike_'+content_type: -2}.items():
             if opinion in post:
                 post_contents = post.getlist(opinion)
                 for post_content in post_contents:
@@ -88,26 +88,27 @@ def save_classifier_publisher(request):
                             'score': score
                         }
                     }
-                    if ContentCls:
-                        # Can't use post_content. lookup content and refer to that. Authors, Tags.
+                    if content_type in ('author', 'tag'):
+                        # Use content to lookup object. Authors, Tags.
                         content_dict = {
                             post_content_field: post_content,
                             'feed': feed
                         }
                         content = ContentCls.objects.get(**content_dict)
                         classifier_dict.update({content_type: content})
-                    elif content_type:
+                    elif content_type in ('title',):
                         # Skip content lookup and just use content directly. Titles.
                         classifier_dict.update({content_type: post_content})
+                    
                     classifier, _ = ClassifierCls.objects.get_or_create(**classifier_dict)
                     if classifier.score != score:
                         classifier.score = score
                         classifier.save()
                         
-    _save_classifier({'like_author': 1, 'dislike_author': -1}, StoryAuthor, ClassifierAuthor, 'author', 'author_name')
-    _save_classifier({'like_tag': 1, 'dislike_tag': -1}, Tag, ClassifierTag, 'tag', 'name')
-    _save_classifier({'like_title': 1, 'dislike_title': -1}, None, ClassifierTitle, 'title', None)
-    _save_classifier({'like_publisher': 1, 'dislike_publisher': -1}, None, ClassifierFeed, None, None)
+    _save_classifier(ClassifierAuthor, 'author', StoryAuthor, 'author_name')
+    _save_classifier(ClassifierTag, 'tag', Tag, 'name')
+    _save_classifier(ClassifierTitle, 'title')
+    _save_classifier(ClassifierFeed, 'publisher')
     
     response = dict(code=code, message=message, payload=payload)
     return response

@@ -31,8 +31,11 @@ SINGLE_DAY = 60*60*24
 
 @never_cache
 def index(request):
-    print "User: %s" % request.user
-    form = AuthenticationForm(request.POST)
+    if request.method == "POST":
+        form = AuthenticationForm(request.POST)
+    else:
+        form = AuthenticationForm()
+
     return render_to_response('reader/feeds.xhtml', {'form': form},
                               context_instance=RequestContext(request))
 

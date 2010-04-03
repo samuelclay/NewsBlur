@@ -23,7 +23,16 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-add-field' }, [
                     $.make('h5', 'Search for a publisher'),
+                    $.make('div', { className: 'NB-add-fields' }, [
+                        $.make('div', [
+                            $.make('label', { 'for': 'NB-add-url' }, 'URL: '),
+                            $.make('input', { id: 'NB-add-url', name: 'url' })
+                        ])
+                    ]),
                     $.make('h5', 'Import from Google Reader'),
+                    $.make('div', { className: 'NB-add-fields' }, [
+                        $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months.')
+                    ]),
                     $.make('h5', 'Upload OPML (from Google Reader)'),
                     $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
                     $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
