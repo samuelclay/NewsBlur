@@ -15,7 +15,6 @@ class FeatureCategory(models.Model):
         return '%s - %s (%s)' % (self.feature, self.category, self.count)
 
 class Category(models.Model):
-    
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     category = models.CharField(max_length=255)
@@ -33,6 +32,8 @@ class ClassifierTitle(models.Model):
     original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
+    unique_together = (('user', 'feed', 'title'),)
+    
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.title, self.feed)
         
@@ -44,6 +45,8 @@ class ClassifierAuthor(models.Model):
     feed = models.ForeignKey(Feed)
     original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
+    
+    unique_together = (('user', 'feed', 'author'),)
     
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.author.author_name, self.feed)
@@ -61,6 +64,8 @@ class ClassifierFeed(models.Model):
     original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
+    unique_together = (('user', 'feed'),)
+    
     def __unicode__(self):
         return '%s: %s' % (self.user, self.feed)
         
@@ -77,6 +82,8 @@ class ClassifierTag(models.Model):
     feed = models.ForeignKey(Feed)
     original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
+    
+    unique_together = (('user', 'feed', 'tag'),)
     
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.tag.name, self.feed)

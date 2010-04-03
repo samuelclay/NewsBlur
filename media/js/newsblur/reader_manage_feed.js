@@ -278,8 +278,19 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     },
     
     serialize_classifier: function() {
-        var data = $('input', this.$manage).serialize();
+        var checked_data = $('input', this.$manage).serialize();
+        var $unchecked = $('input[type=checkbox]:not(:checked)', this.$manage);
+        $unchecked.attr('checked', true);
+        $unchecked.each(function() {
+           $(this).attr('name', 'remove_' + $(this).attr('name'));
+        });
+        var unchecked_data = $unchecked.serialize();
+        $unchecked.each(function() {
+           $(this).attr('name', $(this).attr('name').replace(/^remove_/, ''));
+        });
+        $unchecked.attr('checked', false);
         
+        var data = [checked_data, unchecked_data].join('&');
         return data;
     },
     

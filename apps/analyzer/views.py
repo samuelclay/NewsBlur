@@ -34,35 +34,60 @@ def save_classifier_story(request):
     score = int(post['score'])
 
     if 'title' in post and 'title' in facets:
-        ClassifierTitle.objects.create(user=request.user,
-                                       score=score,
-                                       title=post['title'],
-                                       feed=feed,
-                                       original_story=story)
+        classifier_title, created = ClassifierTitle.objects.get_or_create(
+            user=request.user,
+            title=post['title'],
+            feed=feed,
+            defaults={
+                'original_story': story,
+                'score': score,
+            })
+        if not created:
+            classifier_title.score = score
+            classifier_title.save()
     
     if 'author' in facets:
         author = story.story_author
-        ClassifierAuthor.objects.create(user=request.user,
-                                        score=score,
-                                        author=author,
-                                        feed=feed,
-                                        original_story=story)
+        classifier_author, created = ClassifierAuthor.objects.get_or_create(
+            user=request.user,
+            author=author,
+            feed=feed,
+            defaults={
+                'original_story': story,
+                'score': score,
+            })
+        if not created:
+            classifier_author.score = score
+            classifier_author.save()
                          
     if 'publisher' in facets:
-        ClassifierFeed.objects.create(user=request.user,
-                                      score=score,
-                                      feed=feed,
-                                      original_story=story)
+        classifier_feed, created = ClassifierFeed.objects.get_or_create(
+            user=request.user,
+            feed=feed,
+            defaults={
+                'original_story': story,
+                'score': score,
+            })
+        if not created:
+            classifier_feed.score = score
+            classifier_feed.save()
     
     if 'tag' in post:
         tags = post.getlist('tag')
         for tag_name in tags:
             tag = Tag.objects.get(name=tag_name, feed=feed)
-            ClassifierTag.objects.create(user=request.user,
-                                         score=score,
-                                         tag=tag,
-                                         feed=feed,
-                                         original_story=story)
+            classifier_tag, created = ClassifierTag.objects.get_or_create(
+                user=request.user,
+                tag=tag,
+                feed=feed,
+                defaults={
+                    'original_story': story,
+                    'score': score,
+                })
+            print classifier_tag, classifier_tag.score, created, score
+            if not created:
+                classifier_tag.score = score
+                classifier_tag.save()
     
     response = dict(code=code, message=message, payload=payload)
     return response
