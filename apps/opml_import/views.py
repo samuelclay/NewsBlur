@@ -63,6 +63,10 @@ class OPMLImporter:
                 folders.append({folder.text: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
+                if not hasattr(feed, 'htmlUrl'):
+                    setattr(feed, 'htmlUrl', None)
+                if not hasattr(feed, 'title'):
+                    setattr(feed, 'title', feed.htmlUrl)
                 print '\t%s - %s - %s' % (feed.title, feed.htmlUrl, feed.xmlUrl,)
                 feed_data = dict(feed_address=feed.xmlUrl, feed_link=feed.htmlUrl, feed_title=feed.title)
                 # feeds.append(feed_data)

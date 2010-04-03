@@ -1074,7 +1074,6 @@ form.opml_import_form input {
 .NB-classifier .NB-publisher .NB-classifier-authors .NB-classifier-author {
     float: left;
     margin: 4px 16px 0 0;
-    font-weight: bold;
 }
 
 .NB-classifier .NB-publisher .NB-classifier-authors input {
@@ -1295,10 +1294,12 @@ background: transparent;
     margin: 2px 6px 6px 0;
     cursor: pointer;
     padding: 2px 9px 2px 4px;
+    font-size: 12px;
+    text-transform: uppercase;
 }
 
 .NB-classifiers .NB-classifier input[type=checkbox] {
-    margin: 0px 4px 0px;
+    margin: 0 6px 0 4px;
     float: none;
     cursor: pointer;
 }
@@ -1306,23 +1307,40 @@ background: transparent;
 .NB-classifiers .NB-classifier label {
     cursor: pointer;
     color: black;
-    text-shadow: 1px 1px 0 #ccc;
+}
+
+.NB-classifiers .NB-classifier label b {
+    color: #303030;
+    text-shadow: none;
+    font-weight: normal;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-tag {
     background-color: #FFA200;
 }
+.NB-classifiers .NB-classifier.NB-classifier-tag label {
+    text-shadow: 1px 1px 0 #cF7200;
+}
 
 .NB-classifiers .NB-classifier.NB-classifier-title {
     background-color: #FF7940;
+}
+.NB-classifiers .NB-classifier.NB-classifier-title label {
+    text-shadow: 1px 1px 0 #cF4910;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-author {
     background-color: #60D6A7;
 }
+.NB-classifiers .NB-classifier.NB-classifier-author label {
+    text-shadow: 1px 1px 0 #30a677;
+}
 
 .NB-classifiers .NB-classifier.NB-classifier-publisher {
     background-color: #6a93d4;
+}
+.NB-classifiers .NB-classifier.NB-classifier-publisher label {
+    text-shadow: 1px 1px 0 #3A63A4;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-facet-disabled {

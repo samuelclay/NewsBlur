@@ -31,14 +31,12 @@ class StoryField(models.TextField):
         except:
             return value
         
-    def get_db_prep_save(self, value):
+    def get_prep_save(self, value):
         
-        if not value:
-            return None
-
-        # print "Pre To DB: %s %s" % (len(value), value[:25])
-        value = value.encode('zlib').encode('base64')            
-        # print "Post To DB: %s %s" % (len(value), value[:25])
+        if value:
+            # print "Pre To DB: %s %s" % (len(value), value[:25])
+            value = value.encode('zlib').encode('base64')            
+            # print "Post To DB: %s %s" % (len(value), value[:25])
         
-        return super(StoryField, self).get_db_prep_save(value)
+        return super(StoryField, self).get_prep_save(value)
             
