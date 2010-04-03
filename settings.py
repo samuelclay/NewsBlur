@@ -59,11 +59,9 @@ if PRODUCTION:
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'newsblur',
             'PASSWORD': '',
-            'HOST': '127.0.0.1',
+            'HOST': '127.0.0.1'
         }
     }
-    DATABASE_HOST = 'localhost'
-    DATABASE_PORT = ''
     # Absolute path to the directory that holds media.
     # Example: "/Users/media/media.lawrence.com/"
     MEDIA_URL = 'http://www.newsblur.com/media/'
@@ -81,7 +79,7 @@ elif STAGING:
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'newsblur',
             'PASSWORD': '',
-            'HOST': '127.0.0.1',
+            'HOST': '127.0.0.1'
         }
     }
     DATABASE_HOST = 'localhost'
