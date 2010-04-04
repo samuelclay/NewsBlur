@@ -190,7 +190,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     
     make_publisher: function(publisher, i, opinion) {
         var $publisher = $.make('div', { className: 'NB-classifier NB-classifier-publisher' }, [
-            $.make('input', { type: 'checkbox', name: opinion+'facet', value: 'publisher', id: 'classifier_publisher', checked: 'checked' }),
+            $.make('input', { type: 'checkbox', name: opinion+'publisher', value: this.feed_id, id: 'classifier_publisher', checked: 'checked' }),
             $.make('label', { 'for': 'classifier_publisher' }, [
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + publisher.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
@@ -297,6 +297,8 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     save: function() {
         var $save = $('.NB-modal input[type=submit]');
         var data = this.serialize_classifier();
+        
+        NEWSBLUR.reader.update_opinions(this.$manage, this.feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {

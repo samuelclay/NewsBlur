@@ -1582,6 +1582,50 @@
             $stories_show.slideDown(500);
             $stories_hide.slideUp(500);
         },
+    
+        update_opinions: function($modal, feed_id) {
+            var self = this;
+            var feed = this.model.get_feed(feed_id);
+            
+            if (feed_id != this.model.feed_id) return;
+            
+            $('input[type=checkbox]', $modal).each(function() {
+                var $this = $(this);
+                var name = $this.attr('name').replace(/^(dis)?like_/, '');
+                var score = /^dislike/.test($this.attr('name')) ? -1 : 1;
+                var value = $this.val();
+                var checked = $this.attr('checked');
+            
+                if (checked) {
+                    if (name == 'tag') {
+                        self.model.classifiers.tags[value] = score;
+                    } else if (name == 'title') {
+                        self.model.classifiers.titles[value] = score;
+                    } else if (name == 'author') {
+                        self.model.classifiers.authors[value] = score;
+                    } else if (name == 'publisher') {
+                        self.model.classifiers.feeds[feed.feed_link] = {
+                            'feed_link': feed.feed_link,
+                            'feed_title': feed.feed_title,
+                            'score': score
+                        };
+                    }
+                } else {
+                    if (name == 'tag' && self.model.classifiers.tags[value] == score) {
+                        delete self.model.classifiers.tags[value];
+                    } else if (name == 'title' && self.model.classifiers.titles[value] == score) {
+                        delete self.model.classifiers.titles[value];
+                    } else if (name == 'author' && self.model.classifiers.authors[value] == score) {
+                        delete self.model.classifiers.authors[value];
+                    } else if (name == 'publisher' 
+                               && self.model.classifiers.feeds[feed.feed_link] 
+                               && self.model.classifiers.feeds[feed.feed_link].score == score) {
+                        delete self.model.classifiers.feeds[feed.feed_link];
+                    }
+                }
+            });
+        
+        },
         
         // ===========
         // = Profile =

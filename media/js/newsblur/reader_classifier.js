@@ -421,7 +421,7 @@ var classifier = {
         var story_id = this.story_id;
         var data = this.serialize_classifier();
         
-        this.update_opinions();
+        NEWSBLUR.reader.update_opinions(this.$classifier, this.feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {
@@ -434,52 +434,12 @@ var classifier = {
         var story_id = this.story_id;
         var data = this.serialize_classifier();
         
-        this.update_opinions();
+        NEWSBLUR.reader.update_opinions(this.$classifier, this.feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_story(story_id, data, function() {
             $.modal.close();
         });
-    },
-    
-    update_opinions: function() {
-        var self = this;
-        
-        $('input[type=checkbox]', this.$classifier).each(function() {
-            var name = $(this).attr('name').replace(/^(dis)?like_/, '');
-            var value = $(this).val();
-            var checked = $(this).attr('checked');
-            NEWSBLUR.log(['update_opinions', name, value, checked]);
-            
-            if (checked) {
-                if (name == 'tag') {
-                    self.model.classifiers.tags[value] = self.score;
-                } else if (name == 'title') {
-                    self.model.classifiers.titles[value] = self.score;
-                } else if (name == 'author') {
-                    self.model.classifiers.authors[value] = self.score;
-                } else if (name == 'publisher') {
-                    self.model.classifiers.feeds[self.feed.feed_link] = {
-                        'feed_link': self.feed.feed_link,
-                        'feed_title': self.feed.feed_title,
-                        'score': self.score
-                    };
-                }
-            } else {
-                if (name == 'tag' && self.model.classifiers.tags[value] == self.score) {
-                    delete self.model.classifiers.tags[value];
-                } else if (name == 'title' && self.model.classifiers.titles[value] == self.score) {
-                    delete self.model.classifiers.titles[value];
-                } else if (name == 'author' && self.model.classifiers.authors[value] == self.score) {
-                    delete self.model.classifiers.authors[value];
-                } else if (name == 'publisher' 
-                           && self.model.classifiers.feeds[self.feed.feed_link] 
-                           && self.model.classifiers.feeds[self.feed.feed_link].score == self.score) {
-                    delete self.model.classifiers.feeds[self.feed.feed_link];
-                }
-            }
-        });
-        
     }
     
 };
