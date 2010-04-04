@@ -971,6 +971,33 @@ form.opml_import_form input {
     background: transparent url('../img/reader/newsblur_splash_image.png') no-repeat 0 0;
 }
 
+#NB-splash .NB-splash-links {
+    position: absolute;
+    right: 12px;
+    bottom: 0;
+    display: block;
+    font-size: 11px;
+    line-height: 16px;
+    margin: 0;
+    padding: 0;
+    text-shadow: 1px 1px 0 #F0F0F0;
+}
+
+#NB-splash .NB-splash-links a {
+    color: #405BA8;
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#NB-splash .NB-splash-links a:hover {
+    color: #A85B40;
+}
+
+#NB-splash .NB-splash-info {
+    margin-left: 244px;
+}
+
 /* ============== */
 /* = Classifier = */
 /* ============== */
@@ -1237,6 +1264,7 @@ form.opml_import_form input {
 
 .NB-manage .NB-manage-rename {
     margin: 0 0 12px 12px;
+    display: none; /* Sorry, but this is not v1.0. Maybe next tuesday. No, next, next tuesday. */
 }
 
 .NB-manage .NB-manage-rename label {
