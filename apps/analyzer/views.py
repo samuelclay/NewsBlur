@@ -36,7 +36,13 @@ def save_classifier(request):
     payload = {}
 
     def _save_classifier(ClassifierCls, content_type, ContentCls=None, post_content_field=None):
-        for opinion, score in {'like_'+content_type: 1, 'dislike_'+content_type: -1}.items():
+        classifiers = {
+            'like_'+content_type: 1, 
+            'dislike_'+content_type: -1,
+            'remove_like_'+content_type: 0,
+            'remove_dislike_'+content_type: 0,
+        }
+        for opinion, score in classifiers.items():
             if opinion in post:
                 post_contents = post.getlist(opinion)
                 for post_content in post_contents:
@@ -63,8 +69,13 @@ def save_classifier(request):
                     
                     classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
                     if classifier.score != score:
-                        classifier.score = score
-                        classifier.save()
+                        if score == 0:
+                            if ((classifier.score == 1 and opinion.startswith('remove_like'))
+                                or (classifier.score == -1 and opinion.startswith('remove_dislike'))):
+                                classifier.delete()
+                        else:
+                            classifier.score = score
+                            classifier.save()
                         
     _save_classifier(ClassifierAuthor, 'author', StoryAuthor, 'author_name')
     _save_classifier(ClassifierTag, 'tag', Tag, 'name')
