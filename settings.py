@@ -181,7 +181,7 @@ COMPRESS_JS = {
             'js/newsblur/reader_add_feed.js',
             'js/newsblur/reader_manage_feed.js',
         ),
-        'output_filename': 'release/all-compressed-?.js'
+        'output_filename': 'js/all-compressed-?.js'
     }
 }
 
@@ -191,7 +191,7 @@ COMPRESS_CSS = {
             'css/reader.css',
             'css/jquery-ui/jquery.theme.css',
         ),
-        'output_filename': 'release/all-compressed-?.css'
+        'output_filename': 'css/all-compressed-?.css'
     }
 }
 
