@@ -112,7 +112,7 @@ def apply_classifier_authors(classifiers, story):
     
 def apply_classifier_tags(classifiers, story):
     for classifier in classifiers:
-        if classifier.tag.name in json.decode(story['story_tags']):
+        if story['story_tags'] and classifier.tag.name in json.decode(story['story_tags']):
             # print 'Tags: (%s) %s -- %s' % (classifier.tag.name in story['story_tags'], classifier.tag.name, story['story_tags'])
             return classifier.score
     return 0
