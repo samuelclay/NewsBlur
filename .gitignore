@@ -2,3 +2,4 @@ logs/*.log
 *.pycmedia/release/
 *.pyc
 media/release/*
+local_settings.py
