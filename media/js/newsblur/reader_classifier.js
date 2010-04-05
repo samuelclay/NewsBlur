@@ -63,21 +63,21 @@ var classifier = {
         this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post', className: 'NB-publisher' }, [
-                (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-classifiers' }, [
+                (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
                     $.make('h5', 'Authors'),
-                    $.make('div', { className: 'NB-classifier-authors NB-classifiers' },
+                    $.make('div', { className: 'NB-classifier-authors NB-fieldset-fields NB-classifiers' },
                         this.make_authors(this.feed_authors, opinion)
                     )
                 ])),
-                (this.feed_tags.length && $.make('div', { className: 'NB-modal-field' }, [
+                (this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
                     $.make('h5', 'Categories &amp; Tags'),
-                    $.make('div', { className: 'NB-classifier-tags NB-classifiers' },
+                    $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                         this.make_tags(this.feed_tags, opinion)
                     )
                 ])),
-                $.make('div', { className: 'NB-modal-field NB-classifiers' }, [
+                $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
                     $.make('h5', 'Everything by This Publisher'),
-                    $.make('div', { className: 'NB-classifiers' },
+                    $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                         this.make_publisher(feed, opinion)
                     )
                 ]),
@@ -118,9 +118,9 @@ var classifier = {
         this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post' }, [
-                (story.story_title && $.make('div', { className: 'NB-modal-field' }, [
+                (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                     $.make('h5', 'Story Title'),
-                    $.make('div', { className: 'NB-classifiers' }, [
+                    $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                         $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
                         $.make('div', { className: 'NB-classifier NB-classifier-title NB-classifier-facet-disabled' }, [
                             $.make('input', { type: 'checkbox', name: opinion+'title', value: '', id: 'classifier_title' }),
@@ -131,21 +131,21 @@ var classifier = {
                         ])
                     ])
                 ])),
-                (story.story_authors && $.make('div', { className: 'NB-modal-field' }, [
+                (story.story_authors && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                     $.make('h5', 'Story Author'),
-                    $.make('div', { className: 'NB-classifiers' },
+                    $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                         this.make_authors([story.story_authors], opinion)
                     )
                 ])),
-                (story.story_tags.length && $.make('div', { className: 'NB-modal-field' }, [
+                (story.story_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                     $.make('h5', 'Story Categories &amp; Tags'),
-                    $.make('div', { className: 'NB-classifier-tags NB-classifiers' },
+                    $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                         this.make_tags(story.story_tags, opinion)
                     )
                 ])),
-                $.make('div', { className: 'NB-modal-field' }, [
+                $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                     $.make('h5', 'Everything by This Publisher'),
-                    $.make('div', { className: 'NB-classifiers' },
+                    $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
                         this.make_publisher(feed, opinion)
                     )
                 ]),

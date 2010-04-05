@@ -45,26 +45,32 @@ NEWSBLUR.ReaderManageFeed.prototype = {
                     $.make('div', { className: 'NB-modal-loading' }),
                     $.make('h2', { className: 'NB-modal-title' }),
                     $.make('div', { className: 'NB-manage-field' }, [
-                        $.make('h5', [
-                            'What you ',
-                            $.make('span', { className: 'NB-classifier-like' }, 'like')
-                        ]),
-                        $.make('div', { className: 'NB-manage-classifier NB-manage-classifier-likes' }),
-                        $.make('h5', [
-                            'What you ',
-                            $.make('span', { className: 'NB-classifier-dislike' }, 'dislike')
-                        ]),
-                        $.make('div', { className: 'NB-manage-classifier NB-manage-classifier-dislikes' }),
-                        $.make('h5', 'Management'),
-                        $.make('div', { className: 'NB-manage-management' }, [
-                            $.make('div', { className: 'NB-manage-rename' }, [
-                                $.make('label', { className: 'NB-manage-rename-label', 'for': 'id_rename' }, "Feed Title: "),
-                                $.make('input', { name: 'rename_title', id: 'id_rename' })
+                        $.make('div', { className: 'NB-fieldset' }, [
+                            $.make('h5', [
+                                'What you ',
+                                $.make('span', { className: 'NB-classifier-like' }, 'like')
                             ]),
-                            $.make('div', { className: 'NB-manage-delete' }, [
-                                $.make('a', { className: 'NB-delete', href: '#' }, "Delete this feed"),
-                                $.make('a', { className: 'NB-delete-confirm', href: '#' }, "Yes, delete this feed!"),
-                                $.make('a', { className: 'NB-delete-cancel', href: '#' }, "cancel")
+                            $.make('div', { className: 'NB-manage-classifier NB-manage-classifier-likes NB-fieldset-fields' })
+                        ]),
+                        $.make('div', { className: 'NB-fieldset' }, [
+                            $.make('h5', [
+                                'What you ',
+                                $.make('span', { className: 'NB-classifier-dislike' }, 'dislike')
+                            ]),
+                            $.make('div', { className: 'NB-manage-classifier NB-manage-classifier-dislikes NB-fieldset-fields' })
+                        ]),
+                        $.make('div', { className: 'NB-fieldset' }, [
+                            $.make('h5', 'Management'),
+                            $.make('div', { className: 'NB-manage-management NB-fieldset-fields' }, [
+                                $.make('div', { className: 'NB-manage-rename' }, [
+                                    $.make('label', { className: 'NB-manage-rename-label', 'for': 'id_rename' }, "Feed Title: "),
+                                    $.make('input', { name: 'rename_title', id: 'id_rename' })
+                                ]),
+                                $.make('div', { className: 'NB-manage-delete' }, [
+                                    $.make('a', { className: 'NB-delete', href: '#' }, "Delete this feed"),
+                                    $.make('a', { className: 'NB-delete-confirm', href: '#' }, "Yes, delete this feed!"),
+                                    $.make('a', { className: 'NB-delete-cancel', href: '#' }, "cancel")
+                                ])
                             ])
                         ])
                     ])

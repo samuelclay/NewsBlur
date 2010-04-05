@@ -21,12 +21,12 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.$add = $.make('div', { className: 'NB-add NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, 'Add feeds and folders'),
             $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
-                $.make('div', { className: 'NB-add-field' }, [
+                $.make('div', { className: 'NB-fieldset' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
                         'Add a new feed'
                     ]),
-                    $.make('div', { className: 'NB-add-fields' }, [
+                    $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', [
                             $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
                             $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url' }),
@@ -34,12 +34,12 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-add-field' }, [
+                $.make('div', { className: 'NB-fieldset' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
                         'Add a new folder'
                     ]),
-                    $.make('div', { className: 'NB-add-fields' }, [
+                    $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', [
                             $.make('label', { 'for': 'NB-add-folder' }, [
                                 $.make('div', { className: 'NB-folder-icon' })
@@ -49,9 +49,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-add-field' }, [
+                $.make('div', { className: 'NB-fieldset' }, [
                     $.make('h5', 'Upload OPML (from Google Reader)'),
-                    $.make('div', { className: 'NB-add-fields' }, [
+                    $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
                         $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
                             e.preventDefault();
@@ -60,11 +60,11 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         })
                     ])
                 ]),
-                $.make('div', { className: 'NB-add-field' }, [
+                $.make('div', { className: 'NB-fieldset' }, [
                     $.make('h5', [
                         'Import from Google Reader'
                     ]),
-                    $.make('div', { className: 'NB-add-fields' }, [
+                    $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months.')
                     ])
                 ])

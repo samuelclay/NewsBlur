@@ -1079,6 +1079,27 @@ form.opml_import_form input {
     vertical-align: middle;
 }
 
+.NB-modal .NB-fieldset {
+    background-color: #F0F0FF;
+    border-bottom: 1px solid #D0D0D9;
+    margin: 16px 0 0;
+    overflow: hidden;
+}
+
+.NB-modal .NB-fieldset-fields {
+    margin: 8px 0 4px 16px;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.NB-modal h5 {
+    margin: 0;
+    padding: 0;
+    padding: 8px 8px 6px;
+    background-color: #D9DDF9;
+    text-shadow: 0 1px 0 #F6F6F6;
+}
+
 /* ============== */
 /* = Classifier = */
 /* ============== */
@@ -1165,7 +1186,6 @@ form.opml_import_form input {
 }
 
 .NB-classifiers {
-    margin-left: 24px;
 }
 
 /* ======================= */
@@ -1209,32 +1229,20 @@ form.opml_import_form input {
 /* = Add Feeds/Folders = */
 /* ===================== */
 
-.NB-add h5 {
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-    padding: 6px 8px 2px;
-    background-color: #D9DDF9;
+.NB-modal.NB-add .NB-fieldset-fields {
+    margin: 14px 0 14px 16px;
 }
+
 .NB-add .NB-add-folders {
     text-transform: none;
     position: absolute;
     right: 8px;
-    bottom: 2px;
+    bottom: 6px;
 }
 
 .NB-add .NB-add-folders select {
     width: 200px;
-}
-
-.NB-add .NB-add-field {
-    padding: 0px 0px 12px;
-    background-color: #F0F0FF;
-    margin: 12px 0 0;
-}
-
-.NB-add .NB-add-fields {
-    margin: 12px 0 0 12px;
+    font-size: 13px;
 }
 
 .NB-add input[type=file] {
@@ -1250,7 +1258,7 @@ form.opml_import_form input {
     width: 350px;
     font-size: 14px;
     padding: 2px;
-    margin: 0 4px;
+    margin: 2px 4px 2px;
     border: 1px solid #606060;
     -moz-box-shadow:2px 2px 0 #D0D0D0;
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
@@ -1277,7 +1285,7 @@ form.opml_import_form input {
 }
 
 .NB-manage .NB-manage-container {
-    height: 300px;
+    height: 375px;
     overflow-y: auto;
     padding: 0 18px 18px 0;
 }
@@ -1308,7 +1316,7 @@ form.opml_import_form input {
 }
 
 .NB-manage .NB-classifier-empty {
-    margin: 0 0 0 12px;
+    margin: 0 0 4px 12px;
     font-size: 12px;
     color: #A0A0A0;
 }
@@ -1350,7 +1358,7 @@ form.opml_import_form input {
 }
 
 .NB-manage .NB-manage-delete {
-    margin: 0 0 0 12px;
+    margin: 0 0 4px 12px;
     font-size: 12px;
 }
 
@@ -1371,7 +1379,7 @@ form.opml_import_form input {
 .NB-manage .NB-manage-delete .NB-delete-cancel {
     margin: 0;
     text-decoration: underline;
-    color: #DBDBDB;
+    color: #A0A0A0;
     display: none;
 }
 
