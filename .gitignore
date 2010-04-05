@@ -1,5 +1,6 @@
 logs/*.log
 *.pycmedia/release/
 *.pyc
-media/release/*
+media/*/*-compressed-*.*
+media/release
 local_settings.py
