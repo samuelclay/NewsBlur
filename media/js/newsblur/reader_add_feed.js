@@ -24,39 +24,49 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                 $.make('div', { className: 'NB-add-field' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
-                        'Add a new feed',
+                        'Add a new feed'
                     ]),
                     $.make('div', { className: 'NB-add-fields' }, [
                         $.make('div', [
-                            $.make('label', { 'for': 'NB-add-url' }, 'Web or RSS Address: '),
-                            $.make('input', { id: 'NB-add-url', className: 'NB-add-url', name: 'url' })
+                            $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
+                            $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url' }),
+                            $.make('input', { type: 'submit', value: 'Add it' })
                         ])
-                    ]),
+                    ])
+                ]),
+                $.make('div', { className: 'NB-add-field' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
-                        'Add a new folder',
+                        'Add a new folder'
                     ]),
+                    $.make('div', { className: 'NB-add-fields' }, [
+                        $.make('div', [
+                            $.make('label', { 'for': 'NB-add-folder' }, [
+                                $.make('div', { className: 'NB-folder-icon' })
+                            ]),
+                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-add-folder', name: 'url' }),
+                            $.make('input', { type: 'submit', value: 'Add folder' })
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-add-field' }, [
+                    $.make('h5', 'Upload OPML (from Google Reader)'),
+                    $.make('div', { className: 'NB-add-fields' }, [
+                        $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
+                        $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
+                            e.preventDefault();
+                            self.handle_opml_upload();
+                            return false;
+                        })
+                    ])
+                ]),
+                $.make('div', { className: 'NB-add-field' }, [
                     $.make('h5', [
-                        'Import from Google Reader',
+                        'Import from Google Reader'
                     ]),
                     $.make('div', { className: 'NB-add-fields' }, [
                         $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months.')
-                    ]),
-                    $.make('h5', 'Upload OPML (from Google Reader)'),
-                    $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
-                    $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
-                        e.preventDefault();
-                        self.handle_opml_upload();
-                        return false;
-                    })
-                ]),
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
-                    $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    ])
                 ])
             ]).bind('submit', function(e) {
                 e.preventDefault();

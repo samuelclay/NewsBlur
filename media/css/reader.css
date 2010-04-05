@@ -1027,10 +1027,11 @@ form.opml_import_form input {
     border-bottom: 1px solid #A0A0A0;
     padding: 18px 0 0px;
     margin: 0 0 6px 0;
-    color: #808080;
+    color:#505050;
+    font-size: 14px;
+    font-family: "Gill Sans", inherit;
     text-transform: uppercase;
     font-weight: normal;
-    font-size: 70%;
     overflow: hidden;
     position: relative;
 }
@@ -1209,17 +1210,63 @@ form.opml_import_form input {
 /* ===================== */
 
 .NB-add h5 {
-    margin: 8px 0 0 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    padding: 6px 8px 2px;
+    background-color: #D9DDF9;
 }
 .NB-add .NB-add-folders {
     text-transform: none;
     position: absolute;
-    right: 0;
+    right: 8px;
     bottom: 2px;
 }
 
 .NB-add .NB-add-folders select {
     width: 200px;
+}
+
+.NB-add .NB-add-field {
+    padding: 0px 0px 12px;
+    background-color: #F0F0FF;
+    margin: 12px 0 0;
+}
+
+.NB-add .NB-add-fields {
+    margin: 12px 0 0 12px;
+}
+
+.NB-add input[type=file] {
+    font-size: 14px;
+}
+
+.NB-add input[type=submit] {
+    font-size: 14px;
+    margin: 0 0 0 4px;
+}
+
+.NB-add input[type=text] {
+    width: 350px;
+    font-size: 14px;
+    padding: 2px;
+    margin: 0 4px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
+
+.NB-add .NB-folder-icon {
+    float: left;
+    margin: 4px 0px 4px;
+    background: transparent url('../img/icons/silk/folder.png') no-repeat 0 0;    
+    width: 16px;
+    height: 16px;
+}
+
+.NB-add input.NB-add-folder {
+    margin-left: 6px;
 }
 
 /* ================ */
@@ -1297,9 +1344,9 @@ form.opml_import_form input {
     margin: 0 4px;
     border: 1px solid #606060;
     width: 400px;
-    -moz-box-shadow:1px 1px 1px #E0E0E0;
-    -webkit-box-shadow:1px 1px 1px #E0E0E0;
-    box-shadow:1px 1px 1px #E0E0E0;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
 }
 
 .NB-manage .NB-manage-delete {
