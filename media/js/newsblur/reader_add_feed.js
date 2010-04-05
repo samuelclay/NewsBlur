@@ -19,17 +19,26 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         var self = this;
         
         this.$add = $.make('div', { className: 'NB-add NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Add a feed'),
+            $.make('h2', { className: 'NB-modal-title' }, 'Add feeds and folders'),
             $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-add-field' }, [
-                    $.make('h5', 'Search for a publisher'),
+                    $.make('h5', [
+                        $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
+                        'Add a new feed',
+                    ]),
                     $.make('div', { className: 'NB-add-fields' }, [
                         $.make('div', [
-                            $.make('label', { 'for': 'NB-add-url' }, 'URL: '),
-                            $.make('input', { id: 'NB-add-url', name: 'url' })
+                            $.make('label', { 'for': 'NB-add-url' }, 'Web or RSS Address: '),
+                            $.make('input', { id: 'NB-add-url', className: 'NB-add-url', name: 'url' })
                         ])
                     ]),
-                    $.make('h5', 'Import from Google Reader'),
+                    $.make('h5', [
+                        $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
+                        'Add a new folder',
+                    ]),
+                    $.make('h5', [
+                        'Import from Google Reader',
+                    ]),
                     $.make('div', { className: 'NB-add-fields' }, [
                         $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months.')
                     ]),
@@ -57,7 +66,35 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         ]);
     
     },
+    
+    make_folders: function() {
+        var folders = this.model.get_folders();
+        var $options = $.make('select');
         
+        var $option = $.make('option', { value: '' }, "Top Level");
+        $options.append($option);
+
+        $options = this.make_folder_options($options, folders, '-');
+        
+        return $options;
+    },
+
+    make_folder_options: function($options, items, depth) {
+        for (var i in items) {
+            var item = items[i];
+            if (typeof item == "object") {
+                for (var o in item) {
+                    var folder = item[o];
+                    var $option = $.make('option', { value: o }, depth + ' ' + o);
+                    $options.append($option);
+                    $options = this.make_folder_options($options, folder, depth+'-');
+                }
+            }
+        }
+    
+        return $options;
+    },
+
     open_modal: function() {
         var self = this;
 

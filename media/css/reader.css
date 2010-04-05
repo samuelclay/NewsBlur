@@ -1031,6 +1031,8 @@ form.opml_import_form input {
     text-transform: uppercase;
     font-weight: normal;
     font-size: 70%;
+    overflow: hidden;
+    position: relative;
 }
 
 .NB-modal .NB-modal-field {
@@ -1200,6 +1202,24 @@ form.opml_import_form input {
 }
 
 .NB-intelligence-slider {
+}
+
+/* ===================== */
+/* = Add Feeds/Folders = */
+/* ===================== */
+
+.NB-add h5 {
+    margin: 8px 0 0 0;
+}
+.NB-add .NB-add-folders {
+    text-transform: none;
+    position: absolute;
+    right: 0;
+    bottom: 2px;
+}
+
+.NB-add .NB-add-folders select {
+    width: 200px;
 }
 
 /* ================ */
