@@ -200,7 +200,7 @@ class Feed(models.Model):
         # print "Formatting Stories: %s" % stories_db.count()
         for story_db in stories_db:
             story = {}
-            story_tags = story_db.tags.all()
+            # story_tags = story_db.tags.all()
             story['story_tags'] = story_db.story_tags
             story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
             story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
