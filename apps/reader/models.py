@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import datetime
 import random
 from django.core.cache import cache
-from apps.rss_feeds.models import Feed, Story
+from apps.rss_feeds.models import Feed, Story, Tag
 from utils import feedparser, object_manager, json
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -101,9 +101,15 @@ class UserSubscription(models.Model):
                                                 feed=self.feed,
                                                 story__story_date__gte=date_delta)
         read_stories_ids = [rs.story.id for rs in read_stories]
-        stories_db = Story.objects.filter(story_feed=self.feed,
-                                          story_date__gte=date_delta)\
-                                  .exclude(id__in=read_stories_ids)
+        # print "Read Stories IDs: %s" % read_stories_ids
+        # print "Date delta: %s" % date_delta
+        from django.db import connection
+        connection.queries = []
+        stories_db = Story.objects.select_related('story_author')\
+                                  .exclude(id__in=read_stories_ids)\
+                                  .filter(story_feed=self.feed,
+                                          story_date__gte=date_delta)
+        # print "Stories_db: %s" % stories_db.count()
         stories = self.feed.format_stories(stories_db)
         # print '  Stories: %s\t' % stories_db.count(),
         # if read_stories.count(): print '(%s read)' % (read_stories.count())

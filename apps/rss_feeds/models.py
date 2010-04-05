@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core import serializers
 from django.core.cache import cache
-from utils import feedparser, object_manager
+from utils import feedparser, object_manager, json
 from utils.dateutil.parser import parse as dateutil_parse
 from utils.feed_functions import encode, prints, mtime, levenshtein_distance
 import time, datetime, random
@@ -104,7 +104,8 @@ class Feed(models.Model):
                            story_content = story_content,
                            story_author = story_author,
                            story_permalink = story.get('link'),
-                           story_guid = story.get('guid') or story.get('id') or story.get('link')
+                           story_guid = story.get('guid') or story.get('id') or story.get('link'),
+                           story_tags = json.encode([t.name for t in story_tags])
                     )
                     try:
                         ret_values[ENTRY_NEW] += 1
@@ -138,7 +139,8 @@ class Feed(models.Model):
                            story_original_content = original_content,
                            story_author = story_author,
                            story_permalink = story.get('link'),
-                           story_guid = story.get('guid') or story.get('id') or story.get('link')
+                           story_guid = story.get('guid') or story.get('id') or story.get('link'),
+                           story_tags = json.encode([t.name for t in story_tags])
                     )
                     s.tags.clear()
                     [s.tags.add(tcat) for tcat in story_tags]
@@ -194,11 +196,12 @@ class Feed(models.Model):
     
     def format_stories(self, stories_db):
         stories = []
-        
+        # from django.db import connection
+        # print "Formatting Stories: %s" % stories_db.count()
         for story_db in stories_db:
             story = {}
             story_tags = story_db.tags.all()
-            story['story_tags'] = [tag.name for tag in story_tags]
+            story['story_tags'] = story_db.story_tags
             story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
             story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
             story['story_date'] = story_db.story_date
@@ -206,7 +209,7 @@ class Feed(models.Model):
             story['story_title'] = story_db.story_title
             story['story_content'] = story_db.story_content
             story['story_permalink'] = story_db.story_permalink
-            story['story_feed_id'] = story_db.story_feed.id
+            story['story_feed_id'] = self
             story['id'] = story_db.id
             
             stories.append(story)
@@ -325,6 +328,7 @@ class Story(models.Model):
     story_permalink = models.CharField(max_length=1000)
     story_guid = models.CharField(max_length=1000)
     story_past_trim_date = models.BooleanField(default=False)
+    story_tags = models.CharField(max_length=1000)
     tags = models.ManyToManyField(Tag)
 
     def __unicode__(self):
