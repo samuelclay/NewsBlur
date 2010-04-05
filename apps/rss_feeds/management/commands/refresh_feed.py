@@ -33,6 +33,3 @@ class Command(BaseCommand):
             usersubs = UserSubscription.objects.filter(
                 feed=feed.id
             )
-            for us in usersubs:
-                us.count_unread()
-                cache.delete('usersub:%s' % us.user_id)

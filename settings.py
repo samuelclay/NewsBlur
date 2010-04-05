@@ -57,49 +57,8 @@ logging.basicConfig(level=logging.INFO,
                 filename=LOG_FILE,
                 filemode='w')
                 
-if PRODUCTION:
-    DATABASES = {
-        'default': {
-            'NAME': 'newsblur',
-            'ENGINE': 'django.db.backends.mysql',
-            'USER': 'newsblur',
-            'PASSWORD': '',
-            'HOST': '127.0.0.1'
-        }
-    }
-    # Absolute path to the directory that holds media.
-    # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_URL = 'http://www.newsblur.com/media/'
-    DEBUG = False
-    CACHE_BACKEND = 'memcached://127.0.0.1:11211'
-    logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s %(message)s',
-                    filename=LOG_FILE,
-                    filemode='w')
-    PREPEND_WWW = True
-elif STAGING:
-    DATABASES = {
-        'default': {
-            'NAME': 'newsblur',
-            'ENGINE': 'django.db.backends.mysql',
-            'USER': 'newsblur',
-            'PASSWORD': '',
-            'HOST': '127.0.0.1'
-        }
-    }
-    DATABASE_HOST = 'localhost'
-    DATABASE_PORT = ''         
 
-    # Absolute path to the directory that holds media.
-    # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_URL = '/media/'
-    DEBUG = True
-    CACHE_BACKEND = 'file:///var/tmp/django_cache'
-    logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(message)s',
-                    filename=LOG_FILE,
-                    filemode='w')
-elif DEV_SERVER2:
+if DEV_SERVER2:
     DATABASES = {
         'default': {
             'NAME': 'newsblur',

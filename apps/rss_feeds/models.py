@@ -201,7 +201,7 @@ class Feed(models.Model):
         for story_db in stories_db:
             story = {}
             # story_tags = story_db.tags.all()
-            story['story_tags'] = story_db.story_tags
+            story['story_tags'] = (story_db.story_tags and json.decode(story_db.story_tags)) or []
             story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
             story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
             story['story_date'] = story_db.story_date
@@ -209,7 +209,7 @@ class Feed(models.Model):
             story['story_title'] = story_db.story_title
             story['story_content'] = story_db.story_content
             story['story_permalink'] = story_db.story_permalink
-            story['story_feed_id'] = self
+            story['story_feed_id'] = self.pk
             story['id'] = story_db.id
             
             stories.append(story)

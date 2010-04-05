@@ -31,25 +31,7 @@ class UserSubscription(models.Model):
         
     def get_user_feeds(self):
         return Feed.objects.get(user=self.user, feed=feeds)
-    
-    def count_unread(self):
-        if self.unread_count_updated > self.feed.last_update:
-            return self.unread_count
-            
-        count = (self.stories_newer_lastread()
-                 + self.stories_between_lastread_allread())
-        if count == 0:
-            self.mark_read_date = datetime.datetime.now()
-            self.last_read_date = datetime.datetime.now()
-            self.unread_count_updated = datetime.datetime.now()
-            self.unread_count = 0
-            self.save()
-        else:
-            self.unread_count = count
-            self.unread_count_updated = datetime.datetime.now()
-            self.save()
-        return count
-    
+        
     def mark_read(self):
         self.last_read_date = datetime.datetime.now()
         self.unread_count -= 1
