@@ -52,6 +52,11 @@ DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
+logging.basicConfig(level=logging.INFO,
+                format='%(asctime)s %(levelname)s %(message)s',
+                filename=LOG_FILE,
+                filemode='w')
+                
 if PRODUCTION:
     DATABASES = {
         'default': {
