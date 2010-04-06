@@ -51,8 +51,9 @@ class FetchFeed:
         """
 
         current_process = multiprocessing.current_process()
-        log_msg = u'[%d-%s] Fetching %s' % (self.feed.id, current_process.name,
-                                             self.feed.feed_title)
+        log_msg = u'%2s ---> Fetching %s (%d)' % (current_process._identity[0],
+                                                 self.feed.feed_title,
+                                                 self.feed.id)
         logging.info(log_msg)
         print(log_msg)
         
@@ -288,18 +289,20 @@ class Dispatcher:
                 comment = u' (SLOW FEED!)'
             else:
                 comment = u''
-            done = (u'[%d-%s] Processed %s in %s [%s] [%s]%s' % (
-                feed.id, current_process.name, feed.feed_title, unicode(delta),
+                
+            done_msg = (u'%2s ---> Processed %s (%d) in %s\n        [%s] [%s]%s' % (
+                current_process._identity[0], feed.feed_title, feed.id, unicode(delta),
                 self.feed_trans[ret_feed],
                 u' '.join(u'%s=%d' % (self.entry_trans[key],
                           ret_entries[key]) for key in self.entry_keys),
                 comment))
-            logging.debug(done)
-            print(done)
+            logging.debug(done_msg)
+            print(done_msg)
+            
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
-        print "DONE WITH PROCESS: %s" % current_process.name
+        print "---> DONE WITH PROCESS: %s" % current_process.name
         sys.exit()
 
     def add_jobs(self, feeds_queue):
