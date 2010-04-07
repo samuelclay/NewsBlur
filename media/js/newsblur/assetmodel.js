@@ -272,6 +272,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     delete_publisher: function(feed_id, callback) {
         delete this.feeds[feed_id];
         this.make_request('/reader/delete_feed', {'feed_id': feed_id}, callback, null);
+    },
+    
+    save_add_url: function(url, folder, callback) {
+        this.make_request('/reader/add_url/', {
+            'url': url,
+            'folder': folder
+        }, callback, null);
+    },
+    
+    save_add_folder: function(folder, parent_folder, callback) {
+        this.make_request('/reader/add_folder/', {
+            'folder': folder,
+            'parent_folder': parent_folder
+        }, callback, null);
     }
     
 };

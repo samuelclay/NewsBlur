@@ -1242,7 +1242,7 @@ form.opml_import_form input {
 
 .NB-add .NB-add-folders select {
     width: 200px;
-    font-size: 13px;
+    font-size: 11px;
 }
 
 .NB-add input[type=file] {
@@ -1275,6 +1275,14 @@ form.opml_import_form input {
 
 .NB-add input.NB-add-folder {
     margin-left: 6px;
+}
+
+.NB-add .NB-error {
+    display: none;
+    font-weight: bold;
+    font-size: 14px;
+    color: #7E0418;
+    margin: 10px 0 0 0;
 }
 
 /* ================ */

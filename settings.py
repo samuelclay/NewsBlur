@@ -25,7 +25,6 @@ if '/utils' not in ' '.join(sys.path):
 # = Global Settings =
 # ===================
 
-DEBUG = True
 ADMINS = (
     ('Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
@@ -57,34 +56,6 @@ logging.basicConfig(level=logging.INFO,
                 filename=LOG_FILE,
                 filemode='w')
                 
-
-if DEV_SERVER2:
-    DATABASES = {
-        'default': {
-            'NAME': 'newsblur',
-            'ENGINE': 'django.db.backends.mysql',
-            'USER': 'newsblur',
-            'PASSWORD': '',
-            'HOST': '127.0.0.1',
-        }
-    }
-    DATABASE_HOST = 'localhost'
-    DATABASE_PORT = ''         
-
-    # Absolute path to the directory that holds media.
-    # Example: "/Users/media/media.lawrence.com/"
-    MEDIA_URL = '/media/'
-    DEBUG = True
-    # CACHE_BACKEND = 'locmem:///'
-    CACHE_BACKEND = 'dummy:///'
-    # CACHE_BACKEND = 'memcached://127.0.0.1:11211'
-    logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(message)s',
-                    filename=LOG_FILE,
-                    filemode='w')
-
-TEMPLATE_DEBUG = DEBUG
-
 # ===========================
 # = Django-specific Modules =
 # ===========================
@@ -154,8 +125,6 @@ COMPRESS_CSS = {
     }
 }
 
-COMPRESS = not DEBUG
-COMPRESS_VERSION = not DEBUG
 COMPRESS_JS_FILTERS = ['compress.filters.jsmin.JSMinFilter']
 COMPRESS_CSS_FILTERS = []
 
@@ -180,14 +149,6 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.logger.LoggingPanel',
 )
 
-def custom_show_toolbar(request):
-    return DEBUG
-
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': True,
-    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
-    'HIDE_DJANGO_SQL': False,
-}
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -239,3 +200,13 @@ DEVSERVER_MODULES = (
 from local_settings import *
 
 COMPRESS = not DEBUG
+TEMPLATE_DEBUG = DEBUG
+
+def custom_show_toolbar(request):
+    return DEBUG
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': True,
+    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
+    'HIDE_DJANGO_SQL': False,
+}

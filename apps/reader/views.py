@@ -8,9 +8,10 @@ except:
     pass
 from django.core.cache import cache
 from django.views.decorators.cache import never_cache
+from django.db.models import Q
 from django.db.models.aggregates import Count
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
-from utils import json
+from utils import json, feedfinder
 from utils.user_functions import get_user
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -242,6 +243,88 @@ def _parse_user_info(user):
         }
     }
 
+@login_required
+def add_url(request):
+    code = 0
+    url = request.POST['url']
+    folder = request.POST['folder']
+    feed = None
+    
+    if url:
+        feed = Feed.objects.filter(Q(feed_address=url) 
+                                   | Q(feed_link__icontains=url))
+    
+    if feed:
+        feed = feed[0]
+    else:
+        feed_finder_url = feedfinder.feed(url)
+        if feed_finder_url:
+            try:
+                feed = Feed.objects.get(feed_address=feed_finder_url)
+            except Feed.DoesNotExist:
+                try:
+                    feed = Feed(feed_address=feed_finder_url)
+                    feed.save()
+                    feed.update()
+                except:
+                    code = -2
+                    message = "This feed has been added, but something went wrong"\
+                              " when downloading it. Maybe the server's busy."
+                
+    if not feed:    
+        code = -1
+        message = "Errm, is that a URL?"
+    else:
+        us, _ = UserSubscription.objects.get_or_create(feed=feed, user=request.user)
+        code = 1
+        message = ""
+        
+        user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
+        user_sub_folders = json.decode(user_sub_folders_object.folders)
+        user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
+        user_sub_folders_object.folders = json.encode(user_sub_folders)
+        user_sub_folders_object.save()
+    
+    data = dict(code=code, message=message)
+    return HttpResponse(json.encode(data))
+
+def _add_object_to_folder(obj, folder, folders):
+    if not folder:
+        folders.append(obj)
+        return folders
+        
+    for k, v in enumerate(folders):
+        if isinstance(v, dict):
+            for f_k, f_v in v.items():
+                if f_k == folder:
+                    f_v.append(obj)
+                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
+    return folders
+
+@login_required
+def add_folder(request):
+    folder = request.POST['folder']
+    parent_folder = request.POST['parent_folder']
+    
+    if folder:
+        code = 1
+        message = ""
+        user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
+        if user_sub_folders_object.folders:
+            user_sub_folders = json.decode(user_sub_folders_object.folders)
+        else:
+            user_sub_folders = []
+        obj = {folder: []}
+        user_sub_folders = _add_object_to_folder(obj, parent_folder, user_sub_folders)
+        user_sub_folders_object.folders = json.encode(user_sub_folders)
+        user_sub_folders_object.save()
+    else:
+        code = -1
+        message = "Gotta write in a folder name."
+        
+    data = dict(code=code, message=message)
+    return HttpResponse(json.encode(data))
+    
 @login_required
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])

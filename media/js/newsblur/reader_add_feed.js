@@ -13,6 +13,8 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.make_modal();
         this.handle_cancel();
         this.open_modal();
+        
+        this.$add.bind('click', $.rescope(this.handle_click, this));
     },
     
     make_modal: function() {
@@ -20,8 +22,8 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
         this.$add = $.make('div', { className: 'NB-add NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, 'Add feeds and folders'),
-            $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
-                $.make('div', { className: 'NB-fieldset' }, [
+            $.make('div', { className: 'NB-add-form' }, [
+                $.make('div', { className: 'NB-fieldset NB-add-add-url' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
                         'Add a new feed'
@@ -30,7 +32,8 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         $.make('div', [
                             $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
                             $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url' }),
-                            $.make('input', { type: 'submit', value: 'Add it' })
+                            $.make('input', { type: 'submit', value: 'Add it', className: 'NB-add-url-submit' }),
+                            $.make('div', { className: 'NB-error' })
                         ])
                     ])
                 ]),
@@ -45,19 +48,21 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                                 $.make('div', { className: 'NB-folder-icon' })
                             ]),
                             $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-add-folder', name: 'url' }),
-                            $.make('input', { type: 'submit', value: 'Add folder' })
+                            $.make('input', { type: 'submit', value: 'Add folder', className: 'NB-add-folder-submit' })
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-fieldset' }, [
                     $.make('h5', 'Upload OPML (from Google Reader)'),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
-                        $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
-                            e.preventDefault();
-                            self.handle_opml_upload();
-                            return false;
-                        })
+                        $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
+                            $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
+                            $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
+                                e.preventDefault();
+                                self.handle_opml_upload();
+                                return false;
+                            })
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-fieldset' }, [
@@ -68,18 +73,14 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months.')
                     ])
                 ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save();
-                return false;
-            })
+            ])
         ]);
     
     },
     
     make_folders: function() {
         var folders = this.model.get_folders();
-        var $options = $.make('select');
+        var $options = $.make('select', { className: 'NB-folders'});
         
         var $option = $.make('option', { value: '' }, "Top Level");
         $options.append($option);
@@ -146,24 +147,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             $.modal.close();
         });
     },
-    
-    serialize_classifier: function() {
-        var data = $('.NB-add form input').serialize();
         
-        return data;
-    },
-    
-    save: function() {
-        var $save = $('.NB-modal input[type=submit]');
-        var story_id = this.story_id;
-        var data = this.serialize_classifier();
-        
-        $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
-        this.model.save_classifier_publisher(data, function() {
-            $.modal.close();
-        });
-    },
-    
     // ========
     // = OPML =
     // ========
@@ -213,6 +197,70 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             self.model.process_opml_import($form.serialize(), callback);
             return false;
         });
+    },
+    
+    // ===========
+    // = Actions =
+    // ===========
+
+    handle_click: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
+            e.preventDefault();
+        
+            var url = $('.NB-add-url').val();
+            var folder = $('.NB-add-url').parents('.NB-fieldset').find('.NB-folders').val();
+            
+            self.save_add_url(url, folder);
+        });
+        
+        $.targetIs(e, { tagSelector: '.NB-add-folder-submit' }, function($t, $p) {
+            e.preventDefault();
+        
+            var folder = $('.NB-add-folder').val();
+            var parent_folder = $('.NB-add-folder').parents('.NB-fieldset').find('.NB-folders').val();
+            
+            self.save_add_folder(folder, parent_folder);
+        });
+    },
+    
+    save_add_url: function(url, folder) {
+        var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+        $error.slideUp(300);
+
+        this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this));
+    },
+    
+    post_save_add_url: function(e, data) {
+        NEWSBLUR.log(['Data', data]);
+        if (data.code > 0) {
+            NEWSBLUR.reader.load_feeds();
+            $.modal.close();
+        } else {
+            var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+            $error.text(data.message);
+            $error.slideDown(300);
+        }
+    },
+    
+    save_add_folder: function(folder, parent_folder) {
+        var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+        $error.slideUp(300);
+
+        this.model.save_add_folder(folder, parent_folder, $.rescope(this.post_save_add_folder, this));
+    },
+    
+    post_save_add_folder: function(e, data) {
+        NEWSBLUR.log(['Data', data]);
+        if (data.code > 0) {
+            NEWSBLUR.reader.load_feeds();
+            $.modal.close();
+        } else {
+            var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+            $error.text(data.message);
+            $error.slideDown(300);
+        }
     }
     
 };

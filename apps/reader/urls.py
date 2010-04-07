@@ -15,4 +15,6 @@ urlpatterns = patterns('',
     (r'^get_read_feed_items', views.get_read_feed_items),
     (r'^get_read_feed_items', views.get_read_feed_items),
     (r'^delete_feed', views.delete_feed),
+    (r'^add_url', views.add_url),
+    (r'^add_folder', views.add_folder),
 )

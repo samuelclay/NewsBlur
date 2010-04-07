@@ -290,11 +290,11 @@ class Dispatcher:
             else:
                 comment = u''
                 
-            done_msg = (u'%2s ---> Processed %s (%d) in %s\n        [%s] [%s]%s' % (
+            done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
                 current_process._identity[0], feed.feed_title, feed.id, unicode(delta),
-                self.feed_trans[ret_feed],
                 u' '.join(u'%s=%d' % (self.entry_trans[key],
                           ret_entries[key]) for key in self.entry_keys),
+                self.feed_trans[ret_feed],
                 comment))
             logging.debug(done_msg)
             print(done_msg)
