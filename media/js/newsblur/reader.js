@@ -236,7 +236,6 @@
             $('.right-pane').hide();
             $('#NB-splash').show();
             $('#NB-splash-overlay').show();
-            $('.NB-task-manage').addClass('NB-inactive');
         },
         
         // ==============
@@ -494,7 +493,6 @@
             this.active_feed = null;
             this.$story_titles.data('page', 0);
             this.$story_titles.data('feed_id', null);
-            $('.NB-task-manage').removeClass('NB-inactive');
         },
         
         open_feed: function(feed_id, $feed_link) {

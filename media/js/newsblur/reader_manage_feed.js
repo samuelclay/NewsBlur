@@ -14,8 +14,17 @@ NEWSBLUR.ReaderManageFeed = function(feed_id, options) {
 NEWSBLUR.ReaderManageFeed.prototype = {
     
     runner: function() {
-        this.feed = this.model.get_feed(this.feed_id);
         this.feeds = this.model.get_feeds();
+        
+        if (!this.feed_id) {
+            // No feed selected, so just choose a random feed.
+            var feeds_list = [];
+            for (var f in this.feeds) {
+                feeds_list.push(f);
+            }
+            this.feed_id = feeds_list[Math.round(Math.random() * 1000 % (feeds_list.length-1))]
+        }
+        this.feed = this.model.get_feed(this.feed_id);
         
         this.make_modal();
         this.initialize_feed(this.feed_id);
