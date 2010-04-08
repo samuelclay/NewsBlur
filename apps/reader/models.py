@@ -21,6 +21,7 @@ class UserSubscription(models.Model):
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
     unread_count_updated = models.DateTimeField(default=datetime.datetime(2000,1,1))
+    needs_unread_recalc = models.BooleanField(default=False)
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
@@ -29,44 +30,15 @@ class UserSubscription(models.Model):
         self.unread_count_updated = datetime.datetime.now()
         super(UserSubscription, self).save(force_insert, force_update, *args, **kwargs)
         
-    def get_user_feeds(self):
-        return Feed.objects.get(user=self.user, feed=feeds)
-        
-    def mark_read(self):
-        self.last_read_date = datetime.datetime.now()
-        self.unread_count -= 1
-        self.unread_count_updated = datetime.datetime.now()
-        self.save()
-        
     def mark_feed_read(self):
         self.last_read_date = datetime.datetime.now()
         self.mark_read_date = datetime.datetime.now()
-        self.unread_count = 0
+        self.unread_count_negative = 0
+        self.unread_count_positive = 0
+        self.unread_count_neutral = 0
         self.unread_count_updated = datetime.datetime.now()
+        self.needs_unread_relcalc = False
         self.save()
-        # readstories = ReadStories.objects.filter(user=self.user, feed=self.feed)
-        # readstories.delete()
-        
-    def stories_newer_lastread(self):
-        return self.feed.new_stories_since_date(self.last_read_date).count()
-        
-    def stories_between_lastread_allread(self):
-        story_count =   Story.objects.filter(
-                            story_date__gte=self.mark_read_date,
-                            story_date__lte=self.last_read_date,
-                            story_feed=self.feed
-                        ).count()
-        read_count =    UserStory.objects.filter(
-                            feed=self.feed, 
-                            read_date__gte=self.mark_read_date,
-                            read_date__lte=self.last_read_date
-                        ).count()
-        return story_count - read_count
-        
-    def subscribe_to_feed(self, feed_id):
-        feed = Feed.objects.get(id=feed_id)
-        new_subscription = UserSubscription(user=self.user, feed=feed)
-        new_subscription.save()
     
     def calculate_feed_scores(self):
         print '[%s]: %s' % (self.feed, self.user)
@@ -125,16 +97,13 @@ class UserSubscription(models.Model):
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
+        self.needs_unread_recalc = False
         
         self.save()
         
         cache.delete('usersub:%s' % self.user.id)
         
         return
-        
-    def get_scores(self):
-        scores = json.decode(self.scores)
-        return scores
         
     class Meta:
         unique_together = ("user", "feed")

@@ -72,6 +72,8 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
 
     for sub in user_subs:
+        if sub.needs_unread_recalc:
+            sub.calculate_feed_scores()
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
             'feed_title': sub.feed.feed_title,
@@ -166,7 +168,12 @@ def load_feed_page(request):
 def mark_story_as_read(request):
     story_ids = request.REQUEST['story_id'].split(',')
     feed_id = int(request.REQUEST['feed_id'])
-
+    
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed_id)
+    if not usersub.needs_unread_recalc:
+        usersub.needs_unread_recalc = True
+        usersub.save()
+    
     data = dict(code=0, payload=story_ids)
     
     for story_id in story_ids:

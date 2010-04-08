@@ -7,18 +7,30 @@ from optparse import OptionParser, make_option
 import os
 import logging
 import errno
+import re
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option("-f", "--feed", dest="feed", default=None),
+        make_option("-a", "--all", dest="all", action="store_true", help="All feeds [for a user, or everybody]"),
+        make_option("-u", "--user", dest="user", nargs=1, help="Specify user id or username"),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
     )
 
     def handle(self, *args, **options):
         if options['daemonize']:
             daemonize()
+        
+        if options['all']:
+            feeds = UserSubscription.objects.all()
+        else:
+            feeds = UserSubscription.objects.filter(needs_unread_recalc=True)
+
+        if options['user']:
+            if re.match(r"([0-9]+)", options['user']):
+                feeds.filter(user=int(options['user']))
+            else:
+                feeds.filter(user__username=options['user'])
             
-        feeds = UserSubscription.objects.all()
         for f in feeds:
             f.calculate_feed_scores()
         
