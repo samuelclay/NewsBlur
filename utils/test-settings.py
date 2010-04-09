@@ -1,7 +1,13 @@
 from settings import *
-
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = ':memory:'
+DATABASES = {
+    'default': {
+        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'USER': 'newsblur',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+    }
+}
 TEST_DATABASE_NAME = ":memory:"
 
 # from django.db import connection

@@ -317,7 +317,7 @@ class StoryAuthor(models.Model):
         
 class Story(models.Model):
     '''A feed item'''
-    story_feed = models.ForeignKey(Feed)
+    story_feed = models.ForeignKey(Feed, related_name="stories")
     story_date = models.DateTimeField()
     story_title = models.CharField(max_length=255)
     story_content = StoryField(null=True, blank=True)

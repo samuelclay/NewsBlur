@@ -14,10 +14,10 @@ class FeedTest(TestCase):
         self.client.login(username='conesus', password='test')
         
         management.call_command('loaddata', 'gawker1.json', verbosity=0)
-        response = self.client.get('/reader/refresh_feed', { "feed_id": 1, "force": True })
+        management.call_command('refresh_feed', force=1, feed=1, daemonize=False)
         
         management.call_command('loaddata', 'gawker2.json', verbosity=0)
-        response = self.client.get('/reader/refresh_feed', { "feed_id": 1, "force": True })
+        management.call_command('refresh_feed', force=1, feed=1, daemonize=False)
         
         response = self.client.get('/reader/load_single_feed', { "feed_id": 1 })
         
