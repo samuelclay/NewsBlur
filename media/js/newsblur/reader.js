@@ -28,8 +28,8 @@
             'feed_view_story_positions_keys': []
         };
         
-        $('body').bind('click.reader', $.rescope(this.handle_clicks, this));
         $('body').bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
+        $('body').bind('click.reader', $.rescope(this.handle_clicks, this));
         $('#story_titles').scroll($.rescope(this.handle_scroll_story_titles, this));
         this.$feed_view.scroll($.rescope(this.handle_scroll_feed_view, this));
                 
@@ -430,7 +430,8 @@
                     ])
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
-                $.make('span', { className: 'feed_title' }, feed.feed_title)
+                $.make('span', { className: 'feed_title' }, feed.feed_title),
+                $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')
             ]).data('feed_id', feed.id);  
             
             return $feed;  
@@ -498,21 +499,23 @@
         open_feed: function(feed_id, $feed_link) {
             var self = this;
             var $story_titles = this.$story_titles;
-            $story_titles.empty().scrollTop('0px');
             
-            this.reset_feed();
-            this.hide_splash_page();
+            if (feed_id != this.active_feed) {
+                $story_titles.empty().scrollTop('0px');
+                this.reset_feed();
+                this.hide_splash_page();
             
-            this.active_feed = feed_id;
-            this.$story_titles.data('page', 0);
-            this.$story_titles.data('feed_id', feed_id);
+                this.active_feed = feed_id;
+                this.$story_titles.data('page', 0);
+                this.$story_titles.data('feed_id', feed_id);
             
-            this.show_feed_title_in_stories($story_titles, feed_id);
-            this.mark_feed_as_selected(feed_id, $feed_link);
-            this.show_feedbar_loading();
-            this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
-            this.show_feed_page_contents(feed_id);
-            this.show_correct_story_view(feed_id);
+                this.show_feed_title_in_stories($story_titles, feed_id);
+                this.mark_feed_as_selected(feed_id, $feed_link);
+                this.show_feedbar_loading();
+                this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
+                this.show_feed_page_contents(feed_id);
+                this.show_correct_story_view(feed_id);
+            }
         },
         
         post_open_feed: function(e, data, first_load) {
@@ -1275,10 +1278,25 @@
         
         mark_feed_as_read: function(feed_id) {
             var self = this;
-
+            var $feed = this.find_feed_in_feed_list(feed_id);
+            var $story_feedbar = $('.NB-feedbar .feed');
+            var $story_titles = this.$story_titles;
+            
             var callback = function() {
                 return;
             };
+            
+            
+            $('.unread_count_neutral', $feed).text(0);
+            $('.unread_count_positive', $feed).text(0);
+            $('.unread_count_negative', $feed).text(0);
+            $('.unread_count_neutral', $story_feedbar).text(0);
+            $('.unread_count_positive', $story_feedbar).text(0);
+            $('.unread_count_negative', $story_feedbar).text(0);
+            $('.story:not(.read)', $story_titles).addClass('read');
+            $feed.removeClass('unread_neutral');
+            $feed.removeClass('unread_positive');
+            $feed.removeClass('unread_negative');
 
             this.model.mark_feed_as_read(feed_id, callback);
         },
@@ -1311,10 +1329,11 @@
                 var feed_id = $t.data('feed_id');
                 self.open_feed(feed_id, $t);
             });
-            $.targetIs(e, { tagSelector: 'a.mark_feed_as_read' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){
                 e.preventDefault();
-                var feed_id = $t.data('feed_id');
+                var feed_id = $t.parents('.feed').data('feed_id');
                 self.mark_feed_as_read(feed_id, $t);
+                $t.fadeOut(400);
             });
             
             // ============
@@ -1412,6 +1431,7 @@
             
             $.targetIs(e, { tagSelector: '#story_titles .story' }, function($t, $p){
                 e.preventDefault();
+                e.stopPropagation();
                 // NEWSBLUR.log(['Story dblclick', $t]);
                 var story_id = $('.story_id', $t).text();
                 var story = self.find_story_in_stories(story_id); 
@@ -1419,6 +1439,7 @@
             });
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();
+                e.stopPropagation();
                 // NEWSBLUR.log(['Feed dblclick', $('.feed_id', $t), $t]);
                 var feed_id = $t.data('feed_id');
                 self.open_feed_link(feed_id, $t);

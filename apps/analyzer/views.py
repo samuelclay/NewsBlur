@@ -35,6 +35,12 @@ def save_classifier(request):
     message = 'OK'
     payload = {}
 
+    # Make subscription as dirty, so unread counts can be recalculated
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    if not usersub.needs_unread_recalc:
+        usersub.needs_unread_recalc = True
+        usersub.save()
+        
     def _save_classifier(ClassifierCls, content_type, ContentCls=None, post_content_field=None):
         classifiers = {
             'like_'+content_type: 1, 
