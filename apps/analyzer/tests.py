@@ -45,9 +45,9 @@ class ClassifierTest(TestCase):
         feed = Feed.objects.all()
         
         management.call_command('loaddata', 'brownstoner.json', verbosity=0)
-        response = self.client.get('/reader/refresh_feed', { "feed_id": 1, "force": True })
+        management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False)
         management.call_command('loaddata', 'brownstoner2.json', verbosity=0)
-        response = self.client.get('/reader/refresh_feed', { "feed_id": 1, "force": True })
+        management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False)
         
         stories = Story.objects.filter(story_feed=1)[:53]
         
@@ -71,27 +71,34 @@ class ClassifierTest(TestCase):
         classifier.train('good', 'Development Watch: 393 Pacific St. #3')
         classifier.train('bad', 'Development Watch: 393 Pacific St. #3')
         classifier.train('bad', 'Development Watch: 393 Pacific St. #3')
-        # classifier.train('Development Watch: 393 Pacific St. #3', 'bad')
-        # classifier.train('Streetlevel: 393 Pacific St. #3', 'good')
+        classifier.train('bad', 'Development Watch: 393 Pacific St. #3')
+        classifier.train('bad', 'Streetlevel: 393 Pacific St. #3')
         
-        c1 = classifier.guess('Co-op of the Day: 413 Atlantic')
-        self.assertEquals(c1[0][0], "good")
-        print c1
+        guess = dict(classifier.guess('Co-op of the Day: 413 Atlantic'))
+        self.assertTrue(guess['good'] > .99)
+        self.assertTrue('bad' not in guess)
         
-        c1 = classifier.guess('House of the Day: 413 Atlantic')
-        self.assertEquals(c1[0][0], "good")
-        print c1
+        guess = dict(classifier.guess('House of the Day: 413 Atlantic'))
+        self.assertTrue(guess['good'] > .99)
+        self.assertTrue('bad' not in guess)
         
-        c2 = classifier.guess('Development Watch: Yatta')
-        print c2
-        self.assertEquals(c2[0][0], "bad")
+        guess = dict(classifier.guess('Development Watch: Yatta'))
+        self.assertTrue(guess['bad'] > .7)
+        self.assertTrue(guess['good'] < .3)
 
-        c2 = classifier.guess('Development Watch: 393 Pacific St.')
-        print c2
-
-        c3 = classifier.guess('Extra, Extra')
-        print c3
+        guess = dict(classifier.guess('Development Watch: 393 Pacific St.'))
+        self.assertTrue(guess['bad'] > .7)
+        self.assertTrue(guess['good'] < .3)
         
-        c4 = classifier.guess('Nothing doing: 393 Pacific St.')
-        print c4
+        guess = dict(classifier.guess('Streetlevel: 123 Carlton St.'))
+        self.assertTrue(guess['bad'] > .99)
+        self.assertTrue('good' not in guess)
+
+        guess = classifier.guess('Extra, Extra')
+        self.assertTrue('bad' not in guess)
+        self.assertTrue('good' not in guess)
+        
+        guess = classifier.guess('Nothing doing: 393 Pacific St.')
+        self.assertTrue('bad' not in guess)
+        self.assertTrue('good' not in guess)
         

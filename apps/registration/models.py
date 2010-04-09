@@ -2,6 +2,7 @@ import datetime
 import random
 import re
 import hashlib
+import sha
 
 from django.conf import settings
 from django.db import models
@@ -137,8 +138,8 @@ class RegistrationManager(models.Manager):
         username and a random salt.
         
         """
-        salt = hashlib.sha.new(str(random.random())).hexdigest()[:5]
-        activation_key = hashlib.sha.new(salt+user.username).hexdigest()
+        salt = sha.new(str(random.random())).hexdigest()[:5]
+        activation_key = sha.new(salt+user.username).hexdigest()
         return self.create(user=user,
                            activation_key=activation_key)
         
