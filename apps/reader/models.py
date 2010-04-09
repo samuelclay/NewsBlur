@@ -32,7 +32,7 @@ class UserSubscription(models.Model):
         
     def mark_feed_read(self):
         latest_story_date = self.feed.stories.order_by('-story_date')[0].story_date\
-                            - datetime.timedelta(minutes=1)
+                            + datetime.timedelta(minutes=1)
         now = datetime.datetime.now()
         self.last_read_date = max(now, latest_story)
         self.mark_read_date = max(now, latest_story)
