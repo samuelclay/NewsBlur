@@ -34,12 +34,12 @@ class UserSubscription(models.Model):
         latest_story_date = self.feed.stories.order_by('-story_date')[0].story_date\
                             + datetime.timedelta(minutes=1)
         now = datetime.datetime.now()
-        self.last_read_date = max(now, latest_story)
-        self.mark_read_date = max(now, latest_story)
+        self.last_read_date = max(now, latest_story_date)
+        self.mark_read_date = max(now, latest_story_date)
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
-        self.unread_count_updated = max(now, latest_story.story_date)
+        self.unread_count_updated = max(now, latest_story_date)
         self.needs_unread_relcalc = False
         self.save()
     
