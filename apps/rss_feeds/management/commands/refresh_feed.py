@@ -29,7 +29,7 @@ class Command(BaseCommand):
         
     def _refresh_feeds(self, feeds):
         for feed in feeds:
-            feed.update(True)
+            feed.update(True, single_threaded=True)
             usersubs = UserSubscription.objects.filter(
                 feed=feed.id
             )

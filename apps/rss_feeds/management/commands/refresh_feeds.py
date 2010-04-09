@@ -14,6 +14,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-f", "--feed", default=None),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
+        make_option("-s", "--single_threaded", dest="single_threaded", action="store_true"),
         make_option('-t', '--timeout', type='int', default=10,
             help='Wait timeout in seconds when connecting to feeds.'),
         make_option('-V', '--verbose', action='store_true',
@@ -29,6 +30,9 @@ class Command(BaseCommand):
         feeds = Feed.objects.all().order_by('?')
         num_workers = min(len(feeds), options['workerthreads'])
         
+        if options['single_threaded']:
+            num_workers = 1
+            
         # settting socket timeout (default= 10 seconds)
         socket.setdefaulttimeout(options['timeout'])
         
