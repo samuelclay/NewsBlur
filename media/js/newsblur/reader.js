@@ -719,11 +719,25 @@
             
             $taskbar_view_page.removeClass('NB-inactive');
             $taskbar_return.css({'display': 'none'});
+            self.flags.iframe_scroll_snap_back_prepared = true;
             
             $story_iframe.removeAttr('src').attr({src: '/reader/load_feed_page?feed_id='+feed_id});
+
             $story_iframe.ready(function() {
                 self.flags.feed_frame_loaded_with_iframe = true;
-                
+
+                setTimeout(function() {
+                    $story_iframe.load(function() {
+                        if (self.iframe_scroll
+                            && self.flags.iframe_scroll_snap_back_prepared 
+                            && $story_iframe.contents().scrollTop() == 0) {
+                            NEWSBLUR.log(['Snap back, loaded, scroll', self.iframe_scroll]);
+                            $story_iframe.contents().scrollTop(self.iframe_scroll);
+                            self.flags.iframe_scroll_snap_back_prepared = false;
+                        }
+                    });
+                }, 50);
+
                 if ($story_iframe.attr('src').indexOf('/reader/load_feed_page?feed_id='+feed_id) != -1) {
                     self.iframe_link_attacher = setInterval(function() {
                         var num_links = $story_iframe.contents().find('a').length;
@@ -737,6 +751,9 @@
                                 self.taskbar_show_return_to_page();
                             });
                         }
+                        $story_iframe.load(function() {
+                            clearInterval(self.iframe_link_attacher);
+                        });
                     }, 2000);
                 }
             });
@@ -749,15 +766,19 @@
                 
             $story_iframe.removeAttr('src').load(function() {
                 clearInterval(self.iframe_link_attacher);
-                $story_iframe.contents().find('a')
-                    .unbind('click.NB-taskbar')
-                    .bind('click.NB-taskbar', function() {
-                    self.taskbar_show_return_to_page();
-                });
-                self.$story_iframe.contents()
-                    .unbind('scroll')
-                    .scroll($.rescope(self.handle_scroll_story_iframe, self));
-                self.prefetch_story_locations_in_story_frame();
+                try {
+                    $story_iframe.contents().find('a')
+                        .unbind('click.NB-taskbar')
+                        .bind('click.NB-taskbar', function() {
+                        self.taskbar_show_return_to_page();
+                    });
+                    self.$story_iframe.contents()
+                        .unbind('scroll')
+                        .scroll($.rescope(self.handle_scroll_story_iframe, self));
+                    self.prefetch_story_locations_in_story_frame();
+                } catch(e) {
+                    // Not on local domain. Ignore.
+                }
             });
         },
         
@@ -1476,6 +1497,9 @@
                 setTimeout(function() {
                     self.flags.handled_scroll_story_iframe = false;
                 }, 50);
+                this.iframe_scroll = from_top;
+                this.flags.iframe_scroll_snap_back_prepared = false;
+                // NEWSBLUR.log(['Setting snap back', this.iframe_scroll]);
             }
         },
         

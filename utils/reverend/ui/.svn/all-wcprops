@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/Divmod/!svn/ver/2573/trunk/Reverend/reverend/ui
+END
+util.py
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/Divmod/!svn/ver/2573/trunk/Reverend/reverend/ui/util.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/Divmod/!svn/ver/2573/trunk/Reverend/reverend/ui/__init__.py
+END
+trainer.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/Divmod/!svn/ver/2573/trunk/Reverend/reverend/ui/trainer.py
+END
+tester.py
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/Divmod/!svn/ver/2573/trunk/Reverend/reverend/ui/tester.py
+END
