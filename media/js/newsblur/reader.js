@@ -719,7 +719,8 @@
             
             $taskbar_view_page.removeClass('NB-inactive');
             $taskbar_return.css({'display': 'none'});
-            self.flags.iframe_scroll_snap_back_prepared = true;
+            this.flags.iframe_scroll_snap_back_prepared = true;
+            this.iframe_link_attacher_num_links = 0;
             
             $story_iframe.removeAttr('src').attr({src: '/reader/load_feed_page?feed_id='+feed_id});
 
@@ -1180,6 +1181,18 @@
                 return $(this).is(':visible');
             });
             
+            if (!$stories.length) {
+                // Not found straight, so check all header tags with styling children removed.
+                $('h1,h2,h3,h4,h5,h6', $iframe).filter(':visible').each(function() {
+                    pos = $(this).text().replace(/&nbsp;|[^a-z0-9-,]/gi, '')
+                                 .indexOf(title);
+                    // NEWSBLUR.log(['Search headers', title, pos, $(this), $(this).text()]);
+                    if (pos >= 0) {
+                        $stories.push($(this));
+                        return false;
+                    }
+                });
+            }
             // NEWSBLUR.log(['Found stories', $stories, story.story_title]);
             
             var max_size = 0;
