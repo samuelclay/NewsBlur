@@ -1208,8 +1208,8 @@
             if ($story && $story.length) {
                 this.cache.iframe_stories[story.id] = $story;
                 var position_original = parseInt($story.offset().top, 10);
-                var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
-                var position = position_original + position_offset;
+                // var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
+                var position = position_original; // + position_offset;
                 this.cache.iframe_story_positions[position] = story;
                 this.cache.iframe_story_positions_keys.push(position);
             }
