@@ -169,7 +169,6 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 			dataType: 'json',
 			success: function (data, status)
 			{
-                var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
                 $loading.removeClass('NB-active');
                 
 				if (typeof data.code != 'undefined') {
@@ -184,6 +183,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 			},
 			error: function (data, status, e)
 			{
+                $loading.removeClass('NB-active');
 				NEWSBLUR.log(['Error', data, status, e]);
 			}
 		});

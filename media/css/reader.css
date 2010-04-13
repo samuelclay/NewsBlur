@@ -120,14 +120,19 @@ a img {
 
 .content-pane {
     display: none;
+    overflow: auto !important;
+    width: auto !important;
+    height: auto !important;
 }
 
 .left-pane {
     display: none;
+    overflow: auto !important;
 }
 
 .right-pane {
     display: none;
+    overflow: auto !important;
 }
 
 /* ============= */
@@ -150,6 +155,8 @@ background: transparent;
     list-style: none;
     margin: 0;
     padding: 0;
+    width: auto !important;
+    height: auto !important;
 }
 
 #feed_list ul.folder {
@@ -582,7 +589,7 @@ background: transparent;
     overflow-x: hidden;
     position: absolute;
     top: 0;
-    left: 0;
+    left: 100% !important;
     width: 100%;
     height: 100%;
 }
@@ -605,6 +612,8 @@ background: transparent;
 #story_pane {
     font-size: 12px;
     line-height: 1.5em;
+    width: auto !important;
+    height: auto !important;
 }
 
 
@@ -629,6 +638,34 @@ background: transparent;
     border-bottom: 1px solid #ADADAD;
     position: relative;
     overflow: hidden;
+}
+
+#story_pane .NB-feed-story .NB-feed-story-sentiment {
+    position: absolute;
+    top: 1px;
+    left: -22px;
+    width: 16px;
+    height: 16px;
+}
+
+#story_pane .NB-feed-story.NB-story-positive .NB-feed-story-sentiment {
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
+}
+
+#story_pane .NB-feed-story.NB-story-neutral .NB-feed-story-sentiment {
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+}
+
+#story_pane .NB-feed-story.NB-story-negative .NB-feed-story-sentiment {
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
+}
+
+#story_pane .NB-feed-story.read .NB-feed-story-sentiment {
+/*     background: none; */
+}
+    
+#story_pane .NB-feed-story-title-container {
+    position: relative;
 }
 
 #story_pane a.NB-feed-story-title {
@@ -1175,29 +1212,19 @@ form.opml_import_form input {
     margin: 6px 0 0 0;
 }
 
-.NB-classifier .NB-publisher .NB-classifier-authors {
-}
-
-.NB-classifier .NB-publisher .NB-classifier-authors .NB-classifier-author {
-    float: left;
-    white-space: nowrap;
-    margin: 2px 6px 6px 0;
-    display: block;
-}
-
 .NB-classifier .NB-publisher .NB-classifier-authors input {
     float: none;
     margin: 4px 6px 0 0;
 }
 
-.NB-classifier .NB-classifier-tag-container {
+.NB-classifier .NB-classifier-container {
     white-space: nowrap;
     float: left;
     display: block;
     margin: 2px 6px 6px 0;
 }
 
-.NB-classifier .NB-classifier-tag-container .NB-classifier {
+.NB-classifier .NB-classifier-container .NB-classifier {
     margin: 0 2px 0 0;
 }
 

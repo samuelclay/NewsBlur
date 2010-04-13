@@ -199,7 +199,7 @@ var classifier = {
                 input_attrs['checked'] = 'checked';
             }
         
-            var $author = $.make('span', { className: 'NB-classifier-author-container' }, [
+            var $author = $.make('span', { className: 'NB-classifier-container NB-classifier-author-container' }, [
                 $.make('span', { className: 'NB-classifier NB-classifier-author' }, [
                     $.make('input', input_attrs),
                     $.make('label', { 'for': 'classifier_author_'+a }, [
@@ -243,7 +243,7 @@ var classifier = {
                 input_attrs['checked'] = 'checked';
             }
             
-            var $tag = $.make('span', { className: 'NB-classifier-tag-container' }, [
+            var $tag = $.make('span', { className: 'NB-classifier-container NB-classifier-tag-container' }, [
                 $.make('span', { className: 'NB-classifier NB-classifier-tag' }, [
                     $.make('input', input_attrs),
                     $.make('label', { 'for': 'classifier_tag_'+t }, [

@@ -111,15 +111,17 @@
     			center__paneSelector:	".right-pane",
     			west__paneSelector:		".left-pane",
     			west__size:				240,
+    			west__onresize:         "leftLayout.resizeAll",
     			center__onresize:       "rightLayout.resizeAll",
     			spacing_open:			4,
-    			resizerDragOpacity:     0.6
+    			resizerDragOpacity:     0.6,
+    			findNestedContent:      true
     		}); 
     		
     		leftLayout = $('.left-pane').layout({
-        	    closable: false,
-    			center__onresize:		"middleLayout.resizeAll",
+        	    closable:               false,
     		    center__paneSelector:   ".left-center",
+    		    center__resizable:      false,
     			south__paneSelector:	".left-south",
     			south__size:            30,
     			south__resizable:       false,
@@ -129,6 +131,8 @@
     		rightLayout = $('.right-pane').layout({ 
     			south__paneSelector:	".right-north",
     			center__paneSelector:	".content-pane",
+    			center__onresize:       "contentLayout.resizeAll",
+    			south__onresize:        "contentLayout.resizeAll",
     			south__size:			168,
     			spacing_open:			10,
     			resizerDragOpacity:     0.6
@@ -582,6 +586,7 @@
         make_story_feed_entries: function(stories, first_load) {
             var $feed_view = this.$feed_view;
             var self = this;
+            var unread_view = NEWSBLUR.Globals.unread_view;
             var $stories;
             
             if (first_load) {
@@ -596,17 +601,30 @@
 
             for (var s in stories) {
                 var story = stories[s];
-                var $story = $.make('li', { className: 'NB-feed-story' }, [
+                var read = story.read_status
+                    ? 'read'
+                    : '';
+                var score = this.compute_story_score(story);
+                var score_color = 'neutral';
+                if (score > 0) score_color = 'positive';
+                if (score < 0) score_color = 'negative';
+
+                var $story = $.make('li', { className: 'NB-feed-story ' + read + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
+                        $.make('div', { className: 'NB-feed-story-sentiment' }),
                         ( story.story_authors &&
                             $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
-                        $.make('a', { className: 'NB-feed-story-title', href: unescape(story.story_permalink) }, story.story_title),
+                        $.make('div', { className: 'NB-feed-story-title-container' }, [
+                            $.make('div', { className: 'NB-feed-story-sentiment' }),
+                            $.make('a', { className: 'NB-feed-story-title', href: unescape(story.story_permalink) }, story.story_title)
+                        ]),
                         ( story.long_parsed_date &&
                             $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date))
                     ]),
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
                 ]).data('story', story.id);
                 $stories.append($story);
+                
                 this.cache.feed_view_stories[story.id] = $story;
                 
                 var image_count = $('img', $story).length;
@@ -1616,13 +1634,16 @@
             var $stories_show, $stories_hide;
             
             if (unread_view_name == 'positive') {
-                $stories_show = $('.story').filter('.NB-story-positive');
-                $stories_hide = $('.story').filter('.NB-story-neutral,.NB-story-negative');
+                $stories_show = $('.story,.NB-feed-story').filter('.NB-story-positive');
+                $stories_hide = $('.story,.NB-feed-story')
+                                .filter('.NB-story-neutral,.NB-story-negative');
             } else if (unread_view_name == 'neutral') {
-                $stories_show = $('.story').filter('.NB-story-positive,.NB-story-neutral');
-                $stories_hide = $('.story').filter('.NB-story-negative');
+                $stories_show = $('.story,.NB-feed-story')
+                                .filter('.NB-story-positive,.NB-story-neutral');
+                $stories_hide = $('.story,.NB-feed-story').filter('.NB-story-negative');
             } else if (unread_view_name == 'negative') {
-                $stories_show = $('.story').filter('.NB-story-positive,.NB-story-neutral,.NB-story-negative');
+                $stories_show = $('.story,.NB-feed-story')
+                                .filter('.NB-story-positive,.NB-story-neutral,.NB-story-negative');
                 $stories_hide = $();
             }
             
