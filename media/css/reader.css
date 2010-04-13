@@ -147,14 +147,20 @@ background: transparent;
     background-color: #D7DDE6;
     overflow-y: auto;
     font-size: 11px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
-#feed_list .folder {
+
+#feed_list ul.folder {
     margin: 6px 0px 4px;
+    padding: 0 0 0 22px;
+    list-style: none;
     background: transparent url('../img/icons/silk/folder.png') no-repeat 3px 1px;
 }
 
-#feed_list .folder .folder_title {
-    padding: 3px 0px 4px 22px;
+#feed_list ul.folder .folder_title {
+    padding: 3px 0 4px;
     font-weight: bold;
     display: block;
     color: #404040;
@@ -1042,7 +1048,8 @@ form.opml_import_form input {
     padding: 12px;
 }
 
-.NB-modal .NB-modal-loading {
+.NB-modal .NB-modal-loading,
+.NB-modal .NB-loading {
     width: 16px;
     height: 16px;
     float: right;
@@ -1051,6 +1058,10 @@ form.opml_import_form input {
 
 .NB-modal .NB-modal-loading.NB-active {
     background: transparent url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
+}
+
+.NB-modal .NB-loading.NB-active {
+    background: transparent url('../img/reader/spinner_ball.gif') no-repeat 0 0;
 }
 
 .NB-modal h2 {

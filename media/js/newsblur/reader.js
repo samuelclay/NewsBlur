@@ -33,7 +33,6 @@
         $('#story_titles').scroll($.rescope(this.handle_scroll_story_titles, this));
         this.$feed_view.scroll($.rescope(this.handle_scroll_feed_view, this));
                 
-        this.load_page();
         this.load_feeds();
         this.apply_resizable_layout();
         this.cornerize_buttons();
@@ -103,17 +102,7 @@
         // ========
         // = Page =
         // ========
-        
-        load_page: function() {
-            // this.resize_story_content_pane();
-            // this.resize_feed_list_pane();
-            this.stylize_login_form();
-        },
-        
-        stylize_login_form: function() {
-            // DD_roundies.addRule('.NB-login form input', '4px');
-        },
-        
+                
         apply_resizable_layout: function() {
             var outerLayout, rightLayout, contentLayout, leftLayout;
             
@@ -375,14 +364,16 @@
 
                 if (typeof item == "number") {
                     var feed = this.model.feeds[item];
-                    var $feed = this.make_feed_title_line(feed);
+                    var $feed = this.make_feed_title_line(feed, true);
                     $feeds.append($feed);
                 } else if (typeof item == "object") {
                     for (var o in item) {
                         var folder = item[o];
-                        var $folder = $.make('div', { className: 'folder' }, [
-                            $.make('span', { className: 'folder_title' }, o),
-                            $.make('div', { className: 'feeds' }, this.make_feeds_folder(folder))
+                        var $folder = $.make('li', { className: 'folder' }, [
+                            $.make('ul', { className: 'folder' }, [
+                                $.make('li', { className: 'folder_title' }, o),
+                                this.make_feeds_folder(folder)
+                            ])
                         ]);
                         $feeds.append($folder);
                     }
@@ -392,10 +383,10 @@
             $('.feed', $feeds).tsort('.feed_title');
             $('.folder', $feeds).tsort('.folder_title');
             
-            return $feeds;
+            return $feeds.children();
         },
         
-        make_feed_title_line: function(feed) {
+        make_feed_title_line: function(feed, list_item) {
             var unread_class = '';
             if (feed.unread_count_positive) {
                 unread_class += ' unread_positive';
@@ -406,7 +397,7 @@
             if (feed.unread_count_negative) {
                 unread_class += ' unread_negative';
             }
-            var $feed = $.make('div', { className: 'feed ' + unread_class }, [
+            var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class }, [
                 $.make('div', { className: 'feed_counts' }, [
                     $.make('div', { className: 'feed_counts_floater' }, [
                         $.make('span', { 
@@ -508,6 +499,7 @@
                 this.active_feed = feed_id;
                 this.$story_titles.data('page', 0);
                 this.$story_titles.data('feed_id', feed_id);
+                this.iframe_scroll = null;
             
                 this.show_feed_title_in_stories($story_titles, feed_id);
                 this.mark_feed_as_selected(feed_id, $feed_link);

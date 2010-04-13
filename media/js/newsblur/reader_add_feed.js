@@ -30,6 +30,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', [
+                            $.make('div', { className: 'NB-loading' }),
                             $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
                             $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url' }),
                             $.make('input', { type: 'submit', value: 'Add it', className: 'NB-add-url-submit' }),
@@ -37,25 +38,28 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-fieldset' }, [
+                $.make('div', { className: 'NB-fieldset NB-add-add-folder' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
                         'Add a new folder'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', [
+                            $.make('div', { className: 'NB-loading' }),
                             $.make('label', { 'for': 'NB-add-folder' }, [
                                 $.make('div', { className: 'NB-folder-icon' })
                             ]),
                             $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-add-folder', name: 'url' }),
-                            $.make('input', { type: 'submit', value: 'Add folder', className: 'NB-add-folder-submit' })
+                            $.make('input', { type: 'submit', value: 'Add folder', className: 'NB-add-folder-submit' }),
+                            $.make('div', { className: 'NB-error' })
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-fieldset' }, [
+                $.make('div', { className: 'NB-fieldset NB-add-opml' }, [
                     $.make('h5', 'Upload OPML (from Google Reader)'),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
+                            $.make('div', { className: 'NB-loading' }),
                             $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
                             $.make('input', { type: 'submit', className: 'NB-add-opml-button', value: 'Upload OPML File' }).click(function(e) {
                                 e.preventDefault();
@@ -154,7 +158,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
     handle_opml_upload: function() {
         var self = this;
-        
+        var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
+        $loading.addClass('NB-active');
+
         // NEWSBLUR.log(['Uploading']);
         $.ajaxFileUpload({
 			url: '/opml/opml_upload', 
@@ -163,6 +169,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 			dataType: 'json',
 			success: function (data, status)
 			{
+                var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
+                $loading.removeClass('NB-active');
+                
 				if (typeof data.code != 'undefined') {
 					if (data.code <= 0) {
                         // NEWSBLUR.log(['Success - Error', data.code]);
@@ -227,13 +236,18 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     
     save_add_url: function(url, folder) {
         var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+        var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
         $error.slideUp(300);
+        $loading.addClass('NB-active');
 
         this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this));
     },
     
     post_save_add_url: function(e, data) {
         NEWSBLUR.log(['Data', data]);
+        var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
+        $loading.removeClass('NB-active');
+        
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
             $.modal.close();
@@ -245,19 +259,24 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     },
     
     save_add_folder: function(folder, parent_folder) {
-        var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+        var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');
+        var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
         $error.slideUp(300);
+        $loading.addClass('NB-active');
 
         this.model.save_add_folder(folder, parent_folder, $.rescope(this.post_save_add_folder, this));
     },
     
     post_save_add_folder: function(e, data) {
         NEWSBLUR.log(['Data', data]);
+        var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
+        $loading.removeClass('NB-active');
+        
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
             $.modal.close();
         } else {
-            var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+            var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');
             $error.text(data.message);
             $error.slideDown(300);
         }
