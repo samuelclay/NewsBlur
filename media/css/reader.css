@@ -120,7 +120,8 @@ a img {
 
 .content-pane {
     display: none;
-    overflow: auto !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
     width: auto !important;
     height: auto !important;
 }

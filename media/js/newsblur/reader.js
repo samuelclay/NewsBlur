@@ -517,12 +517,20 @@
         post_open_feed: function(e, data, first_load) {
             var stories = data.stories;
             var tags = data.tags;
+            var feed_id;
             
-            this.story_titles_clear_loading_endbar();
-            this.create_story_titles(stories);
-            this.hover_over_story_titles();
-            this.make_story_feed_entries(stories, first_load);
-            this.show_feed_view_taskbar_view();
+            for (var s in stories) {
+                feed_id = stories[s].story_feed_id;
+                break;
+            }
+            
+            if (this.active_feed == feed_id) {
+                this.story_titles_clear_loading_endbar();
+                this.create_story_titles(stories);
+                this.hover_over_story_titles();
+                this.make_story_feed_entries(stories, first_load);
+                this.show_feed_view_taskbar_view();
+            }
         },
         
         show_correct_story_view: function(feed_id) {
