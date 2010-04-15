@@ -78,13 +78,30 @@ def load_feeds(request):
             'id': sub.feed.pk,
             'feed_title': sub.feed.feed_title,
             'feed_link': sub.feed.feed_link,
-            'unread_count_positive': sub.unread_count_positive,
-            'unread_count_neutral': sub.unread_count_neutral,
-            'unread_count_negative': sub.unread_count_negative,
+            'ps': sub.unread_count_positive,
+            'nt': sub.unread_count_neutral,
+            'ng': sub.unread_count_negative,
         }
 
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
     return HttpResponse(json.encode(data), mimetype='application/json')
+
+def refresh_feeds(request):
+    user = get_user(request)
+    feeds = {}
+            
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+
+    for sub in user_subs:
+        if sub.needs_unread_recalc:
+            sub.calculate_feed_scores()
+        feeds[sub.feed.pk] = {
+            'ps': sub.unread_count_positive,
+            'nt': sub.unread_count_neutral,
+            'ng': sub.unread_count_negative,
+        }
+
+    return HttpResponse(json.encode(feeds), mimetype='application/json')
 
 def load_single_feed(request):
     user = get_user(request)

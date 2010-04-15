@@ -211,6 +211,30 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
+    refresh_feeds: function(callback) {
+        var self = this;
+        
+        var pre_callback = function(feeds) {
+            var updated_feeds = [];
+            
+            for (var f in feeds) {
+                var feed = feeds[f];
+                for (var k in feed) {
+                    if (self.feeds[f][k] != feed[k]) {
+                        // NEWSBLUR.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
+                        self.feeds[f][k] = feed[k];
+                        if (!(f in updated_feeds)) {
+                            updated_feeds.push(f);
+                        }
+                    }
+                }
+            }
+            callback(updated_feeds);
+        };
+        
+        this.make_request('/reader/refresh_feeds', {}, pre_callback);
+    },
+    
     get_feed: function(feed_id) {
         var self = this;
         
