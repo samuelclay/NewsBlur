@@ -265,6 +265,7 @@ class Dispatcher:
             # from random import randint
             # if randint(0,10) < 10:
             #     continue
+            ret_values = {}
             
             try:
                 ffeed = FetchFeed(feed, self.options)
