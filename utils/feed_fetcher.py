@@ -107,9 +107,9 @@ class ProcessFeed:
             ENTRY_ERR:0}
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
-                                             self.feed.feed_title))
+                                               self.feed.feed_title))
 
-        # Use stories per month to caluclate next feed update
+        # Use stories per month to calculate next feed update
         updates_per_day = max(30, self.feed.stories_per_month) / 30.0 * 12
         minutes_to_next_update = 60 * 24 / updates_per_day
         random_factor = random.randint(0,int(minutes_to_next_update/4))
@@ -291,9 +291,9 @@ class Dispatcher:
                 ret_feed = FEED_ERREXC
                 ret_entries = {}
             finally:
-                del ffeed
-                del pfeed
-                del fpage
+                if ffeed: del ffeed
+                if pfeed: del pfeed
+                if fpage: del fpage
                 if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
                     del user_subs
 
