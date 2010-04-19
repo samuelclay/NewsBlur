@@ -265,7 +265,10 @@ class Dispatcher:
             # from random import randint
             # if randint(0,10) < 10:
             #     continue
-        
+            ffeed = None
+            pfeed = None
+            fpage = None
+            
             try:
                 ffeed = FetchFeed(feed, self.options)
                 fetched_feed = ffeed.fetch()
