@@ -265,15 +265,6 @@ class Dispatcher:
             # from random import randint
             # if randint(0,10) < 10:
             #     continue
-            ffeed = None
-            pfeed = None
-            fpage = None        
-            ret_values = {
-                ENTRY_NEW: 0,
-                ENTRY_UPDATED: 0,
-                ENTRY_SAME: 0,
-                ENTRY_ERR: 0
-            }
             
             try:
                 ffeed = FetchFeed(feed, self.options)
@@ -297,8 +288,16 @@ class Dispatcher:
                 # print traceback.format_exception(etype, eobj, etb)
                 traceback.print_exception(etype, eobj, etb)
                 print '[%d] ! -------------------------' % (feed.id,)
-                ret_feed = FEED_ERREXC
-                ret_entries = {}
+                ret_feed = FEED_ERREXC 
+                ffeed = None
+                pfeed = None
+                fpage = None      
+                ret_values = {
+                    ENTRY_NEW: 0,
+                    ENTRY_UPDATED: 0,
+                    ENTRY_SAME: 0,
+                    ENTRY_ERR: 0
+                }
             finally:
                 if ffeed: del ffeed
                 if pfeed: del pfeed
