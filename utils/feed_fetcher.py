@@ -268,6 +268,7 @@ class Dispatcher:
             ffeed = None
             pfeed = None
             fpage = None
+            ret_entries = {}
             
             try:
                 ffeed = FetchFeed(feed, self.options)
