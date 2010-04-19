@@ -267,8 +267,13 @@ class Dispatcher:
             #     continue
             ffeed = None
             pfeed = None
-            fpage = None
-            ret_entries = {}
+            fpage = None        
+            ret_values = {
+                ENTRY_NEW: 0,
+                ENTRY_UPDATED: 0,
+                ENTRY_SAME: 0,
+                ENTRY_ERR: 0
+            }
             
             try:
                 ffeed = FetchFeed(feed, self.options)
