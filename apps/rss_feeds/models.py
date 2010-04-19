@@ -18,6 +18,7 @@ from django.db.models import Q
 import settings
 import logging
 import difflib
+import datetime
 from utils.diff import HTMLDiff
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
@@ -38,6 +39,8 @@ class Feed(models.Model):
     etag = models.CharField(max_length=50, blank=True, null=True)
     last_modified = models.DateTimeField(null=True, blank=True)
     page_data = StoryField(null=True, blank=True)
+    stories_per_month = models.IntegerField(default=0)
+    next_scheduled_update = models.DateTimeField(default=datetime.datetime.now)
     
     
     def __unicode__(self):

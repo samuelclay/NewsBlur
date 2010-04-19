@@ -15,6 +15,8 @@ import datetime
 import traceback
 import multiprocessing
 import Queue
+import datetime
+import random
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -107,6 +109,19 @@ class ProcessFeed:
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
                                              self.feed.feed_title))
 
+        # Count stories in past month to calculate next scheduled update
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+        stories_count = Story.objects.filter(story_feed=self.feed, story_date__gte=month_ago).count()
+        stories_count = stories_count
+        self.feed.stories_per_month = stories_count
+        updates_per_day = max(30, stories_count) / 30.0 * 12
+        minutes_to_next_update = 60 * 24 / updates_per_day
+        random_factor = random.randint(0,int(minutes_to_next_update/4))
+        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
+            minutes=minutes_to_next_update+random_factor
+        )
+        self.feed.next_scheduled_update = next_scheduled_update
+        
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 logging.debug(u'[%d] HTTP status %d: %s' % (self.feed.id,
@@ -118,6 +133,7 @@ class ProcessFeed:
                     logging.debug('[%d] Feed has not changed since ' \
                            'last check: %s' % (self.feed.id,
                                                self.feed.feed_address))
+                self.feed.save()
                 return FEED_SAME, ret_values
 
             if self.fpf.status >= 400:
@@ -125,6 +141,7 @@ class ProcessFeed:
                 logging.error('[%d] !HTTP_ERROR! %d: %s' % (self.feed.id,
                                                      self.fpf.status,
                                                      self.feed.feed_address))
+                self.feed.save()
                 return FEED_ERRHTTP, ret_values
 
         if hasattr(self.fpf, 'bozo') and self.fpf.bozo:
@@ -147,6 +164,7 @@ class ProcessFeed:
         self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
         self.feed.last_update = datetime.datetime.now()
+        
 
         if False and self.options['verbose']:
             logging.debug(u'[%d] Feed info for: %s\n' \
@@ -242,7 +260,6 @@ class Dispatcher:
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
-        # print feed_queue
         for feed in feed_queue:
             # print "Process Feed: [%s] %s" % (current_process.name, feed)
                 

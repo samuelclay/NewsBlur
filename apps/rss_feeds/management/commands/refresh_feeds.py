@@ -8,6 +8,7 @@ import logging
 import socket
 import os
 import math
+import datetime
 
 
 class Command(BaseCommand):
@@ -26,23 +27,21 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['daemonize']:
             daemonize()
-        
-        feeds = Feed.objects.all().order_by('?')
+            
+        socket.setdefaulttimeout(options['timeout'])
+        now = datetime.datetime.now()
+        feeds = Feed.objects.filter(next_scheduled_update__lte=now).order_by('?')
+
         num_workers = min(len(feeds), options['workerthreads'])
-        
         if options['single_threaded']:
             num_workers = 1
-            
-        # settting socket timeout (default= 10 seconds)
-        socket.setdefaulttimeout(options['timeout'])
         
         disp = feed_fetcher.Dispatcher(options, num_workers)        
-        
-        
         
         feeds_queue = []
         for _ in range(num_workers):
             feeds_queue.append([])
+            
         i = 0
         for feed in feeds:
             feeds_queue[i%num_workers].append(feed)
