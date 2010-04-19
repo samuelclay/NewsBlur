@@ -265,7 +265,6 @@ class Dispatcher:
             # from random import randint
             # if randint(0,10) < 10:
             #     continue
-            ret_values = {}
             
             try:
                 ffeed = FetchFeed(feed, self.options)
@@ -293,7 +292,7 @@ class Dispatcher:
                 ffeed = None
                 pfeed = None
                 fpage = None      
-                ret_values = {
+                ret_entries = {
                     ENTRY_NEW: 0,
                     ENTRY_UPDATED: 0,
                     ENTRY_SAME: 0,
