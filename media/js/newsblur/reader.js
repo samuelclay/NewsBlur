@@ -658,10 +658,6 @@
         
         process_stories_location_in_feed_view: function(stories, story_index) {
             var self = this;
-            
-            if (this.story_view != 'feed') {
-                return;
-            }
 
             if (stories[story_index] && stories[story_index]['story_feed_id'] == this.active_feed) {
                 var story = stories[story_index];
@@ -908,70 +904,68 @@
         switch_taskbar_view: function($button, story_not_found, story_found) {
             var $story_pane = this.$story_pane;
             
-            if (!($button.hasClass('NB-active')) || story_not_found || story_found) {
-                // NEWSBLUR.log(['$button', $button, this.page_view_showing_feed_view, $button.hasClass('NB-active'), story_not_found]);
-                var $taskbar_buttons = $('.NB-taskbar .task_button_view');
-                var $feed_view = this.$feed_view;
-                var $story_iframe = this.$story_iframe;
-                var $page_to_feed_arrow = $('.NB-taskbar .NB-task-view-page-to-feed-arrow');
-                
-                if (story_not_found) {
-                    $page_to_feed_arrow.show();
-                } else {
-                    $taskbar_buttons.removeClass('NB-active');
-                    $button.addClass('NB-active');
-                    $page_to_feed_arrow.hide();
-                    this.page_view_showing_feed_view = false;
+            // NEWSBLUR.log(['$button', $button, this.page_view_showing_feed_view, $button.hasClass('NB-active'), story_not_found]);
+            var $taskbar_buttons = $('.NB-taskbar .task_button_view');
+            var $feed_view = this.$feed_view;
+            var $story_iframe = this.$story_iframe;
+            var $page_to_feed_arrow = $('.NB-taskbar .NB-task-view-page-to-feed-arrow');
+            
+            if (story_not_found) {
+                $page_to_feed_arrow.show();
+            } else {
+                $taskbar_buttons.removeClass('NB-active');
+                $button.addClass('NB-active');
+                $page_to_feed_arrow.hide();
+                this.page_view_showing_feed_view = false;
+            }
+            
+            if ($button.hasClass('task_view_page')) {
+                $story_pane.animate({
+                    'left': 0
+                }, {
+                    'easing': 'easeInOutQuint',
+                    'duration': 750,
+                    'queue': false
+                });
+                if (!story_not_found) {
+                    this.story_view = 'page';
+                }
+            } else if ($button.hasClass('task_view_feed')) {
+                $story_pane.animate({
+                    'left': -1 * $story_iframe.width()
+                }, {
+                    'easing': 'easeInOutQuint',
+                    'duration': 750,
+                    'queue': false
+                });
+
+                if (!story_not_found) {
+                    this.story_view = 'feed';
                 }
                 
-                if ($button.hasClass('task_view_page')) {
-                    $story_pane.animate({
-                        'left': 0
-                    }, {
-                        'easing': 'easeInOutQuint',
-                        'duration': 750,
-                        'queue': false
-                    });
-                    if (!story_not_found) {
-                        this.story_view = 'page';
-                    }
-                } else if ($button.hasClass('task_view_feed')) {
-                    $story_pane.animate({
-                        'left': -1 * $story_iframe.width()
-                    }, {
-                        'easing': 'easeInOutQuint',
-                        'duration': 750,
-                        'queue': false
-                    });
+                this.show_feed_view_taskbar_view();
 
-                    if (!story_not_found) {
-                        this.story_view = 'feed';
-                    }
-                    
-                    this.show_feed_view_taskbar_view();
-
-                    var $current_story = this.get_current_story_from_story_titles();
-                    if ($current_story && $current_story.length) {
-                        $feed_view.scrollTo($current_story, {'offset': 0, 'axis': 'y'});
-                    }
-                    
-                    if (!this.flags['feed_view_stories_processed']) {
-                        this.process_stories_location_in_feed_view(this.model.stories, 0);
-                        this.flags['feed_view_stories_processed'] = true;
-                    }
-                } else if ($button.hasClass('task_view_story')) {
-                    $story_pane.animate({
-                        'left': -1 * $story_iframe.width()
-                    }, {
-                        'easing': 'easeInOutQuint',
-                        'duration': 750,
-                        'queue': false
-                    });
-                    if (!story_not_found) {
-                        this.story_view = 'story';
-                    }
-                    this.show_feed_view_taskbar_view();
+                var $current_story = this.get_current_story_from_story_titles();
+                if ($current_story && $current_story.length) {
+                    $feed_view.scrollTo($current_story, {'offset': 0, 'axis': 'y'});
                 }
+                
+                if (!this.flags['feed_view_stories_processed']) {
+                    this.process_stories_location_in_feed_view(this.model.stories, 0);
+                    this.flags['feed_view_stories_processed'] = true;
+                }
+            } else if ($button.hasClass('task_view_story')) {
+                $story_pane.animate({
+                    'left': -1 * $story_iframe.width()
+                }, {
+                    'easing': 'easeInOutQuint',
+                    'duration': 750,
+                    'queue': false
+                });
+                if (!story_not_found) {
+                    this.story_view = 'story';
+                }
+                this.show_feed_view_taskbar_view();
             }
         },
         
@@ -1551,7 +1545,7 @@
         handle_scroll_feed_view: function(elem, e) {
             var self = this;
             
-            if (!this.flags.scrolling_by_selecting_story_title && this.story_view == 'feed') {
+            if (!this.flags.scrolling_by_selecting_story_title && this.story_view != 'story') {
                 var from_top = this.$feed_view.scrollTop();
                 var positions = this.cache.feed_view_story_positions_keys;
                 var closest = parseInt(this.closest(from_top, positions), 10);
