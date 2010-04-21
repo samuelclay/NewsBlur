@@ -735,6 +735,38 @@ background: transparent;
     margin: 0px;
 }
 
+.content-pane .feed {
+    position: absolute;
+    top: 4px;
+    right: 0px;
+    width: 200px;
+    z-index: 10;
+    display: none;
+}
+
+.content-pane .feed .feed_counts {
+    float: left;
+}
+
+.content-pane .feed .feed_counts .feed_counts_floater {
+    float: left;
+}
+
+.content-pane .feed .feed_counts .unread_count {
+    float: right;
+    padding: 0 8px;
+}
+
+.content-pane .feed .unread_count.unread_count_full {
+    display: block;
+}
+
+.content-pane .feed .feed_favicon,
+.content-pane .feed .feed_title,
+.content-pane .feed .NB-feedbar-mark-feed-read {
+    display: none;
+}
+
 /* ============ */
 /* = Task Bar = */
 /* ============ */

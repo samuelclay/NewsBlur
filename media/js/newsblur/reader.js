@@ -512,6 +512,7 @@
                 this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
                 this.show_feed_page_contents(feed_id);
                 this.show_correct_story_view(feed_id);
+                this.make_content_pane_feed_counter(feed_id);
             }
         },
         
@@ -532,6 +533,17 @@
                 this.make_story_feed_entries(stories, first_load);
                 this.show_feed_view_taskbar_view();
             }
+        },
+        
+        make_content_pane_feed_counter: function(feed_id) {
+            var $content_pane = $('.content-pane');
+            var feed = this.model.get_feed(feed_id);
+            var $counter = this.make_feed_title_line(feed);
+            
+            $('.feed', $content_pane).remove();
+            $content_pane.append($counter);
+            
+            $('.unread_count', $content_pane).corner('4px');
         },
         
         show_correct_story_view: function(feed_id) {
@@ -1277,6 +1289,7 @@
             var $feed_list = this.$feed_list;
             var $feed = $('.feed.selected', $feed_list);
             var $story_feedbar = $('.NB-feedbar .feed');
+            var $content_pane = $('.content-pane');
             
             var callback = function(read) {
                 if (read) return;
@@ -1290,6 +1303,7 @@
                     var count = Math.max(unread_count_positive-1, 0);
                     $('.unread_count_positive', $feed).text(count);
                     $('.unread_count_positive', $story_feedbar).text(count);
+                    $('.unread_count_positive', $content_pane).text(count);
                     if (count == 0) {
                         $feed.removeClass('unread_positive');
                     } else {
@@ -1299,6 +1313,7 @@
                     var count = Math.max(unread_count_neutral-1, 0);
                     $('.unread_count_neutral', $feed).text(count);
                     $('.unread_count_neutral', $story_feedbar).text(count);
+                    $('.unread_count_neutral', $content_pane).text(count);
                     if (count == 0) {
                         $feed.removeClass('unread_neutral');
                     } else {
@@ -1308,12 +1323,20 @@
                     var count = Math.max(unread_count_negative-1, 0);
                     $('.unread_count_negative', $feed).text(count);
                     $('.unread_count_negative', $story_feedbar).text(count);
+                    $('.unread_count_negative', $content_pane).text(count);
                     if (count == 0) {
                         $feed.removeClass('unread_negative');
                     } else {
                         $feed.addClass('unread_negative');
                     }
                 }
+                
+                $('.feed', $content_pane).css({'opacity': 0, 'display': 'block'})
+                    .animate({'opacity': 1}, {'duration': 250, 'queue': false});
+                    
+                setTimeout(function() {
+                    $('.feed', $content_pane).animate({'opacity': 0}, {'duration': 250, 'queue': false});
+                }, 400);
 
                 return;
             };
@@ -1327,6 +1350,7 @@
             var self = this;
             var $feed = this.find_feed_in_feed_list(feed_id);
             var $story_feedbar = $('.NB-feedbar .feed');
+            var $content_pane = $('.content-pane');
             var $story_titles = this.$story_titles;
             
             var callback = function() {
@@ -1340,6 +1364,9 @@
             $('.unread_count_neutral', $story_feedbar).text(0);
             $('.unread_count_positive', $story_feedbar).text(0);
             $('.unread_count_negative', $story_feedbar).text(0);
+            $('.unread_count_neutral', $content_pane).text(0);
+            $('.unread_count_positive', $content_pane).text(0);
+            $('.unread_count_negative', $content_pane).text(0);
             $('.story:not(.read)', $story_titles).addClass('read');
             $feed.removeClass('unread_neutral');
             $feed.removeClass('unread_positive');
