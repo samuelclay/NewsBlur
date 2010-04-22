@@ -1755,7 +1755,7 @@
                     }
                 }
             });
-        
+            
         },
         
         // ===================
@@ -1769,6 +1769,10 @@
             this.flags.feed_refresh = setInterval(function() {
                 self.model.refresh_feeds($.rescope(self.post_feed_refresh, self));
             }, FEED_REFRESH_INTERVAL);
+        },
+        
+        force_feed_refresh: function() {
+            this.model.refresh_feeds($.rescope(this.post_feed_refresh, this));
         },
         
         post_feed_refresh: function(e, updated_feeds) {
