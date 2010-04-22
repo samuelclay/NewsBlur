@@ -331,7 +331,7 @@ background: transparent;
     color: #F0F0F0;
     cursor: pointer;
     position: absolute;
-    right: 200px;
+    right: 95px;
     font-size: 9px;
     line-height: 11px;
     font-weight: bold;
@@ -354,6 +354,7 @@ background: transparent;
     position: absolute;
     top: -1px;
     right: 6px;
+    display: none;
 }
 
 #story_titles .NB-feedbar .feed .feed_counts .feed_counts_floater {
@@ -737,11 +738,12 @@ background: transparent;
 
 .content-pane .feed {
     position: absolute;
-    top: 4px;
-    right: 0px;
-    width: 200px;
+    bottom: 1px;
+    left: 350px;
     z-index: 10;
-    display: none;
+    display: block;
+    opacity: .1;
+    font-size: 20px;
 }
 
 .content-pane .feed .feed_counts {
