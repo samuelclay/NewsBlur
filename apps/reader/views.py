@@ -319,7 +319,11 @@ def add_url(request):
         code = -1
         message = "Errm, is that a URL?"
     else:
-        us, _ = UserSubscription.objects.get_or_create(feed=feed, user=request.user)
+        us, _ = UserSubscription.objects.get_or_create(
+            feed=feed, 
+            user=request.user,
+            defaults={'needs_unread_recalc': True}
+        )
         code = 1
         message = ""
         
