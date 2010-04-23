@@ -107,14 +107,10 @@ class ProcessFeed:
             ENTRY_ERR:0}
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
-                                             self.feed.feed_title))
+                                               self.feed.feed_title))
 
-        # Count stories in past month to calculate next scheduled update
-        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-        stories_count = Story.objects.filter(story_feed=self.feed, story_date__gte=month_ago).count()
-        stories_count = stories_count
-        self.feed.stories_per_month = stories_count
-        updates_per_day = max(30, stories_count) / 30.0 * 12
+        # Use stories per month to calculate next feed update
+        updates_per_day = max(30, self.feed.stories_per_month) / 30.0 * 12
         minutes_to_next_update = 60 * 24 / updates_per_day
         random_factor = random.randint(0,int(minutes_to_next_update/4))
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
@@ -269,7 +265,7 @@ class Dispatcher:
             # from random import randint
             # if randint(0,10) < 10:
             #     continue
-        
+            
             try:
                 ffeed = FetchFeed(feed, self.options)
                 fetched_feed = ffeed.fetch()
@@ -292,12 +288,20 @@ class Dispatcher:
                 # print traceback.format_exception(etype, eobj, etb)
                 traceback.print_exception(etype, eobj, etb)
                 print '[%d] ! -------------------------' % (feed.id,)
-                ret_feed = FEED_ERREXC
-                ret_entries = {}
+                ret_feed = FEED_ERREXC 
+                ffeed = None
+                pfeed = None
+                fpage = None      
+                ret_entries = {
+                    ENTRY_NEW: 0,
+                    ENTRY_UPDATED: 0,
+                    ENTRY_SAME: 0,
+                    ENTRY_ERR: 0
+                }
             finally:
-                del ffeed
-                del pfeed
-                del fpage
+                if ffeed: del ffeed
+                if pfeed: del pfeed
+                if fpage: del fpage
                 if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
                     del user_subs
 

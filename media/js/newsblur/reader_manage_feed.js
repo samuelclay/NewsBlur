@@ -317,6 +317,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {
+            NEWSBLUR.reader.force_feed_refresh();
             $.modal.close();
         });
     },

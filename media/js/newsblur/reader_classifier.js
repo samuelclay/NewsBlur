@@ -425,6 +425,7 @@ var classifier = {
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {
+            NEWSBLUR.reader.force_feed_refresh();
             $.modal.close();
         });
     },
@@ -438,6 +439,7 @@ var classifier = {
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_story(story_id, data, function() {
+            NEWSBLUR.reader.force_feed_refresh();
             $.modal.close();
         });
     }
