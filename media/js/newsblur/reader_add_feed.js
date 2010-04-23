@@ -166,20 +166,12 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 			url: '/opml/opml_upload', 
 			secureuri: false,
 			fileElementId: 'opml_file_input',
-			dataType: 'json',
+			dataType: 'text',
 			success: function (data, status)
 			{
                 $loading.removeClass('NB-active');
-                
-				if (typeof data.code != 'undefined') {
-					if (data.code <= 0) {
-                        // NEWSBLUR.log(['Success - Error', data.code]);
-					} else {
-                        // NEWSBLUR.log(['Success', data]);
-						NEWSBLUR.reader.load_feeds();
-						$.modal.close();
-					}
-				}
+				NEWSBLUR.reader.load_feeds();
+				$.modal.close();
 			},
 			error: function (data, status, e)
 			{
@@ -190,24 +182,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 		
 		return false;
     },
-    
-    handle_opml_form: function() {
-        var self = this;
-        var $form = $('form.opml_import_form');
         
-        // NEWSBLUR.log(['OPML Form:', $form]);
-        
-        var callback = function(e) {
-            // NEWSBLUR.log(['OPML Callback', e]);
-        };
-        
-        $form.submit(function() {
-            
-            self.model.process_opml_import($form.serialize(), callback);
-            return false;
-        });
-    },
-    
     // ===========
     // = Actions =
     // ===========
