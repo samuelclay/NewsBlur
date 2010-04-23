@@ -38,14 +38,21 @@ a img {
 /* = Splash page = */
 /* =============== */
 
-.NB-login {
+.NB-account {
     position: absolute;
     right: 50px;
     top: 40px;
+    width: 186px;
 }
 
-.NB-login input[type=text],
-.NB-login input[type=password] {
+.NB-account .NB-login {
+    padding: 0 0 64px 0;
+    margin: 0 0 24px 0;
+    background: transparent url('../img/reader/separator.png') no-repeat bottom center;
+}
+
+.NB-account input[type=text],
+.NB-account input[type=password] {
     border:1px solid #D3D5DE;
     display:block;
     font-size:13px;
@@ -54,15 +61,15 @@ a img {
     width:100%;
 }
 
-.NB-login input[type=text]:focus,
-.NB-login input[type=password]:focus {
+.NB-account input[type=text]:focus,
+.NB-account input[type=password]:focus {
     border-color: #739BBE;
 }
 
-.NB-login input[type=submit] {
+.NB-account input[type=submit] {
 /*    height: 40px;*/
     outline: none;
-    width: 100px;
+    width: 150px;
     margin: 4px 5px 0 0;
     padding: 4px 10px 5px;
     text-shadow: 0 -1px 0 #C7C9D2;
@@ -75,43 +82,52 @@ a img {
 }
 
 
-.NB-login input[type=submit]:hover {
+.NB-account input[type=submit]:hover {
 /*    background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;*/
     color: #000;
     border-color: #6F7283;
 /*    font-weight: bold;*/
 }
 
-.NB-login input[type=hidden] {
+.NB-account input[type=hidden] {
     display: none;
 }
 
-.NB-login label,
-.NB-login .NB-login-label {
+.NB-account label,
+.NB-account .NB-account-label {
     margin-top: 2px;
-    color:#90A0B0;
-    font-size:13px;
+    color:#A0B0C0;
+    font-size:12px;
     display: block;
-/*    text-transform: uppercase;*/
+    text-transform: uppercase;
 }
 
-.NB-login .NB-login-label {
+.NB-account .NB-account-label {
     font-weight: bold;
 }
 
-.NB-login .NB-login-text {
+.NB-account .NB-account-text {
     font-size: 13px;
     color: #90A0B0;
     margin-bottom: 30px;
 }
 
-.NB-login .NB-login-text a {
+.NB-account .NB-account-text a {
     text-decoration: none;
     color: #3E4773;
 }
 
-.NB-login .NB-login-text a:hover {
+.NB-account .NB-account-text a:hover {
     color: #0E1763;
+}
+
+.NB-account .errorlist {
+    list-style: none;
+    font-size: 12px;
+    color: #AF4D18;
+    font-weight: bold;
+    width: 200px;
+    padding: 0;
 }
 
 /* ================ */
@@ -1088,7 +1104,8 @@ form.opml_import_form input {
 
 #NB-splash .NB-splash-links {
     position: absolute;
-    right: 12px;
+    right: 50px;
+    width: 186px;
     bottom: 0;
     display: block;
     font-size: 11px;
@@ -1096,6 +1113,12 @@ form.opml_import_form input {
     margin: 0;
     padding: 0;
     text-shadow: 1px 1px 0 #F0F0F0;
+    list-style: none;
+    white-space: nowrap;
+}
+
+#NB-splash .NB-splash-links .NB-splash-link {
+    display: block;
 }
 
 #NB-splash .NB-splash-links a {

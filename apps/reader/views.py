@@ -15,14 +15,14 @@ from utils import json, feedfinder
 from utils.user_functions import get_user
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.core import serializers 
 from django.utils.safestring import mark_safe
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
+from apps.reader.forms import SignupForm, LoginForm
 import logging
 import datetime
 import threading
@@ -33,20 +33,40 @@ SINGLE_DAY = 60*60*24
 @never_cache
 def index(request):
     if request.method == "POST":
-        form = AuthenticationForm(request.POST)
+        if request.POST['submit'] == 'login':
+            login_form = LoginForm(request.POST, prefix='login')
+            signup_form = SignupForm(prefix='signup')
+        else:
+            login_form = LoginForm(prefix='login')
+            signup_form = SignupForm(request.POST, prefix='signup')
     else:
-        form = AuthenticationForm()
+        login_form = LoginForm(prefix='login')
+        signup_form = SignupForm(prefix='signup')
 
-    return render_to_response('reader/feeds.xhtml', {'form': form},
-                              context_instance=RequestContext(request))
+    return render_to_response('reader/feeds.xhtml', {
+        'login_form': login_form,
+        'signup_form': signup_form,
+    }, context_instance=RequestContext(request))
 
 @never_cache
 def login(request):
     if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
+        form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
             from django.contrib.auth import login
             login(request, form.get_user())
+            return HttpResponseRedirect(reverse('index'))
+
+    return index(request)
+    
+@never_cache
+def signup(request):
+    if request.method == "POST":
+        form = SignupForm(prefix='signup', data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            from django.contrib.auth import login
+            login(request, new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
