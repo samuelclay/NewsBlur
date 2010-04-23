@@ -71,7 +71,11 @@ class OPMLImporter:
                 feed_data = dict(feed_address=feed.xmlUrl, feed_link=feed.htmlUrl, feed_title=feed.title)
                 # feeds.append(feed_data)
                 feed_db, _ = Feed.objects.get_or_create(feed_address=feed.xmlUrl, defaults=dict(**feed_data))
-                us, _ = UserSubscription.objects.get_or_create(feed=feed_db, user=self.user)
+                us, _ = UserSubscription.objects.get_or_create(
+                    feed=feed_db, 
+                    user=self.user,
+                    defaults={'needs_unread_recalc': True}
+                )
                 folders.append(feed_db.pk)
         return folders
     
