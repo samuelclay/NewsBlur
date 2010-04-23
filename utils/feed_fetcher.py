@@ -110,7 +110,7 @@ class ProcessFeed:
                                                self.feed.feed_title))
 
         # Use stories per month to calculate next feed update
-        updates_per_day = max(30, self.feed.stories_per_month) / 30.0 * 12
+        updates_per_day = max(30, self.feed.stories_per_month*self.feed.stories_per_month) / 30.0 * 6
         minutes_to_next_update = 60 * 24 / updates_per_day
         random_factor = random.randint(0,int(minutes_to_next_update/4))
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
