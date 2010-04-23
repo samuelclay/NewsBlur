@@ -74,7 +74,11 @@ class OPMLImporter:
                 us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
                     user=self.user,
-                    defaults={'needs_unread_recalc': True}
+                    
+                    defaults={
+                        'needs_unread_recalc': True,
+                        'mark_read_date': datetime.datetime.now() - datetime.timedelta(days=1)
+                    }
                 )
                 folders.append(feed_db.pk)
         return folders
