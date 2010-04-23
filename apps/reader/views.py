@@ -323,8 +323,13 @@ def add_url(request):
         code = 1
         message = ""
         
-        user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
-        user_sub_folders = json.decode(user_sub_folders_object.folders)
+        user_sub_folders_object, created = UserSubscriptionFolders.objects.get_or_create(user=request.user,
+            defaults={'folders': '[]'}
+        )
+        if created:
+            user_sub_folders = []
+        else:
+            user_sub_folders = json.decode(user_sub_folders_object.folders)
         user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
