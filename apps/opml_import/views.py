@@ -33,7 +33,7 @@ def opml_upload(request):
     feeds = UserSubscription.objects.filter(user=request.user).values()
     data = json.encode(dict(message=message, code=code, payload=dict(folders=folders, feeds=feeds)))
 
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, mimetype='text/plain')
 
 class OPMLImporter:
     
