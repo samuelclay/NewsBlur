@@ -46,7 +46,7 @@ class Command(BaseCommand):
         for feed in feeds:
             feeds_queue[i%num_workers].append(feed)
             i += 1
-        disp.add_jobs(feeds_queue)
+        disp.add_jobs(feeds_queue, i)
         
         print "Running jobs..."
         disp.run_jobs()

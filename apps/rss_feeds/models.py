@@ -344,3 +344,15 @@ class Story(models.Model):
         db_table="stories"
         ordering=["-story_date"]
         
+class FeedUpdateHistory(models.Model):
+    fetch_date = models.DateTimeField(default=datetime.datetime.now)
+    number_of_feeds = models.IntegerField()
+    seconds_taken = models.IntegerField()
+    
+    def __unicode__(self):
+        return "[%s] %s feeds: %s seconds" % (
+            fetch_date.strftime('%F %d'),
+            self.number_of_feeds,
+            self.seconds_taken,
+        )
+    

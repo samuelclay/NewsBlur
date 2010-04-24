@@ -1,4 +1,4 @@
-from apps.rss_feeds.models import Story
+from apps.rss_feeds.models import Story, FeedUpdateHistory
 from django.core.cache import cache
 from apps.reader.models import UserSubscription, UserStory
 from apps.rss_feeds.importer import PageImporter
@@ -327,10 +327,11 @@ class Dispatcher:
             print "---> DONE WITH PROCESS: %s" % current_process.name
             sys.exit()
 
-    def add_jobs(self, feeds_queue):
+    def add_jobs(self, feeds_queue, feeds_count):
         """ adds a feed processing job to the pool
         """
         self.feeds_queue = feeds_queue
+        self.feeds_count = feeds_count
             
     def run_jobs(self):
         if self.options['single_threaded']:
@@ -360,6 +361,12 @@ class Dispatcher:
                               for key in self.entry_keys)
                     ))
             print done
+            time_taken = datetime.datetime.now() - self.time_start
+            history = FeedUpdateHistory(
+                number_of_feeds=self.feeds_count,
+                seconds_taken=time_taken.seconds
+            )
+            history.save()
             logging.info(done)
             return
 
