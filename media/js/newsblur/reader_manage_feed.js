@@ -22,19 +22,22 @@ NEWSBLUR.ReaderManageFeed.prototype = {
             for (var f in this.feeds) {
                 feeds_list.push(f);
             }
-            this.feed_id = feeds_list[Math.round(Math.random() * 1000 % (feeds_list.length-1))]
+            this.feed_id = feeds_list[Math.round(Math.random() * 1000 % (feeds_list.length-1))];
+            if (!this.feed_id) this.feed_id = f;
         }
         this.feed = this.model.get_feed(this.feed_id);
         
-        this.make_modal();
-        this.initialize_feed(this.feed_id);
-        this.handle_cancel();
-        this.open_modal();
-        this.load_feed_classifier();
+        if (this.feed_id) {
+            this.make_modal();
+            this.initialize_feed(this.feed_id);
+            this.handle_cancel();
+            this.open_modal();
+            this.load_feed_classifier();
         
-        this.$manage.bind('click', $.rescope(this.handle_click, this));
-        this.$manage.bind('change', $.rescope(this.handle_change, this));
-        this.$manage.bind('keyup', $.rescope(this.handle_keyup, this));
+            this.$manage.bind('click', $.rescope(this.handle_click, this));
+            this.$manage.bind('change', $.rescope(this.handle_change, this));
+            this.$manage.bind('keyup', $.rescope(this.handle_keyup, this));
+        }
     },
     
     initialize_feed: function(feed_id) {

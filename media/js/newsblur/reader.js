@@ -341,24 +341,29 @@
             var self = this;
             
             if ($('#feed_list').length) {
+                $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.model.load_feeds($.rescope(this.make_feeds, this));
             }
         },
         
         make_feeds: function() {
-            if (!this.model.feeds.length) {
-                this.load_feed_browser();
-            }
             var $feed_list = this.$feed_list.empty();
             var folders = this.model.folders;
             var feeds = this.model.feeds;
-            NEWSBLUR.log(['Making feeds', {'folders': folders, 'feeds': feeds}]);
+            // NEWSBLUR.log(['Making feeds', {'folders': folders, 'feeds': feeds}]);
             
             $('#story_taskbar').css({'display': 'block'});
-            // NEWSBLUR.log(['Subscriptions', {'folders':folders}]);
+
             var $folder = this.make_feeds_folder(folders);
             $feed_list.append($folder);
             $('.unread_count', $feed_list).corner('4px');
+            
+            if (!$folder.length) {
+                this.load_feed_browser();
+                this.setup_ftux_add_feed_callout();
+            } else {
+                $('.NB-callout-ftux').fadeOut(500);
+            }
         },
         
         make_feeds_folder: function(items) {
@@ -1799,6 +1804,25 @@
         
         save_profile: function(key, value) {
             NEWSBLUR.Globals[key] = value;
+        },
+        
+        // ========
+        // = FTUX =
+        // ========
+        
+        setup_ftux_add_feed_callout: function() {
+            $('.NB-callout-ftux .NB-callout-text').text('First things first...');
+            $('.NB-callout-ftux').corner('5px');
+            $('.NB-callout-ftux').css({
+                'opacity': 0,
+                'display': 'block'
+            }).animate({
+                'opacity': 1,
+                'bottom': 36
+            }, {
+                'duration': 750,
+                'easing': 'easeInOutQuint'
+            });
         }
         
     };

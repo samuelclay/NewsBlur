@@ -36,33 +36,33 @@ class LoginForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    username = forms.RegexField(regex=r'^\w+$',
-                                max_length=30,
-                                widget=forms.TextInput(),
-                                label=_(u'username'),
-                                error_messages={'required': 'Please enter a username.'})
+    signup_username = forms.RegexField(regex=r'^\w+$',
+                                       max_length=30,
+                                       widget=forms.TextInput(),
+                                       label=_(u'username'),
+                                       error_messages={'required': 'Please enter a username.'})
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
                              label=_(u'email address'),
                                 error_messages={'required': 'Please enter your email.'})
-    password = forms.CharField(widget=forms.PasswordInput(render_value=False),
-                               label=_(u'password'),
-                                error_messages={'required': 'Please enter a password.'})
+    signup_password = forms.CharField(widget=forms.PasswordInput(render_value=False),
+                                      label=_(u'password'),
+                                      error_messages={'required': 'Please enter a password.'})
     
-    def clean_username(self):
+    def clean_signup_username(self):
         try:
-            user = User.objects.get(username__iexact=self.cleaned_data['username'])
+            user = User.objects.get(username__iexact=self.cleaned_data['signup_username'])
         except User.DoesNotExist:
-            return self.cleaned_data['username']
+            return self.cleaned_data['signup_username']
         raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
-        return self.cleaned_data['username']
+        return self.cleaned_data['signup_username']
 
             
     def save(self, profile_callback=None):
-        new_user = User(username=self.cleaned_data['username'],
+        new_user = User(username=self.cleaned_data['signup_username'],
                         email=self.cleaned_data['email'])
-        new_user.set_password(self.cleaned_data['password'])
+        new_user.set_password(self.cleaned_data['signup_password'])
         new_user.is_active = True
         new_user.save()
-        new_user = authenticate(username=self.cleaned_data['username'], password=self.cleaned_data['password'])
+        new_user = authenticate(username=self.cleaned_data['signup_username'], password=self.cleaned_data['signup_password'])
         
         return new_user

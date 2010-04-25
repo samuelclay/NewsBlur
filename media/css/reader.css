@@ -38,11 +38,16 @@ a img {
 /* = Splash page = */
 /* =============== */
 
+.NB-splash-heading {
+    display: none;
+}
+
 .NB-account {
     position: absolute;
     right: 50px;
     top: 40px;
     width: 186px;
+    z-index: 1;
 }
 
 .NB-account .NB-login {
@@ -128,6 +133,45 @@ a img {
     font-weight: bold;
     width: 200px;
     padding: 0;
+}
+
+/* ============ */
+/* = Callouts = */
+/* ============ */
+
+.NB-callout {
+    position: absolute;
+    -moz-box-shadow: 2px 2px 5px #909090;
+    -webkit-box-shadow: 2px 2px 5px #909090;
+    box-shadow: 2px 2px 5px #909090;
+    border: 1px solid #707070;
+    background: #E2FFCC url('../img/reader/callout_background.png') repeat-x 0 0;
+    display: none;
+    z-index: 10;
+}
+
+.NB-callout .NB-callout-text {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.NB-callout .NB-callout-container {
+    position: relative;
+    padding: 4px 12px;
+}
+
+.NB-callout .NB-callout-container .NB-callout-arrow {
+    width: 32px;
+    height: 14px;
+    background: transparent url('../img/reader/callout_arrow.png') no-repeat 0 0;
+    position: absolute;
+    bottom: -14px;
+    left: 4px;
+}
+
+.NB-callout-ftux {
+    left: 2px;
+    bottom: 51px;
 }
 
 /* ================ */
@@ -1115,6 +1159,7 @@ form.opml_import_form input {
     text-shadow: 1px 1px 0 #F0F0F0;
     list-style: none;
     white-space: nowrap;
+    z-index: 0;
 }
 
 #NB-splash .NB-splash-links .NB-splash-link {

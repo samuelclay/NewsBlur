@@ -2,10 +2,18 @@
 
 {% block content %}
 
+<h1 class="NB-splash-heading">NewsBlur</h1>
+<h2 class="NB-splash-heading">- A feed reader with intelligence.</h2>
+  
 <div class="left-pane">
     <ul class="left-center" id="feed_list"></ul>
-    
     <div class="NB-taskbar left-south">
+      <div class="NB-callout-ftux NB-callout">
+        <div class="NB-callout-container">
+          <div class="NB-callout-text"></div>
+          <div class="NB-callout-arrow"></div>
+        </div>
+      </div>
     	<ul class="taskbar_nav taskbar_nav_feeds">
     		<li class="task_button task_button_menu NB-task-add">
     		<li class="task_button task_button_menu NB-task-manage">
@@ -114,12 +122,12 @@
         
           <form method="post" action="{% url signup %}">
             <div>
-              {{ signup_form.username.label_tag }}
-              {{ signup_form.username }}
+              {{ signup_form.signup_username.label_tag }}
+              {{ signup_form.signup_username }}
             </div>
             <div>
-              {{ signup_form.password.label_tag }}
-              {{ signup_form.password }}
+              {{ signup_form.signup_password.label_tag }}
+              {{ signup_form.signup_password }}
             </div>
             <div>
               {{ signup_form.email.label_tag }}
