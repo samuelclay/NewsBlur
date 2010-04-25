@@ -362,6 +362,7 @@
                 this.load_feed_browser();
                 this.setup_ftux_add_feed_callout();
             } else {
+                $('.NB-task-manage').removeClass('NB-disabled');
                 $('.NB-callout-ftux').fadeOut(500);
             }
         },
@@ -753,7 +754,7 @@
                 $story_iframe.data('feed_id', feed_id);
             }
             
-            $taskbar_view_page.removeClass('NB-inactive');
+            $taskbar_view_page.removeClass('NB-disabled');
             $taskbar_return.css({'display': 'none'});
             this.flags.iframe_scroll_snap_back_prepared = true;
             this.iframe_link_attacher_num_links = 0;
@@ -837,10 +838,10 @@
                     }
                 } catch(e) {
                     $taskbar_return.css({'display': 'block'});
-                    $taskbar_view_page.addClass('NB-inactive');    
+                    $taskbar_view_page.addClass('NB-disabled');    
                 } finally {
                     $taskbar_return.css({'display': 'block'});
-                    $taskbar_view_page.addClass('NB-inactive');   
+                    $taskbar_view_page.addClass('NB-disabled');   
                 }
             }, 500);
         },
@@ -1489,7 +1490,7 @@
             });  
             $.targetIs(e, { tagSelector: '.NB-task-manage' }, function($t, $p){
                 e.preventDefault();
-                if (!$t.hasClass('NB-inactive')) {
+                if (!$t.hasClass('NB-disabled')) {
                     self.open_manage_feed_modal();
                 }
             });  

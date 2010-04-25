@@ -197,7 +197,7 @@ def load_feed_page(request):
     if feed.page_data:
         data = feed.page_data
     else:
-        data = "Give it 10 minutes..."
+        data = "Give it 10 minutes...<br /><br />Your feed will be here in under 5 minutes (on average).<br />Soon there will be a progress bar. Until then, take a deep breath."
     
     return HttpResponse(data, mimetype='text/html')
     
@@ -317,7 +317,7 @@ def add_url(request):
                 
     if not feed:    
         code = -1
-        message = "Errm, is that a URL?"
+        message = "That URL does not point to a website or RSS feed."
     else:
         us, _ = UserSubscription.objects.get_or_create(
             feed=feed, 
@@ -388,11 +388,11 @@ def delete_feed(request):
     user_stories.delete()
     
     def _find_feed_in_folders(folders):
-        for k, folder in enumerate(folders):
+        for k, folder in enumerate(list(folders)):
             if isinstance(folder, int):
                 if folder == feed_id:
                     print "DEL'ED: %s'th item: %s" % (k, folders)
-                    del folders[k]
+                    folders.remove(folder)
             elif isinstance(folder, dict):
                 for f_k, f_v in folder.items():
                     folders[k][f_k] = _find_feed_in_folders(f_v)

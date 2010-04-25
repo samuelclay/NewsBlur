@@ -327,7 +327,7 @@ class Dispatcher:
             print "---> DONE WITH PROCESS: %s" % current_process.name
             sys.exit()
 
-    def add_jobs(self, feeds_queue, feeds_count):
+    def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
         """
         self.feeds_queue = feeds_queue

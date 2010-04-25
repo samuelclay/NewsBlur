@@ -13,6 +13,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.make_modal();
         this.handle_cancel();
         this.open_modal();
+        this.handle_keystrokes();
         
         this.$add.bind('click', $.rescope(this.handle_click, this));
     },
@@ -74,7 +75,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         'Import from Google Reader'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months.')
+                        $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months. Use OPML. It\'s easy.')
                     ])
                 ])
             ])
@@ -151,6 +152,20 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             $.modal.close();
         });
     },
+    
+    handle_keystrokes: function() {
+        var self = this;
+        
+        $('.NB-add-url', this.$add).bind('keyup', 'return', function(e) {
+            e.preventDefault();
+            self.save_add_url();
+        });  
+        
+        $('.NB-add-folder', this.$add).bind('keyup', 'return', function(e) {
+            e.preventDefault();
+            self.save_add_folder();
+        });  
+    },
         
     // ========
     // = OPML =
@@ -192,26 +207,24 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
         $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
             e.preventDefault();
-        
-            var url = $('.NB-add-url').val();
-            var folder = $('.NB-add-url').parents('.NB-fieldset').find('.NB-folders').val();
             
-            self.save_add_url(url, folder);
+            self.save_add_url();
         });
         
         $.targetIs(e, { tagSelector: '.NB-add-folder-submit' }, function($t, $p) {
             e.preventDefault();
-        
-            var folder = $('.NB-add-folder').val();
-            var parent_folder = $('.NB-add-folder').parents('.NB-fieldset').find('.NB-folders').val();
             
-            self.save_add_folder(folder, parent_folder);
+            self.save_add_folder();
         });
     },
     
-    save_add_url: function(url, folder) {
+    save_add_url: function() {
         var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
+        
+        var url = $('.NB-add-url').val();
+        var folder = $('.NB-add-url').parents('.NB-fieldset').find('.NB-folders').val();
+            
         $error.slideUp(300);
         $loading.addClass('NB-active');
 
@@ -233,9 +246,13 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         }
     },
     
-    save_add_folder: function(folder, parent_folder) {
+    save_add_folder: function() {
         var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
+        
+        var folder = $('.NB-add-folder').val();
+        var parent_folder = $('.NB-add-folder').parents('.NB-fieldset').find('.NB-folders').val();
+            
         $error.slideUp(300);
         $loading.addClass('NB-active');
 

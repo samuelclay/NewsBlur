@@ -887,6 +887,10 @@ background: transparent;
     background-color: #A0A7B1;
 }
 
+.NB-taskbar .taskbar_nav .task_button.NB-disabled:hover {
+    background-color: inherit;
+}
+
 .NB-taskbar .taskbar_nav .task_button.active .taskbar_menu {
     display: block;
 }
@@ -922,9 +926,18 @@ background: transparent;
     background-color: #96B6E6;
     color: #405090;
 }
+.NB-taskbar .taskbar_nav .task_button.NB-disabled .taskbar_menu li span:hover {
+    background-color: inherit;
+    color: inherit;
+}
 
 .NB-taskbar .task_button {
     cursor: pointer;
+}
+
+.NB-taskbar .task_button.NB-disabled {
+    opacity: .3;
+    cursor: default;
 }
 
 .NB-taskbar .task_button.NB-task-add {
@@ -998,9 +1011,6 @@ background: transparent;
 }
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
-}
-.NB-taskbar .NB-inactive {
-    opacity: .3;
 }
 
 .NB-taskbar .task_button.task_return {
