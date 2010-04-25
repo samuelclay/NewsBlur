@@ -204,11 +204,11 @@
             });
             $(document).bind('keydown', 'left', function(e) {
                 e.preventDefault();
-                self.show_next_feed(-1);
+                self.switch_taskbar_view_direction(-1);
             });
             $(document).bind('keydown', 'right', function(e) {
                 e.preventDefault();
-                self.show_next_feed(1);
+                self.switch_taskbar_view_direction(1);
             });
             $(document).bind('keydown', 'space', function(e) {
                 e.preventDefault();
@@ -511,14 +511,15 @@
                 this.$story_titles.data('page', 0);
                 this.$story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
+                this.story_view = 'page'; // TODO: Grab from preferences.
             
                 this.show_feed_title_in_stories($story_titles, feed_id);
                 this.mark_feed_as_selected(feed_id, $feed_link);
                 this.show_feedbar_loading();
                 this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
                 this.show_feed_page_contents(feed_id);
-                this.show_correct_story_view(feed_id);
                 this.make_content_pane_feed_counter(feed_id);
+                this.switch_taskbar_view(this.story_view);
             }
         },
         
@@ -558,27 +559,6 @@
             var o_width = $content_pane.width();
             var left = (o_width / 2.0) - (i_width / 2.0);
             $('.feed', $content_pane).css({'left': left});
-        },
-        
-        show_correct_story_view: function(feed_id) {
-            var $feed_view = this.$feed_view;
-            var $story_iframe = this.$story_iframe;
-            var $story_pane = this.$story_pane;
-            
-            // TODO: Assume page view until user prefs override
-            if (this.story_view == 'feed') {
-                $story_pane.css({
-                    'left': -1 * $story_iframe.width()
-                });
-            } else if (this.story_view == 'page') {
-                $feed_view.css({
-                    'left': $feed_view.width()
-                });
-            } else if (this.story_view == 'story') {
-
-            }
-            
-            this.switch_taskbar_view(this.story_view);
         },
         
         create_story_titles: function(stories) {
@@ -940,7 +920,7 @@
         // = Taskbar - Story =
         // ===================
         
-        switch_taskbar_view: function(view, story_not_found, story_found) {
+        switch_taskbar_view: function(view, story_not_found) {
             var $story_pane = this.$story_pane;
             
             // NEWSBLUR.log(['$button', $button, this.flags['page_view_showing_feed_view'], $button.hasClass('NB-active'), story_not_found]);
@@ -1000,6 +980,33 @@
                     this.story_view = 'story';
                 }
                 this.show_feed_view_taskbar_view();
+            }
+        },
+        
+        switch_taskbar_view_direction: function(direction) {
+            var $active = $('.taskbar_nav_view .NB-active');
+            var view;
+            
+            if (direction == -1) {
+                if ($active.hasClass('task_view_page')) {
+                    // view = 'page';
+                } else if ($active.hasClass('task_view_feed')) {
+                    view = 'page';
+                } else if ($active.hasClass('task_view_story')) {
+                    view = 'feed';
+                } 
+            } else if (direction == 1) {
+                if ($active.hasClass('task_view_page')) {
+                    view = 'feed';
+                } else if ($active.hasClass('task_view_feed')) {
+                    view = 'story';
+                } else if ($active.hasClass('task_view_story')) {
+                    // view = 'story';
+                } 
+            }
+            
+            if (view) {
+                this.switch_taskbar_view(view);  
             }
         },
         
@@ -1089,7 +1096,7 @@
             // NEWSBLUR.log(['Found story', found_story_in_page, this.story_view, this.flags.feed_frame_loaded_with_iframe, this.flags['page_view_showing_feed_view']]);
             if (found_story_in_page) {
                 if (this.story_view == 'page' && this.flags['page_view_showing_feed_view']) {
-                    this.switch_taskbar_view('page', false, true);
+                    this.switch_taskbar_view('page', false);
                     this.flags['page_view_showing_feed_view'] = false;
                 }
             } else {
