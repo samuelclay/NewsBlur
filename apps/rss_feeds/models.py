@@ -348,6 +348,7 @@ class FeedUpdateHistory(models.Model):
     fetch_date = models.DateTimeField(default=datetime.datetime.now)
     number_of_feeds = models.IntegerField()
     seconds_taken = models.IntegerField()
+    average_per_feed = models.DecimalField(decimal_places=1, max_digits=4)
     
     def __unicode__(self):
         return "[%s] %s feeds: %s seconds" % (
@@ -355,4 +356,8 @@ class FeedUpdateHistory(models.Model):
             self.number_of_feeds,
             self.seconds_taken,
         )
+    
+    def save(self, *args, **kwargs):
+        self.average_per_feed = str(self.seconds_taken / float(max(1.0,self.number_of_feeds)))
+        super(FeedUpdateHistory, self).save(*args, **kwargs)
     
