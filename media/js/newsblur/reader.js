@@ -1744,7 +1744,7 @@
                 $stories_show.slideDown(500);
                 setTimeout(function() {
                     var $story = self.find_story_in_story_titles(self.active_story);
-                    NEWSBLUR.log(['$story', $story]);
+                    // NEWSBLUR.log(['$story', $story]);
                     if ($story && $story.length && $story.is(':visible')) {
                         var story = self.active_story;
                         self.active_story = null; // Set is in open_story(), which allows it to scroll.

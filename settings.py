@@ -128,6 +128,7 @@ COMPRESS_CSS = {
     }
 }
 
+COMPRESS_VERSION = True
 COMPRESS_JS_FILTERS = ['compress.filters.jsmin.JSMinFilter']
 COMPRESS_CSS_FILTERS = []
 
