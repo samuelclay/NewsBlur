@@ -1209,7 +1209,7 @@
             var search_document = function(node, title) {
                 var skip = 0;
                 
-                if (node.nodeType == 3) {
+                if (node && node.nodeType == 3) {
                     // if (node.data.indexOf(story.story_title.substr(0, 20)) >= 0) {
                     //     NEWSBLUR.log(['found', {
                     //         node: node.data.replace(/&nbsp;|[^a-z0-9-]/gi, ''),
@@ -1222,7 +1222,7 @@
                         $stories.push($(node).parent());
                     }
                 }
-                else if (node.nodeType == 1 && node.childNodes && !(/(script|style)/i.test(node.tagName))) {
+                else if (node && node.nodeType == 1 && node.childNodes && !(/(script|style)/i.test(node.tagName))) {
                     for (var i = 0; i < node.childNodes.length; ++i) {
                         i += search_document(node.childNodes[i], title);
                     }
