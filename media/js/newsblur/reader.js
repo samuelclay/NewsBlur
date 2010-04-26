@@ -1848,7 +1848,7 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = 1000 * 60 * 5; // 5 minutes
+            var FEED_REFRESH_INTERVAL = 1000 * 60; // 1 minute
             
             this.flags.feed_refresh = setInterval(function() {
                 self.model.refresh_feeds($.rescope(self.post_feed_refresh, self));
