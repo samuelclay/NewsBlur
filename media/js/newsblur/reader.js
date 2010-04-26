@@ -16,7 +16,8 @@
         this.story_view = 'page';
         
         this.flags = {
-            'feed_view_images_loaded': {}
+            'feed_view_images_loaded': {},
+            'bouncing_callout': false
         };
         this.locks = {};
         this.cache = {
@@ -1671,6 +1672,8 @@
         open_add_feed_modal: function() {
             var feed_id = this.active_feed;
             
+            clearInterval(this.flags['bouncing_callout']);
+            
             NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
         },
         
@@ -1887,6 +1890,8 @@
         // ========
         
         setup_ftux_add_feed_callout: function() {
+            var self = this;
+            
             $('.NB-callout-ftux .NB-callout-text').text('First things first...');
             $('.NB-callout-ftux').corner('5px');
             $('.NB-callout-ftux').css({
@@ -1898,6 +1903,13 @@
             }, {
                 'duration': 750,
                 'easing': 'easeInOutQuint'
+            }).each(function() {
+                var $this = $(this);
+                self.flags['bouncing_callout'] = setInterval(function() {
+                    $this.animate({'bottom': '+=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'})
+                         .animate({'bottom': '+=0px'}, {'duration': 50})
+                         .animate({'bottom': '-=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'});
+                }, 1000);
             });
         }
         
