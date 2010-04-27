@@ -30,7 +30,7 @@ class Command(BaseCommand):
             
         socket.setdefaulttimeout(options['timeout'])
         now = datetime.datetime.now()
-        feeds = Feed.objects.filter(next_scheduled_update__lte=now).order_by('?')
+        feeds = Feed.objects.filter(next_scheduled_update__lte=now)#.order_by('?')
 
         num_workers = min(len(feeds), options['workerthreads'])
         if options['single_threaded']:
