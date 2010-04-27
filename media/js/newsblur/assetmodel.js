@@ -232,7 +232,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             callback(updated_feeds);
         };
         
-        this.make_request('/reader/refresh_feeds', {}, pre_callback);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/refresh_feeds', {}, pre_callback);
+        }
     },
     
     get_feed: function(feed_id) {

@@ -127,7 +127,7 @@ def load_single_feed(request):
     user = get_user(request)
     
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 50))
+    limit = int(request.REQUEST.get('limit', 30))
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
