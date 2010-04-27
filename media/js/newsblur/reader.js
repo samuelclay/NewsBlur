@@ -608,7 +608,8 @@
                 }
                 if (this.flags['iframe_prefetching_story_locations']) {
                     var stories_count = this.cache['iframe_story_positions_keys'].length;
-                    this.prefetch_story_locations_in_story_frame(stories_count+1);
+                    this.flags.story_frame_prefetched = false;
+                    this.prefetch_story_locations_in_story_frame(stories_count);
                 }
             }
         },
