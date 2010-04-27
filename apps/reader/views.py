@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import login as login_user
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -51,7 +51,7 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
-            login(request, form.get_user())
+            login_user(request, form.get_user())
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
@@ -62,7 +62,7 @@ def signup(request):
         form = SignupForm(prefix='signup', data=request.POST)
         if form.is_valid():
             new_user = form.save()
-            login(request, new_user)
+            login_user(request, new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
