@@ -1,32 +1,30 @@
-from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
-from django.db import IntegrityError
-try:
-    from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor
-except:
-    pass
-from django.core.cache import cache
-from django.views.decorators.cache import never_cache
-from django.db.models import Q
-from django.db.models.aggregates import Count
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
-from utils import json, feedfinder
-from utils.user_functions import get_user
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-from django.core import serializers 
-from django.utils.safestring import mark_safe
-from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
-from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from apps.analyzer.models import get_classifiers_for_user
-from apps.reader.forms import SignupForm, LoginForm
 import logging
 import datetime
 import threading
 import random
+from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
+from django.db import IntegrityError
+from django.core.cache import cache
+from django.views.decorators.cache import never_cache
+from django.db.models import Q
+from django.db.models.aggregates import Count
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
+from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.analyzer.models import get_classifiers_for_user
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
+from apps.reader.forms import SignupForm, LoginForm
+try:
+    from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor
+except:
+    pass
+from utils import json, feedfinder
+from utils.user_functions import get_user
 
 SINGLE_DAY = 60*60*24
 
@@ -53,7 +51,6 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
-            from django.contrib.auth import login
             login(request, form.get_user())
             return HttpResponseRedirect(reverse('index'))
 
@@ -65,7 +62,6 @@ def signup(request):
         form = SignupForm(prefix='signup', data=request.POST)
         if form.is_valid():
             new_user = form.save()
-            from django.contrib.auth import login
             login(request, new_user)
             return HttpResponseRedirect(reverse('index'))
 
