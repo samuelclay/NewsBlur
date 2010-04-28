@@ -811,6 +811,7 @@
             var $story_iframe = this.$story_iframe;
             var $taskbar_view_page = $('.NB-taskbar .task_view_page');
             var $taskbar_return = $('.NB-taskbar .task_return');
+            this.flags.iframe_view_loaded = false;
             
             if (!feed_id) {
                 feed_id = $story_iframe.data('feed_id');
@@ -871,7 +872,21 @@
                 try {
                     $story_iframe.contents().find('a')
                         .unbind('click.NB-taskbar')
-                        .bind('click.NB-taskbar', function() {
+                        .bind('click.NB-taskbar', function(e) {
+                        var href = $(this).attr('href');
+                        if (href.indexOf('#') == 0) {
+                            e.preventDefault();
+                            var $footnote = $('a[name='+href.substr(1)+'], [id='+href.substr(1)+']',
+                                              $story_iframe.contents());
+                            // NEWSBLUR.log(['Footnote', $footnote, href, href.substr(1)]);
+                            $story_iframe.contents().scrollTo($footnote, 600, { 
+                                axis: 'y', 
+                                easing: 'easeInOutQuint', 
+                                offset: 0, 
+                                queue: false 
+                            });
+                            return false;
+                        }
                         self.taskbar_show_return_to_page();
                     });
                     self.$story_iframe.contents()
