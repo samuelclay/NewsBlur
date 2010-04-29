@@ -275,7 +275,11 @@ class Feed(models.Model):
                                                               existing_story.story_title)
                 seq = difflib.SequenceMatcher(None, story_content, existing_story.story_content)
                 
-                if seq and seq.real_quick_ratio() > .9 and seq.quick_ratio() > .95:
+                if (seq
+                    and story_content
+                    and existing_story.story_content
+                    and seq.real_quick_ratio() > .9 
+                    and seq.quick_ratio() > .95):
                     content_ratio = seq.ratio()
                     
                 if story_title_difference > 0 and story_title_difference < 5 and content_ratio > .98:
