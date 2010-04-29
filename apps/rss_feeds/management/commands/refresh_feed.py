@@ -13,6 +13,7 @@ import errno
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-f", "--feed", dest="feed", default=None),
+        make_option("-F", "--force", dest="force", action="store_true"),
         make_option("-t", "--title", dest="title", default=None),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
     )
@@ -25,11 +26,11 @@ class Command(BaseCommand):
             feed = Feed.objects.get(feed_title__contains=options['title'])
         else:
             feed = Feed.objects.get(pk=options['feed'])
-        self._refresh_feeds([feed])
+        self._refresh_feeds([feed], force=options['force'])
         
-    def _refresh_feeds(self, feeds):
+    def _refresh_feeds(self, feeds, force=False):
         for feed in feeds:
-            feed.update(True, single_threaded=True)
+            feed.update(force=force, single_threaded=True)
             usersubs = UserSubscription.objects.filter(
                 feed=feed.id
             )

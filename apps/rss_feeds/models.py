@@ -19,6 +19,7 @@ import settings
 import logging
 import difflib
 import datetime
+import hashlib
 from utils.diff import HTMLDiff
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
@@ -68,6 +69,7 @@ class Feed(models.Model):
             'verbose': 2,
             'timeout': 10,
             'single_threaded': single_threaded,
+            'force': force,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self]])
@@ -272,7 +274,7 @@ class Feed(models.Model):
                                                               existing_story.story_title)
                 seq = difflib.SequenceMatcher(None, story_content, existing_story.story_content)
                 
-                if seq.real_quick_ratio() > .9 and seq.quick_ratio() > .95:
+                if seq and seq.real_quick_ratio() > .9 and seq.quick_ratio() > .95:
                     content_ratio = seq.ratio()
                     
                 if story_title_difference > 0 and story_title_difference < 5 and content_ratio > .98:
@@ -331,6 +333,7 @@ class Story(models.Model):
     story_author = models.ForeignKey(StoryAuthor)
     story_permalink = models.CharField(max_length=1000)
     story_guid = models.CharField(max_length=1000)
+    story_guid_hash = models.CharField(max_length=40)
     story_past_trim_date = models.BooleanField(default=False)
     story_tags = models.CharField(max_length=1000)
     tags = models.ManyToManyField(Tag)
@@ -343,6 +346,11 @@ class Story(models.Model):
         verbose_name = "story"
         db_table="stories"
         ordering=["-story_date"]
+        
+    def save(self, *args, **kwargs):
+        if not self.story_guid_hash and self.story_guid:
+            self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
+        super(Story, self).save(*args, **kwargs)
         
 class FeedUpdateHistory(models.Model):
     fetch_date = models.DateTimeField(default=datetime.datetime.now)
