@@ -123,7 +123,7 @@ class Feed(models.Model):
                     [s.tags.add(tcat) for tcat in story_tags]
                 elif existing_story and story_has_changed:
                     # update story
-                    logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
+                    # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
                     if existing_story.story_original_content:
