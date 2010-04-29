@@ -42,6 +42,7 @@ class Feed(models.Model):
     page_data = StoryField(null=True, blank=True)
     stories_per_month = models.IntegerField(default=0)
     next_scheduled_update = models.DateTimeField(default=datetime.datetime.now)
+    last_load_time = models.IntegerField(default=0)
     
     
     def __unicode__(self):
