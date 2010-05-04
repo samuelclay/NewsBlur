@@ -613,7 +613,8 @@
                 if (this.flags['iframe_prefetching_story_locations']) {
                     var stories_count = this.cache['iframe_story_positions_keys'].length;
                     this.flags.story_frame_prefetched = false;
-                    this.prefetch_story_locations_in_story_frame(stories_count);
+                    var $iframe = this.$story_iframe.contents();
+                    this.prefetch_story_locations_in_story_frame(stories_count, true, $iframe);
                 }
             }
         },
@@ -818,6 +819,13 @@
             var $taskbar_view_page = $('.NB-taskbar .task_view_page');
             var $taskbar_return = $('.NB-taskbar .task_return');
             this.flags.iframe_view_loaded = false;
+            this.flags.story_frame_prefetched = false;
+            
+            $.extend(this.cache, {
+                'iframe_stories': {},
+                'iframe_story_positions': {},
+                'iframe_story_positions_keys': []
+            });
             
             if (!feed_id) {
                 feed_id = $story_iframe.data('feed_id');
@@ -846,11 +854,12 @@
                         }
                     });
                 }, 50);
-
+                
+                // NEWSBLUR.log(['iFrame domain', $story_iframe.attr('src').indexOf('/reader/load_feed_page?feed_id='+feed_id), $story_iframe.attr('src')]);
                 if ($story_iframe.attr('src').indexOf('/reader/load_feed_page?feed_id='+feed_id) != -1) {
-                    self.iframe_link_attacher = setInterval(function() {
+                    var iframe_link_attacher = function() {
                         var num_links = $story_iframe.contents().find('a').length;
-                        // NEWSBLUR.log(['Finding links', num_links]);
+                        // NEWSBLUR.log(['Finding links', self.iframe_link_attacher_num_links, num_links]);
                         if (self.iframe_link_attacher_num_links != num_links) {
                             // NEWSBLUR.log(['Found new links', num_links, self.iframe_link_attacher_num_links]);
                             self.iframe_link_attacher_num_links = num_links;
@@ -860,10 +869,13 @@
                                 self.taskbar_show_return_to_page();
                             });
                         }
-                        $story_iframe.load(function() {
-                            clearInterval(self.iframe_link_attacher);
-                        });
-                    }, 2000);
+                    };
+                    clearInterval(self.iframe_link_attacher);
+                    self.iframe_link_attacher = setInterval(iframe_link_attacher, 2000);
+                    iframe_link_attacher();
+                    $story_iframe.load(function() {
+                        clearInterval(self.iframe_link_attacher);
+                    });
                 }
             });
         },
@@ -874,7 +886,6 @@
             var $story_iframe = this.$story_iframe;
                 
             $story_iframe.removeAttr('src').load(function() {
-                clearInterval(self.iframe_link_attacher);
                 try {
                     $story_iframe.contents().find('a')
                         .unbind('click.NB-taskbar')
@@ -899,7 +910,8 @@
                         .unbind('scroll')
                         .scroll($.rescope(self.handle_scroll_story_iframe, self));
                     self.flags['iframe_prefetching_story_locations'] = true;
-                    self.prefetch_story_locations_in_story_frame(0, true);
+                    var $iframe = self.$story_iframe.contents();
+                    self.prefetch_story_locations_in_story_frame(0, true, $iframe);
                 } catch(e) {
                     // Not on local domain. Ignore.
                 }
@@ -1290,7 +1302,7 @@
             return false;
         },
         
-        prefetch_story_locations_in_story_frame: function(s, clear_cache) {
+        prefetch_story_locations_in_story_frame: function(s, clear_cache, $iframe) {
             var self = this;
             var stories = this.model.stories;
             if (!s) s = 0;
@@ -1298,13 +1310,14 @@
             
             if (clear_cache) {
                 $.extend(this.cache, {
+                    'iframe_stories': {},
                     'iframe_story_positions': {},
                     'iframe_story_positions_keys': []
                 });
             }
             
             if (story && story['story_feed_id'] == this.active_feed) {
-                var $story = this.find_story_in_story_iframe(story);
+                var $story = this.find_story_in_story_iframe(story, $iframe);
                 // NEWSBLUR.log(['Prefetching story', s, story.story_title, $story]);
                 
                 setTimeout(function() {
@@ -1316,7 +1329,7 @@
                                     && self.cache.iframe_stories[stories[s-1].id].length)
                                 || (self.cache.iframe_stories[stories[s-2].id] 
                                     && self.cache.iframe_stories[stories[s-2].id].length)))) {
-                        self.prefetch_story_locations_in_story_frame(s+1);
+                        self.prefetch_story_locations_in_story_frame(s+1, false, $iframe);
                         self.flags.story_frame_prefetched = false;
                     } else {
                         NEWSBLUR.log(['iFrame view entirely loaded', (s-2) + ' stories', self.cache.iframe_stories]);
@@ -1328,8 +1341,8 @@
             }
         },
         
-        find_story_in_story_iframe: function(story) {
-            var $iframe = this.$story_iframe.contents();
+        find_story_in_story_iframe: function(story, $iframe) {
+            if (!$iframe) $iframe = this.$story_iframe.contents();
             var $stories = $([]);
             
             if (this.flags.story_frame_prefetched || story.id in this.cache.iframe_stories) {
