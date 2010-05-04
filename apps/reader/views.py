@@ -383,16 +383,21 @@ def delete_feed(request):
     user_stories = UserStory.objects.filter(user=request.user, feed=feed_id)
     user_stories.delete()
     
-    def _find_feed_in_folders(folders):
-        for k, folder in enumerate(list(folders)):
+    def _find_feed_in_folders(old_folders):
+        new_folders = []
+        
+        for k, folder in enumerate(old_folders):
             if isinstance(folder, int):
                 if folder == feed_id:
-                    print "DEL'ED: %s'th item: %s" % (k, folders)
-                    folders.remove(folder)
+                    print "DEL'ED: %s'th item: %s" % (k, old_folders)
+                    # folders.remove(folder)
+                else:
+                    new_folders.append(folder)
             elif isinstance(folder, dict):
                 for f_k, f_v in folder.items():
-                    folders[k][f_k] = _find_feed_in_folders(f_v)
-        return folders
+                    new_folders.append({f_k: _find_feed_in_folders(f_v)})
+
+        return new_folders
         
     user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
     user_sub_folders = json.decode(user_sub_folders_object.folders)
