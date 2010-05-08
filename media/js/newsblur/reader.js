@@ -536,15 +536,16 @@
         // =====================
         
         reset_feed: function() {
-            this.flags.story_frame_prefetched = false;
+            this.flags.iframe_story_locations_fetched = false;
             this.flags.iframe_view_loaded = false;
             this.flags.feed_view_images_loaded = {};
             this.flags.feed_view_positions_calculated = false;
             this.flags.scrolling_by_selecting_story_title = false;
             this.flags.switching_to_feed_view = false;
             this.flags.find_next_unread_on_page_of_feed_stories_load = false;
-            this.flags.iframe_prefetching_story_locations = false;
             this.flags.page_view_showing_feed_view = false;
+            this.flags.iframe_fetching_story_locations = false;
+            
             
             this.cache = {
                 'iframe_stories': {},
@@ -593,6 +594,7 @@
             var stories = data.stories;
             var tags = data.tags;
             var feed_id = this.active_feed;
+            var $iframe = this.$story_iframe.contents();
             
             for (var s in stories) {
                 feed_id = stories[s].story_feed_id;
@@ -610,11 +612,12 @@
                 if (this.flags['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_unread_story(true);
                 }
-                if (this.flags['iframe_prefetching_story_locations']) {
+                if (!first_load) {
                     var stories_count = this.cache['iframe_story_positions_keys'].length;
-                    this.flags.story_frame_prefetched = false;
-                    var $iframe = this.$story_iframe.contents();
-                    this.prefetch_story_locations_in_story_frame(stories_count, true, $iframe);
+                    this.flags.iframe_story_locations_fetched = false;
+                    this.fetch_story_locations_in_story_frame(stories_count, true, $iframe);
+                } else {
+                    this.prefetch_story_locations_in_story_frame($iframe);
                 }
             }
         },
@@ -819,7 +822,7 @@
             var $taskbar_view_page = $('.NB-taskbar .task_view_page');
             var $taskbar_return = $('.NB-taskbar .task_return');
             this.flags.iframe_view_loaded = false;
-            this.flags.story_frame_prefetched = false;
+            this.flags.iframe_story_locations_fetched = false;
             
             $.extend(this.cache, {
                 'iframe_stories': {},
@@ -909,9 +912,8 @@
                     self.$story_iframe.contents()
                         .unbind('scroll')
                         .scroll($.rescope(self.handle_scroll_story_iframe, self));
-                    self.flags['iframe_prefetching_story_locations'] = true;
                     var $iframe = self.$story_iframe.contents();
-                    self.prefetch_story_locations_in_story_frame(0, true, $iframe);
+                    self.fetch_story_locations_in_story_frame(0, true, $iframe);
                 } catch(e) {
                     // Not on local domain. Ignore.
                 }
@@ -1221,7 +1223,7 @@
             //      this.process_stories_location_in_feed_view(0, true);
             // }
             // if (iframe_position && !(iframe_position in this.cache.iframe_story_positions_keys)) {
-            //     this.prefetch_story_locations_in_story_frame(0, true);
+            //     this.fetch_story_locations_in_story_frame(0, true);
             // }
         },
         
@@ -1302,11 +1304,33 @@
             return false;
         },
         
-        prefetch_story_locations_in_story_frame: function(s, clear_cache, $iframe) {
+        prefetch_story_locations_in_story_frame: function($iframe) {
+            var self = this;
+            var stories = this.model.stories;
+            if (!$iframe) $iframe = this.$story_iframe.contents();
+            
+            for (var s in stories) {
+                var story = stories[s];
+                var $story = this.find_story_in_story_iframe(story, $iframe);
+                // NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
+                if (!$story || !$story.length || this.flags['iframe_fetching_story_locations']) break;
+            }
+            
+            if (!this.flags['iframe_fetching_story_locations']) {
+                setTimeout(function() {
+                    self.prefetch_story_locations_in_story_frame($iframe);
+                }, 1000);
+            }
+        },
+        
+        fetch_story_locations_in_story_frame: function(s, clear_cache, $iframe) {
             var self = this;
             var stories = this.model.stories;
             if (!s) s = 0;
             var story = stories[s];
+            if (!$iframe) $iframe = this.$story_iframe.contents();
+            
+            this.flags['iframe_fetching_story_locations'] = true;
             
             if (clear_cache) {
                 $.extend(this.cache, {
@@ -1329,11 +1353,11 @@
                                     && self.cache.iframe_stories[stories[s-1].id].length)
                                 || (self.cache.iframe_stories[stories[s-2].id] 
                                     && self.cache.iframe_stories[stories[s-2].id].length)))) {
-                        self.prefetch_story_locations_in_story_frame(s+1, false, $iframe);
-                        self.flags.story_frame_prefetched = false;
+                        self.fetch_story_locations_in_story_frame(s+1, false, $iframe);
+                        self.flags.iframe_story_locations_fetched = false;
                     } else {
                         NEWSBLUR.log(['iFrame view entirely loaded', (s-2) + ' stories', self.cache.iframe_stories]);
-                        self.flags.story_frame_prefetched = true;
+                        self.flags.iframe_story_locations_fetched = true;
                     }
                 }, 50);
             } else if (story && story['story_feed_id'] != this.active_feed) {
@@ -1345,7 +1369,7 @@
             if (!$iframe) $iframe = this.$story_iframe.contents();
             var $stories = $([]);
             
-            if (this.flags.story_frame_prefetched || story.id in this.cache.iframe_stories) {
+            if (this.flags.iframe_story_locations_fetched || story.id in this.cache.iframe_stories) {
                 return this.cache.iframe_stories[story.id];
             }
             
