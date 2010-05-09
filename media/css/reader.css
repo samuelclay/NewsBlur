@@ -1388,6 +1388,11 @@ form.opml_import_form input {
     font-size: .5em;
 }
 
+.NB-taskbar-intelligence.NB-modal-slider {
+    right: 26px;
+    top: 34px;
+}
+
 .NB-taskbar-intelligence .NB-taskbar-intelligence-indicator {
     position: absolute;
     top: -16px;

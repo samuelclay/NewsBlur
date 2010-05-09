@@ -1,6 +1,10 @@
 NEWSBLUR.ReaderClassifierFeed = function(feed_id, score, options) {
     var defaults = {};
     
+    this.flags = {
+        'publisher': true,
+        'story': false
+    };
     this.feed_id = feed_id;
     this.score = score;
     this.options = $.extend({}, defaults, options);
@@ -13,6 +17,10 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, score, options) {
 NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, score, options) {
     var defaults = {};
     
+    this.flags = {
+        'publisher': false,
+        'story': true
+    };
     this.story_id = story_id;
     this.feed_id = feed_id;
     this.score = score;
@@ -27,6 +35,8 @@ var classifier = {
     runner_feed: function() {
         this.find_story_and_feed();
         this.make_modal_feed();
+        this.make_modal_title();
+        this.make_modal_intelligence_slider();
         this.handle_text_highlight();
         this.handle_select_checkboxes();
         this.handle_cancel();
@@ -37,6 +47,7 @@ var classifier = {
     runner_story: function() {
         this.find_story_and_feed();
         this.make_modal_story();
+        this.make_modal_title();
         this.handle_text_highlight();
         this.handle_select_checkboxes();
         this.handle_cancel();
@@ -61,6 +72,7 @@ var classifier = {
         NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
         
         this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
+            this.make_modal_intelligence_slider(),
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post', className: 'NB-publisher' }, [
                 (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
@@ -95,13 +107,6 @@ var classifier = {
                 return false;
             })
         ]);
-        
-        var $modal_title = $('.NB-modal-title', this.$classifier);
-        if (this.score == 1) {
-            $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this publisher?');
-        } else if (this.score == -1) {
-            $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this publisher?');
-        }
     },
         
     make_modal_story: function() {
@@ -116,6 +121,7 @@ var classifier = {
         story.story_title = $('<div/>').html(story.story_title).text();
         
         this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
+            this.make_modal_intelligence_slider(),
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post' }, [
                 (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -163,13 +169,61 @@ var classifier = {
                 return false;
             })
         ]);
-        
+    },
+    
+    make_modal_title: function() {
         var $modal_title = $('.NB-modal-title', this.$classifier);
-        if (this.score == 1) {
-            $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this story?');
-        } else if (this.score == -1) {
-            $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this story?');
+        
+        if (this.flags['publisher']) {
+            if (this.score == 1) {
+                $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this publisher?');
+            } else if (this.score == -1) {
+                $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this publisher?');
+            }
+        } else if (this.flags['story']) {
+            if (this.score == 1) {
+                $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this story?');
+            } else if (this.score == -1) {
+                $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this story?');
+            }
         }
+    },
+    
+    make_modal_intelligence_slider: function() {
+        var self = this;
+        var $slider = $.make('div', { className: 'NB-taskbar-intelligence NB-modal-slider' }, [
+            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative' }),
+            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral' }),
+            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive' }),
+            $.make('div', { className: 'NB-intelligence-slider' })
+        ]);
+        
+        $('.NB-intelligence-slider', $slider).slider({
+            range: 'max',
+            min: -1,
+            max: 1,
+            step: 2,
+            value: this.score,
+            slide: function(e, ui) {
+                // self.switch_feed_view_unread_view(ui.value);
+                self.score = ui.value;
+                self.make_modal_title();
+                $('input[name^=like],input[name^=dislike]', self.$classifier).attr('name', function(i, current_name) {
+                    if (self.score == -1) {
+                        return 'dis' + current_name.substr(current_name.indexOf('like_'));
+                    } else if (self.score == 1) {
+                        return current_name.substr(current_name.indexOf('like_'));
+                    }
+                });
+            },
+            stop: function(e, ui) {
+                // self.save_profile('unread_view', ui.value);
+                // self.flags['feed_view_positions_calculated'] = false;
+                // self.show_correct_story_titles_in_unread_view({'animate': true});
+            }
+        });
+        
+        return $slider;
     },
     
     make_authors: function(authors, opinion) {
