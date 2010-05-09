@@ -490,6 +490,7 @@
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, feed.feed_title),
+                $.make('div', { className: 'NB-feedbar-manage-feed' }),
                 $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')
             ]).data('feed_id', feed.id);  
             
@@ -1608,6 +1609,12 @@
                 self.mark_feed_as_read(feed_id, $t);
                 $t.fadeOut(400);
             });
+            $.targetIs(e, { tagSelector: '.NB-feedbar-manage-feed' }, function($t, $p){
+                e.preventDefault();
+                if (!$('.NB-task-manage').hasClass('NB-disabled')) {
+                    self.open_manage_feed_modal();
+                }
+            }); 
             
             // ============
             // = Feed Bar =

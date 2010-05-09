@@ -366,7 +366,7 @@ background: transparent;
 
 #story_titles .NB-feedbar {
     font-weight: bold;
-    font-size: 13px;
+    font-size: 16px;
     padding: 2px 28px 2px 4px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-bottom: 2px solid #404040;
@@ -380,12 +380,22 @@ background: transparent;
     margin-right: 8px;
     vertical-align: top;
     float: left;
+    margin-top: 2px;
 }
 
 #story_titles .NB-feedbar .feed .feed_title {
     float: left;
 }
 
+#story_titles .NB-feedbar .NB-feedbar-manage-feed {
+    background: transparent url("../img/icons/silk/wrench.png") no-repeat center center;
+    float: left;
+    width: 16px;
+    height: 16px;
+    display: none;
+    cursor: pointer;
+    padding: 3px 4px 0 16px;
+}
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
     background-color: #3090cf;
     color: #F0F0F0;
@@ -393,7 +403,7 @@ background: transparent;
     position: absolute;
     right: 95px;
     font-size: 9px;
-    line-height: 11px;
+    line-height: 15px;
     font-weight: bold;
     margin: 3px 11px 2px;
     padding: 0px 4px 0;
@@ -401,6 +411,7 @@ background: transparent;
     display: none;
 }
 
+#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-mark-feed-read {
     display: block;
 }
@@ -428,7 +439,7 @@ background: transparent;
 #story_titles .NB-feedbar .NB-feedbar-intelligence {
     position: absolute;
     right: 4px;
-    top: 2px;
+    top: 3px;
 }
 
 #story_titles .NB-feedbar .unread_count {
