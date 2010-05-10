@@ -2029,16 +2029,18 @@
             
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
-                var feed = this.model.get_feed(feed_id);
-                var $feed = this.make_feed_title_line(feed, true);
-                var $feed_on_page = this.find_feed_in_feed_list(feed_id);
-                var selected = $feed_on_page.hasClass('selected');
-                if (selected) {
-                    $feed.addClass('selected');
+                if (feed_id != this.active_feed) {
+                    var feed = this.model.get_feed(feed_id);
+                    var $feed = this.make_feed_title_line(feed, true);
+                    var $feed_on_page = this.find_feed_in_feed_list(feed_id);
+                    var selected = $feed_on_page.hasClass('selected');
+                    if (selected) {
+                        $feed.addClass('selected');
+                    }
+                    NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                    $feed_on_page.replaceWith($feed);
+                    $('.unread_count', $feed).corner('4px');
                 }
-                NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
-                $feed_on_page.replaceWith($feed);
-                $('.unread_count', $feed).corner('4px');
             }
         },
         

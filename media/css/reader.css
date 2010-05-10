@@ -457,10 +457,11 @@ background: transparent;
 
 #story_titles .NB-feedbar .NB-feed-sentiment {
     position: absolute;
-    width: 24px;
+    width: 16px;
     height: 16px;
     top: 2px;
     display: none;
+    cursor: pointer;
 }
 
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feed-sentiment {
