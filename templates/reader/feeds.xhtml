@@ -2,80 +2,9 @@
 
 {% block content %}
 
-<h1 class="NB-splash-heading">NewsBlur</h1>
+<h1 class="NB-splash-heading">News Blur</h1>
 <h2 class="NB-splash-heading">- A feed reader with intelligence.</h2>
   
-<div class="left-pane">
-    <ul class="left-center" id="feed_list"></ul>
-    <div class="NB-taskbar left-south">
-      <div class="NB-callout-ftux NB-callout">
-        <div class="NB-callout-container">
-          <div class="NB-callout-text"></div>
-          <div class="NB-callout-arrow"></div>
-        </div>
-      </div>
-    	<ul class="taskbar_nav taskbar_nav_feeds">
-    		<li class="task_button task_button_menu NB-task-add">
-    		<li class="task_button task_button_menu NB-task-manage NB-disabled">
-    		</li>
-    	</ul>
-    	<div class="NB-taskbar-intelligence">
-    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
-    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
-    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
-    	 <div class="NB-intelligence-slider"></div>
-    	</div>
-    </div>
-
-</div>
-
-
-
-<div class="right-pane">
-    
-    <div id="story_titles" class="right-north"></div>
-
-    <div class="content-pane">
-        <div id="story_taskbar" class="NB-taskbar content-north">
-          <ul class="taskbar_nav taskbar_nav_view">
-            <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
-              <div class="NB-task-view-page-to-feed-arrow"></div>
-            </li>
-            <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
-            <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
-          </ul>
-
-          <ul class="taskbar_nav taskbar_nav_return">
-            <li class="task_button task_return">
-              <span class="NB-task-title">
-                <div>Return to</div>
-                <div>Original</div>
-              </span>
-            </li>
-          </ul>
-
-          <ul class="taskbar_nav taskbar_nav_story first">
-            <li class="task_button task_button_story task_story_previous"></li>
-            <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
-              <span class="NB-task-title">Next Unread</span>
-            </li>
-            <li class="task_button task_button_story task_story_next"></li>
-          </ul>
-        	
-        </div>
-    
-        <div id="story_pane" class="content-center">
-            
-            <div class="NB-story-pane-container">
-        		<iframe id="story_iframe" class="NB-feed-frame"></iframe>
-        		<div class="NB-feed-story-view NB-view-hidden"></div>
-            </div>
-		
-        </div>
-    </div>    
-    
-</div>
-
 <div id="NB-splash">
 
   <div class="NB-splash-info">
@@ -149,14 +78,85 @@
   </div>
 
   <ul class="NB-splash-links">
-    <li class="NB-splash-link">Created by: <a href="http://www.samuelclay.com">Samuel Clay</a></li>
-    <li class="NB-splash-link">Contact: <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
-    <li class="NB-splash-link">Twitter: <a href="http://twitter.com/samuelclay">@samuelclay</a></li>
+    <li class="NB-splash-link">Hand-crafted by: <a href="http://www.samuelclay.com">Samuel Clay</a></li>
+    <li class="NB-splash-link">Write to me: <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
+    <li class="NB-splash-link">Talk to me: <a href="http://twitter.com/samuelclay">@samuelclay</a></li>
   </ul>
       
   {# <div class="NB-splash-image"></div> #}
   <div class="NB-splash-title"></div>
 
+</div>
+
+<div class="left-pane">
+    <ul class="left-center" id="feed_list"></ul>
+    <div class="NB-taskbar left-south">
+      <div class="NB-callout-ftux NB-callout">
+        <div class="NB-callout-container">
+          <div class="NB-callout-text"></div>
+          <div class="NB-callout-arrow"></div>
+        </div>
+      </div>
+    	<ul class="taskbar_nav taskbar_nav_feeds">
+    		<li class="task_button task_button_menu NB-task-add">
+    		<li class="task_button task_button_menu NB-task-manage NB-disabled">
+    		</li>
+    	</ul>
+    	<div class="NB-taskbar-intelligence">
+    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
+    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
+    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
+    	 <div class="NB-intelligence-slider"></div>
+    	</div>
+    </div>
+
+</div>
+
+
+
+<div class="right-pane">
+    
+    <div id="story_titles" class="right-north"></div>
+
+    <div class="content-pane">
+        <div id="story_taskbar" class="NB-taskbar content-north">
+          <ul class="taskbar_nav taskbar_nav_view">
+            <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
+              <div class="NB-task-view-page-to-feed-arrow"></div>
+            </li>
+            <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
+            <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
+          </ul>
+
+          <ul class="taskbar_nav taskbar_nav_return">
+            <li class="task_button task_return">
+              <span class="NB-task-title">
+                <div>Return to</div>
+                <div>Original</div>
+              </span>
+            </li>
+          </ul>
+
+          <ul class="taskbar_nav taskbar_nav_story first">
+            <li class="task_button task_button_story task_story_previous"></li>
+            <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
+              <span class="NB-task-title">Next Unread</span>
+            </li>
+            <li class="task_button task_button_story task_story_next"></li>
+          </ul>
+        	
+        </div>
+    
+        <div id="story_pane" class="content-center">
+            
+            <div class="NB-story-pane-container">
+        		<iframe id="story_iframe" class="NB-feed-frame"></iframe>
+        		<div class="NB-feed-story-view NB-view-hidden"></div>
+            </div>
+		
+        </div>
+    </div>    
+    
 </div>
 
 

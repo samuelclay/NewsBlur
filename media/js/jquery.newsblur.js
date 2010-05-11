@@ -1,9 +1,9 @@
 if (typeof NEWSBLUR == 'undefined') NEWSBLUR = {};
 if (typeof NEWSBLUR.Globals == 'undefined') NEWSBLUR.Globals = {};
 
-/* ============================ */
-/* = Core NewsBlur Javascript = */
-/* ============================ */
+/* ============================= */
+/* = Core News Blur Javascript = */
+/* ============================= */
 
 NEWSBLUR.log = function(msg) {
     try {

@@ -1160,9 +1160,10 @@ form.opml_import_form input {
     position: absolute;
     bottom: 0;
     margin-left: 244px;
-    height: 100px;
-    width: 600px;
-    background: transparent url('../img/reader/newsblur_splash_logo.png') no-repeat 0 -200px;
+    background: transparent url('../img/reader/newsblur_logo_small.gif') no-repeat 0 0;
+    height: 51px;
+    right: 250px;
+    width: 246px;
 }
 
 #NB-splash .NB-splash-image {

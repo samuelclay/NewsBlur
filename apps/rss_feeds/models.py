@@ -22,7 +22,7 @@ import datetime
 import hashlib
 from utils.diff import HTMLDiff
 
-USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
+USER_AGENT = 'News Blur v1.0 - newsblur.com'
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
