@@ -618,7 +618,7 @@
                     this.flags.iframe_story_locations_fetched = false;
                     this.fetch_story_locations_in_story_frame(stories_count, false, $iframe);
                 } else {
-                    this.prefetch_story_locations_in_story_frame($iframe);
+                    this.prefetch_story_locations_in_story_frame();
                 }
             }
         },
@@ -1305,21 +1305,29 @@
             return false;
         },
         
-        prefetch_story_locations_in_story_frame: function($iframe) {
+        prefetch_story_locations_in_story_frame: function() {
             var self = this;
             var stories = this.model.stories;
-            if (!$iframe) $iframe = this.$story_iframe.contents();
+            var $iframe = this.$story_iframe.contents();
             
-            for (var s in stories) {
-                var story = stories[s];
-                var $story = this.find_story_in_story_iframe(story, $iframe);
-                NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
-                if (!$story || !$story.length || this.flags['iframe_fetching_story_locations']) break;
+            if (!this.flags['iframe_fetching_story_locations']) {
+                $.extend(this.cache, {
+                    'iframe_stories': {},
+                    'iframe_story_positions': {},
+                    'iframe_story_positions_keys': []
+                });
+            
+                for (var s in stories) {
+                    var story = stories[s];
+                    var $story = this.find_story_in_story_iframe(story, $iframe);
+                    // NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
+                    if (!$story || !$story.length || this.flags['iframe_fetching_story_locations']) break;
+                }
             }
             
             if (!this.flags['iframe_fetching_story_locations']) {
                 setTimeout(function() {
-                    self.prefetch_story_locations_in_story_frame($iframe);
+                    self.prefetch_story_locations_in_story_frame();
                 }, 1000);
             }
         },
