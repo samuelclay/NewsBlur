@@ -202,7 +202,8 @@ class Feed(models.Model):
                                       .select_related('story_author')[offset:offset+limit]
             stories = self.format_stories(stories_db)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories, 600)
-            cache.delete('updated_feed:%s' % self.id)
+            if offset == 0:
+                cache.delete('updated_feed:%s' % self.id)
         
         return stories
     

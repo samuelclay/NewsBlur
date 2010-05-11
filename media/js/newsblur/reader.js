@@ -2045,18 +2045,17 @@
             
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
-                if (feed_id != this.active_feed) {
-                    var feed = this.model.get_feed(feed_id);
-                    var $feed = this.make_feed_title_line(feed, true);
-                    var $feed_on_page = this.find_feed_in_feed_list(feed_id);
-                    var selected = $feed_on_page.hasClass('selected');
-                    if (selected) {
-                        $feed.addClass('selected');
-                    }
-                    NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
-                    $feed_on_page.replaceWith($feed);
-                    $('.unread_count', $feed).corner('4px');
-                } else {
+                var feed = this.model.get_feed(feed_id);
+                var $feed = this.make_feed_title_line(feed, true);
+                var $feed_on_page = this.find_feed_in_feed_list(feed_id);
+                var selected = $feed_on_page.hasClass('selected');
+                if (selected) {
+                    $feed.addClass('selected');
+                }
+                NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                $feed_on_page.replaceWith($feed);
+                $('.unread_count', $feed).corner('4px');
+                if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     this.model.load_feed(feed_id, 0, true, $.rescope(this.post_refresh_active_feed, this));
                 }
@@ -2074,7 +2073,29 @@
             }
             
             if (this.active_feed == feed_id) {
-                
+                for (var s in stories) {
+                    var story = stories[s];
+                    var $story = this.find_story_in_story_titles(story);
+                    
+                    if ($story && $story.length) {
+                        // Just update intelligence
+                        var score = this.compute_story_score(story);
+                        $story.removeClass('NB-story-neutral')
+                              .removeClass('NB-story-negative')
+                              .removeClass('NB-story-positive');
+                        if (score < 0) {
+                            $story.addClass('NB-story-negative');
+                        } else if (score > 0) {
+                            $story.addClass('NB-story-positive');
+                        } else if (score == 0) {
+                            $story.addClass('NB-story-neutral');
+                        }
+                    } else {
+                        // New story! Prepend.
+                        
+                    }
+                }
+                this.show_correct_story_titles_in_unread_view({'animate': true});
             }
         },
         
