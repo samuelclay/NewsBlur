@@ -963,8 +963,8 @@ background: transparent;
 }
 
 .NB-taskbar .taskbar_nav_story {
-  right: 61px;
-  width: 200px;
+  right: 0;
+  width: 261px;
   position: absolute;
 }
 
@@ -1020,6 +1020,10 @@ background: transparent;
 .NB-taskbar .task_button.task_story_previous {
     cursor: pointer;
     background: transparent url('../img/icons/silk/arrow_left.png') no-repeat center center;
+}
+.NB-taskbar .task_button.task_story_next {
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/arrow_down.png') no-repeat center center;
 }
 .NB-taskbar .task_button_view.NB-active {
     background-color: #A0A7B1;
