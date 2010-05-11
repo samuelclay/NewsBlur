@@ -1320,7 +1320,7 @@
                 for (var s in stories) {
                     var story = stories[s];
                     var $story = this.find_story_in_story_iframe(story, $iframe);
-                    // NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
+                    NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
                     if (!$story || !$story.length || this.flags['iframe_fetching_story_locations']) break;
                 }
             }
