@@ -2029,7 +2029,7 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = 1000 * 60; // 1 minute
+            var FEED_REFRESH_INTERVAL = 1000 * 60 * 3 / 12; // 3 minutes
             
             this.flags.feed_refresh = setInterval(function() {
                 self.model.refresh_feeds($.rescope(self.post_feed_refresh, self));
@@ -2056,7 +2056,25 @@
                     NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
                     $feed_on_page.replaceWith($feed);
                     $('.unread_count', $feed).corner('4px');
+                } else {
+                    NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
+                    this.model.load_feed(feed_id, 0, true, $.rescope(this.post_refresh_active_feed, this));
                 }
+            }
+        },
+        
+        post_refresh_active_feed: function(e, data, first_load) {
+            var stories = data.stories;
+            var tags = data.tags;
+            var feed_id = this.active_feed;
+            
+            for (var s in stories) {
+                feed_id = stories[s].story_feed_id;
+                break;
+            }
+            
+            if (this.active_feed == feed_id) {
+                
             }
         },
         

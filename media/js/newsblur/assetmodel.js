@@ -179,21 +179,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/load_feeds', {}, pre_callback);
     },
     
-    load_feed: function(feed_id, page, first_load, callback, error_callback) {
+    load_feed: function(feed_id, page, first_load, callback) {
         var self = this;
         
         var pre_callback = function(data) {
-            // NEWSBLUR.log(['pre_callback', data]);
-            if (feed_id != self.feed_id) {
-                self.stories = data.stories;
-                self.feed_tags = data.feed_tags;
-                self.feed_authors = data.feed_authors;
-                self.feed_id = feed_id;
-                self.classifiers = data.classifiers;
-            } else {
-                $.merge(self.stories, data.stories);
-            }
-            callback(data, first_load);
+            return self.load_feed_precallback(data, feed_id, callback, first_load);
         };
         
         // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
@@ -203,12 +193,48 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     feed_id: feed_id,
                     page: page
                 }, pre_callback,
-                error_callback,
+                null,
                 {
                     'ajax_group': (page ? 'feed_page' : 'feed')
                 }
             );
         }
+    },
+    
+    load_feed_precallback: function(data, feed_id, callback, first_load) {
+        // NEWSBLUR.log(['pre_callback', data]);
+        if (feed_id != this.feed_id) {
+            this.stories = data.stories;
+            this.feed_tags = data.feed_tags;
+            this.feed_authors = data.feed_authors;
+            this.feed_id = feed_id;
+            this.classifiers = data.classifiers;
+            this.story_keys = [];
+            for (var s in data.stories) {
+                this.story_keys.push(data.stories[s].id);
+            }
+        } else {
+            $.merge(this.stories, data.stories);
+            
+            // Assemble key cache for later, removing dupes
+            var data_stories = $.merge([], data.stories);
+            for (var s in data_stories) {
+                var story_id = data_stories[s].id;
+                if (!(story_id in this.story_keys)) {
+                    this.story_keys.push(story_id);
+                } else {
+                    // There's a dupe story. Remove it!
+                    for (var s2 in this.stories) {
+                        if (story_id == this.stories[s2].id) {
+                            delete this.stories[s2];
+                            delete data.stories[s];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return $.isFunction(callback) && callback(data, first_load);
     },
     
     refresh_feeds: function(callback) {
@@ -234,6 +260,28 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/refresh_feeds', {}, pre_callback);
+        }
+    },
+    
+    refresh_feed: function(feed_id, callback) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            return self.load_feed_precallback(data, feed_id, callback);
+        };
+        
+        // NEWSBLUR.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
+        if (feed_id) {
+            this.make_request('/reader/load_single_feed',
+                {
+                    feed_id: feed_id,
+                    page: 0
+                }, pre_callback,
+                null,
+                {
+                    'ajax_group': 'feed'
+                }
+            );
         }
     },
     
