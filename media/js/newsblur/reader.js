@@ -588,6 +588,9 @@
                 this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
                 this.load_iframe(feed_id);
                 this.flags['opening_feed'] = false;
+                this.$story_iframe.contents()
+                    .unbind('scroll')
+                    .scroll($.rescope(this.handle_scroll_story_iframe, this));
             }
         },
         
@@ -1320,15 +1323,17 @@
                 for (var s in stories) {
                     var story = stories[s];
                     var $story = this.find_story_in_story_iframe(story, $iframe);
-                    NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
+                    // NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
                     if (!$story || !$story.length || this.flags['iframe_fetching_story_locations']) break;
                 }
             }
             
             if (!this.flags['iframe_fetching_story_locations']) {
                 setTimeout(function() {
-                    self.prefetch_story_locations_in_story_frame();
-                }, 1000);
+                    if (!self.flags['iframe_fetching_story_locations']) {
+                        self.prefetch_story_locations_in_story_frame();
+                    }
+                }, 3000);
             }
         },
         
@@ -1763,17 +1768,13 @@
         
         handle_scroll_story_iframe: function(elem, e) {
             var self = this;
-            if (!this.flags.scrolling_by_selecting_story_title && !this.flags.handled_scroll_story_iframe) {
+            if (!this.flags.scrolling_by_selecting_story_title) {
                 var from_top = this.$story_iframe.contents().scrollTop();
                 var positions = this.cache.iframe_story_positions_keys;
                 var closest = this.closest(from_top, positions);
                 var story = this.cache.iframe_story_positions[positions[closest]];
                 // NEWSBLUR.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
                 this.navigate_story_titles_to_story(story);
-                this.flags.handled_scroll_story_iframe = false;
-                setTimeout(function() {
-                    self.flags.handled_scroll_story_iframe = false;
-                }, 50);
                 this.iframe_scroll = from_top;
                 this.flags.iframe_scroll_snap_back_prepared = false;
                 // NEWSBLUR.log(['Setting snap back', this.iframe_scroll]);
