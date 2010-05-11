@@ -1314,6 +1314,8 @@
             var $iframe = this.$story_iframe.contents();
             
             if (!this.flags['iframe_fetching_story_locations']) {
+                $iframe.unbind('scroll').scroll($.rescope(this.handle_scroll_story_iframe, this));
+                    
                 $.extend(this.cache, {
                     'iframe_stories': {},
                     'iframe_story_positions': {},
