@@ -2029,7 +2029,7 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = 1000 * 60 * 3 / 12; // 3 minutes
+            var FEED_REFRESH_INTERVAL = 1000 * 60 * 3; // 3 minutes
             
             this.flags.feed_refresh = setInterval(function() {
                 self.model.refresh_feeds($.rescope(self.post_feed_refresh, self));
@@ -2042,7 +2042,7 @@
         
         post_feed_refresh: function(e, updated_feeds) {
             var feeds = this.model.feeds;
-            
+
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
                 var feed = this.model.get_feed(feed_id);
@@ -2052,12 +2052,14 @@
                 if (selected) {
                     $feed.addClass('selected');
                 }
-                NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
                 $feed_on_page.replaceWith($feed);
                 $('.unread_count', $feed).corner('4px');
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
-                    this.model.load_feed(feed_id, 0, true, $.rescope(this.post_refresh_active_feed, this));
+                    var limit = $('.story', this.$story_titles).length;
+                    this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                } else {
+                    NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
                 }
             }
         },
@@ -2073,9 +2075,10 @@
             }
             
             if (this.active_feed == feed_id) {
-                for (var s in stories) {
-                    var story = stories[s];
+                for (var s in this.model.stories) {
+                    var story = this.model.stories[s];
                     var $story = this.find_story_in_story_titles(story);
+                    var $feed_story = this.find_story_in_feed_view(story);
                     
                     if ($story && $story.length) {
                         // Just update intelligence
@@ -2083,12 +2086,18 @@
                         $story.removeClass('NB-story-neutral')
                               .removeClass('NB-story-negative')
                               .removeClass('NB-story-positive');
+                        $feed_story.removeClass('NB-story-neutral')
+                              .removeClass('NB-story-negative')
+                              .removeClass('NB-story-positive');
                         if (score < 0) {
                             $story.addClass('NB-story-negative');
+                            $feed_story.addClass('NB-story-negative');
                         } else if (score > 0) {
                             $story.addClass('NB-story-positive');
+                            $feed_story.addClass('NB-story-positive');
                         } else if (score == 0) {
                             $story.addClass('NB-story-neutral');
+                            $feed_story.addClass('NB-story-neutral');
                         }
                     } else {
                         // New story! Prepend.
