@@ -115,8 +115,9 @@ class Feed(models.Model):
                            story_tags = json.encode([t.name for t in story_tags])
                     )
                     try:
-                        ret_values[ENTRY_NEW] += 1
                         s.save(force_insert=True)
+                        ret_values[ENTRY_NEW] += 1
+                        cache.set('updated_feed:%s' % self.id, 1)
                     except IntegrityError, e:
                         ret_values[ENTRY_ERR] += 1
                         print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
@@ -152,8 +153,9 @@ class Feed(models.Model):
                     s.tags.clear()
                     [s.tags.add(tcat) for tcat in story_tags]
                     try:
-                        ret_values[ENTRY_UPDATED] += 1
                         s.save(force_update=True)
+                        ret_values[ENTRY_UPDATED] += 1
+                        cache.set('updated_feed:%s' % self.id, 1)
                     except IntegrityError, e:
                         ret_values[ENTRY_ERR] += 1
                         print('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
@@ -191,13 +193,16 @@ class Feed(models.Model):
                 user_stories_count)
                 
     def get_stories(self, offset=0, limit=25):
-        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
+        updated = cache.get('updated_feed:%s' % self.id)
+        if not updated:
+            stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
 
         if not stories:
             stories_db = Story.objects.filter(story_feed=self)\
                                       .select_related('story_author')[offset:offset+limit]
             stories = self.format_stories(stories_db)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories, 600)
+            cache.delete('updated_feed:%s' % self.id)
         
         return stories
     
