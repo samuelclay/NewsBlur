@@ -194,6 +194,7 @@ class Feed(models.Model):
                 
     def get_stories(self, offset=0, limit=25):
         updated = cache.get('updated_feed:%s' % self.id)
+        stories = None
         if not updated:
             stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
 
