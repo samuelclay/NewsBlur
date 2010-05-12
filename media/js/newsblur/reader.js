@@ -1440,6 +1440,19 @@
                     }
                 });
             }
+            
+            if (!$stories.length) {
+                // Still not found, so check Tumblr style .post's
+                $('.post,.postProp,#postContent', $iframe).filter(':visible').each(function() {
+                    pos = $(this).text().replace(/&nbsp;|[^a-z0-9-,]/gi, '')
+                                 .indexOf(title);
+                    // NEWSBLUR.log(['Search .post', title, pos, $(this), $(this).text().replace(/&nbsp;|[^a-z0-9-,]/gi, '')]);
+                    if (pos >= 0) {
+                        $stories.push($(this));
+                        return false;
+                    }
+                });
+            }
             // NEWSBLUR.log(['Found stories', $stories, story.story_title]);
             
             var max_size = 0;
