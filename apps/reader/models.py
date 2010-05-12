@@ -130,7 +130,7 @@ class UserStory(models.Model):
         
 class UserSubscriptionFolders(models.Model):
     user = models.ForeignKey(User)
-    folders = models.TextField(default="{}")
+    folders = models.TextField(default="[]")
     
     def __unicode__(self):
         return "[%s]: %s" % (self.user, len(self.folders),)

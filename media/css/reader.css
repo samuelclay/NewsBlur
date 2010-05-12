@@ -258,7 +258,7 @@ background: transparent;
 }
 #feed_list .feed_title {
     display: block;
-    padding: 4px 42px 2px 23px;
+    padding: 4px 40px 2px 23px;
     text-decoration: none;
     color: #272727;
     line-height: 1.3em;
@@ -266,6 +266,11 @@ background: transparent;
     overflow: hidden;
 }
 
+#feed_list .feed_counts {
+    position: absolute;
+    right: 2px;
+    top: 0;
+}
 #feed_list .NB-feedbar-mark-feed-read {
     display: none;
 }
