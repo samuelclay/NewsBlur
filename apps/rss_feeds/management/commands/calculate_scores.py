@@ -27,9 +27,9 @@ class Command(BaseCommand):
 
         if options['user']:
             if re.match(r"([0-9]+)", options['user']):
-                feeds.filter(user=int(options['user']))
+                feeds = feeds.filter(user=int(options['user']))
             else:
-                feeds.filter(user__username=options['user'])
+                feeds = feeds.filter(user__username=options['user'])
             
         for f in feeds:
             f.calculate_feed_scores()
