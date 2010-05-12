@@ -146,10 +146,14 @@ def load_single_feed(request):
             
     # print "Feed: %s %s" % (feed, usersub)
     logging.debug("Feed: " + feed.feed_title)
+    if stories:
+        last_read_date = stories[-1]['story_date']
+    else:
+        last_read_date = usersub.mark_read_date
     userstory = UserStory.objects.filter(
         user=user, 
         feed=feed.id,
-        read_date__gt=stories[-1:]['story_date']
+        read_date__gt=last_read_date
     ).values()
     for story in stories:
         for o in userstory:
