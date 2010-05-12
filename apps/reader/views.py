@@ -149,7 +149,7 @@ def load_single_feed(request):
     userstory = UserStory.objects.filter(
         user=user, 
         feed=feed.id,
-        read_date__gt=usersub.mark_read_date
+        read_date__gt=stories[-1:]['story_date']
     ).values()
     for story in stories:
         for o in userstory:
