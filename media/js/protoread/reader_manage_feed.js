@@ -1,8 +1,8 @@
-NEWSBLUR.ReaderManageFeed = function(feed_id, options) {
+PROTOREAD.ReaderManageFeed = function(feed_id, options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = PROTOREAD.AssetModel.reader();
     this.feed_id = feed_id;
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.counters = {
@@ -11,7 +11,7 @@ NEWSBLUR.ReaderManageFeed = function(feed_id, options) {
     this.runner();
 };
 
-NEWSBLUR.ReaderManageFeed.prototype = {
+PROTOREAD.ReaderManageFeed.prototype = {
     
     runner: function() {
         this.feeds = this.model.get_feeds();
@@ -171,8 +171,8 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         if (!$('.NB-classifier', $classifiers).length) {
             var $empty_classifier = $.make('div', { className: 'NB-classifier-empty' }, [
                 'No opinions yet. Use the ',
-                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/thumbs-down.png', className: 'NB-dislike' }),
-                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/thumbs-up.png', className: 'NB-like' }),
+                $.make('img', { src: PROTOREAD.Globals.MEDIA_URL + 'img/reader/thumbs-down.png', className: 'NB-dislike' }),
+                $.make('img', { src: PROTOREAD.Globals.MEDIA_URL + 'img/reader/thumbs-up.png', className: 'NB-like' }),
                 ' buttons next to stories.'
             ]);
             $classifiers.append($empty_classifier);
@@ -316,11 +316,11 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         var $save = $('.NB-modal input[type=submit]');
         var data = this.serialize_classifier();
         
-        NEWSBLUR.reader.update_opinions(this.$manage, this.feed_id);
+        PROTOREAD.reader.update_opinions(this.$manage, this.feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {
-            NEWSBLUR.reader.force_feed_refresh();
+            PROTOREAD.reader.force_feed_refresh();
             $.modal.close();
         });
     },
@@ -331,7 +331,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         var feed_id = this.feed_id;
         
         this.model.delete_publisher(feed_id, function() {
-            NEWSBLUR.reader.delete_feed(feed_id);
+            PROTOREAD.reader.delete_feed(feed_id);
             $.modal.close();
         });
     },

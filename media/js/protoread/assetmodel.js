@@ -1,10 +1,10 @@
-NEWSBLUR.AssetModel = function() {
+PROTOREAD.AssetModel = function() {
     var _Reader = null;
     
     return {
         reader: function(){
             if(!_Reader){
-                _Reader = new NEWSBLUR.AssetModel.Reader();
+                _Reader = new PROTOREAD.AssetModel.Reader();
                 _Reader.init();
             } else {
                 _Reader.init();
@@ -13,7 +13,7 @@ NEWSBLUR.AssetModel = function() {
         },
         preferences: function(){
             if(!_Prefs){
-                _Prefs = new NEWSBLUR.AssetModel.Preferences();
+                _Prefs = new PROTOREAD.AssetModel.Preferences();
                 _Prefs.init();
             } else {
                 _Prefs.init();
@@ -23,7 +23,7 @@ NEWSBLUR.AssetModel = function() {
     };
 }();
 
-NEWSBLUR.AssetModel.Reader = function() {
+PROTOREAD.AssetModel.Reader = function() {
     this.feeds = {};
     this.folders = [];
     this.stories = {};
@@ -31,7 +31,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.classifiers = {};
 };
 
-NEWSBLUR.AssetModel.Reader.prototype = {
+PROTOREAD.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
@@ -60,19 +60,19 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             type: 'POST',
             dataType: 'json',
             beforeSend: function() {
-                // NEWSBLUR.log(['beforeSend', options]);
+                // PROTOREAD.log(['beforeSend', options]);
                 $.isFunction(options['beforeSend']) && options['beforeSend']();
                 return true;
             },
             success: function(o) {
-                // NEWSBLUR.log(['make_request 1', o]);
+                // PROTOREAD.log(['make_request 1', o]);
 
                 if ($.isFunction(callback)) {
                     callback(o);
                 }
             },
             error: function(e) {
-                // NEWSBLUR.log(['AJAX Error', e]);
+                // PROTOREAD.log(['AJAX Error', e]);
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 }
@@ -93,10 +93,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }
         }
         
-        if (!read && NEWSBLUR.Globals.is_authenticated) {
+        if (!read && PROTOREAD.Globals.is_authenticated) {
             if (!(feed_id in this.read_stories)) { this.read_stories[feed_id] = []; }
             this.read_stories[feed_id].push(story_id);
-            NEWSBLUR.log(['Marking Read', this.read_stories, story_id]);
+            PROTOREAD.log(['Marking Read', this.read_stories, story_id]);
             
             var story_ids = new Array(this.read_stories[feed_id]);
             this.make_request('/reader/mark_story_as_read', {
@@ -126,7 +126,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }
         }
         
-        NEWSBLUR.log(['Like', opinion, this.stories[s].opinion]);
+        PROTOREAD.log(['Like', opinion, this.stories[s].opinion]);
         if (opinion != 1) {
             this.make_request('/reader/mark_story_as_like',
                 {
@@ -147,7 +147,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 break;
             }
         }
-        NEWSBLUR.log(['Dislike', opinion, this.stories[s].opinion]);
+        PROTOREAD.log(['Dislike', opinion, this.stories[s].opinion]);
         if (opinion != -1) {
             this.make_request('/reader/mark_story_as_dislike',
                 {
@@ -186,7 +186,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             return self.load_feed_precallback(data, feed_id, callback, first_load);
         };
         
-        // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
+        // PROTOREAD.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
         if (feed_id) {
             this.make_request('/reader/load_single_feed',
                 {
@@ -202,7 +202,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     load_feed_precallback: function(data, feed_id, callback, first_load) {
-        // NEWSBLUR.log(['pre_callback', data]);
+        // PROTOREAD.log(['pre_callback', data]);
         if (feed_id != this.feed_id) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;
@@ -248,7 +248,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 var feed = feeds[f];
                 for (var k in feed) {
                     if (self.feeds[f][k] != feed[k]) {
-                        // NEWSBLUR.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
+                        // PROTOREAD.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
                         self.feeds[f][k] = feed[k];
                         if (!(f in updated_feeds)) {
                             updated_feeds.push(f);
@@ -260,7 +260,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             callback(updated_feeds);
         };
         
-        if (NEWSBLUR.Globals.is_authenticated) {
+        if (PROTOREAD.Globals.is_authenticated) {
             this.make_request('/reader/refresh_feeds', {}, pre_callback);
         }
     },
@@ -269,11 +269,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            // NEWSBLUR.log(['refresh_feed pre_callback', data]);
+            // PROTOREAD.log(['refresh_feed pre_callback', data]);
             self.load_feed_precallback(data, feed_id, callback);
         };
         
-        // NEWSBLUR.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
+        // PROTOREAD.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
         if (feed_id) {
             this.make_request('/reader/load_single_feed',
                 {
@@ -370,12 +370,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
 
 
 
-NEWSBLUR.AssetModel.Preferences = function() {
+PROTOREAD.AssetModel.Preferences = function() {
     this.feeds = {};
     this.stories = {};
 };
 
-NEWSBLUR.AssetModel.Preferences.prototype = {
+PROTOREAD.AssetModel.Preferences.prototype = {
     
     init: function() {
         return;

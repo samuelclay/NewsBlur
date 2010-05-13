@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cross-domain-policy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.adobe.com/xml/schemas/PolicyFile.xsd">
-  <allow-access-from domain="*.newsblur.com" />
-  <allow-access-from domain="nb.local.host" />
-  <allow-access-from domain="media.newsblur" />
+  <allow-access-from domain="*.protoread.com" />
+  <allow-access-from domain="pr.local.host" />
+  <allow-access-from domain="media.protoread" />
   <site-control permitted-cross-domain-policies="master-only"/>
 </cross-domain-policy>

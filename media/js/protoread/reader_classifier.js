@@ -1,4 +1,4 @@
-NEWSBLUR.ReaderClassifierFeed = function(feed_id, score, options) {
+PROTOREAD.ReaderClassifierFeed = function(feed_id, score, options) {
     var defaults = {};
     
     this.flags = {
@@ -8,13 +8,13 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, score, options) {
     this.feed_id = feed_id;
     this.score = score;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = PROTOREAD.AssetModel.reader();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner_feed();
 };
 
 
-NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, score, options) {
+PROTOREAD.ReaderClassifierStory = function(story_id, feed_id, score, options) {
     var defaults = {};
     
     this.flags = {
@@ -25,7 +25,7 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, score, options) {
     this.feed_id = feed_id;
     this.score = score;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = PROTOREAD.AssetModel.reader();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner_story();
 };
@@ -69,7 +69,7 @@ var classifier = {
         var feed = this.feed;
         var opinion = (this.score == 1 ? 'like_' : 'dislike_');
                 
-        NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
+        PROTOREAD.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
         
         this.$classifier = $.make('div', { className: 'NB-classifier NB-modal' }, [
             this.make_modal_intelligence_slider(),
@@ -115,7 +115,7 @@ var classifier = {
         var feed = this.feed;
         var opinion = (this.score == 1 ? 'like_' : 'dislike_');
         
-        NEWSBLUR.log(['Make Story', story, feed]);
+        PROTOREAD.log(['Make Story', story, feed]);
         
         // HTML entities decoding.
         story.story_title = $('<div/>').html(story.story_title).text();
@@ -475,11 +475,11 @@ var classifier = {
         var story_id = this.story_id;
         var data = this.serialize_classifier();
         
-        NEWSBLUR.reader.update_opinions(this.$classifier, this.feed_id);
+        PROTOREAD.reader.update_opinions(this.$classifier, this.feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {
-            NEWSBLUR.reader.force_feed_refresh();
+            PROTOREAD.reader.force_feed_refresh();
             $.modal.close();
         });
     },
@@ -489,16 +489,16 @@ var classifier = {
         var story_id = this.story_id;
         var data = this.serialize_classifier();
         
-        NEWSBLUR.reader.update_opinions(this.$classifier, this.feed_id);
+        PROTOREAD.reader.update_opinions(this.$classifier, this.feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_story(story_id, data, function() {
-            NEWSBLUR.reader.force_feed_refresh();
+            PROTOREAD.reader.force_feed_refresh();
             $.modal.close();
         });
     }
     
 };
 
-NEWSBLUR.ReaderClassifierStory.prototype = classifier;
-NEWSBLUR.ReaderClassifierFeed.prototype = classifier;
+PROTOREAD.ReaderClassifierStory.prototype = classifier;
+PROTOREAD.ReaderClassifierFeed.prototype = classifier;

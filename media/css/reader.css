@@ -1171,17 +1171,17 @@ form.opml_import_form input {
     position: absolute;
     bottom: 0;
     margin-left: 244px;
-    background: transparent url('../img/reader/newsblur_logo_small.gif') no-repeat 0 0;
-    height: 51px;
+    background: transparent url('../img/reader/protoread_logo.png') no-repeat 0 0;
+    height: 52px;
     right: 250px;
-    width: 246px;
+    width: 242px;
 }
 
 #NB-splash .NB-splash-image {
     margin: 0 auto;
     height: 376px;
     width: 600px;
-    background: transparent url('../img/reader/newsblur_splash_image.png') no-repeat 0 0;
+    background: transparent url('../img/reader/protoread_splash_image.png') no-repeat 0 0;
 }
 
 #NB-splash .NB-splash-links {

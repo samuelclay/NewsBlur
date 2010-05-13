@@ -22,7 +22,7 @@ import datetime
 import hashlib
 from utils.diff import HTMLDiff
 
-USER_AGENT = 'News Blur v1.0 - newsblur.com'
+USER_AGENT = 'Protoread v1.0 - protoread.com'
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -62,7 +62,7 @@ class Feed(models.Model):
     def update(self, force=False, feed=None, single_threaded=False):
         from utils import feed_fetcher
         try:
-            self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
+            self.feed_address = self.feed_address % {'PROTOREAD_DIR': settings.PROTOREAD_DIR}
         except:
             pass
         

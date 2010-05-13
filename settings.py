@@ -7,11 +7,11 @@ import os
 # ===========================
 
 CURRENT_DIR = os.path.dirname(__file__)
-NEWSBLUR_DIR = CURRENT_DIR
+PROTOREAD_DIR = CURRENT_DIR
 TEMPLATE_DIRS = (''.join([CURRENT_DIR, '/templates']),)
 MEDIA_ROOT = ''.join([CURRENT_DIR, '/media'])
 UTILS_ROOT = ''.join([CURRENT_DIR, '/utils'])
-LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
+LOG_FILE = ''.join([CURRENT_DIR, '/logs/protoread.log'])
 
 # ==============
 # = PYTHONPATH =
@@ -45,10 +45,9 @@ SECRET_KEY = '6yx-@2u@v$)-=fqm&tc8lhk3$6d68+c7gd%p$q2@o7b4o8-*fz'
 # = Enviornment =
 # ===============
 
-PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
-STAGING = __file__.find('/home/conesus/stg-newsblur') == 0
-DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
-DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
+PRODUCTION = __file__.find('/home/conesus/protoread') == 0
+DEV_SERVER1 = __file__.find('/Users/conesus/Projects/protoread') == 0
+DEV_SERVER2 = __file__.find('/Users/conesus/protoread') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
 logging.basicConfig(level=logging.INFO,
@@ -89,7 +88,7 @@ COMPRESS_JS = {
         'source_filenames': (
             'js/jquery-1.4.2.js',
             'js/jquery.easing.js',
-            'js/jquery.newsblur.js',
+            'js/jquery.protoread.js',
             'js/jquery.scrollTo.js',
             'js/jquery.timers.js',
             'js/jquery.corners.js',
@@ -108,11 +107,11 @@ COMPRESS_JS = {
             'js/jquery.layout.js',
             'js/jquery.tinysort.js',
             'js/jquery.fieldselection.js',
-            'js/newsblur/assetmodel.js',
-            'js/newsblur/reader.js',
-            'js/newsblur/reader_classifier.js',
-            'js/newsblur/reader_add_feed.js',
-            'js/newsblur/reader_manage_feed.js',
+            'js/protoread/assetmodel.js',
+            'js/protoread/reader.js',
+            'js/protoread/reader_classifier.js',
+            'js/protoread/reader_add_feed.js',
+            'js/protoread/reader_manage_feed.js',
         ),
         'output_filename': 'js/all-compressed-?.js'
     }
@@ -157,7 +156,7 @@ DEBUG_TOOLBAR_PANELS = (
 # = Miscellaneous Settings =
 # ==========================
 
-AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
+AUTH_PROFILE_MODULE = 'protoread.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
 ROOT_URLCONF = 'urls'
 INTERNAL_IPS = ('127.0.0.1',)

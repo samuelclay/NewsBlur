@@ -1,11 +1,11 @@
-if (typeof NEWSBLUR == 'undefined') NEWSBLUR = {};
-if (typeof NEWSBLUR.Globals == 'undefined') NEWSBLUR.Globals = {};
+if (typeof PROTOREAD == 'undefined') PROTOREAD = {};
+if (typeof PROTOREAD.Globals == 'undefined') PROTOREAD.Globals = {};
 
 /* ============================= */
-/* = Core News Blur Javascript = */
+/* = Core Protoread Javascript = */
 /* ============================= */
 
-NEWSBLUR.log = function(msg) {
+PROTOREAD.log = function(msg) {
     try {
         if (typeof o == "object")
         {
@@ -39,7 +39,7 @@ NEWSBLUR.log = function(msg) {
             var elemTop = $elem.offset().top - docOffset;
             var elemBottom = elemTop + $elem.outerHeight();
 
-            // NEWSBLUR.log(['isScrollVisible', docViewTop, docViewBottom, docOffset, elemTop, elemBottom]);
+            // PROTOREAD.log(['isScrollVisible', docViewTop, docViewBottom, docOffset, elemTop, elemBottom]);
             
             return ((elemTop >= docViewTop) && (elemBottom <= docViewBottom));
         }

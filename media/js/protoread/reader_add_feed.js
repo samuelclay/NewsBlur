@@ -1,13 +1,13 @@
-NEWSBLUR.ReaderAddFeed = function(feed_id, score, options) {
+PROTOREAD.ReaderAddFeed = function(feed_id, score, options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = PROTOREAD.AssetModel.reader();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner();
 };
 
-NEWSBLUR.ReaderAddFeed.prototype = {
+PROTOREAD.ReaderAddFeed.prototype = {
     
     runner: function() {
         this.make_modal();
@@ -176,7 +176,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
         $loading.addClass('NB-active');
 
-        // NEWSBLUR.log(['Uploading']);
+        // PROTOREAD.log(['Uploading']);
         $.ajaxFileUpload({
 			url: '/opml/opml_upload', 
 			secureuri: false,
@@ -185,13 +185,13 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 			success: function (data, status)
 			{
                 $loading.removeClass('NB-active');
-				NEWSBLUR.reader.load_feeds();
+				PROTOREAD.reader.load_feeds();
 				$.modal.close();
 			},
 			error: function (data, status, e)
 			{
                 $loading.removeClass('NB-active');
-				NEWSBLUR.log(['Error', data, status, e]);
+				PROTOREAD.log(['Error', data, status, e]);
 			}
 		});
 		
@@ -232,12 +232,12 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     },
     
     post_save_add_url: function(e, data) {
-        NEWSBLUR.log(['Data', data]);
+        PROTOREAD.log(['Data', data]);
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
         $loading.removeClass('NB-active');
         
         if (data.code > 0) {
-            NEWSBLUR.reader.load_feeds();
+            PROTOREAD.reader.load_feeds();
             $.modal.close();
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
@@ -260,12 +260,12 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     },
     
     post_save_add_folder: function(e, data) {
-        NEWSBLUR.log(['Data', data]);
+        PROTOREAD.log(['Data', data]);
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
         $loading.removeClass('NB-active');
         
         if (data.code > 0) {
-            NEWSBLUR.reader.load_feeds();
+            PROTOREAD.reader.load_feeds();
             $.modal.close();
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');

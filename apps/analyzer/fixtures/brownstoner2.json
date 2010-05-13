@@ -3,7 +3,7 @@
         "pk": 1, 
         "model": "rss_feeds.feed", 
         "fields": {            
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/analyzer/fixtures/brownstoner2.xml", 
+            "feed_address": "%(PROTOREAD_DIR)s/apps/analyzer/fixtures/brownstoner2.xml", 
             "days_to_trim": 90, 
             "feed_link": "http://brownstoner.com", 
             "num_subscribers": 0, 
