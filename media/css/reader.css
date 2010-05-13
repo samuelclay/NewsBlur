@@ -188,7 +188,13 @@ a img {
 
 .left-pane {
     display: none;
-    overflow: auto !important;
+    overflow: hidden !important;
+}
+
+.left-center {
+    display: none;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
 }
 
 .right-pane {
