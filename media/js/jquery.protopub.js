@@ -1,11 +1,11 @@
-if (typeof PROTOREAD == 'undefined') PROTOREAD = {};
-if (typeof PROTOREAD.Globals == 'undefined') PROTOREAD.Globals = {};
+if (typeof PROTOPUB == 'undefined') PROTOPUB = {};
+if (typeof PROTOPUB.Globals == 'undefined') PROTOPUB.Globals = {};
 
 /* ============================= */
-/* = Core Protoread Javascript = */
+/* = Core Protopub Javascript = */
 /* ============================= */
 
-PROTOREAD.log = function(msg) {
+PROTOPUB.log = function(msg) {
     try {
         if (typeof o == "object")
         {
@@ -39,7 +39,7 @@ PROTOREAD.log = function(msg) {
             var elemTop = $elem.offset().top - docOffset;
             var elemBottom = elemTop + $elem.outerHeight();
 
-            // PROTOREAD.log(['isScrollVisible', docViewTop, docViewBottom, docOffset, elemTop, elemBottom]);
+            // PROTOPUB.log(['isScrollVisible', docViewTop, docViewBottom, docOffset, elemTop, elemBottom]);
             
             return ((elemTop >= docViewTop) && (elemBottom <= docViewBottom));
         }

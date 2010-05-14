@@ -23,8 +23,8 @@ import socket
 # http://feedjack.googlecode.com
 
 VERSION = '0.9'
-URL = 'http://www.protoread.com/'
-USER_AGENT = 'Protoread %s - %s' % (VERSION, URL)
+URL = 'http://www.protopub.com/'
+USER_AGENT = 'Protopub %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)

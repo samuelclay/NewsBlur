@@ -1,13 +1,13 @@
-PROTOREAD.ReaderAddFeed = function(feed_id, score, options) {
+PROTOPUB.ReaderAddFeed = function(feed_id, score, options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
-    this.model = PROTOREAD.AssetModel.reader();
+    this.model = PROTOPUB.AssetModel.reader();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner();
 };
 
-PROTOREAD.ReaderAddFeed.prototype = {
+PROTOPUB.ReaderAddFeed.prototype = {
     
     runner: function() {
         this.make_modal();
@@ -176,7 +176,7 @@ PROTOREAD.ReaderAddFeed.prototype = {
         var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
         $loading.addClass('NB-active');
 
-        // PROTOREAD.log(['Uploading']);
+        // PROTOPUB.log(['Uploading']);
         $.ajaxFileUpload({
 			url: '/opml/opml_upload', 
 			secureuri: false,
@@ -185,13 +185,13 @@ PROTOREAD.ReaderAddFeed.prototype = {
 			success: function (data, status)
 			{
                 $loading.removeClass('NB-active');
-				PROTOREAD.reader.load_feeds();
+				PROTOPUB.reader.load_feeds();
 				$.modal.close();
 			},
 			error: function (data, status, e)
 			{
                 $loading.removeClass('NB-active');
-				PROTOREAD.log(['Error', data, status, e]);
+				PROTOPUB.log(['Error', data, status, e]);
 			}
 		});
 		
@@ -232,12 +232,12 @@ PROTOREAD.ReaderAddFeed.prototype = {
     },
     
     post_save_add_url: function(e, data) {
-        PROTOREAD.log(['Data', data]);
+        PROTOPUB.log(['Data', data]);
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
         $loading.removeClass('NB-active');
         
         if (data.code > 0) {
-            PROTOREAD.reader.load_feeds();
+            PROTOPUB.reader.load_feeds();
             $.modal.close();
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
@@ -260,12 +260,12 @@ PROTOREAD.ReaderAddFeed.prototype = {
     },
     
     post_save_add_folder: function(e, data) {
-        PROTOREAD.log(['Data', data]);
+        PROTOPUB.log(['Data', data]);
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
         $loading.removeClass('NB-active');
         
         if (data.code > 0) {
-            PROTOREAD.reader.load_feeds();
+            PROTOPUB.reader.load_feeds();
             $.modal.close();
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');

@@ -1,10 +1,10 @@
-PROTOREAD.AssetModel = function() {
+PROTOPUB.AssetModel = function() {
     var _Reader = null;
     
     return {
         reader: function(){
             if(!_Reader){
-                _Reader = new PROTOREAD.AssetModel.Reader();
+                _Reader = new PROTOPUB.AssetModel.Reader();
                 _Reader.init();
             } else {
                 _Reader.init();
@@ -13,7 +13,7 @@ PROTOREAD.AssetModel = function() {
         },
         preferences: function(){
             if(!_Prefs){
-                _Prefs = new PROTOREAD.AssetModel.Preferences();
+                _Prefs = new PROTOPUB.AssetModel.Preferences();
                 _Prefs.init();
             } else {
                 _Prefs.init();
@@ -23,7 +23,7 @@ PROTOREAD.AssetModel = function() {
     };
 }();
 
-PROTOREAD.AssetModel.Reader = function() {
+PROTOPUB.AssetModel.Reader = function() {
     this.feeds = {};
     this.folders = [];
     this.stories = {};
@@ -31,7 +31,7 @@ PROTOREAD.AssetModel.Reader = function() {
     this.classifiers = {};
 };
 
-PROTOREAD.AssetModel.Reader.prototype = {
+PROTOPUB.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
@@ -60,19 +60,19 @@ PROTOREAD.AssetModel.Reader.prototype = {
             type: 'POST',
             dataType: 'json',
             beforeSend: function() {
-                // PROTOREAD.log(['beforeSend', options]);
+                // PROTOPUB.log(['beforeSend', options]);
                 $.isFunction(options['beforeSend']) && options['beforeSend']();
                 return true;
             },
             success: function(o) {
-                // PROTOREAD.log(['make_request 1', o]);
+                // PROTOPUB.log(['make_request 1', o]);
 
                 if ($.isFunction(callback)) {
                     callback(o);
                 }
             },
             error: function(e) {
-                // PROTOREAD.log(['AJAX Error', e]);
+                // PROTOPUB.log(['AJAX Error', e]);
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 }
@@ -93,10 +93,10 @@ PROTOREAD.AssetModel.Reader.prototype = {
             }
         }
         
-        if (!read && PROTOREAD.Globals.is_authenticated) {
+        if (!read && PROTOPUB.Globals.is_authenticated) {
             if (!(feed_id in this.read_stories)) { this.read_stories[feed_id] = []; }
             this.read_stories[feed_id].push(story_id);
-            PROTOREAD.log(['Marking Read', this.read_stories, story_id]);
+            PROTOPUB.log(['Marking Read', this.read_stories, story_id]);
             
             var story_ids = new Array(this.read_stories[feed_id]);
             this.make_request('/reader/mark_story_as_read', {
@@ -126,7 +126,7 @@ PROTOREAD.AssetModel.Reader.prototype = {
             }
         }
         
-        PROTOREAD.log(['Like', opinion, this.stories[s].opinion]);
+        PROTOPUB.log(['Like', opinion, this.stories[s].opinion]);
         if (opinion != 1) {
             this.make_request('/reader/mark_story_as_like',
                 {
@@ -147,7 +147,7 @@ PROTOREAD.AssetModel.Reader.prototype = {
                 break;
             }
         }
-        PROTOREAD.log(['Dislike', opinion, this.stories[s].opinion]);
+        PROTOPUB.log(['Dislike', opinion, this.stories[s].opinion]);
         if (opinion != -1) {
             this.make_request('/reader/mark_story_as_dislike',
                 {
@@ -186,7 +186,7 @@ PROTOREAD.AssetModel.Reader.prototype = {
             return self.load_feed_precallback(data, feed_id, callback, first_load);
         };
         
-        // PROTOREAD.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
+        // PROTOPUB.log(['load_feed', feed_id, page, first_load, callback, pre_callback]);
         if (feed_id) {
             this.make_request('/reader/load_single_feed',
                 {
@@ -202,7 +202,7 @@ PROTOREAD.AssetModel.Reader.prototype = {
     },
     
     load_feed_precallback: function(data, feed_id, callback, first_load) {
-        // PROTOREAD.log(['pre_callback', data]);
+        // PROTOPUB.log(['pre_callback', data]);
         if (feed_id != this.feed_id) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;
@@ -248,7 +248,7 @@ PROTOREAD.AssetModel.Reader.prototype = {
                 var feed = feeds[f];
                 for (var k in feed) {
                     if (self.feeds[f][k] != feed[k]) {
-                        // PROTOREAD.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
+                        // PROTOPUB.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
                         self.feeds[f][k] = feed[k];
                         if (!(f in updated_feeds)) {
                             updated_feeds.push(f);
@@ -260,7 +260,7 @@ PROTOREAD.AssetModel.Reader.prototype = {
             callback(updated_feeds);
         };
         
-        if (PROTOREAD.Globals.is_authenticated) {
+        if (PROTOPUB.Globals.is_authenticated) {
             this.make_request('/reader/refresh_feeds', {}, pre_callback);
         }
     },
@@ -269,11 +269,11 @@ PROTOREAD.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            // PROTOREAD.log(['refresh_feed pre_callback', data]);
+            // PROTOPUB.log(['refresh_feed pre_callback', data]);
             self.load_feed_precallback(data, feed_id, callback);
         };
         
-        // PROTOREAD.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
+        // PROTOPUB.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
         if (feed_id) {
             this.make_request('/reader/load_single_feed',
                 {
@@ -370,12 +370,12 @@ PROTOREAD.AssetModel.Reader.prototype = {
 
 
 
-PROTOREAD.AssetModel.Preferences = function() {
+PROTOPUB.AssetModel.Preferences = function() {
     this.feeds = {};
     this.stories = {};
 };
 
-PROTOREAD.AssetModel.Preferences.prototype = {
+PROTOPUB.AssetModel.Preferences.prototype = {
     
     init: function() {
         return;

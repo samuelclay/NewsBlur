@@ -1171,7 +1171,7 @@ form.opml_import_form input {
     position: absolute;
     bottom: -1px;
     margin-left: 244px;
-    background: transparent url('../img/reader/protoread_logo.png') no-repeat 0 0;
+    background: transparent url('../img/reader/protopub_logo.png') no-repeat 0 0;
     height: 52px;
     right: 250px;
     width: 242px;
@@ -1181,7 +1181,7 @@ form.opml_import_form input {
     margin: 0 auto;
     height: 376px;
     width: 600px;
-    background: transparent url('../img/reader/protoread_splash_image.png') no-repeat 0 0;
+    background: transparent url('../img/reader/protopub_splash_image.png') no-repeat 0 0;
 }
 
 #NB-splash .NB-splash-links {

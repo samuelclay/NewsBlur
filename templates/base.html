@@ -2,7 +2,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-    <title>{% block title %}Protoread{% endblock %}</title>
+    <title>{% block title %}Protopub{% endblock %}</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 
     <link rel="shortcut icon" HREF="/media/img/favicon.png">
@@ -12,8 +12,8 @@
 
 	<script type="text/javascript" charset="utf-8">
 
-		var PROTOREAD = {};
-		PROTOREAD.Globals = {
+		var PROTOPUB = {};
+		PROTOPUB.Globals = {
 			'is_authenticated': {% if user.is_authenticated %}true{% else %}false{% endif %},
 			'is_anonymous': {% if user.is_anonymous %}true{% else %}false{% endif %},
 			'username': "{{ user.username|safe }}",
