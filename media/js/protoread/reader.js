@@ -26,13 +26,15 @@
             'iframe_story_positions': {},
             'feed_view_story_positions': {},
             'iframe_story_positions_keys': [],
-            'feed_view_story_positions_keys': []
+            'feed_view_story_positions_keys': [],
+            'mouse_position_y': 0
         };
         
         $('body').bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
         $('body').bind('click.reader', $.rescope(this.handle_clicks, this));
         $('#story_titles').scroll($.rescope(this.handle_scroll_story_titles, this));
         this.$feed_view.scroll($.rescope(this.handle_scroll_feed_view, this));
+        this.$feed_view.bind('mousemove', $.rescope(this.handle_mousemove_feed_view, this));
                 
         this.load_feeds();
         this.apply_resizable_layout();
@@ -589,9 +591,13 @@
                 this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
                 this.load_iframe(feed_id);
                 this.flags['opening_feed'] = false;
-                this.$story_iframe.contents()
+                var $iframe_contents = this.$story_iframe.contents();
+                $iframe_contents
                     .unbind('scroll')
                     .scroll($.rescope(this.handle_scroll_story_iframe, this));
+                $iframe_contents
+                    .unbind('mousemove')
+                    .bind('mousemove', $.rescope(this.handle_mousemove_iframe_view, this));
             }
         },
         
@@ -920,9 +926,13 @@
                         }
                         self.taskbar_show_return_to_page();
                     });
-                    self.$story_iframe.contents()
+                    var $iframe_contents = self.$story_iframe.contents();
+                    $iframe_contents
                         .unbind('scroll')
                         .scroll($.rescope(self.handle_scroll_story_iframe, self));
+                    $iframe_contents
+                        .unbind('mousemove')
+                        .bind('mousemove', $.rescope(self.handle_mousemove_iframe_view, self));
                     var $iframe = self.$story_iframe.contents();
                     self.fetch_story_locations_in_story_frame(0, true, $iframe);
                 } catch(e) {
@@ -1794,12 +1804,37 @@
         
         handle_scroll_story_iframe: function(elem, e) {
             var self = this;
-            if (!this.flags.scrolling_by_selecting_story_title) {
-                var from_top = this.$story_iframe.contents().scrollTop();
+            if (this.story_view == 'page'
+                && !this.flags.scrolling_by_selecting_story_title) {
+                var from_top = this.cache.mouse_position_y + this.$story_iframe.contents().scrollTop();
                 var positions = this.cache.iframe_story_positions_keys;
                 var closest = this.closest(from_top, positions);
                 var story = this.cache.iframe_story_positions[positions[closest]];
                 // PROTOREAD.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
+                this.navigate_story_titles_to_story(story);
+                this.iframe_scroll = from_top;
+                this.flags.iframe_scroll_snap_back_prepared = false;
+                // PROTOREAD.log(['Setting snap back', this.iframe_scroll]);
+            }
+        },
+        
+        handle_mousemove_iframe_view: function(elem, e) {
+            var self = this;
+            var scroll_top = this.$story_iframe.contents().scrollTop();
+            this.cache.mouse_position_y = e.pageY - 50 - scroll_top;
+            
+            setTimeout(function() {
+                self.flags['mousemove_timeout'] = false;
+            }, 40);
+            
+            if (!this.flags['mousemove_timeout']
+                && !this.flags.scrolling_by_selecting_story_title) {
+                var from_top = this.cache.mouse_position_y + scroll_top;
+                var positions = this.cache.iframe_story_positions_keys;
+                var closest = this.closest(from_top, positions);
+                var story = this.cache.iframe_story_positions[positions[closest]];
+                this.flags['mousemove_timeout'] = true;
+                // PROTOREAD.log(['Mousemove iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
                 this.navigate_story_titles_to_story(story);
                 this.iframe_scroll = from_top;
                 this.flags.iframe_scroll_snap_back_prepared = false;
@@ -1812,9 +1847,12 @@
             var closest = Math.abs(array[index] - value);
             for (var i in array) {
                 var next_value = array[i] - value;
-                if (50 >= next_value && Math.abs(next_value) < closest) {
-                    index = i;
+                if (next_value <= 50 && Math.abs(next_value) < closest) {
+                    index = parseInt(i, 10);
                     closest = Math.abs(array[index] - value);
+                } else if (next_value > 50) {
+                    // PROTOREAD.log(['Not Closest', index, next_value, value, closest]);
+                    return index;
                 }
             }
             return index;
@@ -1823,14 +1861,41 @@
         handle_scroll_feed_view: function(elem, e) {
             var self = this;
             
-            if (!this.flags['switching_to_feed_view']
+            if (this.story_view == 'feed'
+                && !this.flags['switching_to_feed_view']
                 && !this.flags.scrolling_by_selecting_story_title 
                 && this.story_view != 'story') {
-                var from_top = this.$feed_view.scrollTop();
+                var from_top = this.cache.mouse_position_y + this.$feed_view.scrollTop();
                 var positions = this.cache.feed_view_story_positions_keys;
-                var closest = parseInt(this.closest(from_top, positions), 10);
+                var closest = this.closest(from_top, positions);
                 var story = this.cache.feed_view_story_positions[positions[closest]];
-                // PROTOREAD.log(['Scroll feed view', from_top, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
+                // PROTOREAD.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
+                this.navigate_story_titles_to_story(story);
+            }
+        },
+        
+        handle_mousemove_feed_view: function(elem, e) {
+            var self = this;
+            this.cache.mouse_position_y = e.pageY - 50;
+            
+            if (this.flags['mousemove_timeout']) {
+                return;
+            }
+            
+            setTimeout(function() {
+                self.flags['mousemove_timeout'] = false;
+            }, 40);
+            
+            if (!this.flags['mousemove_timeout']
+                && !this.flags['switching_to_feed_view']
+                && !this.flags.scrolling_by_selecting_story_title 
+                && this.story_view != 'story') {
+                var from_top = this.cache.mouse_position_y + this.$feed_view.scrollTop();
+                var positions = this.cache.feed_view_story_positions_keys;
+                var closest = this.closest(from_top, positions);
+                var story = this.cache.feed_view_story_positions[positions[closest]];
+                this.flags['mousemove_timeout'] = true;
+                // PROTOREAD.log(['Mousemove feed view', from_top, closest, positions[closest]]);
                 this.navigate_story_titles_to_story(story);
             }
         },

@@ -718,7 +718,7 @@ background: transparent;
 #story_pane .NB-feed-story-header {
     font-weight: bold;
     font-size: 16px;
-    padding: 0 140px 0 28px;
+    padding: 0 200px 0 28px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-top: 4px solid #404040;
     border-bottom: 1px solid #ADADAD;
@@ -1169,7 +1169,7 @@ form.opml_import_form input {
 
 #NB-splash .NB-splash-title {
     position: absolute;
-    bottom: 0;
+    bottom: -1px;
     margin-left: 244px;
     background: transparent url('../img/reader/protoread_logo.png') no-repeat 0 0;
     height: 52px;
