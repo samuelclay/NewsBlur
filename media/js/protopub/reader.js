@@ -9,6 +9,7 @@
         this.$feed_view = $('.NB-feed-story-view');
         this.$story_iframe = $('.NB-feed-frame');
         this.$intelligence_slider = $('.NB-intelligence-slider');
+        this.$mouse_indicator = $('#mouse-indicator');
 
         this.model = PROTOPUB.AssetModel.reader();
         this.options = {};
@@ -27,7 +28,7 @@
             'feed_view_story_positions': {},
             'iframe_story_positions_keys': [],
             'feed_view_story_positions_keys': [],
-            'mouse_position_y': 0
+            'mouse_position_y': 50
         };
         
         $('body').bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
@@ -1822,6 +1823,7 @@
             var self = this;
             var scroll_top = this.$story_iframe.contents().scrollTop();
             this.cache.mouse_position_y = e.pageY - 50 - scroll_top;
+            this.$mouse_indicator.css('top', this.cache.mouse_position_y + 50 - 8);
             
             setTimeout(function() {
                 self.flags['mousemove_timeout'] = false;
@@ -1877,6 +1879,7 @@
         handle_mousemove_feed_view: function(elem, e) {
             var self = this;
             this.cache.mouse_position_y = e.pageY - 50;
+            this.$mouse_indicator.css('top', this.cache.mouse_position_y + 50 - 8);
             
             if (this.flags['mousemove_timeout']) {
                 return;
