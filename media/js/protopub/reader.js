@@ -2147,7 +2147,6 @@
                 if (selected) {
                     $feed.addClass('selected');
                 }
-                $feed_on_page.replaceWith($feed);
                 $('.unread_count', $feed).corner('4px');
                 if (feed_id == this.active_feed) {
                     PROTOPUB.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
@@ -2155,6 +2154,7 @@
                     this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
                 } else {
                     PROTOPUB.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                    $feed_on_page.replaceWith($feed);
                 }
             }
         },
