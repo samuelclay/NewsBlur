@@ -6,7 +6,7 @@ from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag
 graph_config = {
     'graph_category' : 'Protopub',
     'graph_title' : 'Protopub Classifiers',
-    'graph_vlabel' : 'users',
+    'graph_vlabel' : '# of classifiers',
     'feeds.label': 'feeds',
     'authors.label': 'authors',
     'tags.label': 'tags',

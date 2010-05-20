@@ -7,7 +7,7 @@ from reader.models import UserSubscriptions
 graph_config = {
     'graph_category' : 'Protopub',
     'graph_title' : 'Protopub Feeds',
-    'graph_vlabel' : 'users',
+    'graph_vlabel' : 'Feeds & Subscribers',
     'feeds.label': 'feeds',
     'subscriptions.label': 'subscriptions',
 }
