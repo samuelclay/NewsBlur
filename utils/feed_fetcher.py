@@ -1,21 +1,17 @@
 from apps.rss_feeds.models import Feed, Story, FeedUpdateHistory
 from django.core.cache import cache
-from apps.reader.models import UserSubscription, UserStory
+from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
 from django.db import transaction
 from django.db.models import Q
-from utils.dateutil.parser import parse as dateutil_parse
 from utils.story_functions import pre_process_story
 import sys
 import time
 import logging
 import datetime
-# import threading
 import traceback
 import multiprocessing
-import Queue
-import datetime
 import random
 import socket
 
@@ -69,7 +65,7 @@ class FetchFeed:
             print(log_msg)
             return FEED_SAME, None
             
-        next_scheduled_update = self.set_next_scheduled_update()
+        self.set_next_scheduled_update()
         
         # we check the etag and the modified time to save bandwith and avoid bans
         try:
@@ -205,7 +201,6 @@ class ProcessFeed:
 
 
         # Compare new stories to existing stories, adding and updating
-        num_entries = len(self.fpf.entries)
         start_date = datetime.datetime.now()
         end_date = datetime.datetime.now()
         story_guids = []

@@ -1,25 +1,17 @@
+import time
+import settings
+import difflib
+import datetime
+import hashlib
 from django.db import models
 from django.db import IntegrityError
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.core import serializers
 from django.core.cache import cache
-from utils import feedparser, object_manager, json
-from utils.dateutil.parser import parse as dateutil_parse
-from utils.feed_functions import encode, prints, mtime, levenshtein_distance
-import time, datetime, random
-from django.utils.http import urlquote
-from django.utils.safestring import mark_safe
+from utils import json
+from utils.feed_functions import levenshtein_distance
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
 from utils.compressed_textfield import StoryField
-from django.db.models import Q
-import settings
-import logging
-import difflib
-import datetime
-import hashlib
 from utils.diff import HTMLDiff
 
 USER_AGENT = 'Protopub v1.0 - protopub.com'
@@ -102,7 +94,7 @@ class Feed(models.Model):
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
                 story_author, _ = self._save_story_author(story.get('author'))
                 if existing_story is None:
-                    pub_date = datetime.datetime.timetuple(story.get('published'))
+                    # pub_date = datetime.datetime.timetuple(story.get('published'))
                     # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
                     
                     s = Story(story_feed = self,
@@ -332,7 +324,15 @@ class StoryAuthor(models.Model):
         
     def __unicode__(self):
         return '%s - %s' % (self.feed, self.author_name)
-        
+
+class FeedPage(models.Model):
+    feed = models.OneToOneField(Feed, related_name="feed_page")
+    page_data = StoryField(null=True, blank=True)
+
+class FeedXML(models.Model):
+    feed = models.OneToOneField(Feed, related_name="feed_xml")
+    rss_xml = StoryField(null=True, blank=True)
+    
 class Story(models.Model):
     '''A feed item'''
     story_feed = models.ForeignKey(Feed, related_name="stories")
@@ -372,7 +372,7 @@ class FeedUpdateHistory(models.Model):
     
     def __unicode__(self):
         return "[%s] %s feeds: %s seconds" % (
-            fetch_date.strftime('%F %d'),
+            self.fetch_date.strftime('%F %d'),
             self.number_of_feeds,
             self.seconds_taken,
         )
