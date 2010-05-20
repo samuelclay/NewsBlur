@@ -228,6 +228,10 @@
             $('.right-pane').show();
             $('#NB-splash').hide();
             $('#NB-splash-overlay').hide();
+            
+            if (PROTOPUB.Globals.is_anonymous) {
+                this.setup_ftux_signup_callout();
+            }
         },
         
         show_splash_page: function() {
@@ -1763,6 +1767,10 @@
                 e.preventDefault();
                 self.show_previous_story();
             }); 
+            $.targetIs(e, { tagSelector: '.task_button_signup' }, function($t, $p){
+                e.preventDefault();
+                self.show_splash_page();
+            }); 
             
         },
         
@@ -2239,6 +2247,30 @@
                          .animate({'bottom': '+=0px'}, {'duration': 50})
                          .animate({'bottom': '-=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'});
                 }, 1000);
+            });
+        },
+        
+        setup_ftux_signup_callout: function() {
+            var self = this;
+            
+            $('.NB-callout-ftux-signup .NB-callout-text').text('Signup');
+            $('.NB-callout-ftux-signup').corner('5px');
+            $('.NB-callout-ftux-signup').css({
+                'opacity': 0,
+                'display': 'block'
+            }).animate({
+                'opacity': 1,
+                'bottom': 36
+            }, {
+                'duration': 750,
+                'easing': 'easeInOutQuint'
+            }).each(function() {
+                var $this = $(this);
+                self.flags['bouncing_callout'] = setInterval(function() {
+                    $this.animate({'bottom': '+=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'})
+                         .animate({'bottom': '+=0px'}, {'duration': 50})
+                         .animate({'bottom': '-=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'});
+                }, 10000);
             });
         }
         

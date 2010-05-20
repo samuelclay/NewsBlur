@@ -143,9 +143,21 @@
               <span class="NB-task-title">Next Unread</span>
             </li>
             <li class="task_button task_button_story task_story_next"></li>
+            {% if not user.is_authenticated %}
+              <li class="task_button task_button_signup"></li>
+            {% endif %}
           </ul>
         	
         </div>
+          
+        {% if not user.is_authenticated %}
+          <div class="NB-callout-ftux-signup NB-callout">
+            <div class="NB-callout-container">
+              <div class="NB-callout-text"></div>
+              <div class="NB-callout-arrow"></div>
+            </div>
+          </div>
+        {% endif %}
     
         <div id="story_pane" class="content-center">
             
