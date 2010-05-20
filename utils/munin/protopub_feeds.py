@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from rss_feeds.models import Feed
-from reader.models import UserSubscriptions
+from apps.rss_feeds.models import Feed
+from apps.reader.models import UserSubscriptions
 
 graph_config = {
     'graph_category' : 'Protopub',
