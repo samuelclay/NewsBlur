@@ -2,7 +2,7 @@
 
 from utils.munin.base import MuninGraph
 from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscriptions
+from apps.reader.models import UserSubscription
 
 graph_config = {
     'graph_category' : 'Protopub',
@@ -14,7 +14,7 @@ graph_config = {
 
 metrics = {
     'feeds': Feed.objects.count(),
-    'subscriptions': UserSubscriptions.objects.count(),
+    'subscriptions': UserSubscription.objects.count(),
 }
 
 if __name__ == '__main__':
