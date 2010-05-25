@@ -28,7 +28,7 @@
             'feed_view_story_positions': {},
             'iframe_story_positions_keys': [],
             'feed_view_story_positions_keys': [],
-            'mouse_position_y': 50
+            'mouse_position_y': 0
         };
         
         $('body').bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
@@ -563,7 +563,8 @@
                 'feed_view_story_positions': {},
                 'iframe_story_positions_keys': [],
                 'feed_view_story_positions_keys': [],
-                'previous_stories_stack': []
+                'previous_stories_stack': [],
+                'mouse_position_y': 0
             };
             
             this.active_feed = null;
@@ -1084,6 +1085,12 @@
                 this.flags['page_view_showing_feed_view'] = false;
                 this.story_view = view;
             }
+            
+            this.flags.scrolling_by_selecting_story_title = true;
+            clearInterval(this.locks.scrolling);
+            this.locks.scrolling = setTimeout(function() {
+                self.flags.scrolling_by_selecting_story_title = false;
+            }, 1000);
             
             if (view == 'page') {
                 var $iframe_story = this.find_story_in_story_iframe(this.active_story);
