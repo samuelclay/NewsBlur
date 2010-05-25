@@ -1086,6 +1086,9 @@
             }
             
             if (view == 'page') {
+                var $iframe_story = this.find_story_in_story_iframe(this.active_story);
+                this.scroll_to_story_in_iframe(this.active_story, $iframe_story, true);
+                
                 $story_pane.animate({
                     'left': 0
                 }, {
@@ -1094,6 +1097,9 @@
                     'queue': false
                 });
             } else if (view == 'feed') {
+                var $feed_story = this.find_story_in_feed_view(this.active_story);
+                this.scroll_to_story_in_story_feed(this.active_story, $feed_story, true);
+                
                 $story_pane.animate({
                     'left': -1 * $story_iframe.width()
                 }, {
@@ -1204,11 +1210,9 @@
             var iframe_position;
             
             if (this.active_story != story) {
-                var $feed_story = this.find_story_in_feed_view(story);
-                var $iframe_story = this.find_story_in_story_iframe(story);
                 
                 this.active_story = story;
-                // PROTOPUB.log(['Story', story, this.flags.iframe_view_loaded, skip_scrolls]);
+                // PROTOPUB.log(['Story', story, this.flags.iframe_view_loaded, skip_scrolls, $feed_story, $iframe_story]);
             
                 this.mark_story_title_as_selected($st);
                 this.mark_story_as_read(story.id, $st);
@@ -1216,6 +1220,9 @@
                 this.flags.scrolling_by_selecting_story_title = true;
                 if (!skip_scrolls) {
                     // User clicks on story, scroll them to it.
+                    var $feed_story = this.find_story_in_feed_view(story);
+                    var $iframe_story = this.find_story_in_story_iframe(story);
+                    
                     if (!this.flags.iframe_view_loaded) {
                         // If the iframe has not yet loaded, we can't touch it.
                         // So just assume story not found.
@@ -1229,11 +1236,11 @@
                 } else {
                     // User is scrolling the page. Just select in story titles.
                     if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
-                        feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
+                        // feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
                     } else if (this.story_view == 'page' && this.flags['page_view_showing_feed_view']) {
-                    
+                        // iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
                     } else if (this.story_view == 'feed' || this.story_view == 'story') {
-                        iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
+                        // iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
                     }
                     this.flags.scrolling_by_selecting_story_title = false;
                 }
@@ -1271,19 +1278,20 @@
 
         },
         
-        scroll_to_story_in_story_feed: function(story, $story) {
+        scroll_to_story_in_story_feed: function(story, $story, skip_scroll) {
             var self = this;
             var $feed_view = this.$feed_view;
 
             // PROTOPUB.log(['scroll_to_story_in_story_feed', story, $story]);
 
             if ($story && $story.length) {
-                if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
+                if (skip_scroll || this.story_view == 'page') {
+                    $feed_view.scrollTo($story, 0, { axis: 'y', offset: 0 }); // Do this at view switch instead.
+                    
+                } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                     $feed_view.scrollable().stop();
                     $feed_view.scrollTo($story, 600, { axis: 'y', easing: 'easeInOutQuint', offset: 0, queue: false });
-                } else if (this.story_view == 'page') {
-                    $feed_view.scrollTo($story, 0, { axis: 'y', offset: 0 });
-                }
+                } 
             }
             clearInterval(this.locks.scrolling);
             this.locks.scrolling = setTimeout(function() {
@@ -1296,6 +1304,8 @@
         },
         
         find_story_in_feed_view: function(story) {
+            if (!story) return;
+            
             var $feed_view = this.$feed_view;
             var $stories = $('.NB-feed-story', $feed_view);
             var $story;
@@ -1310,14 +1320,15 @@
             return $story;
         },
         
-        scroll_to_story_in_iframe: function(story, $story) {
+        scroll_to_story_in_iframe: function(story, $story, skip_scroll) {
             var $iframe = this.$story_iframe;
 
             if ($story && $story.length) {
-                if (this.story_view == 'feed'
+                if (skip_scroll
+                    || this.story_view == 'feed'
                     || this.story_view == 'story'
                     || this.flags['page_view_showing_feed_view']) {
-                    $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 });
+                    $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 }); // Do this at story_view switch
                 } else if (this.story_view == 'page') {
                     $iframe.scrollable().stop();
                     $iframe.scrollTo($story, 800, { axis: 'y', easing: 'easeInOutQuint', offset: -24, queue: false });
@@ -1404,6 +1415,8 @@
         },
         
         find_story_in_story_iframe: function(story, $iframe) {
+            if (!story) return;
+            
             if (!$iframe) $iframe = this.$story_iframe.contents();
             var $stories = $([]);
             
@@ -1814,6 +1827,7 @@
         handle_scroll_story_iframe: function(elem, e) {
             var self = this;
             if (this.story_view == 'page'
+                && !this.flags['page_view_showing_feed_view']
                 && !this.flags.scrolling_by_selecting_story_title) {
                 var from_top = this.cache.mouse_position_y + this.$story_iframe.contents().scrollTop();
                 var positions = this.cache.iframe_story_positions_keys;
@@ -1871,7 +1885,8 @@
         handle_scroll_feed_view: function(elem, e) {
             var self = this;
             
-            if (this.story_view == 'feed'
+            if ((this.story_view == 'feed' 
+                 || (this.story_view == 'page' && this.flags['page_view_showing_feed_view']))
                 && !this.flags['switching_to_feed_view']
                 && !this.flags.scrolling_by_selecting_story_title 
                 && this.story_view != 'story') {
@@ -1960,7 +1975,7 @@
                 stop: function(e, ui) {
                     self.save_profile('unread_view', ui.value);
                     self.flags['feed_view_positions_calculated'] = false;
-                    self.show_correct_story_titles_in_unread_view({'animate': true});
+                    self.show_correct_story_titles_in_unread_view({'animate': true, 'follow': true});
                 }
             });
         },
@@ -2058,7 +2073,7 @@
             }
             
             // PROTOPUB.log(['Showing correct stories', this.story_view, this.flags['feed_view_positions_calculated'], unread_view_name, $stories_show.length, $stories_hide.length]);
-            if (options['animate']) {
+            if (options['animate'] && options['follow']) {
                 $stories_hide.slideUp(500);
                 $stories_show.slideDown(500);
                 setTimeout(function() {
@@ -2210,7 +2225,7 @@
                     this.hover_over_story_titles();
                     this.flags['feed_view_positions_calculated'] = false;
                 }
-                this.show_correct_story_titles_in_unread_view({'animate': true});
+                this.show_correct_story_titles_in_unread_view({'animate': true, 'follow': false});
             }
         },
         
