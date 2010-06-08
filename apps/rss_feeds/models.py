@@ -14,7 +14,7 @@ from utils.story_functions import pre_process_story
 from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
 
-USER_AGENT = 'Protopub v1.0 - protopub.com'
+USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -54,7 +54,7 @@ class Feed(models.Model):
     def update(self, force=False, feed=None, single_threaded=False):
         from utils import feed_fetcher
         try:
-            self.feed_address = self.feed_address % {'PROTOPUB_DIR': settings.PROTOPUB_DIR}
+            self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         except:
             pass
         

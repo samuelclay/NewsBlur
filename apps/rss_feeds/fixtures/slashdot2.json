@@ -3,7 +3,7 @@
         "pk": 5, 
         "model": "rss_feeds.feed", 
         "fields": {            
-            "feed_address": "%(PROTOPUB_DIR)s/apps/rss_feeds/fixtures/slashdot2.xml", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/slashdot2.xml", 
             "days_to_trim": 90, 
             "feed_link": "http://slashdot.com", 
             "num_subscribers": 0, 

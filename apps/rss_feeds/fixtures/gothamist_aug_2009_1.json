@@ -3,7 +3,7 @@
         "pk": 4, 
         "model": "rss_feeds.feed", 
         "fields": {            
-            "feed_address": "%(PROTOPUB_DIR)s/apps/rss_feeds/fixtures/gothamist_aug_2009_1.xml", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gothamist_aug_2009_1.xml", 
             "days_to_trim": 90, 
             "feed_link": "http://gothamist.com", 
             "num_subscribers": 0, 
