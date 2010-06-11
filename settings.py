@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'apps.opml_import',
     'apps.profile',
     'devserver',
+    'south',
     # 'debug_toolbar'
 )
 

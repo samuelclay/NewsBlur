@@ -183,6 +183,24 @@ a img {
     right: -1px;
 }
 
+.NB-callout-mouse-indicator {
+    top: -3px;
+    left: 26px;
+    opacity: 0;
+}
+
+.NB-callout-mouse-indicator .NB-callout-container {
+    padding: 1px 12px 1px;
+}
+
+.NB-callout-mouse-indicator .NB-callout-container .NB-callout-arrow {
+    width: 12px;
+    height: 26px;
+    background: transparent url('../img/reader/callout_arrow_side.png') no-repeat 0 0;
+    top: 0px;
+    left: -11px;
+}
+
 /* ================ */
 /* = Content Pane = */
 /* ================ */
@@ -1716,4 +1734,5 @@ background: transparent;
     width: 10px;
     height: 15px;
     z-index: 10;
+    cursor: pointer;
 }
