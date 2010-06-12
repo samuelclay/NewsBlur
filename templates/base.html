@@ -1,60 +1,53 @@
+{% load compressed %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-    <title>{% block title %}NewsBlur{% endblock %}</title>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>{% block title %}NewsBlur{% endblock %}</title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" HREF="/media/img/favicon.png">
 
-    <link rel="shortcut icon" HREF="/media/img/favicon.png">
-    <!-- <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}theme/ui.theme.css" /> -->
-    <!-- <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery-theme/jquery-ui-1.7.2.custom.css" /> -->
-
-
-	<script type="text/javascript" charset="utf-8">
-
-		var NEWSBLUR = {};
-		NEWSBLUR.Globals = {
-			'is_authenticated': {% if user.is_authenticated %}true{% else %}false{% endif %},
-			'is_anonymous': {% if user.is_anonymous %}true{% else %}false{% endif %},
-			'username': "{{ user.username|safe }}",
-			'unread_view': 0{# user.profile.unread_view|safe #},
-			'MEDIA_URL': "{{ MEDIA_URL }}",
-		};
-
-	</script>
-	
-
-	{% load compressed %}
-	{% compressed_css 'all' %}
+  <script type="text/javascript" charset="utf-8">
+    var NEWSBLUR = {};
+    NEWSBLUR.Globals = {
+      'is_authenticated': {{ user.is_authenticated|yesno:"true,false" }},
+      'is_anonymous': {{ user.is_anonymous|yesno:"true,false" }},
+      'username': "{{ user.username|safe }}",
+      'MEDIA_URL': "{{ MEDIA_URL }}",
+    };
+    NEWSBLUR.Preferences = {
+      'view_settings': {
+        'unread_view': 0,
+        'lock_mouse_indicator': 0
+      }
+    };
+  </script>
+  
+  {% compressed_css 'all' %}
   {% compressed_js 'all' %}
-    {#  #}
-    {# <!-- Exception Hub start --> #}
-    {# <script type="text/javascript"> #}
-    {# var ehHost = (("https:" == document.location.protocol) ? "https://" : "http://"); #}
-    {# document.write(unescape("%3Cscript src='" + ehHost + "js.exceptionhub.com/javascripts/eh.js' type='text/javascript'%3E%3C/script%3E")); #}
-    {# </script> #}
-    {# <script> #}
-    {# try { #}
-    {# ExceptionHub.setup("341c9a42cde2bada808155ace04658bc", 186, 'production'); #}
-    {# } catch(e) {} #}
-    {# </script> #}
-    {# <!-- Exception Hub end --> #}
+  
+  <script type="text/javascript" charset="utf-8">
+    {% if request.user.is_authenticated %}
+      $.extend(NEWSBLUR.Preferences.view_settings, {{ user.profile.view_settings|safe }});
+    {% endif %}
+  </script>
     
 </head>
 
 <body>
-    {% block header %}{% endblock %}
-    {% block content %}{% endblock %}
 
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-8371683-2");
-pageTracker._trackPageview();
-} catch(err) {}</script>
+  {% block header %}{% endblock %}
+  {% block content %}{% endblock %}
+
+  <script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+  try {
+  var pageTracker = _gat._getTracker("UA-8371683-2");
+  pageTracker._trackPageview();
+  } catch(err) {}</script>
 
 </body>
 </html>

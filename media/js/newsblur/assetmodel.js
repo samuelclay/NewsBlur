@@ -1,5 +1,6 @@
 NEWSBLUR.AssetModel = function() {
     var _Reader = null;
+    var _Prefs = null;
     
     return {
         reader: function(){
@@ -10,16 +11,7 @@ NEWSBLUR.AssetModel = function() {
                 _Reader.init();
             }
             return _Reader;
-        },
-        preferences: function(){
-            if(!_Prefs){
-                _Prefs = new NEWSBLUR.AssetModel.Preferences();
-                _Prefs.init();
-            } else {
-                _Prefs.init();
-            }
-            return _Prefs;
-        }    
+        }
     };
 }();
 
@@ -364,36 +356,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             'folder': folder,
             'parent_folder': parent_folder
         }, callback, null);
-    }
-    
-};
-
-
-
-NEWSBLUR.AssetModel.Preferences = function() {
-    this.feeds = {};
-    this.stories = {};
-};
-
-NEWSBLUR.AssetModel.Preferences.prototype = {
-    
-    init: function() {
-        return;
     },
     
-    make_request: function(url, data, callback) {
-        $.ajax({
-            url: url,
-            data: data,
-            type: 'POST',
-            success: function(o) {
-                var data = eval('(' + o + ')');
-                if(callback && typeof callback == 'function'){
-                    callback(data);
-                }
-            }
-        });    
+    preference: function(preference, value, callback) {
+        if (typeof value == 'undefined') {
+            return NEWSBLUR.Preferences.view_settings[preference];
+        }
+        
+        NEWSBLUR.Preferences.view_settings[preference] = value;
+        this.make_request('/profile/set', {
+            'preference': preference,
+            'value': value
+        }, callback, null);
     }
     
 };
+
 

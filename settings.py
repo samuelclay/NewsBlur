@@ -67,13 +67,14 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
     "django.core.context_processors.debug",
-    "django.core.context_processors.media"
+    "django.core.context_processors.media",
+    'django.core.context_processors.request',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.cache.CacheMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',

@@ -40,7 +40,7 @@ def index(request):
     else:
         login_form = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
-
+    
     return render_to_response('reader/feeds.xhtml', {
         'login_form': login_form,
         'signup_form': signup_form,
