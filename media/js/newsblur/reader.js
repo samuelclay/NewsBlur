@@ -1245,7 +1245,8 @@
                     var $feed_story = this.find_story_in_feed_view(story);
                     var $iframe_story = this.find_story_in_story_iframe(story);
                     
-                    if (!this.flags.iframe_view_loaded) {
+                    // if (!this.flags.iframe_view_loaded) {
+                    if (!$iframe_story || !$iframe_story.length || !this.flags['story_titles_loaded']) {
                         // If the iframe has not yet loaded, we can't touch it.
                         // So just assume story not found.
                         this.switch_to_correct_view(false);
@@ -1313,7 +1314,8 @@
             // NEWSBLUR.log(['scroll_to_story_in_story_feed', story, $story]);
 
             if ($story && $story.length) {
-                if (skip_scroll || this.story_view == 'page') {
+                if (skip_scroll || (this.story_view == 'page'
+                                    && !this.flags['page_view_showing_feed_view'])) {
                     $feed_view.scrollTo($story, 0, { axis: 'y', offset: 0 }); // Do this at view switch instead.
                     
                 } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
@@ -1447,7 +1449,7 @@
         },
         
         find_story_in_story_iframe: function(story, $iframe) {
-            if (!story) return;
+            if (!story) return $([]);
             
             if (!$iframe) $iframe = this.$story_iframe.contents();
             var $stories = $([]);
