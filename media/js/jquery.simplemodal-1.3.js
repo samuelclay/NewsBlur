@@ -1,9 +1,9 @@
 /*
- * SimpleModal 1.3.4 - jQuery Plugin
+ * SimpleModal 1.3.5 - jQuery Plugin
  * http://www.ericmmartin.com/projects/simplemodal/
  * Copyright (c) 2010 Eric Martin (http://twitter.com/EricMMartin)
  * Dual licensed under the MIT and GPL licenses
- * Revision: $Id: jquery.simplemodal.js 237 2010-03-11 05:51:01Z emartin24 $
+ * Revision: $Id: jquery.simplemodal.js 245 2010-03-25 20:41:15Z emartin24 $
  */
 
 /**
@@ -58,7 +58,7 @@
  * @requires jQuery v1.2.2
  * @cat Plugins/Windows and Overlays
  * @author Eric Martin (http://ericmmartin.com)
- * @version 1.3.4
+ * @version 1.3.5
  */
 ;(function ($) {
 	var ie6 = $.browser.msie && parseInt($.browser.version) == 6 && typeof window['XMLHttpRequest'] != "object",
@@ -121,7 +121,7 @@
 	 * persist:			(Boolean:false) Persist the data across modal calls? Only used for existing
 								DOM elements. If true, the data will be maintained across modal calls, if false,
 								the data will be reverted to its original state.
-	 * transient:		(Boolean:false) If true, the overlay, iframe, and certain events will be disabled
+	 * modal:			(Boolean:true) If false, the overlay, iframe, and certain events will be disabled
 								allowing the user to interace with the page below the dialog
 	 * onOpen:			(Function:null) The callback function used in place of SimpleModal's open
 	 * onShow:			(Function:null) The callback function used after the modal dialog has opened
@@ -151,7 +151,7 @@
 		overlayClose: false,
 		position: null,
 		persist: false,
-		'transient': false,
+		modal: true,
 		onOpen: null,
 		onShow: null,
 		onClose: null
@@ -182,7 +182,7 @@
 			}
 
 			// $.boxModel is undefined if checked earlier
-			ieQuirks = $.browser.msie && !$.support.boxModel;
+			ieQuirks = $.browser.msie && !$.boxModel;
 
 			// merge defaults and user options
 			s.o = $.extend({}, $.modal.defaults, options);
@@ -249,7 +249,7 @@
 			w = s.getDimensions();
 
 			// add an iframe to prevent select options from bleeding through
-			if (!s.o['transient'] && ie6) {
+			if (s.o.modal && ie6) {
 				s.d.iframe = $('<iframe src="javascript:false;"></iframe>')
 					.css($.extend(s.o.iframeCss, {
 						display: 'none',
@@ -271,8 +271,8 @@
 				.css($.extend(s.o.overlayCss, {
 					display: 'none',
 					opacity: s.o.opacity / 100,
-					height: s.o['transient'] ? 0 : w[0],
-					width: s.o['transient'] ? 0 : w[1],
+					height: s.o.modal ? w[0] : 0,
+					width: s.o.modal ? w[1] : 0,
 					position: 'fixed',
 					left: 0,
 					top: 0,
@@ -332,7 +332,7 @@
 			});
 			
 			// bind the overlay click to the close function, if enabled
-			if (!s.o['transient'] && s.o.close && s.o.overlayClose) {
+			if (s.o.modal && s.o.close && s.o.overlayClose) {
 				s.d.overlay.bind('click.simplemodal', function (e) {
 					e.preventDefault();
 					s.close();
@@ -341,7 +341,7 @@
 	
 			// bind keydown events
 			$(document).bind('keydown.simplemodal', function (e) {
-				if (!s.o['transient'] && s.o.focus && e.keyCode == 9) { // TAB
+				if (s.o.modal && s.o.focus && e.keyCode == 9) { // TAB
 					s.watchTab(e);
 				}
 				else if ((s.o.close && s.o.escClose) && e.keyCode == 27) { // ESC
@@ -361,7 +361,7 @@
 				if (ie6 || ieQuirks) {
 					s.fixIE();
 				}
-				else if (!s.o['transient']) {
+				else if (s.o.modal) {
 					// update the iframe & overlay
 					s.d.iframe && s.d.iframe.css({height: w[0], width: w[1]});
 					s.d.overlay.css({height: w[0], width: w[1]});
@@ -384,7 +384,7 @@
 			var s = this, p = s.o.position;
 
 			// simulate fixed position - adapted from BlockUI
-			$.each([s.d.iframe || null, s.o['transient'] ? null : s.d.overlay, s.d.container], function (i, el) {
+			$.each([s.d.iframe || null, !s.o.modal ? null : s.d.overlay, s.d.container], function (i, el) {
 				if (el) {
 					var bch = 'document.body.clientHeight', bcw = 'document.body.clientWidth',
 						bsh = 'document.body.scrollHeight', bsl = 'document.body.scrollLeft',

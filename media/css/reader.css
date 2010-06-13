@@ -1838,7 +1838,7 @@ background: transparent;
     width: 74%;
     padding: 0;
     margin: 0;
-    background-color: #BAD3D8;
+    background-color: #BAE3A8;
     border-top: 1px solid #8ABCBE;
     border-left: 1px solid #8ABCBE;
     border-right: 1px solid #8ABCBE;
@@ -1862,8 +1862,9 @@ background: transparent;
     cursor: pointer;
 }
 
-.NB-menu-manage li:hover {
-    background-color: #7395C0;
+.NB-menu-manage li:hover,
+.NB-menu-manage li.NB-hover {
+    background-color: #639510;
     color: white;
 }
 
@@ -1873,8 +1874,25 @@ background: transparent;
     margin-bottom: 6px;
 }
 
-.NB-menu-manage li.NB-menu-separator:hover {
+.NB-menu-manage li.NB-menu-separator:hover,
+.NB-menu-manage li.NB-menu-manage-feed-info:hover {
     background-color: inherit;
     color: inherit;
     cursor: default;
+}
+
+.NB-menu-manage .NB-menu-manage-feed-info {
+    padding-left: 24px;
+    font-weight: bold;
+    font-size: 12px;
+    position: relative;
+}
+
+.NB-menu-manage .NB-menu-manage-feed-info .feed_favicon {
+    position: absolute;
+    left: 4px;
+    top: 3px;
+}
+
+.NB-menu-manage .NB-menu-manage-feed-info .feed_title {
 }
