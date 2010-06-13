@@ -44,16 +44,38 @@ a img {
 
 .NB-account {
     position: absolute;
-    right: 50px;
-    top: 40px;
-    width: 186px;
+    right: 0px;
+    top: 0px;
+    width: 478px;
     z-index: 1;
+    overflow: hidden;
+}
+
+.NB-account .NB-module-header-login {
+    width: 186px;
+    margin: 0 50px 0 0;
+    float: left;
+}
+
+.NB-account .NB-module-header-signup {
+    width: 186px;
+    margin: 0;
+    float: left;
 }
 
 .NB-account .NB-login {
     padding: 0 0 64px 0;
-    margin: 0 0 24px 0;
+    margin: 0 50px 24px 12px;
+    width: 186px;
+    float: left;
     background: transparent url('../img/reader/separator.png') no-repeat bottom center;
+}
+
+.NB-account .NB-signup {
+    float: left;
+    width: 186px;
+    padding: 0;
+    margin: 0;
 }
 
 .NB-account input[type=text],
@@ -61,7 +83,7 @@ a img {
     border:1px solid #D3D5DE;
     display:block;
     font-size:13px;
-    margin:0 0 5px;
+    margin:0 0 12px;
     padding:5px;
     width:100%;
 }
@@ -100,7 +122,7 @@ a img {
 
 .NB-account label,
 .NB-account .NB-account-label {
-    margin-top: 2px;
+    margin: 2px 0 2px;
     color:#A0B0C0;
     font-size:12px;
     display: block;
@@ -1281,10 +1303,13 @@ form.opml_import_form input {
     font-size: 130%;
 }
 
-.NB-modal h5 {
+.NB-modal h5,
+.NB-module h5 {
+    margin: 0;
+    padding: 8px 8px 6px;
+    background-color: #D9DDF9;
+    text-shadow: 0 1px 0 #F6F6F6;
     border-bottom: 1px solid #A0A0A0;
-    padding: 18px 0 0px;
-    margin: 0 0 6px 0;
     color:#505050;
     font-size: 14px;
     font-family: "Gill Sans", inherit;
@@ -1350,13 +1375,6 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
-.NB-modal h5 {
-    margin: 0;
-    padding: 0;
-    padding: 8px 8px 6px;
-    background-color: #D9DDF9;
-    text-shadow: 0 1px 0 #F6F6F6;
-}
 
 /* ============== */
 /* = Classifier = */
@@ -1735,4 +1753,71 @@ background: transparent;
     height: 15px;
     z-index: 10;
     cursor: pointer;
+}
+
+/* ============= */
+/* = Main Page = */
+/* ============= */
+
+.NB-account .NB-module {
+    margin: 12px 0 36px;
+    padding: 12px 0;
+    width: 478px;
+    clear: both;
+}
+
+.NB-account .NB-module a {
+    text-decoration: none;
+    color: #3E4773;
+}
+
+.NB-account .NB-module a:hover {
+    color: #0E1763;
+}
+
+.NB-account .NB-module h5 {
+    margin: 0 0 12px;
+    padding: 8px 12px 6px;
+}
+
+.NB-account .NB-module .NB-module-header-right {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: normal;
+    float: right;
+}
+
+/* ============ */
+/* = Features = */
+/* ============ */
+
+.NB-module-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 12px;
+}
+
+.NB-module-features .NB-module-feature {
+    margin: 0 0 12px;
+}
+
+.NB-module-features .NB-module-feature .NB-module-feature-date {
+    float: left;
+    text-transform: uppercase;
+    padding: 0 8px 12px 0;
+    color: #134160;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.NB-module-features .NB-module-feature .NB-module-feature-description {
+    line-height: 16px;
+    font-size: 13px;
+    padding: 0 4px 12px 0;
+}
+
+#add-feature-form {
+    display: none;
 }

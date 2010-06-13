@@ -19,4 +19,5 @@ urlpatterns = patterns('',
     url(r'^delete_feed', views.delete_feed, name='delete-feed'),
     url(r'^add_url', views.add_url),
     url(r'^add_folder', views.add_folder),
+    url(r'^add_feature', views.add_feature, name='add-feature'),
 )

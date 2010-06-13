@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from apps.reader.models import Feature
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username"), max_length=30,
@@ -66,3 +67,11 @@ class SignupForm(forms.Form):
         new_user = authenticate(username=self.cleaned_data['signup_username'], password=self.cleaned_data['signup_password'])
         
         return new_user
+
+class FeatureForm(forms.Form):
+    description = forms.CharField(required=True)
+    
+    def save(self):
+        feature = Feature(description=self.cleaned_data['description'])
+        feature.save()
+        return feature

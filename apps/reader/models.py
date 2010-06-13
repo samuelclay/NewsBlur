@@ -7,6 +7,7 @@ from apps.rss_feeds.models import Feed, Story, Tag
 from utils import feedparser, object_manager, json
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from utils.compressed_textfield import StoryField
 
 DAYS_OF_UNREAD = 14
 
@@ -138,3 +139,13 @@ class UserSubscriptionFolders(models.Model):
     class Meta:
         verbose_name_plural = "folders"
         verbose_name = "folder"
+        
+class Feature(models.Model):
+    description = models.TextField(default="")
+    date = models.DateTimeField(default=datetime.datetime.now)
+    
+    def __unicode__(self):
+        return "[%s] %s" % (self.date, self.description[:50])
+    
+    class Meta:
+        ordering = ["-date"]

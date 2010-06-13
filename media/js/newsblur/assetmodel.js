@@ -364,10 +364,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         
         NEWSBLUR.Preferences.view_settings[preference] = value;
-        this.make_request('/profile/set', {
-            'preference': preference,
-            'value': value
-        }, callback, null);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/profile/set', {
+                'preference': preference,
+                'value': value
+            }, callback, null);
+        }
     }
     
 };

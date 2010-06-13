@@ -21,18 +21,23 @@ def opml_upload(request):
     xml_opml = None
     message = "OK"
     code = 1
+    payload = {}
     
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
             xml_opml = file.read()
             
-    opml_importer = OPMLImporter(xml_opml, request.user)
-    folders = opml_importer.process()
+            opml_importer = OPMLImporter(xml_opml, request.user)
+            folders = opml_importer.process()
 
-    feeds = UserSubscription.objects.filter(user=request.user).values()
-    data = json.encode(dict(message=message, code=code, payload=dict(folders=folders, feeds=feeds)))
-
+            feeds = UserSubscription.objects.filter(user=request.user).values()
+            payload = dict(folders=folders, feeds=feeds)
+        else:
+            message = "Attach an .opml file."
+            code = -1
+            
+    data = json.encode(dict(message=message, code=code, payload=payload))
     return HttpResponse(data, mimetype='text/plain')
 
 class OPMLImporter:

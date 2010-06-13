@@ -13,12 +13,12 @@ from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import login as login_user
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseForbidden
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory
-from apps.reader.forms import SignupForm, LoginForm
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory, Feature
+from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
     from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor
 except:
@@ -40,10 +40,17 @@ def index(request):
     else:
         login_form = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
+
+    features = Feature.objects.all()
+    feature_form = None
+    if request.user.is_staff:
+        feature_form = FeatureForm()
     
     return render_to_response('reader/feeds.xhtml', {
         'login_form': login_form,
         'signup_form': signup_form,
+        'feature_form': feature_form,
+        'features': features
     }, context_instance=RequestContext(request))
 
 @never_cache
@@ -410,3 +417,20 @@ def delete_feed(request):
     
     data = json.encode(dict(code=1))
     return HttpResponse(data)
+    
+@login_required
+def add_feature(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden()
+
+    code = -1    
+    form = FeatureForm(request.POST)
+    
+    if form.is_valid():
+        form.save()
+        code = 1
+        return HttpResponseRedirect(reverse('index'))
+    
+    data = json.encode(dict(code=code))
+    return HttpResponse(data)
+    
