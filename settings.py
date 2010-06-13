@@ -113,6 +113,8 @@ COMPRESS_JS = {
             'js/newsblur/reader_classifier.js',
             'js/newsblur/reader_add_feed.js',
             'js/newsblur/reader_manage_feed.js',
+            'js/newsblur/reader_mark_read.js',
+            'js/newsblur/reader_preferences.js',
         ),
         'output_filename': 'js/all-compressed-?.js'
     }

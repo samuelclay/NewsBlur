@@ -1226,7 +1226,6 @@ form.opml_import_form input {
 #NB-splash .NB-splash-title {
     position: absolute;
     bottom: -1px;
-    margin-left: 244px;
     background: transparent url('../img/reader/newsblur_logo.png') no-repeat 0 0;
     height: 52px;
     right: 250px;
@@ -1271,8 +1270,14 @@ form.opml_import_form input {
     color: #A85B40;
 }
 
-#NB-splash .NB-splash-info {
-    margin-left: 244px;
+.NB-splash-info {
+    background-color: white;
+    z-index: 1;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 500px;
+    height: 56px;
 }
 
 /* ============== */
@@ -1871,7 +1876,7 @@ background: transparent;
 
 .NB-menu-manage li {
     margin: 0 0 0 0;
-    padding: 3px 12px;
+    padding: 3px 8px 3px 12px;
     cursor: pointer;
 }
 

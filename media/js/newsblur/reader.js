@@ -113,47 +113,47 @@
         apply_resizable_layout: function() {
             var outerLayout, rightLayout, contentLayout, leftLayout;
             
-        	outerLayout = $('body').layout({ 
-        	    closable: true,
-    			center__paneSelector:	".right-pane",
-    			west__paneSelector:		".left-pane",
-    			west__size:				240,
-    			west__onresize:         "leftLayout.resizeAll",
-    			center__onresize:       "rightLayout.resizeAll",
-    			spacing_open:			4,
-    			resizerDragOpacity:     0.6,
-    			findNestedContent:      true
-    		}); 
-    		
-    		leftLayout = $('.left-pane').layout({
-        	    closable:               false,
-    		    center__paneSelector:   ".left-center",
-    		    center__resizable:      false,
-    			south__paneSelector:	".left-south",
-    			south__size:            30,
-    			south__resizable:       false,
-    			south__spacing_open:    0
-    		});
+            outerLayout = $('body').layout({ 
+                closable: true,
+                center__paneSelector:   ".right-pane",
+                west__paneSelector:     ".left-pane",
+                west__size:             240,
+                west__onresize:         "leftLayout.resizeAll",
+                center__onresize:       "rightLayout.resizeAll",
+                spacing_open:           4,
+                resizerDragOpacity:     0.6,
+                findNestedContent:      true
+            }); 
+            
+            leftLayout = $('.left-pane').layout({
+                closable:               false,
+                center__paneSelector:   ".left-center",
+                center__resizable:      false,
+                south__paneSelector:    ".left-south",
+                south__size:            30,
+                south__resizable:       false,
+                south__spacing_open:    0
+            });
 
-    		rightLayout = $('.right-pane').layout({ 
-    			south__paneSelector:	".right-north",
-    			center__paneSelector:	".content-pane",
-    			center__onresize:       "contentLayout.resizeAll",
-    			south__onresize:        "contentLayout.resizeAll",
-    			south__size:			168,
-    			spacing_open:			10,
-    			resizerDragOpacity:     0.6
-    		}); 
+            rightLayout = $('.right-pane').layout({ 
+                south__paneSelector:    ".right-north",
+                center__paneSelector:   ".content-pane",
+                center__onresize:       "contentLayout.resizeAll",
+                south__onresize:        "contentLayout.resizeAll",
+                south__size:            168,
+                spacing_open:           10,
+                resizerDragOpacity:     0.6
+            }); 
 
-    		contentLayout = $('.content-pane').layout({ 
-    			center__paneSelector:	".content-center",
-    			south__paneSelector:	".content-north",
-    			south__size:            30,
-    			spacing_open:           0,
-    			resizerDragOpacity:     0.6
-    		}); 
-    		
-    		$('.right-pane').hide();
+            contentLayout = $('.content-pane').layout({ 
+                center__paneSelector:   ".content-center",
+                south__paneSelector:    ".content-north",
+                south__size:            30,
+                spacing_open:           0,
+                resizerDragOpacity:     0.6
+            }); 
+            
+            $('.right-pane').hide();
         },
         
         resize_story_content_pane: function() {
@@ -1791,6 +1791,18 @@
                     self.open_manage_feed_modal();
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-mark-read' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_mark_read_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-preferences' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_preferences_modal();
+                }
+            });  
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
                 e.preventDefault();
                 var view;
@@ -2067,6 +2079,18 @@
             NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
         },
         
+        open_mark_read_modal: function() {
+            var feed_id = this.active_feed;
+            
+            NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead();
+        },
+        
+        open_preferences_modal: function() {
+            var feed_id = this.active_feed;
+            
+            NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
+        },
+        
         make_manage_menu: function() {
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
@@ -2094,8 +2118,8 @@
             }
             
             var $site_specific = [
-                $.make('li', { className: 'NB-menu-manage-mark-read' }, 'Mark read older than...'),
-                $.make('li', { className: 'NB-menu-manage-mark-read' }, 'Preferences')
+                $.make('li', { className: 'NB-menu-manage-mark-read' }, 'Mark old stories as read'),
+                $.make('li', { className: 'NB-menu-manage-preferences' }, 'Preferences')
             ];
             for (var f in $site_specific) {
                 $manage_menu.append($site_specific[f]);
@@ -2128,18 +2152,30 @@
                 'complete': function() {
                     $(document).bind('click.menu', function() {
                         self.hide_manage_menu();
-                        $(document).unbind('click.menu');
                     });
                 }
             });
             $('.NB-task-manage').addClass('NB-hover');
+
+            clearTimeout(this.flags.closed_manage_menu);
             
+            $manage_menu_container.hover(function() {
+                clearTimeout(self.flags.closed_manage_menu);
+            }, function() {
+                clearTimeout(self.flags.closed_manage_menu);
+                self.flags.closed_manage_menu = setTimeout(function() {
+                    self.hide_manage_menu();
+                }, 1000);
+            });
         },
         
         hide_manage_menu: function() {
             var $manage_menu_container = $('.NB-menu-manage-container');
             var height = $manage_menu_container.outerHeight();
-            
+
+            clearTimeout(this.flags.closed_manage_menu);
+            $(document).unbind('click.menu');
+
             $manage_menu_container.animate({
                 'opacity': 0
             }, {

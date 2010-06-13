@@ -265,10 +265,10 @@ NEWSBLUR.ReaderManageFeed.prototype = {
             'minHeight': height,
             'overlayClose': true,
             'onOpen': function (dialog) {
-	            dialog.overlay.fadeIn(200, function () {
-		            dialog.container.fadeIn(200);
-		            dialog.data.fadeIn(200);
-	            });
+                dialog.overlay.fadeIn(200, function () {
+                    dialog.container.fadeIn(200);
+                    dialog.data.fadeIn(200);
+                });
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
