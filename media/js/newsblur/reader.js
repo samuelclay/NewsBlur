@@ -1782,6 +1782,12 @@
             $.targetIs(e, { tagSelector: '.NB-task-manage' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
+                    self.show_manage_menu($t);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-manage' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
                     self.open_manage_feed_modal();
                 }
             });  
@@ -2059,6 +2065,83 @@
             var feed_id = this.active_feed;
             
             NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
+        },
+        
+        make_manage_menu: function() {
+            var feed_id = this.active_feed;
+            
+            var $manage_menu = $.make('ul', { className: 'NB-menu-manage' });
+            
+            if (feed_id) {
+                var $feed_specific = [
+                    $.make('li', { className: 'NB-menu-manage-feed-manage' }, 'Manage site opinions'),
+                    $.make('li', { className: 'NB-menu-manage-feed-stats' }, 'See site statistics'),
+                    $.make('li', { className: 'NB-menu-manage-feed-delete' }, 'Delete this site')
+                ];
+                for (var f in $feed_specific) {
+                    $manage_menu.append($feed_specific[f]);
+                }
+            }
+            
+            if ($manage_menu.children().length) {
+                var $separator = $.make('li', { className: 'NB-menu-separator' });
+                $manage_menu.append($separator);
+            }
+            
+            var $site_specific = [
+                $.make('li', { className: 'NB-menu-manage-mark-read' }, 'Mark old as read'),
+                $.make('li', { className: 'NB-menu-manage-mark-read' }, 'Preferences')
+            ];
+            for (var f in $site_specific) {
+                $manage_menu.append($site_specific[f]);
+            }
+            return $manage_menu;
+        },
+        
+        show_manage_menu: function() {
+            var self = this;
+            var $manage_menu_container = $('.NB-menu-manage-container');
+            
+            if ($manage_menu_container.css('opacity') != 0) {
+                return this.hide_manage_menu();
+            }
+            
+            var $manage_menu = this.make_manage_menu();
+            $manage_menu_container.empty().append($manage_menu);
+            $manage_menu_container.corner('tl tr 5px');
+            $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
+            $manage_menu_container.css({'left': '-1000px', 'display': 'block', 'opacity': 1});
+            var height = $manage_menu_container.outerHeight();
+            $manage_menu_container.css({'bottom': '-'+(height+30)+'px', 'left': '40px', 'opacity': 0});
+            $manage_menu_container.animate({
+                'bottom': '30px', 
+                'opacity': 1
+            }, {
+                'duration': 350, 
+                'easing': 'easeOutQuint', 
+                'queue': false,
+                'complete': function() {
+                    $(document).bind('click.menu', function() {
+                        self.hide_manage_menu();
+                        $(document).unbind('click.menu');
+                    });
+                }
+            });
+            $('.NB-task-manage').addClass('NB-hover');
+            
+        },
+        
+        hide_manage_menu: function() {
+            var $manage_menu_container = $('.NB-menu-manage-container');
+            var height = $manage_menu_container.outerHeight();
+            
+            $manage_menu_container.animate({
+                'opacity': 0
+            }, {
+                'duration': 350, 
+                'queue': false
+            });
+            $('.NB-task-manage').removeClass('NB-hover');
         },
         
         // ================

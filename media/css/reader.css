@@ -909,6 +909,7 @@ background: transparent;
     background: #e0e0e0 url('../img/reader/taskbar_background.png') repeat-x top left;
     position: relative;
     border-top: 1px solid #7d7d7d;
+    z-index: 10;
 }
 
 .NB-taskbar .NB-task-view-page-to-feed-arrow {
@@ -955,7 +956,8 @@ background: transparent;
     font-size: 13px;
 }
 
-.NB-taskbar .taskbar_nav .task_button:hover {
+.NB-taskbar .taskbar_nav .task_button:hover,
+.NB-taskbar .taskbar_nav .task_button.NB-hover {
     background-color: #A0A7B1;
 }
 
@@ -1820,4 +1822,59 @@ background: transparent;
 
 #add-feature-form {
     display: none;
+}
+
+/* ========= */
+/* = Menus = */
+/* ========= */
+
+.NB-menu-manage-container {
+    z-index: 1;
+    position: absolute;
+    display: none;
+    opacity: 0;
+    bottom: 0;
+    left: 48px;
+    width: 74%;
+    padding: 0;
+    margin: 0;
+    background-color: #BAD3D8;
+    border-top: 1px solid #8ABCBE;
+    border-left: 1px solid #8ABCBE;
+    border-right: 1px solid #8ABCBE;
+    -webkit-box-shadow: 1px 3px 0 #979DA6;
+    -moz-box-shadow: 1px 3px 0 #979DA6;
+    box-shadow: 1px 3px 0 #979DA6;
+}
+
+.NB-menu-manage {
+    list-style: none;
+    font-size: 11px;
+    text-transform: uppercase;
+    margin: 4px 0;
+    padding: 0;
+    font-family: 'Lucida Grande', inherit;
+}
+
+.NB-menu-manage li {
+    margin: 0 0 0 0;
+    padding: 3px 12px;
+    cursor: pointer;
+}
+
+.NB-menu-manage li:hover {
+    background-color: #7395C0;
+    color: white;
+}
+
+.NB-menu-manage li.NB-menu-separator {
+    border-bottom: 1px solid #8ABCBE;
+    padding-bottom: 3px;
+    margin-bottom: 6px;
+}
+
+.NB-menu-manage li.NB-menu-separator:hover {
+    background-color: inherit;
+    color: inherit;
+    cursor: default;
 }
