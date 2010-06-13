@@ -65,7 +65,7 @@ a img {
 
 .NB-account .NB-login {
     padding: 0 0 64px 0;
-    margin: 0 50px 24px 12px;
+    margin: 0 50px 0 12px;
     width: 186px;
     float: left;
     background: transparent url('../img/reader/separator.png') no-repeat bottom center;
@@ -1762,10 +1762,11 @@ background: transparent;
 /* ============= */
 
 .NB-account .NB-module {
-    margin: 12px 0 36px;
-    padding: 12px 0;
+    margin: 24px 0 0;
+    padding: 0;
     width: 478px;
     clear: both;
+    overflow: hidden;
 }
 
 .NB-account .NB-module a {
@@ -1803,10 +1804,14 @@ background: transparent;
     margin: 0 0 12px;
 }
 
+.NB-module-features .NB-module-feature.last {
+    margin-bottom: 0;
+}
+
 .NB-module-features .NB-module-feature .NB-module-feature-date {
     float: left;
     text-transform: uppercase;
-    padding: 0 8px 12px 0;
+    padding: 1px 8px 12px 0;
     color: #134160;
     font-size: 12px;
     font-weight: bold;
@@ -1814,10 +1819,18 @@ background: transparent;
     white-space: nowrap;
 }
 
+.NB-module-features .NB-module-feature.last .NB-module-feature-date {
+    padding-bottom: 0;
+}
+
 .NB-module-features .NB-module-feature .NB-module-feature-description {
     line-height: 16px;
     font-size: 13px;
     padding: 0 4px 12px 0;
+}
+
+.NB-module-features .NB-module-feature.last .NB-module-feature-description {
+    padding-bottom: 0;
 }
 
 #add-feature-form {
