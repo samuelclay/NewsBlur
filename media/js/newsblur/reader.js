@@ -11,6 +11,7 @@
         this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
         this.story_view = 'page';
         this.$s = {
+            $body: $('body'),
             $feed_list: $('#feed_list'),
             $story_titles: $('#story_titles'),
             $story_pane: $('#story_pane .NB-story-pane-container'),
@@ -38,11 +39,12 @@
         // = Event Handlers =
         // ==================
         
-        $('body').bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
-        $('body').bind('click.reader', $.rescope(this.handle_clicks, this));
-        $('#story_titles').scroll($.rescope(this.handle_scroll_story_titles, this));
+        this.$s.$body.bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
+        this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
+        this.$s.$story_titles.scroll($.rescope(this.handle_scroll_story_titles, this));
         this.$s.$feed_view.scroll($.rescope(this.handle_scroll_feed_view, this));
         this.$s.$feed_view.bind('mousemove', $.rescope(this.handle_mousemove_feed_view, this));
+        this.handle_keystrokes();
         
         // ==================
         // = Initialization =
@@ -51,7 +53,6 @@
         this.load_feeds();
         this.apply_resizable_layout();
         this.cornerize_buttons();
-        this.handle_keystrokes();
         this.setup_feed_page_iframe_load();
         this.load_intelligence_slider();
         this.setup_feed_refresh();
@@ -68,7 +69,7 @@
         apply_resizable_layout: function() {
             var outerLayout, rightLayout, contentLayout, leftLayout;
             
-            outerLayout = $('body').layout({ 
+            outerLayout = this.$s.$body.layout({ 
                 closable: true,
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
@@ -2393,42 +2394,6 @@
             });
         },
         
-        handle_keystrokes: function() {      
-            var self = this;                                                           
-            $(document).bind('keydown', 'down', function(e) {
-                e.preventDefault();
-                self.show_next_story(1);
-            });
-            $(document).bind('keydown', 'up', function(e) {
-                e.preventDefault();
-                self.show_next_story(-1);
-            });                                                           
-            $(document).bind('keydown', 'j', function(e) {
-                e.preventDefault();
-                self.show_next_story(-1);
-            });
-            $(document).bind('keydown', 'k', function(e) {
-                e.preventDefault();
-                self.show_next_story(1);
-            });
-            $(document).bind('keydown', 'left', function(e) {
-                e.preventDefault();
-                self.switch_taskbar_view_direction(-1);
-            });
-            $(document).bind('keydown', 'right', function(e) {
-                e.preventDefault();
-                self.switch_taskbar_view_direction(1);
-            });
-            $(document).bind('keydown', 'space', function(e) {
-                e.preventDefault();
-                self.page_in_story(0.4, 1);
-            });
-            $(document).bind('keydown', 'shift+space', function(e) {
-                e.preventDefault();
-                self.page_in_story(0.4, -1);
-            });
-        },
-        
         handle_scroll_story_titles: function(elem, e) {
             var self = this;
             var $story_titles = this.$s.$story_titles;
@@ -2509,6 +2474,44 @@
                 // NEWSBLUR.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
                 this.navigate_story_titles_to_story(story);
             }
+        },
+        
+        handle_keystrokes: function() {      
+            var self = this;
+            var $document = $(document);
+            
+            $document.bind('keydown', 'down', function(e) {
+                e.preventDefault();
+                self.show_next_story(1);
+            });
+            $document.bind('keydown', 'up', function(e) {
+                e.preventDefault();
+                self.show_next_story(-1);
+            });                                                           
+            $document.bind('keydown', 'j', function(e) {
+                e.preventDefault();
+                self.show_next_story(-1);
+            });
+            $document.bind('keydown', 'k', function(e) {
+                e.preventDefault();
+                self.show_next_story(1);
+            });
+            $document.bind('keydown', 'left', function(e) {
+                e.preventDefault();
+                self.switch_taskbar_view_direction(-1);
+            });
+            $document.bind('keydown', 'right', function(e) {
+                e.preventDefault();
+                self.switch_taskbar_view_direction(1);
+            });
+            $document.bind('keydown', 'space', function(e) {
+                e.preventDefault();
+                self.page_in_story(0.4, 1);
+            });
+            $document.bind('keydown', 'shift+space', function(e) {
+                e.preventDefault();
+                self.page_in_story(0.4, -1);
+            });
         }
         
     };
