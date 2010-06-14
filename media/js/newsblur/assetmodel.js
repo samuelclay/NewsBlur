@@ -370,6 +370,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 'value': value
             }, callback, null);
         }
+    },
+    
+    save_mark_read: function(days, callback) {
+        this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
     }
     
 };

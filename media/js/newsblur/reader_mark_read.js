@@ -1,5 +1,7 @@
 NEWSBLUR.ReaderMarkRead = function(options) {
-    var defaults = {};
+    var defaults = {
+        'days': 1
+    };
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
@@ -11,6 +13,8 @@ NEWSBLUR.ReaderMarkRead.prototype = {
     
     runner: function() {
         this.make_modal();
+        this.load_slider();
+        this.generate_explanation(this.options['days']);
         this.handle_cancel();
         this.open_modal();
         
@@ -23,11 +27,10 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         this.$modal = $.make('div', { className: 'NB-modal-markread NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, 'Mark old stories as read'),
             $.make('form', { className: 'NB-markread-form' }, [
+                $.make('div', { className: 'NB-markread-slider'}),
+                $.make('div', { className: 'NB-markread-explanation'}),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
-                    $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
+                    $.make('input', { type: 'submit', className: '', value: 'Do it' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
@@ -72,12 +75,55 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         });
     },
     
-    handle_cancel: function() {
-        var $cancel = $('.NB-modal-cancel', this.$modal);
+    load_slider: function() {
+        var self = this;
+        var $slider = $('.NB-markread-slider', this.$modal);
         
-        $cancel.click(function(e) {
-            e.preventDefault();
-            $.modal.close();
+        $slider.slider({
+            range: 'min',
+            min: 0,
+            max: 7,
+            step: 1,
+            value: this.options['days'],
+            slide: function(e, ui) {
+                var value = ui.value;
+                self.update_dayofweek(value);
+                self.generate_explanation(value);
+            },
+            stop: function(e, ui) {
+                
+            }
+        });
+
+    },
+    
+    update_dayofweek: function(value) {
+        
+    },
+    
+    generate_explanation: function(value) {
+        var $explanation = $('.NB-markread-explanation', this.$modal);
+        var explanation;
+        
+        if (value == 0) {
+            explanation = "Mark <b>every story</b> as read.";
+        } else if (value >= 1) {
+            explanation = "Mark all stories older than <b>" + value + " day" + (value==1?'':'s') + " old</b> as read.";
+        }
+        
+        $explanation.html(explanation);
+    },
+    
+    save_mark_read: function() {
+        var $save = $('.NB-modal input[type=submit]');
+        var $slider = $('.NB-markread-slider', this.$modal);
+        var days = $slider.slider('option', 'value');
+        
+        $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
+        this.model.save_mark_read(days, function() {
+            NEWSBLUR.reader.force_feed_refresh(function() {
+                $.modal.close();
+            });
         });
     },
             
@@ -90,8 +136,15 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         
         $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
             e.preventDefault();
-            
-            self.save_add_url();
+        });
+    },
+    
+    handle_cancel: function() {
+        var $cancel = $('.NB-modal-cancel', this.$modal);
+        
+        $cancel.click(function(e) {
+            e.preventDefault();
+            $.modal.close();
         });
     }
     

@@ -1,8 +1,6 @@
 import logging
 import datetime
-import threading
-import random
-from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.db import IntegrityError
@@ -11,9 +9,8 @@ from django.views.decorators.cache import never_cache
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 from django.contrib.auth import login as login_user
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -207,6 +204,24 @@ def load_feed_page(request):
     
     return HttpResponse(data, mimetype='text/html')
     
+    
+@login_required
+def mark_all_as_read(request):
+    code = 1
+    days = int(request.POST['days'])
+    
+    feeds = UserSubscription.objects.filter(user=request.user)
+    for sub in feeds:
+        if days == 0:
+            sub.mark_feed_read()
+        else:
+            sub.needs_unread_recalc = True
+            sub.mark_read_date = datetime.datetime.now() - datetime.timedelta(days=days)
+            sub.save()
+    
+    data = json.encode(dict(code=code))
+    return HttpResponse(data)
+    
 @login_required
 def mark_story_as_read(request):
     story_ids = request.REQUEST['story_id'].split(',')
@@ -225,7 +240,7 @@ def mark_story_as_read(request):
         try:
             m.save()
             data.update({'code': 1})
-        except IntegrityError, e:
+        except IntegrityError:
             data.update({'code': -1})
     
     return HttpResponse(json.encode(data))
@@ -239,7 +254,7 @@ def mark_feed_as_read(request):
     us = UserSubscription.objects.get(feed=feed, user=request.user)
     try:
         us.mark_feed_read()
-    except IntegrityError, e:
+    except IntegrityError:
         code = -1
     else:
         code = 1
@@ -279,10 +294,6 @@ def mark_story_with_opinion(request, opinion):
         except:
             data = json.encode(dict(code=2))
     return HttpResponse(data)
-    
-@login_required
-def get_read_feed_items(request, username):
-    feeds = get_list_or_404(Feed)
     
 def _parse_user_info(user):
     return {

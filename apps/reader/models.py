@@ -32,9 +32,12 @@ class UserSubscription(models.Model):
         super(UserSubscription, self).save(force_insert, force_update, *args, **kwargs)
         
     def mark_feed_read(self):
-        latest_story_date = self.feed.stories.order_by('-story_date')[0].story_date\
-                            + datetime.timedelta(minutes=1)
         now = datetime.datetime.now()
+        if self.feed.stories.all():
+            latest_story_date = self.feed.stories.order_by('-story_date')[0].story_date\
+                                + datetime.timedelta(minutes=1)
+        else:
+            latest_story_date = now
         self.last_read_date = max(now, latest_story_date)
         self.mark_read_date = max(now, latest_story_date)
         self.unread_count_negative = 0

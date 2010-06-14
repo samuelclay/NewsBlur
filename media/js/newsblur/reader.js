@@ -2384,12 +2384,23 @@
             }, FEED_REFRESH_INTERVAL);
         },
         
-        force_feed_refresh: function() {
+        force_feed_refresh: function(callback) {
+            if (callback) {
+                this.cache.refresh_callback = callback;
+            } else {
+                delete this.cache.refresh_callback;
+            }
+            
             this.model.refresh_feeds($.rescope(this.post_feed_refresh, this));
         },
         
         post_feed_refresh: function(e, updated_feeds) {
             var feeds = this.model.feeds;
+            
+            if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
+                this.cache.refresh_callback();
+                delete this.cache.refresh_callback;
+            }
 
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];

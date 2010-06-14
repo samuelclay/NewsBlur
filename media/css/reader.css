@@ -1670,6 +1670,18 @@ form.opml_import_form input {
 }
 
 /* =================== */
+/* = Mark Read Modal = */
+/* =================== */
+
+.NB-modal-markread .NB-markread-slider {
+    margin-top: 24px;
+}
+
+.NB-modal-markread .NB-markread-explanation {
+    margin-top: 24px;
+}
+
+/* =================== */
 /* = Classifier Tags = */
 /* =================== */
 
