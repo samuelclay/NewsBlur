@@ -131,33 +131,39 @@ NEWSBLUR.log = function(msg) {
         },
 
         make: function(){
-            var $elem,text,children,type,name,props;
+            var $elem, text, children, type, name, props;
             var args = arguments;
             var tagname = args[0];
-            if(args[1]){
-                if (typeof args[1]=='string'){
+            
+            // Second argument can be TextNode or Attributes
+            // $.make('div', 'inner text') || $.make('div', { className: 'etc' })
+            if (args[1]) {
+                if (typeof args[1] == 'string') {
                     text = args[1];
-                }else if(typeof args[1]=='object' && args[1].push){
-                  children = args[1];
-                }else{
+                } else if (typeof args[1] == 'object' && args[1].push) {
+                    children = args[1];
+                } else {
                     props = args[1];
                 }
             }
-            if(args[2]){
-                if(typeof args[2]=='string'){
+            
+            // Third argument can be TextNode or an array of additional $.make
+            if (args[2]) {
+                if (typeof args[2] == 'string') {
                     text = args[2];
-                }else if(typeof args[1]=='object' && args[2].push){
-                  children = args[2];
+                } else if (typeof args[1] == 'object' && args[2].push) {
+                    children = args[2];
                 }
             }
-            if(tagname == 'text' && text){
+            
+            if (tagname == 'text' && text) {
                 return document.createTextNode(text);
-            }else{
+            } else {
                 $elem = $(document.createElement(tagname));
-                if(props){
-                    for(var propname in props){
-                      if (props.hasOwnProperty(propname)) {
-                            if($elem.is(':input') && propname == 'value'){
+                if (props) {
+                    for (var propname in props) {
+                        if (props.hasOwnProperty(propname)) {
+                            if ($elem.is(':input') && propname == 'value') {
                                 $elem.val(props[propname]);
                             } else {
                                 $elem.attr(propname, props[propname]);
@@ -165,14 +171,14 @@ NEWSBLUR.log = function(msg) {
                         }
                     }
                 }
-                if(children){
-                    for(var i=0;i<children.length;i++){
-                        if(children[i]){
+                if (children) {
+                    for (var i = 0; i < children.length; i++) {
+                        if (children[i]) {
                             $elem.append(children[i]);
                         }
                     }
                 }
-                if(text){
+                if (text) {
                     $elem.html(text);
                 }
                 return $elem;
