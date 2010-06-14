@@ -1899,6 +1899,10 @@ background: transparent;
     cursor: default;
 }
 
+.NB-menu-manage .NB-menu-manage-feed {
+    padding-left: 24px;
+}
+
 .NB-menu-manage .NB-menu-manage-feed-info {
     padding-left: 24px;
     font-weight: bold;

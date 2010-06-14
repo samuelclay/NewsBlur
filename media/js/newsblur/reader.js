@@ -2103,9 +2103,9 @@
                         $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                         $.make('span', { className: 'feed_title' }, feed.feed_title)
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed-manage' }, 'Manage opinions'),
-                    $.make('li', { className: 'NB-menu-manage-feed-stats' }, 'Site statistics'),
-                    $.make('li', { className: 'NB-menu-manage-feed-delete' }, 'Delete this site')
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, 'Manage opinions'),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, 'Site statistics'),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, 'Delete this site')
                 ];
                 for (var f in $feed_specific) {
                     $manage_menu.append($feed_specific[f]);
@@ -2130,6 +2130,8 @@
         show_manage_menu: function() {
             var self = this;
             var $manage_menu_container = $('.NB-menu-manage-container');
+
+            clearTimeout(this.flags.closed_manage_menu);
             
             if ($manage_menu_container.css('opacity') != 0) {
                 return this.hide_manage_menu();
@@ -2156,8 +2158,6 @@
                 }
             });
             $('.NB-task-manage').addClass('NB-hover');
-
-            clearTimeout(this.flags.closed_manage_menu);
             
             $manage_menu_container.hover(function() {
                 clearTimeout(self.flags.closed_manage_menu);
@@ -2506,25 +2506,27 @@
         setup_ftux_signup_callout: function() {
             var self = this;
             
-            $('.NB-callout-ftux-signup .NB-callout-text').text('Signup');
-            $('.NB-callout-ftux-signup').corner('5px');
-            $('.NB-callout-ftux-signup').css({
-                'opacity': 0,
-                'display': 'block'
-            }).animate({
-                'opacity': 1,
-                'bottom': 36
-            }, {
-                'duration': 750,
-                'easing': 'easeInOutQuint'
-            }).each(function() {
-                var $this = $(this);
-                self.flags['bouncing_callout'] = setInterval(function() {
-                    $this.animate({'bottom': '+=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'})
-                         .animate({'bottom': '+=0px'}, {'duration': 50})
-                         .animate({'bottom': '-=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'});
-                }, 10000);
-            });
+            if (!self.flags['bouncing_callout']) {
+                $('.NB-callout-ftux-signup .NB-callout-text').text('Signup');
+                $('.NB-callout-ftux-signup').corner('5px');
+                $('.NB-callout-ftux-signup').css({
+                    'opacity': 0,
+                    'display': 'block'
+                }).animate({
+                    'opacity': 1,
+                    'bottom': 36
+                }, {
+                    'duration': 750,
+                    'easing': 'easeInOutQuint'
+                }).each(function() {
+                    var $this = $(this);
+                        self.flags['bouncing_callout'] = setInterval(function() {
+                            $this.animate({'bottom': '+=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'})
+                                 .animate({'bottom': '+=0px'}, {'duration': 50})
+                                 .animate({'bottom': '-=2px'}, {'duration': 200, 'easing': 'easeInOutQuint'});
+                        }, 10000);
+                });
+            }
         }
         
     };
