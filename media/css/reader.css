@@ -1772,6 +1772,7 @@ background: transparent;
     height: 15px;
     z-index: 10;
     cursor: pointer;
+    display: none;
 }
 
 /* ============= */
