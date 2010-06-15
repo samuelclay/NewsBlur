@@ -1766,13 +1766,13 @@ background: transparent;
 #mouse-indicator {
     position: absolute;
     top: 50px;
-    left: 0px;
+    left: -10px;
+    opacity: 0;
     background: transparent url('../img/reader/mouse_indicator.png') no-repeat 0 0;
     width: 10px;
     height: 15px;
     z-index: 10;
     cursor: pointer;
-    display: none;
 }
 
 /* ============= */

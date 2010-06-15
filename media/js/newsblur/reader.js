@@ -671,7 +671,6 @@
                 $iframe_contents
                     .unbind('scroll')
                     .scroll($.rescope(this.handle_scroll_story_iframe, this));
-                NEWSBLUR.log(['Hiding open_feed']);
                 this.hide_mouse_indicator();
                 $iframe_contents
                     .unbind('mousemove.reader')
@@ -679,6 +678,9 @@
                 this.$s.$content_pane
                     .unbind('mouseleave.reader')
                     .bind('mouseleave.reader', $.rescope(this.hide_mouse_indicator, this));
+                this.$s.$content_pane
+                    .unbind('mouseenter.reader')
+                    .bind('mouseenter.reader', $.rescope(this.show_mouse_indicator, this));
             }
         },
         
@@ -1258,7 +1260,6 @@
                     $iframe_contents
                         .unbind('scroll')
                         .scroll($.rescope(self.handle_scroll_story_iframe, self));
-                    NEWSBLUR.log(['Hiding setup_feed_page_iframe_load']);
                     $iframe_contents
                         .unbind('mousemove.reader')
                         .bind('mousemove.reader', $.rescope(self.handle_mousemove_iframe_view, self));
@@ -2443,13 +2444,12 @@
         
         hide_mouse_indicator: function() {
             var self = this;
-            NEWSBLUR.log(['hide_mouse_indicator']);
+
             this.flags['mouse_indicator_hidden'] = true;
-            this.$s.$mouse_indicator.animate({'opacity': 0}, {
-                'duration': 500, 
+            this.$s.$mouse_indicator.animate({'opacity': 0, 'left': -10}, {
+                'duration': 200, 
                 'queue': false, 
                 'complete': function() {
-                    self.$s.$mouse_indicator.css('display', 'none');
                     self.flags['mouse_indicator_hidden'] = true;
                 }
             });
@@ -2459,13 +2459,9 @@
             var self = this;
             
             if (this.flags['mouse_indicator_hidden']) {
-                NEWSBLUR.log(['show_mouse_indicator']);
                 this.flags['mouse_indicator_hidden'] = false;
-                this.$s.$mouse_indicator.css({
-                    'display': 'block',
-                    'opacity': 0
-                }).animate({'opacity': 1}, {
-                    'duration': 500, 
+                this.$s.$mouse_indicator.animate({'opacity': 1, 'left': 0}, {
+                    'duration': 200, 
                     'queue': false,
                     'complete': function() {
                         self.flags['mouse_indicator_hidden'] = false;
