@@ -1816,7 +1816,7 @@
                     self.switch_feed_view_unread_view(ui.value);
                 },
                 stop: function(e, ui) {
-                    this.model.preference('unread_view', ui.value);
+                    self.model.preference('unread_view', ui.value);
                     self.flags['feed_view_positions_calculated'] = false;
                     self.show_correct_story_titles_in_unread_view({'animate': true, 'follow': true});
                 }
