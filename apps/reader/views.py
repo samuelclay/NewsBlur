@@ -106,6 +106,57 @@ def load_feeds(request):
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
     return HttpResponse(json.encode(data), mimetype='application/json')
 
+def load_feeds_iphone(request):
+    user = get_user(request)
+    feeds = {}
+    
+    try:
+        folders = UserSubscriptionFolders.objects.get(user=user)
+    except UserSubscriptionFolders.DoesNotExist:
+        data = dict(folders=[])
+        return HttpResponse(json.encode(data), mimetype='application/json')
+        
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+
+    for sub in user_subs:
+        if sub.needs_unread_recalc:
+            sub.calculate_feed_scores()
+        feeds[sub.feed.pk] = {
+            'id': sub.feed.pk,
+            'feed_title': sub.feed.feed_title,
+            'feed_link': sub.feed.feed_link,
+            'ps': sub.unread_count_positive,
+            'nt': sub.unread_count_neutral,
+            'ng': sub.unread_count_negative,
+        }
+    
+    folders = json.decode(folders.folders)
+    flat_folders = {}
+    
+    def make_feeds_folder(items, parent_folder="", depth=0):
+        for item in items:
+            if isinstance(item, int):
+                feed = feeds[item]
+                if not parent_folder:
+                    parent_folder = ' '
+                if parent_folder in flat_folders:
+                    flat_folders[parent_folder].append(feed)
+                else:
+                    flat_folders[parent_folder] = [feed]
+            elif isinstance(item, dict):
+                for folder_name in item:
+                    folder = item[folder_name]
+                    flat_folder_name = "%s%s%s" % (
+                        parent_folder,
+                        " - " if parent_folder else "",
+                        folder_name
+                    )
+                    make_feeds_folder(folder, flat_folder_name, depth+1)
+        
+    make_feeds_folder(folders)
+    data = dict(flat_folders=flat_folders)
+    return HttpResponse(json.encode(data), mimetype='application/json')
+
 def refresh_feeds(request):
     user = get_user(request)
     feeds = {}

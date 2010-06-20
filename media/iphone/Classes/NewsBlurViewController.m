@@ -1,0 +1,185 @@
+//
+//  NewsBlurViewController.m
+//  NewsBlur
+//
+//  Created by Samuel Clay on 6/16/10.
+//  Copyright NewsBlur 2010. All rights reserved.
+//
+
+#import "NewsBlurViewController.h"
+#import "JSON.h"
+
+@implementation NewsBlurViewController
+@synthesize viewTableFeedTitles;
+@synthesize feedViewToolbar;
+
+@synthesize feedTitleList;
+@synthesize dictFolders;
+@synthesize dictFoldersArray;
+
+/*
+// The designated initializer. Override to perform setup that is required before the view is loaded.
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
+        // Custom initialization
+    }
+    return self;
+}
+*/
+
+- (void)viewDidLoad {
+	self.feedTitleList = [[NSMutableArray alloc] init];
+	self.dictFolders = [[NSDictionary alloc] init];
+	self.dictFoldersArray = [[NSMutableArray alloc] init];
+	[self fetchFeedList];
+    [super viewDidLoad];
+}
+
+
+/*
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+*/
+
+- (void)didReceiveMemoryWarning {
+	// Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+	
+	// Release any cached data, images, etc that aren't in use.
+}
+
+- (void)viewDidUnload {
+	// Release any retained subviews of the main view.
+	// e.g. self.myOutlet = nil;
+}
+
+
+- (void)dealloc {
+	[feedTitleList release];
+	[dictFolders release];
+	[dictFoldersArray release];
+    [super dealloc];
+}
+
+#pragma mark -
+#pragma mark Initialization
+
+- (void)fetchFeedList {
+	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
+											   stringWithFormat:@"http://nb.local.host:8000/reader/load_feeds_iphone"]];
+	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
+	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+	[connection release];
+	[request release];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
+{
+	
+	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	NSDictionary *results = [jsonString JSONValue];
+	self.dictFolders = [results objectForKey:@"flat_folders"];
+	
+	NSSortDescriptor *sortDescriptor;
+	sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
+												  ascending:YES] autorelease];
+	NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+	NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
+	NSArray *sortedArray;
+	
+	for (id f in self.dictFolders) {
+		[self.dictFoldersArray addObject:f];
+		
+		sortedArray = [[self.dictFolders objectForKey:f] sortedArrayUsingDescriptors:sortDescriptors];
+		[sortedFolders setValue:sortedArray forKey:f];
+	}
+	
+	self.dictFolders = sortedFolders;
+	[self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
+	
+	[[self viewTableFeedTitles] reloadData];
+	
+	[sortedFolders release];
+	[jsonString release];
+}
+
+#pragma mark -
+#pragma mark Table View - Feed List
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+//	NSInteger count = [self.dictFolders count];
+//	NSLog(@"Folders: %d: %@", count, self.dictFolders);
+	return [self.dictFoldersArray count];
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	int index = 0;
+	for (id f in self.dictFoldersArray) {
+		if (index == section) {
+			// NSLog(@"Computing Table view header: %i: %@", index, f);
+			return f;
+		}
+		index++;
+	}
+	return nil;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	int index = 0;
+	for (id f in self.dictFoldersArray) {
+		if (index == section) {
+			// NSLog(@"Computing Table view rows: %i: %@", index, f);	
+			NSArray *feeds = [self.dictFolders objectForKey:f];
+			//NSLog(@"Table view items: %i: %@", [feeds count], f);
+			return [feeds count];
+		}
+		index++;
+	}
+	
+	return 0;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
+	
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
+	if (cell == nil) {
+		
+		cell = [[[UITableViewCell alloc] 
+				 initWithStyle:UITableViewCellStyleDefault
+				 reuseIdentifier:SimpleTableIdentifier] autorelease];
+	}
+	
+	int section_index = 0;
+	for (id f in self.dictFoldersArray) {
+		// NSLog(@"Cell: %i: %@", section_index, f);
+		if (section_index == indexPath.section) {
+			NSArray *feeds = [self.dictFolders objectForKey:f];
+			// NSLog(@"Cell: %i: %@: %@", section_index, f, [feeds objectAtIndex:indexPath.row]);
+			cell.textLabel.text = [[feeds objectAtIndex:indexPath.row] objectForKey:@"feed_title"];
+			return cell;
+		}
+		section_index++;
+	}
+	
+	return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//	NSDictionary *dictionary = [listOfItems objectAtIndex:indexPath.section];
+//	NSArray *array = [dictionary objectForKey:@"Countries"];
+//	NSString *selectedCountry = [array objectAtIndex:indexPath.row];
+//	
+//	//Initialize the detail view controller and display it.
+//	DetailViewController *dvController = [[DetailViewController alloc] initWithNibName:@"DetailView" bundle:[NSBundle mainBundle]];
+//	dvController.selectedCountry = selectedCountry;
+//	[self.navigationController pushViewController:dvController animated:YES];
+//	[dvController release];
+//	dvController = nil;
+	
+}
+
+@end
