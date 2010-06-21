@@ -7,34 +7,50 @@
 //
 
 #import "NewsBlurViewController.h"
+#import "NewsBlurAppDelegate.h"
 #import "JSON.h"
 
 @implementation NewsBlurViewController
+
+@synthesize appDelegate;
+
 @synthesize viewTableFeedTitles;
 @synthesize feedViewToolbar;
+@synthesize feedScoreSlider;
 
 @synthesize feedTitleList;
 @synthesize dictFolders;
 @synthesize dictFoldersArray;
 
-/*
-// The designated initializer. Override to perform setup that is required before the view is loaded.
+#pragma mark -
+#pragma	mark Globals
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-        // Custom initialization
+	
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		[appDelegate hideNavigationBar:NO];
     }
     return self;
 }
-*/
 
 - (void)viewDidLoad {
 	self.feedTitleList = [[NSMutableArray alloc] init];
 	self.dictFolders = [[NSDictionary alloc] init];
 	self.dictFoldersArray = [[NSMutableArray alloc] init];
+	[appDelegate hideNavigationBar:NO];
 	[self fetchFeedList];
     [super viewDidLoad];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[appDelegate hideNavigationBar:NO];
+	[super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [appDelegate showNavigationBar:YES];
+    [super viewWillDisappear:animated];
+}
 
 /*
 // Override to allow orientations other than the default portrait orientation.
@@ -61,6 +77,7 @@
 	[feedTitleList release];
 	[dictFolders release];
 	[dictFoldersArray release];
+	[appDelegate release];
     [super dealloc];
 }
 
@@ -69,7 +86,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://nb.local.host:8000/reader/load_feeds_iphone"]];
+											   stringWithFormat:@"http://nb.local.host:8000/reader/load_feeds_iphone/"]];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	[connection release];
@@ -159,7 +176,8 @@
 		if (section_index == indexPath.section) {
 			NSArray *feeds = [self.dictFolders objectForKey:f];
 			// NSLog(@"Cell: %i: %@: %@", section_index, f, [feeds objectAtIndex:indexPath.row]);
-			cell.textLabel.text = [[feeds objectAtIndex:indexPath.row] objectForKey:@"feed_title"];
+			cell.textLabel.text = [[feeds objectAtIndex:indexPath.row] 
+								   objectForKey:@"feed_title"];
 			return cell;
 		}
 		section_index++;
@@ -169,17 +187,20 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	NSDictionary *dictionary = [listOfItems objectAtIndex:indexPath.section];
-//	NSArray *array = [dictionary objectForKey:@"Countries"];
-//	NSString *selectedCountry = [array objectAtIndex:indexPath.row];
-//	
-//	//Initialize the detail view controller and display it.
-//	DetailViewController *dvController = [[DetailViewController alloc] initWithNibName:@"DetailView" bundle:[NSBundle mainBundle]];
-//	dvController.selectedCountry = selectedCountry;
-//	[self.navigationController pushViewController:dvController animated:YES];
-//	[dvController release];
-//	dvController = nil;
-	
+	NSDictionary *activeFeed;
+	int section_index = 0;
+	for (id f in self.dictFoldersArray) {
+		// NSLog(@"Cell: %i: %@", section_index, f);
+		if (section_index == indexPath.section) {
+			NSArray *feeds = [self.dictFolders objectForKey:f];
+			activeFeed = [feeds objectAtIndex:indexPath.row];
+			NSLog(@"Active feed: %@", activeFeed);
+			break;
+		}
+		section_index++;
+	}
+	NSLog(@"App Delegate: %@", self.appDelegate);
+	[self.appDelegate loadFeedDetailView];
 }
 
 @end

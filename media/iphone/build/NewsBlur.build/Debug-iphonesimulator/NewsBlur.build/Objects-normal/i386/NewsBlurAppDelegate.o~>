@@ -1,0 +1,3 @@
+/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m:52: warning: incomplete implementation of class 'NewsBlurAppDelegate'
+/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m:52: warning: method definition for '-showNavigationBar' not found
+/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m:52: warning: method definition for '-hideNavigationBar' not found

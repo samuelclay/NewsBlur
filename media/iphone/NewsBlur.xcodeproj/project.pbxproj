@@ -15,8 +15,8 @@
 		2899E5220DE3E06400AC0155 /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* NewsBlurViewController.xib */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */; };
-		787A0CDB11CE65330056422D /* FeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787A0CD911CE65330056422D /* FeedViewController.m */; };
-		787A0CDC11CE65330056422D /* FeedViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787A0CDA11CE65330056422D /* FeedViewController.xib */; };
+		787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787A0CD911CE65330056422D /* FeedDetailViewController.m */; };
+		787A0CDC11CE65330056422D /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787A0CDA11CE65330056422D /* FeedDetailViewController.xib */; };
 		78FC34F711CA94900055C312 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34EC11CA94900055C312 /* NSObject+SBJSON.m */; };
 		78FC34F811CA94900055C312 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34EE11CA94900055C312 /* NSString+SBJSON.m */; };
 		78FC34F911CA94900055C312 /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F011CA94900055C312 /* SBJSON.m */; };
@@ -38,9 +38,9 @@
 		28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = NewsBlurViewController.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; wrapsLines = 1; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlur_Prefix.pch; sourceTree = "<group>"; };
-		787A0CD811CE65330056422D /* FeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedViewController.h; sourceTree = "<group>"; };
-		787A0CD911CE65330056422D /* FeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedViewController.m; sourceTree = "<group>"; };
-		787A0CDA11CE65330056422D /* FeedViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedViewController.xib; sourceTree = "<group>"; };
+		787A0CD811CE65330056422D /* FeedDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailViewController.h; sourceTree = "<group>"; };
+		787A0CD911CE65330056422D /* FeedDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailViewController.m; sourceTree = "<group>"; };
+		787A0CDA11CE65330056422D /* FeedDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = FeedDetailViewController.xib; path = Classes/FeedDetailViewController.xib; sourceTree = "<group>"; };
 		78FC34EA11CA94900055C312 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		78FC34EB11CA94900055C312 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		78FC34EC11CA94900055C312 /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
@@ -74,9 +74,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				787A0CD811CE65330056422D /* FeedViewController.h */,
-				787A0CD911CE65330056422D /* FeedViewController.m */,
-				787A0CDA11CE65330056422D /* FeedViewController.xib */,
+				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
+				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
@@ -118,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				2899E5210DE3E06400AC0155 /* NewsBlurViewController.xib */,
+				787A0CDA11CE65330056422D /* FeedDetailViewController.xib */,
 				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* NewsBlur-Info.plist */,
 			);
@@ -200,7 +200,7 @@
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				2899E5220DE3E06400AC0155 /* NewsBlurViewController.xib in Resources */,
-				787A0CDC11CE65330056422D /* FeedViewController.xib in Resources */,
+				787A0CDC11CE65330056422D /* FeedDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,7 +220,7 @@
 				78FC34FA11CA94900055C312 /* SBJsonBase.m in Sources */,
 				78FC34FB11CA94900055C312 /* SBJsonParser.m in Sources */,
 				78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */,
-				787A0CDB11CE65330056422D /* FeedViewController.m in Sources */,
+				787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
