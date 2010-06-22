@@ -1,991 +1,0 @@
-TNewsBlur
-v7
-r0
-t298853317.457331
-cCheck dependencies
-cProcessInfoPlistFile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/Info.plist NewsBlur-Info.plist
-cCompileXIB /Users/conesus/newsblur/media/iphone/MainWindow.xib
-cCompileXIB /Users/conesus/newsblur/media/iphone/NewsBlurViewController.xib
-cCompileXIB /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.xib
-cProcessPCH /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch.gch NewsBlur_Prefix.pch normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o /Users/conesus/newsblur/media/iphone/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSObject+SBJSON.o /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSString+SBJSON.o /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJSON.o /Users/conesus/newsblur/media/iphone/Source/SBJSON.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonBase.o /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonParser.o /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonWriter.o /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedDetailViewController.o /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
-cLd /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur normal i386
-cGenerateDSYMFile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app.dSYM /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-cTouch /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk
-c000000004B155C8800000000000000EE
-t1259691144
-s238
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics
-c000000004ABDC853000000000026EE30
-t1253951571
-s2551344
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk/System/Library/Frameworks/Foundation.framework/Foundation
-c000000004ABDC952000000000027E880
-t1253951826
-s2615424
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h
-c000000004ABDC93F0000000000001355
-t1253951807
-s4949
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIKit.h
-c000000004ABDEE1D0000000000000788
-t1253961245
-s1928
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk/System/Library/Frameworks/UIKit.framework/UIKit
-c000000004ABDEEE200000000016721E0
-t1253961442
-s23536096
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk
-c000000004B69B45C00000000000000EE
-t1265218652
-s238
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics
-c000000004B2B4CC3000000000026EE30
-t1261128899
-s2551344
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks/Foundation.framework/Foundation
-c000000004B2B4DC8000000000027E880
-t1261129160
-s2615424
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h
-c000000004B2B4DAE0000000000001355
-t1261129134
-s4949
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIKit.h
-c000000004B2B61620000000000000788
-t1261134178
-s1928
-
-N/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks/UIKit.framework/UIKit
-c000000004B2B62B500000000016721E0
-t1261134517
-s23536096
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.h
-c000000004C198C5100000000000001E4
-t1276742737
-s484
-i<UIKit/UIKit.h>
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m
-c000000004C198C5100000000000002A7
-t1276742737
-s679
-i"NewsBlurAppDelegate.h"
-i"NewsBlurViewController.h"
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.h
-c000000004C1992A300000000000001C6
-t1276744355
-s454
-i<UIKit/UIKit.h>
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m
-c000000004C199671000000000000092F
-t1276745329
-s2351
-i"NewsBlurViewController.h"
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/MainWindow.xib
-c000000004C198C510000000000002657
-t1276742737
-s9815
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlurViewController.xib
-c000000004C19923500000000000047F4
-t1276744245
-s18420
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur_Prefix.pch
-c000000004C198C5100000000000000B9
-t1276742737
-s185
-i<Foundation/Foundation.h>
-i<UIKit/UIKit.h>
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app
-t1276745333
-s238
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app.dSYM
-t1276745333
-s102
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/Info.plist
-t1276744531
-s597
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/MainWindow.nib
-t1276744533
-s1512
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-t1276745333
-s20860
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlurViewController.nib
-t1276744533
-s1574
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/PkgInfo
-t1276744531
-s8
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlur.LinkFileList
-c000000004C1990FA00000000000001C5
-t1276743930
-s453
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o
-t1276744533
-s38248
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o
-t1276745333
-s39204
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o
-t1276744533
-s5980
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurAppDelegate.plist
-t1276745307
-s275
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurViewController.plist
-t1276745333
-s275
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/main.plist
-t1276745307
-s275
-
-N/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m
-c000000004C198C510000000000000169
-t1276742737
-s361
-i<UIKit/UIKit.h>
-
-N/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.h
-c000000004C1FC4EF000000000000034B
-t1277150447
-s843
-i<UIKit/UIKit.h>
-
-N/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m
-c000000004C1FEC2D0000000000000AE8
-t1277160493
-s2792
-i"FeedDetailViewController.h"
-i"NewsBlurAppDelegate.h"
-
-N/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.xib
-c000000004C1FC5B000000000000046DC
-t1277150640
-s18140
-
-N/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.h
-c000000004C1E744300000000000002BB
-t1277064259
-s699
-i<UIKit/UIKit.h>
-
-N/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m
-c000000004C1E75210000000000000882
-t1277064481
-s2178
-i"FeedViewController.h"
-
-N/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.xib
-c000000004C1E77AD0000000000003CD9
-t1277065133
-s15577
-
-N/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.h
-c000000004C1FD5ED0000000000000391
-t1277154797
-s913
-i<UIKit/UIKit.h>
-
-N/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m
-c000000004C1FD5E80000000000000591
-t1277154792
-s1425
-i"NewsBlurAppDelegate.h"
-i"NewsBlurViewController.h"
-i"FeedDetailViewController.h"
-
-N/Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.h
-c000000004C1E8D3A0000000000000419
-t1277070650
-s1049
-i<UIKit/UIKit.h>
-
-N/Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m
-c000000004C1FEC4200000000000016E5
-t1277160514
-s5861
-i"NewsBlurViewController.h"
-i"NewsBlurAppDelegate.h"
-i"JSON.h"
-
-N/Users/conesus/newsblur/media/iphone/MainWindow.xib
-c000000004C1FC77900000000000040F3
-t1277151097
-s16627
-
-N/Users/conesus/newsblur/media/iphone/NewsBlurViewController.xib
-c000000004C1FD1A00000000000003F5E
-t1277153696
-s16222
-
-N/Users/conesus/newsblur/media/iphone/NewsBlur_Prefix.pch
-c000000004C1A5A1500000000000000B9
-t1276795413
-s185
-i<Foundation/Foundation.h>
-i<UIKit/UIKit.h>
-
-N/Users/conesus/newsblur/media/iphone/Source/JSON.h
-c000000004C16B1E600000000000008F9
-t1276555750
-s2297
-i"SBJSON.h"
-i"NSObject+SBJSON.h"
-i"NSString+SBJSON.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.h
-c000000004C16B1E60000000000000A01
-t1276555750
-s2561
-i<Foundation/Foundation.h>
-
-N/Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m
-c000000004C16B1E6000000000000089E
-t1276555750
-s2206
-i"NSObject+SBJSON.h"
-i"SBJsonWriter.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.h
-c000000004C16B1E60000000000000916
-t1276555750
-s2326
-i<Foundation/Foundation.h>
-
-N/Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m
-c000000004C16B1E6000000000000087D
-t1276555750
-s2173
-i"NSString+SBJSON.h"
-i"SBJsonParser.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJSON.h
-c000000004C16B1E60000000000000AED
-t1276555750
-s2797
-i<Foundation/Foundation.h>
-i"SBJsonParser.h"
-i"SBJsonWriter.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJSON.m
-c000000004C16B1E60000000000001ABC
-t1276555750
-s6844
-i"SBJSON.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJsonBase.h
-c000000004C16B1E60000000000000B82
-t1276555750
-s2946
-i<Foundation/Foundation.h>
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m
-c000000004C16B1E60000000000000AC1
-t1276555750
-s2753
-i"SBJsonBase.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJsonParser.h
-c000000004C16B1E60000000000000C0B
-t1276555750
-s3083
-i<Foundation/Foundation.h>
-i"SBJsonBase.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m
-c000000004C16B1E600000000000036D0
-t1276555750
-s14032
-i"SBJsonParser.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.h
-c000000004C16B1E60000000000001140
-t1276555750
-s4416
-i<Foundation/Foundation.h>
-i"SBJsonBase.h"
-
-N/Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m
-c000000004C16B1E60000000000001F26
-t1276555750
-s7974
-i"SBJsonWriter.h"
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app
-t1277160517
-s306
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app.dSYM
-t1277160517
-s102
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/FeedDetailViewController.nib
-t1277150944
-s3046
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/FeedViewController.nib
-t1277067260
-s2989
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/Info.plist
-t1277150943
-s565
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/MainWindow.nib
-t1277151099
-s2385
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-t1277160517
-s72224
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlurViewController.nib
-t1277153699
-s2384
-
-N/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/PkgInfo
-t1277150943
-s8
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedDetailViewController.o
-t1277160496
-s48024
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedViewController.o
-t1277064483
-s42152
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSObject+SBJSON.o
-t1276796432
-s7744
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSString+SBJSON.o
-t1276796432
-s7764
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlur.LinkFileList
-c000000004C1E83460000000000000527
-t1277068102
-s1319
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o
-t1277154835
-s44564
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o
-t1277160517
-s60092
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJSON.o
-t1276796432
-s16764
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonBase.o
-t1276796432
-s12108
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonParser.o
-t1276796432
-s29816
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonWriter.o
-t1276796432
-s22560
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o
-t1276796432
-s5952
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/FeedDetailViewController.plist
-t1277154660
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/FeedViewController.plist
-t1277064489
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NSObject+SBJSON.plist
-t1276808047
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NSString+SBJSON.plist
-t1276808047
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurAppDelegate.plist
-t1277154672
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurViewController.plist
-t1277154659
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJSON.plist
-t1276808048
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJsonBase.plist
-t1276808047
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJsonParser.plist
-t1276808048
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJsonWriter.plist
-t1276808048
-s275
-
-N/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/main.plist
-t1276808047
-s275
-
-N/Users/conesus/newsblur/media/iphone/main.m
-c000000004C1A5A160000000000000169
-t1276795414
-s361
-i<UIKit/UIKit.h>
-
-N/var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch.gch
-t1276743932
-s13026768
-
-N/var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch.pth
-t1276745306
-s1729288
-
-N/var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch.pth
-t1276808047
-s1728784
-
-N/var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch.gch
-t1276796432
-s13034960
-
-NNewsBlur-Info.plist
-c000000004C1FC4670000000000000371
-t1277150311
-s881
-
-CAnalyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m
-s298438106.996916
-e298438107.117038
-r1
-xAnalyze
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m
-lSLF07#2@92"Analyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m298438106#298438107#0(0"0(0#0#84"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m4300911832#2102"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch --analyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurAppDelegate.plist0#
-
-CAnalyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m
-s298438133.376738
-e298438133.406334
-r1
-xAnalyze
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m
-lSLF07#2@95"Analyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m298438133#298438133#0(0"0(0#0#87"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m4300911832#2108"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch --analyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurViewController.plist0#
-
-CAnalyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m
-s298438106.995495
-e298438107.071890
-r1
-xAnalyze
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m
-lSLF07#2@69"Analyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m298438106#298438107#0(0"0(0#0#61"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m4300911832#2064"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch --analyze /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/main.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m
-s298847459.966770
-e298847460.010106
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m
-o/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m:22:3:{22:3-22:34}: warning: method '-showNavigationBar' not found (return type defaults to 'id')
-o                 [appDelegate showNavigationBar];
-o                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-o/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m:29:5:{29:5-29:36}: warning: method '-showNavigationBar' not found (return type defaults to 'id')
-o     [appDelegate showNavigationBar];
-o     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-o/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m:34:5:{34:5-34:36}: warning: method '-showNavigationBar' not found (return type defaults to 'id')
-o     [appDelegate showNavigationBar];
-o     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-o3 diagnostics generated.
-lSLF07#2@79"Analyze /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m298847459#298847460#0(781"/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m:22:3:{22:3-22:34}: warning: method '-showNavigationBar' not found (return type defaults to 'id')                 [appDelegate showNavigationBar];                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m:29:5:{29:5-29:36}: warning: method '-showNavigationBar' not found (return type defaults to 'id')     [appDelegate showNavigationBar];     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m:34:5:{34:5-34:36}: warning: method '-showNavigationBar' not found (return type defaults to 'id')     [appDelegate showNavigationBar];     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~3 diagnostics generated.0(0#0#71"/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m4300934600#1914"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/FeedDetailViewController.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m
-s298757289.720905
-e298757289.763894
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m
-lSLF07#2@73"Analyze /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m298757289#298757289#0(0"0(0#0#65"/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m4300934600#1902"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/FeedViewController.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m
-s298847471.986823
-e298847472.023134
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m
-lSLF07#2@74"Analyze /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m298847471#298847472#0(0"0(0#0#66"/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m4300934600#1904"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurAppDelegate.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m
-s298847459.884980
-e298847459.966355
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m
-lSLF07#2@77"Analyze /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m298847459#298847460#0(0"0(0#0#69"/Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m4300934600#1910"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NewsBlurViewController.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m
-s298500847.735312
-e298500847.848677
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m
-lSLF07#2@69"Analyze /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m298500847#298500847#0(0"0(0#0#61"/Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m4300934600#1895"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NSObject+SBJSON.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m
-s298500847.848810
-e298500847.915789
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m
-lSLF07#2@69"Analyze /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m298500847#298500848#0(0"0(0#0#61"/Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m4300934600#1895"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/NSString+SBJSON.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Source/SBJSON.m
-s298500847.851937
-e298500848.060040
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Source/SBJSON.m
-lSLF07#2@60"Analyze /Users/conesus/newsblur/media/iphone/Source/SBJSON.m298500847#298500848#0(0"0(0#0#52"/Users/conesus/newsblur/media/iphone/Source/SBJSON.m4300934600#1877"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Source/SBJSON.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJSON.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m
-s298500847.915885
-e298500847.954420
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m
-lSLF07#2@64"Analyze /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m298500847#298500848#0(0"0(0#0#56"/Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m4300934600#1885"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJsonBase.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m
-s298500847.954518
-e298500848.566845
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m
-lSLF07#2@66"Analyze /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m298500847#298500848#0(0"0(0#0#58"/Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m4300934600#1889"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJsonParser.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m
-s298500848.060255
-e298500848.185553
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m
-lSLF07#2@66"Analyze /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m298500848#298500848#0(0"0(0#0#58"/Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m4300934600#1889"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/SBJsonWriter.plist0#
-
-CAnalyze /Users/conesus/newsblur/media/iphone/main.m
-s298500847.584243
-e298500847.735235
-r1
-xAnalyze
-x/Users/conesus/newsblur/media/iphone/main.m
-lSLF07#2@51"Analyze /Users/conesus/newsblur/media/iphone/main.m298500847#298500847#0(0"0(0#0#43"/Users/conesus/newsblur/media/iphone/main.m4300934600#1866"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch --analyze /Users/conesus/newsblur/media/iphone/main.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/StaticAnalyzer/normal/i386/main.plist0#
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies298853317#298853317#0(0"0(0#1#0"4300934600#0"0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedDetailViewController.o /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298853296.176112
-e298853296.295684
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedDetailViewController.o
-x/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@79"Compile /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m298853296#298853296#0(0"0(0#0#71"/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m4300934600#1905"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedDetailViewController.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedViewController.o /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298757283.902442
-e298757283.975009
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedViewController.o
-x/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@73"Compile /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m298757283#298757283#0(0"0(0#0#65"/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m4300934600#1893"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/FeedViewController.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSObject+SBJSON.o /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.653671
-e298489232.729397
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSObject+SBJSON.o
-x/Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@69"Compile /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m298489232#298489232#0(0"0(0#0#61"/Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m4300934600#1886"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Source/NSObject+SBJSON.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSObject+SBJSON.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSString+SBJSON.o /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.702815
-e298489232.793968
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSString+SBJSON.o
-x/Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@69"Compile /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m298489232#298489232#0(0"0(0#0#61"/Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m4300934600#1886"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Source/NSString+SBJSON.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NSString+SBJSON.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298437333.454444
-e298437333.600191
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@92"Compile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m298437333#298437333#0(0"0(0#0#84"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m4300911832#2093"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch -c /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurAppDelegate.m -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298847635.311468
-e298847635.453875
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o
-x/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@74"Compile /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m298847635#298847635#0(0"0(0#0#66"/Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m4300934600#1895"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Classes/NewsBlurAppDelegate.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurAppDelegate.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298438133.330444
-e298438133.437241
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@95"Compile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m298438133#298438133#0(0"0(0#0#87"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m4300911832#2099"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch -c /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/Classes/NewsBlurViewController.m -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298853317.260535
-e298853317.409198
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o
-x/Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@77"Compile /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m298853317#298853317#0(0"0(0#0#69"/Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m4300934600#1901"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Classes/NewsBlurViewController.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlurViewController.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJSON.o /Users/conesus/newsblur/media/iphone/Source/SBJSON.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.729494
-e298489232.838782
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJSON.o
-x/Users/conesus/newsblur/media/iphone/Source/SBJSON.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@60"Compile /Users/conesus/newsblur/media/iphone/Source/SBJSON.m298489232#298489232#0(0"0(0#0#52"/Users/conesus/newsblur/media/iphone/Source/SBJSON.m4300934600#1868"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Source/SBJSON.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJSON.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonBase.o /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.794076
-e298489232.867281
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonBase.o
-x/Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@64"Compile /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m298489232#298489232#0(0"0(0#0#56"/Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m4300934600#1876"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Source/SBJsonBase.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonBase.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonParser.o /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.839081
-e298489232.999622
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonParser.o
-x/Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@66"Compile /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m298489232#298489232#0(0"0(0#0#58"/Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m4300934600#1880"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Source/SBJsonParser.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonParser.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonWriter.o /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.867379
-e298489232.983532
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonWriter.o
-x/Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@66"Compile /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m298489232#298489232#0(0"0(0#0#58"/Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m4300934600#1880"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/Source/SBJsonWriter.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/SBJsonWriter.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298437333.453554
-e298437333.523586
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@69"Compile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m298437333#298437333#0(0"0(0#0#61"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m4300911832#2055"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch -c /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/main.m -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o0#
-
-CCompileC build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o /Users/conesus/newsblur/media/iphone/main.m normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489232.454807
-e298489232.628411
-r1
-xCompileC
-xbuild/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o
-x/Users/conesus/newsblur/media/iphone/main.m
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@51"Compile /Users/conesus/newsblur/media/iphone/main.m298489232#298489232#0(0"0(0#0#43"/Users/conesus/newsblur/media/iphone/main.m4300934600#1857"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -include /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch -c /Users/conesus/newsblur/media/iphone/main.m -o /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/main.o0#
-
-CCompileXIB /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/MainWindow.xib
-s298437331.090544
-e298437333.453132
-r1
-xCompileXIB
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/MainWindow.xib
-lSLF07#2@25"CompileXIB MainWindow.xib298437331#298437333#0(0"0(0#0#69"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/MainWindow.xib4300911832#531"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 3.1.3    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/MainWindow.nib /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/MainWindow.xib0#
-
-CCompileXIB /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlurViewController.xib
-s298437331.091542
-e298437333.453373
-r1
-xCompileXIB
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlurViewController.xib
-lSLF07#2@37"CompileXIB NewsBlurViewController.xib298437331#298437333#0(0"0(0#0#81"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlurViewController.xib4300911832#555"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 3.1.3    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlurViewController.nib /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlurViewController.xib0#
-
-CCompileXIB /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.xib
-s298843744.225231
-e298843744.556893
-r1
-xCompileXIB
-x/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.xib
-lSLF07#2@47"CompileXIB Classes/FeedDetailViewController.xib298843744#298843744#0(0"0(0#0#73"/Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.xib4300934600#513"    cd /Users/conesus/newsblur/media/iphone    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 3.1.2    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/FeedDetailViewController.nib /Users/conesus/newsblur/media/iphone/Classes/FeedDetailViewController.xib0#
-
-CCompileXIB /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.xib
-s298760047.677341
-e298760061.060367
-r1
-xCompileXIB
-x/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.xib
-lSLF07#2@41"CompileXIB Classes/FeedViewController.xib298760047#298760061#0(0"0(0#0#67"/Users/conesus/newsblur/media/iphone/Classes/FeedViewController.xib32088645568430192#501"    cd /Users/conesus/newsblur/media/iphone    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 3.1.2    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/FeedViewController.nib /Users/conesus/newsblur/media/iphone/Classes/FeedViewController.xib0#
-
-CCompileXIB /Users/conesus/newsblur/media/iphone/MainWindow.xib
-s298843899.118706
-e298843899.413156
-r1
-xCompileXIB
-x/Users/conesus/newsblur/media/iphone/MainWindow.xib
-lSLF07#2@25"CompileXIB MainWindow.xib298843899#298843899#0(0"0(0#0#51"/Users/conesus/newsblur/media/iphone/MainWindow.xib4300934600#477"    cd /Users/conesus/newsblur/media/iphone    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 3.1.2    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/MainWindow.nib /Users/conesus/newsblur/media/iphone/MainWindow.xib0#
-
-CCompileXIB /Users/conesus/newsblur/media/iphone/NewsBlurViewController.xib
-s298846499.366043
-e298846499.684047
-r1
-xCompileXIB
-x/Users/conesus/newsblur/media/iphone/NewsBlurViewController.xib
-lSLF07#2@37"CompileXIB NewsBlurViewController.xib298846499#298846499#0(0"0(0#0#63"/Users/conesus/newsblur/media/iphone/NewsBlurViewController.xib4300934600#501"    cd /Users/conesus/newsblur/media/iphone    setenv IBC_MINIMUM_COMPATIBILITY_VERSION 3.1.2    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/ibtool --errors --warnings --notices --output-format human-readable-text --compile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlurViewController.nib /Users/conesus/newsblur/media/iphone/NewsBlurViewController.xib0#
-
-CGenerateDSYMFile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app.dSYM /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-s298438133.454552
-e298438133.468159
-r1
-xGenerateDSYMFile
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app.dSYM
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-lSLF07#2@112"GenerateDSYMFile build/Debug-iphonesimulator/NewsBlur.app.dSYM build/Debug-iphonesimulator/NewsBlur.app/NewsBlur298438133#298438133#0(0"0(0#0#104"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur4300911832#434"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/dsymutil /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app.dSYM0#
-
-CGenerateDSYMFile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app.dSYM /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-s298853317.435335
-e298853317.454397
-r1
-xGenerateDSYMFile
-x/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app.dSYM
-x/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-lSLF07#2@112"GenerateDSYMFile build/Debug-iphonesimulator/NewsBlur.app.dSYM build/Debug-iphonesimulator/NewsBlur.app/NewsBlur298853317#298853317#0(0"0(0#0#86"/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur4300934600#380"    cd /Users/conesus/newsblur/media/iphone    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/dsymutil /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur -o /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app.dSYM0#
-
-CLd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur normal i386
-s298438133.437325
-e298438133.454464
-r1
-xLd
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-xnormal
-xi386
-lSLF07#2@109"Link /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur298438133#298438133#0(0"0(0#0#0"4300911832#949"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv MACOSX_DEPLOYMENT_TARGET 10.5    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -arch i386 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -L/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -filelist /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlur.LinkFileList -mmacosx-version-min=10.5 -framework Foundation -framework UIKit -framework CoreGraphics -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur0#
-
-CLd /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur normal i386
-s298853317.409288
-e298853317.435224
-r1
-xLd
-x/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur
-xnormal
-xi386
-lSLF07#2@91"Link /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur298853317#298853317#0(0"0(0#0#0"4300934600#859"    cd /Users/conesus/newsblur/media/iphone    setenv MACOSX_DEPLOYMENT_TARGET 10.5    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -arch i386 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -L/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -filelist /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/Objects-normal/i386/NewsBlur.LinkFileList -mmacosx-version-min=10.5 -framework Foundation -framework UIKit -framework CoreGraphics -o /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/NewsBlur0#
-
-CProcessInfoPlistFile /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/Info.plist NewsBlur-Info.plist
-s298437331.019258
-e298437331.090454
-r1
-xProcessInfoPlistFile
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/Info.plist
-xNewsBlur-Info.plist
-lSLF07#2@27"Process NewsBlur-Info.plist298437331#298437331#0(0"0(0#0#74"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur-Info.plist4300911832#530"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    builtin-infoPlistUtility NewsBlur-Info.plist -genpkginfo /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -o /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app/Info.plist0#
-
-CProcessInfoPlistFile /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/Info.plist NewsBlur-Info.plist
-s298843743.909396
-e298843743.913115
-r1
-xProcessInfoPlistFile
-x/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/Info.plist
-xNewsBlur-Info.plist
-lSLF07#2@27"Process NewsBlur-Info.plist298843743#298843743#0(0"0(0#0#56"/Users/conesus/newsblur/media/iphone/NewsBlur-Info.plist4300934600#476"    cd /Users/conesus/newsblur/media/iphone    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    builtin-infoPlistUtility NewsBlur-Info.plist -genpkginfo /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -o /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app/Info.plist0#
-
-CProcessPCH /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch.gch NewsBlur_Prefix.pch normal i386 objective-c com.apple.compilers.gcc.4_2
-s298436730.913716
-e298436732.112117
-r1
-xProcessPCH
-x/var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch.gch
-xNewsBlur_Prefix.pch
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@30"Precompile NewsBlur_Prefix.pch298436730#298436732#0(0"0(0#0#74"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur_Prefix.pch7299824218901144576#1930"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c-header -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -c /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur_Prefix.pch -o /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-fxhhdhzxdmvaopddhtuoejiliyxt/NewsBlur_Prefix.pch.gch0#
-
-CProcessPCH /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch.pth NewsBlur_Prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.analyzer
-s298438106.642702
-e298438106.994955
-r1
-xProcessPCH
-x/var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch.pth
-xNewsBlur_Prefix.pch
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.llvm.clang.1_0.analyzer
-lSLF07#2@30"Precompile NewsBlur_Prefix.pch298438106#298438106#0(0"0(0#0#74"/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur_Prefix.pch4300911832#1921"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c-header -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/include -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -c /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur_Prefix.pch -o /var/folders/dv/dvG4rY+8GM8ca78osT4Y3k+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gshdevrantiawldxpkpbbnfcxifp/NewsBlur_Prefix.pch.pth0#
-
-CProcessPCH /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch.pth NewsBlur_Prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.analyzer
-s298500846.676957
-e298500847.582693
-r1
-xProcessPCH
-x/var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch.pth
-xNewsBlur_Prefix.pch
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.llvm.clang.1_0.analyzer
-lSLF07#2@30"Precompile NewsBlur_Prefix.pch298500846#298500847#0(0"0(0#0#56"/Users/conesus/newsblur/media/iphone/NewsBlur_Prefix.pch4300934600#1741"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/usr/bin/clang -x objective-c-header -arch i386 -fmessage-length=0 -pipe -fdiagnostics-print-source-range-info -std=c99 -Wno-trigraphs -fpascal-strings -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fasm-blocks -mmacosx-version-min=10.5 -gdwarf-2 -fvisibility=hidden -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -c /Users/conesus/newsblur/media/iphone/NewsBlur_Prefix.pch -o /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-chsnxxliztpdlwdcufovqmapxyxi/NewsBlur_Prefix.pch.pth0#
-
-CProcessPCH /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch.gch NewsBlur_Prefix.pch normal i386 objective-c com.apple.compilers.gcc.4_2
-s298489230.139049
-e298489232.454338
-r1
-xProcessPCH
-x/var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch.gch
-xNewsBlur_Prefix.pch
-xnormal
-xi386
-xobjective-c
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@30"Precompile NewsBlur_Prefix.pch298489230#298489232#0(0"0(0#0#56"/Users/conesus/newsblur/media/iphone/NewsBlur_Prefix.pch7299824218901144576#1750"    cd /Users/conesus/newsblur/media/iphone    setenv LANG en_US.US-ASCII    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -x objective-c-header -arch i386 -fmessage-length=0 -pipe -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.2.sdk -fvisibility=hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-generated-files.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-own-target-headers.hmap -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-all-target-headers.hmap -iquote /Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/NewsBlur-project-headers.hmap -F/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator -I/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/include -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources/i386 -I/Users/conesus/newsblur/media/iphone/build/NewsBlur.build/Debug-iphonesimulator/NewsBlur.build/DerivedSources -c /Users/conesus/newsblur/media/iphone/NewsBlur_Prefix.pch -o /var/folders/iz/izKfdiZ8FRGBj3IDBBFpJk+++TI/-Caches-/com.apple.Xcode.501/SharedPrecompiledHeaders/NewsBlur_Prefix-gmuaslcxlgrshyfawftgpidjytbr/NewsBlur_Prefix.pch.gch0#
-
-CTouch /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app
-s298438133.468236
-e298438133.470328
-r1
-xTouch
-x/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app
-lSLF07#2@101"Touch /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app298438133#298438133#0(0"0(0#0#0"4300911832#311"    cd /Users/conesus/Projects/newsblur/media/iphone/NewsBlur    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /usr/bin/touch -c /Users/conesus/Projects/newsblur/media/iphone/NewsBlur/build/Debug-iphonesimulator/NewsBlur.app0#
-
-CTouch /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app
-s298853317.454490
-e298853317.457119
-r1
-xTouch
-x/Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app
-lSLF07#2@83"Touch /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app298853317#298853317#0(0"0(0#0#0"4300934600#275"    cd /Users/conesus/newsblur/media/iphone    setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"    /usr/bin/touch -c /Users/conesus/newsblur/media/iphone/build/Debug-iphonesimulator/NewsBlur.app0#
-

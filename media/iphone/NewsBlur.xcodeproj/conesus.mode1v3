@@ -200,10 +200,7 @@
 			<key>XCObserverAutoDisconnectKey</key>
 			<true/>
 			<key>XCObserverDefintionKey</key>
-			<dict>
-				<key>PBXStatusErrorsKey</key>
-				<integer>0</integer>
-			</dict>
+			<dict/>
 			<key>XCObserverFactoryKey</key>
 			<string>XCPerspectivesSpecificationIdentifier</string>
 			<key>XCObserverGUIDKey</key>
@@ -215,10 +212,7 @@
 			<key>XCObserverTriggerKey</key>
 			<string>awakenModuleWithObserver:</string>
 			<key>XCObserverValidationKey</key>
-			<dict>
-				<key>PBXStatusErrorsKey</key>
-				<integer>2</integer>
-			</dict>
+			<dict/>
 		</dict>
 		<dict>
 			<key>XCObserverAutoDisconnectKey</key>
@@ -399,7 +393,15 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
+<<<<<<< HEAD
 										<string>7842EC5911D023EC0066CF9D</string>
+=======
+<<<<<<< HEAD:media/iphone/NewsBlur/NewsBlur.xcodeproj/conesus.mode1v3
+										<string>788997EB11CC24F600041675</string>
+=======
+										<string>7842EC4811D00E490066CF9D</string>
+>>>>>>> a00c48d5e86b002cf5eecc692a408563e3a06001:media/iphone/NewsBlur.xcodeproj/conesus.mode1v3
+>>>>>>> 9e3b876902adf3bbbe06c73747827d3f7b6ce47d
 										<key>history</key>
 										<array>
 											<string>787A0E8411CEAF200056422D</string>
@@ -606,7 +608,15 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
+<<<<<<< HEAD
 	<real>298853356.05402702</real>
+=======
+<<<<<<< HEAD:media/iphone/NewsBlur/NewsBlur.xcodeproj/conesus.mode1v3
+	<real>298591478.86150402</real>
+=======
+	<real>298847817.25606197</real>
+>>>>>>> a00c48d5e86b002cf5eecc692a408563e3a06001:media/iphone/NewsBlur.xcodeproj/conesus.mode1v3
+>>>>>>> 9e3b876902adf3bbbe06c73747827d3f7b6ce47d
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -625,8 +635,16 @@
 	<array>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>788997AE11C9C87C00041675</string>
+<<<<<<< HEAD
 		<string>1C78EAAD065D492600B07095</string>
+=======
+<<<<<<< HEAD:media/iphone/NewsBlur/NewsBlur.xcodeproj/conesus.mode1v3
+		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur.xcodeproj</string>
+=======
+>>>>>>> 9e3b876902adf3bbbe06c73747827d3f7b6ce47d
 		<string>/Users/conesus/newsblur/media/iphone/NewsBlur.xcodeproj</string>
+>>>>>>> a00c48d5e86b002cf5eecc692a408563e3a06001:media/iphone/NewsBlur.xcodeproj/conesus.mode1v3
 	</array>
 	<key>WindowString</key>
 	<string>726 55 697 823 0 0 1440 878 </string>
@@ -678,7 +696,11 @@
 								<key>XCBuildResultsTrigger_Collapse</key>
 								<integer>1020</integer>
 								<key>XCBuildResultsTrigger_Open</key>
+<<<<<<< HEAD:media/iphone/NewsBlur/NewsBlur.xcodeproj/conesus.mode1v3
+								<integer>1010</integer>
+=======
 								<integer>1013</integer>
+>>>>>>> a00c48d5e86b002cf5eecc692a408563e3a06001:media/iphone/NewsBlur.xcodeproj/conesus.mode1v3
 							</dict>
 							<key>GeometryConfiguration</key>
 							<dict>
