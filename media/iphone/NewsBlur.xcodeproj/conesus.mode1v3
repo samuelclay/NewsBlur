@@ -399,7 +399,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>7842EC4811D00E490066CF9D</string>
+										<string>7842EC5911D023EC0066CF9D</string>
 										<key>history</key>
 										<array>
 											<string>787A0E8411CEAF200056422D</string>
@@ -408,9 +408,9 @@
 											<string>7842EBA311CFFE610066CF9D</string>
 											<string>7842EBEC11D00B670066CF9D</string>
 											<string>7842EC3F11D00D940066CF9D</string>
-											<string>7842EC4011D00D940066CF9D</string>
 											<string>7842EC4111D00D940066CF9D</string>
-											<string>7842EC1E11D00CC30066CF9D</string>
+											<string>7842EC5711D023EC0066CF9D</string>
+											<string>7842EC5811D023EC0066CF9D</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -606,7 +606,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>298847817.25606197</real>
+	<real>298853356.05402702</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -623,9 +623,9 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>788997AE11C9C87C00041675</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/conesus/newsblur/media/iphone/NewsBlur.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -1010,7 +1010,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Identifier</key>
