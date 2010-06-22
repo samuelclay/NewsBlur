@@ -5,3 +5,4 @@ media/*/*-compressed-*.*
 media/release
 local_settings.py
 media/iphone/NewsBlur/build
+media/iphone/build
