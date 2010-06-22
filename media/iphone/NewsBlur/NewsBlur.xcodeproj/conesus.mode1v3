@@ -200,10 +200,7 @@
 			<key>XCObserverAutoDisconnectKey</key>
 			<true/>
 			<key>XCObserverDefintionKey</key>
-			<dict>
-				<key>PBXStatusErrorsKey</key>
-				<integer>0</integer>
-			</dict>
+			<dict/>
 			<key>XCObserverFactoryKey</key>
 			<string>XCPerspectivesSpecificationIdentifier</string>
 			<key>XCObserverGUIDKey</key>
@@ -215,10 +212,7 @@
 			<key>XCObserverTriggerKey</key>
 			<string>awakenModuleWithObserver:</string>
 			<key>XCObserverValidationKey</key>
-			<dict>
-				<key>PBXStatusErrorsKey</key>
-				<integer>2</integer>
-			</dict>
+			<dict/>
 		</dict>
 	</array>
 	<key>OpenEditors</key>
@@ -254,8 +248,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -334,6 +326,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -351,7 +345,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>788997E811C9CDFE00041675</string>
+										<string>788997EB11CC24F600041675</string>
 										<key>history</key>
 										<array>
 											<string>788997B811C9CAE400041675</string>
@@ -538,7 +532,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>298438142.85467201</real>
+	<real>298591478.86150402</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -557,8 +551,8 @@
 	<array>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>788997AE11C9C87C00041675</string>
-		<string>/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur.xcodeproj</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/conesus/Projects/newsblur/media/iphone/NewsBlur/NewsBlur.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>596 178 1025 845 0 0 1920 1178 </string>
@@ -608,9 +602,9 @@
 								<key>PBXProjectModuleLabel</key>
 								<string>Build Results</string>
 								<key>XCBuildResultsTrigger_Collapse</key>
-								<integer>1023</integer>
+								<integer>1020</integer>
 								<key>XCBuildResultsTrigger_Open</key>
-								<integer>1012</integer>
+								<integer>1010</integer>
 							</dict>
 							<key>GeometryConfiguration</key>
 							<dict>
