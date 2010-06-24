@@ -77,7 +77,7 @@ def json_encode(data):
     
     ret = _any(data)
     
-    return json.dumps(ret, cls=DateTimeAwareJSONEncoder, ensure_ascii=False)
+    return json.dumps(ret, cls=DateTimeAwareJSONEncoder, ensure_ascii=False, indent=2)
 
 def json_view(func):
     def wrap(request, *a, **kw):

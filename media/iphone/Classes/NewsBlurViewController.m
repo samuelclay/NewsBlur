@@ -43,7 +43,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	[appDelegate hideNavigationBar:NO];
+		//[appDelegate hideNavigationBar:YES];
 	[super viewDidAppear:animated];
 }
 
@@ -97,7 +97,7 @@
 {
 	
 	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSDictionary *results = [jsonString JSONValue];
+	NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
 	self.dictFolders = [results objectForKey:@"flat_folders"];
 	
 	NSSortDescriptor *sortDescriptor;
@@ -120,6 +120,7 @@
 	[[self viewTableFeedTitles] reloadData];
 	
 	[sortedFolders release];
+	[results release];
 	[jsonString release];
 }
 
@@ -164,7 +165,6 @@
 	
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
 	if (cell == nil) {
-		
 		cell = [[[UITableViewCell alloc] 
 				 initWithStyle:UITableViewCellStyleDefault
 				 reuseIdentifier:SimpleTableIdentifier] autorelease];
@@ -187,20 +187,22 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSDictionary *activeFeed;
+	NSDictionary *activeFeed = [NSDictionary alloc];
 	int section_index = 0;
 	for (id f in self.dictFoldersArray) {
 		// NSLog(@"Cell: %i: %@", section_index, f);
 		if (section_index == indexPath.section) {
-			NSArray *feeds = [self.dictFolders objectForKey:f];
-			activeFeed = [feeds objectAtIndex:indexPath.row];
-			NSLog(@"Active feed: %@", activeFeed);
+			NSArray *feeds = [[NSArray alloc] initWithArray:[self.dictFolders objectForKey:f]];
+			activeFeed = [activeFeed initWithDictionary:[feeds objectAtIndex:indexPath.row]];
+			[feeds release];
+			//NSLog(@"Active feed: %@", activeFeed);
 			break;
 		}
 		section_index++;
 	}
 	NSLog(@"App Delegate: %@", self.appDelegate);
-	[self.appDelegate loadFeedDetailView];
+	[self.appDelegate loadFeedDetailView:activeFeed];
+	[activeFeed release];
 }
 
 @end

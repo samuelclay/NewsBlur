@@ -8,11 +8,13 @@
 
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "JSON.h"
 
 
 @implementation FeedDetailViewController
 
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider;
+@synthesize stories;
 @synthesize activeFeed;
 @synthesize appDelegate;
 
@@ -27,18 +29,23 @@
 - (void)viewDidLoad {
     NSLog(@"Loaded Feed view: %@", self.activeFeed);
     [appDelegate showNavigationBar:YES];
+    [self fetchFeedDetail];
     [super viewDidLoad];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [appDelegate showNavigationBar:YES];
+    [appDelegate showNavigationBar:animated];
     
 	[super viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [appDelegate hideNavigationBar:YES];
     [super viewWillDisappear:animated];
+    [appDelegate hideNavigationBar:NO];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [appDelegate hideNavigationBar:YES];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -51,32 +58,60 @@
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
+    NSLog(@"Unloading detail view: %@", self);
+    [appDelegate hideNavigationBar:NO];
+    self.activeFeed = nil;
+    self.appDelegate = nil;
+    self.stories = nil;
 }
 
 - (void)dealloc {
     [activeFeed release];
     [appDelegate release];
+    [stories release];
     [super dealloc];
 }
 
-#pragma mark Feed view
+#pragma mark -
+#pragma mark Initialization
 
+- (void)fetchFeedDetail {
+    if ([self.activeFeed objectForKey:@"id"] != nil) {
+        NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://nb.local.host:8000/reader/load_single_feed/?feed_id=%@", 
+                                      [self.activeFeed objectForKey:@"id"]];
+        NSLog(@"Url: %@", theFeedDetailURL);
+        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+        [theFeedDetailURL release];
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedDetail];
+        NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        [connection release];
+        [request release];
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
+{
+	
+	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
+	
+    NSArray *storiesArray = [[NSArray alloc] initWithArray:[results objectForKey:@"stories"]];
+    self.stories = storiesArray;
+    NSLog(@"Stories: %d -- %@", [self.stories count], [self storyTitlesTable]);
+	[[self storyTitlesTable] reloadData];
+    
+    [storiesArray release];
+    [results release];
+	[jsonString release];
+}
 
 
 #pragma mark -
 #pragma mark Table View - Feed List
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 0;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-
-	return nil;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
+    NSLog(@"Stories: %d", [self.stories count]);
+    return [self.stories count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -89,6 +124,9 @@
 				 initWithStyle:UITableViewCellStyleDefault
 				 reuseIdentifier:SimpleTableIdentifier] autorelease];
 	}
+    
+    cell.textLabel.text = [[self.stories objectAtIndex:indexPath.row] 
+                           objectForKey:@"story_title"];
 //	
 //	int section_index = 0;
 //	for (id f in self.dictFoldersArray) {

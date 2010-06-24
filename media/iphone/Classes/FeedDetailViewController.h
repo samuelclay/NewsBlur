@@ -10,21 +10,26 @@
 
 @class NewsBlurAppDelegate;
 
-@interface FeedDetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
+@interface FeedDetailViewController : UIViewController 
+           <UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
     
-    NSDictionary * activeFeed;         
+    NSMutableDictionary * activeFeed;         
+    NSArray * stories;
                
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
 }
 
+- (void)fetchFeedDetail;
+
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 
-@property (nonatomic, retain) NSDictionary * activeFeed;
+@property (nonatomic, retain) NSArray * stories;
+@property (nonatomic, readwrite, copy) NSMutableDictionary * activeFeed;
 
 @end

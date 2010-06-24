@@ -15,30 +15,23 @@
 @synthesize window;
 @synthesize navigationController;
 @synthesize feedsViewController;
-@synthesize feedDetailViewController;
+//@synthesize feedDetailViewController;
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
     
     [window addSubview:navigationController.view];
-    //[window addSubview:feedDetailViewController.view];
     [window makeKeyAndVisible];
 	return YES;
 }
 
-
 - (void)dealloc {
     [feedsViewController release];
-    [feedDetailViewController release];
+//    [feedDetailViewController release];
     [navigationController release];
     [window release];
     [super dealloc];
-}
-
-- (void)loadFeedDetailView {
-    NSLog(@"Loading feed detail view: %@, %@", navigationController, feedDetailViewController);
-    [[self navigationController] pushViewController:feedDetailViewController animated:YES];
 }
 
 - (void)hideNavigationBar:(BOOL)animated {
@@ -48,5 +41,25 @@
 - (void)showNavigationBar:(BOOL)animated {
     [[self navigationController] setNavigationBarHidden:NO animated:animated];
 }
+
+#pragma mark -
+#pragma mark Views
+
+- (void)loadFeedDetailView:(NSMutableDictionary *)activeFeed {
+    UINavigationController *navController = self.navigationController;
+    FeedDetailViewController *feedDetailViewController = [[FeedDetailViewController alloc] initWithNibName:@"FeedDetailViewController" bundle:nil];
+    //NSLog(@"feedDetailViewController: %@", feedDetailViewController);
+    //[feedDetailViewController setView:nil];
+    feedDetailViewController.activeFeed = [[NSDictionary alloc] initWithDictionary:activeFeed];
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Feeds" style:UIBarButtonItemStylePlain target:nil action:nil];
+    self.navigationController.navigationItem.backBarButtonItem = backButton;
+    [backButton release];
+    [navController popViewControllerAnimated:NO];
+    [navController pushViewController:feedDetailViewController animated:YES];
+    [feedDetailViewController release];
+    NSLog(@"Released feedDetailViewController");
+}
+
+
 
 @end
