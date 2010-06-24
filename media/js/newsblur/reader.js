@@ -937,7 +937,7 @@
         },
         
         open_story_link: function(story, $st) {
-            window.open(unescape(story['story_permalink']), '_blank');
+            window.open(unescape(decodeURIComponent(story['story_permalink'])), '_blank');
             window.focus();
         },
         
@@ -1114,7 +1114,7 @@
                 break;
             }
             var $story_title = $.make('div', { className: 'story ' + read + ' NB-story-' + score_color }, [
-                $.make('a', { href: unescape(story.story_permalink), className: 'story_title' }, [
+                $.make('a', { href: unescape(decodeURIComponent(story.story_permalink)), className: 'story_title' }, [
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags
