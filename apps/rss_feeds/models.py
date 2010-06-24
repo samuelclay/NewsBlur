@@ -184,19 +184,17 @@ class Feed(models.Model):
                 self, 
                 user_stories_count)
                 
-    def get_stories(self, offset=0, limit=25):
-        updated = cache.get('updated_feed:%s' % self.id)
-        stories = None
-        if not updated:
+    def get_stories(self, offset=0, limit=25, force=False):
+        if not force:
             stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
+        else:
+            stories = None
 
-        if not stories:
+        if not stories or force:
             stories_db = Story.objects.filter(story_feed=self)\
                                       .select_related('story_author')[offset:offset+limit]
             stories = self.format_stories(stories_db)
-            cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories, 600)
-            if offset == 0:
-                cache.delete('updated_feed:%s' % self.id)
+            cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
         return stories
     

@@ -302,6 +302,9 @@ class Dispatcher:
                             logging.info('Deleting user sub cache: %s' % sub.user_id)
                             cache.delete('usersub:%s' % sub.user_id)
                             sub.calculate_feed_scores()
+                    if ((ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]) \
+                        or (ENTRY_UPDATED in ret_entries and ret_entries[ENTRY_UPDATED])):
+                        feed.get_stories(force=True)
                 else:
                     continue
             except:
