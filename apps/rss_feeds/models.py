@@ -3,6 +3,7 @@ import settings
 import difflib
 import datetime
 import hashlib
+import random
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -301,7 +302,25 @@ class Feed(models.Model):
         # if story_has_changed or not story_in_system:
             # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
-            
+    
+    def set_next_scheduled_update(self):
+        # Use stories per month to calculate next feed update
+        updates_per_day = max(30, self.stories_per_month) / 30.0 * 6
+        minutes_to_next_update = 60 * 24 / updates_per_day
+        random_factor = random.randint(0,int(minutes_to_next_update/4))
+        slow_punishment = 0
+        if 30 <= self.last_load_time < 60:
+            slow_punishment = self.last_load_time
+        elif 60 <= self.last_load_time < 100:
+            slow_punishment = 2 * self.last_load_time
+        elif self.last_load_time >= 100:
+            slow_punishment = 4 * self.last_load_time
+        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
+            minutes=minutes_to_next_update+random_factor+slow_punishment
+        )
+        self.next_scheduled_update = next_scheduled_update
+        self.save()
+        
     class Meta:
         db_table="feeds"
         ordering=["feed_title"]

@@ -37,7 +37,7 @@ class PageImporter(object):
         
         # html = self.fix_urls(html)
         
-        return html
+        return html.strip()
 
     def fix_urls(self, document):
         # BEWARE: This will rewrite URLs inside of <script> tags. You know, like

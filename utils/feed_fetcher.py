@@ -58,14 +58,14 @@ class FetchFeed:
                                                  
         # Check if feed still needs to be updated
         feed = Feed.objects.get(pk=self.feed.pk)
-        if feed.next_scheduled_update > datetime.datetime.now() and not self.options['force']:
+        if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
             log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
                                                                  self.feed.id)
             logging.info(log_msg)
             print(log_msg)
             return FEED_SAME, None
             
-        self.set_next_scheduled_update()
+        self.feed.set_next_scheduled_update()
         
         # we check the etag and the modified time to save bandwith and avoid bans
         try:
@@ -82,19 +82,6 @@ class FetchFeed:
         
         return FEED_OK, self.fpf
     
-    def set_next_scheduled_update(self):
-        # Use stories per month to calculate next feed update
-        updates_per_day = max(30, self.feed.stories_per_month) / 30.0 * 6
-        minutes_to_next_update = 60 * 24 / updates_per_day
-        random_factor = random.randint(0,int(minutes_to_next_update/4))
-        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-            minutes=minutes_to_next_update+random_factor
-        )
-        self.feed.next_scheduled_update = next_scheduled_update
-        self.feed.save()
-        
-        return next_scheduled_update
-
 class FetchPage:
     def __init__(self, feed, options):
         self.feed = feed
@@ -318,8 +305,6 @@ class Dispatcher:
                 if ffeed: del ffeed
                 if pfeed: del pfeed
                 if fpage: del fpage
-                if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
-                    del user_subs
 
             delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:
