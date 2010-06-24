@@ -15,7 +15,7 @@
 @synthesize window;
 @synthesize navigationController;
 @synthesize feedsViewController;
-//@synthesize feedDetailViewController;
+@synthesize feedDetailViewController;
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
@@ -28,7 +28,7 @@
 
 - (void)dealloc {
     [feedsViewController release];
-//    [feedDetailViewController release];
+    [feedDetailViewController release];
     [navigationController release];
     [window release];
     [super dealloc];
@@ -47,17 +47,17 @@
 
 - (void)loadFeedDetailView:(NSMutableDictionary *)activeFeed {
     UINavigationController *navController = self.navigationController;
-    FeedDetailViewController *feedDetailViewController = [[FeedDetailViewController alloc] initWithNibName:@"FeedDetailViewController" bundle:nil];
+    //[feedDetailViewController release];
+    //feedDetailViewController = [[FeedDetailViewController alloc] initWithNibName:@"FeedDetailViewController" bundle:nil];
     //NSLog(@"feedDetailViewController: %@", feedDetailViewController);
     //[feedDetailViewController setView:nil];
-    feedDetailViewController.activeFeed = [[NSDictionary alloc] initWithDictionary:activeFeed];
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Feeds" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationController.navigationItem.backBarButtonItem = backButton;
     [backButton release];
     [navController popViewControllerAnimated:NO];
+    feedDetailViewController.activeFeed = [[NSDictionary alloc] initWithDictionary:activeFeed];
     [navController pushViewController:feedDetailViewController animated:YES];
-    [feedDetailViewController release];
-    NSLog(@"Released feedDetailViewController");
+    //NSLog(@"Released feedDetailViewController");
 }
 
 

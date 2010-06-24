@@ -11,11 +11,12 @@
 @class NewsBlurAppDelegate;
 
 @interface FeedDetailViewController : UIViewController 
-           <UITableViewDelegate, UITableViewDataSource> {
+<UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeed;         
     NSArray * stories;
+    NSMutableString * jsonString;
                
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
@@ -31,5 +32,6 @@
 
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, readwrite, copy) NSMutableDictionary * activeFeed;
+@property (nonatomic, retain) NSMutableString * jsonString;
 
 @end

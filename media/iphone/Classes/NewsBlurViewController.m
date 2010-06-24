@@ -200,7 +200,7 @@
 		}
 		section_index++;
 	}
-	NSLog(@"App Delegate: %@", self.appDelegate);
+	//NSLog(@"App Delegate: %@", self.appDelegate);
 	[self.appDelegate loadFeedDetailView:activeFeed];
 	[activeFeed release];
 }
