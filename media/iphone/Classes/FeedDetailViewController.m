@@ -17,6 +17,7 @@
 @synthesize stories;
 @synthesize activeFeed;
 @synthesize appDelegate;
+@synthesize jsonString;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -26,11 +27,22 @@
     return self;
 }
 
-- (void)viewDidLoad {
-    NSLog(@"Loaded Feed view: %@", self.activeFeed);
-    [appDelegate showNavigationBar:YES];
+- (void)viewWillAppear:(BOOL)animated {
+    //NSLog(@"Loaded Feed view: %@", self.activeFeed);
     [self fetchFeedDetail];
-    [super viewDidLoad];
+    
+    UILabel *label = [[UILabel alloc] init];
+	[label setFont:[UIFont boldSystemFontOfSize:16.0]];
+	[label setBackgroundColor:[UIColor clearColor]];
+	[label setTextColor:[UIColor whiteColor]];
+	[label setText:[self.activeFeed objectForKey:@"feed_title"]];
+    [label sizeToFit];
+	[self.navigationController.navigationBar.topItem setTitleView:label];
+    self.navigationController.navigationBar.backItem.title = @"All";
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
+	[label release];
+    
+	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -41,11 +53,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [appDelegate hideNavigationBar:NO];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [appDelegate hideNavigationBar:YES];
+    
+    [appDelegate hideNavigationBar:animated];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -58,17 +67,18 @@
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
-    NSLog(@"Unloading detail view: %@", self);
-    [appDelegate hideNavigationBar:NO];
+    //NSLog(@"Unloading detail view: %@", self);
     self.activeFeed = nil;
     self.appDelegate = nil;
     self.stories = nil;
+    self.jsonString = nil;
 }
 
 - (void)dealloc {
     [activeFeed release];
     [appDelegate release];
     [stories release];
+    [jsonString release];
     [super dealloc];
 }
 
@@ -79,9 +89,10 @@
     if ([self.activeFeed objectForKey:@"id"] != nil) {
         NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://nb.local.host:8000/reader/load_single_feed/?feed_id=%@", 
                                       [self.activeFeed objectForKey:@"id"]];
-        NSLog(@"Url: %@", theFeedDetailURL);
+        //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         [theFeedDetailURL release];
+        jsonString = nil;
         NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedDetail];
         NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
         [connection release];
@@ -90,14 +101,37 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
-{
+{   
+	if(jsonString == nil) {
+        jsonString = [[NSMutableString alloc] 
+                      initWithData:data 
+                      encoding:NSUTF8StringEncoding];
+        
+	} else {
+		NSMutableString *temp_string = [[NSMutableString alloc] 
+                                        initWithString:jsonString];
+		
+		[jsonString release];
+		jsonString = [[NSMutableString alloc] 
+                      initWithData:data 
+                      encoding:NSUTF8StringEncoding];
+		[temp_string appendString:jsonString];
+        
+		[jsonString release];
+		jsonString = [[NSMutableString alloc] initWithString: temp_string];
+		[temp_string release];
+        
+	}
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[jsonString JSONValue]];
 	
-	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
-	
-    NSArray *storiesArray = [[NSArray alloc] initWithArray:[results objectForKey:@"stories"]];
+    NSArray *storiesArray = [[NSArray alloc] 
+                             initWithArray:[results objectForKey:@"stories"]];
     self.stories = storiesArray;
-    NSLog(@"Stories: %d -- %@", [self.stories count], [self storyTitlesTable]);
+    //NSLog(@"Stories: %d -- %@", [self.stories count], [self storyTitlesTable]);
 	[[self storyTitlesTable] reloadData];
     
     [storiesArray release];
@@ -110,7 +144,7 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"Stories: %d", [self.stories count]);
+    //NSLog(@"Stories: %d", [self.stories count]);
     return [self.stories count];
 }
 

@@ -15,13 +15,13 @@
     UIWindow *window;
     UINavigationController *navigationController;
     NewsBlurViewController *feedsViewController;
-    //FeedDetailViewController *feedDetailViewController;
+    FeedDetailViewController *feedDetailViewController;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
-//@property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
+@property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 
 - (void)loadFeedDetailView:(NSDictionary *)activeFeed;
 - (void)hideNavigationBar:(BOOL)animated;
