@@ -15,46 +15,28 @@
 
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider;
 @synthesize stories;
-@synthesize activeFeed;
 @synthesize appDelegate;
 @synthesize jsonString;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-		[appDelegate showNavigationBar:YES];
+        
     }
     return self;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    //NSLog(@"Loaded Feed view: %@", self.activeFeed);
+    NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     [self fetchFeedDetail];
-    
-    UILabel *label = [[UILabel alloc] init];
-	[label setFont:[UIFont boldSystemFontOfSize:16.0]];
-	[label setBackgroundColor:[UIColor clearColor]];
-	[label setTextColor:[UIColor whiteColor]];
-	[label setText:[self.activeFeed objectForKey:@"feed_title"]];
-    [label sizeToFit];
-	[self.navigationController.navigationBar.topItem setTitleView:label];
-    self.navigationController.navigationBar.backItem.title = @"All";
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
-	[label release];
     
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [appDelegate showNavigationBar:animated];
+    //[appDelegate showNavigationBar:animated];
     
 	[super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    
-    [appDelegate hideNavigationBar:animated];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -68,14 +50,11 @@
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
     //NSLog(@"Unloading detail view: %@", self);
-    self.activeFeed = nil;
     self.appDelegate = nil;
-    self.stories = nil;
     self.jsonString = nil;
 }
 
 - (void)dealloc {
-    [activeFeed release];
     [appDelegate release];
     [stories release];
     [jsonString release];
@@ -86,9 +65,9 @@
 #pragma mark Initialization
 
 - (void)fetchFeedDetail {
-    if ([self.activeFeed objectForKey:@"id"] != nil) {
-        NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://nb.local.host:8000/reader/load_single_feed/?feed_id=%@", 
-                                      [self.activeFeed objectForKey:@"id"]];
+    if ([appDelegate.activeFeed objectForKey:@"id"] != nil) {
+        NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://www.newsblur.com/reader/load_single_feed/?feed_id=%@", 
+                                      [appDelegate.activeFeed objectForKey:@"id"]];
         //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         [theFeedDetailURL release];
@@ -130,8 +109,8 @@
 	
     NSArray *storiesArray = [[NSArray alloc] 
                              initWithArray:[results objectForKey:@"stories"]];
-    self.stories = storiesArray;
-    //NSLog(@"Stories: %d -- %@", [self.stories count], [self storyTitlesTable]);
+    [appDelegate setActiveFeedStories:storiesArray];
+    //NSLog(@"Stories: %d -- %@", [appDelegate.activeFeedStories count], [self storyTitlesTable]);
 	[[self storyTitlesTable] reloadData];
     
     [storiesArray release];
@@ -144,8 +123,8 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    //NSLog(@"Stories: %d", [self.stories count]);
-    return [self.stories count];
+    //NSLog(@"Stories: %d", [appDelegate.activeFeedStories count]);
+    return [appDelegate.activeFeedStories count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -159,7 +138,7 @@
 				 reuseIdentifier:SimpleTableIdentifier] autorelease];
 	}
     
-    cell.textLabel.text = [[self.stories objectAtIndex:indexPath.row] 
+    cell.textLabel.text = [[appDelegate.activeFeedStories objectAtIndex:indexPath.row] 
                            objectForKey:@"story_title"];
 //	
 //	int section_index = 0;
@@ -179,7 +158,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
+    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:indexPath.row]];
+    NSLog(@"Active Story: %@", [appDelegate activeStory]);
+	[appDelegate loadStoryDetailView];
 	
 }
 

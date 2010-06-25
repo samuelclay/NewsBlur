@@ -14,7 +14,6 @@
 <UITableViewDelegate, UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
     
-    NSMutableDictionary * activeFeed;         
     NSArray * stories;
     NSMutableString * jsonString;
                
@@ -31,7 +30,6 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 
 @property (nonatomic, retain) NSArray * stories;
-@property (nonatomic, readwrite, copy) NSMutableDictionary * activeFeed;
 @property (nonatomic, retain) NSMutableString * jsonString;
 
 @end

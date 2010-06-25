@@ -9,6 +9,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
+#import "StoryDetailViewController.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -16,21 +17,30 @@
 @synthesize navigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
+@synthesize storyDetailViewController;
 
+@synthesize activeFeed;
+@synthesize activeFeedStories;
+@synthesize activeStory;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
     
     [window addSubview:navigationController.view];
     [window makeKeyAndVisible];
+    
 	return YES;
 }
 
 - (void)dealloc {
     [feedsViewController release];
     [feedDetailViewController release];
+    [storyDetailViewController release];
     [navigationController release];
     [window release];
+    [activeFeed release];
+    [activeFeedStories release];
+    [activeStory release];
     [super dealloc];
 }
 
@@ -45,19 +55,37 @@
 #pragma mark -
 #pragma mark Views
 
-- (void)loadFeedDetailView:(NSMutableDictionary *)activeFeed {
+- (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
-    //[feedDetailViewController release];
-    //feedDetailViewController = [[FeedDetailViewController alloc] initWithNibName:@"FeedDetailViewController" bundle:nil];
-    //NSLog(@"feedDetailViewController: %@", feedDetailViewController);
-    //[feedDetailViewController setView:nil];
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Feeds" style:UIBarButtonItemStylePlain target:nil action:nil];
-    self.navigationController.navigationItem.backBarButtonItem = backButton;
-    [backButton release];
-    [navController popViewControllerAnimated:NO];
-    feedDetailViewController.activeFeed = [[NSDictionary alloc] initWithDictionary:activeFeed];
+    [[self retain] autorelease];
+    UILabel *label = [[UILabel alloc] init];
+    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
+    [label setBackgroundColor:[UIColor clearColor]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setText:[activeFeed objectForKey:@"feed_title"]];
+    [label sizeToFit];
+    [navController.navigationBar.topItem setTitleView:label];
+    navController.navigationBar.backItem.title = @"All";
+    [label release];
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
+    
     [navController pushViewController:feedDetailViewController animated:YES];
-    //NSLog(@"Released feedDetailViewController");
+    NSLog(@"Released feedDetailViewController");
+}
+
+- (void)loadStoryDetailView {
+    UINavigationController *navController = self.navigationController;   
+    [[self retain] autorelease];
+    UILabel *label = [[UILabel alloc] init];
+    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
+    [label setBackgroundColor:[UIColor clearColor]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setText:[activeStory objectForKey:@"story_title"]];
+    [label sizeToFit];
+    [navController.navigationBar.topItem setTitleView:label];
+    navController.navigationBar.backItem.title = @"Stories";
+    [label release];
+    [navController pushViewController:storyDetailViewController animated:YES];
 }
 
 

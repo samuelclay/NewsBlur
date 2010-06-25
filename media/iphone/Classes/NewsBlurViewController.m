@@ -42,8 +42,14 @@
     [super viewDidLoad];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	[viewTableFeedTitles deselectRowAtIndexPath:[viewTableFeedTitles indexPathForSelectedRow] animated:animated];
+	
+    [appDelegate hideNavigationBar:animated];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
-		//[appDelegate hideNavigationBar:YES];
+	appDelegate.activeFeed = nil; 
 	[super viewDidAppear:animated];
 }
 
@@ -86,7 +92,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://nb.local.host:8000/reader/load_feeds_iphone/"]];
+											   stringWithFormat:@"http://www.newsblur.com/reader/load_feeds_iphone/"]];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	[connection release];
@@ -187,22 +193,20 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSDictionary *activeFeed = [NSDictionary alloc];
 	int section_index = 0;
 	for (id f in self.dictFoldersArray) {
 		// NSLog(@"Cell: %i: %@", section_index, f);
 		if (section_index == indexPath.section) {
 			NSArray *feeds = [[NSArray alloc] initWithArray:[self.dictFolders objectForKey:f]];
-			activeFeed = [activeFeed initWithDictionary:[feeds objectAtIndex:indexPath.row]];
+			[appDelegate setActiveFeed:[feeds objectAtIndex:indexPath.row]];
 			[feeds release];
-			//NSLog(@"Active feed: %@", activeFeed);
+			NSLog(@"Active feed: %@", [appDelegate activeFeed]);
 			break;
 		}
 		section_index++;
 	}
 	//NSLog(@"App Delegate: %@", self.appDelegate);
-	[self.appDelegate loadFeedDetailView:activeFeed];
-	[activeFeed release];
+	[appDelegate loadFeedDetailView];
 }
 
 @end
