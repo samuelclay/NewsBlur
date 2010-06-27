@@ -28,6 +28,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
+    
     [self fetchFeedDetail];
     
 	[super viewWillAppear:animated];

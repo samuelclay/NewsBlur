@@ -57,17 +57,6 @@
 
 - (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
-    [[self retain] autorelease];
-    UILabel *label = [[UILabel alloc] init];
-    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
-    [label setBackgroundColor:[UIColor clearColor]];
-    [label setTextColor:[UIColor whiteColor]];
-    [label setText:[activeFeed objectForKey:@"feed_title"]];
-    [label sizeToFit];
-    [navController.navigationBar.topItem setTitleView:label];
-    navController.navigationBar.backItem.title = @"All";
-    [label release];
-    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
     
     [navController pushViewController:feedDetailViewController animated:YES];
     NSLog(@"Released feedDetailViewController");
@@ -75,16 +64,6 @@
 
 - (void)loadStoryDetailView {
     UINavigationController *navController = self.navigationController;   
-    [[self retain] autorelease];
-    UILabel *label = [[UILabel alloc] init];
-    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
-    [label setBackgroundColor:[UIColor clearColor]];
-    [label setTextColor:[UIColor whiteColor]];
-    [label setText:[activeStory objectForKey:@"story_title"]];
-    [label sizeToFit];
-    [navController.navigationBar.topItem setTitleView:label];
-    navController.navigationBar.backItem.title = @"Stories";
-    [label release];
     [navController pushViewController:storyDetailViewController animated:YES];
 }
 

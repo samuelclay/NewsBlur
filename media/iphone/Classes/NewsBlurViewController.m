@@ -206,6 +206,18 @@
 		section_index++;
 	}
 	//NSLog(@"App Delegate: %@", self.appDelegate);
+	
+    UILabel *label = [[UILabel alloc] init];
+    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
+    [label setBackgroundColor:[UIColor clearColor]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setText:[appDelegate.activeFeed objectForKey:@"feed_title"]];
+    [label sizeToFit];
+    [appDelegate.navigationController.navigationBar.topItem setTitleView:label];
+    appDelegate.navigationController.navigationBar.backItem.title = @"All";
+    [label release];
+    appDelegate.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
+	
 	[appDelegate loadFeedDetailView];
 }
 

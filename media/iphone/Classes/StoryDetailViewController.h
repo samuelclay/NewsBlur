@@ -11,11 +11,13 @@
 @class NewsBlurAppDelegate;
 
 @interface StoryDetailViewController : UIViewController 
-<UIScrollViewDelegate> {
+<UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 
+    UIWebView *webView;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, retain) IBOutlet UIWebView *webView;
 
 @end

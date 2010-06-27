@@ -381,14 +381,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>NewsBlurAppDelegate.m</string>
+								<string>NewsBlurViewController.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -396,25 +394,25 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>NewsBlurAppDelegate.m</string>
+										<string>NewsBlurViewController.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>7842EE7611D46F640066CF9D</string>
+										<string>7842EEFE11D817960066CF9D</string>
 										<key>history</key>
 										<array>
 											<string>787A0E8411CEAF200056422D</string>
 											<string>7842EB9911CFFC1B0066CF9D</string>
 											<string>7842EB9A11CFFC1B0066CF9D</string>
-											<string>7842EDE711D4555D0066CF9D</string>
 											<string>7842EDF311D456A60066CF9D</string>
-											<string>7842EE3811D45EF50066CF9D</string>
-											<string>7842EE4311D45FC40066CF9D</string>
 											<string>7842EE6011D46E550066CF9D</string>
-											<string>7842EE6211D46E550066CF9D</string>
 											<string>7842EE6411D46E550066CF9D</string>
 											<string>7842EE6F11D46F3B0066CF9D</string>
-											<string>7842EE7011D46F3B0066CF9D</string>
+											<string>7842EE8A11D583AA0066CF9D</string>
+											<string>7842EEAF11D585620066CF9D</string>
+											<string>7842EEB511D5858F0066CF9D</string>
+											<string>7842EEFB11D5913A0066CF9D</string>
+											<string>7842EEFC11D5913A0066CF9D</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -436,6 +434,8 @@
 							<string>631pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -610,7 +610,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>299134820.34374899</real>
+	<real>299374486.79672199</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
