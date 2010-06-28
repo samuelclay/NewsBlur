@@ -13,7 +13,11 @@ class Command(BaseCommand):
             feeds = Feed.objects.filter(id=options['feed'])
         else:
             feeds = Feed.objects.all()
-
-        for f in feeds.iterator():
-            f.calculate_subscribers(verbose=options['verbose'])
+            
+        feeds_count = feeds.count()
+        
+        for i in xrange(0, feeds_count, 100):
+            feeds = Feed.objects.all()[i:i+100]
+            for feed in feeds.iterator():
+                feed.calculate_subscribers(verbose=options['verbose'])
         
