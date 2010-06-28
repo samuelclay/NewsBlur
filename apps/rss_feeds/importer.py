@@ -3,6 +3,7 @@ import logging
 import re
 import urlparse
 import multiprocessing
+from apps.rss_feeds.models import FeedPage
 
 class PageImporter(object):
     
@@ -63,9 +64,10 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            self.feed.page_data = html
+            feed_page, _ = FeedPage.objects.get_or_create(feed=self.feed)
+            feed_page.page_data = html
             self.lock.acquire()
             try:
-                self.feed.save()
+                feed_page.save()
             finally:
                 self.lock.release()

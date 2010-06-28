@@ -248,10 +248,10 @@ def load_single_feed(request):
 
 def load_feed_page(request):
     feed = Feed.objects.get(id=request.REQUEST.get('feed_id'))
-    if feed.page_data:
-        data = feed.page_data
+    if feed.feed_page and feed.feed_page.page_data:
+        data = feed.feed_page.page_data
     else:
-        data = "Give it 10 minutes...<br /><br />Your feed will be here in under 5 minutes (on average).<br />Soon there will be a progress bar. Until then, take a deep breath."
+        data = "Give it 5-10 minutes...<br /><br />Your feed will be here in under 5 minutes (on average).<br />Soon there will be a progress bar. Until then, take a deep breath."
     
     return HttpResponse(data, mimetype='text/html')
     
