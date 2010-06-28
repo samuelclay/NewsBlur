@@ -21,9 +21,9 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
-    feed_link = models.URLField(max_length=200, default="")
-    feed_title = models.CharField(max_length=255, default="")
-    feed_tagline = models.CharField(max_length=1024, default="")
+    feed_link = models.URLField(max_length=200, default="", blank=True, null=True)
+    feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
+    feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True, default=0)
