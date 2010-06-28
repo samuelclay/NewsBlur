@@ -32,7 +32,6 @@ class Feed(models.Model):
     creation = models.DateField(auto_now_add=True)
     etag = models.CharField(max_length=50, blank=True, null=True)
     last_modified = models.DateTimeField(null=True, blank=True)
-    page_data = StoryField(null=True, blank=True)
     stories_per_month = models.IntegerField(default=0)
     next_scheduled_update = models.DateTimeField(default=datetime.datetime.now)
     last_load_time = models.IntegerField(default=0)
@@ -382,7 +381,7 @@ class Story(models.Model):
     story_guid_hash = models.CharField(max_length=40)
     story_past_trim_date = models.BooleanField(default=False)
     story_tags = models.CharField(max_length=1000)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField('Tag')
 
     def __unicode__(self):
         return self.story_title
