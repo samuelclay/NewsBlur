@@ -16,6 +16,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
+from apps.opml_import.views import import_from_google_reader
 try:
     from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor, FeedPage
 except:
@@ -38,7 +39,11 @@ def index(request):
         login_form = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
 
-    features = Feature.objects.all()
+    if request.session.get('import_from_google_reader', False):
+        import_from_google_reader(request.user)
+        # del request.session['import_from_google_reader']
+        
+    features = Feature.objects.all()[:5]
     feature_form = None
     if request.user.is_staff:
         feature_form = FeatureForm()
@@ -47,7 +52,8 @@ def index(request):
         'login_form': login_form,
         'signup_form': signup_form,
         'feature_form': feature_form,
-        'features': features
+        'features': features,
+        'import_from_google_reader': import_from_google_reader,
     }, context_instance=RequestContext(request))
 
 @never_cache
