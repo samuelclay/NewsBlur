@@ -327,7 +327,7 @@ class Feed(models.Model):
         random_factor = random.randint(0,int(minutes_to_next_update/4))
         slow_punishment = 0
         # 6 hours / subscribers. Lots of subscribers = lots of updates
-        subscriber_bonus = 6 * 60 / self.num_subscribers
+        subscriber_bonus = 6 * 60 / max(1, self.num_subscribers)
         
         if 30 <= self.last_load_time < 60:
             slow_punishment = self.last_load_time
