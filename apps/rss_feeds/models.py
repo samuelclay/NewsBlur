@@ -47,12 +47,15 @@ class Feed(models.Model):
         self.save()
         
         if verbose:
-            print " %s> %s subscriber%s: %s" % (
-                '-' * min(self.num_subscribers, 20),
-                self.num_subscribers,
-                '' if self.num_subscribers == 1 else 's',
-                self.feed_title,
-            )
+            if self.num_subscribers <= 1:
+                print '.',
+            else:
+                print "\n %s> %s subscriber%s: %s" % (
+                    '-' * min(self.num_subscribers, 20),
+                    self.num_subscribers,
+                    '' if self.num_subscribers == 1 else 's',
+                    self.feed_title,
+                ),
         
     def last_updated(self):
         return time.time() - time.mktime(self.last_update.timetuple())
