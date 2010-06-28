@@ -2,10 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 from apps.rss_feeds.models import Feed, Story, StoryAuthor, Tag
+from utils.compressed_textfield import StoryField
 from utils import json
 
 class FeatureCategory(models.Model):
-
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     feature = models.CharField(max_length=255)
@@ -30,7 +30,7 @@ class ClassifierTitle(models.Model):
     score = models.SmallIntegerField()
     title = models.CharField(max_length=255)
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story, null=True)
+    # original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     unique_together = (('user', 'feed', 'title'),)
@@ -44,7 +44,7 @@ class ClassifierAuthor(models.Model):
     score = models.SmallIntegerField()
     author = models.ForeignKey(StoryAuthor)
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story, null=True)
+    # original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     unique_together = (('user', 'feed', 'author'),)
@@ -62,7 +62,7 @@ class ClassifierFeed(models.Model):
     user = models.ForeignKey(User)
     score = models.SmallIntegerField()
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story, null=True)
+    # original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     unique_together = (('user', 'feed'),)
@@ -81,7 +81,7 @@ class ClassifierTag(models.Model):
     score = models.SmallIntegerField()
     tag = models.ForeignKey(Tag)
     feed = models.ForeignKey(Feed)
-    original_story = models.ForeignKey(Story, null=True)
+    # original_story = models.ForeignKey(Story, null=True)
     creation_date = models.DateTimeField(auto_now=True)
     
     unique_together = (('user', 'feed', 'tag'),)
