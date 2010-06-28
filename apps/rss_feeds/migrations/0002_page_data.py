@@ -6,14 +6,16 @@ from apps.rss_feeds.models import *
 class Migration:
     
     def forwards(self, orm):
-        feeds = Feed.objects.all()
-        for feed in feeds.iterator():
-            print feed.feed_title
-            feed_page, _ = FeedPage.objects.get_or_create(feed=feed)
-            feed_page.page_data = feed.page_data
-            feed_page.save()
-            feed.page_data = None
-            feed.save()
+        for i in xrange(100):
+            feeds = Feed.objects.all()[i:i+100]
+            for feed in feeds.iterator():
+                print feed.feed_title
+                feed_page, created = FeedPage.objects.get_or_create(feed=feed)
+                if created:
+                    feed_page.page_data = feed.page_data
+                    feed_page.save()
+                    feed.page_data = None
+                    feed.save()
     
     def backwards(self, orm):
         "Write your backwards migration here"
