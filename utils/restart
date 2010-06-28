@@ -1,2 +1,3 @@
 #!/bin/sh
-ps aux | grep 8080 | egrep -v 'grep' | awk '{print $2}' | xargs kill; ./manage.py runfcgi method=threaded host=127.0.0.1 port=8080
+#ps aux | grep 8080 | egrep -v 'grep' | awk '{print $2}' | xargs kill; ./manage.py runfcgi method=threaded host=127.0.0.1 port=8080
+sudo /etc/init.d/gunicorn stop && sleep 1 && sudo /etc/init.d/gunicorn start &

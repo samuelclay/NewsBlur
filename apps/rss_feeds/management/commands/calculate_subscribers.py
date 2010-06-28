@@ -14,6 +14,6 @@ class Command(BaseCommand):
         else:
             feeds = Feed.objects.all()
 
-        for f in feeds:
+        for f in feeds.iterator():
             f.calculate_subscribers(verbose=options['verbose'])
         
