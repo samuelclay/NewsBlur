@@ -40,6 +40,20 @@ class Feed(models.Model):
     
     def __unicode__(self):
         return self.feed_title
+    
+    def calculate_subscribers(self, verbose=False):
+        from apps.reader.models import UserSubscription
+        subs = UserSubscription.objects.filter(feed=self)
+        self.num_subscribers = subs.count()
+        self.save()
+        
+        if verbose:
+            print " %s> %s subscriber%s: %s" % (
+                '-' * min(self.num_subscribers, 20),
+                self.num_subscribers,
+                '' if self.num_subscribers == 1 else 's',
+                self.feed_title,
+            )
         
     def last_updated(self):
         return time.time() - time.mktime(self.last_update.timetuple())
