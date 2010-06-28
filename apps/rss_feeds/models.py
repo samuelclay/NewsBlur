@@ -21,9 +21,9 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
-    feed_link = models.URLField(max_length=200, default="")
-    feed_title = models.CharField(max_length=255, default="")
-    feed_tagline = models.CharField(max_length=1024, default="")
+    feed_link = models.URLField(max_length=200, default="", blank=True, null=True)
+    feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
+    feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True, default=0)
@@ -323,15 +323,18 @@ class Feed(models.Model):
         # Use stories per month to calculate next feed update
         updates_per_day = max(30, self.stories_per_month) / 30.0
         # 1 update per day = 12 hours
-        # > 1 update per day = 30 minutes
-        minutes_to_next_update = 30
+        # > 1 update per day:
+        #   2 updates = 1.5 hours
+        #   4 updates = 45 minutes
+        #   10 updates = 18 minutes
+        minutes_to_next_update = 12 * 60 / (updates_per_day * 4)
         if updates_per_day <= 1:
             minutes_to_next_update = 60 * 12
-        random_factor = random.randint(0,int(minutes_to_next_update/4))
-        slow_punishment = 0
+        random_factor = random.randint(0,int(minutes_to_next_update/6))
         # 6 hours / subscribers. Lots of subscribers = lots of updates
         subscriber_bonus = 6 * 60 / max(1, self.num_subscribers)
         
+        slow_punishment = 0
         if 30 <= self.last_load_time < 60:
             slow_punishment = self.last_load_time
         elif 60 <= self.last_load_time < 100:

@@ -813,6 +813,10 @@
                 story = this.model.get_story($story.data('story'));
                 NEWSBLUR.log(['now story', story, $story]);
             }
+            if (!story || !$story || !$story.length) {
+                return;
+            }
+            
             // NEWSBLUR.log(['scroll_to_story_in_story_feed', story, $story]);
 
             if ($story && $story.length) {

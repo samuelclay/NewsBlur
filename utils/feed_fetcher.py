@@ -312,7 +312,7 @@ class Dispatcher:
             else:
                 comment = u''
             
-            feed.last_load_time = delta.seconds
+            feed.last_load_time = max(1, delta.seconds)
             feed.save()
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (

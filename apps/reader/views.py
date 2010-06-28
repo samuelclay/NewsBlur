@@ -251,7 +251,7 @@ def load_feed_page(request):
     feed_page, created = FeedPage.objects.get_or_create(feed=feed)
     if not created:
         data = feed.feed_page.page_data
-    else:
+    if created or not data:
         data = "Give it 5-10 minutes...<br /><br />Your feed will be here in under 5 minutes (on average).<br />Soon there will be a progress bar. Until then, take a deep breath."
     
     return HttpResponse(data, mimetype='text/html')
