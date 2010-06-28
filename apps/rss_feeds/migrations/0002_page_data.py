@@ -6,7 +6,7 @@ from apps.rss_feeds.models import *
 class Migration:
     
     def forwards(self, orm):
-        for i in xrange(100):
+        for i in xrange(2000, 5000, 100):
             feeds = Feed.objects.all()[i:i+100]
             for feed in feeds.iterator():
                 print feed.feed_title
