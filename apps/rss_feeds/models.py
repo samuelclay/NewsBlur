@@ -318,12 +318,16 @@ class Feed(models.Model):
     
     def set_next_scheduled_update(self):
         # Use stories per month to calculate next feed update
-        updates_per_day = max(30, self.stories_per_month) / 30.0 * 6
-        minutes_to_next_update = 60 * 24 / updates_per_day
+        updates_per_day = max(30, self.stories_per_month) / 30.0
+        # 1 update per day = 12 hours
+        # > 1 update per day = 30 minutes
+        minutes_to_next_update = 30
+        if updates_per_day <= 1:
+            minutes_to_next_update = 60 * 12
         random_factor = random.randint(0,int(minutes_to_next_update/4))
         slow_punishment = 0
-        # 12 hours / subscribers. Lots of subscribers = lots of updates
-        subscriber_bonus = 12 * 60 / self.num_subscribers
+        # 6 hours / subscribers. Lots of subscribers = lots of updates
+        subscriber_bonus = 6 * 60 / self.num_subscribers
         
         if 30 <= self.last_load_time < 60:
             slow_punishment = self.last_load_time
