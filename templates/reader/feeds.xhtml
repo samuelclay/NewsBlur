@@ -82,11 +82,15 @@
           </tr>
           <tr class="NB-module-feature">
             <td class="NB-module-feature-date">2. </td>
-            <td class="NB-module-feature-description">NewsBlur learns your opinions when you like or dislike stories.</td>
+            <td class="NB-module-feature-description">Read stories directly on the original website.</td>
           </tr>
           <tr class="NB-module-feature last">
             <td class="NB-module-feature-date">3. </td>
-            <td class="NB-module-feature-description">Read those stories directly on the original website.</td>
+            <td class="NB-module-feature-description">
+              Stories: <img src="{{ MEDIA_URL }}img/icons/silk/bullet_red.png"> = dislike, 
+              <img src="{{ MEDIA_URL }}img/icons/silk/bullet_orange.png"> = neutral, 
+              <img src="{{ MEDIA_URL }}img/icons/silk/bullet_green.png"> = like.
+            </td>
           </tr>
         </table>
         {% if user.is_staff %}
@@ -125,9 +129,9 @@
         </div>
       </h5>
       
-      <table class="NB-module-features">
+      <table class="NB-module-features" cellpadding="0" cellspacing="0">
         {% for feature in features %}
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %}">
+          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.last_login %}NB-module-feature-new{% endif %}">
             <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
             <td class="NB-module-feature-description">{{ feature.description }}</td>
           </tr>
@@ -141,8 +145,27 @@
       {% endif %}
     </div>
     
+    <div class="NB-module NB-module-stats">
+      <h5 class="NB-module-header">
+        Spread the Love
+      </h5>
+      
+      <table class="NB-module-features" cellpadding="0" cellspacing="0">
+        <tr class="NB-module-feature {% if forloop.last %}last{% endif %}">
+          <td class="NB-module-feature-description">The more people who use NewsBlur, the more incentive there is to continually improve it. Show your support by <a href="http://twitter.com/?status=I am using NewsBlur, an intelligent feed reader: http://www.newsblur.com."><b>tweeting</b></a> about it.</td>
+        </tr>
+      </table>
+      {% if user.is_staff %}
+        <form action="{% url add-feature %}" id="add-feature-form" method="post">
+          {{ feature_form.description }}
+          <input type="submit" value="Add feature" />
+        </form>
+      {% endif %}
+    </div>
+    
   </div>
 
+    
   <div class="NB-splash-info">
     <ul class="NB-splash-links">
       <li class="NB-splash-link">Hand-crafted by: <a href="http://www.samuelclay.com">Samuel Clay</a></li>

@@ -1815,40 +1815,60 @@ background: transparent;
 .NB-module-features {
     list-style: none;
     padding: 0;
-    margin: 0 12px;
+    margin: 0 6px;
+    width: 466px;
 }
 
-.NB-module-features .NB-module-feature {
-    margin: 0 0 12px;
+.NB-module-features .NB-module-feature td {
+    margin: 0 0 0;
 }
 
-.NB-module-features .NB-module-feature.last {
+.NB-module-features .NB-module-feature.last td {
     margin-bottom: 0;
 }
 
+.NB-module-features .NB-module-feature.NB-module-feature-new td {
+    background-color: #FCFFB4;
+}
 .NB-module-features .NB-module-feature .NB-module-feature-date {
     float: left;
     text-transform: uppercase;
-    padding: 1px 8px 12px 0;
+    padding: 4px 8px;
+    margin: 0;
     color: #134160;
     font-size: 12px;
     font-weight: bold;
-    line-height: 16px;
+    line-height: 20px;
     white-space: nowrap;
 }
 
 .NB-module-features .NB-module-feature.last .NB-module-feature-date {
-    padding-bottom: 0;
+    margin-bottom: 0;
 }
 
 .NB-module-features .NB-module-feature .NB-module-feature-description {
-    line-height: 16px;
+    line-height: 20px;
     font-size: 13px;
-    padding: 0 4px 12px 0;
+    padding: 4px 8px;
+    margin: 0;
+    width: 100%;
 }
 
 .NB-module-features .NB-module-feature.last .NB-module-feature-description {
-    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.NB-module-features .NB-module-feature .NB-module-feature-description a {
+    color: #405BA8;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-description a:hover {
+    color: #A85B40;
+}
+
+.NB-module-features .NB-module-feature .NB-module-feature-description img {
+    width: 16px;
+    height: 16px;
+    vertical-align: bottom;
 }
 
 #add-feature-form {
