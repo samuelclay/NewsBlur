@@ -12,6 +12,7 @@ body {
     list-style: none;
     font-family: 'Lucida Grande',Helvetica, Arial;
     height: 100%;
+    text-rendering: optimizeLegibility;
 }
 
 a, a:active, a:hover, a:visited, button {
