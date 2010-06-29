@@ -6,7 +6,6 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', reader_views.index, name='index'),
-    (r'^accounts/', include('apps.registration.urls')),
     (r'^reader/', include('apps.reader.urls')),
     (r'^classifier/', include('apps.analyzer.urls')),
     (r'^profile/', include('apps.profile.urls')),
