@@ -1,3 +1,0 @@
-Activate your account in {{ expiration_days }} days...
-{{ site }}{% url registration_activate activation_key %}
-

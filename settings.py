@@ -182,7 +182,6 @@ INSTALLED_APPS = (
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
-    'apps.registration',
     'apps.opml_import',
     'apps.profile',
     'devserver',

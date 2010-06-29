@@ -121,7 +121,7 @@ class Feed(models.Model):
                            story_author = story_author,
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
-                           story_tags = json.encode([t.name for t in story_tags])
+                           story_tags = self._shorten_story_tags(story_tags)
                     )
                     try:
                         s.save(force_insert=True)
@@ -157,7 +157,7 @@ class Feed(models.Model):
                            story_author = story_author,
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
-                           story_tags = json.encode([t.name for t in story_tags])
+                           story_tags = self._shorten_story_tags(story_tags)
                     )
                     s.tags.clear()
                     [s.tags.add(tcat) for tcat in story_tags]
@@ -177,6 +177,13 @@ class Feed(models.Model):
     def _save_story_author(self, author):
         author, created = StoryAuthor.objects.get_or_create(feed=self, author_name=author)
         return author, created
+    
+    def _shorten_story_tags(self, story_tags):
+        encoded_tags = json.encode([t.name for t in story_tags])
+        if len(encoded_tags) < 2000:
+            return encoded_tags
+        
+        return self._shorten_story_tags(story_tags[:-1])
         
     def trim_feed(self):
         from apps.reader.models import UserStory
@@ -390,7 +397,7 @@ class Story(models.Model):
     story_guid = models.CharField(max_length=1000)
     story_guid_hash = models.CharField(max_length=40)
     story_past_trim_date = models.BooleanField(default=False)
-    story_tags = models.CharField(max_length=1000)
+    story_tags = models.CharField(max_length=2000)
     tags = models.ManyToManyField('Tag')
 
     def __unicode__(self):
