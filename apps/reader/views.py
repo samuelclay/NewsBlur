@@ -273,9 +273,11 @@ def mark_all_as_read(request):
         if days == 0:
             sub.mark_feed_read()
         else:
-            sub.needs_unread_recalc = True
-            sub.mark_read_date = datetime.datetime.now() - datetime.timedelta(days=days)
-            sub.save()
+            read_date = datetime.datetime.now() - datetime.timedelta(days=days)
+            if sub.mark_read_date < read_date:
+                sub.needs_unread_recalc = True
+                sub.mark_read_date = read_date
+                sub.save()
     
     data = json.encode(dict(code=code))
     return HttpResponse(data)
