@@ -1514,6 +1514,14 @@ a.NB-splash-link:hover {
     margin: 14px 0 14px 16px;
 }
 
+.NB-add .NB-add-danger {
+    display: block;
+    font-size: 12px;
+    color: #535558;
+    font-weight: bold;
+    margin: 8px 0 0;
+}
+
 .NB-add .NB-add-folders {
     text-transform: none;
     position: absolute;
@@ -1564,6 +1572,13 @@ a.NB-splash-link:hover {
     font-size: 14px;
     color: #7E0418;
     margin: 10px 0 0 0;
+}
+
+.NB-add .NB-add-google-reader-arrow {
+    width: 16px;
+    height: 16px;
+    vertical-align: bottom;
+    margin: 0 4px;
 }
 
 /* ================ */
