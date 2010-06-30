@@ -81,12 +81,14 @@ def reader_callback(request):
 def import_from_google_reader(user):
     scope = "http://www.google.com/reader/api"
     sub_url = "%s/0/subscription/list" % scope
-    user_token = OAuthToken.objects.get(user=user)
-    consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
-    token = oauth.Token(user_token.access_token, user_token.access_token_secret)
-    client = oauth.Client(consumer, token)
+    user_tokens = OAuthToken.objects.filter(user=user)
+    if user_tokens.count():
+        user_token = user_tokens[0]
+        consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
+        token = oauth.Token(user_token.access_token, user_token.access_token_secret)
+        client = oauth.Client(consumer, token)
 
-    resp, content = client.request(sub_url, 'GET')
-    reader_importer = GoogleReaderImporter(content, user)
-    return reader_importer.process()
+        resp, content = client.request(sub_url, 'GET')
+        reader_importer = GoogleReaderImporter(content, user)
+        return reader_importer.process()
     
