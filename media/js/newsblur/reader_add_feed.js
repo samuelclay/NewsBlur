@@ -56,8 +56,16 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
+                $.make('div', { className: 'NB-fieldset' }, [
+                    $.make('h5', [
+                        'Import from Google Reader'
+                    ]),
+                    $.make('div', { className: 'NB-fieldset-fields' }, [
+                        $.make('a', { href: NEWSBLUR.URLs['opml-reader-authorize'], className: 'NB-opml-reader-oauth NB-splash-link' }, 'Synchronize with Google Reader (OAuth)')
+                    ])
+                ]),
                 $.make('div', { className: 'NB-fieldset NB-add-opml' }, [
-                    $.make('h5', 'Upload OPML (from Google Reader)'),
+                    $.make('h5', 'Upload OPML'),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
                             $.make('div', { className: 'NB-loading' }),
@@ -68,14 +76,6 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                                 return false;
                             })
                         ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-fieldset' }, [
-                    $.make('h5', [
-                        'Import from Google Reader'
-                    ]),
-                    $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('div', { className: 'NB-disabled' }, 'Google Reader integration coming in the next few months. Use OPML. It\'s easy.')
                     ])
                 ])
             ])
@@ -117,10 +117,14 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         var $holder = $.make('div', { className: 'NB-modal-holder' }).append(this.$add).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
         var height = $('.NB-add', $holder).outerHeight(true);
         $holder.css({'visibility': 'visible', 'display': 'none'});
-        
+        var w = $.modal.impl.getDimensions();
+        if (height > w[0]) {
+            height = w[0] - 70;
+        }
+        NEWSBLUR.log(['Reader Height', height, w]);
         this.$add.modal({
             'minWidth': 600,
-            'minHeight': height,
+            'maxHeight': height,
             'overlayClose': true,
             'onOpen': function (dialog) {
 	            dialog.overlay.fadeIn(200, function () {
@@ -178,7 +182,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 
         // NEWSBLUR.log(['Uploading']);
         $.ajaxFileUpload({
-			url: '/opml/opml_upload', 
+			url: '/import/opml_upload', 
 			secureuri: false,
 			fileElementId: 'opml_file_input',
 			dataType: 'text',
@@ -197,7 +201,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 		
 		return false;
     },
-        
+    
     // ===========
     // = Actions =
     // ===========
@@ -215,7 +219,8 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             e.preventDefault();
             
             self.save_add_folder();
-        });
+        });        
+        
     },
     
     save_add_url: function() {

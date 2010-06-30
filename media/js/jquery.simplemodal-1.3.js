@@ -462,7 +462,7 @@
 
 				var mh = s.o.maxHeight && s.o.maxHeight < w[0] ? s.o.maxHeight : w[0],
 					mw = s.o.maxWidth && s.o.maxWidth < w[1] ? s.o.maxWidth : w[1];
-
+                    NEWSBLUR.log(['Height', w, s.o.maxHeight]);
 				// height
 				if (!ch) {
 					if (!dh) {ch = s.o.minHeight;}

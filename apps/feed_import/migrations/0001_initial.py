@@ -1,7 +1,7 @@
 
 from south.db import db
 from django.db import models
-from apps.opml_import.models import *
+from apps.feed_import.models import *
 
 class Migration:
     
@@ -17,4 +17,4 @@ class Migration:
         
     }
     
-    complete_apps = ['opml_import']
+    complete_apps = ['feed_import']

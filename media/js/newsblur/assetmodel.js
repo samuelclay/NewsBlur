@@ -320,7 +320,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     process_opml_import: function(data, callback) {
         var self = this;
         
-        this.make_request('/opml_import/process', data, callback);
+        this.make_request('/import/process', data, callback);
     },
     
     save_classifier_story: function(story_id, data, callback) {

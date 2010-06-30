@@ -1,29 +1,29 @@
 
 from south.db import db
 from django.db import models
-from apps.opml_import.models import *
+from apps.feed_import.models import *
 
 class Migration:
     
     def forwards(self, orm):
         
         # Adding model 'OAuthToken'
-        db.create_table('opml_import_oauthtoken', (
-            ('id', orm['opml_import.oauthtoken:id']),
-            ('user', orm['opml_import.oauthtoken:user']),
-            ('request_token', orm['opml_import.oauthtoken:request_token']),
-            ('request_token_secret', orm['opml_import.oauthtoken:request_token_secret']),
-            ('access_token', orm['opml_import.oauthtoken:access_token']),
-            ('access_token_secret', orm['opml_import.oauthtoken:access_token_secret']),
+        db.create_table('feed_import_oauthtoken', (
+            ('id', orm['feed_import.oauthtoken:id']),
+            ('user', orm['feed_import.oauthtoken:user']),
+            ('request_token', orm['feed_import.oauthtoken:request_token']),
+            ('request_token_secret', orm['feed_import.oauthtoken:request_token_secret']),
+            ('access_token', orm['feed_import.oauthtoken:access_token']),
+            ('access_token_secret', orm['feed_import.oauthtoken:access_token_secret']),
         ))
-        db.send_create_signal('opml_import', ['OAuthToken'])
+        db.send_create_signal('feed_import', ['OAuthToken'])
         
     
     
     def backwards(self, orm):
         
         # Deleting model 'OAuthToken'
-        db.delete_table('opml_import_oauthtoken')
+        db.delete_table('feed_import_oauthtoken')
         
     
     
@@ -62,7 +62,7 @@ class Migration:
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'opml_import.oauthtoken': {
+        'feed_import.oauthtoken': {
             'access_token': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'access_token_secret': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -72,4 +72,4 @@ class Migration:
         }
     }
     
-    complete_apps = ['opml_import']
+    complete_apps = ['feed_import']
