@@ -362,10 +362,14 @@ var classifier = {
             .css({'visibility': 'hidden', 'display': 'block', 'width': 600});
         var height = $('.NB-classifier', $holder).outerHeight(true);
         $holder.css({'visibility': 'visible', 'display': 'none'});
+        var w = $.modal.impl.getDimensions();
+        if (height > w[0] - 70) {
+            height = w[0] - 70;
+        }
         
         this.$classifier.modal({
             'minWidth': 600,
-            'minHeight': height,
+            'maxHeight': height,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {

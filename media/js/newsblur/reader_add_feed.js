@@ -118,10 +118,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         var height = $('.NB-add', $holder).outerHeight(true);
         $holder.css({'visibility': 'visible', 'display': 'none'});
         var w = $.modal.impl.getDimensions();
-        if (height > w[0]) {
+        if (height > w[0] - 70) {
             height = w[0] - 70;
         }
-        NEWSBLUR.log(['Reader Height', height, w]);
         this.$add.modal({
             'minWidth': 600,
             'maxHeight': height,

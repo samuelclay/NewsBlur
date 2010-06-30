@@ -27,6 +27,7 @@
         };
         this.locks = {};
         this.cache = {
+            'feature_page': 0,
             'iframe_stories': {},
             'feed_view_stories': {},
             'iframe_story_positions': {},
@@ -2184,6 +2185,22 @@
             this.$s.$mouse_indicator.css('top', position);
         },
         
+        // ==================
+        // = Features Board =
+        // ==================
+        
+        load_feature_page: function(direction) {
+            var self = this;
+            
+            if (direction == -1 && !this.cache['feature_page']) {
+                return;
+            }
+            
+            this.model.get_features_page(this.cache['feature_page']+direction, function(e, data) {
+                
+            });
+        },
+        
         // ========
         // = FTUX =
         // ========
@@ -2389,6 +2406,14 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
+            $.targetIs(e, { tagSelector: '.NB-features-next-page' }, function($t, $p){
+                e.preventDefault();
+                self.load_feature_page(1);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-features-previous-page' }, function($t, $p){
+                e.preventDefault();
+                self.load_feature_page(-1);
+            });
         },
         
         handle_dblclicks: function(elem, e) {

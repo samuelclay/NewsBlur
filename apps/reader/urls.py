@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     url(r'^add_url', views.add_url),
     url(r'^add_folder', views.add_folder),
     url(r'^add_feature', views.add_feature, name='add-feature'),
+    url(r'^load_features', views.load_features, name='load-features'),
 )

@@ -503,3 +503,7 @@ def add_feature(request):
     data = json.encode(dict(code=code))
     return HttpResponse(data)
     
+def load_features(request):
+    page = request.GET('page', 0)
+    features = Feature.objects.all()[page*3:(page+1)*3+1]
+    return HttpResponse(json.encode(features), mimetype='application/json')

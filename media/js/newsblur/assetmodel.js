@@ -374,6 +374,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     save_mark_read: function(days, callback) {
         this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
+    },
+    
+    get_features_page: function(page, callback) {
+        this.make_request('/reader/load_features', {'page': page}, callback);
     }
     
 };
