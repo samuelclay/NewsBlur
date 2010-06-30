@@ -77,6 +77,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.cache.CacheMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.profile.middleware.LastSeenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
