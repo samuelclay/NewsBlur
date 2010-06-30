@@ -43,7 +43,7 @@ def index(request):
         import_from_google_reader(request.user)
         del request.session['import_from_google_reader']
         
-    features = Feature.objects.all()[:5]
+    features = Feature.objects.all()[:3]
     feature_form = None
     if request.user.is_staff:
         feature_form = FeatureForm()
@@ -504,6 +504,6 @@ def add_feature(request):
     return HttpResponse(data)
     
 def load_features(request):
-    page = request.GET('page', 0)
-    features = Feature.objects.all()[page*3:(page+1)*3+1]
+    page = int(request.POST.get('page', 0))
+    features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     return HttpResponse(json.encode(features), mimetype='application/json')

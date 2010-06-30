@@ -90,6 +90,7 @@ COMPRESS_JS = {
         'source_filenames': (
             'js/jquery-1.4.2.js',
             'js/jquery.easing.js',
+            'js/jquery.date.js',
             'js/jquery.newsblur.js',
             'js/jquery.scrollTo.js',
             'js/jquery.timers.js',

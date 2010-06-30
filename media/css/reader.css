@@ -1815,11 +1815,29 @@ background: transparent;
 /* = Features = */
 /* ============ */
 
-.NB-module-features {
+.NB-module-features table {
     list-style: none;
     padding: 0;
     margin: 0 6px;
     width: 466px;
+}
+
+.NB-module-features .NB-features-direction {
+    display: block;
+    width: 16px;
+    height: 16px;
+    float: right;
+    margin: 0 4px;
+}
+
+.NB-module-features .NB-features-next-page {
+    background: transparent url('../img/icons/silk/control_play.png') no-repeat 0 0;
+}
+.NB-module-features .NB-features-next-page:hover {
+    background: transparent url('../img/icons/silk/control_play_blue.png') no-repeat 0 0;
+}
+.NB-module-features .NB-features-previous-page {
+    background: transparent url('../img/icons/mini/action_back.gif') no-repeat 0 0;
 }
 
 .NB-module-features .NB-module-feature td {
