@@ -2206,6 +2206,7 @@
                 
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
                 for (var f in features) {
+                    if (f == 3) break;
                     var feature = features[f];
                     var date = Date.parse(feature.date);
                     var $tr = $.make('tr', { className: 'NB-module-feature' }, [
