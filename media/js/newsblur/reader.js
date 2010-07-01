@@ -1717,7 +1717,8 @@
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, 'Manage opinions'),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, 'Site statistics'),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, 'Delete this site')
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, 'Delete this site'),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, 'Really delete?')
                 ];
                 for (var f in $feed_specific) {
                     $manage_menu.append($feed_specific[f]);
@@ -1764,7 +1765,7 @@
                 'easing': 'easeOutQuint', 
                 'queue': false,
                 'complete': function() {
-                    $(document).bind('click.menu', function() {
+                    $(document).bind('click.menu', function(e) {
                         self.hide_manage_menu();
                     });
                 }
@@ -1798,6 +1799,33 @@
                 }
             });
             $('.NB-task-manage').removeClass('NB-hover');
+        },
+        
+        show_confirm_delete_menu_item: function() {
+            var $delete = $('.NB-menu-manage-feed-delete');
+            var $confirm = $('.NB-menu-manage-feed-delete-confirm');
+            
+            $delete.addClass('NB-menu-manage-feed-delete-cancel');
+            $delete.text('Cancel delete');
+            $confirm.slideDown(500);
+        },
+        
+        hide_confirm_delete_menu_item: function() {
+            var $delete = $('.NB-menu-manage-feed-delete');
+            var $confirm = $('.NB-menu-manage-feed-delete-confirm');
+            
+            $delete.removeClass('NB-menu-manage-feed-delete-cancel');
+            $delete.text('Delete this site');
+            $confirm.slideUp(500);
+        },
+        
+        manage_menu_delete_feed: function(feed) {
+            var self = this;
+            var feed_id = feed || this.active_feed;
+        
+            this.model.delete_publisher(feed_id, function() {
+                self.delete_feed(feed_id);
+            });
         },
         
         // ==========================
@@ -2387,6 +2415,19 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_manage_feed_modal();
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if ($t.hasClass('NB-menu-manage-feed-delete-cancel')) {
+                    self.hide_confirm_delete_menu_item();
+                } else {
+                    self.show_confirm_delete_menu_item();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete-confirm' }, function($t, $p){
+                e.preventDefault();
+                self.manage_menu_delete_feed(self.active_feed);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-mark-read' }, function($t, $p){
                 e.preventDefault();

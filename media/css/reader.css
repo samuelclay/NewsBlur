@@ -1839,6 +1839,10 @@ background: transparent;
 
 .NB-module-features .NB-features-add {
     float: right;
+    display: none;
+}
+.NB-module-features .NB-module-header:hover .NB-features-add {
+    display: block;
 }
 
 .NB-module-features .NB-features-direction {
@@ -1990,6 +1994,7 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-feed {
     padding-left: 44px;
+    position: relative;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info {
@@ -2019,10 +2024,22 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-delete {
     background: transparent url('../img/icons/silk/bin_closed.png') no-repeat 22px 2px;    
 }
+.NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
+    background-image: none;    
+}
+
+.NB-menu-manage .NB-menu-manage-feed-delete-confirm {
+    background: transparent url('../img/icons/silk/exclamation.png') no-repeat 22px 2px;   
+    font-weight: bold; 
+}
 
 .NB-menu-manage .NB-menu-manage-mark-read {
     background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat 4px 2px;
 }
 .NB-menu-manage .NB-menu-manage-preferences {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat 4px 2px;
+}
+
+.NB-menu-manage .NB-menu-manage-feed-delete-confirm {
+    display: none;
 }
