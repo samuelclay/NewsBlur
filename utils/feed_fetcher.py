@@ -3,7 +3,6 @@ from django.core.cache import cache
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
-from django.db import transaction
 from django.db.models import Q
 from utils.story_functions import pre_process_story
 import sys
@@ -81,21 +80,6 @@ class FetchFeed:
         
         return FEED_OK, self.fpf
     
-class FetchPage:
-    def __init__(self, feed, options):
-        self.feed = feed
-        self.options = options
-
-    @transaction.autocommit
-    def fetch(self):
-        logging.debug(u'[%d] Fetching page from %s' % (self.feed.id,
-                                                       self.feed.feed_title))
-        if self.feed.feed_link:
-            page_importer = PageImporter(self.feed.feed_link, self.feed)
-            self.feed.page = page_importer.fetch_page()
-        
-            self.feed.save()
-        
 class ProcessFeed:
     def __init__(self, feed, fpf, options):
         self.feed = feed
@@ -279,9 +263,10 @@ class Dispatcher:
                 if fetched_feed and ret_feed == FEED_OK:
                     pfeed = ProcessFeed(feed, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
-                
-                    fpage = FetchPage(feed, self.options)
-                    fpage.fetch()
+                    
+                    if feed.feed_link:
+                        page_importer = PageImporter(feed.feed_link, feed)
+                        page_importer.fetch_page()
                 
                     if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
                         user_subs = UserSubscription.objects.filter(feed=feed)
