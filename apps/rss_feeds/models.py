@@ -194,7 +194,7 @@ class Feed(models.Model):
             self.save()
             return
 
-        tags_list = json.decode(feed_tags)
+        tags_list = json.decode(feed_tags) if feed_tags else []
         if len(tags_list) > 1:
             self.save_popular_tags(tags_list[:-1])
     
@@ -212,7 +212,7 @@ class Feed(models.Model):
             self.save()
             return
 
-        authors_list = json.decode(feed_authors)
+        authors_list = json.decode(feed_authors) if feed_authors else []
         if len(authors_list) > 1:
             self.save_popular_authors(authors_list[:-1])
         
