@@ -1846,8 +1846,13 @@ background: transparent;
     width: 16px;
     height: 16px;
     float: right;
-    margin: 0 4px;
+    margin: 0 3px;
 }
+
+.NB-module-features .NB-features-direction.NB-disabled {
+    opacity: .25;
+}
+
 
 .NB-module-features .NB-features-next-page {
     background: transparent url('../img/icons/silk/control_play.png') no-repeat 0 0;
@@ -1855,8 +1860,19 @@ background: transparent;
 .NB-module-features .NB-features-next-page:hover {
     background: transparent url('../img/icons/silk/control_play_blue.png') no-repeat 0 0;
 }
+.NB-module-features .NB-features-next-page.NB-disabled:hover {
+    background: transparent url('../img/icons/silk/control_play.png') no-repeat 0 0;
+    cursor: default;
+}
 .NB-module-features .NB-features-previous-page {
-    background: transparent url('../img/icons/mini/action_back.gif') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/control_play_left.png') no-repeat 0 0;
+}
+.NB-module-features .NB-features-previous-page:hover {
+    background: transparent url('../img/icons/silk/control_play_left_blue.png') no-repeat 0 0;
+}
+.NB-module-features .NB-features-previous-page.NB-disabled:hover {
+    background: transparent url('../img/icons/silk/control_play_left.png') no-repeat 0 0;
+    cursor: default;
 }
 
 .NB-module-features .NB-module-feature td {

@@ -2191,23 +2191,18 @@
         
         load_feature_page: function(direction) {
             var self = this;
+            var $next = $('.NB-features-next-page');
+            var $previous = $('.NB-features-previous-page');
             
             if (direction == -1 && !this.cache['feature_page']) {
                 return;
             }
-            
-            if (this.flags['features_last_page']) {
+            if (direction == 1 && this.flags['features_last_page']) {
                 return;
             }
             
             this.model.get_features_page(this.cache['feature_page']+direction, function(features) {
                 self.cache['feature_page'] += direction;
-                
-                var features_count = features.length;
-                if (features_count < 4) {
-                    self.flags['features_last_page'] = true;
-                    $('.NB-features-next-page').fadeOut(500);
-                }
                 
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
                 for (var f in features) {
@@ -2221,6 +2216,21 @@
                 }
                 
                 $('.NB-module-features table').replaceWith($table);
+                
+                var features_count = features.length;
+                if (features_count < 4) {
+                    $next.addClass('NB-disabled');
+                    self.flags['features_last_page'] = true;
+                } else {
+                    $next.removeClass('NB-disabled');
+                    self.flags['features_last_page'] = false;
+                }
+                if (self.cache['feature_page'] > 0) {
+                    $previous.removeClass('NB-disabled');
+                } else {
+                    $previous.addClass('NB-disabled');
+                }
+                
             });
         },
         
