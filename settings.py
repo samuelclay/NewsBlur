@@ -168,6 +168,7 @@ ROOT_URLCONF = 'urls'
 INTERNAL_IPS = ('127.0.0.1',)
 LOGGING_LOG_SQL = True
 APPEND_SLASH = True
+SOUTH_TESTS_MIGRATE = False 
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 # ===============

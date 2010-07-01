@@ -12,7 +12,6 @@ import logging
 import datetime
 import traceback
 import multiprocessing
-import random
 import socket
 
 # Refresh feed code adapted from Feedjack.
@@ -182,6 +181,7 @@ class ProcessFeed:
                 
         self.lock.acquire()
         try:
+            self.feed.save_popular_tags()
             self.feed.save()
         finally:
             self.lock.release()
