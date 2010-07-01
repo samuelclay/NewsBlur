@@ -4,19 +4,24 @@ from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
 from django.utils import simplejson as json
 from decimal import Decimal
-
+from django.core import serializers
 from django.http import HttpResponse
 from django.core.mail import mail_admins
 from django.utils.translation import ugettext as _
+from django.db.models.query import QuerySet
 import sys
 
 def decode(data):
     return json.loads(data)
     
-def encode(data):
-    return json_encode(data)
+def encode(data, *args, **kwargs):
+    if isinstance(data, QuerySet):
+        # Django models
+        return serializers.serialize("json", data, *args, **kwargs)
+    else:
+        return json_encode(data, *args, **kwargs)
 
-def json_encode(data):
+def json_encode(data, *args, **kwargs):
     """
     The main issues with django's default json serializer is that properties that
     had been added to an object dynamically are being ignored (and it also has 
@@ -77,7 +82,7 @@ def json_encode(data):
     
     ret = _any(data)
     
-    return json.dumps(ret, cls=DateTimeAwareJSONEncoder, ensure_ascii=False, indent=2)
+    return json.dumps(ret, cls=DateTimeAwareJSONEncoder, ensure_ascii=False, *args, **kwargs)
 
 def json_view(func):
     def wrap(request, *a, **kw):
@@ -104,7 +109,7 @@ def json_view(func):
                 request_repr,
                 )
             print message
-            # mail_admins(subject, message, fail_silently=True)
+            mail_admins(subject, message, fail_silently=True)
 
             # Come what may, we're returning JSON.
             if hasattr(e, 'message'):
