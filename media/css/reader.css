@@ -1837,6 +1837,10 @@ background: transparent;
     width: 466px;
 }
 
+.NB-module-features .NB-features-add {
+    float: right;
+}
+
 .NB-module-features .NB-features-direction {
     display: block;
     width: 16px;

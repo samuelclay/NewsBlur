@@ -2212,9 +2212,9 @@
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
                 for (var f in features) {
                     var feature = features[f];
-                    var date = new Date(feature.date.substring(0, 10));
+                    var date = Date.parse(feature.date);
                     var $tr = $.make('tr', { className: 'NB-module-feature' }, [
-                        $.make('td', { className: 'NB-module-feature-date' }, date.asString('mmm dd, yyyy')),
+                        $.make('td', { className: 'NB-module-feature-date' }, date.toString('MMM dd, yyyy')),
                         $.make('td', { className: 'NB-module-feature-description' }, feature.description)
                     ]);
                     $table.append($tr);
