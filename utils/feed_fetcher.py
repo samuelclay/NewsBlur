@@ -240,9 +240,6 @@ class Dispatcher:
             identity = current_process._identity[0]
         for feed in feed_queue:
             # print "Process Feed: [%s] %s" % (current_process.name, feed)
-            ffeed = None
-            pfeed = None
-            fpage = None
             ret_entries = {
                 ENTRY_NEW: 0,
                 ENTRY_UPDATED: 0,
@@ -260,13 +257,16 @@ class Dispatcher:
                 ffeed = FetchFeed(feed, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
+                if (fetched_feed and
+                    feed.feed_link and
+                    (ret_feed == FEED_OK or
+                     (ret_feed == FEED_SAME and feed.stories_per_month > 10))):
+                    page_importer = PageImporter(feed.feed_link, feed)
+                    page_importer.fetch_page()
+
                 if fetched_feed and ret_feed == FEED_OK:
                     pfeed = ProcessFeed(feed, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
-                    
-                    if feed.feed_link:
-                        page_importer = PageImporter(feed.feed_link, feed)
-                        page_importer.fetch_page()
                 
                     if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
                         user_subs = UserSubscription.objects.filter(feed=feed)
@@ -286,10 +286,6 @@ class Dispatcher:
                 traceback.print_exception(etype, eobj, etb)
                 print '[%d] ! -------------------------' % (feed.id,)
                 ret_feed = FEED_ERREXC 
-            finally:
-                if ffeed: del ffeed
-                if pfeed: del pfeed
-                if fpage: del fpage
 
             delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:
