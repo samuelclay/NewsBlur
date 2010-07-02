@@ -296,19 +296,43 @@
                     }
                 });
             }
-            
-            // NEWSBLUR.log(['Found stories', $stories, story.story_title]);
-            
+                        
             // Find the story with the biggest font size
             var max_size = 0;
-            var $story = $([]);
+            var $same_size_stories = $([]);
             $stories.each(function() {
-                var size = parseInt($(this).css('font-size'), 10);
+                var $this = $(this);
+                var size = parseInt($this.css('font-size'), 10);
                 if (size > max_size) {
                     max_size = size;
-                    $story = $(this);
+                    $same_size_stories = $([]);
+                }
+                if (size == max_size) {
+                    $same_size_stories.push($this);
                 }
             });
+            
+            // NEWSBLUR.log(['Found stories', $stories.length, $same_size_stories.length, $same_size_stories, story.story_title]);
+            
+            // Multiple stories at the same big font size? Determine story title overlap,
+            // and choose the smallest difference in title length.
+            var $story = $([]);
+            if ($same_size_stories.length > 1) {
+                var story_similarity = 100;
+                $same_size_stories.each(function() {
+                    var $this = $(this);
+                    var story_text = $this.text();
+                    var overlap = Math.abs(story_text.length - story.story_title.length);
+                    if (overlap < story_similarity) {
+                        story_similarity = overlap;
+                        $story = $this;
+                    }
+                });
+            }
+
+            if (!$story.length) {
+                $story = $same_size_stories[0];
+            }
             
             if ($story && $story.length) {
                 this.cache.iframe_stories[story.id] = $story;
