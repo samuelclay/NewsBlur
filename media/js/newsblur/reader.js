@@ -1717,7 +1717,8 @@
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, 'Manage opinions'),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, 'Site statistics'),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, 'Delete this site')
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, 'Delete this site'),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, 'Really delete?')
                 ];
                 for (var f in $feed_specific) {
                     $manage_menu.append($feed_specific[f]);
@@ -1764,7 +1765,7 @@
                 'easing': 'easeOutQuint', 
                 'queue': false,
                 'complete': function() {
-                    $(document).bind('click.menu', function() {
+                    $(document).bind('click.menu', function(e) {
                         self.hide_manage_menu();
                     });
                 }
@@ -1798,6 +1799,33 @@
                 }
             });
             $('.NB-task-manage').removeClass('NB-hover');
+        },
+        
+        show_confirm_delete_menu_item: function() {
+            var $delete = $('.NB-menu-manage-feed-delete');
+            var $confirm = $('.NB-menu-manage-feed-delete-confirm');
+            
+            $delete.addClass('NB-menu-manage-feed-delete-cancel');
+            $delete.text('Cancel delete');
+            $confirm.slideDown(500);
+        },
+        
+        hide_confirm_delete_menu_item: function() {
+            var $delete = $('.NB-menu-manage-feed-delete');
+            var $confirm = $('.NB-menu-manage-feed-delete-confirm');
+            
+            $delete.removeClass('NB-menu-manage-feed-delete-cancel');
+            $delete.text('Delete this site');
+            $confirm.slideUp(500);
+        },
+        
+        manage_menu_delete_feed: function(feed) {
+            var self = this;
+            var feed_id = feed || this.active_feed;
+        
+            this.model.delete_publisher(feed_id, function() {
+                self.delete_feed(feed_id);
+            });
         },
         
         // ==========================
@@ -2191,36 +2219,47 @@
         
         load_feature_page: function(direction) {
             var self = this;
+            var $next = $('.NB-features-next-page');
+            var $previous = $('.NB-features-previous-page');
             
             if (direction == -1 && !this.cache['feature_page']) {
                 return;
             }
-            
-            if (this.flags['features_last_page']) {
+            if (direction == 1 && this.flags['features_last_page']) {
                 return;
             }
             
             this.model.get_features_page(this.cache['feature_page']+direction, function(features) {
                 self.cache['feature_page'] += direction;
                 
-                var features_count = features.length;
-                if (features_count < 4) {
-                    self.flags['features_last_page'] = true;
-                    $('.NB-features-next-page').fadeOut(500);
-                }
-                
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
                 for (var f in features) {
+                    if (f == 3) break;
                     var feature = features[f];
-                    var date = new Date(feature.date.substring(0, 10));
+                    var date = Date.parse(feature.date);
                     var $tr = $.make('tr', { className: 'NB-module-feature' }, [
-                        $.make('td', { className: 'NB-module-feature-date' }, date.asString('mmm dd, yyyy')),
+                        $.make('td', { className: 'NB-module-feature-date' }, date.toString('MMM dd, yyyy')),
                         $.make('td', { className: 'NB-module-feature-description' }, feature.description)
                     ]);
                     $table.append($tr);
                 }
                 
                 $('.NB-module-features table').replaceWith($table);
+                
+                var features_count = features.length;
+                if (features_count < 4) {
+                    $next.addClass('NB-disabled');
+                    self.flags['features_last_page'] = true;
+                } else {
+                    $next.removeClass('NB-disabled');
+                    self.flags['features_last_page'] = false;
+                }
+                if (self.cache['feature_page'] > 0) {
+                    $previous.removeClass('NB-disabled');
+                } else {
+                    $previous.addClass('NB-disabled');
+                }
+                
             });
         },
         
@@ -2376,6 +2415,19 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_manage_feed_modal();
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if ($t.hasClass('NB-menu-manage-feed-delete-cancel')) {
+                    self.hide_confirm_delete_menu_item();
+                } else {
+                    self.show_confirm_delete_menu_item();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete-confirm' }, function($t, $p){
+                e.preventDefault();
+                self.manage_menu_delete_feed(self.active_feed);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-mark-read' }, function($t, $p){
                 e.preventDefault();

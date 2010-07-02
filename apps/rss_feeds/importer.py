@@ -66,8 +66,4 @@ class PageImporter(object):
         if html and len(html) > 100:
             feed_page, _ = FeedPage.objects.get_or_create(feed=self.feed)
             feed_page.page_data = html
-            self.lock.acquire()
-            try:
-                feed_page.save()
-            finally:
-                self.lock.release()
+            feed_page.save()

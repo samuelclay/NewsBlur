@@ -12,7 +12,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
-from utils.compressed_textfield import StoryField
+from utils.compressed_textfield import CompressedTextField, StoryField
 from utils.diff import HTMLDiff
 
 USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
@@ -35,6 +35,8 @@ class Feed(models.Model):
     stories_per_month = models.IntegerField(default=0)
     next_scheduled_update = models.DateTimeField(default=datetime.datetime.now)
     last_load_time = models.IntegerField(default=0)
+    popular_tags = models.CharField(max_length=1024, blank=True, null=True)
+    popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
     
     def __unicode__(self):
@@ -178,12 +180,49 @@ class Feed(models.Model):
         author, created = StoryAuthor.objects.get_or_create(feed=self, author_name=author)
         return author, created
     
+    def save_popular_tags(self, feed_tags=None):
+        if not feed_tags:
+            from apps.rss_feeds.models import Tag
+            from django.db.models.aggregates import Count
+            all_tags = Tag.objects.filter(feed=self)\
+                      .annotate(stories_count=Count('story'))\
+                      .order_by('-stories_count')[:20]
+            feed_tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
+        popular_tags = json.encode(feed_tags)
+        if len(popular_tags) < 1024:
+            self.popular_tags = popular_tags
+            self.save()
+            return
+
+        tags_list = json.decode(feed_tags) if feed_tags else []
+        if len(tags_list) > 1:
+            self.save_popular_tags(tags_list[:-1])
+    
+    def save_popular_authors(self, feed_authors=None):
+        if not feed_authors:
+            from django.db.models.aggregates import Count
+            all_authors = StoryAuthor.objects.filter(feed=self, author_name__isnull=False)\
+                          .annotate(stories_count=Count('story'))\
+                          .order_by('-stories_count')[:20]
+            feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
+                                                                       if author.stories_count > 1]
+        popular_authors = json.encode(feed_authors)
+        if len(popular_authors) < 1024:
+            self.popular_authors = popular_authors
+            self.save()
+            return
+
+        authors_list = json.decode(feed_authors) if feed_authors else []
+        if len(authors_list) > 1:
+            self.save_popular_authors(authors_list[:-1])
+        
     def _shorten_story_tags(self, story_tags):
         encoded_tags = json.encode([t.name for t in story_tags])
         if len(encoded_tags) < 2000:
             return encoded_tags
         
-        return self._shorten_story_tags(story_tags[:-1])
+        if len(story_tags) > 1:
+            return self._shorten_story_tags(story_tags[:-1])
         
     def trim_feed(self):
         from apps.reader.models import UserStory

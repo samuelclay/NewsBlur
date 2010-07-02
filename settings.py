@@ -50,10 +50,11 @@ DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
-logging.basicConfig(level=logging.INFO,
-                format='%(asctime)s %(levelname)s %(message)s',
-                filename=LOG_FILE,
-                filemode='w')
+if PRODUCTION:
+    logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename=LOG_FILE,
+                    filemode='w')
                 
 # ===========================
 # = Django-specific Modules =
@@ -167,6 +168,7 @@ ROOT_URLCONF = 'urls'
 INTERNAL_IPS = ('127.0.0.1',)
 LOGGING_LOG_SQL = True
 APPEND_SLASH = True
+SOUTH_TESTS_MIGRATE = False 
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 # ===============
@@ -188,6 +190,7 @@ INSTALLED_APPS = (
     'apps.profile',
     'devserver',
     'south',
+    'test_utils',
     # 'debug_toolbar'
 )
 

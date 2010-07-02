@@ -153,5 +153,20 @@
             "email": "samuel@ofbrooklyn.com", 
             "date_joined": "2009-01-04 17:32:58"
         }
+    },
+    {
+        "pk": 1206, 
+        "model": "reader.usersubscription", 
+        "fields": {
+            "feed": 56, 
+            "needs_unread_recalc": false, 
+            "unread_count_updated": "2010-06-29 19:37:38", 
+            "unread_count_positive": 0, 
+            "mark_read_date": "2010-06-28 19:36:44", 
+            "unread_count_negative": 3, 
+            "user": 1, 
+            "last_read_date": "2010-06-15 19:30:35", 
+            "unread_count_neutral": 0
+        }
     }
 ]

@@ -4,10 +4,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.db import IntegrityError
-from django.core.cache import cache
 from django.views.decorators.cache import never_cache
 from django.db.models import Q
-from django.db.models.aggregates import Count
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
@@ -18,7 +16,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserSt
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.feed_import.views import import_from_google_reader
 try:
-    from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor, FeedPage
+    from apps.rss_feeds.models import Feed, Story, FeedPage
 except:
     pass
 from utils import json, feedfinder
@@ -235,16 +233,8 @@ def load_single_feed(request):
     
     # Intelligence
     
-    all_tags = Tag.objects.filter(feed=feed)\
-                          .annotate(stories_count=Count('story'))\
-                          .order_by('-stories_count')[:20]
-    feed_tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
-    
-    all_authors = StoryAuthor.objects.filter(feed=feed)\
-                          .annotate(stories_count=Count('story'))\
-                          .order_by('-stories_count')[:20]
-    feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
-                                                               if author.stories_count > 1]
+    feed_tags = json.decode(feed.popular_tags) if feed.popular_tags else []
+    feed_authors = json.decode(feed.popular_authors) if feed.popular_authors else []
     classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
                                            classifier_authors, classifier_titles, classifier_tags)
     

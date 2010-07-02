@@ -5,8 +5,8 @@ from django.core import management
 from pprint import pprint
 from django.core.urlresolvers import reverse
 
-class FeedTest(TestCase):
-    fixtures = ['reader.json']
+class ReaderTest(TestCase):
+    fixtures = ['reader.json', 'stories.json']
     
     def setUp(self):
         self.client = Client()
@@ -74,3 +74,19 @@ class FeedTest(TestCase):
         self.assertEquals(len(feeds['folders']), 4)
         self.assertTrue(1 not in feeds['folders'])
         self.assertEquals(feeds['folders'], [{u'Tech': [{u'Deep Tech': [6, 7]}]}, 2, 3, {u'Blogs': []}])
+        
+    def test_load_single_feed(self):
+        from django.conf import settings
+        from django.db import connection
+        settings.DEBUG = True
+        connection.queries = []
+
+        self.client.login(username='conesus', password='test')        
+        response = self.client.get(reverse('load-single-feed'), {'feed_id': 56})
+        feed = json.decode(response.content)
+        
+        pprint(connection.queries)
+        
+        self.assert_(connection.queries)
+        
+        settings.DEBUG = False
