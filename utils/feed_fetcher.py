@@ -62,8 +62,6 @@ class FetchFeed:
             logging.info(log_msg)
             print(log_msg)
             return FEED_SAME, None
-            
-        self.feed.set_next_scheduled_update()
         
         # we check the etag and the modified time to save bandwith and avoid bans
         try:
@@ -163,12 +161,7 @@ class ProcessFeed:
             elif entry.link:
                 guids.append(entry.link)
                 
-        self.lock.acquire()
-        try:
-            self.feed.save_popular_tags()
-            self.feed.save()
-        finally:
-            self.lock.release()
+        self.feed.save()
 
 
         # Compare new stories to existing stories, adding and updating
@@ -261,14 +254,17 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                 
-                    if ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]:
+                    if ret_entries.get(ENTRY_NEW):
+                        feed.count_subscribers()
+                        feed.count_stories_per_month()
+                        feed.save_popular_authors()
+                        feed.save_popular_tags()
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
                             logging.info('Deleting user sub cache: %s' % sub.user_id)
                             cache.delete('usersub:%s' % sub.user_id)
                             sub.calculate_feed_scores()
-                    if ((ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]) \
-                        or (ENTRY_UPDATED in ret_entries and ret_entries[ENTRY_UPDATED])):
+                    if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
                         feed.get_stories(force=True)
                 
                 if (fetched_feed and
@@ -293,6 +289,8 @@ class Dispatcher:
             
             feed.last_load_time = max(1, delta.seconds)
             feed.save()
+            
+            feed.set_next_scheduled_update()
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
                 identity, feed.feed_title, feed.id, unicode(delta),

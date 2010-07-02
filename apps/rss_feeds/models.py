@@ -42,7 +42,7 @@ class Feed(models.Model):
     def __unicode__(self):
         return self.feed_title
     
-    def calculate_subscribers(self, verbose=False):
+    def count_subscribers(self, verbose=False):
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
@@ -58,7 +58,14 @@ class Feed(models.Model):
                     '' if self.num_subscribers == 1 else 's',
                     self.feed_title,
                 ),
-        
+    def count_stories_per_month(self, verbose=False):
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+        stories_count = Story.objects.filter(story_feed=self, story_date__gte=month_ago).count()
+        self.stories_per_month = stories_count
+        self.save()
+        if verbose:
+            print "  ---> %s [%s]: %s stories" % (self.feed_title, self.pk, self.stories_per_month)
+            
     def last_updated(self):
         return time.time() - time.mktime(self.last_update.timetuple())
     
@@ -370,15 +377,19 @@ class Feed(models.Model):
         updates_per_day = max(30, self.stories_per_month) / 30.0
         # 1 update per day = 12 hours
         # > 1 update per day:
-        #   2 updates = 1.5 hours
-        #   4 updates = 45 minutes
-        #   10 updates = 18 minutes
-        minutes_to_next_update = 12 * 60 / (updates_per_day * 4)
+        #   2 updates = 1 hour
+        #   4 updates = 30 minutes
+        #   10 updates = 12 minutes
+        minutes_to_next_update = 12 * 60 / (updates_per_day * 6)
         if updates_per_day <= 1:
             minutes_to_next_update = 60 * 12
         random_factor = random.randint(0,int(minutes_to_next_update/6))
-        # 6 hours / subscribers. Lots of subscribers = lots of updates
-        subscriber_bonus = 6 * 60 / max(1, self.num_subscribers)
+        
+        # Lots of subscribers = lots of updates
+        # 6 hours for 1 subscriber.
+        # 1.5 hours for 2 subscribers.
+        # 1 hour for 3 subscribers.
+        subscriber_bonus = 6 * 60 / max(1, self.num_subscribers*2)
         
         slow_punishment = 0
         if 30 <= self.last_load_time < 60:
