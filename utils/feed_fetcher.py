@@ -256,13 +256,6 @@ class Dispatcher:
             try:
                 ffeed = FetchFeed(feed, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
-                
-                if (fetched_feed and
-                    feed.feed_link and
-                    (ret_feed == FEED_OK or
-                     (ret_feed == FEED_SAME and feed.stories_per_month > 10))):
-                    page_importer = PageImporter(feed.feed_link, feed)
-                    page_importer.fetch_page()
 
                 if fetched_feed and ret_feed == FEED_OK:
                     pfeed = ProcessFeed(feed, fetched_feed, self.options)
@@ -277,8 +270,13 @@ class Dispatcher:
                     if ((ENTRY_NEW in ret_entries and ret_entries[ENTRY_NEW]) \
                         or (ENTRY_UPDATED in ret_entries and ret_entries[ENTRY_UPDATED])):
                         feed.get_stories(force=True)
-                else:
-                    continue
+                
+                if (fetched_feed and
+                    feed.feed_link and
+                    (ret_feed == FEED_OK or
+                     (ret_feed == FEED_SAME and feed.stories_per_month > 10))):
+                    page_importer = PageImporter(feed.feed_link, feed)
+                    page_importer.fetch_page()
             except:
                 (etype, eobj, etb) = sys.exc_info()
                 print '[%d] ! -------------------------' % (feed.id,)

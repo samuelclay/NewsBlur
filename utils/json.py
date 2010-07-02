@@ -15,7 +15,7 @@ def decode(data):
     return json.loads(data)
     
 def encode(data, *args, **kwargs):
-    if isinstance(data, QuerySet):
+    if type(data) == QuerySet: # Careful, ValuesQuerySet is a dict
         # Django models
         return serializers.serialize("json", data, *args, **kwargs)
     else:

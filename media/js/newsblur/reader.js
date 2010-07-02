@@ -639,19 +639,20 @@
         },
         
         reset_feed: function() {
-            this.flags.iframe_story_locations_fetched = false;
-            this.flags.iframe_view_loaded = false;
-            this.flags.feed_view_images_loaded = {};
-            this.flags.feed_view_positions_calculated = false;
-            this.flags.scrolling_by_selecting_story_title = false;
-            this.flags.switching_to_feed_view = false;
-            this.flags.find_next_unread_on_page_of_feed_stories_load = false;
-            this.flags.page_view_showing_feed_view = false;
-            this.flags.iframe_fetching_story_locations = false;
-            this.flags.story_titles_loaded = false;
+            $.extend(this.flags, {
+                'iframe_story_locations_fetched': false,
+                'iframe_view_loaded': false,
+                'feed_view_images_loaded': {},
+                'feed_view_positions_calculated': false,
+                'scrolling_by_selecting_story_title': false,
+                'switching_to_feed_view': false,
+                'find_next_unread_on_page_of_feed_stories_load': false,
+                'page_view_showing_feed_view': false,
+                'iframe_fetching_story_locations': false,
+                'story_titles_loaded': false
+            });
             
-            
-            this.cache = {
+            $.extend(this.cache, {
                 'iframe_stories': {},
                 'feed_view_stories': {},
                 'iframe_story_positions': {},
@@ -660,7 +661,7 @@
                 'feed_view_story_positions_keys': [],
                 'previous_stories_stack': [],
                 'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10)
-            };
+            });
             
             this.active_feed = null;
             this.$s.$story_titles.data('page', 0);
