@@ -81,6 +81,27 @@ a img {
     overflow: hidden;
 }
 
+.NB-account .NB-import-signup {
+    float: left;
+    width: 186px;
+    padding: 0 0 64px 0;
+    margin: 0 50px 0 12px;
+    height: 206px;
+    overflow: hidden;
+}
+
+.NB-account .NB-import-signup-text {
+    text-align: center;
+    width: 200px;
+}
+.NB-account .NB-import-signup-text h3 {
+    margin-top: 48px;
+    color: #20843D;
+}
+.NB-account .NB-import-signup-text p {
+    color: #636363;
+}
+
 .NB-account .NB-signup-optional {
     float: right;
     text-transform: uppercase;
@@ -91,6 +112,10 @@ a img {
 }
 .NB-account .NB-signup-hidden {
     display: none;
+}
+
+.NB-account .NB-import-signup {
+    height: auto;
 }
 
 .NB-account .NB-signup .NB-signup-google {

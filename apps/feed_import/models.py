@@ -9,7 +9,8 @@ from utils import json
 import utils.opml as opml
 
 class OAuthToken(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, null=True, blank=True)
+    session_id = models.CharField(max_length=50, null=True, blank=True)
     request_token = models.CharField(max_length=50)
     request_token_secret = models.CharField(max_length=50)
     access_token = models.CharField(max_length=50)
@@ -81,7 +82,8 @@ class GoogleReaderImporter(Importer):
         folders = defaultdict(list)
         for item in self.feeds:
             folders = self.process_item(item, folders)
-        print dict(folders)
+        print "Google Reader import"
+        # print dict(folders)
         self.rearrange_folders(folders)
         print self.subscription_folders
         UserSubscriptionFolders.objects.create(user=self.user,

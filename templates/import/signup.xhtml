@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block head_js %}{% endblock head_js %}
+
+{% block content %}
+
+
+<div id="NB-splash">
+
+
+  <div class="NB-account">
+    {% if not user.is_authenticated %}
+      
+      <div class="NB-module">
+        <h5>
+          <div class="NB-module-header-signup">Signup</div>
+        </h5>
+
+        <div class="NB-import-signup">
+          <form method="post" action="{% url import-signup %}">
+            <div>
+              {{ signup_form.signup_username.label_tag }}
+              {{ signup_form.signup_username }}
+            </div>
+            <div class="">
+              <div class="NB-signup-optional">Optional</div>
+              {{ signup_form.signup_password.label_tag }}
+              {{ signup_form.signup_password }}
+            </div>
+            <div class="">
+              <div class="NB-signup-optional">Optional</div>
+              {{ signup_form.email.label_tag }}
+              {{ signup_form.email }}
+            </div>
+
+            <input name="submit" type="submit" value="create account" />
+            <input type="hidden" name="next" value="/" />
+          </form>
+          
+          {% if signup_form.errors %}
+            {% for field, error in signup_form.errors.items %}
+              {{ error }}
+            {% endfor %}
+          {% endif %}
+      
+        </div>
+        
+        <div class="NB-signup NB-import-signup-text">
+          <h3>Almost There!</h3>
+          <p>To complete the import,<br />just choose a username.</p>
+        </div>
+        
+      </div>
+      
+      
+    {% endif %}
+  
+    
+  </div>
+
+    
+  <div class="NB-splash-info">
+    <ul class="NB-splash-links">
+      <li class="NB-splash-link">Hand-crafted by: <a href="http://www.samuelclay.com">Samuel Clay</a></li>
+      <li class="NB-splash-link">Write to me: <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
+      <li class="NB-splash-link">Twitter, Twitter: <a href="http://twitter.com/samuelclay">@samuelclay</a></li>
+    </ul>
+    <div class="NB-splash-title"></div>
+  </div>
+
+</div>
+
+{% endblock %}

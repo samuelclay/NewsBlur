@@ -27,7 +27,9 @@
   </script>
   
   {% compressed_css 'all' %}
-  {% compressed_js 'all' %}
+  {% block head_js %}
+    {% compressed_js 'all' %}
+  {% endblock head_js %}
   
   <script type="text/javascript" charset="utf-8">
     {% if request.user.is_authenticated %}
