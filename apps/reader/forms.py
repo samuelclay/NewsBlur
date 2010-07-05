@@ -8,17 +8,22 @@ class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username"), max_length=30,
                                error_messages={'required': 'Please enter a username.'})
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput,
-                               error_messages={'required': 'Please enter a password.'})
+                               required=False)    
+                               # error_messages={'required': 'Please enter a password.'})
 
     def __init__(self, *args, **kwargs):
         self.user_cache = None
         super(LoginForm, self).__init__(*args, **kwargs)
 
+    def clean_password(self):
+        if not self.cleaned_data['password']:
+            return ""
+            
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
 
-        if username and password:
+        if username:
             self.user_cache = authenticate(username=username, password=password)
             if self.user_cache is None:
                 raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
@@ -44,27 +49,37 @@ class SignupForm(forms.Form):
                                        error_messages={'required': 'Please enter a username.'})
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
                              label=_(u'email address'),
-                                error_messages={'required': 'Please enter your email.'})
+                             required=False)  
+                             # error_messages={'required': 'Please enter your email.'})
     signup_password = forms.CharField(widget=forms.PasswordInput(render_value=False),
                                       label=_(u'password'),
-                                      error_messages={'required': 'Please enter a password.'})
+                                      required=False)
+                                      # error_messages={'required': 'Please enter a password.'})
     
     def clean_signup_username(self):
         try:
-            user = User.objects.get(username__iexact=self.cleaned_data['signup_username'])
+            User.objects.get(username__iexact=self.cleaned_data['signup_username'])
         except User.DoesNotExist:
             return self.cleaned_data['signup_username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        raise forms.ValidationError(_(u'Someone already has that username. Please choose another.'))
         return self.cleaned_data['signup_username']
 
+    def clean_signup_password(self):
+        if not self.cleaned_data['signup_password']:
+            return ""
+            
+    def clean_email(self):
+        if not self.cleaned_data['email']:
+            return ""
             
     def save(self, profile_callback=None):
-        new_user = User(username=self.cleaned_data['signup_username'],
-                        email=self.cleaned_data['email'])
+        new_user = User(username=self.cleaned_data['signup_username'])
         new_user.set_password(self.cleaned_data['signup_password'])
         new_user.is_active = True
+        new_user.email = self.cleaned_data['email']
         new_user.save()
-        new_user = authenticate(username=self.cleaned_data['signup_username'], password=self.cleaned_data['signup_password'])
+        new_user = authenticate(username=self.cleaned_data['signup_username'],
+                                password=self.cleaned_data['signup_password'])
         
         return new_user
 

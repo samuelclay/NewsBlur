@@ -62,7 +62,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('a', { href: NEWSBLUR.URLs['opml-reader-authorize'], className: 'NB-opml-reader-oauth NB-splash-link' }, [
-                            'Synchronize with Google Reader (OAuth)',
+                            'Import everything from Google Reader (OAuth)',
                             $.make('img', { className: 'NB-add-google-reader-arrow', src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/arrow_right.png' })
                         ]),
                         $.make('div', { className: 'NB-add-danger' }, 'This will erase all existing feeds and folders.')

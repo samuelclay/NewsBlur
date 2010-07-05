@@ -60,6 +60,7 @@
         this.setup_feed_refresh();
         this.handle_mouse_indicator_hover();
         this.position_mouse_indicator();
+        this.handle_login_and_signup_forms();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -2236,6 +2237,24 @@
                 position = position - 8; // Compensate for mouse indicator height.
             }
             this.$s.$mouse_indicator.css('top', position);
+        },
+        
+        // ==========================
+        // = Login and Signup Forms =
+        // ==========================
+        
+        handle_login_and_signup_forms: function() {
+            var self = this;
+            var $hidden_inputs = $('.NB-signup-hidden');
+            var $signup_username = $('input[name=signup-signup_username]');
+            
+            $signup_username.bind('focus', function() {
+                $hidden_inputs.slideDown(300);
+            }).bind('blur', function() {
+                if ($signup_username.val().length < 2) {
+                    $hidden_inputs.slideUp(300);
+                }
+            });
         },
         
         // ==================

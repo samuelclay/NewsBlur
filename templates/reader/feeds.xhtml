@@ -34,6 +34,7 @@
               {{ login_form.username }}
             </div>
             <div>
+              <div class="NB-signup-optional">Optional</div>
               {{ login_form.password.label_tag }}
               {{ login_form.password }}
             </div>
@@ -44,22 +45,18 @@
         </div>
 
         <div class="NB-signup">
-          {% if signup_form.errors %}
-            {% for field, error in signup_form.errors.items %}
-              {{ error }}
-            {% endfor %}
-          {% endif %}
-      
           <form method="post" action="{% url signup %}">
             <div>
               {{ signup_form.signup_username.label_tag }}
               {{ signup_form.signup_username }}
             </div>
-            <div>
+            <div class="NB-signup-hidden">
+              <div class="NB-signup-optional">Optional</div>
               {{ signup_form.signup_password.label_tag }}
               {{ signup_form.signup_password }}
             </div>
-            <div>
+            <div class="NB-signup-hidden">
+              <div class="NB-signup-optional">Optional</div>
               {{ signup_form.email.label_tag }}
               {{ signup_form.email }}
             </div>
@@ -67,6 +64,15 @@
             <input name="submit" type="submit" value="create account" />
             <input type="hidden" name="next" value="/" />
           </form>
+          
+          {% if signup_form.errors %}
+            {% for field, error in signup_form.errors.items %}
+              {{ error }}
+            {% endfor %}
+          {% endif %}
+      
+          <center style="margin: 12px 0;">&mdash; or &mdash;</center>
+          <a href="{% url opml-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
         </div>
       </div>
       

@@ -77,6 +77,27 @@ a img {
     width: 186px;
     padding: 0;
     margin: 0;
+    height: 206px;
+    overflow: hidden;
+}
+
+.NB-account .NB-signup-optional {
+    float: right;
+    text-transform: uppercase;
+    color: #ABC0A8;
+    font-weight: bold;
+    font-size: 9px;
+    line-height: 17px;
+}
+.NB-account .NB-signup-hidden {
+    display: none;
+}
+
+.NB-account .NB-signup .NB-signup-google {
+    margin: 12px auto;
+    display: block;
+    font-size: 12px;
+    text-align: center;
 }
 
 .NB-account input[type=text],
@@ -86,7 +107,7 @@ a img {
     font-size:13px;
     margin:0 0 12px;
     padding:5px;
-    width:100%;
+    width:174px;
 }
 
 .NB-account input[type=text]:focus,
@@ -97,7 +118,7 @@ a img {
 .NB-account input[type=submit] {
 /*    height: 40px;*/
     outline: none;
-    width: 150px;
+    width: 186px; /* 174=input-width + 5*2=padding + 2=border */
     margin: 4px 5px 0 0;
     padding: 4px 10px 5px;
     text-shadow: 0 -1px 0 #C7C9D2;
@@ -123,7 +144,7 @@ a img {
 
 .NB-account label,
 .NB-account .NB-account-label {
-    margin: 2px 0 2px;
+    margin: 0;
     color:#A0B0C0;
     font-size:12px;
     display: block;
@@ -1807,11 +1828,11 @@ background: transparent;
 
 .NB-account .NB-module a {
     text-decoration: none;
-    color: #3E4773;
+/*    color: #3E4773;*/
 }
 
 .NB-account .NB-module a:hover {
-    color: #0E1763;
+/*    color: #0E1763;*/
 }
 
 .NB-account .NB-module h5 {
@@ -1859,6 +1880,9 @@ background: transparent;
 
 
 .NB-module-features .NB-features-next-page {
+    background: transparent url('../img/icons/silk/control_play_blue.png') no-repeat 0 0;
+}
+.NB-module-features .NB-features-next-page:link {
     background: transparent url('../img/icons/silk/control_play.png') no-repeat 0 0;
 }
 .NB-module-features .NB-features-next-page:hover {
@@ -1869,6 +1893,9 @@ background: transparent;
     cursor: default;
 }
 .NB-module-features .NB-features-previous-page {
+    background: transparent url('../img/icons/silk/control_play_left_blue.png') no-repeat 0 0;
+}
+.NB-module-features .NB-features-previous-page:link {
     background: transparent url('../img/icons/silk/control_play_left.png') no-repeat 0 0;
 }
 .NB-module-features .NB-features-previous-page:hover {
