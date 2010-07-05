@@ -61,6 +61,7 @@ a img {
 .NB-account .NB-module-header-signup {
     width: 186px;
     margin: 0;
+    padding: 0 4px;
     float: left;
 }
 
@@ -75,7 +76,7 @@ a img {
 .NB-account .NB-signup {
     float: left;
     width: 186px;
-    padding: 0;
+    padding: 0 4px;
     margin: 0;
     height: 206px;
     overflow: hidden;
@@ -100,6 +101,18 @@ a img {
 }
 .NB-account .NB-import-signup-text p {
     color: #636363;
+}
+
+.NB-account .NB-signup-orline {
+    margin: 30px auto 24px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 10px;
+    color: #606060;
+    font-weight: bold;
+}
+.NB-account .NB-signup-orline .NB-signup-orline-or {
+    padding: 0 4px;
 }
 
 .NB-account .NB-signup-optional {
