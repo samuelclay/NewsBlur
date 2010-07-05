@@ -15,10 +15,6 @@ class LoginForm(forms.Form):
         self.user_cache = None
         super(LoginForm, self).__init__(*args, **kwargs)
 
-    def clean_password(self):
-        if not self.cleaned_data['password']:
-            return ""
-            
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
