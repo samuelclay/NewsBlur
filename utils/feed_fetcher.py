@@ -12,6 +12,7 @@ import datetime
 import traceback
 import multiprocessing
 import socket
+import urllib2
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -22,6 +23,8 @@ USER_AGENT = 'NewsBlur %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
+
+socket.setdefaulttimeout(30)
 
 def prints(tstr):
     """ lovely unicode
@@ -65,8 +68,18 @@ class FetchFeed:
         
         # we check the etag and the modified time to save bandwith and avoid bans
         try:
-            socket.setdefaulttimeout(10)
-            self.fpf = feedparser.parse(self.feed.feed_address,
+            socket.setdefaulttimeout(30)
+            req = urllib2.Request(self.feed.feed_address)
+            data = urllib2.urlopen(req, timeout=30)
+        except Exception, e:
+            log_msg = '! ERROR: TIMEOUT: %s' % e
+            logging.error(log_msg)
+            print(log_msg)
+            
+            return FEED_ERRPARSE, None
+
+        try:
+            self.fpf = feedparser.parse(data.read(),
                                         agent=USER_AGENT,
                                         etag=self.feed.etag)
         except Exception, e:
@@ -160,8 +173,16 @@ class ProcessFeed:
                 guids.append(entry.title)
             elif entry.link:
                 guids.append(entry.link)
-                
-        self.feed.save()
+        
+        self.lock.acquire()
+        try:
+            self.feed.save()
+            self.feed.count_subscribers()
+            self.feed.count_stories_per_month()
+            self.feed.save_popular_authors()
+            self.feed.save_popular_tags()
+        finally:
+            self.lock.release()
 
 
         # Compare new stories to existing stories, adding and updating
@@ -255,10 +276,6 @@ class Dispatcher:
                     ret_feed, ret_entries = pfeed.process()
                 
                     if ret_entries.get(ENTRY_NEW):
-                        feed.count_subscribers()
-                        feed.count_stories_per_month()
-                        feed.save_popular_authors()
-                        feed.save_popular_tags()
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
                             logging.info('Deleting user sub cache: %s' % sub.user_id)
@@ -320,7 +337,8 @@ class Dispatcher:
         else:
             for i in range(self.num_threads):
                 feed_queue = self.feeds_queue[i]
-                self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper, args=(feed_queue,)))
+                self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper,
+                                                            args=(feed_queue,)))
                 # worker.setName("Thread #%s" % (i+1))
                 # worker.setDaemon(True)
             for i in range(self.num_threads):

@@ -383,7 +383,7 @@ class Feed(models.Model):
         minutes_to_next_update = 12 * 60 / (updates_per_day * 6)
         if updates_per_day <= 1:
             minutes_to_next_update = 60 * 12
-        random_factor = random.randint(0,int(minutes_to_next_update/6))
+        random_factor = random.randint(0,int(minutes_to_next_update/4))
         
         # Lots of subscribers = lots of updates
         # 6 hours for 1 subscriber.
@@ -395,9 +395,9 @@ class Feed(models.Model):
         if 30 <= self.last_load_time < 60:
             slow_punishment = self.last_load_time
         elif 60 <= self.last_load_time < 100:
-            slow_punishment = 2 * self.last_load_time
-        elif self.last_load_time >= 100:
             slow_punishment = 4 * self.last_load_time
+        elif self.last_load_time >= 100:
+            slow_punishment = 12 * self.last_load_time
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
             minutes=minutes_to_next_update+random_factor+slow_punishment+subscriber_bonus
         )
