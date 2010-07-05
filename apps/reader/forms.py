@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -83,6 +84,7 @@ class FeatureForm(forms.Form):
     description = forms.CharField(required=True)
     
     def save(self):
-        feature = Feature(description=self.cleaned_data['description'])
+        feature = Feature(description=self.cleaned_data['description'],
+                          date=datetime.datetime.now() + datetime.timedelta(minutes=1))
         feature.save()
         return feature

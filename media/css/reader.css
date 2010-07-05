@@ -1319,12 +1319,15 @@ form.opml_import_form input {
     display: block;
 }
 
+#NB-splash .NB-splash-links a {
+    font-weight: bold;
+}
+
 #NB-splash .NB-splash-links a,
 a.NB-splash-link {
     color: #405BA8;
     font-size: 12px;
     text-decoration: none;
-    font-weight: bold;
 }
 
 #NB-splash .NB-splash-links a:hover,

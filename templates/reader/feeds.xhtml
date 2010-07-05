@@ -111,7 +111,7 @@
         <h5 class="NB-module-header">
           Welcome, {{ user.username }}
           <div class="NB-module-header-right">
-            <a href="{% url logout %}?next=/">Logout</a>
+            <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
         </h5>
       </div>
@@ -125,7 +125,7 @@
           <a href="#" class="NB-features-direction NB-features-previous-page NB-disabled"></a>
           {% if user.is_staff %}
             <div class="NB-features-add">
-              <a href="#" id="add-feature-button">Add</a> | 
+              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a> | 
             </div>
             <script>
             $(document).ready(function() {
