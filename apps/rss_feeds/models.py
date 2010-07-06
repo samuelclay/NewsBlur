@@ -385,7 +385,7 @@ class Feed(models.Model):
             # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
     
-    def set_next_scheduled_update(self):
+    def set_next_scheduled_update(self, lock=None):
         # Use stories per month to calculate next feed update
         updates_per_day = max(30, self.stories_per_month) / 30.0
         # 1 update per day = 12 hours
@@ -416,7 +416,8 @@ class Feed(models.Model):
             minutes=updates_per_day_delay+slow_punishment+subscriber_bonus+random_factor
         )
         self.next_scheduled_update = next_scheduled_update
-        self.save()
+
+        self._save_with_lock(lock)
         
     class Meta:
         db_table="feeds"

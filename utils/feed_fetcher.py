@@ -239,6 +239,8 @@ class Dispatcher:
         connection.close()
         
         current_process = multiprocessing.current_process()
+        lock = multiprocessing.Lock()
+        
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
@@ -252,6 +254,8 @@ class Dispatcher:
             }
             start_time = datetime.datetime.now()
         
+            feed.set_next_scheduled_update(lock=lock)
+            
             ### Uncomment to test feed fetcher
             # from random import randint
             # if randint(0,10) < 10:
@@ -297,7 +301,7 @@ class Dispatcher:
             feed.last_load_time = max(1, delta.seconds)
             feed.save()
             
-            feed.set_next_scheduled_update()
+            feed.set_next_scheduled_update(lock=lock)
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
                 identity, feed.feed_title, feed.id, unicode(delta),
