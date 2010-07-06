@@ -514,7 +514,7 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-manage-feed {
-    background: transparent url("../img/icons/silk/wrench.png") no-repeat center center;
+    background: transparent url("../img/icons/silk/cog.png") no-repeat center center;
     float: left;
     width: 16px;
     height: 16px;
@@ -1084,7 +1084,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/add.png') no-repeat center 8px;
 }
 .NB-taskbar .task_button.NB-task-manage {
-    background: transparent url('../img/icons/silk/wrench.png') no-repeat center 8px;
+    background: transparent url('../img/icons/silk/cog.png') no-repeat center 8px;
 }
 .NB-taskbar .task_button.task_profile {
     background: transparent url('../img/icons/silk/user.png') no-repeat center 8px;

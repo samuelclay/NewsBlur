@@ -191,6 +191,7 @@ INSTALLED_APPS = (
     'devserver',
     'south',
     'test_utils',
+    'utils',
     # 'debug_toolbar'
 )
 
