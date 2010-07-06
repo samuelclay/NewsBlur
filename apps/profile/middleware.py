@@ -3,7 +3,8 @@ import datetime
 class LastSeenMiddleware(object):
 
     def process_response(self, request, response):
-        if (not request.is_ajax() 
+        if (request.path == '/'
+            and not request.is_ajax() 
             and hasattr(request, 'user')
             and request.user.is_authenticated()): 
             request.user.profile.last_seen_on = datetime.datetime.now()
