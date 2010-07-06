@@ -360,20 +360,40 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     preference: function(preference, value, callback) {
         if (typeof value == 'undefined') {
-            return NEWSBLUR.Preferences.view_settings[preference];
+            return NEWSBLUR.Preferences[preference];
         }
         
-        NEWSBLUR.Preferences.view_settings[preference] = value;
+        NEWSBLUR.Preferences[preference] = value;
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/profile/set', {
+            this.make_request('/profile/set_preference', {
                 'preference': preference,
                 'value': value
             }, callback, null);
         }
     },
     
+    view_setting: function(feed_id, feed_view_setting, callback) {
+        if (typeof feed_view_setting == 'undefined') {
+            return NEWSBLUR.Preferences.view_settings[feed_id+''];
+        }
+        
+        NEWSBLUR.Preferences.view_settings[feed_id+''] = feed_view_setting;
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/profile/set_view_setting', {
+                'feed_id': feed_id+'',
+                'feed_view_setting': feed_view_setting
+            }, callback, null);
+        }
+    },
+    
     save_mark_read: function(days, callback) {
-        this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
+        } else {
+            if ($.isFunction(callback)) {
+                callback(o);
+            }
+        }
     },
     
     get_features_page: function(page, callback) {

@@ -16,10 +16,9 @@
       'MEDIA_URL': "{{ MEDIA_URL }}"
     };
     NEWSBLUR.Preferences = {
-      'view_settings': {
-        'unread_view': 0,
-        'lock_mouse_indicator': 0
-      }
+      'unread_view': 0,
+      'lock_mouse_indicator': 0,
+      'view_settings': {}
     };
     NEWSBLUR.URLs = {
       'opml-reader-authorize': "{% url opml-reader-authorize %}"
@@ -33,7 +32,8 @@
   
   <script type="text/javascript" charset="utf-8">
     {% if request.user.is_authenticated %}
-      $.extend(NEWSBLUR.Preferences.view_settings, {{ user.profile.view_settings|safe }});
+      $.extend(NEWSBLUR.Preferences, {{ user.profile.preferences|safe }});
+      $.extend(NEWSBLUR.Preferences['view_settings'], {{ user.profile.view_settings|safe }});
     {% endif %}
   </script>
     

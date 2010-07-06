@@ -683,7 +683,7 @@
                 $story_titles.data('page', 0);
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
-                this.story_view = 'page'; // TODO: Grab from preferences.
+                this.story_view = this.model.view_setting(this.active_feed) || 'page';
             
                 this.show_feed_title_in_stories($story_titles, feed_id);
                 this.mark_feed_as_selected(feed_id, $feed_link);
@@ -1583,6 +1583,10 @@
             var $story_iframe = this.$s.$story_iframe;
             var $page_to_feed_arrow = $('.NB-taskbar .NB-task-view-page-to-feed-arrow');
             
+            if (!story_not_found && this.story_view != view) {
+                this.model.view_setting(this.active_feed, view);
+            }
+            
             if (story_not_found) {
                 $page_to_feed_arrow.show();
                 this.flags['page_view_showing_feed_view'] = true;
@@ -1647,6 +1651,7 @@
                 
                 this.show_correct_stories_in_page_and_feed_view();
             }
+            
         },
         
         switch_taskbar_view_direction: function(direction) {

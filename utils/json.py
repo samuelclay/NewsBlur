@@ -81,7 +81,6 @@ def json_encode(data, *args, **kwargs):
         return ret
     
     ret = _any(data)
-    
     return json.dumps(ret, cls=DateTimeAwareJSONEncoder, ensure_ascii=False, *args, **kwargs)
 
 def json_view(func):
@@ -122,3 +121,11 @@ def json_view(func):
         json = json_encode(response)
         return HttpResponse(json, mimetype='application/json')
     return wrap
+
+def main():
+    test = {1: True, 2: u"string", 3: 30}
+    json_test = json_encode(test)
+    print test, json_test
+    
+if __name__ == '__main__':
+    main()
