@@ -650,7 +650,8 @@
                 'find_next_unread_on_page_of_feed_stories_load': false,
                 'page_view_showing_feed_view': false,
                 'iframe_fetching_story_locations': false,
-                'story_titles_loaded': false
+                'story_titles_loaded': false,
+                'iframe_prevented_from_loading': false
             });
             
             $.extend(this.cache, {
@@ -691,7 +692,13 @@
                 this.make_content_pane_feed_counter(feed_id);
                 this.switch_taskbar_view(this.story_view);
                 // NEWSBLUR.log(['open_feed', this.flags, this.active_feed, feed_id]);
-                this.load_iframe(feed_id);
+                
+                var feed_view_setting = this.model.view_setting(feed_id);
+                if (feed_view_setting == 'page') {
+                    this.load_iframe(feed_id);
+                } else {
+                    this.flags['iframe_prevented_from_loading'] = true;
+                }
                 this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
                 this.flags['opening_feed'] = false;
                 var $iframe_contents = this.$s.$story_iframe.contents();
@@ -1199,8 +1206,9 @@
             var $story_iframe = this.$s.$story_iframe;
             var $taskbar_view_page = $('.NB-taskbar .task_view_page');
             var $taskbar_return = $('.NB-taskbar .task_return');
-            this.flags.iframe_view_loaded = false;
-            this.flags.iframe_story_locations_fetched = false;
+            this.flags['iframe_view_loaded'] = false;
+            this.flags['iframe_story_locations_fetched'] = false;
+            this.flags['iframe_prevented_from_loading'] = false;
             
             $.extend(this.cache, {
                 'iframe_stories': {},
@@ -1605,6 +1613,9 @@
             }, 1000);
             
             if (view == 'page') {
+                if (this.flags['iframe_prevented_from_loading']) {
+                    this.load_iframe(this.active_feed);
+                }
                 var $iframe_story = this.find_story_in_story_iframe(this.active_story);
                 this.scroll_to_story_in_iframe(this.active_story, $iframe_story, true);
                 
