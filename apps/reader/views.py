@@ -20,7 +20,7 @@ try:
 except:
     pass
 from utils import json, feedfinder
-from utils.user_functions import get_user
+from utils.user_functions import get_user, invalidate_template_cache
 
 SINGLE_DAY = 60*60*24
 
@@ -281,7 +281,7 @@ def mark_story_as_read(request):
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
         usersub.save()
-    
+        
     data = dict(code=0, payload=story_ids)
     
     for story_id in story_ids:

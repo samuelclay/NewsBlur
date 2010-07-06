@@ -1908,6 +1908,8 @@
         },
         
         get_unread_view_name: function(unread_view) {
+            unread_view = unread_view || this.model.preference('unread_view');
+            
             return (unread_view > 0
                     ? 'positive'
                     : unread_view < 0
@@ -1915,15 +1917,14 @@
                       : 'neutral');
         },
         
-        get_unread_count: function(visible_only) {
+        get_unread_count: function(visible_only, unread_view_name) {
             var total = 0;
             var feed = this.model.get_feed(this.active_feed);
             
             if (!visible_only) {
                 total = feed.ng + feed.nt + feed.ps;
             } else {
-                var unread_view = this.model.preference('unread_view');
-                var unread_view_name = this.get_unread_view_name(unread_view);
+                unread_view_name = unread_view_name || this.get_unread_view_name();
                 if (unread_view_name == 'positive') {
                     total = feed.ps;
                 } else if (unread_view_name == 'neutral') {
@@ -1937,9 +1938,8 @@
         
         show_correct_story_titles_in_unread_view: function(options) {
             var self = this;
-            var unread_view = this.model.preference('unread_view');
             var $story_titles = this.$s.$story_titles;
-            var unread_view_name = this.get_unread_view_name(unread_view);
+            var unread_view_name = this.get_unread_view_name();
             var $stories_show, $stories_hide;
             
             if (unread_view_name == 'positive') {

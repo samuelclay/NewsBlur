@@ -1,13 +1,11 @@
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
-import datetime
-import random
 from django.core.cache import cache
-from apps.rss_feeds.models import Feed, Story, Tag
-from utils import feedparser, object_manager, json
+from apps.rss_feeds.models import Feed, Story
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from utils.compressed_textfield import StoryField
+# from utils.compressed_textfield import StoryField
 
 DAYS_OF_UNREAD = 14
 
@@ -107,6 +105,11 @@ class UserSubscription(models.Model):
         self.needs_unread_recalc = False
         
         self.save()
+        
+        if (self.unread_count_positive == 0 and 
+            self.unread_count_neutral == 0 and 
+            self.unread_count_negative == 0):
+            self.mark_feed_read()
         
         cache.delete('usersub:%s' % self.user.id)
         
