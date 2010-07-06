@@ -684,7 +684,7 @@
                 $story_titles.data('page', 0);
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
-                this.story_view = this.model.view_setting(this.active_feed) || 'page';
+                this.story_view = this.model.view_setting(this.active_feed);
             
                 this.show_feed_title_in_stories($story_titles, feed_id);
                 this.mark_feed_as_selected(feed_id, $feed_link);
@@ -694,9 +694,10 @@
                 // NEWSBLUR.log(['open_feed', this.flags, this.active_feed, feed_id]);
                 
                 var feed_view_setting = this.model.view_setting(feed_id);
-                if (feed_view_setting == 'page') {
+                if (!feed_view_setting || feed_view_setting == 'page') {
                     this.load_iframe(feed_id);
                 } else {
+                    this.unload_iframe();
                     this.flags['iframe_prevented_from_loading'] = true;
                 }
                 this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
@@ -1200,12 +1201,9 @@
         // = Story Pane - iFrame/Page View =
         // =================================
         
-        load_iframe: function(feed_id) {
-            var self = this;
-            var $feed_view = this.$s.$story_pane;
+        unload_iframe: function() {
             var $story_iframe = this.$s.$story_iframe;
-            var $taskbar_view_page = $('.NB-taskbar .task_view_page');
-            var $taskbar_return = $('.NB-taskbar .task_return');
+            
             this.flags['iframe_view_loaded'] = false;
             this.flags['iframe_story_locations_fetched'] = false;
             this.flags['iframe_prevented_from_loading'] = false;
@@ -1215,6 +1213,20 @@
                 'iframe_story_positions': {},
                 'iframe_story_positions_keys': []
             });
+            
+            $story_iframe.data('feed_id', null);
+            
+            $story_iframe.removeAttr('src');
+        },
+        
+        load_iframe: function(feed_id) {
+            var self = this;
+            var $feed_view = this.$s.$story_pane;
+            var $story_iframe = this.$s.$story_iframe;
+            var $taskbar_view_page = $('.NB-taskbar .task_view_page');
+            var $taskbar_return = $('.NB-taskbar .task_return');
+            
+            this.unload_iframe();
             
             if (!feed_id) {
                 feed_id = $story_iframe.data('feed_id');

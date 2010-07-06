@@ -21,6 +21,8 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.stories = {};
     this.read_stories = {};
     this.classifiers = {};
+    
+    this.DEFAULT_VIEW = 'page';
 };
 
 NEWSBLUR.AssetModel.Reader.prototype = {
@@ -374,7 +376,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     view_setting: function(feed_id, feed_view_setting, callback) {
         if (typeof feed_view_setting == 'undefined') {
-            return NEWSBLUR.Preferences.view_settings[feed_id+''];
+            return NEWSBLUR.Preferences.view_settings[feed_id+''] || this.DEFAULT_VIEW;
         }
         
         NEWSBLUR.Preferences.view_settings[feed_id+''] = feed_view_setting;
