@@ -166,12 +166,13 @@ class ProcessFeed:
         self.lock.acquire()
         try:
             self.feed.save()
-            self.feed.count_subscribers()
-            self.feed.count_stories_per_month()
-            self.feed.save_popular_authors()
-            self.feed.save_popular_tags()
         finally:
             self.lock.release()
+            
+        self.feed.count_subscribers(lock=self.lock)
+        self.feed.count_stories_per_month(lock=self.lock)
+        self.feed.save_popular_authors(lock=self.lock)
+        self.feed.save_popular_tags(lock=self.lock)
 
 
         # Compare new stories to existing stories, adding and updating

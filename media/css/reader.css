@@ -2011,6 +2011,13 @@ background: transparent;
     vertical-align: bottom;
 }
 
+.NB-module-features .NB-module-feature .NB-module-feature-description img.NB-module-feature-arrow {
+    padding: 0 4px;
+    vertical-align: text-bottom;
+    width: 16px;
+    height: 16px;
+}
+
 #add-feature-form {
     display: none;
 }

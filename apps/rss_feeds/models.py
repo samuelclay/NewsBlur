@@ -42,11 +42,12 @@ class Feed(models.Model):
     def __unicode__(self):
         return self.feed_title
     
-    def count_subscribers(self, verbose=False):
+    def count_subscribers(self, verbose=False, lock=None):
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
-        self.save()
+
+        self._save_with_lock(lock)
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -58,11 +59,13 @@ class Feed(models.Model):
                     '' if self.num_subscribers == 1 else 's',
                     self.feed_title,
                 ),
-    def count_stories_per_month(self, verbose=False):
+    def count_stories_per_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
         stories_count = Story.objects.filter(story_feed=self, story_date__gte=month_ago).count()
         self.stories_per_month = stories_count
-        self.save()
+
+        self._save_with_lock(lock)
+            
         if verbose:
             print "  ---> %s [%s]: %s stories" % (self.feed_title, self.pk, self.stories_per_month)
             
@@ -187,7 +190,7 @@ class Feed(models.Model):
         author, created = StoryAuthor.objects.get_or_create(feed=self, author_name=author)
         return author, created
     
-    def save_popular_tags(self, feed_tags=None):
+    def save_popular_tags(self, feed_tags=None, lock=None):
         if not feed_tags:
             from apps.rss_feeds.models import Tag
             from django.db.models.aggregates import Count
@@ -198,14 +201,14 @@ class Feed(models.Model):
         popular_tags = json.encode(feed_tags)
         if len(popular_tags) < 1024:
             self.popular_tags = popular_tags
-            self.save()
+            self._save_with_lock(lock)
             return
 
         tags_list = json.decode(feed_tags) if feed_tags else []
         if len(tags_list) > 1:
             self.save_popular_tags(tags_list[:-1])
     
-    def save_popular_authors(self, feed_authors=None):
+    def save_popular_authors(self, feed_authors=None, lock=None):
         if not feed_authors:
             from django.db.models.aggregates import Count
             all_authors = StoryAuthor.objects.filter(feed=self, author_name__isnull=False)\
@@ -216,13 +219,23 @@ class Feed(models.Model):
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
             self.popular_authors = popular_authors
-            self.save()
+            self._save_with_lock(lock)
             return
 
         authors_list = json.decode(feed_authors) if feed_authors else []
         if len(authors_list) > 1:
             self.save_popular_authors(authors_list[:-1])
-        
+    
+    def _save_with_lock(self, lock=None):
+        if lock:
+            lock.acquire()
+            try:
+                self.save()
+            finally:
+                lock.release()
+        else:
+            self.save()
+            
     def _shorten_story_tags(self, story_tags):
         encoded_tags = json.encode([t.name for t in story_tags])
         if len(encoded_tags) < 2000:
@@ -377,19 +390,17 @@ class Feed(models.Model):
         updates_per_day = max(30, self.stories_per_month) / 30.0
         # 1 update per day = 12 hours
         # > 1 update per day:
-        #   2 updates = 1 hour
-        #   4 updates = 30 minutes
-        #   10 updates = 12 minutes
-        minutes_to_next_update = 12 * 60 / (updates_per_day * 6)
-        if updates_per_day <= 1:
-            minutes_to_next_update = 60 * 12
-        random_factor = random.randint(0,int(minutes_to_next_update/4))
+        #   2 updates = 3 hours
+        #   4 updates = 1 hour
+        #   10 updates = 20 minutes
+        updates_per_day_delay = 60 * 12 / (updates_per_day ** 1.55)
         
         # Lots of subscribers = lots of updates
+        # 72 hours for 0 subscribers.
         # 6 hours for 1 subscriber.
-        # 1.5 hours for 2 subscribers.
-        # 1 hour for 3 subscribers.
-        subscriber_bonus = 6 * 60 / max(1, self.num_subscribers*2)
+        # 45 min for 2 subscribers.
+        # 10 min for 3 subscribers.
+        subscriber_bonus = 6 * 60 / max(.083, self.num_subscribers**3)
         
         slow_punishment = 0
         if 30 <= self.last_load_time < 60:
@@ -398,8 +409,11 @@ class Feed(models.Model):
             slow_punishment = 4 * self.last_load_time
         elif self.last_load_time >= 100:
             slow_punishment = 12 * self.last_load_time
+            
+        random_factor = random.randint(0,int(updates_per_day_delay+subscriber_bonus+slow_punishment)) / 4
+        
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-            minutes=minutes_to_next_update+random_factor+slow_punishment+subscriber_bonus
+            minutes=updates_per_day_delay+slow_punishment+subscriber_bonus+random_factor
         )
         self.next_scheduled_update = next_scheduled_update
         self.save()
