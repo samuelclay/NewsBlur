@@ -59,7 +59,7 @@ class FetchFeed:
                                                  
         # Check if feed still needs to be updated
         feed = Feed.objects.get(pk=self.feed.pk)
-        if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
+        if feed.last_update > datetime.datetime.now() and not self.options.get('force'):
             log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
                                                                  self.feed.id)
             logging.info(log_msg)
