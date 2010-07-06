@@ -1214,8 +1214,6 @@
                 'iframe_story_positions_keys': []
             });
             
-            $story_iframe.data('feed_id', null);
-            
             $story_iframe.removeAttr('src');
         },
         
