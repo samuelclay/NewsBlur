@@ -25,3 +25,11 @@ class Command(BaseCommand):
             for feed in feeds.iterator():
                 feed.count_subscribers(verbose=options['verbose'])
         
+        if options['delete']:
+            print "# Deleting old feeds..."
+            old_feeds = Feed.objects.filter(num_subscribers=0)
+            for feed in old_feeds:
+                feed.count_subscribers(verbose=True)
+                if feed.num_subscribers == 0:
+                    print ' ---> Deleting: %s' % feed
+                    # feed.delete()
