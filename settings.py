@@ -192,6 +192,7 @@ INSTALLED_APPS = (
     'south',
     'test_utils',
     'utils',
+    'utils.typogrify',
     # 'debug_toolbar'
 )
 

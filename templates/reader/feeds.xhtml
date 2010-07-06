@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 
+{% load typogrify_tags %}
+
 {% block content %}
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- A feed reader with intelligence.</h2>
-  
+
+
 <div id="NB-splash">
 
 
@@ -143,7 +146,7 @@
         {% for feature in features %}
           <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
             <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
-            <td class="NB-module-feature-description">{{ feature.description }}</td>
+            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
           </tr>
         {% endfor %}
       </table>
