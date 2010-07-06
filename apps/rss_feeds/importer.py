@@ -1,5 +1,4 @@
 import urllib2
-import logging
 import re
 import urlparse
 import multiprocessing
@@ -13,19 +12,14 @@ class PageImporter(object):
         self.lock = multiprocessing.Lock()
     
     def fetch_page(self):
+        if not self.url:
+            return
+            
         request = urllib2.Request(self.url)
-        
-        try:
-            response = urllib2.urlopen(request)
-        except urllib2.HTTPError, e:
-            logging.error('The server couldn\'t fulfill the request. Error: %s' % e.code)
-        except urllib2.URLError, e:
-            logging.error('Failed to reach server. Reason: %s' % e.reason)
-        else:
-            data = response.read()
-            html = data
-            html = self.rewrite_page(html)
-            self.save_page(html)
+        response = urllib2.urlopen(request)
+        data = response.read()
+        html = self.rewrite_page(data)
+        self.save_page(html)
     
     def rewrite_page(self, response):
         BASE_RE = re.compile(r'<head(.*?\>)', re.I)

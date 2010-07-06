@@ -316,10 +316,12 @@ class Feed(models.Model):
         fcat = []
         if entry.has_key('tags'):
             for tcat in entry.tags:
-                if tcat.label != None:
+                if tcat.label:
                     term = tcat.label
-                else:
+                elif tcat.term:
                     term = tcat.term
+                else:
+                    continue
                 qcat = term.strip()
                 if ',' in qcat or '/' in qcat:
                     qcat = qcat.replace(',', '/').split('/')

@@ -72,18 +72,23 @@ class FetchFeed:
             socket.setdefaulttimeout(30)
             req = urllib2.Request(self.feed.feed_address)
             data = urllib2.urlopen(req, timeout=30)
+        except urllib2.HTTPError, e:
+            print "HTTP Error: %s" % e
+            feed.save_history(e.code, e.msg, e.fp.read())
+            return FEED_ERRPARSE, None
         except Exception, e:
-            log_msg = '! ERROR: TIMEOUT: %s' % e
+            log_msg = '! ERROR: Unknown: %s' % e
             logging.error(log_msg)
             print(log_msg)
-            feed.save_history(300, "Timeout", e)
+            feed.save_history(300, 'Unknown Error', e)
             
             return FEED_ERRPARSE, None
 
         try:
             self.fpf = feedparser.parse(data.read(),
                                         agent=USER_AGENT,
-                                        etag=self.feed.etag)
+                                        etag=self.feed.etag,
+                                        modified=self.feed.last_modified)
         except Exception, e:
             log_msg = '! ERROR: feed cannot be parsed: %s' % e
             logging.error(log_msg)
@@ -127,6 +132,7 @@ class ProcessFeed:
                            'last check: %s' % (self.feed.id,
                                                self.feed.feed_address))
                 self.feed.save()
+                self.feed.save_history(304, "Not modified")
                 return FEED_SAME, ret_values
 
             if self.fpf.status >= 400:
@@ -135,6 +141,7 @@ class ProcessFeed:
                                                      self.fpf.status,
                                                      self.feed.feed_address))
                 self.feed.save()
+                self.feed.save_history(self.fpf.status, "HTTP Error")
                 return FEED_ERRHTTP, ret_values
 
         if hasattr(self.fpf, 'bozo') and self.fpf.bozo:
