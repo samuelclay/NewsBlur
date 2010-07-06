@@ -64,6 +64,7 @@ class FetchFeed:
                                                                  self.feed.id)
             logging.info(log_msg)
             print(log_msg)
+            feed.save_history(201, "Already fetched")
             return FEED_SAME, None
         
         # we check the etag and the modified time to save bandwith and avoid bans
@@ -75,6 +76,7 @@ class FetchFeed:
             log_msg = '! ERROR: TIMEOUT: %s' % e
             logging.error(log_msg)
             print(log_msg)
+            feed.save_history(300, "Timeout", e)
             
             return FEED_ERRPARSE, None
 
@@ -86,9 +88,11 @@ class FetchFeed:
             log_msg = '! ERROR: feed cannot be parsed: %s' % e
             logging.error(log_msg)
             print(log_msg)
+            feed.save_history(301, "Parse error", e)
             
             return FEED_ERRPARSE, None
         
+        feed.save_history(200, "OK")
         return FEED_OK, self.fpf
     
 class ProcessFeed:
@@ -285,12 +289,12 @@ class Dispatcher:
                     page_importer = PageImporter(feed.feed_link, feed)
                     page_importer.fetch_page()
             except:
-                (etype, eobj, etb) = sys.exc_info()
                 print '[%d] ! -------------------------' % (feed.id,)
-                # print traceback.format_exception(etype, eobj, etb)
-                traceback.print_exception(etype, eobj, etb)
+                tb = traceback.format_exc()
+                print tb
                 print '[%d] ! -------------------------' % (feed.id,)
                 ret_feed = FEED_ERREXC 
+                feed.save_history(500, "Error", tb)
 
             delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:

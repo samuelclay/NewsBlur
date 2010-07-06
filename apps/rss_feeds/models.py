@@ -42,6 +42,15 @@ class Feed(models.Model):
     def __unicode__(self):
         return self.feed_title
     
+    def save_history(self, status_code, message, exception=None):
+        FeedFetchHistory.objects.create(feed=self, 
+                                        status_code=status_code,
+                                        message=message,
+                                        exception=exception)
+        old_fetch_histories = self.fetch_history.all()[10:]
+        for history in old_fetch_histories:
+            history.delete()
+        
     def count_subscribers(self, verbose=False, lock=None):
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
@@ -495,4 +504,20 @@ class FeedUpdateHistory(models.Model):
     def save(self, *args, **kwargs):
         self.average_per_feed = str(self.seconds_taken / float(max(1.0,self.number_of_feeds)))
         super(FeedUpdateHistory, self).save(*args, **kwargs)
+
+class FeedFetchHistory(models.Model):
+    feed = models.ForeignKey(Feed, related_name='fetch_history')
+    status_code = models.CharField(max_length=10, null=True, blank=True)
+    message = models.CharField(max_length=255, null=True, blank=True)
+    exception = models.TextField(null=True, blank=True)
+    fetch_date = models.DateTimeField(default=datetime.datetime.now)
     
+    def __unicode__(self):
+        return "[%s] %s (%s): %s %s: %s" % (
+            self.feed.id,
+            self.feed,
+            self.fetch_date,
+            self.status_code,
+            self.message,
+            self.exception[:50]
+        )
