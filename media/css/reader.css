@@ -55,6 +55,7 @@ a img {
 .NB-account .NB-module-header-login {
     width: 186px;
     margin: 0 50px 0 0;
+    padding: 0 4px;
     float: left;
 }
 
@@ -66,7 +67,7 @@ a img {
 }
 
 .NB-account .NB-login {
-    padding: 0 0 64px 0;
+    padding: 0 4px 64px;
     margin: 0 50px 0 12px;
     width: 186px;
     float: left;
@@ -110,6 +111,10 @@ a img {
     line-height: 10px;
     color: #606060;
     font-weight: bold;
+}
+
+.NB-account .NB-signup-orline-reduced {
+    margin: 0px auto 0px;
 }
 .NB-account .NB-signup-orline .NB-signup-orline-or {
     padding: 0 4px;
@@ -347,8 +352,9 @@ background: transparent;
     padding: 3px 0 4px;
     font-weight: bold;
     display: block;
-    color: #404040;
+    color: #606060;
     text-transform: uppercase;
+    text-shadow: 1px 1px 0 #EEEEEE;
 }
 
 #feed_list .feeds {
@@ -1328,6 +1334,7 @@ a.NB-splash-link {
     color: #405BA8;
     font-size: 12px;
     text-decoration: none;
+    font-weight: bold;
 }
 
 #NB-splash .NB-splash-links a:hover,
@@ -1582,6 +1589,11 @@ a.NB-splash-link:hover {
     color: #535558;
     font-weight: bold;
     margin: 8px 0 0;
+}
+
+.NB-add .NB-add-danger img {
+    vertical-align: bottom;
+    padding: 0 4px 0 0 ;
 }
 
 .NB-add .NB-add-folders {

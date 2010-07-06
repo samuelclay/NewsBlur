@@ -139,7 +139,7 @@ class ProcessFeed:
 
         # the feed has changed (or it is the first time we parse it)
         # saving the etag and last_modified fields
-        self.feed.etag = self.fpf.get('etag', '')
+        self.feed.etag = self.fpf.get('etag')
         # some times this is None (it never should) *sigh*
         if self.feed.etag is None:
             self.feed.etag = ''
@@ -153,17 +153,6 @@ class ProcessFeed:
         self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)[:1024]
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
         self.feed.last_update = datetime.datetime.now()
-        
-
-        if False and self.options['verbose']:
-            logging.debug(u'[%d] Feed info for: %s\n' \
-                   u'  title %s\n' \
-                   u'  tagline %s\n' \
-                   u'  link %s\n' \
-                   u'  last_checked %s' % (
-                self.feed.id, self.feed.feed_address, self.feed.feed_title,
-                self.feed.feed_tagline, self.feed.feed_link, self.feed.last_update))
-
 
         guids = []
         for entry in self.fpf.entries:

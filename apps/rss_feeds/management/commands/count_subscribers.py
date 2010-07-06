@@ -7,6 +7,7 @@ class Command(BaseCommand):
         make_option("-f", "--feed", dest="feed", default=None),
         make_option("-t", "--title", dest="title", default=None),
         make_option("-V", "--verbose", dest="verbose", action="store_true"),
+        make_option("-D", "--delete", dest="delete", action="store_true"),
     )
 
     def handle(self, *args, **options):

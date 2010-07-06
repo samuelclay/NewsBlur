@@ -58,7 +58,7 @@ class SignupForm(forms.Form):
             User.objects.get(username__iexact=self.cleaned_data['signup_username'])
         except User.DoesNotExist:
             return self.cleaned_data['signup_username']
-        raise forms.ValidationError(_(u'Someone already has that username. Please choose another.'))
+        raise forms.ValidationError(_(u'Someone is already using that username.'))
         return self.cleaned_data['signup_username']
 
     def clean_signup_password(self):
