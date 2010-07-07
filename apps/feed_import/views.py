@@ -39,6 +39,7 @@ def opml_upload(request):
 
         
 def reader_authorize(request):
+    print request.session.session_key
     oauth_key = settings.OAUTH_KEY
     oauth_secret = settings.OAUTH_SECRET
     scope = "http://www.google.com/reader/api"
@@ -77,6 +78,7 @@ def reader_callback(request):
     if request.user.is_authenticated():
         user_token = OAuthToken.objects.get(user=request.user)
     else:
+        print request.session.session_key
         user_token = OAuthToken.objects.get(session_id=request.session.session_key)
 
     # Authenticated in Google, so verify and fetch access tokens
