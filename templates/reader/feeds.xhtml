@@ -81,19 +81,23 @@
       
       <div class="NB-module NB-module-howitworks">
         <h5 class="NB-module-header">
-          How It Works
+          <div class="NB-module-header-left">
+            How It Works
+          </div>
           <div class="NB-module-header-right">
-            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 0 %}NB-active{% endif %}"></a>
-            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 1 %}NB-active{% endif %}"></a>
-            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 2 %}NB-active{% endif %}"></a>
-            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 3 %}NB-active{% endif %}"></a>
-            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 4 %}NB-active{% endif %}"></a>
-            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 5 %}NB-active{% endif %}"></a>
-          
             <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
             <a href="#" class="NB-module-direction NB-module-next-page {% if howitworks_page == 5 %}NB-disabled{% endif %}"></a>
           </div>
         </h5>
+        
+        <div class="NB-howitworks-page-indicators">
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 0 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 1 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 2 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 3 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 4 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 5 %}NB-active{% endif %}"></a>
+        </div>
       
         <div class="NB-howitworks-page {% if howitworks_page == 0 %}NB-active{% endif %}">
           <div class="NB-howitworks-page-image">

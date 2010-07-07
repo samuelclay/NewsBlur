@@ -1954,6 +1954,14 @@ background: transparent;
     padding: 8px 12px 6px;
 }
 
+.NB-account .NB-module .NB-module-header-left {
+    float: left;
+}
+.NB-account .NB-module .NB-module-header-center {
+    text-align: center;
+    margin: 0 auto;
+    width: 132px;
+}
 .NB-account .NB-module .NB-module-header-right {
     font-size: 13px;
     line-height: 16px;
@@ -2047,6 +2055,18 @@ background: transparent;
 /* = How it Works Module = */
 /* ======================= */
 
+.NB-module-howitworks {
+    position: relative;
+}
+
+.NB-module-howitworks .NB-howitworks-page-indicators {
+    position: absolute;
+    width: 132px;
+    height: 20px;
+    right: 64px;
+    bottom: 0px;
+}
+
 .NB-module-howitworks .NB-howitworks-page {
     display: none;
     overflow: hidden;
@@ -2071,6 +2091,8 @@ background: transparent;
     float: left;
     line-height: 30px;
     font-size: 22px;
+    color: #303030;
+    text-shadow: 1px 1px 0px #F0F0F0;
 }
 
 .NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-description td {
