@@ -1,5 +1,6 @@
 import logging
 import datetime
+import random
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -46,12 +47,14 @@ def index(request):
     if request.user.is_staff:
         feature_form = FeatureForm()
     
+    howitworks_page = random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
         'login_form': login_form,
         'signup_form': signup_form,
         'feature_form': feature_form,
         'features': features,
         'import_from_google_reader': import_from_google_reader,
+        'howitworks_page': howitworks_page,
     }, context_instance=RequestContext(request))
 
 @never_cache

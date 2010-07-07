@@ -82,32 +82,97 @@
       <div class="NB-module NB-module-howitworks">
         <h5 class="NB-module-header">
           How It Works
+          <div class="NB-module-header-right">
+            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 0 %}NB-active{% endif %}"></a>
+            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 1 %}NB-active{% endif %}"></a>
+            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 2 %}NB-active{% endif %}"></a>
+            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 3 %}NB-active{% endif %}"></a>
+            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 4 %}NB-active{% endif %}"></a>
+            <a href="#" class="NB-module-page-indicator {% if howitworks_page == 5 %}NB-active{% endif %}"></a>
+          
+            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-next-page {% if howitworks_page == 5 %}NB-disabled{% endif %}"></a>
+          </div>
         </h5>
       
-        <table class="NB-module-features">
-          <tr class="NB-module-feature">
-            <td class="NB-module-feature-date">1. </td>
-            <td class="NB-module-feature-description">Add websites you read. Even from Google Reader.</td>
-          </tr>
-          <tr class="NB-module-feature">
-            <td class="NB-module-feature-date">2. </td>
-            <td class="NB-module-feature-description">Read stories directly on the original website.</td>
-          </tr>
-          <tr class="NB-module-feature last">
-            <td class="NB-module-feature-date">3. </td>
-            <td class="NB-module-feature-description">
-              Stories: <img src="{{ MEDIA_URL }}img/icons/silk/bullet_red.png"> = dislike, 
-              <img src="{{ MEDIA_URL }}img/icons/silk/bullet_orange.png"> = neutral, 
-              <img src="{{ MEDIA_URL }}img/icons/silk/bullet_green.png"> = like.
-            </td>
-          </tr>
-        </table>
-        {% if user.is_staff %}
-          <form action="{% url add-feature %}" id="add-feature-form" method="post">
-            {{ feature_form.description }}
-            <input type="submit" value="Add feature" />
-          </form>
-        {% endif %}
+        <div class="NB-howitworks-page {% if howitworks_page == 0 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_original.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Read the <br /> original site.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 1 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_like.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Intelligently find good stories you will like.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 2 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_dislike.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Intelligently filter out stories which you may dislike.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 3 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_import.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Import your feeds from Google Reader.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 4 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_iphone.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Use the iPhone app, available in August.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 5 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_github.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Open source, regularly improved, attention to detail.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+        
       </div>
     {% else %}
       <div class="NB-module NB-module-stats">
@@ -119,13 +184,11 @@
         </h5>
       </div>
     {% endif %}
-  
+    
     <div class="NB-module NB-module-features">
       <h5 class="NB-module-header">
         New Features
         <div class="NB-module-header-right">
-          <a href="#" class="NB-features-direction NB-features-next-page"></a>
-          <a href="#" class="NB-features-direction NB-features-previous-page NB-disabled"></a>
           {% if user.is_staff %}
             <div class="NB-features-add">
               <a href="#" id="add-feature-button" class="NB-splash-link">Add</a> | 
@@ -139,6 +202,8 @@
             });
             </script>
           {% endif %}
+          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+          <a href="#" class="NB-module-direction NB-module-next-page"></a>
         </div>
       </h5>
       

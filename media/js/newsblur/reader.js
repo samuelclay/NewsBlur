@@ -2289,8 +2289,8 @@
         
         load_feature_page: function(direction) {
             var self = this;
-            var $next = $('.NB-features-next-page');
-            var $previous = $('.NB-features-previous-page');
+            var $next = $('.NB-module-features .NB-module-next-page');
+            var $previous = $('.NB-module-features .NB-module-previous-page');
             
             if (direction == -1 && !this.cache['feature_page']) {
                 return;
@@ -2331,6 +2331,38 @@
                 }
                 
             });
+        },
+        
+        load_howitworks_page: function(page) {
+            var self = this;
+            var $next = $('.NB-module-howitworks .NB-module-next-page');
+            var $previous = $('.NB-module-howitworks .NB-module-previous-page');
+            var $pages = $('.NB-howitworks-page');
+            var $page_indicators = $('.NB-module-howitworks .NB-module-page-indicator');
+            var pages_count = $pages.length;
+            
+            if (page == -1) {
+                return;
+            }
+            if (page >= pages_count) {
+                return;
+            }
+            
+            $pages.removeClass("NB-active");
+            $page_indicators.removeClass("NB-active");
+            $pages.eq(page).addClass("NB-active");
+            $page_indicators.eq(page).addClass("NB-active");
+            
+            if (page >= pages_count - 1) {
+                $next.addClass('NB-disabled');
+            } else {
+                $next.removeClass('NB-disabled');
+            }
+            if (page <= 0) {
+                $previous.addClass('NB-disabled');
+            } else {
+                $previous.removeClass('NB-disabled');
+            }
         },
         
         // ========
@@ -2393,7 +2425,8 @@
         
         handle_clicks: function(elem, e) {
             var self = this;
-
+            // var start = (new Date().getMilliseconds());
+            
             // = Feeds =
             
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
@@ -2546,19 +2579,36 @@
             }); 
             
             // = One-offs =
-
+            var clicked = false;
             $.targetIs(e, { tagSelector: '#mouse-indicator' }, function($t, $p){
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
-            $.targetIs(e, { tagSelector: '.NB-features-next-page' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-features' }, function($t, $p){
                 e.preventDefault();
                 self.load_feature_page(1);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-features-previous-page' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-module-previous-page', childOf: '.NB-module-features' }, function($t, $p){
                 e.preventDefault();
                 self.load_feature_page(-1);
             });
+            $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-howitworks' }, function($t, $p){
+                e.preventDefault();
+                var page = $('.NB-howitworks-page.NB-active').prevAll('.NB-howitworks-page').length;
+                self.load_howitworks_page(page+1);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-module-previous-page', childOf: '.NB-module-howitworks' }, function($t, $p){
+                e.preventDefault();
+                var page = $('.NB-howitworks-page.NB-active').prevAll('.NB-howitworks-page').length;
+                self.load_howitworks_page(page-1);
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-page-indicator', childOf: '.NB-module-howitworks' }, function($t, $p){
+                e.preventDefault();
+                var page = $t.prevAll('.NB-module-page-indicator').length;
+                self.load_howitworks_page(page);
+            }); 
+            
+            // NEWSBLUR.log(['End', (new Date().getMilliseconds()) - start]);
         },
         
         handle_dblclicks: function(elem, e) {
