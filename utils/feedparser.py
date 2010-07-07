@@ -2616,7 +2616,6 @@ def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, h
     If handlers is supplied, it is a list of handlers used to build a
     urllib2 opener.
     """
-
     if hasattr(url_file_stream_or_string, 'read'):
         return url_file_stream_or_string
 

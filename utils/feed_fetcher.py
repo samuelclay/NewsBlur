@@ -67,28 +67,15 @@ class FetchFeed:
             feed.save_history(201, "Already fetched")
             return FEED_SAME, None
         
-        # we check the etag and the modified time to save bandwith and avoid bans
         try:
-            socket.setdefaulttimeout(30)
-            req = urllib2.Request(self.feed.feed_address)
-            data = urllib2.urlopen(req, timeout=30)
+            self.fpf = feedparser.parse(self.feed.feed_address,
+                                        agent=USER_AGENT,
+                                        etag=self.feed.etag,
+                                        modified=self.feed.last_modified)
         except urllib2.HTTPError, e:
             print "HTTP Error: %s" % e
             feed.save_history(e.code, e.msg, e.fp.read())
             return FEED_ERRPARSE, None
-        except Exception, e:
-            log_msg = '! ERROR: Unknown: %s' % e
-            logging.error(log_msg)
-            print(log_msg)
-            feed.save_history(300, 'Unknown Error', e)
-            
-            return FEED_ERRPARSE, None
-
-        try:
-            self.fpf = feedparser.parse(data.read(),
-                                        agent=USER_AGENT,
-                                        etag=self.feed.etag,
-                                        modified=self.feed.last_modified)
         except Exception, e:
             log_msg = '! ERROR: feed cannot be parsed: %s' % e
             logging.error(log_msg)
@@ -295,6 +282,8 @@ class Dispatcher:
                      (ret_feed == FEED_SAME and feed.stories_per_month > 10))):
                     page_importer = PageImporter(feed.feed_link, feed)
                     page_importer.fetch_page()
+            except KeyboardInterrupt:
+                break
             except:
                 print '[%d] ! -------------------------' % (feed.id,)
                 tb = traceback.format_exc()

@@ -17,7 +17,7 @@
         "pk": 1,
         "model": "reader.usersubscriptionfolders",
         "fields": {
-            "folders": "[{\"Tech\": [4, 5]}, 1, 2, 3]",
+            "folders": "[{\"Tech\": [4, 5]}, 1, 2, 3, 6]",
             "user": 1
         }
     },
@@ -69,6 +69,20 @@
         "model": "reader.usersubscription",
         "fields": {
             "feed": 5,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count_neutral": 0,
+            "unread_count_positive": 0,
+            "unread_count_negative": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 6,
             "unread_count_updated": "2009-08-01 00:23:42",
             "mark_read_date": "2009-07-28 23:17:27",
             "unread_count_neutral": 0,
