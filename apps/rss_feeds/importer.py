@@ -4,6 +4,7 @@ import urllib2
 import re
 import urlparse
 import multiprocessing
+import traceback
 from apps.rss_feeds.models import FeedPage
 
 class PageImporter(object):
@@ -16,12 +17,26 @@ class PageImporter(object):
     def fetch_page(self):
         if not self.url:
             return
-            
-        request = urllib2.Request(self.url)
-        response = urllib2.urlopen(request)
-        data = response.read()
-        html = self.rewrite_page(data)
-        self.save_page(html)
+        
+        try:
+            request = urllib2.Request(self.url)
+            response = urllib2.urlopen(request)
+            data = response.read()
+            html = self.rewrite_page(data)
+            self.save_page(html)
+        except urllib2.HTTPError, e:
+            print "HTTP Error: %s" % e
+            self.feed.save_page_history(e.code, e.msg, e.fp.read())
+            return
+        except Exception, e:
+            print '[%d] ! -------------------------' % (self.feed.id,)
+            tb = traceback.format_exc()
+            print tb
+            print '[%d] ! -------------------------' % (self.feed.id,)
+            self.feed.save_page_history(500, "Error", tb)
+            return
+        
+        self.feed.save_page_history(200, "OK")
     
     def rewrite_page(self, response):
         BASE_RE = re.compile(r'<head(.*?\>)', re.I)

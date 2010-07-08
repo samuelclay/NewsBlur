@@ -42,12 +42,21 @@ class Feed(models.Model):
     def __unicode__(self):
         return self.feed_title
     
-    def save_history(self, status_code, message, exception=None):
+    def save_feed_history(self, status_code, message, exception=None):
         FeedFetchHistory.objects.create(feed=self, 
                                         status_code=status_code,
                                         message=message,
                                         exception=exception)
-        old_fetch_histories = self.fetch_history.all()[10:]
+        old_fetch_histories = self.feed_fetch_history.all()[10:]
+        for history in old_fetch_histories:
+            history.delete()
+    
+    def save_page_history(self, status_code, message, exception=None):
+        PageFetchHistory.objects.create(feed=self, 
+                                        status_code=status_code,
+                                        message=message,
+                                        exception=exception)
+        old_fetch_histories = self.page_fetch_history.all()[10:]
         for history in old_fetch_histories:
             history.delete()
         
@@ -140,6 +149,7 @@ class Feed(models.Model):
                            story_title = story.get('title'),
                            story_content = story_content,
                            story_author = story_author,
+                           story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
                            story_tags = self._shorten_story_tags(story_tags)
@@ -176,6 +186,7 @@ class Feed(models.Model):
                            story_content = diff.getDiff(),
                            story_original_content = original_content,
                            story_author = story_author,
+                           story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
                            story_tags = self._shorten_story_tags(story_tags)
@@ -283,8 +294,7 @@ class Feed(models.Model):
             stories = None
 
         if not stories or force:
-            stories_db = Story.objects.filter(story_feed=self)\
-                                      .select_related('story_author')[offset:offset+limit]
+            stories_db = Story.objects.filter(story_feed=self)[offset:offset+limit]
             stories = self.format_stories(stories_db)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
@@ -301,7 +311,7 @@ class Feed(models.Model):
             story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
             story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
             story['story_date'] = story_db.story_date
-            story['story_authors'] = story_db.story_author.author_name
+            story['story_authors'] = story_db.story_author_name
             story['story_title'] = story_db.story_title
             story['story_content'] = story_db.story_content
             story['story_permalink'] = story_db.story_permalink
@@ -469,6 +479,7 @@ class Story(models.Model):
     story_content_type = models.CharField(max_length=255, null=True,
                                           blank=True)
     story_author = models.ForeignKey(StoryAuthor)
+    story_author_name = models.CharField(max_length=500, null=True, blank=True)
     story_permalink = models.CharField(max_length=1000)
     story_guid = models.CharField(max_length=1000)
     story_guid_hash = models.CharField(max_length=40)
@@ -508,7 +519,24 @@ class FeedUpdateHistory(models.Model):
         super(FeedUpdateHistory, self).save(*args, **kwargs)
 
 class FeedFetchHistory(models.Model):
-    feed = models.ForeignKey(Feed, related_name='fetch_history')
+    feed = models.ForeignKey(Feed, related_name='feed_fetch_history')
+    status_code = models.CharField(max_length=10, null=True, blank=True)
+    message = models.CharField(max_length=255, null=True, blank=True)
+    exception = models.TextField(null=True, blank=True)
+    fetch_date = models.DateTimeField(default=datetime.datetime.now)
+    
+    def __unicode__(self):
+        return "[%s] %s (%s): %s %s: %s" % (
+            self.feed.id,
+            self.feed,
+            self.fetch_date,
+            self.status_code,
+            self.message,
+            self.exception[:50]
+        )
+        
+class PageFetchHistory(models.Model):
+    feed = models.ForeignKey(Feed, related_name='page_fetch_history')
     status_code = models.CharField(max_length=10, null=True, blank=True)
     message = models.CharField(max_length=255, null=True, blank=True)
     exception = models.TextField(null=True, blank=True)

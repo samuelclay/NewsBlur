@@ -3,6 +3,7 @@ import socket
 socket.setdefaulttimeout(2)
 
 from apps.rss_feeds.models import Feed, Story, FeedUpdateHistory
+# from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
@@ -67,7 +68,7 @@ class FetchFeed:
                                                                  self.feed.id)
             logging.info(log_msg)
             print(log_msg)
-            feed.save_history(201, "Already fetched")
+            feed.save_feed_history(201, "Already fetched")
             return FEED_SAME, None
         
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
@@ -75,6 +76,10 @@ class FetchFeed:
                                     agent=USER_AGENT,
                                     etag=self.feed.etag,
                                     modified=modified)
+        
+        # feed_xml, _ = FeedXML.objects.get_or_create(feed=self.feed)
+        # feed_xml.rss_xml = self.fpf
+        # feed_xml.save()
         
         return FEED_OK, self.fpf
     
@@ -109,7 +114,7 @@ class ProcessFeed:
                            'last check: %s' % (self.feed.id,
                                                self.feed.feed_address))
                 self.feed.save()
-                self.feed.save_history(304, "Not modified")
+                self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
 
             if self.fpf.status >= 400:
@@ -118,7 +123,7 @@ class ProcessFeed:
                                                      self.fpf.status,
                                                      self.feed.feed_address))
                 self.feed.save()
-                self.feed.save_history(self.fpf.status, "HTTP Error")
+                self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 return FEED_ERRHTTP, ret_values
 
         if hasattr(self.fpf, 'bozo') and self.fpf.bozo:
@@ -275,14 +280,14 @@ class Dispatcher:
                 break
             except urllib2.HTTPError, e:
                 print "HTTP Error: %s" % e
-                feed.save_history(e.code, e.msg, e.fp.read())
+                feed.save_feed_history(e.code, e.msg, e.fp.read())
             except Exception, e:
                 print '[%d] ! -------------------------' % (feed.id,)
                 tb = traceback.format_exc()
                 print tb
                 print '[%d] ! -------------------------' % (feed.id,)
                 ret_feed = FEED_ERREXC 
-                feed.save_history(500, "Error", tb)
+                feed.save_feed_history(500, "Error", tb)
 
             delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:
