@@ -64,8 +64,7 @@ class UserSubscription(models.Model):
         # print "Date delta: %s" % date_delta
         from django.db import connection
         connection.queries = []
-        stories_db = Story.objects.select_related('story_author')\
-                                  .filter(story_feed=self.feed,
+        stories_db = Story.objects.filter(story_feed=self.feed,
                                           story_date__gte=date_delta)\
                                   .exclude(id__in=read_stories_ids)
         # print "Stories_db: %s" % stories_db.count()
