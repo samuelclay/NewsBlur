@@ -13,14 +13,15 @@ class Migration(DataMigration):
         while True:
             print i,
             sys.stdout.flush()
-            stories = Story.objects.all()[i:i+500]
+            stories = Story.objects.all().select_related('story_author')[i:i+500]
             if not stories:
                 break
             else:
                 i += 500
             for story in stories:
-                story.story_author_name = story.story_author.author_name
-                story.save()
+                if story.story_author.author_name:
+                    story.story_author_name = story.story_author.author_name
+                    story.save()
 
 
     def backwards(self, orm):
