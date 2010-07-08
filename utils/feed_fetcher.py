@@ -70,22 +70,12 @@ class FetchFeed:
             feed.save_history(201, "Already fetched")
             return FEED_SAME, None
         
-        try:
-            modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
-            self.fpf = feedparser.parse(self.feed.feed_address,
-                                        agent=USER_AGENT,
-                                        etag=self.feed.etag,
-                                        modified=modified)
-        except urllib2.HTTPError, e:
-            print "HTTP Error: %s" % e
-            return FEED_ERRHTTP, None
-        except Exception, e:
-            log_msg = '! ERROR: feed cannot be parsed: %s' % e
-            logging.error(log_msg)
-            print(log_msg)
-            return FEED_ERRPARSE, None
+        modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
+        self.fpf = feedparser.parse(self.feed.feed_address,
+                                    agent=USER_AGENT,
+                                    etag=self.feed.etag,
+                                    modified=modified)
         
-        feed.save_history(200, "OK")
         return FEED_OK, self.fpf
     
 class ProcessFeed:
