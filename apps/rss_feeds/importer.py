@@ -1,3 +1,5 @@
+import socket
+socket.setdefaulttimeout(2)
 import urllib2
 import re
 import urlparse

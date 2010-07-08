@@ -1,3 +1,7 @@
+
+import socket
+socket.setdefaulttimeout(2)
+
 from apps.rss_feeds.models import Feed, Story, FeedUpdateHistory
 from django.core.cache import cache
 from apps.reader.models import UserSubscription
@@ -11,7 +15,6 @@ import logging
 import datetime
 import traceback
 import multiprocessing
-import socket
 import urllib2
 
 # Refresh feed code adapted from Feedjack.
@@ -68,20 +71,18 @@ class FetchFeed:
             return FEED_SAME, None
         
         try:
+            modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
             self.fpf = feedparser.parse(self.feed.feed_address,
                                         agent=USER_AGENT,
                                         etag=self.feed.etag,
-                                        modified=self.feed.last_modified)
+                                        modified=modified)
         except urllib2.HTTPError, e:
             print "HTTP Error: %s" % e
-            feed.save_history(e.code, e.msg, e.fp.read())
-            return FEED_ERRPARSE, None
+            return FEED_ERRHTTP, None
         except Exception, e:
             log_msg = '! ERROR: feed cannot be parsed: %s' % e
             logging.error(log_msg)
             print(log_msg)
-            feed.save_history(301, "Parse error", e)
-            
             return FEED_ERRPARSE, None
         
         feed.save_history(200, "OK")
@@ -106,7 +107,6 @@ class ProcessFeed:
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
                                                self.feed.feed_title))
-        
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 logging.debug(u'[%d] HTTP status %d: %s' % (self.feed.id,
@@ -148,7 +148,7 @@ class ProcessFeed:
             pass
         
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
-        self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)[:1024]
+        self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
         self.feed.last_update = datetime.datetime.now()
 
@@ -166,12 +166,6 @@ class ProcessFeed:
             self.feed.save()
         finally:
             self.lock.release()
-            
-        self.feed.count_subscribers(lock=self.lock)
-        self.feed.count_stories_per_month(lock=self.lock)
-        self.feed.save_popular_authors(lock=self.lock)
-        self.feed.save_popular_tags(lock=self.lock)
-
 
         # Compare new stories to existing stories, adding and updating
         start_date = datetime.datetime.now()
@@ -193,7 +187,12 @@ class ProcessFeed:
         ).order_by('-story_date')
         # print 'Existing stories: %s' % existing_stories.count()
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
-        
+            
+        self.feed.count_subscribers(lock=self.lock)
+        self.feed.count_stories_per_month(lock=self.lock)
+        self.feed.save_popular_authors(lock=self.lock)
+        self.feed.save_popular_tags(lock=self.lock)
+
         return FEED_OK, ret_values
 
         
@@ -284,7 +283,10 @@ class Dispatcher:
                     page_importer.fetch_page()
             except KeyboardInterrupt:
                 break
-            except:
+            except urllib2.HTTPError, e:
+                print "HTTP Error: %s" % e
+                feed.save_history(e.code, e.msg, e.fp.read())
+            except Exception, e:
                 print '[%d] ! -------------------------' % (feed.id,)
                 tb = traceback.format_exc()
                 print tb
@@ -300,8 +302,6 @@ class Dispatcher:
             
             feed.last_load_time = max(1, delta.seconds)
             feed.save()
-            
-            feed.set_next_scheduled_update(lock=lock)
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
                 identity, feed.feed_title, feed.id, unicode(delta),
