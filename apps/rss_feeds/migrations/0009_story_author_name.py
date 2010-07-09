@@ -4,24 +4,21 @@ import sys
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-from apps.rss_feeds.models import Story, StoryAuthor
+from apps.rss_feeds.models import Story, Feed
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        i = 0
-        while True:
-            print i,
+        feeds = Feed.objects.all().order_by('-stories_per_month')
+        for feed in feeds:
+            print feed
             sys.stdout.flush()
-            stories = Story.objects.all().select_related('story_author')[i:i+500]
-            if not stories:
-                break
-            else:
-                i += 500
-            for story in stories:
-                if story.story_author.author_name:
+            stories = Story.objects.select_related('story_author').filter(story_feed=feed)
+            for story in stories.iterator():
+                if not story.story_author_name and story.story_author.author_name:
                     story.story_author_name = story.story_author.author_name
                     story.save()
+                    print story.story_date,
 
 
     def backwards(self, orm):

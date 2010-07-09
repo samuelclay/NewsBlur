@@ -1,5 +1,5 @@
 /*
- * jQuery UI Droppable 1.8
+ * jQuery UI Droppable 1.8.2
  *
  * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT (MIT-LICENSE.txt)
@@ -147,7 +147,7 @@ $.widget("ui.droppable", {
 });
 
 $.extend($.ui.droppable, {
-	version: "1.8"
+	version: "1.8.2"
 });
 
 $.ui.intersect = function(draggable, droppable, toleranceMode) {

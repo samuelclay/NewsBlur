@@ -1,5 +1,5 @@
 /*
- * jQuery UI Position 1.8
+ * jQuery UI Position 1.8.2
  *
  * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT (MIT-LICENSE.txt)
@@ -112,6 +112,10 @@ $.fn.position = function( options ) {
 		} else if ( options.my[1] === verticalDefault ) {
 			position.top -= elemHeight / 2;
 		}
+
+		// prevent fractions (see #5280)
+		position.left = parseInt( position.left );
+		position.top = parseInt( position.top );
 
 		$.each( [ "left", "top" ], function( i, dir ) {
 			if ( $.ui.position[ collision[i] ] ) {
