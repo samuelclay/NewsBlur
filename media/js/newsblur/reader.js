@@ -541,6 +541,7 @@
             } else {
                 $('.NB-task-manage').removeClass('NB-disabled');
                 $('.NB-callout-ftux').fadeOut(500);
+                this.load_sortable_feeds();
             }
         },
         
@@ -615,6 +616,45 @@
             ]).data('feed_id', feed.id);  
             
             return $feed;  
+        },
+        
+        load_sortable_feeds: function() {
+            var self = this;
+            
+            $('ul#feed_list,ul#feed_list ul.folder').sortable({
+                connectWith: '.folder, ul#feed_list',
+                items: '.feed',
+                placeholder: 'NB-feeds-list-highlight',
+                axis: 'y',
+                distance: 3,
+                start: function(e, ui) {
+                    self.flags['sorting_feed'] = true;
+                    ui.placeholder.attr('class', ui.item.attr('class') + ' NB-feeds-list-highlight');
+                    ui.item.addClass('NB-feed-sorting');
+                    ui.placeholder.html(ui.item.children().clone());
+                },
+                sort: function(e, ui) {
+                    $('.feed', ui.placeholder.parents('.folder')).tsort('.feed_title');
+                    $('.folder', ui.placeholder.parents('.folder')).tsort('.folder_title');
+                },
+                stop: function(e, ui) {
+                    setTimeout(function() {
+                        self.flags['sorting_feed'] = false;
+                    }, 100);
+                    ui.item.removeClass('NB-feed-sorting');
+                    $('.feed', e.target).tsort('.feed_title');
+                    $('.folder', e.target).tsort('.folder_title');
+                    self.save_feed_order();
+                    NEWSBLUR.log(['stop', ui.item]);
+                    ui.item.css({'backgroundColor': '#D7DDE6'})
+                           .animate({'backgroundColor': '#F67066'}, {'duration': 700})
+                           .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
+                }
+            });
+        },
+        
+        save_feed_order: function() {
+            
         },
         
         delete_feed: function(feed_id) {
@@ -2431,8 +2471,10 @@
             
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();
-                var feed_id = $t.data('feed_id');
-                self.open_feed(feed_id, $t);
+                if (!self.flags['sorting_feed']) {
+                    var feed_id = $t.data('feed_id');
+                    self.open_feed(feed_id, $t);
+                }
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){
                 e.preventDefault();

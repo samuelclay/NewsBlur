@@ -107,6 +107,7 @@ COMPRESS_JS = {
             'js/jquery.ui.mouse.js',
             'js/jquery.ui.position.js',
             'js/jquery.ui.draggable.js',
+            'js/jquery.ui.sortable.js',
             'js/jquery.ui.slider.js',
             'js/jquery.layout.js',
             'js/jquery.tinysort.js',
