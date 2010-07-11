@@ -502,3 +502,16 @@ def load_features(request):
     page = int(request.POST.get('page', 0))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     return HttpResponse(json.encode(features), mimetype='application/json')
+
+@json.json_view
+def save_feed_order(request):
+    folders = request.POST.get('folders')
+    print " ---> [%s]: Feed re-ordering: %s" % (request.user, folders)
+    if folders:
+        # Test that folders can be JSON decoded
+        folders_list = json.decode(folders)
+        user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
+        user_sub_folders.folders = folders
+        user_sub_folders.save()
+    
+    return {}

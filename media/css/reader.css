@@ -367,6 +367,12 @@ background: transparent;
     border-top: 1px solid #D7DDE6;
     border-bottom: 1px solid #D7DDE6;
     padding-right: 2px;
+    background-color: #D7DDE6;
+}
+
+.feed.NB-feed-sorting,
+#feed_list.NB-feed-sorting {
+    cursor: move !important;
 }
 
 #feed_list .feed_id {
@@ -1994,8 +2000,9 @@ background: transparent;
 }
 
 .NB-module-features .NB-features-add {
-    float: right;
+    float: left;
     display: none;
+    margin-right: 12px;
 }
 .NB-module-features .NB-module-header:hover .NB-features-add {
     display: block;

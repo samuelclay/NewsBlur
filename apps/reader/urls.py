@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^add_folder', views.add_folder),
     url(r'^add_feature', views.add_feature, name='add-feature'),
     url(r'^load_features', views.load_features, name='load-features'),
+    url(r'^save_feed_order', views.save_feed_order, name='save-feed-order'),
 )

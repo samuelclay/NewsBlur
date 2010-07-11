@@ -46,7 +46,7 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self):
-        print '[%s]: %s' % (self.feed, self.user)
+        print ' ---> [%s]: Computing scores: %s' % (self.user, self.feed)
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.

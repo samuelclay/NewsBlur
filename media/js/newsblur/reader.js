@@ -627,10 +627,12 @@
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 3,
+                cursor: 'move',
                 start: function(e, ui) {
                     self.flags['sorting_feed'] = true;
                     ui.placeholder.attr('class', ui.item.attr('class') + ' NB-feeds-list-highlight');
                     ui.item.addClass('NB-feed-sorting');
+                    self.$s.$feed_list.addClass('NB-feed-sorting');
                     ui.placeholder.html(ui.item.children().clone());
                 },
                 sort: function(e, ui) {
@@ -642,10 +644,10 @@
                         self.flags['sorting_feed'] = false;
                     }, 100);
                     ui.item.removeClass('NB-feed-sorting');
+                    self.$s.$feed_list.removeClass('NB-feed-sorting');
                     $('.feed', e.target).tsort('.feed_title');
                     $('.folder', e.target).tsort('.folder_title');
                     self.save_feed_order();
-                    NEWSBLUR.log(['stop', ui.item]);
                     ui.item.css({'backgroundColor': '#D7DDE6'})
                            .animate({'backgroundColor': '#F67066'}, {'duration': 700})
                            .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
@@ -654,7 +656,29 @@
         },
         
         save_feed_order: function() {
+            var combine_folders = function($folder) {
+                var folders = [];
+                var $items = $folder.children('li.folder, .feed');
+                
+                for (var i=0, i_count=$items.length; i < i_count; i++) {
+                    var $item = $items.eq(i);
+
+                    if ($item.hasClass('feed')) {
+                        folders.push($item.data('feed_id'));
+                    } else if ($item.hasClass('folder')) {
+                        var folder_title = $item.find('.folder_title').eq(0).text();
+                        var child_folders = {};
+                        child_folders[folder_title] = combine_folders($item.children('ul.folder').eq(0));
+                        folders.push(child_folders);
+                    }
+                }
+                
+                return folders;
+            };
             
+            var combined_folders = combine_folders(this.$s.$feed_list);
+            NEWSBLUR.log(['Save new folder/feed order', {'combined': combined_folders}]);
+            this.model.save_feed_order(combined_folders);
         },
         
         delete_feed: function(feed_id) {

@@ -392,14 +392,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
         } else {
-            if ($.isFunction(callback)) {
-                callback(o);
-            }
+            if ($.isFunction(callback)) callback();
         }
     },
     
     get_features_page: function(page, callback) {
         this.make_request('/reader/load_features', {'page': page}, callback);
+    },
+    
+    save_feed_order: function(folders, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/save_feed_order', {'folders': $.toJSON(folders)}, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     }
     
 };
