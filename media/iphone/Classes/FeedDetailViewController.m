@@ -8,8 +8,10 @@
 
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "FeedDetailTableCell.h"
 #import "JSON.h"
 
+#define kTableViewRowHeight 62;
 
 @implementation FeedDetailViewController
 
@@ -129,32 +131,31 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
+	static NSString *FeedDetailCellIdentifier = @"FeedDetailCellIdentifier";
 	
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
+	FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedDetailCellIdentifier];
 	if (cell == nil) {
-		
-		cell = [[[UITableViewCell alloc] 
-				 initWithStyle:UITableViewCellStyleDefault
-				 reuseIdentifier:SimpleTableIdentifier] autorelease];
+		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedDetailTableCell"
+                                                     owner:self
+                                                   options:nil];
+        for (id oneObject in nib) {
+            if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
+                cell = (FeedDetailTableCell *)oneObject;
+            }
+        }
 	}
     
-    cell.textLabel.text = [[appDelegate.activeFeedStories objectAtIndex:indexPath.row] 
-                           objectForKey:@"story_title"];
-//	
-//	int section_index = 0;
-//	for (id f in self.dictFoldersArray) {
-//		// NSLog(@"Cell: %i: %@", section_index, f);
-//		if (section_index == indexPath.section) {
-//			NSArray *feeds = [self.dictFolders objectForKey:f];
-//			// NSLog(@"Cell: %i: %@: %@", section_index, f, [feeds objectAtIndex:indexPath.row]);
-//			cell.textLabel.text = [[feeds objectAtIndex:indexPath.row] 
-//								   objectForKey:@"feed_title"];
-//			return cell;
-//		}
-//		section_index++;
-//	}
-//	
+    NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:indexPath.row];
+    if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
+        cell.storyAuthor.text = [story objectForKey:@"story_authors"];
+    } else {
+        cell.storyAuthor.text = @"";
+    }
+    cell.storyTitle.text = [story objectForKey:@"story_title"];
+    cell.storyDate.text = [story objectForKey:@"long_parsed_date"];
+    NSLog(@"Date: %@ - %@", cell.storyDate.text, [story objectForKey:@"long_parsed_date"]);
+    cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_orange.png"];
+
 	return cell;
 }
 
@@ -163,6 +164,10 @@
     NSLog(@"Active Story: %@", [appDelegate activeStory]);
 	[appDelegate loadStoryDetailView];
 	
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return kTableViewRowHeight;
 }
 
 @end

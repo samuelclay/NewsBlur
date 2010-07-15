@@ -20,6 +20,8 @@
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
+    
+
 }
 
 - (void)fetchFeedDetail;

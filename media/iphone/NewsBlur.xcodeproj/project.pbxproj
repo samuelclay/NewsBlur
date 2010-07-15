@@ -17,6 +17,12 @@
 		28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */; };
 		7842ECF811D44A530066CF9D /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailViewController.m */; };
 		7842ECF911D44A540066CF9D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */; };
+		7843F4E911EEABDC00675F64 /* FeedDetailTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7843F4E811EEABDC00675F64 /* FeedDetailTableCell.xib */; };
+		7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */; };
+		7843F50F11EEB4EE00675F64 /* bullet_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 7843F50B11EEB4EE00675F64 /* bullet_blue.png */; };
+		7843F51011EEB4EE00675F64 /* bullet_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 7843F50C11EEB4EE00675F64 /* bullet_orange.png */; };
+		7843F51111EEB4EE00675F64 /* bullet_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 7843F50D11EEB4EE00675F64 /* bullet_red.png */; };
+		7843F51211EEB4EE00675F64 /* bullet_yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = 7843F50E11EEB4EE00675F64 /* bullet_yellow.png */; };
 		787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787A0CD911CE65330056422D /* FeedDetailViewController.m */; };
 		787A0CDC11CE65330056422D /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787A0CDA11CE65330056422D /* FeedDetailViewController.xib */; };
 		78FC34F711CA94900055C312 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34EC11CA94900055C312 /* NSObject+SBJSON.m */; };
@@ -43,6 +49,13 @@
 		7842ECF511D44A530066CF9D /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
 		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryDetailViewController.m; sourceTree = "<group>"; };
 		7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
+		7843F4E811EEABDC00675F64 /* FeedDetailTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedDetailTableCell.xib; sourceTree = "<group>"; };
+		7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
+		7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
+		7843F50B11EEB4EE00675F64 /* bullet_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet_blue.png; sourceTree = "<group>"; };
+		7843F50C11EEB4EE00675F64 /* bullet_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet_orange.png; sourceTree = "<group>"; };
+		7843F50D11EEB4EE00675F64 /* bullet_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet_red.png; sourceTree = "<group>"; };
+		7843F50E11EEB4EE00675F64 /* bullet_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet_yellow.png; sourceTree = "<group>"; };
 		787A0CD811CE65330056422D /* FeedDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailViewController.h; sourceTree = "<group>"; };
 		787A0CD911CE65330056422D /* FeedDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailViewController.m; sourceTree = "<group>"; };
 		787A0CDA11CE65330056422D /* FeedDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedDetailViewController.xib; sourceTree = "<group>"; };
@@ -82,6 +95,9 @@
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */,
+				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
+				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
+				7843F4E811EEABDC00675F64 /* FeedDetailTableCell.xib */,
 				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
 				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
 				787A0CDA11CE65330056422D /* FeedDetailViewController.xib */,
@@ -127,6 +143,10 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7843F50B11EEB4EE00675F64 /* bullet_blue.png */,
+				7843F50C11EEB4EE00675F64 /* bullet_orange.png */,
+				7843F50D11EEB4EE00675F64 /* bullet_red.png */,
+				7843F50E11EEB4EE00675F64 /* bullet_yellow.png */,
 				8D1107310486CEB800E47090 /* NewsBlur-Info.plist */,
 			);
 			name = Resources;
@@ -189,6 +209,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = NewsBlur;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "NewsBlur" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
@@ -210,6 +233,11 @@
 				2899E5220DE3E06400AC0155 /* NewsBlurViewController.xib in Resources */,
 				787A0CDC11CE65330056422D /* FeedDetailViewController.xib in Resources */,
 				7842ECF911D44A540066CF9D /* StoryDetailViewController.xib in Resources */,
+				7843F4E911EEABDC00675F64 /* FeedDetailTableCell.xib in Resources */,
+				7843F50F11EEB4EE00675F64 /* bullet_blue.png in Resources */,
+				7843F51011EEB4EE00675F64 /* bullet_orange.png in Resources */,
+				7843F51111EEB4EE00675F64 /* bullet_red.png in Resources */,
+				7843F51211EEB4EE00675F64 /* bullet_yellow.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,6 +259,7 @@
 				78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */,
 				787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */,
 				7842ECF811D44A530066CF9D /* StoryDetailViewController.m in Sources */,
+				7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +302,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos3.1.3;
 			};
 			name = Debug;
