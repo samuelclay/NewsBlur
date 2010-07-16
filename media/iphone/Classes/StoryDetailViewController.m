@@ -24,9 +24,28 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
-    
-    [webView loadHTMLString:[appDelegate.activeStory 
-                             objectForKey:@"story_content"] 
+    NSString *imgCssString = [NSString stringWithFormat:@"<style>"
+                              "body {"
+                              "  line-height: 18px;"
+                              "  font-size: 13px;"
+                              "  font-family: 'Lucida Grande',Helvetica, Arial;"
+                              "  text-rendering: optimizeLegibility;"
+                              "}"
+                              "img {"
+                              "  max-width: 300px;"
+                              "  width: auto;"
+                              "  height: auto;"
+                              "}"
+                              "blockquote {"
+                              "  background-color: #F0F0F0;"
+                              "  border-left: 1px solid #9B9B9B;"
+                              "  padding: .5em 2em;"
+                              "  margin: 0px;"
+                              "}"
+                              "</style>"];
+    NSString *htmlString = [NSString stringWithFormat:@"%@ %@", imgCssString, [appDelegate.activeStory 
+                               objectForKey:@"story_content"]];
+    [webView loadHTMLString:htmlString
                     baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
                                                   objectForKey:@"feed_link"]]];
 	[super viewWillAppear:animated];
