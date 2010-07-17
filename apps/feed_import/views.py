@@ -137,7 +137,14 @@ def import_signup(request):
         signup_form = SignupForm(prefix='signup', data=request.POST)
         if signup_form.is_valid():
             new_user = signup_form.save()
-            user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+            try:
+                user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+            except OAuthToken.DoesNotExist:
+                user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
+                if user_tokens:
+                    user_token = user_tokens[0]
+                    user_token.session_id = request.session.session_key
+                    user_token.save()
             user_token.user = new_user
             user_token.save()
             login_user(request, new_user)
