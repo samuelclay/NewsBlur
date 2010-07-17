@@ -95,6 +95,8 @@ def reader_callback(request):
             user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
             if user_tokens:
                 user_token = user_tokens[0]
+                user_token.session_id = request.session.session_key
+                user_token.save()
 
     # Authenticated in Google, so verify and fetch access tokens
     token = oauth.Token(user_token.request_token, user_token.request_token_secret)
