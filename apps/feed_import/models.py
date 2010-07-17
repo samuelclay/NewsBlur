@@ -11,10 +11,12 @@ import utils.opml as opml
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
     session_id = models.CharField(max_length=50, null=True, blank=True)
+    remote_ip = models.CharField(max_length=50, null=True, blank=True)
     request_token = models.CharField(max_length=50)
     request_token_secret = models.CharField(max_length=50)
     access_token = models.CharField(max_length=50)
     access_token_secret = models.CharField(max_length=50)
+    created_date = models.DateTimeField(default=datetime.datetime.now)
     
 
 class Importer:

@@ -70,6 +70,7 @@ def reader_authorize(request):
     else:
         OAuthToken.objects.filter(session_id=request.session.session_key).delete()
         auth_token_dict['session_id'] = request.session.session_key
+        auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
     OAuthToken.objects.create(**auth_token_dict)
                               
     redirect = "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
@@ -88,7 +89,12 @@ def reader_callback(request):
     if request.user.is_authenticated():
         user_token = OAuthToken.objects.get(user=request.user)
     else:
-        user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+        try:
+            user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+        except OAuthToken.DoesNotExist:
+            user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
+            if user_tokens:
+                user_token = user_tokens[0]
 
     # Authenticated in Google, so verify and fetch access tokens
     token = oauth.Token(user_token.request_token, user_token.request_token_secret)
