@@ -11,7 +11,7 @@
 #import "FeedDetailTableCell.h"
 #import "JSON.h"
 
-#define kTableViewRowHeight 62;
+#define kTableViewRowHeight 55;
 
 @implementation FeedDetailViewController
 
@@ -74,7 +74,7 @@
         //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         [theFeedDetailURL release];
-        jsonString = nil;
+        jsonString = [[NSMutableData data] retain];
         NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedDetail];
         NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
         [connection release];
@@ -82,33 +82,22 @@
     }
 }
 
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    [jsonString setLength:0];
+}
+
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
 {   
-	if(jsonString == nil) {
-        jsonString = [[NSMutableString alloc] 
-                      initWithData:data 
-                      encoding:NSUTF8StringEncoding];
-        
-	} else {
-		NSMutableString *temp_string = [[NSMutableString alloc] 
-                                        initWithString:jsonString];
-		
-		[jsonString release];
-		jsonString = [[NSMutableString alloc] 
-                      initWithData:data 
-                      encoding:NSUTF8StringEncoding];
-		[temp_string appendString:jsonString];
-        
-		[jsonString release];
-		jsonString = [[NSMutableString alloc] initWithString: temp_string];
-		[temp_string release];
-        
-	}
+    [jsonString appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    NSString *jsonS = [[NSString alloc] 
+                       initWithData:jsonString 
+                       encoding:NSUTF8StringEncoding];
     NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[jsonString JSONValue]];
+                             initWithDictionary:[jsonS JSONValue]];
 	
     NSArray *storiesArray = [[NSArray alloc] 
                              initWithArray:[results objectForKey:@"stories"]];
@@ -118,7 +107,22 @@
     
     [storiesArray release];
     [results release];
+    [jsonS release];
 	[jsonString release];
+}
+
+- (void)connection:(NSURLConnection *)connection
+  didFailWithError:(NSError *)error
+{
+    // release the connection, and the data object
+    [connection release];
+    // receivedData is declared as a method instance elsewhere
+    [jsonString release];
+    
+    // inform the user
+    NSLog(@"Connection failed! Error - %@ %@",
+          [error localizedDescription],
+          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
 }
 
 
@@ -153,7 +157,6 @@
     }
     cell.storyTitle.text = [story objectForKey:@"story_title"];
     cell.storyDate.text = [story objectForKey:@"long_parsed_date"];
-    NSLog(@"Date: %@ - %@", cell.storyDate.text, [story objectForKey:@"long_parsed_date"]);
     cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_orange.png"];
 
 	return cell;

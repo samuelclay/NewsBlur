@@ -15,7 +15,7 @@
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
-    NSMutableString * jsonString;
+    NSMutableData * jsonString;
                
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
@@ -32,6 +32,6 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 
 @property (nonatomic, retain) NSArray * stories;
-@property (nonatomic, retain) NSMutableString * jsonString;
+@property (nonatomic, retain) NSMutableData * jsonString;
 
 @end

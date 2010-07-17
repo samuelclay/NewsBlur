@@ -15,7 +15,9 @@ def format_story_link_date__short(date):
 def format_story_link_date__long(date):
     parsed_date, date_tuple, today_tuple, yesterday_tuple = _extract_date_tuples(date)
     if date_tuple == today_tuple:
-        return parsed_date.format('\T\o\d\\a\y, F jS, Y g:ia').replace('.','')
+        return 'Today, ' + parsed_date.format('F jS g:ia').replace('.','')
+    if date_tuple == yesterday_tuple:
+        return 'Yesterday, ' + parsed_date.format('F jS g:ia').replace('.','')
     elif date_tuple[0] == today_tuple[0]:
         return parsed_date.format('l, F jS g:ia').replace('.','')
     else:
