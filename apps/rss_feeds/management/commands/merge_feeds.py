@@ -55,17 +55,17 @@ class Command(BaseCommand):
                 folders = json.decode(user_sub_folders.folders)
                 folders = self.rewrite_folders(folders, original_feed, duplicate_feed)
                 user_sub_folders.folders = json.encode(folders)
-                # user_sub_folders.save()
+                user_sub_folders.save()
                 
                 # Switch to original feed for the user subscription
                 print "      ===> %s " % user_sub.user
                 user_sub.feed = original_feed
                 try:
-                    # user_sub.save()
+                    user_sub.save()
                     pass
                 except IntegrityError:
                     print "      !!!!> %s already subscribed" % user_sub.user
-                    # user_sub.delete()
+                    user_sub.delete()
             
             # Switch read stories
             user_stories = UserStory.objects.filter(feed=duplicate_feed)
@@ -79,13 +79,13 @@ class Command(BaseCommand):
                     user_story.story = original_story[0]
                 else:
                     print " ***> Can't find original story: %s" % duplicate_story
-                # user_story.save()
+                user_story.save()
             
             def delete_story_feed(model, feed_field='feed'):
                 duplicate_stories = model.objects.filter(**{feed_field: duplicate_feed})
                 if duplicate_stories.count():
                     print " ---> Deleting %s %s" % (duplicate_stories.count(), model)
-                # duplicate_stories.delete()
+                duplicate_stories.delete()
             def switch_feed(model):
                 duplicates = model.objects.filter(feed=duplicate_feed)
                 if duplicates.count():
@@ -93,11 +93,11 @@ class Command(BaseCommand):
                 for duplicate in duplicates:
                     duplicate.feed = original_feed
                     try:
-                        # duplicate.save()
+                        duplicate.save()
                         pass
                     except IntegrityError:
                         print "      !!!!> %s already exists" % duplicate
-                        # duplicates.delete()
+                        duplicates.delete()
             delete_story_feed(Story, 'story_feed')
             delete_story_feed(Tag)
             delete_story_feed(StoryAuthor)
@@ -107,8 +107,8 @@ class Command(BaseCommand):
             switch_feed(ClassifierAuthor)
             switch_feed(ClassifierFeed)
             switch_feed(ClassifierTag)
-            # duplicate_authors.delete()
-            # duplicate_feed.delete()
+            
+            duplicate_feed.delete()
     
     def rewrite_folders(self, folders, original_feed, duplicate_feed):
         new_folders = []
@@ -116,7 +116,7 @@ class Command(BaseCommand):
         for k, folder in enumerate(folders):
             if isinstance(folder, int):
                 if folder == duplicate_feed.pk:
-                    print "              ===> Rewrote %s'th item: %s" % (k+1, folders)
+                    # print "              ===> Rewrote %s'th item: %s" % (k+1, folders)
                     new_folders.append(original_feed.pk)
                 else:
                     new_folders.append(folder)
