@@ -43,7 +43,7 @@ class Feed(models.Model):
         return self.feed_title
 
     def save(self, *args, **kwargs):
-        if len(self.feed_tagline) > 1024:
+        if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
             
         super(Feed, self).save(*args, **kwargs)
