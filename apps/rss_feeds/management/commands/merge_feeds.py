@@ -35,13 +35,18 @@ class Command(BaseCommand):
                               AND f2.id > f.id
                               AND f.feed_tagline = f2.feed_tagline 
                               AND f.feed_link = f2.feed_link 
-                              AND f.feed_title = f2.feed_title;""")
+                              AND f.feed_title = f2.feed_title
+                          ORDER BY original_id ASC;""")
         
         feed_fields = ('original_id', 'duplicate_id', 'original_feed_address', 'duplicate_feed_address')
         for feeds_values in cursor.fetchall():
             feeds = dict(zip(feed_fields, feeds_values))
-            original_feed = Feed.objects.get(pk=feeds['original_id'])
-            duplicate_feed = Feed.objects.get(pk=feeds['duplicate_id'])
+            try:
+                original_feed = Feed.objects.get(pk=feeds['original_id'])
+                duplicate_feed = Feed.objects.get(pk=feeds['duplicate_id'])
+            except Feed.DoesNotExist:
+                print " ***> Already deleted feed: %s" % feeds['duplicate_id']
+                continue
             
             print " ---> Feed: [%s - %s] %s - %s" % (feeds['original_id'], feeds['duplicate_id'],
                                                      original_feed, original_feed.feed_link)
