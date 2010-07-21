@@ -9,7 +9,9 @@ from django.views.decorators.cache import never_cache
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.conf import settings
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -519,3 +521,15 @@ def save_feed_order(request):
         user_sub_folders.save()
     
     return {}
+
+@login_required
+def login_as(request):
+    if not request.user.is_staff:
+        assert False
+        return HttpResponseForbidden()
+    username = request.GET['user']
+    user = get_object_or_404(User, username=username)
+    user.backend = settings.AUTHENTICATION_BACKENDS[0]
+    login_user(request, user)
+    return HttpResponseRedirect(reverse('index'))
+    

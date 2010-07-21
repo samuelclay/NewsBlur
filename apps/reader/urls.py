@@ -3,6 +3,7 @@ from apps.reader import views
 
 urlpatterns = patterns('',
     url(r'^$', views.index),
+    url(r'^login_as', views.login_as, name='login_as'),
     url(r'^logout', views.logout, name='logout'),
     url(r'^login', views.login, name='login'),
     url(r'^signup', views.signup, name='signup'),
