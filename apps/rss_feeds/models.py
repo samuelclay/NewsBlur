@@ -41,7 +41,13 @@ class Feed(models.Model):
     
     def __unicode__(self):
         return self.feed_title
-    
+
+    def save(self, *args, **kwargs):
+        if len(self.feed_tagline) > 1024:
+            self.feed_tagline = self.feed_tagline[:1024]
+            
+        super(Feed, self).save(*args, **kwargs)
+        
     def save_feed_history(self, status_code, message, exception=None):
         FeedFetchHistory.objects.create(feed=self, 
                                         status_code=status_code,

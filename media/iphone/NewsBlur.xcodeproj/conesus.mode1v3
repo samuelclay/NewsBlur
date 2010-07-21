@@ -348,7 +348,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>9</integer>
+									<integer>3</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -391,7 +391,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>FeedDetailViewController.m</string>
+								<string>StoryDetailViewController.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -399,11 +399,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>FeedDetailViewController.m</string>
+										<string>StoryDetailViewController.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>78850CBC11F00145003C7C0D</string>
+										<string>78850CE511F0A2BC003C7C0D</string>
 										<key>history</key>
 										<array>
 											<string>787A0E8411CEAF200056422D</string>
@@ -414,7 +414,6 @@
 											<string>7842EE6F11D46F3B0066CF9D</string>
 											<string>7842EEAF11D585620066CF9D</string>
 											<string>7843F4F911EEAE1800675F64</string>
-											<string>7843F4FA11EEAE1800675F64</string>
 											<string>7843F5AA11EEC0AA00675F64</string>
 											<string>7843F5AB11EEC0AA00675F64</string>
 											<string>7843F5AC11EEC0AA00675F64</string>
@@ -424,7 +423,8 @@
 											<string>7843F5DA11EEC43F00675F64</string>
 											<string>78850C3B11EFF5AE003C7C0D</string>
 											<string>78850C6311EFF7AA003C7C0D</string>
-											<string>78850C6411EFF7AA003C7C0D</string>
+											<string>78850CE411F0A2BC003C7C0D</string>
+											<string>7843F4FA11EEAE1800675F64</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -619,7 +619,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>300941637.58052999</real>
+	<real>300982972.53733999</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
