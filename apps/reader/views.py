@@ -277,6 +277,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
+    print " ---> Marking all as read [%s]: %s days" % (request.user, days,)
     data = json.encode(dict(code=code))
     return HttpResponse(data)
     
@@ -319,6 +320,7 @@ def mark_feed_as_read(request):
         
     data = json.encode(dict(code=code))
 
+    print " ---> Marking feed as read [%s]: %s" % (request.user, feed,)
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return HttpResponse(data)
     
