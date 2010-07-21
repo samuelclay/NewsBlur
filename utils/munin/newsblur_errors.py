@@ -7,9 +7,12 @@ import datetime
 
 graph_config = {
     'graph_category' : 'NewsBlur',
-    'graph_title' : 'NewsBlur Users',
-    'graph_vlabel' : 'users',
-    'all.label': 'all',
+    'graph_title' : 'NewsBlur Errors',
+    'graph_vlabel' : 'errors',
+    'feed_errors.label': 'Feed Errors',
+    'feed_success.label': 'Feed Success',
+    'page_errors.label': 'Page Errors',
+    'page_success.label': 'Page Success',
 }
 
 last_day = datetime.datetime.now() - datetime.timedelta(days=1)
