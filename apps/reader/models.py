@@ -5,11 +5,18 @@ from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-# from utils.compressed_textfield import StoryField
+from utils.compressed_textfield import StoryField
 
 DAYS_OF_UNREAD = 14
 
 class UserSubscription(models.Model):
+    """
+    A feed which a user has subscrubed to. Carries all of the cached information
+    about the subscription, including unread counts of the three primary scores.
+    
+    Also has a dirty flag (needs_unread_recalc) which means that the unread counts
+    are not accurate and need to be calculated with `self.calculate_feed_scores()`.
+    """
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     last_read_date = models.DateTimeField(default=datetime.datetime.now()
@@ -21,6 +28,7 @@ class UserSubscription(models.Model):
     unread_count_negative = models.IntegerField(default=0)
     unread_count_updated = models.DateTimeField(default=datetime.datetime(2000,1,1))
     needs_unread_recalc = models.BooleanField(default=False)
+    feed_opens = models.IntegerField(default=0)
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
@@ -119,6 +127,10 @@ class UserSubscription(models.Model):
         
         
 class UserStory(models.Model):
+    """
+    Stories read by the user. These are deleted as the mark_read_date for the
+    UserSubscription passes the UserStory date.
+    """
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     story = models.ForeignKey(Story)
@@ -135,6 +147,11 @@ class UserStory(models.Model):
         unique_together = ("user", "feed", "story")
         
 class UserSubscriptionFolders(models.Model):
+    """
+    A JSON list of folders and feeds for while a user has subscribed. The list
+    is a recursive descent of feeds and folders in folders. Used to layout
+    the feeds and folders in the Reader's feed navigation pane.
+    """
     user = models.ForeignKey(User)
     folders = models.TextField(default="[]")
     
@@ -144,8 +161,12 @@ class UserSubscriptionFolders(models.Model):
     class Meta:
         verbose_name_plural = "folders"
         verbose_name = "folder"
-        
+
+
 class Feature(models.Model):
+    """
+    Simple blog-like feature board shown to all users on the home page.
+    """
     description = models.TextField(default="")
     date = models.DateTimeField(default=datetime.datetime.now)
     
@@ -154,3 +175,4 @@ class Feature(models.Model):
     
     class Meta:
         ordering = ["-date"]
+        

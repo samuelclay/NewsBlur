@@ -21,7 +21,7 @@ try:
 except:
     pass
 from utils import json, feedfinder
-from utils.user_functions import get_user, invalidate_template_cache
+from utils.user_functions import get_user
 
 SINGLE_DAY = 60*60*24
 
@@ -240,6 +240,9 @@ def load_single_feed(request):
     feed_authors = json.decode(feed.popular_authors) if feed.popular_authors else []
     classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
                                            classifier_authors, classifier_titles, classifier_tags)
+    
+    usersub.feed_opens += 1
+    usersub.save()
     
     context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, classifiers=classifiers)
     data = json.encode(context)
@@ -510,6 +513,7 @@ def save_feed_order(request):
     if folders:
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
+        assert folders_list is not None
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()

@@ -56,7 +56,9 @@ def save_classifier(request):
                         classifier_dict.update({content_type: post_content})
                     
                     classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
-                    if classifier.score != score:
+                    if score == 0:
+                        classifier.delete()
+                    elif classifier.score != score:
                         if score == 0:
                             if ((classifier.score == 1 and opinion.startswith('remove_like'))
                                 or (classifier.score == -1 and opinion.startswith('remove_dislike'))):

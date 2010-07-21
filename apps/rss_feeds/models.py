@@ -484,7 +484,7 @@ class Story(models.Model):
     story_guid = models.CharField(max_length=1000)
     story_guid_hash = models.CharField(max_length=40)
     story_past_trim_date = models.BooleanField(default=False)
-    story_tags = models.CharField(max_length=2000)
+    story_tags = models.CharField(max_length=2000, null=True, blank=True)
     tags = models.ManyToManyField('Tag')
 
     def __unicode__(self):
@@ -495,6 +495,7 @@ class Story(models.Model):
         verbose_name = "story"
         db_table="stories"
         ordering=["-story_date"]
+        unique_together = (("story_feed", "story_guid_hash"),)
         
     def save(self, *args, **kwargs):
         if not self.story_guid_hash and self.story_guid:
