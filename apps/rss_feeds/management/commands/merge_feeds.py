@@ -19,12 +19,14 @@ class Command(BaseCommand):
         cursor.execute("""SELECT DISTINCT f.id AS original_id, f2.id AS duplicate_id, 
                               f.feed_address AS original_feed_address,
                               f2.feed_address AS duplicate_feed_address
+                          """
                               # f.feed_title AS original_feed_title,
                               # f2.feed_title AS duplicate_feed_title, 
                               # f.feed_link AS original_feed_link,
                               # f2.feed_link AS duplicate_feed_link, 
                               # f2.feed_tagline AS original_feed_tagline,
                               # f.feed_tagline AS duplicate_feed_tagline 
+                          """
                           FROM stories s1
                           INNER JOIN stories s2 ON s1.story_guid_hash = s2.story_guid_hash
                           INNER JOIN feeds f ON f.id = s1.story_feed_id
