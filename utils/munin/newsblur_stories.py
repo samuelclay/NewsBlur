@@ -15,7 +15,7 @@ graph_config = {
 }
 
 metrics = {
-    # 'stories': Story.objects.count(),
+    'stories': Story.objects.count(),
     'tags': Tag.objects.count(),
     'authors': StoryAuthor.objects.count(),
     'read_stories': UserStory.objects.count(),
