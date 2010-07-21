@@ -84,7 +84,10 @@ class Command(BaseCommand):
                     user_story.story = original_story[0]
                 else:
                     print " ***> Can't find original story: %s" % duplicate_story
-                user_story.save()
+                try:
+                    user_story.save()
+                except IntegrityError:
+                    print " ***> Story already saved: %s" % user_story
             
             def delete_story_feed(model, feed_field='feed'):
                 duplicate_stories = model.objects.filter(**{feed_field: duplicate_feed})
