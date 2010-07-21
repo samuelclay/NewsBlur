@@ -22,8 +22,9 @@ try:
     from apps.rss_feeds.models import Feed, Story, FeedPage
 except:
     pass
-from utils import json, feedfinder
+from utils import json
 from utils.user_functions import get_user
+from utils.feed_functions import fetch_address_from_page
 
 SINGLE_DAY = 60*60*24
 
@@ -378,19 +379,12 @@ def add_url(request):
     if feed:
         feed = feed[0]
     else:
-        feed_finder_url = feedfinder.feed(url)
-        if feed_finder_url:
-            try:
-                feed = Feed.objects.get(feed_address=feed_finder_url)
-            except Feed.DoesNotExist:
-                try:
-                    feed = Feed(feed_address=feed_finder_url)
-                    feed.save()
-                    feed.update()
-                except:
-                    code = -2
-                    message = "This feed has been added, but something went wrong"\
-                              " when downloading it. Maybe the server's busy."
+        try:
+            feed = fetch_address_from_page(url)
+        except:
+            code = -2
+            message = "This feed has been added, but something went wrong"\
+                      " when downloading it. Maybe the server's busy."
                 
     if not feed:    
         code = -1
