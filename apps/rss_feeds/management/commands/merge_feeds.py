@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
-from apps.rss_feeds.models import Feed, Story
+from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor
 from apps.reader.models import UserSubscription, UserStory, UserSubscriptionFolders
+from apps.analyzer.models import FeatureCategory, Category, ClassifierTitle
+from apps.analyzer.models import ClassifierAuthor, ClassifierFeed, ClassifierTag
 from optparse import make_option
 from django.db import connection
 from django.db.utils import IntegrityError
@@ -77,9 +79,33 @@ class Command(BaseCommand):
                     print " ***> Can't find original story: %s" % duplicate_story
                 # user_story.save()
             
-            duplicate_stories = Story.objects.filter(story_feed=duplicate_feed)
-            print " ---> Deleting %s stories" % duplicate_stories.count()
-            # duplicate_stories.delete()
+            def delete_story_feed(model, feed_field='feed'):
+                duplicate_stories = model.objects.filter(**{feed_field: duplicate_feed})
+                if duplicate_stories.count():
+                    print " ---> Deleting %s %s" % (duplicate_stories.count(), model)
+                # duplicate_stories.delete()
+            def switch_feed(model):
+                duplicates = model.objects.filter(feed=duplicate_feed)
+                if duplicates.count():
+                    print " ---> Switching %s %s" % (duplicates.count(), model)
+                for duplicate in duplicates:
+                    duplicate.feed = original_feed
+                    try:
+                        # duplicate.save()
+                        pass
+                    except IntegrityError:
+                        print "      !!!!> %s already exists" % duplicate
+                        # duplicates.delete()
+            delete_story_feed(Story, 'story_feed')
+            delete_story_feed(Tag)
+            delete_story_feed(StoryAuthor)
+            switch_feed(FeatureCategory)
+            switch_feed(Category)
+            switch_feed(ClassifierTitle)
+            switch_feed(ClassifierAuthor)
+            switch_feed(ClassifierFeed)
+            switch_feed(ClassifierTag)
+            # duplicate_authors.delete()
             # duplicate_feed.delete()
     
     def rewrite_folders(self, folders, original_feed, duplicate_feed):
