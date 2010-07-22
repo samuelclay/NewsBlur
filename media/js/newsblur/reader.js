@@ -1831,10 +1831,24 @@
                         $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                         $.make('span', { className: 'feed_title' }, feed.feed_title)
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, 'Manage opinions'),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, 'Site statistics'),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, 'Delete this site'),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, 'Really delete?')
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Manage opinions'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and don\'t like.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site statistics'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Popularity, load times, and info.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
+                    ])
                 ];
                 for (var f in $feed_specific) {
                     $manage_menu.append($feed_specific[f]);
@@ -1847,8 +1861,17 @@
             }
             
             var $site_specific = [
-                $.make('li', { className: 'NB-menu-manage-mark-read' }, 'Mark old stories as read'),
-                $.make('li', { className: 'NB-menu-manage-preferences' }, 'Preferences')
+                $.make('li', { className: 'NB-menu-manage-mark-read' }, [
+                    $.make('div', { className: 'NB-menu-manage-image' }),
+                    $.make('div', { className: 'NB-menu-manage-title' }, 'Mark old stories as read'),
+                    $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Past few days or everything.')
+                ]),
+                $.make('li', { className: 'NB-menu-manage-preferences' }, [
+                    $.make('div', { className: 'NB-menu-manage-image' }),
+                    $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
+                    $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
+                ]),
+                $.make('li', { className: 'NB-menu-separator' })
             ];
             for (var f in $site_specific) {
                 $manage_menu.append($site_specific[f]);
@@ -1870,11 +1893,10 @@
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.corner('tl tr 5px');
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
-            $manage_menu_container.css({'left': '-1000px', 'display': 'block', 'opacity': 1});
-            var height = $manage_menu_container.outerHeight();
-            $manage_menu_container.css({'bottom': '-'+(height+30)+'px', 'left': '40px', 'opacity': 0});
+            $manage_menu_container.css({'display': 'block'});
+            // var height = $manage_menu_container.outerHeight();
+            // $manage_menu_container.css({'bottom': '-'+(height+30)+'px', 'left': '40px', 'opacity': 0});
             $manage_menu_container.animate({
-                'bottom': '30px', 
                 'opacity': 1
             }, {
                 'duration': 350, 
@@ -1901,7 +1923,7 @@
         hide_manage_menu: function() {
             var $manage_menu_container = $('.NB-menu-manage-container');
             var height = $manage_menu_container.outerHeight();
-
+                        
             clearTimeout(this.flags.closed_manage_menu);
             $(document).unbind('click.menu');
 
@@ -1922,7 +1944,7 @@
             var $confirm = $('.NB-menu-manage-feed-delete-confirm');
             
             $delete.addClass('NB-menu-manage-feed-delete-cancel');
-            $delete.text('Cancel delete');
+            $('.NB-menu-manage-title', $delete).text('Cancel delete');
             $confirm.slideDown(500);
         },
         
@@ -1931,7 +1953,7 @@
             var $confirm = $('.NB-menu-manage-feed-delete-confirm');
             
             $delete.removeClass('NB-menu-manage-feed-delete-cancel');
-            $delete.text('Delete this site');
+            $('.NB-menu-manage-title', $delete).text('Delete this site');
             $confirm.slideUp(500);
         },
         
