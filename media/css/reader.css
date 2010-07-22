@@ -2127,37 +2127,41 @@ background: transparent;
 /* ========= */
 
 .NB-menu-manage-container {
-    z-index: 1;
+    z-index: 10;
     position: absolute;
     display: none;
     opacity: 0;
-    bottom: 0;
-    left: 48px;
-    width: 74%;
+    bottom: 30px;
+    left: 40px;
+    width: 300px
     padding: 0;
     margin: 0;
-    background-color: #BAE3A8;
+    background-color: #F0FFF0;
     border-top: 1px solid #8ABCBE;
     border-left: 1px solid #8ABCBE;
     border-right: 1px solid #8ABCBE;
-    -webkit-box-shadow: 1px 3px 0 #979DA6;
-    -moz-box-shadow: 1px 3px 0 #979DA6;
-    box-shadow: 1px 3px 0 #979DA6;
+    -webkit-box-shadow: 2px 2px 5px #979DA6;
+    -moz-box-shadow: 2px 2px 5px #979DA6;
+    box-shadow: 2px 2px 5px #979DA6;
 }
 
 .NB-menu-manage {
     list-style: none;
     font-size: 11px;
     text-transform: uppercase;
-    margin: 4px 0;
+    margin: 4px 0 0;
     padding: 0;
     font-family: 'Lucida Grande', inherit;
+    width: 285px;
 }
 
 .NB-menu-manage li {
     margin: 0 0 0 0;
-    padding: 3px 8px 3px 24px;
+    padding: 5px 8px 5px 36px;
     cursor: pointer;
+    clear: both;
+    position: relative;
+    background-color: #BAE3A8;
 }
 
 .NB-menu-manage li:hover,
@@ -2167,9 +2171,10 @@ background: transparent;
 }
 
 .NB-menu-manage li.NB-menu-separator {
+    background-color: #BAE3A8;
     border-bottom: 1px solid #8ABCBE;
-    padding-bottom: 3px;
-    margin-bottom: 6px;
+    margin-bottom: 1px;
+    padding: 0;
 }
 
 .NB-menu-manage li.NB-menu-separator:hover,
@@ -2179,16 +2184,44 @@ background: transparent;
     cursor: default;
 }
 
+.NB-menu-manage .NB-menu-manage-title {
+  font-size: 16px;
+  text-shadow: 0 1px 0 #FFF;
+}
+
+.NB-menu-manage li:hover .NB-menu-manage-title {
+    text-shadow: 0 1px 0 #000;
+}
+
+.NB-menu-manage .NB-menu-manage-subtitle {
+  font-size: 12px;
+  color: #415C7B;
+}
+
+.NB-menu-manage li:hover .NB-menu-manage-subtitle {
+    color: #D2E2F8;
+}
+
+.NB-menu-manage .NB-menu-manage-image {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 5px;
+  left: 10px;
+}
+
 .NB-menu-manage .NB-menu-manage-feed {
-    padding-left: 44px;
     position: relative;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info {
-    padding-left: 24px;
     font-weight: bold;
     font-size: 12px;
     position: relative;
+    padding-top: 4px;
+    padding-bottom: 8px;
+    text-shadow: 0 1px 0 #FFF;
+    background-color: #F0FFF0;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info .feed_favicon {
@@ -2200,31 +2233,32 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-info .feed_title {
 }
 
-.NB-menu-manage .NB-menu-manage-feed-manage {
-    background: transparent url('../img/icons/silk/book_open.png') no-repeat 24px 2px;    
+.NB-menu-manage .NB-menu-manage-feed-manage .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/book_open.png') no-repeat 0 0;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-stats {
-    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat 24px 2px;    
+.NB-menu-manage .NB-menu-manage-feed-stats .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat  0 0;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-delete {
-    background: transparent url('../img/icons/silk/bin_closed.png') no-repeat 22px 2px;    
+.NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  0 0;  
+    left: 8px;  
 }
 .NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
     background-image: none;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-delete-confirm {
-    background: transparent url('../img/icons/silk/exclamation.png') no-repeat 22px 2px;   
+.NB-menu-manage .NB-menu-manage-feed-delete-confirm .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 0;   
     font-weight: bold; 
 }
 
-.NB-menu-manage .NB-menu-manage-mark-read {
-    background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat 4px 2px;
+.NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat  0 0;
 }
-.NB-menu-manage .NB-menu-manage-preferences {
-    background: transparent url('../img/icons/silk/color_wheel.png') no-repeat 4px 2px;
+.NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 0;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-delete-confirm {
