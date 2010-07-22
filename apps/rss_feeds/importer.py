@@ -5,6 +5,7 @@ import re
 import urlparse
 import multiprocessing
 import traceback
+import feedparser
 from apps.rss_feeds.models import FeedPage
 
 class PageImporter(object):
@@ -24,6 +25,12 @@ class PageImporter(object):
             data = response.read()
             html = self.rewrite_page(data)
             self.save_page(html)
+        except ValueError, e:
+            print "   ---> ValueError on url: %s" % e
+            self.feed.save_page_history(401, "Bad URL", e)
+            fp = feedparser.parse(self.feed.feed_address)
+            self.feed.feed_link = fp.feed.get('link', "")
+            self.feed.save()
         except urllib2.HTTPError, e:
             print "HTTP Error: %s" % e
             self.feed.save_page_history(e.code, e.msg, e.fp.read())

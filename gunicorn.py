@@ -8,3 +8,4 @@ def numCPUs():
 bind = "127.0.0.1:8000"
 pidfile = "/tmp/gunicorn_newsblur.pid"
 workers = numCPUs() # * 2 + 1
+workers = 1

@@ -10,6 +10,7 @@ from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
 from django.db.models import Q
 from utils.story_functions import pre_process_story
+from utils.feed_functions import fetch_address_from_page
 import sys
 import time
 import logging
@@ -17,6 +18,7 @@ import datetime
 import traceback
 import multiprocessing
 import urllib2
+import xml.sax
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -76,7 +78,7 @@ class FetchFeed:
                                     agent=USER_AGENT,
                                     etag=self.feed.etag,
                                     modified=modified)
-        
+            
         # feed_xml, _ = FeedXML.objects.get_or_create(feed=self.feed)
         # feed_xml.rss_xml = self.fpf
         # feed_xml.save()
@@ -102,6 +104,17 @@ class ProcessFeed:
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
                                                self.feed.feed_title))
+                                    
+        if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
+            print "   ---> Non-xml feed: %s. Fetching page." % self.feed
+            feed = fetch_address_from_page(self.feed.feed_address, self.feed)
+            if feed:
+                self.feed.last_modified = None
+                self.feed.etag = None
+                self.feed.save()
+        elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
+            feed = fetch_address_from_page(self.feed.feed_link, self.feed)
+            
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 logging.debug(u'[%d] HTTP status %d: %s' % (self.feed.id,

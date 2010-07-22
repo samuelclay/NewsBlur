@@ -1,6 +1,7 @@
 import datetime
 import time
 import sys
+from utils import feedfinder
 
 def encode(tstr):
     """ Encodes a unicode string in utf-8
@@ -49,3 +50,21 @@ def levenshtein_distance(first, second):
                 substitution += 1
             distance_matrix[i][j] = min(insertion, deletion, substitution)
     return distance_matrix[first_length-1][second_length-1]
+    
+    
+def fetch_address_from_page(url, existing_feed=None):
+    from apps.rss_feeds.models import Feed
+    feed_finder_url = feedfinder.feed(url)
+    if feed_finder_url:
+        if existing_feed:
+            existing_feed.feed_address = feed_finder_url
+            existing_feed.save()
+            feed = existing_feed
+        else:
+            try:
+                feed = Feed.objects.get(feed_address=feed_finder_url)
+            except Feed.DoesNotExist:
+                feed = Feed(feed_address=feed_finder_url)
+                feed.save()
+                feed.update()
+        return feed

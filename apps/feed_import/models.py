@@ -104,6 +104,9 @@ class GoogleReaderImporter(Importer):
         category = item.xpath('./list[@name="categories"]/object/string[@name="label"]') and \
                         item.xpath('./list[@name="categories"]/object/string[@name="label"]')[0].text
         
+        if not feed_address:
+            feed_address = feed_link
+            
         feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
         feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
         us, _ = UserSubscription.objects.get_or_create(

@@ -1987,7 +1987,10 @@
                     self.switch_feed_view_unread_view(ui.value);
                 },
                 stop: function(e, ui) {
-                    self.model.preference('unread_view', ui.value);
+                    self.switch_feed_view_unread_view(ui.value);
+                    if (self.model.preference('unread_view') != ui.value) {
+                        self.model.preference('unread_view', ui.value);
+                    }
                     self.flags['feed_view_positions_calculated'] = false;
                     self.show_correct_story_titles_in_unread_view({'animate': true, 'follow': true});
                 }
@@ -1998,11 +2001,7 @@
             var $feed_list = this.$s.$feed_list;
             var unread_view_name = this.get_unread_view_name(unread_view);
             var $next_story_button = $('.task_story_next_unread');
-            
-            if (this.model.preference('unread_view') != unread_view) {
-                this.model.preference('unread_view', unread_view);
-            }
-            
+                        
             $feed_list.removeClass('unread_view_positive')
                       .removeClass('unread_view_neutral')
                       .removeClass('unread_view_negative')
@@ -2015,7 +2014,9 @@
         },
         
         get_unread_view_name: function(unread_view) {
-            unread_view = unread_view || this.model.preference('unread_view');
+            if (typeof unread_view == 'undefined') {
+                unread_view = this.model.preference('unread_view');
+            }
             
             return (unread_view > 0
                     ? 'positive'

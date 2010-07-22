@@ -9,7 +9,9 @@ from django.views.decorators.cache import never_cache
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.conf import settings
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -20,8 +22,9 @@ try:
     from apps.rss_feeds.models import Feed, Story, FeedPage
 except:
     pass
-from utils import json, feedfinder
-from utils.user_functions import get_user, invalidate_template_cache
+from utils import json
+from utils.user_functions import get_user
+from utils.feed_functions import fetch_address_from_page
 
 SINGLE_DAY = 60*60*24
 
@@ -241,6 +244,9 @@ def load_single_feed(request):
     classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
                                            classifier_authors, classifier_titles, classifier_tags)
     
+    usersub.feed_opens += 1
+    usersub.save()
+    
     context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, classifiers=classifiers)
     data = json.encode(context)
     return HttpResponse(data, mimetype='application/json')
@@ -272,6 +278,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
+    print " ---> Marking all as read [%s]: %s days" % (request.user, days,)
     data = json.encode(dict(code=code))
     return HttpResponse(data)
     
@@ -314,6 +321,7 @@ def mark_feed_as_read(request):
         
     data = json.encode(dict(code=code))
 
+    print " ---> Marking feed as read [%s]: %s" % (request.user, feed,)
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return HttpResponse(data)
     
@@ -371,19 +379,12 @@ def add_url(request):
     if feed:
         feed = feed[0]
     else:
-        feed_finder_url = feedfinder.feed(url)
-        if feed_finder_url:
-            try:
-                feed = Feed.objects.get(feed_address=feed_finder_url)
-            except Feed.DoesNotExist:
-                try:
-                    feed = Feed(feed_address=feed_finder_url)
-                    feed.save()
-                    feed.update()
-                except:
-                    code = -2
-                    message = "This feed has been added, but something went wrong"\
-                              " when downloading it. Maybe the server's busy."
+        try:
+            feed = fetch_address_from_page(url)
+        except:
+            code = -2
+            message = "This feed has been added, but something went wrong"\
+                      " when downloading it. Maybe the server's busy."
                 
     if not feed:    
         code = -1
@@ -510,8 +511,21 @@ def save_feed_order(request):
     if folders:
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
+        assert folders_list is not None
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()
     
     return {}
+
+@login_required
+def login_as(request):
+    if not request.user.is_staff:
+        assert False
+        return HttpResponseForbidden()
+    username = request.GET['user']
+    user = get_object_or_404(User, username=username)
+    user.backend = settings.AUTHENTICATION_BACKENDS[0]
+    login_user(request, user)
+    return HttpResponseRedirect(reverse('index'))
+    
