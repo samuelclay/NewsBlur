@@ -391,6 +391,11 @@ background: transparent;
     line-height: 1.3em;
     height: 1.2em;
     overflow: hidden;
+    text-shadow: 0 1px 0 #FFF;
+}
+
+#feed_list .feed.selected .feed_title {
+    text-shadow: 0 1px 2px #eee;
 }
 
 #feed_list .feed_counts {
@@ -2139,10 +2144,11 @@ background: transparent;
     background-color: #F0FFF0;
     border-top: 1px solid #8ABCBE;
     border-left: 1px solid #8ABCBE;
-    border-right: 1px solid #8ABCBE;
-    -webkit-box-shadow: 2px 2px 5px #979DA6;
-    -moz-box-shadow: 2px 2px 5px #979DA6;
-    box-shadow: 2px 2px 5px #979DA6;
+    border-right: 1px solid #6A9C9E;
+    border-bottom: 1px solid #6A9C9E;
+    -webkit-box-shadow: 2px 2px 5px #5E6267;
+    -moz-box-shadow: 2px 2px 5px #5E6267;
+    box-shadow: 2px 2px 5px #5E6267;
 }
 
 .NB-menu-manage {
@@ -2153,6 +2159,10 @@ background: transparent;
     padding: 0;
     font-family: 'Lucida Grande', inherit;
     width: 285px;
+}
+
+.NB-menu-manage.NB-menu-manage-notop {
+    margin: 0;
 }
 
 .NB-menu-manage li {
@@ -2195,7 +2205,7 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-subtitle {
   font-size: 12px;
-  color: #415C7B;
+  color: #617C4B;
 }
 
 .NB-menu-manage li:hover .NB-menu-manage-subtitle {
@@ -2206,7 +2216,7 @@ background: transparent;
   position: absolute;
   width: 16px;
   height: 16px;
-  top: 5px;
+  top: 7px;
   left: 10px;
 }
 
@@ -2216,7 +2226,7 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-feed-info {
     font-weight: bold;
-    font-size: 12px;
+    font-size: 15px;
     position: relative;
     padding-top: 4px;
     padding-bottom: 8px;
@@ -2226,8 +2236,8 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-feed-info .feed_favicon {
     position: absolute;
-    left: 4px;
-    top: 3px;
+    left: 10px;
+    top: 6px;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info .feed_title {
@@ -2244,6 +2254,7 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  0 0;  
     left: 8px;  
+    top: 8px;
 }
 .NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
     background-image: none;    

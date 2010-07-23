@@ -1853,6 +1853,8 @@
                 for (var f in $feed_specific) {
                     $manage_menu.append($feed_specific[f]);
                 }
+            } else {
+                $manage_menu.addClass('NB-menu-manage-notop');
             }
             
             if ($manage_menu.children().length) {
@@ -1870,8 +1872,7 @@
                     $.make('div', { className: 'NB-menu-manage-image' }),
                     $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
                     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
-                ]),
-                $.make('li', { className: 'NB-menu-separator' })
+                ])
             ];
             for (var f in $site_specific) {
                 $manage_menu.append($site_specific[f]);
