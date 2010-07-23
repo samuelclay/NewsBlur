@@ -6,9 +6,12 @@ media/release
 local_settings.py
 media/iphone/NewsBlur/build
 media/iphone/build
+media/iphone/NewsBlur.xcodeproj/conesus.pbxuser
+media/iphone/NewsBlur.xcodeproj/conesus.mode1v3
 build/
 .DS_Store
 **/*.pbxuser
 *.mode2v3
 *.mode1v3
 **/*.perspectivev*
+*.pbxuser

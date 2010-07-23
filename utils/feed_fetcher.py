@@ -70,7 +70,7 @@ class FetchFeed:
                                                                  self.feed.id)
             logging.info(log_msg)
             print(log_msg)
-            feed.save_feed_history(201, "Already fetched")
+            feed.save_feed_history(501, "Already fetched")
             return FEED_SAME, None
         
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
@@ -200,7 +200,8 @@ class ProcessFeed:
         self.feed.count_stories_per_month(lock=self.lock)
         self.feed.save_popular_authors(lock=self.lock)
         self.feed.save_popular_tags(lock=self.lock)
-
+        self.feed.save_feed_history(200, "OK")
+        
         return FEED_OK, ret_values
 
         
