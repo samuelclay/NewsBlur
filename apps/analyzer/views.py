@@ -4,11 +4,13 @@ from apps.reader.models import UserSubscription
 from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag, get_classifiers_for_user
 from utils import json
 from utils.user_functions import get_user
+from utils.user_functions import ajax_login_required
 
 def index(requst):
     pass
     
 @require_POST
+@ajax_login_required
 @json.json_view
 def save_classifier(request):
     post = request.POST
