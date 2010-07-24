@@ -56,7 +56,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-fieldset' }, [
+                $.make('div', { className: 'NB-fieldset NB-anonymous-ok' }, [
                     $.make('h5', [
                         'Import from Google Reader'
                     ]),
@@ -86,12 +86,16 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         $.make('div', { className: 'NB-add-danger' }, [
                             $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/server_go.png' }),
                             'This will erase all existing feeds and folders.'
-                        ])
+                        ]),
+                        $.make('div', { className: 'NB-error' })
                     ])
                 ])
             ])
         ]);
-    
+        
+        if (NEWSBLUR.Globals.is_anonymous) {
+            this.$add.addClass('NB-signed-out');
+        }
     },
     
     make_folders: function() {
@@ -137,10 +141,10 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             'maxHeight': height,
             'overlayClose': true,
             'onOpen': function (dialog) {
-	            dialog.overlay.fadeIn(200, function () {
-		            dialog.container.fadeIn(200);
-		            dialog.data.fadeIn(200);
-	            });
+                dialog.overlay.fadeIn(200, function () {
+                    dialog.container.fadeIn(200);
+                    dialog.data.fadeIn(200);
+                });
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
@@ -190,26 +194,34 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
         $loading.addClass('NB-active');
 
+        if (NEWSBLUR.Globals.is_anonymous) {
+            var $error = $('.NB-error', '.NB-fieldset.NB-add-opml');
+            $error.text("Please create an account. Not much to do without an account.");
+            $error.slideDown(300);
+            $loading.removeClass('NB-active');
+            return false;
+        }
+
         // NEWSBLUR.log(['Uploading']);
         $.ajaxFileUpload({
-			url: '/import/opml_upload', 
-			secureuri: false,
-			fileElementId: 'opml_file_input',
-			dataType: 'text',
-			success: function (data, status)
-			{
+            url: '/import/opml_upload', 
+            secureuri: false,
+            fileElementId: 'opml_file_input',
+            dataType: 'text',
+            success: function (data, status)
+            {
                 $loading.removeClass('NB-active');
-				NEWSBLUR.reader.load_feeds();
-				$.modal.close();
-			},
-			error: function (data, status, e)
-			{
+                NEWSBLUR.reader.load_feeds();
+                $.modal.close();
+            },
+            error: function (data, status, e)
+            {
                 $loading.removeClass('NB-active');
-				NEWSBLUR.log(['Error', data, status, e]);
-			}
-		});
-		
-		return false;
+                NEWSBLUR.log(['Error', data, status, e]);
+            }
+        });
+        
+        return false;
     },
     
     // ===========

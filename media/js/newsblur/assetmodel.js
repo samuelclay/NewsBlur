@@ -69,6 +69,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 // NEWSBLUR.log(['AJAX Error', e]);
                 if ($.isFunction(error_callback)) {
                     error_callback();
+                } else if ($.isFunction(callback)) {
+                    callback({'message': 'Please create an account. Not much to do without an account.'});
                 }
             }
         }); 

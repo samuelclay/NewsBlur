@@ -1377,12 +1377,20 @@ a.NB-splash-link:hover {
     height: 56px;
 }
 
-/* ============== */
-/* = Classifier = */
-/* ============== */
+/* ========== */
+/* = Modals = */
+/* ========== */
 
 .NB-modal {
     padding: 12px;
+}
+
+.NB-modal.NB-signed-out .NB-fieldset {
+    opacity: .3;
+}
+
+.NB-modal.NB-signed-out .NB-fieldset.NB-anonymous-ok {
+    opacity: 1;
 }
 
 .NB-modal .NB-modal-loading,

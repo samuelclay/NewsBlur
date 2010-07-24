@@ -91,8 +91,8 @@ class Command(BaseCommand):
             
             def delete_story_feed(model, feed_field='feed'):
                 duplicate_stories = model.objects.filter(**{feed_field: duplicate_feed})
-                if duplicate_stories.count():
-                    print " ---> Deleting %s %s" % (duplicate_stories.count(), model)
+                # if duplicate_stories.count():
+                #     print " ---> Deleting %s %s" % (duplicate_stories.count(), model)
                 duplicate_stories.delete()
             def switch_feed(model):
                 duplicates = model.objects.filter(feed=duplicate_feed)

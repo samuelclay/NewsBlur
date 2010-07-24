@@ -12,8 +12,10 @@ from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, OPMLImporter, GoogleReaderImporter
 from utils import json
+from utils.user_functions import ajax_login_required
 
 
+@ajax_login_required
 def opml_upload(request):
     xml_opml = None
     message = "OK"

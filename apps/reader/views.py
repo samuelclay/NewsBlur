@@ -23,7 +23,7 @@ try:
 except:
     pass
 from utils import json
-from utils.user_functions import get_user
+from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page
 
 SINGLE_DAY = 60*60*24
@@ -264,7 +264,7 @@ def load_feed_page(request):
     return HttpResponse(data, mimetype='text/html')
     
     
-@login_required
+@ajax_login_required
 def mark_all_as_read(request):
     code = 1
     days = int(request.POST['days'])
@@ -284,7 +284,7 @@ def mark_all_as_read(request):
     data = json.encode(dict(code=code))
     return HttpResponse(data)
     
-@login_required
+@ajax_login_required
 def mark_story_as_read(request):
     story_ids = request.REQUEST['story_id'].split(',')
     feed_id = int(request.REQUEST['feed_id'])
@@ -307,7 +307,7 @@ def mark_story_as_read(request):
     
     return HttpResponse(json.encode(data))
     
-@login_required
+@ajax_login_required
 def mark_feed_as_read(request):
     feed_id = int(request.REQUEST['feed_id'])
     feed = Feed.objects.get(id=feed_id)
@@ -327,15 +327,15 @@ def mark_feed_as_read(request):
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return HttpResponse(data)
     
-@login_required
+@ajax_login_required
 def mark_story_as_like(request):
     return mark_story_with_opinion(request, 1)
 
-@login_required
+@ajax_login_required
 def mark_story_as_dislike(request):
     return mark_story_with_opinion(request, -1)
 
-@login_required
+@ajax_login_required
 def mark_story_with_opinion(request, opinion):
     story_id = request.REQUEST['story_id']
     story = Story.objects.select_related("story_feed").get(id=story_id)
@@ -367,7 +367,7 @@ def _parse_user_info(user):
         }
     }
 
-@login_required
+@ajax_login_required
 def add_url(request):
     code = 0
     url = request.POST['url']
@@ -427,7 +427,7 @@ def _add_object_to_folder(obj, folder, folders):
                 folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
     return folders
 
-@login_required
+@ajax_login_required
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST['parent_folder']
@@ -451,7 +451,7 @@ def add_folder(request):
     data = dict(code=code, message=message)
     return HttpResponse(json.encode(data))
     
-@login_required
+@ajax_login_required
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
