@@ -2159,7 +2159,7 @@ background: transparent;
     margin: 4px 0 0;
     padding: 0;
     font-family: 'Lucida Grande', inherit;
-    width: 285px;
+    width: 295px;
 }
 
 .NB-menu-manage.NB-menu-manage-notop {
@@ -2175,21 +2175,30 @@ background: transparent;
     background-color: #BAE3A8;
 }
 
-.NB-menu-manage li:hover,
+.NB-menu-manage li:hover:not(.NB-disabled),
 .NB-menu-manage li.NB-hover {
     background-color: #639510;
     color: white;
 }
 
 .NB-menu-manage li.NB-menu-separator {
-    background-color: #BAE3A8;
-    border-bottom: 1px solid #8ABCBE;
+    background-color: #E2E8D8;
+    border-bottom: 1px solid #72924A;
+    padding: 0;
+    height: 1px;
+}
+
+.NB-menu-manage li.NB-menu-separator-top {
+    background-color: #72924A;
+    border-bottom: 1px solid #F8FFFF;
     margin-bottom: 1px;
     padding: 0;
+    height: 1px;
 }
 
 .NB-menu-manage li.NB-menu-separator:hover,
-.NB-menu-manage li.NB-menu-manage-feed-info:hover {
+.NB-menu-manage li.NB-menu-manage-feed-info:hover,
+.NB-menu-manage li.NB-menu-manage-site-info:hover {
     background-color: inherit;
     color: inherit;
     cursor: default;
@@ -2200,8 +2209,13 @@ background: transparent;
   text-shadow: 0 1px 0 #FFF;
 }
 
-.NB-menu-manage li:hover .NB-menu-manage-title {
+.NB-menu-manage li:hover:not(.NB-disabled) .NB-menu-manage-title {
     text-shadow: 0 1px 0 #000;
+}
+
+.NB-menu-manage .NB-disabled {
+    opacity: .7;
+    cursor: default;
 }
 
 .NB-menu-manage .NB-menu-manage-subtitle {
@@ -2225,7 +2239,8 @@ background: transparent;
     position: relative;
 }
 
-.NB-menu-manage .NB-menu-manage-feed-info {
+.NB-menu-manage .NB-menu-manage-feed-info,
+.NB-menu-manage .NB-menu-manage-site-info {
     font-weight: bold;
     font-size: 15px;
     position: relative;
@@ -2248,8 +2263,16 @@ background: transparent;
     background: transparent url('../img/icons/silk/book_open.png') no-repeat 0 0;    
 }
 
+.NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 0;    
+}
+
 .NB-menu-manage .NB-menu-manage-feed-stats .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/chart_curve.png') no-repeat  0 0;    
+}
+
+.NB-menu-manage .NB-menu-manage-feed-mark-read .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/cut.png') no-repeat  0 0;    
 }
 
 .NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {

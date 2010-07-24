@@ -1116,6 +1116,7 @@
         
         mark_feed_as_read: function(feed_id) {
             var self = this;
+            feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var $feed = this.find_feed_in_feed_list(feed_id);
             var $content_pane = this.$s.$content_pane;
@@ -1801,10 +1802,10 @@
             NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
         },
         
-        open_manage_feed_modal: function() {
+        open_manage_feed_modal: function(group) {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
+            NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id, {'group': group});
         },
         
         open_mark_read_modal: function() {
@@ -1825,48 +1826,16 @@
             
             var $manage_menu = $.make('ul', { className: 'NB-menu-manage' });
             
-            if (feed_id) {
-                var $feed_specific = [
-                    $.make('li', { className: 'NB-menu-manage-feed-info' }, [
-                        $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
-                        $.make('span', { className: 'feed_title' }, feed.feed_title)
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Manage opinions'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and don\'t like.')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site statistics'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Popularity, load times, and info.')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
-                    ])
-                ];
-                for (var f in $feed_specific) {
-                    $manage_menu.append($feed_specific[f]);
-                }
-            } else {
-                $manage_menu.addClass('NB-menu-manage-notop');
-            }
-            
-            if ($manage_menu.children().length) {
-                var $separator = $.make('li', { className: 'NB-menu-separator' });
-                $manage_menu.append($separator);
-            }
-            
             var $site_specific = [
+                $.make('li', { className: 'NB-menu-manage-site-info' }, [
+                    $.make('div', { className: 'NB-menu-manage-image' }),
+                    $.make('span', { className: 'feed_title' }, "NewsBlur")
+                ]).corner('tl tr 8px'),
+                $.make('li', { className: 'NB-menu-separator' }),
                 $.make('li', { className: 'NB-menu-manage-mark-read' }, [
                     $.make('div', { className: 'NB-menu-manage-image' }),
-                    $.make('div', { className: 'NB-menu-manage-title' }, 'Mark old stories as read'),
-                    $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Past few days or everything.')
+                    $.make('div', { className: 'NB-menu-manage-title' }, 'Mark all feeds as read'),
+                    $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back.')
                 ]),
                 $.make('li', { className: 'NB-menu-manage-preferences' }, [
                     $.make('div', { className: 'NB-menu-manage-image' }),
@@ -1876,6 +1845,53 @@
             ];
             for (var f in $site_specific) {
                 $manage_menu.append($site_specific[f]);
+            }
+            
+            if (feed_id) {
+                var $feed_specific = [
+                    $.make('li', { className: 'NB-menu-separator-top' }),
+                    $.make('li', { className: 'NB-menu-manage-feed-info' }, [
+                        $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
+                        $.make('span', { className: 'feed_title' }, feed.feed_title)
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Manage opinions'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and don\'t like.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train intelligence'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site statistics'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Popularity, load times, and history.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-mark-read' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
+                    ])
+                ];
+                for (var f in $feed_specific) {
+                    $manage_menu.append($feed_specific[f]);
+                }
+            } else {
+                $manage_menu.addClass('NB-menu-manage-notop');
+            }
+            
+            if (feed_id && this.get_unread_count(true) == 0) {
+                $('.NB-menu-manage-feed-mark-read', $manage_menu).addClass('NB-disabled');
             }
             return $manage_menu;
         },
@@ -1892,7 +1908,7 @@
             
             var $manage_menu = this.make_manage_menu();
             $manage_menu_container.empty().append($manage_menu);
-            $manage_menu_container.corner('tl tr 5px');
+            $manage_menu_container.corner('tl tr 8px');
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
             $manage_menu_container.css({'display': 'block'});
             // var height = $manage_menu_container.outerHeight();
@@ -1916,7 +1932,9 @@
             }, function() {
                 clearTimeout(self.flags.closed_manage_menu);
                 self.flags.closed_manage_menu = setTimeout(function() {
-                    self.hide_manage_menu();
+                    if (self.flags.closed_manage_menu) {
+                        self.hide_manage_menu();
+                    }
                 }, 1000);
             });
         },
@@ -2533,7 +2551,7 @@
             $.targetIs(e, { tagSelector: '.NB-feedbar-manage-feed' }, function($t, $p){
                 e.preventDefault();
                 if (!$('.NB-task-manage').hasClass('NB-disabled')) {
-                    self.open_manage_feed_modal();
+                    self.open_manage_feed_modal('opinions');
                 }
             }); 
             
@@ -2606,7 +2624,19 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-manage' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_manage_feed_modal();
+                    self.open_manage_feed_modal('opinions');
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-train' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_manage_feed_modal('train');
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_manage_feed_modal('stats');
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete' }, function($t, $p){
@@ -2621,6 +2651,10 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete-confirm' }, function($t, $p){
                 e.preventDefault();
                 self.manage_menu_delete_feed(self.active_feed);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-mark-read' }, function($t, $p){
+                e.preventDefault();
+                self.mark_feed_as_read(self.active_feed);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-mark-read' }, function($t, $p){
                 e.preventDefault();
