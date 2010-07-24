@@ -78,7 +78,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            print " ---> NEW SIGNUP: %s" % form.get_user()
+            print " ---> NEW SIGNUP: %s" % new_user
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)

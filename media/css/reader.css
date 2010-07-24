@@ -391,11 +391,12 @@ background: transparent;
     line-height: 1.3em;
     height: 1.2em;
     overflow: hidden;
-    text-shadow: 0 1px 0 #FFF;
+    text-shadow: 0 1px 0 #EBF3FA;
 }
 
 #feed_list .feed.selected .feed_title {
-    text-shadow: 0 1px 2px #eee;
+    text-shadow: 0 1px 0 #FFC97D;
+    color: #000000;
 }
 
 #feed_list .feed_counts {
