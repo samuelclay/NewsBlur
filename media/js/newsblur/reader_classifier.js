@@ -200,13 +200,13 @@ var classifier = {
         
         $('.NB-intelligence-slider', $slider).slider({
             range: 'max',
-            min: -1,
-            max: 1,
+            min: 0,
+            max: 2,
             step: 2,
-            value: this.score,
+            value: this.score + 1,
             slide: function(e, ui) {
                 // self.switch_feed_view_unread_view(ui.value);
-                self.score = ui.value;
+                self.score = ui.value - 1;
                 self.make_modal_title();
                 $('input[name^=like],input[name^=dislike]', self.$classifier).attr('name', function(i, current_name) {
                     if (self.score == -1) {
@@ -215,11 +215,8 @@ var classifier = {
                         return current_name.substr(current_name.indexOf('like_'));
                     }
                 });
-            },
-            stop: function(e, ui) {
-                // self.save_profile('unread_view', ui.value);
-                // self.flags['feed_view_positions_calculated'] = false;
-                // self.show_correct_story_titles_in_unread_view({'animate': true});
+                var $submit = $('input[type=submit]', self.$classifier);
+                $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
             }
         });
         
@@ -371,6 +368,7 @@ var classifier = {
             'minWidth': 600,
             'maxHeight': height,
             'overlayClose': true,
+            'autoResize': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
@@ -380,6 +378,7 @@ var classifier = {
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
                 $('.NB-classifier', self.$classifier).corner('14px');
+                $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();
@@ -436,13 +435,8 @@ var classifier = {
         var $submit = $('input[type=submit]', this.$classifier);
         
         $('input', this.$classifier).change(function() {
-            var count = $('input:checked', self.$classifier).length;
-            
-            if (count) {
-                $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
-            } else {
-                $submit.addClass("NB-disabled").attr('disabled', 'true').attr('value', 'Check what you like above...');
-            }
+            // var count = $('input:checked', self.$classifier).length;
+            $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
         });
     },
     

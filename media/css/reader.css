@@ -1383,6 +1383,7 @@ a.NB-splash-link:hover {
 
 .NB-modal {
     padding: 12px;
+    position: relative;
 }
 
 .NB-modal.NB-signed-out .NB-fieldset {
@@ -1579,8 +1580,8 @@ a.NB-splash-link:hover {
 }
 
 .NB-taskbar-intelligence.NB-modal-slider {
-    right: 26px;
-    top: 34px;
+    right: 18px;
+    top: 28px;
 }
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-indicator {
@@ -2252,16 +2253,20 @@ background: transparent;
     font-weight: bold;
     font-size: 15px;
     position: relative;
-    padding-top: 4px;
+    padding-top: 8px;
     padding-bottom: 8px;
     text-shadow: 0 1px 0 #FFF;
     background-color: #F0FFF0;
 }
 
+.NB-menu-manage .NB-menu-manage-site-info {
+    padding-top: 6px;
+}
+
 .NB-menu-manage .NB-menu-manage-feed-info .feed_favicon {
     position: absolute;
     left: 10px;
-    top: 6px;
+    top: 10px;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info .feed_title {

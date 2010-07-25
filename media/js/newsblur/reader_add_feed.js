@@ -129,13 +129,17 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     open_modal: function() {
         var self = this;
 
-        var $holder = $.make('div', { className: 'NB-modal-holder' }).append(this.$add).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
+        var $holder = $.make('div', { className: 'NB-modal-holder' })
+            .append(this.$add)
+            .appendTo('body')
+            .css({'visibility': 'hidden', 'display': 'block', 'width': 600});
         var height = $('.NB-add', $holder).outerHeight(true);
         $holder.css({'visibility': 'visible', 'display': 'none'});
         var w = $.modal.impl.getDimensions();
         if (height > w[0] - 70) {
             height = w[0] - 70;
         }
+        
         this.$add.modal({
             'minWidth': 600,
             'maxHeight': height,
@@ -148,7 +152,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
-                // $('.NB-classifier-tag', self.$add).corner('4px');
+                $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();
