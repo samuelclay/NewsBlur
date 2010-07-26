@@ -87,10 +87,11 @@ def json_view(func):
     def wrap(request, *a, **kw):
         response = None
         try:
-            response = dict(func(request, *a, **kw))
-            assert isinstance(response, dict)
-            if 'result' not in response:
-                response['result'] = 'ok'
+            response = func(request, *a, **kw)
+            if not sinstance(response, list):
+                response = dict(response)
+                if 'result' not in response:
+                    response['result'] = 'ok'
         except KeyboardInterrupt:
             # Allow keyboard interrupts through for debugging.
             raise
