@@ -33,6 +33,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear', domSuccessTrigger: true, traditional: true}); 
         this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domSuccessTrigger: true, traditional: true}); 
         this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domSuccessTrigger: true, domCompleteTrigger: true, traditional: true}); 
+        this.ajax['statistics'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domSuccessTrigger: true, traditional: true}); 
         return;
     },
     
@@ -43,15 +44,25 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             'traditional': true,
             'preventDoubbleRequests': false
         }, options);
+        var request_type = 'POST';
+        var clear_queue = false;
         
         if (options['ajax_group'] == 'feed') {
+            clear_queue = true;
+        }
+        if (options['ajax_group'] == 'statistics') {
+            clear_queue = true;
+            request_type = 'GET';
+        }
+        
+        if (clear_queue) {
             this.ajax[options['ajax_group']].clear(true);
         }
         
         this.ajax[options['ajax_group']].add({
             url: url,
             data: data,
-            type: 'POST',
+            type: request_type,
             dataType: 'json',
             beforeSend: function() {
                 // NEWSBLUR.log(['beforeSend', options]);
@@ -408,6 +419,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         } else {
             if ($.isFunction(callback)) callback();
         }
+    },
+    
+    get_feed_statistics: function(feed_id, callback) {
+        this.make_request('/rss_feeds/statistics', {
+            'feed_id': feed_id
+        }, callback, callback, {
+            'ajax_group': 'statistics'
+        });
     }
     
 };

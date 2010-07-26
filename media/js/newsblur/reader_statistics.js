@@ -1,38 +1,31 @@
-NEWSBLUR.ReaderPreferences = function(options) {
+NEWSBLUR.ReaderStatistics = function(feed_id, options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
+    this.feed_id = feed_id;
+    this.feed = this.model.get_feed(feed_id);
     this.runner();
 };
 
-NEWSBLUR.ReaderPreferences.prototype = {
+NEWSBLUR.ReaderStatistics.prototype = {
     
     runner: function() {
         this.make_modal();
-        this.handle_cancel();
         this.open_modal();
-        
-        this.$modal.bind('click', $.rescope(this.handle_click, this));
+        this.get_stats();
     },
     
     make_modal: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Preferences'),
-            $.make('form', { className: 'NB-preferences-form' }, [
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
-                ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_preferences();
-                return false;
-            })
+        this.$modal = $.make('div', { className: 'NB-modal-statistics NB-modal' }, [
+            $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
+            $.make('h2', { className: 'NB-modal-subtitle' }, [
+                $.make('img', { className: 'NB-modal-statistics-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
+                $.make('span', { className: 'NB-modal-statistics-feed-title' }, this.feed.feed_title)
+            ])
         ]);
     },
     
@@ -74,27 +67,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
         });
     },
     
-    handle_cancel: function() {
-        var $cancel = $('.NB-modal-cancel', this.$modal);
-        
-        $cancel.click(function(e) {
-            e.preventDefault();
-            $.modal.close();
-        });
+    get_stats: function() {
+        this.model.get_feed_statistics(this.feed_id, $.rescope(this.populate_stats, this));
     },
-            
-    // ===========
-    // = Actions =
-    // ===========
-
-    handle_click: function(elem, e) {
-        var self = this;
-        
-        $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
-            e.preventDefault();
-            
-            self.save_add_url();
-        });
+    
+    populate_stats: function(s, data) {
+        NEWSBLUR.log(['Stats', data]);
     }
     
 };

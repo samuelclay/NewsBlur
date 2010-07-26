@@ -207,7 +207,7 @@
             "last_modified": "2010-06-29 03:28:00", 
             "last_load_time": 10, 
             "active": true, 
-            "stories_per_month": 217,
+            "stories_last_month": 217,
             "popular_tags": "[]",
             "popular_authors": "[]"
         }

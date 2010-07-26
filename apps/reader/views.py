@@ -91,6 +91,7 @@ def logout(request):
     
     return HttpResponseRedirect(reverse('index'))
     
+@json.json_view
 def load_feeds(request):
     user = get_user(request)
     feeds = {}
@@ -99,7 +100,7 @@ def load_feeds(request):
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
         data = dict(feeds=[], folders=[])
-        return HttpResponse(json.encode(data), mimetype='application/json')
+        return data
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
 
@@ -116,8 +117,9 @@ def load_feeds(request):
         }
 
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
-    return HttpResponse(json.encode(data), mimetype='application/json')
+    return data
 
+@json.json_view
 def load_feeds_iphone(request):
     user = get_user(request)
     feeds = {}
@@ -126,7 +128,7 @@ def load_feeds_iphone(request):
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
         data = dict(folders=[])
-        return HttpResponse(json.encode(data), mimetype='application/json')
+        return data
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
 
@@ -167,8 +169,9 @@ def load_feeds_iphone(request):
         
     make_feeds_folder(folders)
     data = dict(flat_folders=flat_folders)
-    return HttpResponse(json.encode(data), mimetype='application/json')
+    return data
 
+@json.json_view
 def refresh_feeds(request):
     user = get_user(request)
     feeds = {}
@@ -184,8 +187,9 @@ def refresh_feeds(request):
             'ng': sub.unread_count_negative,
         }
 
-    return HttpResponse(json.encode(feeds), mimetype='application/json')
+    return feeds
 
+@json.json_view
 def load_single_feed(request):
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
@@ -208,7 +212,11 @@ def load_single_feed(request):
     classifier_titles = ClassifierTitle.objects.filter(user=user, feed=feed)
     classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
     
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
+    try:
+        usersub = UserSubscription.objects.get(user=user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        print " ***> UserSub DNE, creating: %s %s" % (user, feed)
+        usersub = UserSubscription.objects.create(user=user, feed=feed)
             
     # print "Feed: %s %s" % (feed, usersub)
     logging.debug("Feed: " + feed.feed_title)
@@ -249,9 +257,8 @@ def load_single_feed(request):
     usersub.feed_opens += 1
     usersub.save()
     
-    context = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, classifiers=classifiers)
-    data = json.encode(context)
-    return HttpResponse(data, mimetype='application/json')
+    data = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, classifiers=classifiers)
+    return data
 
 def load_feed_page(request):
     feed = Feed.objects.get(id=request.REQUEST.get('feed_id'))
@@ -265,6 +272,7 @@ def load_feed_page(request):
     
     
 @ajax_login_required
+@json.json_view
 def mark_all_as_read(request):
     code = 1
     days = int(request.POST['days'])
@@ -281,10 +289,10 @@ def mark_all_as_read(request):
                 sub.save()
     
     print " ---> Marking all as read [%s]: %s days" % (request.user, days,)
-    data = json.encode(dict(code=code))
-    return HttpResponse(data)
+    return dict(code=code)
     
 @ajax_login_required
+@json.json_view
 def mark_story_as_read(request):
     story_ids = request.REQUEST['story_id'].split(',')
     feed_id = int(request.REQUEST['feed_id'])
@@ -305,9 +313,10 @@ def mark_story_as_read(request):
         except IntegrityError:
             data.update({'code': -1})
     
-    return HttpResponse(json.encode(data))
+    return data
     
 @ajax_login_required
+@json.json_view
 def mark_feed_as_read(request):
     feed_id = int(request.REQUEST['feed_id'])
     feed = Feed.objects.get(id=feed_id)
@@ -321,11 +330,9 @@ def mark_feed_as_read(request):
     else:
         code = 1
         
-    data = json.encode(dict(code=code))
-
     print " ---> Marking feed as read [%s]: %s" % (request.user, feed,)
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
-    return HttpResponse(data)
+    return dict(code=code)
     
 @ajax_login_required
 def mark_story_as_like(request):
@@ -336,6 +343,7 @@ def mark_story_as_dislike(request):
     return mark_story_with_opinion(request, -1)
 
 @ajax_login_required
+@json.json_view
 def mark_story_with_opinion(request, opinion):
     story_id = request.REQUEST['story_id']
     story = Story.objects.select_related("story_feed").get(id=story_id)
@@ -345,18 +353,18 @@ def mark_story_with_opinion(request, opinion):
                                                  feed=story.story_feed)
     if previous_opinion and previous_opinion.opinion != opinion:
         previous_opinion.opinion = opinion
-        data = json.encode(dict(code=0))
+        code = 0
         previous_opinion.save()
         logging.debug("Changed Opinion: " + str(previous_opinion.opinion) + ' ' + str(opinion))
     else:
         logging.debug("Marked Opinion: " + str(story_id) + ' ' + str(opinion))
         m = UserStory(story=story, user=request.user, feed=story.story_feed, opinion=opinion)
-        data = json.encode(dict(code=0))
+        code = 0
         try:
             m.save()
         except:
-            data = json.encode(dict(code=2))
-    return HttpResponse(data)
+            code = 2
+    return dict(code=code)
     
 def _parse_user_info(user):
     return {
@@ -368,6 +376,7 @@ def _parse_user_info(user):
     }
 
 @ajax_login_required
+@json.json_view
 def add_url(request):
     code = 0
     url = request.POST['url']
@@ -411,8 +420,7 @@ def add_url(request):
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
     
-    data = dict(code=code, message=message)
-    return HttpResponse(json.encode(data))
+    return dict(code=code, message=message)
 
 def _add_object_to_folder(obj, folder, folders):
     if not folder:
@@ -428,6 +436,7 @@ def _add_object_to_folder(obj, folder, folders):
     return folders
 
 @ajax_login_required
+@json.json_view
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST['parent_folder']
@@ -448,10 +457,10 @@ def add_folder(request):
         code = -1
         message = "Gotta write in a folder name."
         
-    data = dict(code=code, message=message)
-    return HttpResponse(json.encode(data))
+    return dict(code=code, message=message)
     
 @ajax_login_required
+@json.json_view
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
@@ -482,10 +491,10 @@ def delete_feed(request):
     user_sub_folders_object.folders = json.encode(user_sub_folders)
     user_sub_folders_object.save()
     
-    data = json.encode(dict(code=1))
-    return HttpResponse(data)
+    return dict(code=1)
     
 @login_required
+@json.json_view
 def add_feature(request):
     if not request.user.is_staff:
         return HttpResponseForbidden()
@@ -498,13 +507,13 @@ def add_feature(request):
         code = 1
         return HttpResponseRedirect(reverse('index'))
     
-    data = json.encode(dict(code=code))
-    return HttpResponse(data)
+    return dict(code=code)
     
+@json.json_view
 def load_features(request):
     page = int(request.POST.get('page', 0))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
-    return HttpResponse(json.encode(features), mimetype='application/json')
+    return features
 
 @json.json_view
 def save_feed_order(request):

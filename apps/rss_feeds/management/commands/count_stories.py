@@ -19,6 +19,6 @@ class Command(BaseCommand):
 
         # Count stories in past month to calculate next scheduled update
         for feed in feeds:
-            feed.count_stories_per_month(verbose=options['verbose'])
+            feed.count_stories(verbose=options['verbose'])
         
         print "\nCounted %s feeds" % feeds.count()

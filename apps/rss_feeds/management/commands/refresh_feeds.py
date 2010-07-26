@@ -53,7 +53,3 @@ class Command(BaseCommand):
         
         print "Polling..."
         disp.poll()
-        
-        os._exit(1)
-        sys.exit()
-        

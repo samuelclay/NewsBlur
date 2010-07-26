@@ -1813,29 +1813,29 @@
         // ===================
         
         open_add_feed_modal: function() {
-            var feed_id = this.active_feed;
-            
             clearInterval(this.flags['bouncing_callout']);
             
             NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
         },
         
-        open_manage_feed_modal: function(group) {
+        open_manage_feed_modal: function() {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id, {'group': group});
+            NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
         },
         
         open_mark_read_modal: function() {
-            var feed_id = this.active_feed;
-            
             NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead();
         },
         
         open_preferences_modal: function() {
+            NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
+        },
+        
+        open_feed_statistics_modal: function() {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
+            NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
         
         make_manage_menu: function() {
@@ -2569,7 +2569,7 @@
             $.targetIs(e, { tagSelector: '.NB-feedbar-manage-feed' }, function($t, $p){
                 e.preventDefault();
                 if (!$('.NB-task-manage').hasClass('NB-disabled')) {
-                    self.open_manage_feed_modal('opinions');
+                    self.open_manage_feed_modal();
                 }
             }); 
             
@@ -2642,7 +2642,7 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-manage' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_manage_feed_modal('opinions');
+                    self.open_manage_feed_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-train' }, function($t, $p){
@@ -2654,7 +2654,7 @@
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_manage_feed_modal('stats');
+                    self.open_feed_statistics_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-delete' }, function($t, $p){

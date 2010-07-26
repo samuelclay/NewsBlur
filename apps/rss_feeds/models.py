@@ -32,7 +32,9 @@ class Feed(models.Model):
     creation = models.DateField(auto_now_add=True)
     etag = models.CharField(max_length=50, blank=True, null=True)
     last_modified = models.DateTimeField(null=True, blank=True)
-    stories_per_month = models.IntegerField(default=0)
+    stories_last_month = models.IntegerField(default=0)
+    average_stories_per_month = models.IntegerField(default=0)
+    stories_last_year = models.CharField(max_length=1024, blank=True, null=True)
     next_scheduled_update = models.DateTimeField(default=datetime.datetime.now)
     last_load_time = models.IntegerField(default=0)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
@@ -42,11 +44,18 @@ class Feed(models.Model):
     def __unicode__(self):
         return self.feed_title
 
-    def save(self, *args, **kwargs):
+    def save(self, lock=None, *args, **kwargs):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
             
-        super(Feed, self).save(*args, **kwargs)
+        if lock:
+            lock.acquire()
+            try:
+                super(Feed, self).save(*args, **kwargs)
+            finally:
+                lock.release()
+        else:
+            super(Feed, self).save(*args, **kwargs)
         
     def save_feed_history(self, status_code, message, exception=None):
         FeedFetchHistory.objects.create(feed=self, 
@@ -71,7 +80,7 @@ class Feed(models.Model):
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
 
-        self._save_with_lock(lock)
+        self.save(lock=lock)
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -83,15 +92,37 @@ class Feed(models.Model):
                     '' if self.num_subscribers == 1 else 's',
                     self.feed_title,
                 ),
-    def count_stories_per_month(self, verbose=False, lock=None):
+                
+    def count_stories(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-        stories_count = Story.objects.filter(story_feed=self, story_date__gte=month_ago).count()
-        self.stories_per_month = stories_count
-
-        self._save_with_lock(lock)
+        stories_last_month = Story.objects.filter(story_feed=self, story_date__gte=month_ago).count()
+        self.stories_last_month = stories_last_month
+        
+        # Save stories for this month count in granular StoriesPerMonth model
+        today = datetime.datetime.now()
+        beginning_of_month = datetime.datetime(today.year, today.month, 1)
+        stories_this_month = Story.objects.filter(story_feed=self,
+                                                  story_date__gte=beginning_of_month).count()
+        stories_per_month, created = StoriesPerMonth.objects.get_or_create(
+            feed=self,
+            year=today.year, 
+            month=today.month,
+            defaults={
+                'story_count': stories_this_month,
+                'beginning_of_month': beginning_of_month,
+            })
+        if not created:
+            stories_per_month.story_count = stories_this_month
+            stories_per_month.save()
+        
+        stories_last_year, average_stories_per_month = StoriesPerMonth.past_year(self)
+        self.stories_last_year = json.encode(stories_last_year)
+        self.average_stories_per_month = average_stories_per_month
+        
+        self.save(lock=lock)
             
         if verbose:
-            print "  ---> %s [%s]: %s stories" % (self.feed_title, self.pk, self.stories_per_month)
+            print "  ---> %s [%s]: %s stories" % (self.feed_title, self.pk, self.stories_last_month)
             
     def last_updated(self):
         return time.time() - time.mktime(self.last_update.timetuple())
@@ -227,7 +258,7 @@ class Feed(models.Model):
         popular_tags = json.encode(feed_tags)
         if len(popular_tags) < 1024:
             self.popular_tags = popular_tags
-            self._save_with_lock(lock)
+            self.save(lock=lock)
             return
 
         tags_list = json.decode(feed_tags) if feed_tags else []
@@ -245,23 +276,13 @@ class Feed(models.Model):
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
             self.popular_authors = popular_authors
-            self._save_with_lock(lock)
+            self.save(lock=lock)
             return
 
         authors_list = json.decode(feed_authors) if feed_authors else []
         if len(authors_list) > 1:
             self.save_popular_authors(authors_list[:-1])
     
-    def _save_with_lock(self, lock=None):
-        if lock:
-            lock.acquire()
-            try:
-                self.save()
-            finally:
-                lock.release()
-        else:
-            self.save()
-            
     def _shorten_story_tags(self, story_tags):
         encoded_tags = json.encode([t.name for t in story_tags])
         if len(encoded_tags) < 2000:
@@ -274,7 +295,11 @@ class Feed(models.Model):
         from apps.reader.models import UserStory
         stories_deleted_count = 0
         user_stories_count = 0
-        stories = Story.objects.filter(story_feed=self).order_by('-story_date')
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+        stories = Story.objects.filter(
+            story_feed=self,
+            story_date__lte=month_ago
+        ).order_by('-story_date')
         print 'Found %s stories in %s. Trimming...' % (stories.count(), self)
         if stories.count() > 1000:
             old_story = stories[1000]
@@ -411,10 +436,10 @@ class Feed(models.Model):
         # if story_has_changed or not story_in_system:
             # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
-    
-    def set_next_scheduled_update(self, lock=None):
+        
+    def get_next_scheduled_update(self):
         # Use stories per month to calculate next feed update
-        updates_per_day = max(30, self.stories_per_month) / 30.0
+        updates_per_day = max(30, self.stories_last_month) / 30.0
         # 1 update per day = 12 hours
         # > 1 update per day:
         #   2 updates = 3 hours
@@ -436,16 +461,21 @@ class Feed(models.Model):
             slow_punishment = 4 * self.last_load_time
         elif self.last_load_time >= 100:
             slow_punishment = 12 * self.last_load_time
-            
-        random_factor = random.randint(0,int(updates_per_day_delay+subscriber_bonus+slow_punishment)) / 4
+        
+        total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
+        random_factor = random.randint(0, total) / 4
         
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-            minutes=updates_per_day_delay+slow_punishment+subscriber_bonus+random_factor
-        )
+            minutes = total + random_factor)
+        
+        return next_scheduled_update, random_factor
+        
+    def set_next_scheduled_update(self, lock=None):
+        next_scheduled_update, _ = self.get_next_scheduled_update()
         self.next_scheduled_update = next_scheduled_update
 
-        self._save_with_lock(lock)
-        
+        self.save(lock=lock)
+    
     class Meta:
         db_table="feeds"
         ordering=["feed_title"]
@@ -558,3 +588,21 @@ class PageFetchHistory(models.Model):
             self.message,
             self.exception[:50]
         )
+        
+class StoriesPerMonth(models.Model):
+    feed = models.ForeignKey(Feed, related_name='stories_per_month')
+    year = models.IntegerField()
+    month = models.IntegerField()
+    story_count = models.IntegerField()
+    beginning_of_month = models.DateTimeField(default=datetime.datetime.now)
+    
+    @classmethod
+    def past_year(cls, feed):
+        year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
+        story_counts = StoriesPerMonth.objects.filter(
+            feed=feed,
+            beginning_of_month__gte=year_ago
+        ).order_by('beginning_of_month')
+        month_counts = [m.story_count for m in story_counts]
+        average_per_month = sum(month_counts) / max(len(month_counts), 1)
+        return month_counts, average_per_month

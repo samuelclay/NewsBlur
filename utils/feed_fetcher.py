@@ -197,7 +197,7 @@ class ProcessFeed:
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
             
         self.feed.count_subscribers(lock=self.lock)
-        self.feed.count_stories_per_month(lock=self.lock)
+        self.feed.count_stories(lock=self.lock)
         self.feed.save_popular_authors(lock=self.lock)
         self.feed.save_popular_tags(lock=self.lock)
         self.feed.save_feed_history(200, "OK")
@@ -287,7 +287,7 @@ class Dispatcher:
                 if (fetched_feed and
                     feed.feed_link and
                     (ret_feed == FEED_OK or
-                     (ret_feed == FEED_SAME and feed.stories_per_month > 10))):
+                     (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
                     page_importer = PageImporter(feed.feed_link, feed)
                     page_importer.fetch_page()
             except KeyboardInterrupt:
@@ -310,7 +310,10 @@ class Dispatcher:
                 comment = u''
             
             feed.last_load_time = max(1, delta.seconds)
-            feed.save()
+            try:
+                feed.save()
+            except IntegriyError:
+                print " ---> IntegrityError on feed: %s - %s" % (feed, feed.feed_address,)
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
                 identity, feed.feed_title, feed.id, unicode(delta),
