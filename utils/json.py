@@ -88,7 +88,7 @@ def json_view(func):
         response = None
         try:
             response = func(request, *a, **kw)
-            if not sinstance(response, list):
+            if not isinstance(response, list):
                 response = dict(response)
                 if 'result' not in response:
                     response['result'] = 'ok'
