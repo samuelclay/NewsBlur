@@ -562,9 +562,26 @@ background: transparent;
     display: none;
 }
 
+#story_titles .NB-feedbar .NB-feedbar-last-updated {
+    color: #808080;
+    text-shadow: 0 1px 0 #e6e6e6;
+    position: absolute;
+    right: 54px;
+    font-size: 9px;
+    line-height: 15px;
+    font-weight: bold;
+    margin: 3px 0 2px;
+    width: 150px;
+    text-transform: uppercase;
+}
+
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-mark-feed-read {
     display: block;
+}
+
+#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-last-updated {
+    display: none;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read:hover {

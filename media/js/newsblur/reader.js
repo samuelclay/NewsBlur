@@ -536,7 +536,6 @@
             $('.unread_count', $feed_list).corner('4px');
             
             if (!$folder.length) {
-                this.load_feed_browser();
                 this.setup_ftux_add_feed_callout();
             } else {
                 $('.NB-task-manage').removeClass('NB-disabled');
@@ -553,7 +552,7 @@
 
                 if (typeof item == "number") {
                     var feed = this.model.feeds[item];
-                    var $feed = this.make_feed_title_line(feed, true);
+                    var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
                 } else if (typeof item == "object") {
                     for (var o in item) {
@@ -575,7 +574,7 @@
             return $feeds.children();
         },
         
-        make_feed_title_line: function(feed, list_item) {
+        make_feed_title_line: function(feed, list_item, type) {
             var unread_class = '';
             if (feed.ps) {
                 unread_class += ' unread_positive';
@@ -612,7 +611,11 @@
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, feed.feed_title),
                 $.make('div', { className: 'NB-feedbar-manage-feed' }),
-                $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')
+                (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
+                    $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
+                    $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated)
+                ])),
+                (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read'))
             ]).data('feed_id', feed.id);  
             
             return $feed;  
@@ -1163,7 +1166,7 @@
         make_content_pane_feed_counter: function(feed_id) {
             var $content_pane = this.$s.$content_pane;
             var feed = this.model.get_feed(feed_id);
-            var $counter = this.make_feed_title_line(feed);
+            var $counter = this.make_feed_title_line(feed, false, 'counter');
             
             $('.feed', $content_pane).remove();
             $('#story_taskbar', $content_pane).append($counter);
@@ -1483,7 +1486,7 @@
             var feed = this.model.get_feed(feed_id);
 
             var $feedbar = $.make('div', { className: 'NB-feedbar' }, [
-                this.make_feed_title_line(feed),
+                this.make_feed_title_line(feed, false, 'story'),
                 $.make('div', { className: 'NB-feedbar-intelligence' }, [
                     $.make('div', { className: 'NB-feed-sentiment NB-feed-like' }),
                     $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike' })
@@ -2221,7 +2224,7 @@
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
                 var feed = this.model.get_feed(feed_id);
-                var $feed = this.make_feed_title_line(feed, true);
+                var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 var selected = $feed_on_page.hasClass('selected');
                 if (selected) {

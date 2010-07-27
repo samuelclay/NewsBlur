@@ -24,7 +24,7 @@ except:
     pass
 from utils import json
 from utils.user_functions import get_user, ajax_login_required
-from utils.feed_functions import fetch_address_from_page
+from utils.feed_functions import fetch_address_from_page, format_relative_date
 
 SINGLE_DAY = 60*60*24
 
@@ -114,6 +114,7 @@ def load_feeds(request):
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
+            'updated': format_relative_date(sub.feed.last_update),
         }
 
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
@@ -257,7 +258,10 @@ def load_single_feed(request):
     usersub.feed_opens += 1
     usersub.save()
     
-    data = dict(stories=stories, feed_tags=feed_tags, feed_authors=feed_authors, classifiers=classifiers)
+    data = dict(stories=stories, 
+                feed_tags=feed_tags, 
+                feed_authors=feed_authors, 
+                classifiers=classifiers)
     return data
 
 def load_feed_page(request):
