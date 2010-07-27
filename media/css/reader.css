@@ -2335,11 +2335,13 @@ background: transparent;
 /* ==================== */
 
 .NB-modal-statistics {
-  
 }
 
 .NB-modal-statistics .NB-modal-subtitle {
+    border-bottom: 3px solid #E0E0E0;
     font-size: 14px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
     position: relative;
 }
 .NB-modal-statistics .NB-modal-statistics-feed-title {
@@ -2353,4 +2355,27 @@ background: transparent;
 
 .NB-modal-statistics .NB-modal-statistics-feed-image {
     float: left;
+}
+
+.NB-modal-statistics .NB-statistics-stat {
+    background-color: #E0FFE0;
+    clear: both;
+    margin: 24px 0 12px;
+    overflow: hidden;
+    padding: 10px 0 0 22px;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-count {
+    font-size: 34px;
+    line-height: 34px;
+    float: left;
+    padding: 0 6px 0 0;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-label {
+    font-size: 16px;
+    line-height: 46px;
+    text-transform: uppercase;
+    color: #A0A0A0;
+    text-shadow: 0 1px 0 #FFF;
 }

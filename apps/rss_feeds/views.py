@@ -1,4 +1,3 @@
-import datetime
 from django.shortcuts import get_object_or_404
 from apps.rss_feeds.models import Feed
 from utils import json
@@ -14,10 +13,8 @@ def load_feed_statistics(request):
     stats['next_update'] = feed.next_scheduled_update
     
     # Minutes between updates
-    now = datetime.datetime.now()
-    next_scheduled_update, random_factor = feed.get_next_scheduled_update()
-    delta = now - next_scheduled_update - datetime.timedelta(minutes=random_factor)
-    stats['update_interval_minutes'] = delta.seconds / 60
+    update_interval_minutes, random_factor = feed.get_next_scheduled_update()
+    stats['update_interval_minutes'] = update_interval_minutes
     
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, stories_last_year = feed.average_stories_per_month, feed.stories_last_year

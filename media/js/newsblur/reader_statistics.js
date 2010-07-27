@@ -25,7 +25,8 @@ NEWSBLUR.ReaderStatistics.prototype = {
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-statistics-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-statistics-feed-title' }, this.feed.feed_title)
-            ])
+            ]),
+            $.make('div', { className: 'NB-modal-statistics-info' })
         ]);
     },
     
@@ -36,14 +37,10 @@ NEWSBLUR.ReaderStatistics.prototype = {
         var height = $('.NB-add', $holder).outerHeight(true);
         $holder.css({'visibility': 'visible', 'display': 'none'});
         
-        var w = $.modal.impl.getDimensions();
-        if (height > w[0] - 70) {
-            height = w[0] - 70;
-        }
-        
         this.$modal.modal({
             'minWidth': 600,
             'maxHeight': height,
+            'minHeight': 340,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -52,7 +49,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                $('#simplemodal-container').corner('6px');
                 $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
@@ -73,6 +70,25 @@ NEWSBLUR.ReaderStatistics.prototype = {
     
     populate_stats: function(s, data) {
         NEWSBLUR.log(['Stats', data]);
+        var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
+            $.make('div', { className: 'NB-statistics-stat'}, [
+                $.make('div', { className: 'NB-statistics-count' }, ''+data['subscriber_count']),
+                $.make('div', { className: 'NB-statistics-label' }, 'subscribers')
+            ]),
+            $.make('div', { className: 'NB-statistics-stat'}, [
+                $.make('div', { className: 'NB-statistics-count' }, ''+data['average_stories_per_month']),
+                $.make('div', { className: 'NB-statistics-label' }, ' stories per month')
+            ]),
+            $.make('div', { className: 'NB-statistics-stat'}, [
+                $.make('div', { className: 'NB-statistics-count' }, ''+data['update_interval_minutes']),
+                $.make('div', { className: 'NB-statistics-label' }, 'minutes between updates')
+            ])
+        ]);
+        
+        $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
+        setTimeout(function() {
+            $.modal.impl.setPosition();
+        }, 10);
     }
     
 };

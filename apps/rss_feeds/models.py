@@ -465,13 +465,14 @@ class Feed(models.Model):
         total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
         random_factor = random.randint(0, total) / 4
         
-        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-            minutes = total + random_factor)
-        
-        return next_scheduled_update, random_factor
+        return total, random_factor
         
     def set_next_scheduled_update(self, lock=None):
-        next_scheduled_update, _ = self.get_next_scheduled_update()
+        total, random_factor = self.get_next_scheduled_update()
+
+        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
+                                minutes = total + random_factor)
+            
         self.next_scheduled_update = next_scheduled_update
 
         self.save(lock=lock)

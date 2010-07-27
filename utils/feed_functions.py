@@ -76,7 +76,8 @@ def format_relative_date(date):
     now = datetime.datetime.now()
     diff = now - date
     if diff < datetime.timedelta(minutes=60):
-        return "%s minutes ago" % (diff.seconds / 60)
+        minutes = diff.seconds / 60
+        return "%s minute%s ago" % (minutes, '' if minutes == 1 else 's')
     elif datetime.timedelta(minutes=60) <= diff < datetime.timedelta(minutes=90):
         return "1 hour ago"
     elif diff >= datetime.timedelta(minutes=90):
