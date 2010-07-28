@@ -22,7 +22,7 @@ try:
     from apps.rss_feeds.models import Feed, Story, FeedPage
 except:
     pass
-from utils import json
+from utils import json, urlnorm
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page, format_relative_date
 
@@ -388,6 +388,7 @@ def add_url(request):
     feed = None
     
     if url:
+        url = urlnorm.normalize(url)
         feed = Feed.objects.filter(Q(feed_address=url) 
                                    | Q(feed_link__icontains=url))
     

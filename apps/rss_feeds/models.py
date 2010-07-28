@@ -4,6 +4,9 @@ import difflib
 import datetime
 import hashlib
 import random
+import nltk
+import re
+from BeautifulSoup import BeautifulStoneSoup
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -477,9 +480,31 @@ class Feed(models.Model):
 
         self.save(lock=lock)
     
+    def calculate_collocations(self):
+        trigram_measures = nltk.collocations.TrigramAssocMeasures()
+
+        stories = Story.objects.filter(story_feed=self)
+        story_content = ' '.join([s.story_content for s in stories])
+        story_content = re.sub(r'&#8217;', '\'', story_content)
+        story_content = unicode(BeautifulStoneSoup(story_content,
+                                convertEntities=BeautifulStoneSoup.HTML_ENTITIES))
+        story_content = re.sub(r'</?\w+\s+[^>]*>', '', story_content)
+        story_content = re.split(r"[^A-Za-z-']+", story_content)
+
+        finder = nltk.collocations.TrigramCollocationFinder.from_words(story_content)
+        finder.apply_freq_filter(3)
+        best = finder.nbest(trigram_measures.pmi, 10)
+        phrases = [' '.join(phrase) for phrase in best]
+        
+        print phrases
+        
     class Meta:
         db_table="feeds"
         ordering=["feed_title"]
+
+class FeedCollocations(models.Model):
+    feed = models.ForeignKey(Feed)
+    phrase = models.CharField(max_length=500)
         
 class Tag(models.Model):
     feed = models.ForeignKey(Feed)

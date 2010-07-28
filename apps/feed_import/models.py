@@ -5,7 +5,7 @@ from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 import datetime
 import lxml.etree
-from utils import json
+from utils import json, urlnorm
 import utils.opml as opml
 
 class OAuthToken(models.Model):
@@ -54,10 +54,12 @@ class OPMLImporter(Importer):
                     setattr(feed, 'htmlUrl', None)
                 if not hasattr(feed, 'title'):
                     setattr(feed, 'title', feed.htmlUrl)
-                print '\t%s - %s - %s' % (feed.title, feed.htmlUrl, feed.xmlUrl,)
-                feed_data = dict(feed_address=feed.xmlUrl, feed_link=feed.htmlUrl, feed_title=feed.title)
+                feed_address = urlnorm.normalize(feed.xmlUrl)
+                feed_link = urlnorm.normalize(feed.htmlUrl)
+                print '\t%s - %s - %s' % (feed.title, feed_link, feed_address,)
+                feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
                 # feeds.append(feed_data)
-                feed_db, _ = Feed.objects.get_or_create(feed_address=feed.xmlUrl, defaults=dict(**feed_data))
+                feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
                 us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
                     user=self.user,
@@ -106,7 +108,10 @@ class GoogleReaderImporter(Importer):
         
         if not feed_address:
             feed_address = feed_link
-            
+        
+        feed_link = urlnorm.normalize(feed_link)
+        feed_address = urlnorm.normalize(feed_address)
+        
         feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
         feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
         us, _ = UserSubscription.objects.get_or_create(
