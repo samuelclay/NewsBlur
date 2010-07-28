@@ -69,20 +69,20 @@ def fetch_address_from_page(url, existing_feed=None):
                 feed.update()
         return feed
         
-def format_relative_date(date):
+def format_relative_date(date, future=False):
     if not date or date < datetime.datetime(2010, 1, 1):
         return "Soon"
         
     now = datetime.datetime.now()
-    diff = now - date
+    diff = abs(now - date)
     if diff < datetime.timedelta(minutes=60):
         minutes = diff.seconds / 60
-        return "%s minute%s ago" % (minutes, '' if minutes == 1 else 's')
+        return "%s minute%s %s" % (minutes, '' if minutes == 1 else 's', '' if future else 'ago')
     elif datetime.timedelta(minutes=60) <= diff < datetime.timedelta(minutes=90):
-        return "1 hour ago"
+        return "1 hour %s" % ('' if future else 'ago')
     elif diff >= datetime.timedelta(minutes=90):
-        dec = (diff.seconds / 60) % 60
+        dec = (diff.seconds / 60 + 15) % 60
         if dec >= 30:
-            return "%s.5 hours ago" % (diff.seconds / 60 / 60)
+            return "%s.5 hours %s" % ((((diff.seconds / 60) + 15) / 60), '' if future else 'ago')
         else:
-            return "%s hours ago" % (diff.seconds / 60 / 60)
+            return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), '' if future else 'ago')

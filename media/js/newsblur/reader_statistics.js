@@ -70,7 +70,34 @@ NEWSBLUR.ReaderStatistics.prototype = {
     
     populate_stats: function(s, data) {
         NEWSBLUR.log(['Stats', data]);
+        var interval_start = data['update_interval_minutes'];
+        var interval_end = data['update_interval_minutes'] * 1.25;
+        var interval = '';
+        if (interval_start < 60) {
+            interval = interval_start + ' to ' + interval_end + ' minutes';
+        } else {
+            var interval_start_hours = parseInt(interval_start / 60, 10);
+            var interval_end_hours = parseInt(interval_end / 60, 10);
+            var dec_start = interval_start % 60;
+            var dec_end = interval_end % 60;
+            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+        }
+        
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
+            $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
+              $.make('div', { className: 'NB-statistics-update'}, [
+                $.make('div', { className: 'NB-statistics-update-label' }, 'Last Update'),
+                $.make('div', { className: 'NB-statistics-update-count' }, ''+data['last_update'])
+              ]),
+              $.make('div', { className: 'NB-statistics-update'}, [
+                $.make('div', { className: 'NB-statistics-update-label' }, 'Every ' + interval),
+                $.make('div', { className: 'NB-statistics-update-count' }, '[-------+++]')
+              ]),
+              $.make('div', { className: 'NB-statistics-update'}, [
+                $.make('div', { className: 'NB-statistics-update-label' }, 'Next Update'),
+                $.make('div', { className: 'NB-statistics-update-count' }, ''+data['next_update'])
+              ])
+            ]),
             $.make('div', { className: 'NB-statistics-stat'}, [
                 $.make('div', { className: 'NB-statistics-count' }, ''+data['subscriber_count']),
                 $.make('div', { className: 'NB-statistics-label' }, 'subscribers')
@@ -78,10 +105,6 @@ NEWSBLUR.ReaderStatistics.prototype = {
             $.make('div', { className: 'NB-statistics-stat'}, [
                 $.make('div', { className: 'NB-statistics-count' }, ''+data['average_stories_per_month']),
                 $.make('div', { className: 'NB-statistics-label' }, ' stories per month')
-            ]),
-            $.make('div', { className: 'NB-statistics-stat'}, [
-                $.make('div', { className: 'NB-statistics-count' }, ''+data['update_interval_minutes']),
-                $.make('div', { className: 'NB-statistics-label' }, 'minutes between updates')
             ])
         ]);
         

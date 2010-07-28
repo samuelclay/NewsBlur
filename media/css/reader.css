@@ -2379,3 +2379,20 @@ background: transparent;
     color: #A0A0A0;
     text-shadow: 0 1px 0 #FFF;
 }
+
+.NB-modal-statistics .NB-statistics-update {
+  float: left;
+  width: 33%;
+  text-align: center;
+}
+
+.NB-modal-statistics .NB-statistics-update .NB-statistics-update-label {
+    text-transform: uppercase;
+    color: #A0A0A0;
+    text-shadow: 0 1px 0 #FFF;
+    font-size: 11px;
+}
+.NB-modal-statistics .NB-statistics-update .NB-statistics-update-count {
+  font-size: 17px;
+  padding: 6px 0 12px 0;
+}

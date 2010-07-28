@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from apps.rss_feeds.models import Feed
 from utils import json
+from utils.feed_functions import format_relative_date
 
 @json.json_view
 def load_feed_statistics(request):
@@ -9,8 +10,8 @@ def load_feed_statistics(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     
     # Dates of last and next update
-    stats['last_update'] = feed.last_update
-    stats['next_update'] = feed.next_scheduled_update
+    stats['last_update'] = format_relative_date(feed.last_update)
+    stats['next_update'] = format_relative_date(feed.next_scheduled_update, future=True)
     
     # Minutes between updates
     update_interval_minutes, random_factor = feed.get_next_scheduled_update()

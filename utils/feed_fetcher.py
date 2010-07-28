@@ -312,7 +312,7 @@ class Dispatcher:
             feed.last_load_time = max(1, delta.seconds)
             try:
                 feed.save()
-            except IntegriyError:
+            except IntegrityError:
                 print " ---> IntegrityError on feed: %s - %s" % (feed, feed.feed_address,)
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
