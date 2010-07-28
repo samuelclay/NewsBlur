@@ -502,9 +502,9 @@ class Feed(models.Model):
         db_table="feeds"
         ordering=["feed_title"]
 
-class FeedCollocations(models.Model):
-    feed = models.ForeignKey(Feed)
-    phrase = models.CharField(max_length=500)
+# class FeedCollocations(models.Model):
+#     feed = models.ForeignKey(Feed)
+#     phrase = models.CharField(max_length=500)
         
 class Tag(models.Model):
     feed = models.ForeignKey(Feed)
