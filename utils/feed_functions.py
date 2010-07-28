@@ -1,6 +1,7 @@
 import datetime
 import time
 import sys
+from django.utils.translation import ungettext, ugettext
 from utils import feedfinder
 
 def encode(tstr):
@@ -69,6 +70,58 @@ def fetch_address_from_page(url, existing_feed=None):
                 feed.update()
         return feed
         
+def _do_timesince(d, chunks, now=None):
+    """
+    Started as a copy of django.util.timesince.timesince, but modified to
+    only output one time unit, and use months as the maximum unit of measure.
+    
+    Takes two datetime objects and returns the time between d and now
+    as a nicely formatted string, e.g. "10 minutes".  If d occurs after now,
+    then "0 minutes" is returned.
+
+    Units used are months, weeks, days, hours, and minutes.
+    Seconds and microseconds are ignored.
+    """
+    # Convert datetime.date to datetime.datetime for comparison
+    if d.__class__ is not datetime.datetime:
+        d = datetime.datetime(d.year, d.month, d.day)
+
+    if not now:
+        now = datetime.datetime.now()
+
+    # ignore microsecond part of 'd' since we removed it from 'now'
+    delta = now - (d - datetime.timedelta(0, 0, d.microsecond))
+    since = delta.days * 24 * 60 * 60 + delta.seconds
+    for i, (seconds, name) in enumerate(chunks):
+        count = since // seconds
+        if count != 0:
+            break
+    s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    return s
+
+def relative_timesince(value):
+    if not value:
+        return u''
+
+    chunks = (
+      (60 * 60, lambda n: ungettext('hour', 'hours', n)),
+      (60, lambda n: ungettext('minute', 'minutes', n))
+    )
+    return _do_timesince(value, chunks)
+    
+def relative_timeuntil(value):
+    if not value:
+        return u''
+
+    chunks = (
+      (60 * 60, lambda n: ungettext('hour', 'hours', n)),
+      (60, lambda n: ungettext('minute', 'minutes', n))
+    )
+    
+    now = datetime.datetime.now()
+    
+    return _do_timesince(now, chunks, value)
+        
 def format_relative_date(date, future=False):
     if not date or date < datetime.datetime(2010, 1, 1):
         return "Soon"
@@ -77,12 +130,16 @@ def format_relative_date(date, future=False):
     diff = abs(now - date)
     if diff < datetime.timedelta(minutes=60):
         minutes = diff.seconds / 60
-        return "%s minute%s %s" % (minutes, '' if minutes == 1 else 's', '' if future else 'ago')
+        return "%s minute%s %s" % (minutes, 
+                                   '' if minutes == 1 else 's', 
+                                   '' if future else 'ago')
     elif datetime.timedelta(minutes=60) <= diff < datetime.timedelta(minutes=90):
         return "1 hour %s" % ('' if future else 'ago')
     elif diff >= datetime.timedelta(minutes=90):
         dec = (diff.seconds / 60 + 15) % 60
         if dec >= 30:
-            return "%s.5 hours %s" % ((((diff.seconds / 60) + 15) / 60), '' if future else 'ago')
+            return "%s.5 hours %s" % ((((diff.seconds / 60) + 15) / 60),
+                                      '' if future else 'ago')
         else:
-            return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), '' if future else 'ago')
+            return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), 
+                                    '' if future else 'ago')

@@ -2362,7 +2362,7 @@ background: transparent;
     clear: both;
     margin: 24px 0 12px;
     overflow: hidden;
-    padding: 10px 0 0 22px;
+    padding: 10px 0;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-count {
@@ -2394,5 +2394,5 @@ background: transparent;
 }
 .NB-modal-statistics .NB-statistics-update .NB-statistics-update-count {
   font-size: 17px;
-  padding: 6px 0 12px 0;
+  padding: 6px 0 0;
 }

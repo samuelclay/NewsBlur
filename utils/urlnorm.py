@@ -41,7 +41,9 @@ default_port = {
 
 def normalize(url):
     """Normalize a URL."""
-
+    if not isinstance(feed_address, url):
+        return url
+        
     scheme,auth,path,query,fragment = urlparse.urlsplit(url.strip())
     (userinfo,host,port)=re.search('([^@]*@)?([^:]*):?(.*)',auth).groups()
 

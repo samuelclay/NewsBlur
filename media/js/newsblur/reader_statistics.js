@@ -87,15 +87,15 @@ NEWSBLUR.ReaderStatistics.prototype = {
             $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-update-label' }, 'Last Update'),
-                $.make('div', { className: 'NB-statistics-update-count' }, ''+data['last_update'])
+                $.make('div', { className: 'NB-statistics-update-count' }, data['last_update'] + ' ago')
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-update-label' }, 'Every ' + interval),
-                $.make('div', { className: 'NB-statistics-update-count' }, '[-------+++]')
+                $.make('div', { className: 'NB-statistics-update-label' }, 'Every'),
+                $.make('div', { className: 'NB-statistics-update-count' }, interval)
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-update-label' }, 'Next Update'),
-                $.make('div', { className: 'NB-statistics-update-count' }, ''+data['next_update'])
+                $.make('div', { className: 'NB-statistics-update-count' }, 'in ' + data['next_update'])
               ])
             ]),
             $.make('div', { className: 'NB-statistics-stat'}, [
