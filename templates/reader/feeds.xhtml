@@ -24,6 +24,7 @@
           {% if login_form.errors %}
             {% for field, error in login_form.errors.items %}
               {{ error|safe }}
+              <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password">Forgot password?</a>
             {% endfor %}
           {% endif %}
           <!--
