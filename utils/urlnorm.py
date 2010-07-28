@@ -56,7 +56,7 @@ def normalize(url):
     # Always use uppercase A-through-F characters when percent-encoding.
     # All portions of the URI must be utf-8 encoded NFC from Unicode strings
     def clean(string):
-        string=unicode(unquote(string),'utf-8','replace')
+        string=unicode(unquote(string))
         return unicodedata.normalize('NFC',string).encode('utf-8')
     path=quote(clean(path),"~:/?#[]@!$&'()*+,;=")
     fragment=quote(clean(fragment),"~")

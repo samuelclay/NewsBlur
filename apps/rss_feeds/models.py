@@ -7,6 +7,7 @@ import random
 import nltk
 import re
 from BeautifulSoup import BeautifulStoneSoup
+from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -480,9 +481,8 @@ class Feed(models.Model):
 
         self.save(lock=lock)
     
-    def calculate_collocations(self):
-        trigram_measures = nltk.collocations.TrigramAssocMeasures()
-
+    def calculate_collocations(self, collocation_measures=TrigramAssocMeasures,
+                               collocation_finder=TrigramCollocationFinder):
         stories = Story.objects.filter(story_feed=self)
         story_content = ' '.join([s.story_content for s in stories])
         story_content = re.sub(r'&#8217;', '\'', story_content)
@@ -491,12 +491,12 @@ class Feed(models.Model):
         story_content = re.sub(r'</?\w+\s+[^>]*>', '', story_content)
         story_content = re.split(r"[^A-Za-z-']+", story_content)
 
-        finder = nltk.collocations.TrigramCollocationFinder.from_words(story_content)
+        finder = collocation_finder.from_words(story_content)
         finder.apply_freq_filter(3)
-        best = finder.nbest(trigram_measures.pmi, 10)
+        best = finder.nbest(collocation_measures.pmi, 10)
         phrases = [' '.join(phrase) for phrase in best]
         
-        print phrases
+        return phrases
         
     class Meta:
         db_table="feeds"
