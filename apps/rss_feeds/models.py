@@ -484,7 +484,7 @@ class Feed(models.Model):
     def calculate_collocations(self, collocation_measures=TrigramAssocMeasures,
                                collocation_finder=TrigramCollocationFinder):
         stories = Story.objects.filter(story_feed=self)
-        story_content = ' '.join([s.story_content for s in stories])
+        story_content = ' '.join([s.story_content for s in stories if s.story_content])
         story_content = re.sub(r'&#8217;', '\'', story_content)
         story_content = unicode(BeautifulStoneSoup(story_content,
                                 convertEntities=BeautifulStoneSoup.HTML_ENTITIES))
