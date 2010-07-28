@@ -9,6 +9,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
 from django.db.models import Q
+from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils.feed_functions import fetch_address_from_page
 import sys
