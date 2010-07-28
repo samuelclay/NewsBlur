@@ -23,7 +23,7 @@
         <div class="NB-login">
           {% if login_form.errors %}
             {% for field, error in login_form.errors.items %}
-              {{ error }}
+              {{ error|safe }}
             {% endfor %}
           {% endif %}
           <!--
@@ -70,7 +70,7 @@
           
           {% if signup_form.errors %}
             {% for field, error in signup_form.errors.items %}
-              {{ error }}
+              {{ error|safe }}
             {% endfor %}
           {% endif %}
       
