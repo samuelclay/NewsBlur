@@ -531,11 +531,11 @@
             
             $('#story_taskbar').css({'display': 'block'});
 
-            var $folder = this.make_feeds_folder(folders);
-            $feed_list.append($folder);
+            this.make_feeds_folder(this.$s.$feed_list, folders);
+            
             $('.unread_count', $feed_list).corner('4px');
             
-            if (!$folder.length) {
+            if (!$feed_list.children().length) {
                 this.setup_ftux_add_feed_callout();
             } else {
                 $('.NB-task-manage').removeClass('NB-disabled');
@@ -544,9 +544,7 @@
             }
         },
         
-        make_feeds_folder: function(items) {
-            var $feeds = $.make('div');
-            
+        make_feeds_folder: function($feeds, items) {
             for (var i in items) {
                 var item = items[i];
 
@@ -559,19 +557,17 @@
                         var folder = item[o];
                         var $folder = $.make('li', { className: 'folder' }, [
                             $.make('ul', { className: 'folder' }, [
-                                $.make('li', { className: 'folder_title' }, o),
-                                this.make_feeds_folder(folder)
+                                $.make('li', { className: 'folder_title' }, o)
                             ])
                         ]);
                         $feeds.append($folder);
+                        this.make_feeds_folder($('ul.folder', $folder), folder);
                     }
                 }
             }
             
             $('.feed', $feeds).tsort('.feed_title');
             $('.folder', $feeds).tsort('.folder_title');
-            
-            return $feeds.children();
         },
         
         make_feed_title_line: function(feed, list_item, type) {
