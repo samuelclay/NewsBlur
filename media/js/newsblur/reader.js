@@ -560,7 +560,11 @@
                                 $.make('li', { className: 'folder_title' }, o)
                             ])
                         ]);
-                        $feeds.append($folder);
+                        (function($feeds, $folder) {
+                            setTimeout(function() {
+                                $feeds.append($folder); 
+                            }, 10);
+                        })($feeds, $folder);
                         this.make_feeds_folder($('ul.folder', $folder), folder);
                     }
                 }

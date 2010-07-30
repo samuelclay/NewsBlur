@@ -2184,7 +2184,6 @@ background: transparent;
     margin: 4px 0 0;
     padding: 0;
     font-family: 'Lucida Grande', inherit;
-    width: 295px;
 }
 
 .NB-menu-manage.NB-menu-manage-notop {
@@ -2276,7 +2275,7 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-site-info {
-    padding-top: 6px;
+    padding-top: 10px;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info .feed_favicon {
