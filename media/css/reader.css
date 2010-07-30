@@ -1049,7 +1049,7 @@ background: transparent;
 }
 
 .NB-taskbar .taskbar_nav_feeds,
-.NB-taskbar .taskbar_nav_view, {
+.NB-taskbar .taskbar_nav_view {
     float: left;
 }
 
@@ -1505,6 +1505,14 @@ a.NB-splash-link:hover {
     overflow: hidden;
 }
 
+.NB-modal .NB-modal-feed-chooser-container {
+    float: right;
+    margin: 16px 0 0;
+}
+
+.NB-modal .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
+    width: 250px;
+}
 
 /* ============== */
 /* = Classifier = */
@@ -1717,15 +1725,6 @@ a.NB-splash-link:hover {
     height: 375px;
     overflow-y: auto;
     padding: 0 18px 18px 0;
-}
-
-.NB-manage .NB-manage-feed-chooser-container {
-    float: right;
-    margin: 16px 0 0;
-}
-
-.NB-manage .NB-manage-feed-chooser-container .NB-manage-feed-chooser {
-    width: 250px;
 }
 
 .NB-manage .NB-classifier-like {
@@ -2165,7 +2164,7 @@ background: transparent;
     opacity: 0;
     bottom: 30px;
     left: 40px;
-    width: 300px
+    width: 300px;
     padding: 0;
     margin: 0;
     background-color: #F0FFF0;
@@ -2365,34 +2364,27 @@ background: transparent;
     padding: 10px 0;
 }
 
-.NB-modal-statistics .NB-statistics-stat .NB-statistics-count {
-    font-size: 34px;
-    line-height: 34px;
-    float: left;
-    padding: 0 6px 0 0;
-}
-
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-label {
-    font-size: 16px;
-    line-height: 46px;
-    text-transform: uppercase;
-    color: #A0A0A0;
-    text-shadow: 0 1px 0 #FFF;
-}
-
-.NB-modal-statistics .NB-statistics-update {
-  float: left;
-  width: 33%;
-  text-align: center;
-}
-
-.NB-modal-statistics .NB-statistics-update .NB-statistics-update-label {
     text-transform: uppercase;
     color: #A0A0A0;
     text-shadow: 0 1px 0 #FFF;
     font-size: 11px;
 }
-.NB-modal-statistics .NB-statistics-update .NB-statistics-update-count {
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-count {
   font-size: 17px;
   padding: 6px 0 0;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-update {
+  float: left;
+  width: 33%;
+  text-align: center;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-stat {
+  float: left;
+  width: 33%;
+  text-align: center;
+  clear: both;
+  margin: 0 0 12px 0;
 }

@@ -6,6 +6,7 @@ NEWSBLUR.ReaderStatistics = function(feed_id, options) {
     this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.feed_id = feed_id;
     this.feed = this.model.get_feed(feed_id);
+    this.feeds = this.model.get_feeds();
     this.runner();
 };
 
@@ -15,32 +16,41 @@ NEWSBLUR.ReaderStatistics.prototype = {
         this.make_modal();
         this.open_modal();
         this.get_stats();
+        
+        this.$modal.bind('change', $.rescope(this.handle_change, this));
     },
     
     make_modal: function() {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-statistics NB-modal' }, [
+            $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-statistics-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-statistics-feed-title' }, this.feed.feed_title)
             ]),
-            $.make('div', { className: 'NB-modal-statistics-info' })
+            $.make('div', { className: 'NB-modal-statistics-info' }),
+            $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
+                this.make_feed_chooser()
+            ])
         ]);
+    },
+        
+    initialize_feed: function(feed_id) {
+        this.feed_id = feed_id;
+        this.feed = this.model.get_feed(feed_id);
+        
+        $('.NB-modal-subtitle .NB-modal-statistics-feed-image', this.$manage).attr('src', this.google_favicon_url + this.feed['feed_link']);
+        $('.NB-modal-subtitle .NB-modal-statistics-feed-title', this.$manage).html(this.feed['feed_title']);
     },
     
     open_modal: function() {
         var self = this;
 
-        var $holder = $.make('div', { className: 'NB-modal-holder' }).append(this.$modal).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
-        var height = $('.NB-add', $holder).outerHeight(true);
-        $holder.css({'visibility': 'visible', 'display': 'none'});
-        
         this.$modal.modal({
             'minWidth': 600,
-            'maxHeight': height,
-            'minHeight': 340,
+            'minHeight': 300,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -50,7 +60,6 @@ NEWSBLUR.ReaderStatistics.prototype = {
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
-                $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();
@@ -64,12 +73,35 @@ NEWSBLUR.ReaderStatistics.prototype = {
         });
     },
     
+    make_feed_chooser: function() {
+        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        
+        for (var f in this.feeds) {
+            var feed = this.feeds[f];
+            var $option = $.make('option', { value: feed.id }, feed.feed_title);
+            $option.appendTo($chooser);
+            
+            if (feed.id == this.feed_id) {
+                $option.attr('selected', true);
+            }
+        }
+        
+        $('option', $chooser).tsort();
+        return $chooser;
+    },
+    
     get_stats: function() {
+        var $loading = $('.NB-modal-loading', this.$modal);
+        $loading.addClass('NB-active');
+        
         this.model.get_feed_statistics(this.feed_id, $.rescope(this.populate_stats, this));
     },
     
     populate_stats: function(s, data) {
         NEWSBLUR.log(['Stats', data]);
+        var $loading = $('.NB-modal-loading', this.$modal);
+        $loading.removeClass('NB-active');
+        
         var interval_start = data['update_interval_minutes'];
         var interval_end = data['update_interval_minutes'] * 1.25;
         var interval = '';
@@ -86,32 +118,45 @@ NEWSBLUR.ReaderStatistics.prototype = {
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-update-label' }, 'Last Update'),
-                $.make('div', { className: 'NB-statistics-update-count' }, data['last_update'] + ' ago')
+                $.make('div', { className: 'NB-statistics-label' }, 'Last Update'),
+                $.make('div', { className: 'NB-statistics-count' }, data['last_update'] + ' ago')
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-update-label' }, 'Every'),
-                $.make('div', { className: 'NB-statistics-update-count' }, interval)
+                $.make('div', { className: 'NB-statistics-label' }, 'Every'),
+                $.make('div', { className: 'NB-statistics-count' }, interval)
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
-                $.make('div', { className: 'NB-statistics-update-label' }, 'Next Update'),
-                $.make('div', { className: 'NB-statistics-update-count' }, 'in ' + data['next_update'])
+                $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
+                $.make('div', { className: 'NB-statistics-count' }, 'in ' + data['next_update'])
               ])
             ]),
-            $.make('div', { className: 'NB-statistics-stat'}, [
-                $.make('div', { className: 'NB-statistics-count' }, ''+data['subscriber_count']),
-                $.make('div', { className: 'NB-statistics-label' }, 'subscribers')
-            ]),
-            $.make('div', { className: 'NB-statistics-stat'}, [
-                $.make('div', { className: 'NB-statistics-count' }, ''+data['average_stories_per_month']),
-                $.make('div', { className: 'NB-statistics-label' }, ' stories per month')
+            $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
+                $.make('div', { className: 'NB-statistics-history-stat' }, [
+                    $.make('div', { className: 'NB-statistics-count' }, ''+data['subscriber_count']),
+                    $.make('div', { className: 'NB-statistics-label' }, 'subscribers')
+                ]),
+                $.make('div', { className: 'NB-statistics-history-stat' }, [
+                    $.make('div', { className: 'NB-statistics-count' }, ''+data['average_stories_per_month']),
+                    $.make('div', { className: 'NB-statistics-label' }, ' stories per month')
+                ])
             ])
         ]);
         
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
         setTimeout(function() {
-            $.modal.impl.setPosition();
+            // $.modal.impl.setContainerDimensions(true);
+            // $.modal.impl.setPosition();
         }, 10);
+    },
+    
+    handle_change: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-modal-feed-chooser' }, function($t, $p){
+            var feed_id = $t.val();
+            self.initialize_feed(feed_id);
+            self.get_stats();
+        });
     }
     
 };

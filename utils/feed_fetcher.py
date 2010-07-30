@@ -242,8 +242,8 @@ class Dispatcher:
         """ wrapper for ProcessFeed
         """
         # Close the DB so the connection can be re-opened on a per-process basis
-        from django.db import connection
-        connection.close()
+        # from django.db import connection
+        # connection.close()
         
         current_process = multiprocessing.current_process()
         lock = multiprocessing.Lock()

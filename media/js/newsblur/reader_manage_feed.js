@@ -87,7 +87,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-manage-feed-chooser-container'}, [
+                $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
                     this.make_feed_chooser()
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
@@ -106,7 +106,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     },
     
     make_feed_chooser: function() {
-        var $chooser = $.make('select', { name: 'feed', className: 'NB-manage-feed-chooser' });
+        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
         
         for (var f in this.feeds) {
             var feed = this.feeds[f];
@@ -383,7 +383,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     handle_change: function(elem, e) {
         var self = this;
         
-        $.targetIs(e, { tagSelector: '.NB-manage-feed-chooser' }, function($t, $p){
+        $.targetIs(e, { tagSelector: '.NB-modal-feed-chooser' }, function($t, $p){
             var feed_id = $t.val();
             self.initialize_feed(feed_id);
             self.load_feed_classifier();
