@@ -563,7 +563,7 @@
                         (function($feeds, $folder) {
                             setTimeout(function() {
                                 $feeds.append($folder); 
-                            }, 10);
+                            }, 0);
                         })($feeds, $folder);
                         this.make_feeds_folder($('ul.folder', $folder), folder);
                     }
