@@ -176,9 +176,9 @@ var classifier = {
         
         if (this.flags['publisher']) {
             if (this.score == 1) {
-                $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this publisher?');
+                $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this site?');
             } else if (this.score == -1) {
-                $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this publisher?');
+                $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this site?');
             }
         } else if (this.flags['story']) {
             if (this.score == 1) {
