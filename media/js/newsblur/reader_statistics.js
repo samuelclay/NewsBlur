@@ -7,6 +7,7 @@ NEWSBLUR.ReaderStatistics = function(feed_id, options) {
     this.feed_id = feed_id;
     this.feed = this.model.get_feed(feed_id);
     this.feeds = this.model.get_feeds();
+    this.first_load = true;
     this.runner();
 };
 
@@ -50,7 +51,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
 
         this.$modal.modal({
             'minWidth': 600,
-            'minHeight': 300,
+            'minHeight': 400,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -98,7 +99,10 @@ NEWSBLUR.ReaderStatistics.prototype = {
     },
     
     populate_stats: function(s, data) {
+        var self = this;
+        
         NEWSBLUR.log(['Stats', data]);
+        
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.removeClass('NB-active');
         
@@ -115,6 +119,20 @@ NEWSBLUR.ReaderStatistics.prototype = {
             interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
         }
         
+        var $stats = this.make_stats(data, interval);
+        $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
+        
+        setTimeout(function() {
+            self.make_charts(data);  
+        }, this.first_load ? 500 : 50);
+        
+        setTimeout(function() {
+            $('#simplemodal-container').css('height', null);
+            $.modal.impl.setContainerDimensions(true);
+        }, 50);
+    },
+    
+    make_stats: function(data, interval) {
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
@@ -133,20 +151,40 @@ NEWSBLUR.ReaderStatistics.prototype = {
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
                     $.make('div', { className: 'NB-statistics-count' }, ''+data['subscriber_count']),
-                    $.make('div', { className: 'NB-statistics-label' }, 'subscribers')
-                ]),
-                $.make('div', { className: 'NB-statistics-history-stat' }, [
+                    $.make('div', { className: 'NB-statistics-label' }, 'subscribers'),
                     $.make('div', { className: 'NB-statistics-count' }, ''+data['average_stories_per_month']),
                     $.make('div', { className: 'NB-statistics-label' }, ' stories per month')
-                ])
+                ]),
+                $.make('div', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
             ])
         ]);
         
-        $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
-        setTimeout(function() {
-            // $.modal.impl.setContainerDimensions(true);
-            // $.modal.impl.setPosition();
-        }, 10);
+        return $stats;
+    },
+    
+    make_charts: function(data) {
+        var r = Raphael("NB-statistics-history-chart", 325, 220);
+        var lines = r.g.linechart(20, 20, 290, 200, 
+                                  [[0, 2, 4, 6, 8, 10, 12],
+                                   [0, 2, 4, 6, 8, 10, 12]], 
+                                  [[12, 12, 23, 15, 17, 27, 22], 
+                                   [10, 20, 30, 25, 15, 28, 2]], {
+            nostroke: false, 
+            axis: false, 
+            symbol: "o", 
+            smooth: true
+        }).hoverColumn(function () {
+            this.tags = r.set();
+            for (var i = 0, ii = this.y.length; i < ii; i++) {
+                this.tags.push(r.g.tag(this.x, this.y[i], this.values[i], 160, 10).insertBefore(this).attr([{fill: "#fff"}, {fill: this.symbols[i].attr("fill")}]));
+            }
+        }, function () {
+            this.tags && this.tags.remove();
+        });
+        lines.symbols.attr({r: 3});
+        // lines.lines[0].animate({"stroke-width": 6}, 1000);
+        // lines.symbols[0].attr({stroke: "#fff"});
+        // lines.symbols[0][1].animate({fill: "#f00"}, 1000);
     },
     
     handle_change: function(elem, e) {
@@ -154,6 +192,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
         
         $.targetIs(e, { tagSelector: '.NB-modal-feed-chooser' }, function($t, $p){
             var feed_id = $t.val();
+            self.first_load = false;
             self.initialize_feed(feed_id);
             self.get_stats();
         });

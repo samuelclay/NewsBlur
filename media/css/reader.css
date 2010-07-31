@@ -2187,7 +2187,6 @@ background: transparent;
 }
 
 .NB-menu-manage.NB-menu-manage-notop {
-    margin: 0;
 }
 
 .NB-menu-manage li {
@@ -2275,7 +2274,7 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-site-info {
-    padding-top: 10px;
+    padding-top: 6px;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info .feed_favicon {
@@ -2303,13 +2302,21 @@ background: transparent;
     background: transparent url('../img/icons/silk/cut.png') no-repeat  0 0;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-feed-delete {
     background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  0 0;  
-    left: 8px;  
-    top: 8px;
+    float: right;
+    width: 16px;
+    height: 16px;
+    margin: 0 4px 0 0;
+    cursor: pointer;
+    display: none;
+}
+.NB-menu-manage .NB-menu-manage-feed-info:hover .NB-menu-manage-feed-delete {
+    display: block;
 }
 .NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
-    background-image: none;    
+    background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 0;  
+    display: block;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-delete-confirm .NB-menu-manage-image {
@@ -2373,7 +2380,10 @@ background: transparent;
   font-size: 17px;
   padding: 6px 0 0;
 }
-
+.NB-modal-statistics .NB-statistics-history-stat .NB-statistics-count {
+  font-size: 42px;
+  margin-top: 12px;
+}
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-update {
   float: left;
   width: 33%;
@@ -2382,8 +2392,19 @@ background: transparent;
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-stat {
   float: left;
-  width: 33%;
+  width: 150px;
   text-align: center;
-  clear: both;
   margin: 0 0 12px 0;
+}
+
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-history-chart {
+  margin: -14px 0 0 0;
+  float: right;
+  width: 325px;
+}
+.NB-modal-statistics .NB-modal-feed-chooser-container {
+  margin: 6px 0 12px;
+}
+.NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
+    width: 100%;
 }

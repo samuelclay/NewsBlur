@@ -499,7 +499,6 @@ def delete_feed(request):
     return dict(code=1)
     
 @login_required
-@json.json_view
 def add_feature(request):
     if not request.user.is_staff:
         return HttpResponseForbidden()

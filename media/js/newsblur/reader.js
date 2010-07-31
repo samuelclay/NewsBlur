@@ -533,8 +533,6 @@
 
             this.make_feeds_folder(this.$s.$feed_list, folders);
             
-            $('.unread_count', $feed_list).corner('4px');
-            
             if (!$feed_list.children().length) {
                 this.setup_ftux_add_feed_callout();
             } else {
@@ -563,6 +561,7 @@
                         (function($feeds, $folder) {
                             setTimeout(function() {
                                 $feeds.append($folder); 
+                                $('.unread_count', $feeds).corner('4px');
                             }, 50);
                         })($feeds, $folder);
                         this.make_feeds_folder($('ul.folder', $folder), folder);
@@ -1845,9 +1844,7 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             
-            var $manage_menu = $.make('ul', { className: 'NB-menu-manage' });
-            
-            var $site_specific = [
+            var $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                 $.make('li', { className: 'NB-menu-manage-site-info' }, [
                     $.make('div', { className: 'NB-menu-manage-image' }),
                     $.make('span', { className: 'feed_title' }, "NewsBlur")
@@ -1863,19 +1860,21 @@
                     $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
                     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
                 ])
-            ];
-            for (var f in $site_specific) {
-                $manage_menu.append($site_specific[f]);
-            }
+            ]);
             
             if (feed_id) {
                 var $feed_specific = [
                     $.make('li', { className: 'NB-menu-separator-top' }),
                     $.make('li', { className: 'NB-menu-manage-feed-info' }, [
+                        $.make('div', { className: 'NB-menu-manage-feed-delete', title: 'Delete this site' }),
                         $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                         $.make('span', { className: 'feed_title' }, feed.feed_title)
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Manage opinions'),
@@ -1890,14 +1889,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site statistics'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Popularity, load times, and history.')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
