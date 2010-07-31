@@ -531,9 +531,9 @@
             
             $('#story_taskbar').css({'display': 'block'});
 
-            this.make_feeds_folder(this.$s.$feed_list, folders);
+            this.make_feeds_folder($feed_list, folders);
             
-            if (!$feed_list.children().length) {
+            if (!folders.length) {
                 this.setup_ftux_add_feed_callout();
             } else {
                 $('.NB-task-manage').removeClass('NB-disabled');
@@ -2424,9 +2424,8 @@
                 for (var f in features) {
                     if (f == 3) break;
                     var feature = features[f];
-                    var date = Date.parse(feature.date);
                     var $tr = $.make('tr', { className: 'NB-module-feature' }, [
-                        $.make('td', { className: 'NB-module-feature-date' }, date.toString('MMM dd, yyyy')),
+                        $.make('td', { className: 'NB-module-feature-date' }, feature.date),
                         $.make('td', { className: 'NB-module-feature-description' }, feature.description)
                     ]);
                     $table.append($tr);

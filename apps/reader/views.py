@@ -517,6 +517,7 @@ def add_feature(request):
 def load_features(request):
     page = int(request.POST.get('page', 0))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
+    features = [{'description': f['description'], 'date': f['date'].strftime("%b %d, %Y")} for f in features]
     return features
 
 @json.json_view
