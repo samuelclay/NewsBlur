@@ -65,6 +65,7 @@ class Command(BaseCommand):
                 # Switch to original feed for the user subscription
                 print "      ===> %s " % user_sub.user
                 user_sub.feed = original_feed
+                user_sub.needs_unread_recalc = True
                 try:
                     user_sub.save()
                     pass
