@@ -244,6 +244,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         $.isFunction(callback) && callback(data, first_load);
     },
     
+    get_feeds_trainer: function(callback) {
+        var self = this;
+        
+        this.make_request('/reader/get_feeds_trainer', {}, callback,
+                          null, {'ajax_group': 'feed'});
+    },    
+    
     refresh_feeds: function(callback) {
         var self = this;
         

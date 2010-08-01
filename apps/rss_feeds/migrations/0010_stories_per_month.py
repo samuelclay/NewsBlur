@@ -35,7 +35,7 @@ class Migration(SchemaMigration):
         db.alter_column('stories', 'story_tags', self.gf('django.db.models.fields.CharField')(max_length=2000, null=True, blank=True))
 
         # Adding unique constraint on 'Story', fields ['story_feed', 'story_guid_hash']
-        db.create_unique('stories', ['story_feed_id', 'story_guid_hash'])
+        # db.create_unique('stories', ['story_feed_id', 'story_guid_hash'])
 
 
     def backwards(self, orm):

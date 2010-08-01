@@ -129,6 +129,14 @@ NEWSBLUR.log = function(msg) {
                 return true;
             }
         },
+        
+        entity: function(str) {
+            var e = document.createElement('div');
+            
+            e.innerHTML = String(str);
+            
+            return e.innerHTML;
+        },
 
         make: function(){
             var $elem, text, children, type, name, props;

@@ -534,6 +534,25 @@ def save_feed_order(request):
     
     return {}
 
+@json.json_view
+def get_feeds_trainer(request):
+    classifiers = []
+    
+    usersubs = UserSubscription.objects.filter(user=request.user).select_related('feed')\
+                                       .order_by('-feed__stories_last_month')
+                
+    for us in usersubs:
+        if not us.is_trained and us.feed.stories_last_month > 0:
+            classifier = dict()
+            classifier['classifiers'] = get_classifiers_for_user(request.user, us.feed)
+            classifier['feed_id'] = us.feed.pk
+            classifier['stories_last_month'] = us.feed.stories_last_month
+            classifier['feed_tags'] = json.decode(us.feed.popular_tags) if us.feed.popular_tags else []
+            classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
+            classifiers.append(classifier)
+    
+    return classifiers
+    
 @login_required
 def login_as(request):
     if not request.user.is_staff:

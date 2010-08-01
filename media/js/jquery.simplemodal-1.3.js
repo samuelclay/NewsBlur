@@ -141,7 +141,7 @@
 		minWidth: null,
 		maxHeight: null,
 		maxWidth: null,
-		autoResize: false,
+		autoResize: true,
 		autoPosition: true,
 		zIndex: 1000,
 		close: true,
@@ -446,6 +446,13 @@
 
 			return [h, el.width()];
 		},
+		resize: function(data) {
+		    if (data) {
+		        this.d.data = data;
+	        }
+		    w = this.getDimensions();
+		    this.setContainerDimensions();
+		},
 		getVal: function (v) {
 			return v == 'auto' ? 0 
 				: v.indexOf('%') > 0 ? v 
@@ -459,34 +466,21 @@
 				var ch = $.browser.opera ? s.d.container.height() : s.getVal(s.d.container.css('height')), 
 					cw = $.browser.opera ? s.d.container.width() : s.getVal(s.d.container.css('width')),
 					dh = s.d.data.outerHeight(true), dw = s.d.data.outerWidth(true);
-
-				var mh = s.o.maxHeight && s.o.maxHeight < w[0] ? s.o.maxHeight : w[0],
+                w = s.getDimensions();
+				var mh = (s.o.maxHeight && s.o.maxHeight < w[0] ? s.o.maxHeight : w[0]) - 80,
 					mw = s.o.maxWidth && s.o.maxWidth < w[1] ? s.o.maxWidth : w[1];
+				
+                // NEWSBLUR.log(['heights', ch, dh, mh, w]);
+				
 				// height
-				if (!ch) {
-					if (!dh) {ch = s.o.minHeight;}
-					else {
-						if (dh > mh) {ch = mh;}
-						else if (dh < s.o.minHeight) {ch = s.o.minHeight;}
-						else {ch = dh;}
-					}
-				}
-				else {
-					ch = ch > mh ? mh : ch;
-				}
+				if (dh > mh) {ch = mh;}
+				else if (dh < s.o.minHeight) {ch = s.o.minHeight;}
+				else {ch = dh;}
 
 				// width
-				if (!cw) {
-					if (!dw) {cw = s.o.minWidth;}
-					else {
-						if (dw > mw) {cw = mw;}
-						else if (dw < s.o.minWidth) {cw = s.o.minWidth;}
-						else {cw = dw;}
-					}
-				}
-				else {
-					cw = cw > mw ? mw : cw;
-				}
+				if (dw > mw) {cw = mw;}
+				else if (dw < s.o.minWidth) {cw = s.o.minWidth;}
+				else {cw = dw;}
 
 				s.d.container.css({height: ch, width: cw});
 				if (dh > ch || dw > cw) {

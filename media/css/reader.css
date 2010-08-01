@@ -1474,17 +1474,72 @@ a.NB-splash-link:hover {
     text-shadow: 1px 1px 0px #e0e0e0;
 }
 
-.NB-disabled {
-    color: #A0A0A0;
+.NB-modal .NB-modal-subtitle {
+    margin:10px 0 0;
+    padding:8px 12px;
+    font-size: 14px;
+    position: relative;
+    background-color: #F6F6F6;
+}
+.NB-modal .NB-modal-feed-title {
+    display: block;
+    margin: 0 40px 0 23px;
+    text-decoration: none;
+    color: #272727;
+    overflow: hidden;
+    text-shadow: 0 1px 0 #EBF3FA;
+}
+
+.NB-modal .NB-modal-feed-image {
+    float: left;
+}
+
+.NB-modal .NB-modal-submit input[type=submit],
+.NB-modal .NB-modal-submit .NB-modal-submit-button {
+    border: 1px solid #606060;
+    font-size: 12px;
+    padding: 4px 8px;
+    text-transform: uppercase;
+    margin: 2px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.NB-modal .NB-modal-submit .NB-modal-submit-back {
+    background-color: #d5d4dB;
+    color: #909090;
+    
+}
+.NB-modal .NB-modal-submit .NB-modal-submit-close {
+    background-color: #d5d4dB;
+    color: #909090;
+    font-weight: bold;
+}
+.NB-modal .NB-modal-submit .NB-modal-submit-save {
+    background-color: #217412;
+    font-weight: bold;
+    color: #FCFCFC;
+}
+
+.NB-modal .NB-modal-submit .NB-disabled {
+    background-color: #d5d4dB;
+    color: #909090;
+    border: 1px solid #A0A0A0;
+    -moz-box-shadow:2px 2px 0 #E6E6E6;
+    -webkit-box-shadow:2px 2px 0 #E6E6E6;
+    box-shadow:2px 2px 0 #E6E6E6;
 }
 
 .NB-modal .NB-modal-submit {
     margin: 16px 0 0 0;
     font-size: 13px;
-}
-
-.NB-modal .NB-modal-submit input[type=submit] {
-    font-size: 14px;
+    overflow: hidden;
 }
 
 .NB-modal img.feed_favicon {
@@ -1517,6 +1572,11 @@ a.NB-splash-link:hover {
 /* ============== */
 /* = Classifier = */
 /* ============== */
+
+.NB-classifier {
+    border-radius: 14px;
+    -moz-border-radius: 14px;
+}
 
 .NB-classifier h2.NB-like {
     color: #007000;
@@ -1592,6 +1652,27 @@ a.NB-splash-link:hover {
 .NB-classifiers {
 }
 
+.NB-classifier .NB-modal-submit .NB-modal-submit-back {
+    float: left;
+    color: #FFF;
+    background-color: #b5b4bB;
+}
+.NB-classifier .NB-modal-submit .NB-modal-submit-close {
+    float: right;
+    color: #FFF;
+    background-color: #b5b4bB;
+}
+.NB-classifier .NB-modal-submit .NB-modal-submit-save {
+    float: right;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+.NB-classifier-trainer-counts {
+    float: right;
+    color: #606060;
+    font-size: 17px;
+}
+
 /* ======================= */
 /* = Intelligence Slider = */
 /* ======================= */
@@ -1644,10 +1725,12 @@ a.NB-splash-link:hover {
 
 .NB-add .NB-add-danger {
     display: block;
+    clear: both;
     font-size: 12px;
     color: #535558;
     font-weight: bold;
     margin: 8px 0 0;
+    float: left;
 }
 
 .NB-add .NB-add-danger img {
@@ -1714,6 +1797,12 @@ a.NB-splash-link:hover {
     margin: 0 4px;
 }
 
+.NB-add .NB-opml-reader-oauth {
+    margin: 4px 0 6px 0;
+    text-decoration: none;
+    float: left;
+    display: block;
+}
 /* ================ */
 /* = Manage Feeds = */
 /* ================ */
@@ -1847,20 +1936,23 @@ background: transparent;
     display: block;
     margin: 2px 6px 6px 0;
     cursor: pointer;
-    padding: 2px 9px 2px 4px;
+    padding: 0 9px 0 4px;
     font-size: 12px;
     text-transform: uppercase;
 }
 
 .NB-classifiers .NB-classifier input[type=checkbox] {
-    margin: 0 6px 0 4px;
-    float: none;
+    margin: 3px 6px 2px 4px;
     cursor: pointer;
+    float: left;
 }
 
 .NB-classifiers .NB-classifier label {
     cursor: pointer;
     color: black;
+    float: left;
+    display: block;
+    padding: 2px 0;
 }
 
 .NB-classifiers .NB-classifier label b {
@@ -2243,7 +2335,7 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-subtitle {
   font-size: 12px;
-  color: #617C4B;
+  color: #718C7B;
 }
 
 .NB-menu-manage li:hover .NB-menu-manage-subtitle {
@@ -2340,26 +2432,6 @@ background: transparent;
 /* ==================== */
 
 .NB-modal-statistics {
-}
-
-.NB-modal-statistics .NB-modal-subtitle {
-    border-bottom: 3px solid #E0E0E0;
-    font-size: 14px;
-    margin-bottom: 6px;
-    padding-bottom: 6px;
-    position: relative;
-}
-.NB-modal-statistics .NB-modal-statistics-feed-title {
-    display: block;
-    margin: 4px 40px 2px 23px;
-    text-decoration: none;
-    color: #272727;
-    overflow: hidden;
-    text-shadow: 0 1px 0 #EBF3FA;
-}
-
-.NB-modal-statistics .NB-modal-statistics-feed-image {
-    float: left;
 }
 
 .NB-modal-statistics .NB-statistics-stat {

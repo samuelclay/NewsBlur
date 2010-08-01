@@ -29,6 +29,7 @@ class UserSubscription(models.Model):
     unread_count_updated = models.DateTimeField(default=datetime.datetime(2000,1,1))
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
+    is_trained = models.BooleanField(default=False)
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '

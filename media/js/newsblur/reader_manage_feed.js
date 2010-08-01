@@ -255,19 +255,9 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     
     open_modal: function() {
         var self = this;
-
-        var $holder = $.make('div', { className: 'NB-modal-holder' }).append(this.$manage).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
-        var height = $('.NB-manage', $holder).outerHeight(true);
-        $holder.css({'visibility': 'visible', 'display': 'none'});
-        
-        var w = $.modal.impl.getDimensions();
-        if (height > w[0] - 70) {
-            height = w[0] - 70;
-        }
         
         this.$manage.modal({
             'minWidth': 600,
-            'maxHeight': height,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {

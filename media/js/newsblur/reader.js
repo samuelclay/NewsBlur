@@ -1149,13 +1149,13 @@
         mark_story_as_like: function(story_id, $button) {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, 1);
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {'score': 1});
         },
         
         mark_story_as_dislike: function(story_id, $button) {
             var feed_id = this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, -1);
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {'score': -1});
         },
         
         // =====================
@@ -1518,7 +1518,8 @@
         open_feed_intelligence_modal: function(score) {
             var feed_id = this.active_feed;
 
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, score);
+            // NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {'score': score});
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({'score': score});
         },
         
         // ==========================
@@ -1855,6 +1856,11 @@
                     $.make('div', { className: 'NB-menu-manage-title' }, 'Mark all feeds as read'),
                     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back.')
                 ]),
+                $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
+                    $.make('div', { className: 'NB-menu-manage-image' }),
+                    $.make('div', { className: 'NB-menu-manage-title' }, 'Train intelligence'),
+                    $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
+                ]),
                 $.make('li', { className: 'NB-menu-manage-preferences' }, [
                     $.make('div', { className: 'NB-menu-manage-image' }),
                     $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
@@ -1883,7 +1889,7 @@
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Train intelligence'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose classifiers for this site.')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

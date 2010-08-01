@@ -21,9 +21,11 @@ def save_classifier(request):
 
     # Make subscription as dirty, so unread counts can be recalculated
     usersub = UserSubscription.objects.get(user=request.user, feed=feed)
-    if not usersub.needs_unread_recalc:
+    if not usersub.needs_unread_recalc or not usersub.is_trained:
         usersub.needs_unread_recalc = True
+        usersub.is_trained = True
         usersub.save()
+        
         
     def _save_classifier(ClassifierCls, content_type, ContentCls=None, post_content_field=None):
         classifiers = {
@@ -88,3 +90,4 @@ def get_classifiers_feed(request):
     response = dict(code=code, payload=payload)
     
     return response
+    

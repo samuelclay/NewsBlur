@@ -30,7 +30,7 @@ NEWSBLUR.ReaderMarkRead.prototype = {
                 $.make('div', { className: 'NB-markread-slider'}),
                 $.make('div', { className: 'NB-markread-explanation'}),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: '', value: 'Do it' }),
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save', value: 'Do it' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
@@ -125,11 +125,15 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         var days = $slider.slider('option', 'value');
         
         $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
-        this.model.save_mark_read(days, function() {
-            NEWSBLUR.reader.force_feed_refresh(function() {
-                $.modal.close();
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.model.save_mark_read(days, function() {
+                NEWSBLUR.reader.force_feed_refresh(function() {
+                    $.modal.close();
+                });
             });
-        });
+        } else {
+            $.modal.close();
+        }
     },
             
     // ===========
