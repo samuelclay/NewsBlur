@@ -81,8 +81,6 @@ var classifier = {
         this.handle_cancel();
         this.handle_select_title();
         this.open_modal();
-        
-        this.$modal.bind('submit.reader_classifer', $.rescope(this.handle_submit, this));
     },
     
     runner_story: function() {
@@ -253,7 +251,11 @@ var classifier = {
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ]))
-            ])
+            ]).bind('submit', function(e) {
+                e.preventDefault();
+                self.save_publisher();
+                return false;
+            })
         ]);
     },
         
@@ -607,15 +609,6 @@ var classifier = {
         $cancel.click(function(e) {
             e.preventDefault();
             $.modal.close();
-        });
-    },
-    
-    handle_submit: function(elem, e) {
-        var self = this;
-                
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-save' }, function($t, $p){
-            e.preventDefault();
-            self.save_publisher();
         });
     },
     
