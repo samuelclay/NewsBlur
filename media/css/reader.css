@@ -1667,6 +1667,11 @@ a.NB-splash-link:hover {
     color: #FFF;
     background-color: #b5b4bB;
 }
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-end {
+    float: right;
+    color: #FFF;
+    background-color: #4679BB;
+}
 .NB-modal-trainer .NB-modal-submit .NB-modal-submit-save {
     float: right;
     padding-left: 12px !important;
@@ -1696,6 +1701,13 @@ a.NB-splash-link:hover {
     vertical-align: middle;
 }
 
+.NB-modal-trainer .NB-trainer-not-authenticated {
+  font-size: 13px;
+  color: #801A14;
+  font-weight: bold;
+  padding: 4px 4px 4px 24px;
+  background: #FFE1DB url('../img/icons/silk/exclamation.png') no-repeat 4px 4px;
+}
 /* ======================= */
 /* = Intelligence Slider = */
 /* ======================= */

@@ -97,6 +97,7 @@ var classifier = {
     },
     
     load_next_feed_in_trainer: function(backwards) {
+        var trainer_data_length = this.trainer_data.length;
         if (backwards) {
             this.trainer_iterator = this.trainer_iterator - 1;
             if (this.trainer_iterator < 1) {
@@ -104,11 +105,15 @@ var classifier = {
                 this.load_feeds_trainer(null, this.trainer_data);
             }
         } else {
-            this.trainer_iterator = Math.min(this.trainer_data.length, this.trainer_iterator + 1);
+            this.trainer_iterator = this.trainer_iterator + 1;
+            if (this.trainer_iterator > trainer_data_length) {
+                this.make_trainer_outro();
+                this.load_feeds_trainer(null, this.trainer_data);
+            }
         }
 
         // Show only feeds, not the trainer intro if going backwards.
-        if (this.trainer_iterator > 0) {
+        if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
             var trainer_data = this.trainer_data[this.trainer_iterator-1];
             this.feed_id = trainer_data['feed_id'];
             this.feed = this.model.get_feed(this.feed_id);
@@ -194,8 +199,50 @@ var classifier = {
                     ' buttons next to stories as you read them.'
                 ])
             ]),
+            (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
             $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('a', { href: '#', className: 'NB-modal-submit-save NB-modal-submit-begin NB-modal-submit-button NB-disabled' }, 'Loading Training...')
+                (!NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-close NB-modal-submit-button' }, 'Close')),
+                (NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-save NB-modal-submit-begin NB-modal-submit-button NB-disabled' }, 'Loading Training...'))
+            ])
+        ]);
+        
+    },
+    
+    make_trainer_outro: function() {
+        var self = this;
+        
+        this.$modal = $.make('div', { className: 'NB-classifier NB-modal NB-modal-trainer'}, [
+            $.make('h2', { className: 'NB-modal-title' }, 'Congratulations! You\'re done.'),
+            $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what happens next:'),
+            $.make('ol', { className: 'NB-trainer-points' }, [
+                $.make('li', [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135, height: 20 }),
+                    $.make('b', 'You can change your opinions.'),
+                    ' You can click the ',
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs-up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs-down.png', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
+                    ' buttons next to stories as you read them.'
+                ]),
+                $.make('li', [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
+                    $.make('b', 'As a reminder, use the intelligence slider to select a filter:'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
+                    ' are stories you don\'t like',
+                    $.make('br'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
+                    ' are stories you have not yet rated',
+                    $.make('br'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
+                    ' are stories you like'
+
+                ]),
+                $.make('li', [
+                    $.make('b', 'You can also filter out stories you don\'t want to read.'),
+                    ' As great as finding good stuff is, you can just as easily ignore the stories you do not like.'
+                ])
+            ]),
+            $.make('div', { className: 'NB-modal-submit' }, [
+                $.make('a', { href: '#', className: 'NB-modal-submit-end NB-modal-submit-button' }, 'Close Training and Start Reading')
             ])
         ]);
         
@@ -632,6 +679,11 @@ var classifier = {
         });
 
         $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){
+            e.preventDefault();
+            self.save_publisher();
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
             e.preventDefault();
             self.save_publisher();
         });
