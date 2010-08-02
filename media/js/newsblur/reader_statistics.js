@@ -51,8 +51,8 @@ NEWSBLUR.ReaderStatistics.prototype = {
 
         this.$modal.modal({
             'minWidth': 600,
-            'minHeight': 400,
             'overlayClose': true,
+            'autoResize': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
@@ -127,8 +127,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
         }, this.first_load ? 500 : 50);
         
         setTimeout(function() {
-            $('#simplemodal-container').css('height', null);
-            $.modal.impl.setContainerDimensions(true);
+            $.modal.impl.resize(self.$modal);
         }, 50);
     },
     
@@ -163,7 +162,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
     },
     
     make_charts: function(data) {
-        var r = Raphael("NB-statistics-history-chart", 325, 220);
+        var r = Raphael("NB-statistics-history-chart", 325, 170);
         var lines = r.g.linechart(20, 20, 290, 200, 
                                   [[0, 2, 4, 6, 8, 10, 12],
                                    [0, 2, 4, 6, 8, 10, 12]], 

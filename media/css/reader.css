@@ -1652,25 +1652,48 @@ a.NB-splash-link:hover {
 .NB-classifiers {
 }
 
-.NB-classifier .NB-modal-submit .NB-modal-submit-back {
+
+/* ====================== */
+/* = Classifier Trainer = */
+/* ====================== */
+
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-back {
     float: left;
     color: #FFF;
     background-color: #b5b4bB;
 }
-.NB-classifier .NB-modal-submit .NB-modal-submit-close {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-close {
     float: right;
     color: #FFF;
     background-color: #b5b4bB;
 }
-.NB-classifier .NB-modal-submit .NB-modal-submit-save {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-save {
     float: right;
     padding-left: 12px !important;
     padding-right: 12px !important;
 }
-.NB-classifier-trainer-counts {
+.NB-modal-trainer .NB-classifier-trainer-counts {
     float: right;
     color: #606060;
     font-size: 17px;
+}
+
+.NB-modal-trainer .NB-trainer-points li {
+    line-height: 23px;
+    margin: 0 0 18px 0;
+}
+.NB-modal-trainer .NB-trainer-points li b {
+    display: block;
+}
+.NB-modal-trainer .NB-trainer-points li img {
+    padding: 0 0 50px 28px;
+}
+
+.NB-modal-trainer .NB-trainer-points li img.NB-trainer-bullet {
+    float: left;
+    margin: 4px 4px 0 0;
+    padding: 0;
+    vertical-align: middle;
 }
 
 /* ======================= */
@@ -2407,17 +2430,20 @@ background: transparent;
     display: block;
 }
 .NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
-    background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 0;  
+    background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  24px 0;  
     display: block;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-delete-confirm .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 0;   
+    background: transparent url('../img/icons/silk/exclamation.png') no-repeat  24px 0;   
     font-weight: bold; 
 }
 
 .NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat  0 0;
+}
+.NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 0;
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 0;
@@ -2425,6 +2451,14 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-feed-delete-confirm {
     display: none;
+}
+
+.NB-menu-manage .NB-menu-manage-feed .NB-menu-manage-image {
+    margin-left: 18px;    
+}
+
+.NB-menu-manage .NB-menu-manage-feed {
+    padding-left: 54px;
 }
 
 /* ==================== */

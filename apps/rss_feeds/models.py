@@ -212,7 +212,11 @@ class Feed(models.Model):
                     else:
                         original_content = existing_story.story_content
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
-                    diff = HTMLDiff(unicode(original_content), story_content)
+                    if len(story_content) > 10:
+                        diff = HTMLDiff(unicode(original_content), story_content)
+                        story_content_diff = diff.getDiff()
+                    else:
+                        story_content_diff = original_content
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
                     if existing_story.story_title != story.get('title'):
@@ -223,7 +227,7 @@ class Feed(models.Model):
                            story_feed = self,
                            story_date = story.get('published'),
                            story_title = story.get('title'),
-                           story_content = diff.getDiff(),
+                           story_content = story_content_diff,
                            story_original_content = original_content,
                            story_author = story_author,
                            story_author_name = story.get('author'),

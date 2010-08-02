@@ -1518,6 +1518,12 @@
         open_feed_intelligence_modal: function(score) {
             var feed_id = this.active_feed;
 
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {'score': score});
+        },
+        
+        open_trainer_modal: function(score) {
+            var feed_id = this.active_feed;
+
             // NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {'score': score});
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({'score': score});
         },
@@ -1856,7 +1862,7 @@
                     $.make('div', { className: 'NB-menu-manage-title' }, 'Mark all feeds as read'),
                     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back.')
                 ]),
-                $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
+                $.make('li', { className: 'NB-menu-manage-trainer' }, [
                     $.make('div', { className: 'NB-menu-manage-image' }),
                     $.make('div', { className: 'NB-menu-manage-title' }, 'Train intelligence'),
                     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
@@ -2648,6 +2654,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_feed_intelligence_modal(1);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-trainer' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_trainer_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){

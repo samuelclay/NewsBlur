@@ -266,7 +266,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                $('#simplemodal-container').corner('6px').css({'width': 600});
                 // $('.NB-classifier-tag', self.$manage).corner('4px');
             },
             'onClose': function(dialog) {

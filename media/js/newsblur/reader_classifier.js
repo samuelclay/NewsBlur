@@ -100,29 +100,34 @@ var classifier = {
     
     load_next_feed_in_trainer: function(backwards) {
         if (backwards) {
-            this.trainer_iterator = Math.max(1, this.trainer_iterator - 1);
+            this.trainer_iterator = this.trainer_iterator - 1;
+            if (this.trainer_iterator < 1) {
+                this.make_trainer_intro();
+                this.load_feeds_trainer(null, this.trainer_data);
+            }
         } else {
             this.trainer_iterator = Math.min(this.trainer_data.length, this.trainer_iterator + 1);
         }
-        var trainer_data = this.trainer_data[this.trainer_iterator-1];
-        this.feed_id = trainer_data['feed_id'];
-        this.feed = this.model.get_feed(this.feed_id);
-        this.feed_tags = trainer_data['feed_tags'];
-        this.feed_authors = trainer_data['feed_authors'];
-        this.user_classifiers = trainer_data['classifiers'];
-        
-        this.make_modal_feed();
-        this.make_modal_title();
-        this.make_modal_trainer_count();
-        
-        if (backwards || this.feed_id in this.cache) {
-            this.$modal = this.cache[this.feed_id];
-        }
-        $('.NB-modal').replaceWith(this.$modal);
-        
 
+        // Show only feeds, not the trainer intro if going backwards.
+        if (this.trainer_iterator > 0) {
+            var trainer_data = this.trainer_data[this.trainer_iterator-1];
+            this.feed_id = trainer_data['feed_id'];
+            this.feed = this.model.get_feed(this.feed_id);
+            this.feed_tags = trainer_data['feed_tags'];
+            this.feed_authors = trainer_data['feed_authors'];
+            this.user_classifiers = trainer_data['classifiers'];
         
-        // var height = this.$modal.outerHeight(true);
+            this.make_modal_feed();
+            this.make_modal_title();
+            this.make_modal_trainer_count();
+        
+            if (backwards || this.feed_id in this.cache) {
+                this.$modal = this.cache[this.feed_id];
+            }
+        }
+        
+        $('.NB-modal').replaceWith(this.$modal);
         $.modal.impl.resize(this.$modal);
     },
     
@@ -156,9 +161,41 @@ var classifier = {
     make_trainer_intro: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal NB-trainer'}, [
+        this.$modal = $.make('div', { className: 'NB-classifier NB-modal NB-modal-trainer'}, [
             $.make('h2', { className: 'NB-modal-title' }, 'Intelligence Trainer'),
-            $.make('h2', { className: 'NB-modal-title' }, 'Trained feed are happy feeds'),
+            $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
+            $.make('ol', { className: 'NB-trainer-points' }, [
+                $.make('li', [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135, height: 20 }),
+                    $.make('b', 'You will see a bunch of tags and authors.'),
+                    ' Check the features you want to see in stories. If you check too many options, you won\'t filter the good stories from the neutral stories.'
+                ]),
+                $.make('li', [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
+                    $.make('b', 'What you select now will show when you use the intelligence slider.'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
+                    ' are stories you don\'t like',
+                    $.make('br'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
+                    ' are stories you have not yet rated',
+                    $.make('br'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
+                    ' are stories you like'
+
+                ]),
+                $.make('li', [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),
+                    $.make('b', 'Stop at any time you like.'),
+                    ' You can always come back to this trainer.'
+                ]),
+                $.make('li', [
+                    $.make('b', 'Don\'t worry if you don\'t know what you like right now.'),
+                    ' Just skip the site. You can click the ',
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs-up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs-down.png', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
+                    ' buttons next to stories as you read them.'
+                ])
+            ]),
             $.make('div', { className: 'NB-modal-submit' }, [
                 $.make('a', { href: '#', className: 'NB-modal-submit-save NB-modal-submit-begin NB-modal-submit-button NB-disabled' }, 'Loading Training...')
             ])
@@ -173,7 +210,7 @@ var classifier = {
                 
         // NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal' }, [
+        this.$modal = $.make('div', { className: 'NB-classifier NB-modal ' + (this.options['training'] && 'NB-modal-trainer') }, [
             $.make('div', { className: 'NB-modal-loading' }),
             (!this.options['training'] && this.make_modal_intelligence_slider()),
             (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
@@ -486,7 +523,7 @@ var classifier = {
             'minWidth': 600,
             'overlayClose': true,
             'autoResize': true,
-            'position': [40, 0],
+            'position': [this.options['training'] ? 40 : 0, 0],
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
@@ -559,7 +596,7 @@ var classifier = {
             if (self.options['training']) {
                 $close.val('Save & Close');
             } else {
-                $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
+                $save.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
             }
         });
     },
