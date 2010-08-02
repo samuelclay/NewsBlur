@@ -2424,10 +2424,10 @@ background: transparent;
     height: 16px;
     margin: 0 4px 0 0;
     cursor: pointer;
-    display: none;
+    visibility: hidden;
 }
 .NB-menu-manage .NB-menu-manage-feed-info:hover .NB-menu-manage-feed-delete {
-    display: block;
+    visibility: visible;
 }
 .NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
     background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  24px 0;  

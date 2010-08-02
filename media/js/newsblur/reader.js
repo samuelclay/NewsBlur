@@ -540,6 +540,9 @@
                 $('.NB-callout-ftux').fadeOut(500);
                 this.load_sortable_feeds();
             }
+            
+            $('.feed', $feed_list).tsort('.feed_title');
+            $('.folder', $feed_list).tsort('.folder_title');
         },
         
         make_feeds_folder: function($feeds, items) {

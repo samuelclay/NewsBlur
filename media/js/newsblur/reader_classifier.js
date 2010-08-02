@@ -665,8 +665,12 @@ var classifier = {
         
         if (this.options['training']) {
             this.cache[this.feed_id] = this.$modal.clone();
+            $save.text('Saving...');
+        } else {
+            $save.val('Saving...');
         }
-        $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
+        $save.addClass('NB-disabled').attr('disabled', true);
+        
         this.model.save_classifier_publisher(data, function() {
             if (!keep_modal_open) {
                 NEWSBLUR.reader.force_feed_refresh();
