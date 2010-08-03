@@ -108,7 +108,7 @@ def json_view(func):
                 '\n'.join(traceback.format_exception(*exc_info)),
                 request_repr,
                 )
-            print message
+            # print message
             mail_admins(subject, message, fail_silently=True)
 
             # Come what may, we're returning JSON.
@@ -126,7 +126,7 @@ def json_view(func):
 def main():
     test = {1: True, 2: u"string", 3: 30}
     json_test = json_encode(test)
-    print test, json_test
+    # print test, json_test
     
 if __name__ == '__main__':
     main()

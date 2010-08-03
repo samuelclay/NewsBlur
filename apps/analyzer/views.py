@@ -76,6 +76,8 @@ def save_classifier(request):
     _save_classifier(ClassifierTitle, 'title')
     _save_classifier(ClassifierFeed, 'publisher')
     
+    print " ---> [%s]: Feed training: %s" % (request.user, feed)
+
     response = dict(code=code, message=message, payload=payload)
     return response
     
