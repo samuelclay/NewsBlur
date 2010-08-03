@@ -18,11 +18,12 @@ class LoginForm(forms.Form):
 
     def clean(self):
         username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
+        password = self.cleaned_data.get('password', '')
 
         if username:
             self.user_cache = authenticate(username=username, password=password)
             if self.user_cache is None:
+                print " ---> *** Bad Login: %s" % username
                 raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(_("This account is inactive."))
@@ -48,7 +49,7 @@ class SignupForm(forms.Form):
                              label=_(u'email address'),
                              required=False)  
                              # error_messages={'required': 'Please enter your email.'})
-    signup_password = forms.CharField(widget=forms.PasswordInput(render_value=False),
+    signup_password = forms.CharField(widget=forms.PasswordInput(),
                                       label=_(u'password'),
                                       required=False)
                                       # error_messages={'required': 'Please enter a password.'})
@@ -64,10 +65,12 @@ class SignupForm(forms.Form):
     def clean_signup_password(self):
         if not self.cleaned_data['signup_password']:
             return ""
+        return self.cleaned_data['signup_password']
             
     def clean_email(self):
         if not self.cleaned_data['email']:
             return ""
+        return self.cleaned_data['email']
             
     def save(self, profile_callback=None):
         new_user = User(username=self.cleaned_data['signup_username'])
