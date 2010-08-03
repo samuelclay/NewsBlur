@@ -654,7 +654,7 @@
                     $('.folder', e.target).tsort('.folder_title');
                     self.save_feed_order();
                     ui.item.css({'backgroundColor': '#D7DDE6'})
-                           .animate({'backgroundColor': '#F67066'}, {'duration': 700})
+                           .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                            .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
                 }
             });
@@ -1903,7 +1903,7 @@
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site statistics'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Popularity, load times, and history.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Popularity, load times, history.')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

@@ -14,9 +14,13 @@ NEWSBLUR.ReaderStatistics = function(feed_id, options) {
 NEWSBLUR.ReaderStatistics.prototype = {
     
     runner: function() {
+        var self = this;
+        
         this.make_modal();
         this.open_modal();
-        this.get_stats();
+        setTimeout(function() {
+            self.get_stats();
+        }, 50);
         
         this.$modal.bind('change', $.rescope(this.handle_change, this));
     },
@@ -25,16 +29,16 @@ NEWSBLUR.ReaderStatistics.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-statistics NB-modal' }, [
+            $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
+                this.make_feed_chooser()
+            ]),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
-            $.make('div', { className: 'NB-modal-statistics-info' }),
-            $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
-                this.make_feed_chooser()
-            ])
+            $.make('div', { className: 'NB-modal-statistics-info' })
         ]);
     },
         
@@ -51,6 +55,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
 
         this.$modal.modal({
             'minWidth': 600,
+            'minHeight': 425,
             'overlayClose': true,
             'autoResize': true,
             'onOpen': function (dialog) {
@@ -61,6 +66,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
+                $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();

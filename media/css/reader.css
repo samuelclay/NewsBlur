@@ -1475,7 +1475,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-modal .NB-modal-subtitle {
-    margin:10px 0 0;
+    margin:12px 0 0;
     padding:8px 12px;
     font-size: 14px;
     position: relative;
@@ -2481,9 +2481,9 @@ background: transparent;
 }
 
 .NB-modal-statistics .NB-statistics-stat {
-    background-color: #E0FFE0;
+    border: 1px solid #e6e6e6;
     clear: both;
-    margin: 24px 0 12px;
+    margin: 24px 0 0;
     overflow: hidden;
     padding: 10px 0;
 }
@@ -2521,8 +2521,12 @@ background: transparent;
   width: 325px;
 }
 .NB-modal-statistics .NB-modal-feed-chooser-container {
-  margin: 6px 0 12px;
+  margin: 3px 0 12px;
 }
 .NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-    width: 100%;
+  margin: 0 0 12px;
+}
+
+.NB-modal-statistics .NB-modal-loading {
+  margin: 6px 8px 0;
 }
