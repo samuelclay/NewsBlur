@@ -25,4 +25,6 @@ def load_feed_statistics(request):
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers
     
+    print " ---> [%s] Statistics: %s" % (request.user, feed)
+    
     return stats

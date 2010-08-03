@@ -523,11 +523,11 @@ def load_features(request):
 @json.json_view
 def save_feed_order(request):
     folders = request.POST.get('folders')
-    print " ---> [%s]: Feed re-ordering: %s" % (request.user, folders)
     if folders:
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
         assert folders_list is not None
+        print " ---> [%s]: Feed re-ordering: %s folders/feeds" % (request.user, len(folders_list))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()
@@ -550,6 +550,8 @@ def get_feeds_trainer(request):
             classifier['feed_tags'] = json.decode(us.feed.popular_tags) if us.feed.popular_tags else []
             classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
             classifiers.append(classifier)
+    
+    print " ---> [%s] Loading Trainer: %s" % (request.user, len(classifiers))
     
     return classifiers
     
