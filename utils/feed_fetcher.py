@@ -107,17 +107,14 @@ class ProcessFeed:
                                                self.feed.feed_title))
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            print "   ---> Non-xml feed: %s. Fetching page." % self.feed
-            feed = fetch_address_from_page(self.feed.feed_address, self.feed)
-            if feed:
-                self.feed.last_modified = None
-                self.feed.etag = None
-                self.feed.save()
-            else:
-                self.feed.save_feed_history(502, 'Duplicate feed, can\'t de-dupe')
+            print "   ---> Non-xml feed: %s." % self.feed
+            if not self.fpf.entries:
+                self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            feed = fetch_address_from_page(self.feed.feed_link, self.feed)
+            if not self.fpf.entries:
+                self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                return FEED_ERRPARSE, ret_values
             
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:

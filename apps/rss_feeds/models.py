@@ -5,6 +5,7 @@ import datetime
 import hashlib
 import random
 import re
+from collections import defaultdict
 from BeautifulSoup import BeautifulStoneSoup
 from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
@@ -652,3 +653,10 @@ class StoriesPerMonth(models.Model):
         month_counts = [m.story_count for m in story_counts]
         average_per_month = sum(month_counts) / max(len(month_counts), 1)
         return month_counts, average_per_month
+        
+    @classmethod
+    def recount_feed(cls, feed):
+        d = defaultdict(int)
+        stories = Story.objects.filter(story_feed=feed).extra(select={'year': "EXTRACT(year FROM story_date)", 'month': "EXTRACT(month from story_date)"}).values('year', 'month')
+        for story in stories:
+            pass
