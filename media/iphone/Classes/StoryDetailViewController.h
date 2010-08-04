@@ -18,5 +18,6 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
+@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
 
 @end

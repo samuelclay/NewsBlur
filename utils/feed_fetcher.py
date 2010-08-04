@@ -24,9 +24,9 @@ import xml.sax
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.9'
+VERSION = '0.4'
 URL = 'http://www.newsblur.com/'
-USER_AGENT = 'NewsBlur %s - %s' % (VERSION, URL)
+USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
@@ -71,7 +71,7 @@ class FetchFeed:
                                                                  self.feed.id)
             logging.info(log_msg)
             print(log_msg)
-            feed.save_feed_history(501, "Already fetched")
+            feed.save_feed_history(303, "Already fetched")
             return FEED_SAME, None
         
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
@@ -113,6 +113,9 @@ class ProcessFeed:
                 self.feed.last_modified = None
                 self.feed.etag = None
                 self.feed.save()
+            else:
+                self.feed.save_feed_history(502, 'Duplicate feed, can\'t de-dupe')
+                return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             feed = fetch_address_from_page(self.feed.feed_link, self.feed)
             

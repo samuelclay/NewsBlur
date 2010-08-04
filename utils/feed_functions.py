@@ -1,7 +1,7 @@
 import datetime
 import time
 import sys
-from django.utils.translation import ungettext, ugettext
+from django.utils.translation import ungettext
 from utils import feedfinder
 
 def encode(tstr):
@@ -58,6 +58,8 @@ def fetch_address_from_page(url, existing_feed=None):
     feed_finder_url = feedfinder.feed(url)
     if feed_finder_url:
         if existing_feed:
+            if Feed.objects.filter(feed_address=feed_finder_url):
+                return None
             existing_feed.feed_address = feed_finder_url
             existing_feed.save()
             feed = existing_feed

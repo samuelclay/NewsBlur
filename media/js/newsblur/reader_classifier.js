@@ -569,7 +569,7 @@ var classifier = {
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                $('#simplemodal-container').corner('6px').css({'width': 600});
                 $('.NB-classifier', self.$modal).corner('14px');
                 $.modal.impl.setPosition();
             },
