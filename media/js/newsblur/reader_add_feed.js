@@ -128,31 +128,20 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 
     open_modal: function() {
         var self = this;
-
-        var $holder = $.make('div', { className: 'NB-modal-holder' })
-            .append(this.$add)
-            .appendTo('body')
-            .css({'visibility': 'hidden', 'display': 'block', 'width': 600});
-        var height = $('.NB-add', $holder).outerHeight(true);
-        $holder.css({'visibility': 'visible', 'display': 'none'});
-        var w = $.modal.impl.getDimensions();
-        if (height > w[0] - 70) {
-            height = w[0] - 70;
-        }
         
         this.$add.modal({
             'minWidth': 600,
+            'maxWidth': 600,
             'overlayClose': true,
+            'autoResize': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200, function() {
-                        $.modal.impl.setContainerDimensions();
-                    });
+                    dialog.data.fadeIn(200);
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                $('#simplemodal-container').corner('6px');
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();

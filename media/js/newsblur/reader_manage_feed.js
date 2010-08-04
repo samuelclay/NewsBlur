@@ -258,6 +258,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         this.$manage.modal({
             'minWidth': 600,
+            'maxWidth': 600,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -266,7 +267,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600});
+                $('#simplemodal-container').corner('6px');
                 // $('.NB-classifier-tag', self.$manage).corner('4px');
             },
             'onClose': function(dialog) {

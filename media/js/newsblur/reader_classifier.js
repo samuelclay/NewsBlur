@@ -559,6 +559,7 @@ var classifier = {
         
         this.$modal.modal({
             'minWidth': 600,
+            'maxWidth': 600,
             'overlayClose': true,
             'autoResize': true,
             'position': [this.options['training'] ? 40 : 0, 0],
@@ -569,9 +570,8 @@ var classifier = {
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600});
+                $('#simplemodal-container').corner('6px');
                 $('.NB-classifier', self.$modal).corner('14px');
-                $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();

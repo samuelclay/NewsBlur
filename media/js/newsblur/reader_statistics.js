@@ -55,6 +55,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
 
         this.$modal.modal({
             'minWidth': 600,
+            'maxWidth': 600,
             'minHeight': 425,
             'overlayClose': true,
             'autoResize': true,
@@ -66,7 +67,6 @@ NEWSBLUR.ReaderStatistics.prototype = {
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
-                $.modal.impl.setPosition();
             },
             'onClose': function(dialog) {
                 dialog.data.hide().empty().remove();

@@ -44,19 +44,10 @@ NEWSBLUR.ReaderMarkRead.prototype = {
     
     open_modal: function() {
         var self = this;
-
-        var $holder = $.make('div', { className: 'NB-modal-holder' }).append(this.$modal).appendTo('body').css({'visibility': 'hidden', 'display': 'block', 'width': 600});
-        var height = $('.NB-add', $holder).outerHeight(true);
-        $holder.css({'visibility': 'visible', 'display': 'none'});
-        
-        var w = $.modal.impl.getDimensions();
-        if (height > w[0] - 70) {
-            height = w[0] - 70;
-        }
         
         this.$modal.modal({
             'minWidth': 600,
-            'maxHeight': height,
+            'maxWidth': 600,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -65,7 +56,7 @@ NEWSBLUR.ReaderMarkRead.prototype = {
                 });
             },
             'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px').css({'width': 600, 'height': height});
+                $('#simplemodal-container').corner('6px');
                 // $('.NB-classifier-tag', self.$modal).corner('4px');
             },
             'onClose': function(dialog) {
