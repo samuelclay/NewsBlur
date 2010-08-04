@@ -105,16 +105,6 @@ class ProcessFeed:
 
         logging.debug(u'[%d] Processing %s' % (self.feed.id,
                                                self.feed.feed_title))
-                                    
-        if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            print "   ---> Non-xml feed: %s." % self.feed
-            if not self.fpf.entries:
-                self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
-                return FEED_ERRPARSE, ret_values
-        elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            if not self.fpf.entries:
-                self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
-                return FEED_ERRPARSE, ret_values
             
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -139,11 +129,17 @@ class ProcessFeed:
                 self.feed.save()
                 self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 return FEED_ERRHTTP, ret_values
-
-        if hasattr(self.fpf, 'bozo') and self.fpf.bozo:
-            logging.debug('[%d] !BOZO! Feed is not well formed: %s' % (
-                self.feed.id, self.feed.feed_address))
-
+                                    
+        if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
+            print "   ---> Non-xml feed: %s." % self.feed
+            if not self.fpf.entries:
+                self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
+                return FEED_ERRPARSE, ret_values
+        elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
+            if not self.fpf.entries:
+                self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                return FEED_ERRPARSE, ret_values
+                
         # the feed has changed (or it is the first time we parse it)
         # saving the etag and last_modified fields
         self.feed.etag = self.fpf.get('etag')
