@@ -55,7 +55,7 @@ ACCEPT_HEADER = "application/atom+xml,application/rdf+xml,application/rss+xml,ap
 # List of preferred XML parsers, by SAX driver name.  These will be tried first,
 # but if they're not installed, Python will keep searching through its own list
 # of pre-installed parsers until it finds one that supports everything we need.
-PREFERRED_XML_PARSERS = ["drv_libxml2"]
+PREFERRED_XML_PARSERS = ["drv_lxml", "drv_libxml2"]
 
 # If you want feedparser to automatically run HTML markup through HTML Tidy, set
 # this to 1.  Requires mxTidy <http://www.egenix.com/files/python/mxTidy.html>
