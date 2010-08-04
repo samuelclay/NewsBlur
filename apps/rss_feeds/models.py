@@ -583,6 +583,8 @@ class Story(models.Model):
     def save(self, *args, **kwargs):
         if not self.story_guid_hash and self.story_guid:
             self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
+        if len(self.story_title) > 255:
+            self.story_title = self.story_title[:255]
         super(Story, self).save(*args, **kwargs)
         
 class FeedUpdateHistory(models.Model):
