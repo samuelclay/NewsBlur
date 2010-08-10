@@ -307,6 +307,7 @@ class Dispatcher:
                 comment = u''
             
             feed.last_load_time = max(1, delta.seconds)
+            feed.fetched_once = True
             try:
                 feed.save()
             except IntegrityError:

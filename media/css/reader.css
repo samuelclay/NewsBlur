@@ -303,6 +303,7 @@ a img {
 .left-pane {
     display: none;
     overflow: hidden !important;
+    background-color: #D7DDE6;
 }
 
 .left-center {
@@ -321,13 +322,30 @@ a img {
 /* = Feed List = */
 /* ============= */
 
+#NB-feeds-list-loader {
+  background: transparent url("../img/reader/big_spinner.gif") no-repeat 0 0;
+  color: #C7CDD6;
+  font-size: 16px;
+  height: 51px;
+  left: 5%;
+  padding: 5px 0 0 62px;
+  position: absolute;
+  text-shadow: 0 1px 0 #E7EDF6;
+  text-transform: uppercase;
+  top: 40%;
+  width: 125px;
+  z-index: 10;
+  cursor: default;
+  display: none;
+}
+
 
 #feed_list ::-moz-selection {
-background: transparent;
-} 
+  background: transparent;
+}
 
 #feed_list ::selection {
-background: transparent;
+  background: transparent;
 }
 
 #feed_list {

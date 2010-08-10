@@ -114,8 +114,10 @@ def load_feeds(request):
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
-            'updated': format_relative_date(sub.feed.last_update),
+            'updated': format_relative_date(sub.feed.last_update)
         }
+        if not sub.feed.fetched_once:
+            feeds[sub.feed.pk]['not_yet_fetched'] = True
 
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
     return data
@@ -187,6 +189,8 @@ def refresh_feeds(request):
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
+        if request.GET.get('check_fetch_status', False) and not sub.feed.fetched_once:
+            feeds[sub.feed.pk]['not_yet_fetched'] = True
 
     return feeds
 
