@@ -269,7 +269,7 @@ def load_single_feed(request):
     return data
 
 def load_feed_page(request):
-    feed = Feed.objects.get(id=request.REQUEST.get('feed_id'))
+    feed = get_object_or_404(Feed, id=request.REQUEST.get('feed_id'))
     feed_page, created = FeedPage.objects.get_or_create(feed=feed)
     if not created:
         data = feed.feed_page.page_data
