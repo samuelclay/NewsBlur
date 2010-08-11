@@ -57,6 +57,8 @@ class UserSubscription(models.Model):
     def calculate_feed_scores(self):
         if not self.feed.fetched_once:
             print ' ---> [%s]: NOT Computing scores: %s' % (self.user, self.feed)
+            self.needs_unread_recalc = False
+            self.save()
             return
 
         print ' ---> [%s]: Computing scores: %s' % (self.user, self.feed)
