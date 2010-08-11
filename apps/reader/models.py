@@ -55,6 +55,10 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self):
+        if not self.feed.fetched_once:
+            print ' ---> [%s]: NOT Computing scores: %s' % (self.user, self.feed)
+            return
+
         print ' ---> [%s]: Computing scores: %s' % (self.user, self.feed)
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
