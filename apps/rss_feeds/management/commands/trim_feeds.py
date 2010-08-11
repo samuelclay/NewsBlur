@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
             
-        feeds = Feed.objects.all()
+        feeds = Feed.objects.filter(fetched_once=True)
         for f in feeds:
             f.trim_feed()
         
