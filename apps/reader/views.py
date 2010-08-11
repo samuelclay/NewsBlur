@@ -189,7 +189,7 @@ def refresh_feeds(request):
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
-        if request.GET.get('check_fetch_status', False) and not sub.feed.fetched_once:
+        if request.POST.get('check_fetch_status', False) and not sub.feed.fetched_once:
             feeds[sub.feed.pk]['not_yet_fetched'] = True
 
     return feeds

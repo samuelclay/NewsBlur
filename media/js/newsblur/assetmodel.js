@@ -251,22 +251,27 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                           null, {'ajax_group': 'feed'});
     },    
     
-    refresh_feeds: function(callback) {
+    refresh_feeds: function(callback, has_unfetched_feeds) {
         var self = this;
         
         var pre_callback = function(feeds) {
             var updated_feeds = [];
-            
-            for (var f in feeds) {
-                f = parseInt(f, 10);
-                var feed = feeds[f];
-                for (var k in feed) {
-                    if (self.feeds[f][k] != feed[k]) {
-                        // NEWSBLUR.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
-                        self.feeds[f][k] = feed[k];
-                        if (!(f in updated_feeds)) {
-                            updated_feeds.push(f);
-                            break;
+
+            if (has_unfetched_feeds) {
+                updated_feeds = _.keys(feeds);
+                NEWSBLUR.log(['updated_feeds',  _.keys(feeds), updated_feeds]);
+            } else {
+                for (var f in feeds) {
+                    f = parseInt(f, 10);
+                    var feed = feeds[f];
+                    for (var k in feed) {
+                        if (self.feeds[f][k] != feed[k]) {
+                            // NEWSBLUR.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
+                            self.feeds[f][k] = feed[k];
+                            if (!(f in updated_feeds)) {
+                                updated_feeds.push(f);
+                                break;
+                            }
                         }
                     }
                 }
@@ -275,7 +280,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/refresh_feeds', {}, pre_callback);
+            this.make_request('/reader/refresh_feeds', {
+              'check_fetch_status': has_unfetched_feeds
+            }, pre_callback);
         }
     },
     

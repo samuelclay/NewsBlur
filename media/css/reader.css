@@ -336,9 +336,7 @@ a img {
   width: 125px;
   z-index: 10;
   cursor: default;
-  display: none;
 }
-
 
 #feed_list ::-moz-selection {
   background: transparent;
@@ -502,6 +500,34 @@ a img {
 
 #feed_list.unread_view_neutral .unread_count {
     padding: 0 3px;
+}
+
+/* ====================== */
+/* = Feeds Progress Bar = */
+/* ====================== */
+
+#NB-feeds-progress {
+  height: 40px;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: none;
+  background-color: #505050;
+  color: #fff;
+  text-shadow: 0 1px 0 #202020;
+  text-align: center;
+  z-index: 1;
+}
+
+#NB-feeds-progress .NB-feeds-progress-title {
+  padding: 3px 0 0 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  
+}
+
+#NB-feeds-progress .NB-feeds-progress-bar {
 }
 
 /* ================ */

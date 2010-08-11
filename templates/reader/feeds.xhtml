@@ -8,10 +8,11 @@
 <h2 class="NB-splash-heading">- A feed reader with intelligence.</h2>
 
 
+
 <div id="NB-splash">
 
-
   <div class="NB-account">
+    
     {% if not user.is_authenticated %}
       
       <div class="NB-module">
@@ -27,10 +28,6 @@
               <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password">Forgot password?</a>
             {% endfor %}
           {% endif %}
-          <!--
-          <div class="NB-account-label">Want an account?</div>
-          <div class="NB-account-text">Talk to <a href="http://twitter.com/samuelclay">@samuelclay</a>.</div>
-          -->
       
           <form method="post" action="{% url login %}">
             <div>
@@ -191,6 +188,7 @@
     {% endif %}
     
     <div class="NB-module NB-module-features">
+      
       <h5 class="NB-module-header">
         New Features
         <div class="NB-module-header-right">
@@ -262,9 +260,19 @@
 
 </div>
 
+
+
 <div class="left-pane">
+  
     <div id="NB-feeds-list-loader">Everything is on its way...</div>
+    
     <ul class="left-center" id="feed_list"></ul>
+    
+    <div id="NB-feeds-progress">
+      <div class="NB-feeds-progress-title">Fetching and Parsing...</div>
+      <div class="NB-feeds-progress-bar"></div>
+    </div>
+    
     <div class="NB-taskbar left-south">
       <div class="NB-callout-ftux NB-callout">
         <div class="NB-callout-container">
@@ -287,7 +295,11 @@
 
 </div>
 
+
+
 <div class="NB-menu-manage-container"></div>
+
+
 
 
 <div class="right-pane">
@@ -296,6 +308,7 @@
 
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar content-north">
+          
           <ul class="taskbar_nav taskbar_nav_view">
             <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
               <div class="NB-task-view-page-to-feed-arrow"></div>
@@ -323,7 +336,7 @@
               <li class="task_button task_button_signup"></li>
             {% endif %}
           </ul>
-        	
+          
         </div>
           
         {% if not user.is_authenticated %}
@@ -336,12 +349,10 @@
         {% endif %}
     
         <div id="story_pane" class="content-center">
-            
             <div class="NB-story-pane-container">
         		<iframe id="story_iframe" class="NB-feed-frame"></iframe>
         		<div class="NB-feed-story-view NB-view-hidden"></div>
             </div>
-		
         </div>
         
         <div id="mouse-indicator">
