@@ -109,10 +109,10 @@ class GoogleReaderImporter(Importer):
         if not feed_address:
             feed_address = feed_link
         
-        feed_link = urlnorm.normalize(feed_link)
-        feed_address = urlnorm.normalize(feed_address)
-        
         try:
+            feed_link = urlnorm.normalize(feed_link)
+            feed_address = urlnorm.normalize(feed_address)
+
             feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
             feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
             us, _ = UserSubscription.objects.get_or_create(
