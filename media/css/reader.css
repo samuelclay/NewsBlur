@@ -355,7 +355,6 @@ a img {
     padding: 0;
     width: auto !important;
     height: auto !important;
-    border-bottom: 1px solid #777D86;
 }
 
 #feed_list ul.folder {
@@ -515,12 +514,16 @@ a img {
   bottom: 0;
   display: none;
   background-color: #505050;
-  border-top: 1px solid #E0E0E0;
+  border-top: 1px solid #777D86;
   border-bottom: 1px solid #101010;
   color: #fff;
   text-shadow: 0 1px 0 #202020;
   text-align: center;
   z-index: 1;
+}
+
+.NB-feeds-progress-container {
+  border-top: 1px solid #E0E0E0;
 }
 
 #NB-feeds-progress .NB-feeds-progress-close {
@@ -1088,11 +1091,15 @@ background: transparent;
 /* = Task Bar = */
 /* ============ */
 
-.NB-taskbar {
+.NB-taskbar-container {
     background: #e0e0e0 url('../img/reader/taskbar_background.png') repeat-x top left;
+    border-top: 1px solid #777D86;
+    z-index: 10;
+}
+
+.NB-taskbar {
     position: relative;
     border-top: 1px solid #F0F0F0;
-    z-index: 10;
 }
 
 .NB-taskbar .NB-task-view-page-to-feed-arrow {
