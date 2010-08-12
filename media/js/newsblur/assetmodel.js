@@ -247,8 +247,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     get_feeds_trainer: function(callback) {
         var self = this;
         
-        this.make_request('/reader/get_feeds_trainer', {}, callback,
-                          null, {'ajax_group': 'feed'});
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/get_feeds_trainer', {}, callback,
+                              null, {'ajax_group': 'feed'});
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     },    
     
     refresh_feeds: function(callback, has_unfetched_feeds) {
@@ -366,17 +370,27 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     process_opml_import: function(data, callback) {
-        var self = this;
-        
-        this.make_request('/import/process', data, callback);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/import/process', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     },
     
     save_classifier_story: function(story_id, data, callback) {
-        this.make_request('/classifier/save/story/', data, callback);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save/story/', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     },
     
     save_classifier_publisher: function(data, callback) {
-        this.make_request('/classifier/save/publisher', data, callback);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save/publisher', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     },
     
     get_feed_classifier: function(feed_id, callback) {
@@ -389,7 +403,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     delete_publisher: function(feed_id, callback) {
         delete this.feeds[feed_id];
-        this.make_request('/reader/delete_feed', {'feed_id': feed_id}, callback, null);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/delete_feed', {'feed_id': feed_id}, callback, null);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     },
     
     save_add_url: function(url, folder, callback) {

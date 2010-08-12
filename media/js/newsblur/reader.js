@@ -96,7 +96,7 @@
                 center__paneSelector:   ".left-center",
                 center__resizable:      false,
                 south__paneSelector:    ".left-south",
-                south__size:            30,
+                south__size:            31,
                 south__resizable:       false,
                 south__spacing_open:    0
             });
@@ -540,11 +540,8 @@
             
             $('#story_taskbar').css({'display': 'block'});
 
-            $feed_list.css({'display': 'none'});
             this.make_feeds_folder($feed_list, folders);
-            this.$s.$feed_link_loader.fadeOut(250, function() {
-              $feed_list.fadeIn(750);
-            });
+            this.$s.$feed_link_loader.fadeOut(250);
             
             this.check_feed_fetch_progress();
             
@@ -584,7 +581,7 @@
                         ]);
                         (function($feeds, $folder) {
                             setTimeout(function() {
-                                $feeds.append($folder);
+                                $feeds.css({'display': 'none'}).append($folder).fadeIn(500);
                                 $('.unread_count', $feeds).corner('4px');
                             }, 50);
                         })($feeds, $folder);
@@ -692,11 +689,11 @@
                 setTimeout(function() {
                     $progress.css({'display': 'block', 'opacity': 0}).animate({
                         'opacity': 1,
-                        'bottom': 30
+                        'bottom': 31
                     }, {
                         'duration': 750
                     });
-                    self.$s.$feed_list.animate({'bottom': 72}, {'duration': 750});
+                    self.$s.$feed_list.animate({'bottom': 73}, {'duration': 750});
                 }, 1000);
             }
         },
