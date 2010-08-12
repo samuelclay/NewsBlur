@@ -540,7 +540,7 @@
             
             $('#story_taskbar').css({'display': 'block'});
 
-            this.make_feeds_folder($feed_list, folders);
+            this.make_feeds_folder($feed_list, folders, 0);
             this.$s.$feed_link_loader.fadeOut(250);
             
             this.check_feed_fetch_progress();
@@ -557,7 +557,9 @@
             $('.folder', $feed_list).tsort('.folder_title');
         },
         
-        make_feeds_folder: function($feeds, items) {
+        make_feeds_folder: function($feeds, items, depth) {
+            var self = this;
+            
             for (var i in items) {
                 var item = items[i];
 
@@ -565,6 +567,9 @@
                     var feed = this.model.feeds[item];
                     var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
+                    if (depth == 0) {
+                        $feed.css({'display': 'none'}).fadeIn(500);
+                    }
                     
                     if (feed.not_yet_fetched) {
                         if (!this.model.preference('hide_fetch_progress')) {
@@ -578,14 +583,14 @@
                             $.make('ul', { className: 'folder' }, [
                                 $.make('li', { className: 'folder_title' }, o)
                             ])
-                        ]);
+                        ]).css({'display': 'none'});
                         (function($feeds, $folder) {
                             setTimeout(function() {
-                                $feeds.css({'display': 'none'}).append($folder).fadeIn(500);
+                                $feeds.append($folder.fadeIn(500));
                                 $('.unread_count', $feeds).corner('4px');
                             }, 50);
                         })($feeds, $folder);
-                        this.make_feeds_folder($('ul.folder', $folder), folder);
+                        this.make_feeds_folder($('ul.folder', $folder), folder, depth+1);
                     }
                 }
             }
