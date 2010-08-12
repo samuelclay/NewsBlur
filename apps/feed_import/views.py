@@ -106,7 +106,8 @@ def reader_callback(request):
     client = oauth.Client(consumer, token)
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
-    user_token.access_token = access_token['oauth_token']
+    print " ---> [%s] OAuth Reader Content: %s -- %s" % (token, access_token, content)
+    user_token.access_token = access_token['oauth_token'] or request.GET.get('oauth_token')
     user_token.access_token_secret = access_token['oauth_token_secret']
     user_token.save()
     

@@ -546,9 +546,7 @@
               $feed_list.fadeIn(750);
             });
             
-            if (this.flags['has_unfetched_feeds']) {
-              this.show_unfetched_feed_progress();
-            }
+            this.check_feed_fetch_progress();
             
             if (!folders.length) {
                 this.setup_ftux_add_feed_callout();
@@ -572,10 +570,9 @@
                     $feeds.append($feed);
                     
                     if (feed.not_yet_fetched) {
-                      this.counts['unfetched_feeds'] += 1;
-                      this.flags['has_unfetched_feeds'] = true;
-                    } else {
-                      this.counts['fetched_feeds'] += 1;
+                        if (!this.model.preference('hide_fetch_progress')) {
+                            this.flags['has_unfetched_feeds'] = true;
+                        }
                     }
                 } else if (typeof item == "object") {
                     for (var o in item) {
@@ -647,12 +644,50 @@
             return $feed;  
         },
         
+        check_feed_fetch_progress: function() {
+            $.extend(this.counts, {
+                'unfetched_feeds': 0,
+                'fetched_feeds': 0
+            });
+            
+            if (this.flags['has_unfetched_feeds']) {
+                var counts = this.model.count_unfetched_feeds();
+                this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
+                this.counts['fetched_feeds'] = counts['fetched_feeds'];
+
+                if (this.counts['unfetched_feeds'] == 0) {
+                    this.flags['has_unfetched_feeds'] = false;
+                    this.hide_unfetched_feed_progress();
+                } else {
+                    this.flags['has_unfetched_feeds'] = true;
+                    this.show_unfetched_feed_progress();
+                }
+            }
+        },
+        
         show_unfetched_feed_progress: function() {
             var self = this;
             var $progress = this.$s.$feeds_progress;
-            var percentage = parseInt(this.counts['unfetched_feeds'] / (this.counts['unfetched_feeds'] + this.counts['fetched_feeds']) * 100, 10);
-            NEWSBLUR.log(['Counting unfetched', this.counts['unfetched_feeds'], this.counts['fetched_feeds'], percentage]);
-            $('.NB-feeds-progress-bar', $progress).text(percentage);
+            var percentage = parseInt(this.counts['fetched_feeds'] / (this.counts['unfetched_feeds'] + this.counts['fetched_feeds']) * 100, 10);
+
+            var titles = [
+                "Fetching your feeds",
+                "Reticulating splines",
+                "Fishing for feeds",
+                "Gathering gumdrops",
+                "Herding feeds",
+                "Feed fetch disco",
+                "Fetching your feeds",
+                "Feeds are being fetched"
+            ];
+            $('.NB-feeds-progress-title', $progress).text(titles[Math.floor(Math.random()*titles.length)]);
+            $('.NB-feeds-progress-counts-fetched', $progress).text(this.counts['fetched_feeds']);
+            $('.NB-feeds-progress-counts-total', $progress).text(this.counts['unfetched_feeds'] + this.counts['fetched_feeds']);
+            $('.NB-feeds-progress-percentage', $progress).text(percentage + '%');
+            $('.NB-feeds-progress-bar', $progress).progressbar({
+                value: percentage
+            });
+            
             if (!$progress.is(':visible')) {
                 setTimeout(function() {
                     $progress.css({'display': 'block', 'opacity': 0}).animate({
@@ -661,14 +696,18 @@
                     }, {
                         'duration': 750
                     });
-                    self.$s.$feed_list.animate({'bottom': '70px'}, {'duration': 750});
+                    self.$s.$feed_list.animate({'bottom': 72}, {'duration': 750});
                 }, 1000);
             }
         },
 
-        hide_unfetched_feed_progress: function() {
+        hide_unfetched_feed_progress: function(permanent) {
             var $progress = this.$s.$feeds_progress;
           
+            if (permanent) {
+                this.model.preference('hide_fetch_progress', true);
+            }
+            
             $progress.animate({
                 'opacity': 0,
                 'bottom': 0
@@ -779,11 +818,6 @@
                 'iframe_fetching_story_locations': false,
                 'story_titles_loaded': false,
                 'iframe_prevented_from_loading': false
-            });
-            
-            $.extend(this.counts, {
-                'unfetched_feeds': 0,
-                'fetched_feeds': 0
             });
             
             $.extend(this.cache, {
@@ -2265,7 +2299,7 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = (1000 * 60) / 20; // 1/2 minutes
+            var FEED_REFRESH_INTERVAL = (1000 * 60) / 2; // 1/2 minutes
             
             this.flags.feed_refresh = setInterval(function() {
                 self.model.refresh_feeds($.rescope(self.post_feed_refresh, self), self.flags['has_unfetched_feeds']);
@@ -2289,11 +2323,6 @@
                 this.cache.refresh_callback();
                 delete this.cache.refresh_callback;
             }
-
-            $.extend(this.counts, {
-                'unfetched_feeds': 0,
-                'fetched_feeds': 0
-            });
             
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
@@ -2306,32 +2335,19 @@
                 if (selected) {
                     $feed.addClass('selected');
                 }
-                NEWSBLUR.log(['feed', feed]);
-                if (feed['not_yet_fetched']) {
-                    this.counts['unfetched_feeds'] += 1;
-                    this.flags['has_unfetched_feeds'] = true;
-                } else {
-                    this.counts['fetched_feeds'] += 1;
-                }
-                if (this.flags['has_unfetched_feeds']) {
-                    this.show_unfetched_feed_progress();
-                }
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     var limit = $('.story', this.$s.$story_titles).length;
                     this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
                 } else {
-                    NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                    if (!this.flags['has_unfetched_feeds']) {
+                        NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                    }
                     $feed_on_page.replaceWith($feed);
                 }
             }
             
-            if (this.counts['unfetched_feeds'] == 0) {
-                this.flags['has_unfetched_feeds'] = false;
-            }
-            if (!this.flags['has_unfetched_feeds']) {
-                this.hide_unfetched_feed_progress();
-            }
+            this.check_feed_fetch_progress();
         },
         
         post_refresh_active_feed: function(e, data, first_load) {
@@ -2826,6 +2842,10 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
+            $.targetIs(e, { tagSelector: '.NB-feeds-progress-close' }, function($t, $p){
+                e.preventDefault();
+                self.hide_unfetched_feed_progress(true);
+            });
             $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-features' }, function($t, $p){
                 e.preventDefault();
                 self.load_feature_page(1);
