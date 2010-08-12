@@ -484,7 +484,7 @@ def delete_feed(request):
         for k, folder in enumerate(old_folders):
             if isinstance(folder, int):
                 if folder == feed_id:
-                    print "DEL'ED: %s'th item: %s" % (k, old_folders)
+                    print " ---> [%s] DEL'ED: %s'th item: %s folders/feeds" % (request.user, k, len(old_folders))
                     # folders.remove(folder)
                 else:
                     new_folders.append(folder)
