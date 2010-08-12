@@ -108,6 +108,7 @@ COMPRESS_JS = {
             'js/jquery.ui.draggable.js',
             'js/jquery.ui.sortable.js',
             'js/jquery.ui.slider.js',
+            'js/jquery.ui.progressbar.js',
             'js/jquery.layout.js',
             'js/jquery.tinysort.js',
             'js/jquery.fieldselection.js',

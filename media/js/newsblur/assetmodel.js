@@ -251,31 +251,38 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                           null, {'ajax_group': 'feed'});
     },    
     
-    refresh_feeds: function(callback) {
+    refresh_feeds: function(callback, has_unfetched_feeds) {
         var self = this;
         
-        var pre_callback = function(feeds) {
+        var pre_callback = function(data) {
             var updated_feeds = [];
-            
-            for (var f in feeds) {
+
+            for (var f in data.feeds) {
+                var updated = false;
                 f = parseInt(f, 10);
-                var feed = feeds[f];
+                var feed = data.feeds[f];
                 for (var k in feed) {
                     if (self.feeds[f][k] != feed[k]) {
                         // NEWSBLUR.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
                         self.feeds[f][k] = feed[k];
-                        if (!(f in updated_feeds)) {
-                            updated_feeds.push(f);
-                            break;
-                        }
+                        NEWSBLUR.log(['Different', k, self.feeds[f], feed]);
+                        updated = true;
                     }
+                }
+                if (updated && !(f in updated_feeds)) {
+                    updated_feeds.push(f);
                 }
             }
             callback(updated_feeds);
         };
         
+        var data = {};
+        if (has_unfetched_feeds) {
+            data['check_fetch_status'] = has_unfetched_feeds;
+        }
+        
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/refresh_feeds', {}, pre_callback);
+            this.make_request('/reader/refresh_feeds', data, pre_callback);
         }
     },
     
@@ -301,6 +308,25 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 }
             );
         }
+    },
+    
+    count_unfetched_feeds: function() {
+        var counts = {
+            'unfetched_feeds': 0,
+            'fetched_feeds': 0
+        };
+        
+        for (var f in this.feeds) {
+            var feed = this.feeds[f];
+
+            if (feed['not_yet_fetched']) {
+                counts['unfetched_feeds'] += 1;
+            } else {
+                counts['fetched_feeds'] += 1;
+            }
+        }
+        
+        return counts;
     },
     
     get_feed: function(feed_id) {

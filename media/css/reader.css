@@ -336,9 +336,7 @@ a img {
   width: 125px;
   z-index: 10;
   cursor: default;
-  display: none;
 }
-
 
 #feed_list ::-moz-selection {
   background: transparent;
@@ -357,6 +355,7 @@ a img {
     padding: 0;
     width: auto !important;
     height: auto !important;
+    border-bottom: 1px solid #777D86;
 }
 
 #feed_list ul.folder {
@@ -504,13 +503,71 @@ a img {
     padding: 0 3px;
 }
 
+/* ====================== */
+/* = Feeds Progress Bar = */
+/* ====================== */
+
+#NB-feeds-progress {
+  height: 40px;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: none;
+  background-color: #505050;
+  border-top: 1px solid #E0E0E0;
+  border-bottom: 1px solid #101010;
+  color: #fff;
+  text-shadow: 0 1px 0 #202020;
+  text-align: center;
+  z-index: 1;
+}
+
+#NB-feeds-progress .NB-feeds-progress-close {
+  width: 11px;
+  height: 11px;
+  float: right;
+  margin: 6px 4px 0 0;
+  cursor: pointer;
+  background: transparent url('../img/icons/close.png') no-repeat 0 0;
+}
+
+#NB-feeds-progress .NB-feeds-progress-title {
+  padding: 5px 15px 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  height: 14px;
+}
+
+#NB-feeds-progress .NB-feeds-progress-bar {
+  height:6px;
+  margin:6px 50px 0;
+}
+
+#NB-feeds-progress .NB-feeds-progress-counts {
+  float: left;
+  font-size: 10px;
+  color: #B0B0B0;
+  padding: 4px 0 0;
+  width: 50px;
+}
+
+#NB-feeds-progress .NB-feeds-progress-percentage {
+  float: right;
+  clear: both;
+  color: #B0B0B0;
+  font-size: 12px;
+  width: 50px;
+  padding: 1px 0 0;
+}
+
 /* ================ */
 /* = Story Titles = */
 /* ================ */
 
 
 #story_titles ::-moz-selection {
-background: transparent;
+  background: transparent;
 } 
 
 #story_titles ::selection {
@@ -1034,7 +1091,7 @@ background: transparent;
 .NB-taskbar {
     background: #e0e0e0 url('../img/reader/taskbar_background.png') repeat-x top left;
     position: relative;
-    border-top: 1px solid #7d7d7d;
+    border-top: 1px solid #F0F0F0;
     z-index: 10;
 }
 

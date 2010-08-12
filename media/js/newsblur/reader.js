@@ -20,15 +20,21 @@
             $story_iframe: $('.NB-feed-frame'),
             $intelligence_slider: $('.NB-intelligence-slider'),
             $mouse_indicator: $('#mouse-indicator'),
-            $feed_link_loader: $('#NB-feeds-list-loader')
+            $feed_link_loader: $('#NB-feeds-list-loader'),
+            $feeds_progress: $('#NB-feeds-progress')
         };
         this.flags = {
             'feed_view_images_loaded': {},
-            'bouncing_callout': false
+            'bouncing_callout': false,
+            'has_unfetched_feeds': false
         };
         this.locks = {};
-        this.cache = {
+        this.counts = {
             'feature_page': 0,
+            'unfetched_feeds': 0,
+            'fetched_feeds': 0
+        };
+        this.cache = {
             'iframe_stories': {},
             'feed_view_stories': {},
             'iframe_story_positions': {},
@@ -540,6 +546,8 @@
               $feed_list.fadeIn(750);
             });
             
+            this.check_feed_fetch_progress();
+            
             if (!folders.length) {
                 this.setup_ftux_add_feed_callout();
             } else {
@@ -560,6 +568,12 @@
                     var feed = this.model.feeds[item];
                     var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
+                    
+                    if (feed.not_yet_fetched) {
+                        if (!this.model.preference('hide_fetch_progress')) {
+                            this.flags['has_unfetched_feeds'] = true;
+                        }
+                    }
                 } else if (typeof item == "object") {
                     for (var o in item) {
                         var folder = item[o];
@@ -628,6 +642,82 @@
             ]).data('feed_id', feed.id);  
             
             return $feed;  
+        },
+        
+        check_feed_fetch_progress: function() {
+            $.extend(this.counts, {
+                'unfetched_feeds': 0,
+                'fetched_feeds': 0
+            });
+            
+            if (this.flags['has_unfetched_feeds']) {
+                var counts = this.model.count_unfetched_feeds();
+                this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
+                this.counts['fetched_feeds'] = counts['fetched_feeds'];
+
+                if (this.counts['unfetched_feeds'] == 0) {
+                    this.flags['has_unfetched_feeds'] = false;
+                    this.hide_unfetched_feed_progress();
+                } else {
+                    this.flags['has_unfetched_feeds'] = true;
+                    this.show_unfetched_feed_progress();
+                }
+            }
+        },
+        
+        show_unfetched_feed_progress: function() {
+            var self = this;
+            var $progress = this.$s.$feeds_progress;
+            var percentage = parseInt(this.counts['fetched_feeds'] / (this.counts['unfetched_feeds'] + this.counts['fetched_feeds']) * 100, 10);
+
+            var titles = [
+                "Fetching your feeds",
+                "Reticulating splines",
+                "Fishing for feeds",
+                "Gathering gumdrops",
+                "Herding feeds",
+                "Feed fetch disco",
+                "Fetching your feeds",
+                "Feeds are being fetched"
+            ];
+            $('.NB-feeds-progress-title', $progress).text(titles[Math.floor(Math.random()*titles.length)]);
+            $('.NB-feeds-progress-counts-fetched', $progress).text(this.counts['fetched_feeds']);
+            $('.NB-feeds-progress-counts-total', $progress).text(this.counts['unfetched_feeds'] + this.counts['fetched_feeds']);
+            $('.NB-feeds-progress-percentage', $progress).text(percentage + '%');
+            $('.NB-feeds-progress-bar', $progress).progressbar({
+                value: percentage
+            });
+            
+            if (!$progress.is(':visible')) {
+                setTimeout(function() {
+                    $progress.css({'display': 'block', 'opacity': 0}).animate({
+                        'opacity': 1,
+                        'bottom': 30
+                    }, {
+                        'duration': 750
+                    });
+                    self.$s.$feed_list.animate({'bottom': 72}, {'duration': 750});
+                }, 1000);
+            }
+        },
+
+        hide_unfetched_feed_progress: function(permanent) {
+            var $progress = this.$s.$feeds_progress;
+          
+            if (permanent) {
+                this.model.preference('hide_fetch_progress', true);
+            }
+            
+            $progress.animate({
+                'opacity': 0,
+                'bottom': 0
+            }, {
+                'duration': 750,
+                'complete': function() {
+                    $progress.css({'display': 'none'});
+                }
+            });
+            this.$s.$feed_list.animate({'bottom': '30px'}, {'duration': 750});
         },
         
         load_sortable_feeds: function() {
@@ -2209,10 +2299,10 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = 1000 * 60 * 1 / 2; // 1/2 minutes
+            var FEED_REFRESH_INTERVAL = (1000 * 60) / 2; // 1/2 minutes
             
             this.flags.feed_refresh = setInterval(function() {
-                self.model.refresh_feeds($.rescope(self.post_feed_refresh, self));
+                self.model.refresh_feeds($.rescope(self.post_feed_refresh, self), self.flags['has_unfetched_feeds']);
             }, FEED_REFRESH_INTERVAL);
         },
         
@@ -2233,26 +2323,31 @@
                 this.cache.refresh_callback();
                 delete this.cache.refresh_callback;
             }
-
+            
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
                 var feed = this.model.get_feed(feed_id);
                 var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 var selected = $feed_on_page.hasClass('selected');
+                
+                $('.unread_count', $feed).corner('4px');
                 if (selected) {
                     $feed.addClass('selected');
                 }
-                $('.unread_count', $feed).corner('4px');
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     var limit = $('.story', this.$s.$story_titles).length;
                     this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
                 } else {
-                    NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                    if (!this.flags['has_unfetched_feeds']) {
+                        NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                    }
                     $feed_on_page.replaceWith($feed);
                 }
             }
+            
+            this.check_feed_fetch_progress();
         },
         
         post_refresh_active_feed: function(e, data, first_load) {
@@ -2432,15 +2527,15 @@
             var $next = $('.NB-module-features .NB-module-next-page');
             var $previous = $('.NB-module-features .NB-module-previous-page');
             
-            if (direction == -1 && !this.cache['feature_page']) {
+            if (direction == -1 && !this.counts['feature_page']) {
                 return;
             }
             if (direction == 1 && this.flags['features_last_page']) {
                 return;
             }
             
-            this.model.get_features_page(this.cache['feature_page']+direction, function(features) {
-                self.cache['feature_page'] += direction;
+            this.model.get_features_page(this.counts['feature_page']+direction, function(features) {
+                self.counts['feature_page'] += direction;
                 
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
                 for (var f in features) {
@@ -2463,7 +2558,7 @@
                     $next.removeClass('NB-disabled');
                     self.flags['features_last_page'] = false;
                 }
-                if (self.cache['feature_page'] > 0) {
+                if (self.counts['feature_page'] > 0) {
                     $previous.removeClass('NB-disabled');
                 } else {
                     $previous.addClass('NB-disabled');
@@ -2747,6 +2842,10 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
+            $.targetIs(e, { tagSelector: '.NB-feeds-progress-close' }, function($t, $p){
+                e.preventDefault();
+                self.hide_unfetched_feed_progress(true);
+            });
             $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-features' }, function($t, $p){
                 e.preventDefault();
                 self.load_feature_page(1);

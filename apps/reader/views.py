@@ -95,6 +95,7 @@ def logout(request):
 def load_feeds(request):
     user = get_user(request)
     feeds = {}
+    not_yet_fetched = False
     
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
@@ -117,8 +118,14 @@ def load_feeds(request):
             'updated': format_relative_date(sub.feed.last_update)
         }
         if not sub.feed.fetched_once:
+            not_yet_fetched = True
             feeds[sub.feed.pk]['not_yet_fetched'] = True
-
+            
+    if not_yet_fetched:
+        for f in feeds:
+            if 'not_yet_fetched' not in feeds[f]:
+                feeds[f]['not_yet_fetched'] = False
+                
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
     return data
 
@@ -189,10 +196,10 @@ def refresh_feeds(request):
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
-        if request.GET.get('check_fetch_status', False) and not sub.feed.fetched_once:
-            feeds[sub.feed.pk]['not_yet_fetched'] = True
-
-    return feeds
+        if request.POST.get('check_fetch_status', False):
+            feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
+            
+    return {'feeds': feeds}
 
 @json.json_view
 def load_single_feed(request):
