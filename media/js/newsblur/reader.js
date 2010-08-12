@@ -19,7 +19,8 @@
             $feed_view: $('.NB-feed-story-view'),
             $story_iframe: $('.NB-feed-frame'),
             $intelligence_slider: $('.NB-intelligence-slider'),
-            $mouse_indicator: $('#mouse-indicator')
+            $mouse_indicator: $('#mouse-indicator'),
+            $feed_link_loader: $('#NB-feeds-list-loader')
         };
         this.flags = {
             'feed_view_images_loaded': {},
@@ -519,6 +520,7 @@
             
             if ($('#feed_list').length) {
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
+                this.$s.$feed_link_loader.css({'display': 'block'});
                 this.model.load_feeds($.rescope(this.make_feeds, this));
             }
         },
@@ -527,11 +529,16 @@
             var $feed_list = this.$s.$feed_list.empty();
             var folders = this.model.folders;
             var feeds = this.model.feeds;
+            
             // NEWSBLUR.log(['Making feeds', {'folders': folders, 'feeds': feeds}]);
             
             $('#story_taskbar').css({'display': 'block'});
 
+            $feed_list.css({'display': 'none'});
             this.make_feeds_folder($feed_list, folders);
+            this.$s.$feed_link_loader.fadeOut(250, function() {
+              $feed_list.fadeIn(750);
+            });
             
             if (!folders.length) {
                 this.setup_ftux_add_feed_callout();
@@ -563,7 +570,7 @@
                         ]);
                         (function($feeds, $folder) {
                             setTimeout(function() {
-                                $feeds.append($folder); 
+                                $feeds.append($folder);
                                 $('.unread_count', $feeds).corner('4px');
                             }, 50);
                         })($feeds, $folder);

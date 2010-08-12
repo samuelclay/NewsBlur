@@ -56,7 +56,11 @@ class Command(BaseCommand):
             user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
             for user_sub in user_subs:
                 # Rewrite feed in subscription folders
-                user_sub_folders = UserSubscriptionFolders.objects.get(user=user_sub.user)
+                try:
+                    user_sub_folders = UserSubscriptionFolders.objects.get(user=user_sub.user)
+                except Exception, e:
+                    print " *** ---> UserSubscriptionFolders error: %s" % e
+                    continue
                 folders = json.decode(user_sub_folders.folders)
                 folders = self.rewrite_folders(folders, original_feed, duplicate_feed)
                 user_sub_folders.folders = json.encode(folders)

@@ -30,7 +30,8 @@ class Feed(models.Model):
     feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=0)
-    last_update = models.DateTimeField(auto_now=True, default=0)
+    last_update = models.DateTimeField(auto_now=True)
+    fetched_once = models.BooleanField(default=False)
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
@@ -657,8 +658,45 @@ class StoriesPerMonth(models.Model):
         return month_counts, average_per_month
         
     @classmethod
-    def recount_feed(cls, feed):
+    def recount_feed(cls, feed, current_counts=None):
         d = defaultdict(int)
-        stories = Story.objects.filter(story_feed=feed).extra(select={'year': "EXTRACT(year FROM story_date)", 'month': "EXTRACT(month from story_date)"}).values('year', 'month')
+        now = datetime.datetime.now()
+        min_year = now.year
+        if not current_counts:
+            current_counts = []
+        
+        # Count stories, aggregate by year and month
+        stories = Story.objects.filter(story_feed=feed).extra(select={
+            'year': "EXTRACT(year FROM story_date)", 
+            'month': "EXTRACT(month from story_date)"
+        }).values('year', 'month')
         for story in stories:
-            pass
+            year = int(story['year'])
+            d['%s-%s' % (year, int(story['month']))] += 1
+            if year < min_year:
+                min_year = year
+        
+        # Add on to existing months, always amending up, never down. (Current month
+        # is guaranteed to be accurate, since trim_feeds won't delete it until after
+        # a month. Hacker News can have 1,000+ and still be counted.)
+        for current_month, current_count in current_counts:
+            if current_month not in d or d[current_month] < current_count:
+                d[current_month] = current_count
+                year = re.findall(r"(\d{4})-\d{1,2}", current_month)[0]
+                if year < min_year:
+                    min_year = year
+                    
+        # Assemble a list with 0's filled in for missing months, 
+        # trimming left and right 0's.
+        months = []
+        start = False
+        for year in range(min_year, now.year+1):
+            for month in range(1, 12+1):
+                if datetime.datetime(year, month, 1) < now:
+                    key = '%s-%s' % (year, month)
+                    if d.get(key) or start:
+                        start = True
+                        months.append((key, d.get(key, 0)))
+        from pprint import pprint
+        pprint(months)
+        
