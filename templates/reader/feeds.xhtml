@@ -269,35 +269,38 @@
     <ul class="left-center" id="feed_list"></ul>
     
     <div id="NB-feeds-progress">
-      <div class="NB-feeds-progress-close"></div>
-      <div class="NB-feeds-progress-title">Fetching your feeds</div>
-      <div class="NB-feeds-progress-percentage"></div>
-      <div class="NB-feeds-progress-counts">
-        <span class="NB-feeds-progress-counts-fetched"></span>
-        /
-        <span class="NB-feeds-progress-counts-total"></span>
+      <div class="NB-feeds-progress-container">
+        <div class="NB-feeds-progress-close"></div>
+        <div class="NB-feeds-progress-title">Fetching your feeds</div>
+        <div class="NB-feeds-progress-percentage"></div>
+        <div class="NB-feeds-progress-counts">
+          <span class="NB-feeds-progress-counts-fetched"></span>
+          /
+          <span class="NB-feeds-progress-counts-total"></span>
+        </div>
+        <div class="NB-feeds-progress-bar"></div>
       </div>
-      <div class="NB-feeds-progress-bar"></div>
     </div>
     
-    <div class="NB-taskbar left-south">
-      <div class="NB-callout-ftux NB-callout">
-        <div class="NB-callout-container">
-          <div class="NB-callout-text"></div>
-          <div class="NB-callout-arrow"></div>
+    <div class="NB-taskbar-container left-south">
+      <div class="NB-taskbar">
+        <div class="NB-callout-ftux NB-callout">
+          <div class="NB-callout-container">
+            <div class="NB-callout-text"></div>
+            <div class="NB-callout-arrow"></div>
+          </div>
+        </div>
+        <ul class="taskbar_nav taskbar_nav_feeds">
+          <li class="task_button task_button_menu NB-task-add"></li>
+          <li class="task_button task_button_menu NB-task-manage NB-disabled"></li>
+        </ul>
+        <div class="NB-taskbar-intelligence">
+          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
+          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
+          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
+          <div class="NB-intelligence-slider"></div>
         </div>
       </div>
-    	<ul class="taskbar_nav taskbar_nav_feeds">
-    		<li class="task_button task_button_menu NB-task-add">
-    		<li class="task_button task_button_menu NB-task-manage NB-disabled">
-    		</li>
-    	</ul>
-    	<div class="NB-taskbar-intelligence">
-    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
-    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
-    	  <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
-    	 <div class="NB-intelligence-slider"></div>
-    	</div>
     </div>
 
 </div>
@@ -314,36 +317,38 @@
     <div id="story_titles" class="right-north"></div>
 
     <div class="content-pane">
-        <div id="story_taskbar" class="NB-taskbar content-north">
+        <div id="story_taskbar" class="NB-taskbar-container content-north">
+          <div class="NB-taskbar">
           
-          <ul class="taskbar_nav taskbar_nav_view">
-            <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
-              <div class="NB-task-view-page-to-feed-arrow"></div>
-            </li>
-            <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
-            <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
-          </ul>
+            <ul class="taskbar_nav taskbar_nav_view">
+              <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
+                <div class="NB-task-view-page-to-feed-arrow"></div>
+              </li>
+              <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
+              <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
+            </ul>
 
-          <ul class="taskbar_nav taskbar_nav_return">
-            <li class="task_button task_return">
-              <span class="NB-task-title">
-                <div>Return to</div>
-                <div>Original</div>
-              </span>
-            </li>
-          </ul>
+            <ul class="taskbar_nav taskbar_nav_return">
+              <li class="task_button task_return">
+                <span class="NB-task-title">
+                  <div>Return to</div>
+                  <div>Original</div>
+                </span>
+              </li>
+            </ul>
 
-          <ul class="taskbar_nav taskbar_nav_story first">
-            <li class="task_button task_button_story task_story_previous"></li>
-            <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
-              <span class="NB-task-title">Next Unread</span>
-            </li>
-            <li class="task_button task_button_story task_story_next"></li>
-            {% if not user.is_authenticated %}
-              <li class="task_button task_button_signup"></li>
-            {% endif %}
-          </ul>
-          
+            <ul class="taskbar_nav taskbar_nav_story first">
+              <li class="task_button task_button_story task_story_previous"></li>
+              <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
+                <span class="NB-task-title">Next Unread</span>
+              </li>
+              <li class="task_button task_button_story task_story_next"></li>
+              {% if not user.is_authenticated %}
+                <li class="task_button task_button_signup"></li>
+              {% endif %}
+            </ul>
+            
+          </div>
         </div>
           
         {% if not user.is_authenticated %}
