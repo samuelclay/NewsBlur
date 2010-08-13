@@ -172,14 +172,14 @@ NEWSBLUR.ReaderStatistics.prototype = {
     },
     
     make_charts: function(data) {
-        data['stories_last_year'] = _.map(data['stories_last_year'], function(date) {
+        data['story_count_history'] = _.map(data['story_count_history'], function(date) {
             var date_matched = date[0].match(/(\d{4})-(\d{1,2})/);
             return [(new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2],10)-1)).getTime(),
                     date[1]];
         });
         var $plot = $(".NB-statistics-history-chart");
         var plot = $.plot($plot,
-            [ { data: data['stories_last_year'], label: "Stories"} ], {
+            [ { data: data['story_count_history'], label: "Stories"} ], {
                 series: {
                     lines: { show: true },
                     points: { show: true }

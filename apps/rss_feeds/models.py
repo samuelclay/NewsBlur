@@ -39,7 +39,7 @@ class Feed(models.Model):
     last_modified = models.DateTimeField(null=True, blank=True)
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
-    stories_last_year = models.CharField(max_length=1024, blank=True, null=True)
+    story_count_history = models.TextField(blank=True, null=True)
     next_scheduled_update = models.DateTimeField(default=datetime.datetime.now)
     last_load_time = models.IntegerField(default=0)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
@@ -122,7 +122,7 @@ class Feed(models.Model):
         min_year = now.year
         total = 0
         month_count = 0
-        current_counts = self.stories_last_year and json.decode(self.stories_last_year)
+        current_counts = self.story_count_history and json.decode(self.story_count_history)
         
         if not current_counts:
             current_counts = []
@@ -162,7 +162,7 @@ class Feed(models.Model):
                         total += d.get(key, 0)
                         month_count += 1
         
-        self.stories_last_year = json.encode(months)
+        self.story_count_history = json.encode(months)
         if not total:
             self.average_stories_per_month = 0
         else:

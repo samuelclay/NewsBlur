@@ -1,24 +1,27 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        from apps.rss_feeds.models import Feed
-        for feed in Feed.objects.all():
-            feed.stories_last_year = None
-            feed.save()
-            try:
-                feed.count_stories(verbose=True)
-            except Exception, e:
-                print ' ---> Exception: %s' % e
+        
+        # Deleting field 'Feed.stories_last_year'
+        db.delete_column('feeds', 'stories_last_year')
+
+        # Adding field 'Feed.story_count_history'
+        db.add_column('feeds', 'story_count_history', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        
+        # Adding field 'Feed.stories_last_year'
+        db.add_column('feeds', 'stories_last_year', self.gf('django.db.models.fields.CharField')(max_length=1024, null=True, blank=True), keep_default=False)
+
+        # Deleting field 'Feed.story_count_history'
+        db.delete_column('feeds', 'story_count_history')
 
 
     models = {
@@ -44,7 +47,7 @@ class Migration(DataMigration):
             'popular_authors': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'null': 'True', 'blank': 'True'}),
             'popular_tags': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'stories_last_month': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'stories_last_year': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'})
+            'story_count_history': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         'rss_feeds.feedfetchhistory': {
             'Meta': {'object_name': 'FeedFetchHistory'},
