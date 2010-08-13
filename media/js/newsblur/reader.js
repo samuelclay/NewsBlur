@@ -68,6 +68,7 @@
         this.handle_mouse_indicator_hover();
         this.position_mouse_indicator();
         this.handle_login_and_signup_forms();
+        // this.iframe_buster_buster();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -84,11 +85,8 @@
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             240,
-                west__onresize:         "leftLayout.resizeAll",
-                center__onresize:       "rightLayout.resizeAll",
                 spacing_open:           4,
-                resizerDragOpacity:     0.6,
-                findNestedContent:      true
+                resizerDragOpacity:     0.6
             }); 
             
             leftLayout = $('.left-pane').layout({
@@ -104,8 +102,6 @@
             rightLayout = $('.right-pane').layout({ 
                 south__paneSelector:    ".right-north",
                 center__paneSelector:   ".content-pane",
-                center__onresize:       "contentLayout.resizeAll",
-                south__onresize:        "contentLayout.resizeAll",
                 south__size:            168,
                 spacing_open:           10,
                 resizerDragOpacity:     0.6
@@ -122,45 +118,16 @@
             $('.right-pane').hide();
         },
         
-        resize_story_content_pane: function() {
-            var $story_titles = this.$s.$story_titles;
-            var doc_height = $(document).height();
-            var stories_pane_height = $story_titles.height();
-            var story_content_top = parseInt($story_titles.css('top'), 10);
-            
-            var new_story_pane_height = doc_height - (stories_pane_height + story_content_top);
-            this.$s.$story_pane.css('height', new_story_pane_height);
-        },
-        
-        resize_feed_list_pane: function() {
-            var doc_height = $(document).height();
-            var feed_list_top = parseInt($('#feed_list').css('top'), 10);
-            
-            var new_feed_list_height = doc_height - feed_list_top;
-            $('#feed_list').css('height', new_feed_list_height);
-        },
-        
-        capture_window_resize: function() {
-            var self = this,
-                resizeTimer;
-                
-            $(window).bind('resize', function() {
-                if (resizeTimer) clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function() {
-                    self.resize_story_content_pane();
-                    self.resize_feed_list_pane();
-                }, 10);
-            });    
-        },
-        
         cornerize_buttons: function() {
             $('.button').corner();
         },
         
         hide_splash_page: function() {
+            var self = this;
             $('.right-pane').show();
             $('#NB-splash').hide();
             $('#NB-splash-overlay').hide();
+            this.$s.$body.layout().resizeAll();
             
             if (NEWSBLUR.Globals.is_anonymous) {
                 this.setup_ftux_signup_callout();
@@ -171,6 +138,20 @@
             $('.right-pane').hide();
             $('#NB-splash').show();
             $('#NB-splash-overlay').show();
+        },
+        
+        iframe_buster_buster: function() {
+            var self = this;
+            var prevent_bust = 0;
+            window.onbeforeunload = function() { prevent_bust++; };
+            setInterval(function() {
+                if (prevent_bust > 0) {
+                    prevent_bust -= 2;
+                    window.top.location = '/reader/buster';
+                    $('.NB-feed-frame').attr('src', '');
+                    $('.task_view_feed').click();
+                }
+            }, 1);
         },
         
         // =======================

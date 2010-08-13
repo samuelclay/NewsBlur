@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth import login as login_user
 from django.shortcuts import render_to_response
+from django.db.models import Q
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, OPMLImporter, GoogleReaderImporter
@@ -72,8 +73,8 @@ def reader_authorize(request):
     else:
         OAuthToken.objects.filter(session_id=request.session.session_key).delete()
         OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).delete()
-        auth_token_dict['session_id'] = request.session.session_key
-        auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
+    auth_token_dict['session_id'] = request.session.session_key
+    auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
     OAuthToken.objects.create(**auth_token_dict)
                               
     redirect = "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])

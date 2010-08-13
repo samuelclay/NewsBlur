@@ -24,4 +24,5 @@ urlpatterns = patterns('',
     url(r'^load_features', views.load_features, name='load-features'),
     url(r'^save_feed_order', views.save_feed_order, name='save-feed-order'),
     url(r'^get_feeds_trainer', views.get_feeds_trainer, name='get-feeds-trainer'),
+    url(r'^buster', views.iframe_buster, name='iframe-buster'),
 )

@@ -579,4 +579,6 @@ def login_as(request):
     user.backend = settings.AUTHENTICATION_BACKENDS[0]
     login_user(request, user)
     return HttpResponseRedirect(reverse('index'))
-    
+
+def iframe_buster(request):
+    return HttpResponse(status=204)
