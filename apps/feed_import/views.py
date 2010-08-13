@@ -71,6 +71,7 @@ def reader_authorize(request):
         auth_token_dict['user'] = request.user
     else:
         OAuthToken.objects.filter(session_id=request.session.session_key).delete()
+        OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).delete()
         auth_token_dict['session_id'] = request.session.session_key
         auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
     OAuthToken.objects.create(**auth_token_dict)
@@ -103,7 +104,7 @@ def reader_callback(request):
                 user_token.session_id = request.session.session_key
                 user_token.save()
                 print "Found ip token in user_tokens: %s" % user_token
-
+    print "Google Reader request.GET: %s" % request.GET
     # Authenticated in Google, so verify and fetch access tokens
     token = oauth.Token(user_token.request_token, user_token.request_token_secret)
     token.set_verifier(request.GET['oauth_verifier'])
@@ -111,8 +112,8 @@ def reader_callback(request):
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
     print " ---> [%s] OAuth Reader Content: %s -- %s" % (token, access_token, content)
-    user_token.access_token = access_token['oauth_token'] or request.GET.get('oauth_token')
-    user_token.access_token_secret = access_token['oauth_token_secret']
+    user_token.access_token = access_token.get('oauth_token') or request.GET.get('oauth_token')
+    user_token.access_token_secret = access_token.get('oauth_token_secret') or request.GET.get('oauth_token_secret')
     user_token.save()
     
     # Fetch imported feeds on next page load

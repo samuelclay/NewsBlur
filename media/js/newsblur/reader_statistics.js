@@ -134,7 +134,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
         
         setTimeout(function() {
             $.modal.impl.resize(self.$modal);
-        }, 50);
+        }, 100);
     },
     
     make_stats: function(data, interval) {
@@ -163,7 +163,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
         
         var $subscribers = $.make('div', { className: 'NB-statistics-subscribers' }, [
             $.make('span', { className: 'NB-statistics-subscribers-count' }, ''+data['subscriber_count']),
-            $.make('span', { className: 'NB-statistics-subscribers-label' }, 'subscriber' + data['subscriber_count']==1?'':'s')
+            $.make('span', { className: 'NB-statistics-subscribers-label' }, 'subscriber' + (data['subscriber_count']==1?'':'s'))
         ]);
         $('.NB-statistics-subscribers', this.$modal).remove();
         $('.NB-modal-subtitle', this.$modal).prepend($subscribers);

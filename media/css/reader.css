@@ -639,7 +639,16 @@ background: transparent;
     text-transform: uppercase;
     display: none;
 }
-
+#story_titles .NB-feedbar .NB-feedbar-statistics {
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat 0 0;    
+    width: 16px;
+    height: 16px;    
+    float: left;
+    display: none;
+    cursor: pointer;
+    padding: 0 4px 0 0px;
+    margin: 3px 0 0 0;
+}
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
     color: #808080;
     text-shadow: 0 1px 0 #e6e6e6;
@@ -654,6 +663,7 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
+#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-statistics,
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-mark-feed-read {
     display: block;
 }
