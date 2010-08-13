@@ -155,41 +155,41 @@ NEWSBLUR.ReaderStatistics.prototype = {
             ]),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
-                    $.make('div', { className: 'NB-statistics-count' }, ''+data['subscriber_count']),
-                    $.make('div', { className: 'NB-statistics-label' }, 'subscribers'),
-                    $.make('div', { className: 'NB-statistics-count' }, ''+data['average_stories_per_month']),
-                    $.make('div', { className: 'NB-statistics-label' }, ' stories per month')
+                    $.make('div', { className: 'NB-statistics-label' }, 'Stories per month')
                 ]),
                 $.make('div', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
             ])
         ]);
         
+        var $subscribers = $.make('div', { className: 'NB-statistics-subscribers' }, [
+            $.make('span', { className: 'NB-statistics-subscribers-count' }, ''+data['subscriber_count']),
+            $.make('span', { className: 'NB-statistics-subscribers-label' }, 'subscriber' + data['subscriber_count']==1?'':'s')
+        ]);
+        $('.NB-statistics-subscribers', this.$modal).remove();
+        $('.NB-modal-subtitle', this.$modal).prepend($subscribers);
+        
         return $stats;
     },
     
     make_charts: function(data) {
-        var r = Raphael("NB-statistics-history-chart", 325, 170);
-        var lines = r.g.linechart(20, 20, 290, 200, 
-                                  [[0, 2, 4, 6, 8, 10, 12],
-                                   [0, 2, 4, 6, 8, 10, 12]], 
-                                  [[12, 12, 23, 15, 17, 27, 22], 
-                                   [10, 20, 30, 25, 15, 28, 2]], {
-            nostroke: false, 
-            axis: false, 
-            symbol: "o", 
-            smooth: true
-        }).hoverColumn(function () {
-            this.tags = r.set();
-            for (var i = 0, ii = this.y.length; i < ii; i++) {
-                this.tags.push(r.g.tag(this.x, this.y[i], this.values[i], 160, 10).insertBefore(this).attr([{fill: "#fff"}, {fill: this.symbols[i].attr("fill")}]));
-            }
-        }, function () {
-            this.tags && this.tags.remove();
+        data['stories_last_year'] = _.map(data['stories_last_year'], function(date) {
+            var date_matched = date[0].match(/(\d{4})-(\d{1,2})/);
+            return [(new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2],10)-1)).getTime(),
+                    date[1]];
         });
-        lines.symbols.attr({r: 3});
-        // lines.lines[0].animate({"stroke-width": 6}, 1000);
-        // lines.symbols[0].attr({stroke: "#fff"});
-        // lines.symbols[0][1].animate({fill: "#f00"}, 1000);
+        var $plot = $(".NB-statistics-history-chart");
+        var plot = $.plot($plot,
+            [ { data: data['stories_last_year'], label: "Stories"} ], {
+                series: {
+                    lines: { show: true },
+                    points: { show: true }
+                },
+                average: data['average_stories_per_month'],
+                legend: { show: false },
+                grid: { hoverable: true, clickable: true },
+                yaxis: { tickDecimals: 0, min: 0 },
+                xaxis: { mode: 'time' }
+            });
     },
     
     handle_change: function(elem, e) {
