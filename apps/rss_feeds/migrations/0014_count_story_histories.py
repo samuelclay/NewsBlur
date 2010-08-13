@@ -10,7 +10,7 @@ class Migration(DataMigration):
         "Write your forwards methods here."
         from apps.rss_feeds.models import Feed
         for feed in Feed.objects.all():
-            feed.stories_last_year = None
+            feed.story_count_history = None
             feed.save()
             try:
                 feed.count_stories(verbose=True)
