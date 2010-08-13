@@ -11,7 +11,10 @@ class Migration(DataMigration):
         for feed in Feed.objects.all():
             feed.stories_last_year = None
             feed.save()
-            feed.count_stories(verbose=True)
+            try:
+                feed.count_stories(verbose=True)
+            except Exception, e:
+                print ' ---> Exception: %s' % e
 
 
     def backwards(self, orm):
