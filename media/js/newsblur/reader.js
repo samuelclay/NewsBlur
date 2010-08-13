@@ -635,7 +635,8 @@
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, feed.feed_title),
-                $.make('div', { className: 'NB-feedbar-manage-feed' }),
+                $.make('div', { className: 'NB-feedbar-manage-feed', title: 'Manage Opinions' }),
+                (type == 'story' && $.make('div', { className: 'NB-feedbar-statistics', title: 'Statistics' })),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
                     $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
                     $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated)
@@ -1330,8 +1331,8 @@
                 ]),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
-                $.make('div', { className: 'NB-story-sentiment NB-story-like' }),
-                $.make('div', { className: 'NB-story-sentiment NB-story-dislike' })
+                $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
+                $.make('div', { className: 'NB-story-sentiment NB-story-dislike', title: 'What I dislike about this story...' })
             ]).data('story_id', story.id);
             
             if (unread_view > score) {
@@ -1589,8 +1590,8 @@
             var $feedbar = $.make('div', { className: 'NB-feedbar' }, [
                 this.make_feed_title_line(feed, false, 'story'),
                 $.make('div', { className: 'NB-feedbar-intelligence' }, [
-                    $.make('div', { className: 'NB-feed-sentiment NB-feed-like' }),
-                    $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike' })
+                    $.make('div', { className: 'NB-feed-sentiment NB-feed-like', title: 'What I like about this site...' }),
+                    $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike', title: 'What I dislike about this site...' })
                 ]),
                 $.make('span', { className: 'feed_id' }, ''+feed.id)
             ]).hover(function() {
@@ -2677,6 +2678,9 @@
                 var feed_id = $t.parents('.feed').data('feed_id');
                 self.mark_feed_as_read(feed_id, $t);
                 $t.fadeOut(400);
+            });
+            $.targetIs(e, { tagSelector: '.NB-feedbar-statistics' }, function($t, $p){
+                self.open_feed_statistics_modal();
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-manage-feed' }, function($t, $p){
                 e.preventDefault();
