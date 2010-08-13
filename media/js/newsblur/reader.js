@@ -84,7 +84,8 @@
                 closable: true,
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
-                west__size:             240,
+                west__size:             this.model.preference('feed_pane_size'),
+                west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
                 spacing_open:           4,
                 resizerDragOpacity:     0.6
             }); 
@@ -102,7 +103,8 @@
             rightLayout = $('.right-pane').layout({ 
                 south__paneSelector:    ".right-north",
                 center__paneSelector:   ".content-pane",
-                south__size:            168,
+                south__size:            this.model.preference('story_titles_pane_size'),
+                south__onresize_end:    $.rescope(this.save_story_titles_pane_size, this),
                 spacing_open:           10,
                 resizerDragOpacity:     0.6
             }); 
@@ -116,6 +118,14 @@
             }); 
             
             $('.right-pane').hide();
+        },
+        
+        save_feed_pane_size: function(w, pane, $pane, state, options, name) {
+            this.model.preference('feed_pane_size', state.size);
+        },
+        
+        save_story_titles_pane_size: function(w, pane, $pane, state, options, name) {
+            this.model.preference('story_titles_pane_size', state.size);
         },
         
         cornerize_buttons: function() {
