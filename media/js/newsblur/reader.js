@@ -3021,11 +3021,11 @@
             });                                                           
             $document.bind('keydown', 'j', function(e) {
                 e.preventDefault();
-                self.show_next_story(-1);
+                self.show_next_story(1);
             });
             $document.bind('keydown', 'k', function(e) {
                 e.preventDefault();
-                self.show_next_story(1);
+                self.show_next_story(-1);
             });
             $document.bind('keydown', 'left', function(e) {
                 e.preventDefault();
