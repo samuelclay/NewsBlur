@@ -63,7 +63,8 @@ class UserSubscription(models.Model):
             self.save()
             return
 
-        logging.info(' ---> [%s]: Computing scores: %s' % (self.user, self.feed))
+        if not silent:
+            logging.info(' ---> [%s]: Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.

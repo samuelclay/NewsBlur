@@ -166,7 +166,7 @@ if len(logging._handlerList) < 1:
                             format='%(asctime)-12s: %(message)s',
                             datefmt='%b %d %H:%M',
                             filename=LOG_FILE,
-                            filemode='w')
+                            filemode='a')
     else:
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)-12s: %(message)s',
