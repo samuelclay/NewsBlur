@@ -35,10 +35,10 @@ class PageImporter(object):
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
             return
         except Exception, e:
-            logging.info('[%d] ! -------------------------' % (self.feed.id,))
+            logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
-            logging.info(tb)
-            logging.info('[%d] ! -------------------------' % (self.feed.id,))
+            logging.debug(tb)
+            logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
             return
         
