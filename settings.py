@@ -50,12 +50,6 @@ PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
 DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
-
-if PRODUCTION:
-    logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s %(message)s',
-                    filename=LOG_FILE,
-                    filemode='w')
                 
 # ===========================
 # = Django-specific Modules =
@@ -161,6 +155,23 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.signals.SignalDebugPanel',
     'debug_toolbar.panels.logger.LoggingPanel',
 )
+
+# ===========
+# = Logging =
+# ===========
+
+if len(logging._handlerList) < 1:
+    if PRODUCTION:
+        logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)-12s: %(message)s',
+                            datefmt='%b %d %H:%M',
+                            filename=LOG_FILE,
+                            filemode='w')
+    else:
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)-12s: %(message)s',
+                            datefmt='%b %d %H:%M',
+                            handler=logging.StreamHandler)
 
 # ==========================
 # = Miscellaneous Settings =

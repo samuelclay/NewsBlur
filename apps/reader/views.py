@@ -66,7 +66,7 @@ def login(request):
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
             login_user(request, form.get_user())
-            print " ---> Login: %s" % form.get_user()
+            logging.info(" ---> Login: %s" % form.get_user())
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
@@ -78,14 +78,14 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            print " ---> NEW SIGNUP: %s" % new_user
+            logging.info(" ---> NEW SIGNUP: %s" % new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
         
 @never_cache
 def logout(request):
-    print "Logout: %s" % request.user
+    logging.info("Logout: %s" % request.user)
     from django.contrib.auth import logout
     logout(request)
     
@@ -230,11 +230,12 @@ def load_single_feed(request):
     try:
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
-        print " ***> UserSub DNE, creating: %s %s" % (user, feed)
+        # FIXME: Why is this happening for `conesus` when logged into another account?!
+        logging.info(" ***> UserSub DNE, creating: %s %s" % (user, feed))
         usersub = UserSubscription.objects.create(user=user, feed=feed)
             
-    # print "Feed: %s %s" % (feed, usersub)
-    logging.debug("Feed: " + feed.feed_title)
+    logging.info("Loading feed: [%s] %s" % (request.user, feed.feed_title))
+    
     if stories:
         last_read_date = stories[-1]['story_date']
     else:
@@ -260,7 +261,6 @@ def load_single_feed(request):
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
         }
-        # logging.debug("Story: %s" % story)
     
     # Intelligence
     
@@ -306,7 +306,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
-    print " ---> Marking all as read [%s]: %s days" % (request.user, days,)
+    logging.info(" ---> Marking all as read [%s]: %s days" % (request.user, days,))
     return dict(code=code)
     
 @ajax_login_required
@@ -323,7 +323,7 @@ def mark_story_as_read(request):
     data = dict(code=0, payload=story_ids)
     
     for story_id in story_ids:
-        logging.debug("Marked Read: %s (%s)" % (story_id, feed_id))
+        logging.debug("Marked Read: [%s] %s (%s)" % (request.user, story_id, feed_id))
         m = UserStory(story_id=int(story_id), user=request.user, feed_id=feed_id)
         try:
             m.save()
@@ -348,7 +348,7 @@ def mark_feed_as_read(request):
     else:
         code = 1
         
-    print " ---> Marking feed as read [%s]: %s" % (request.user, feed,)
+    logging.info(" ---> Marking feed as read [%s]: %s" % (request.user, feed,))
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return dict(code=code)
     
@@ -373,9 +373,9 @@ def mark_story_with_opinion(request, opinion):
         previous_opinion.opinion = opinion
         code = 0
         previous_opinion.save()
-        logging.debug("Changed Opinion: " + str(previous_opinion.opinion) + ' ' + str(opinion))
+        logging.debug("Changed Opinion: [%s] %s %s" % (request.user, previous_opinion.opinion, opinion))
     else:
-        logging.debug("Marked Opinion: " + str(story_id) + ' ' + str(opinion))
+        logging.debug("Marked Opinion: [%s] %s %s" % (request.user, story_id, opinion))
         m = UserStory(story=story, user=request.user, feed=story.story_feed, opinion=opinion)
         code = 0
         try:
@@ -494,7 +494,7 @@ def delete_feed(request):
         for k, folder in enumerate(old_folders):
             if isinstance(folder, int):
                 if folder == feed_id:
-                    print " ---> [%s] DEL'ED: %s'th item: %s folders/feeds" % (request.user, k, len(old_folders))
+                    logging.info(" ---> [%s] DEL'ED: %s'th item: %s folders/feeds" % (request.user, k, len(old_folders)))
                     # folders.remove(folder)
                 else:
                     new_folders.append(folder)
@@ -541,7 +541,7 @@ def save_feed_order(request):
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
         assert folders_list is not None
-        print " ---> [%s]: Feed re-ordering: %s folders/feeds" % (request.user, len(folders_list))
+        logging.info(" ---> [%s]: Feed re-ordering: %s folders/feeds" % (request.user, len(folders_list)))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()
@@ -565,7 +565,7 @@ def get_feeds_trainer(request):
             classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
             classifiers.append(classifier)
     
-    print " ---> [%s] Loading Trainer: %s" % (request.user, len(classifiers))
+    logging.info(" ---> [%s] Loading Trainer: %s" % (request.user, len(classifiers)))
     
     return classifiers
     

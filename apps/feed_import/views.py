@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import urlparse
+import logging
 import oauth2 as oauth
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect
@@ -42,11 +43,11 @@ def opml_upload(request):
 
         
 def reader_authorize(request):
-    print " ---> [%s]: Authorize Google Reader import (%s) - %s" % (
+    logging.info(" ---> [%s]: Authorize Google Reader import (%s) - %s" % (
         request.user,
         request.session.session_key,
         request.META['REMOTE_ADDR'],
-    )
+    ))
     oauth_key = settings.OAUTH_KEY
     oauth_secret = settings.OAUTH_SECRET
     scope = "http://www.google.com/reader/api"
@@ -84,35 +85,35 @@ def reader_callback(request):
     access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
     consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
 
-    print " ---> [%s]: Google Reader callback (%s) - %s" % (
+    logging.info(" ---> [%s]: Google Reader callback (%s) - %s" % (
         request.user,
         request.session.session_key,
         request.META['REMOTE_ADDR']
-    )
+    ))
 
     if request.user.is_authenticated():
         user_token = OAuthToken.objects.get(user=request.user)
-        print "Authenticated user_token: %s" % user_token
+        logging.info("Authenticated user_token: %s" % user_token)
     else:
         try:
             user_token = OAuthToken.objects.get(session_id=request.session.session_key)
-            print "Found session user_token: %s" % user_token
+            logging.info("Found session user_token: %s" % user_token)
         except OAuthToken.DoesNotExist:
             user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
-            print "Found ip user_tokens: %s" % user_tokens
+            logging.info("Found ip user_tokens: %s" % user_tokens)
             if user_tokens:
                 user_token = user_tokens[0]
                 user_token.session_id = request.session.session_key
                 user_token.save()
-                print "Found ip token in user_tokens: %s" % user_token
-    print "Google Reader request.GET: %s" % request.GET
+                logging.info("Found ip token in user_tokens: %s" % user_token)
+    logging.info("Google Reader request.GET: %s" % request.GET)
     # Authenticated in Google, so verify and fetch access tokens
     token = oauth.Token(user_token.request_token, user_token.request_token_secret)
     token.set_verifier(request.GET['oauth_verifier'])
     client = oauth.Client(consumer, token)
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
-    print " ---> [%s] OAuth Reader Content: %s -- %s" % (token, access_token, content)
+    logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (token, access_token, content))
     user_token.access_token = access_token.get('oauth_token') or request.GET.get('oauth_token')
     user_token.access_token_secret = access_token.get('oauth_token_secret') or request.GET.get('oauth_token_secret')
     user_token.save()

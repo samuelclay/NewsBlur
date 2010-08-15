@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import get_object_or_404
 from apps.rss_feeds.models import Feed
 from utils import json
@@ -25,6 +26,6 @@ def load_feed_statistics(request):
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers
     
-    print " ---> [%s] Statistics: %s" % (request.user, feed)
+    logging.info(" ---> [%s] Statistics: %s" % (request.user, feed))
     
     return stats

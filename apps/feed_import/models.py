@@ -7,6 +7,7 @@ import datetime
 import lxml.etree
 from utils import json, urlnorm
 import utils.opml as opml
+import logging
 
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
@@ -46,7 +47,7 @@ class OPMLImporter(Importer):
         for item in outline:
             if not hasattr(item, 'xmlUrl'):
                 folder = item
-                print 'New Folder: %s' % folder.text
+                logging.info(' ---> [%s] New Folder: %s' % (self.user, folder.text))
                 folders.append({folder.text: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
@@ -56,7 +57,7 @@ class OPMLImporter(Importer):
                     setattr(feed, 'title', feed.htmlUrl)
                 feed_address = urlnorm.normalize(feed.xmlUrl)
                 feed_link = urlnorm.normalize(feed.htmlUrl)
-                print '\t%s - %s - %s' % (feed.title, feed_link, feed_address,)
+                logging.info(' ---> \t%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
                 # feeds.append(feed_data)
                 feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
@@ -86,10 +87,10 @@ class GoogleReaderImporter(Importer):
         folders = defaultdict(list)
         for item in self.feeds:
             folders = self.process_item(item, folders)
-        print "Google Reader import"
+        logging.info(" ---> Google Reader import: [%s]" % self.user)
         # print dict(folders)
         self.rearrange_folders(folders)
-        print self.subscription_folders
+        logging.info(" ---> [%s]: %s" % (self.user, self.subscription_folders))
         UserSubscriptionFolders.objects.create(user=self.user,
                                                folders=json.encode(self.subscription_folders))
 

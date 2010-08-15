@@ -33,13 +33,6 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
 
 socket.setdefaulttimeout(30)
 
-def prints(tstr):
-    """ lovely unicode
-    """
-    sys.stdout.write('%s\n' % (tstr.encode(sys.getdefaultencoding(),
-                         'replace')))
-    sys.stdout.flush()
-    
 def mtime(ttime):
     """ datetime auxiliar function.
     """
@@ -61,16 +54,14 @@ class FetchFeed:
         log_msg = u'%2s ---> Fetching %s (%d)' % (identity,
                                                  self.feed.feed_title,
                                                  self.feed.id)
-        logging.info(log_msg)
-        print(log_msg)
+        logging.debug(log_msg)
                                                  
         # Check if feed still needs to be updated
         feed = Feed.objects.get(pk=self.feed.pk)
         if feed.last_update > datetime.datetime.now() and not self.options.get('force'):
             log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
                                                                  self.feed.id)
-            logging.info(log_msg)
-            print(log_msg)
+            logging.debug(log_msg)
             feed.save_feed_history(303, "Already fetched")
             return FEED_SAME, None
         
@@ -123,7 +114,7 @@ class ProcessFeed:
 
             if self.fpf.status >= 400:
                 # http error, ignore
-                logging.error('[%d] !HTTP_ERROR! %d: %s' % (self.feed.id,
+                logging.debug('[%d] !HTTP_ERROR! %d: %s' % (self.feed.id,
                                                      self.fpf.status,
                                                      self.feed.feed_address))
                 self.feed.save()
@@ -131,7 +122,7 @@ class ProcessFeed:
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            print "   ---> Non-xml feed: %s." % self.feed
+            logging.debug("   ---> Non-xml feed: %s." % self.feed)
             if not self.fpf.entries:
                 self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 return FEED_ERRPARSE, ret_values
@@ -183,14 +174,11 @@ class ProcessFeed:
             if story.get('published') > end_date:
                 end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        # print 'Story GUIDs: %s' % story_guids
-        # print 'Story start/end: %s %s' % (start_date, end_date)
         existing_stories = Story.objects.filter(
             (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
             | (Q(story_guid__in=story_guids)),
             story_feed=self.feed
         ).order_by('-story_date')
-        # print 'Existing stories: %s' % existing_stories.count()
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
             
         self.feed.count_subscribers(lock=self.lock)
@@ -248,7 +236,6 @@ class Dispatcher:
         if current_process._identity:
             identity = current_process._identity[0]
         for feed in feed_queue:
-            # print "Process Feed: [%s] %s" % (current_process.name, feed)
             ret_entries = {
                 ENTRY_NEW: 0,
                 ENTRY_UPDATED: 0,
@@ -275,9 +262,9 @@ class Dispatcher:
                     if ret_entries.get(ENTRY_NEW):
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
-                            logging.info('Deleting user sub cache: %s' % sub.user_id)
+                            logging.debug('Deleting user sub cache: %s' % sub.user_id)
                             cache.delete('usersub:%s' % sub.user_id)
-                            sub.calculate_feed_scores()
+                            sub.calculate_feed_scores(silent=True)
                     if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
                         feed.get_stories(force=True)
                 
@@ -290,13 +277,12 @@ class Dispatcher:
             except KeyboardInterrupt:
                 break
             except urllib2.HTTPError, e:
-                print "HTTP Error: %s" % e
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
             except Exception, e:
-                print '[%d] ! -------------------------' % (feed.id,)
+                logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
-                print tb
-                print '[%d] ! -------------------------' % (feed.id,)
+                logging.debug(tb)
+                logging.debug('[%d] ! -------------------------' % (feed.id,))
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
 
@@ -311,7 +297,7 @@ class Dispatcher:
             try:
                 feed.save()
             except IntegrityError:
-                print " ---> IntegrityError on feed: %s - %s" % (feed, feed.feed_address,)
+                logging.debug(" ---> IntegrityError on feed: %s - %s" % (feed, feed.feed_address,))
             
             done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
                 identity, feed.feed_title, feed.id, unicode(delta),
@@ -320,13 +306,12 @@ class Dispatcher:
                 self.feed_trans[ret_feed],
                 comment))
             logging.debug(done_msg)
-            print(done_msg)
             
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
         if not self.options['single_threaded']:
-            print "---> DONE WITH PROCESS: %s" % current_process.name
+            logging.debug("---> DONE WITH PROCESS: %s" % current_process.name)
             sys.exit()
 
     def add_jobs(self, feeds_queue, feeds_count=1):
@@ -363,14 +348,13 @@ class Dispatcher:
                               self.entry_stats[key])
                               for key in self.entry_keys)
                     ))
-            print done
+            logging.debug(done)
             time_taken = datetime.datetime.now() - self.time_start
             history = FeedUpdateHistory(
                 number_of_feeds=self.feeds_count,
                 seconds_taken=time_taken.seconds
             )
             history.save()
-            logging.info(done)
             return
 
                 

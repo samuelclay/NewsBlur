@@ -1,4 +1,5 @@
 import datetime
+import logging
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -54,14 +55,15 @@ class UserSubscription(models.Model):
         self.needs_unread_relcalc = False
         self.save()
     
-    def calculate_feed_scores(self):
+    def calculate_feed_scores(self, silent=False):
         if not self.feed.fetched_once:
-            print ' ---> [%s]: NOT Computing scores: %s' % (self.user, self.feed)
+            if not silent:
+                logging.info(' ---> [%s]: NOT Computing scores: %s' % (self.user, self.feed))
             self.needs_unread_recalc = False
             self.save()
             return
 
-        print ' ---> [%s]: Computing scores: %s' % (self.user, self.feed)
+        logging.info(' ---> [%s]: Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
@@ -75,18 +77,12 @@ class UserSubscription(models.Model):
                                                 feed=self.feed,
                                                 story__story_date__gte=date_delta)
         read_stories_ids = [rs.story.id for rs in read_stories]
-        # print "Read Stories IDs: %s" % read_stories_ids
-        # print "Date delta: %s" % date_delta
         from django.db import connection
         connection.queries = []
         stories_db = Story.objects.filter(story_feed=self.feed,
                                           story_date__gte=date_delta)\
                                   .exclude(id__in=read_stories_ids)
-        # print "Stories_db: %s" % stories_db.count()
         stories = self.feed.format_stories(stories_db)
-        # print '  Stories: %s\t' % stories_db.count(),
-        # if read_stories.count(): print '(%s read)' % (read_stories.count())
-        # else: print ''
         classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
         classifier_authors = ClassifierAuthor.objects.filter(user=self.user, feed=self.feed)
         classifier_titles = ClassifierTitle.objects.filter(user=self.user, feed=self.feed)
@@ -112,7 +108,6 @@ class UserSubscription(models.Model):
             if max_score == 0 and min_score == 0:
                 feed_scores['neutral'] += 1
         
-        # print '  Feed scores: %s' % feed_scores
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']

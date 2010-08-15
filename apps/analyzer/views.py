@@ -1,3 +1,4 @@
+import logging
 from django.views.decorators.http import require_POST
 from apps.rss_feeds.models import Feed, Tag, StoryAuthor
 from apps.reader.models import UserSubscription
@@ -76,7 +77,7 @@ def save_classifier(request):
     _save_classifier(ClassifierTitle, 'title')
     _save_classifier(ClassifierFeed, 'publisher')
     
-    print " ---> [%s]: Feed training: %s" % (request.user, feed)
+    logging.info(" ---> [%s]: Feed training: %s" % (request.user, feed))
 
     response = dict(code=code, message=message, payload=payload)
     return response
