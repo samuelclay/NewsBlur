@@ -1,4 +1,4 @@
-import logging
+from utils import log as logging
 from django.shortcuts import get_object_or_404
 from apps.rss_feeds.models import Feed
 from utils import json

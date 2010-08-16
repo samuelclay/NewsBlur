@@ -1,7 +1,6 @@
 import sys
 import logging
 import os
-from utils import log
 
 # ===========================
 # = Directory Declaractions =

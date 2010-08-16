@@ -1,4 +1,4 @@
-import logging
+from utils import log as logging
 from django.views.decorators.http import require_POST
 from apps.rss_feeds.models import Feed, Tag, StoryAuthor
 from apps.reader.models import UserSubscription
