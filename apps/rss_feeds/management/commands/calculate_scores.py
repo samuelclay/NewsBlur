@@ -4,8 +4,8 @@ from apps.rss_feeds.models import Feed, Story
 from django.core.cache import cache
 from apps.reader.models import UserSubscription, UserStory
 from optparse import OptionParser, make_option
+from utils import log as logging
 import os
-import logging
 import errno
 import re
 

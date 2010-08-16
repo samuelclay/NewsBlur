@@ -5,7 +5,6 @@ from django.core.cache import cache
 from apps.rss_feeds.models import Feed
 from optparse import OptionParser, make_option
 import os
-import logging
 import errno
 
 class Command(BaseCommand):

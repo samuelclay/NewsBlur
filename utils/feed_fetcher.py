@@ -12,9 +12,9 @@ from django.db.models import Q
 from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils.feed_functions import fetch_address_from_page
+from utils import log as logging
 import sys
 import time
-import logging
 import datetime
 import traceback
 import multiprocessing
@@ -94,7 +94,7 @@ class ProcessFeed:
             ENTRY_SAME:0,
             ENTRY_ERR:0}
 
-        logging.debug(u'[%d] Processing %s' % (self.feed.id,
+        logging.debug(u' ---> [%d] Processing %s' % (self.feed.id,
                                                self.feed.feed_title))
             
         if hasattr(self.fpf, 'status'):
@@ -262,7 +262,6 @@ class Dispatcher:
                     if ret_entries.get(ENTRY_NEW):
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
-                            logging.debug('Deleting user sub cache: %s' % sub.user_id)
                             cache.delete('usersub:%s' % sub.user_id)
                             sub.calculate_feed_scores(silent=True)
                     if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):

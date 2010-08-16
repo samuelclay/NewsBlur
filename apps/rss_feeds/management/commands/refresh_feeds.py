@@ -1,13 +1,10 @@
 from django.core.management.base import BaseCommand
-from django.core.handlers.wsgi import WSGIHandler
-from apps.rss_feeds.models import Feed, Story
-from optparse import OptionParser, make_option
+from django.conf import settings
+from apps.rss_feeds.models import Feed
+from optparse import make_option
 from utils import feed_fetcher
 from utils.management_functions import daemonize
-import logging
 import socket
-import os
-import math
 import datetime
 
 
@@ -27,6 +24,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['daemonize']:
             daemonize()
+            
+        settings.LOG_TO_STREAM = True
             
         socket.setdefaulttimeout(options['timeout'])
         now = datetime.datetime.now()
@@ -48,8 +47,6 @@ class Command(BaseCommand):
             i += 1
         disp.add_jobs(feeds_queue, i)
         
-        print "Running jobs..."
+        print " ---> Fetching %s feeds..." % feeds.count()
         disp.run_jobs()
-        
-        print "Polling..."
         disp.poll()

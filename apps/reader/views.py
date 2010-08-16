@@ -1,4 +1,3 @@
-import logging
 import datetime
 import random
 from django.shortcuts import render_to_response, get_object_or_404
@@ -25,6 +24,7 @@ except:
 from utils import json, urlnorm
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page, format_relative_date
+from utils import log as logging
 
 SINGLE_DAY = 60*60*24
 
@@ -281,10 +281,16 @@ def load_single_feed(request):
 def load_feed_page(request):
     feed = get_object_or_404(Feed, id=request.REQUEST.get('feed_id'))
     feed_page, created = FeedPage.objects.get_or_create(feed=feed)
+    data = None
+    
     if not created:
         data = feed.feed_page.page_data
-    if created or not data:
+        
+    if created:
         data = "Give it 5-10 minutes...<br /><br />Your feed will be here in under 5 minutes (on average).<br />Soon there will be a progress bar. Until then, take a deep breath."
+        
+    if not data:
+        data = "There is something wrong with this feed. In the next week, there will be a way to correct this error."
     
     return HttpResponse(data, mimetype='text/html')
     

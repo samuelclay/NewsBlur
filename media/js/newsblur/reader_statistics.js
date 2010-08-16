@@ -188,7 +188,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
                 legend: { show: false },
                 grid: { hoverable: true, clickable: true },
                 yaxis: { tickDecimals: 0, min: 0 },
-                xaxis: { mode: 'time' }
+                xaxis: { mode: 'time', minTickSize: [1, 'month'], timeformat: '%b %y' }
             });
     },
     

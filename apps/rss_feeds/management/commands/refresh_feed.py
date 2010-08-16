@@ -7,7 +7,6 @@ from apps.reader.models import UserSubscription, UserStory
 from optparse import OptionParser, make_option
 from utils.management_functions import daemonize
 import os
-import logging
 import errno
 
 class Command(BaseCommand):

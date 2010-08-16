@@ -1,6 +1,7 @@
 import sys
 import logging
 import os
+from utils import log
 
 # ===========================
 # = Directory Declaractions =
@@ -156,23 +157,6 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.logger.LoggingPanel',
 )
 
-# ===========
-# = Logging =
-# ===========
-
-if len(logging._handlerList) < 1:
-    if PRODUCTION:
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)-12s: %(message)s',
-                            datefmt='%b %d %H:%M',
-                            filename=LOG_FILE,
-                            filemode='a')
-    else:
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)-12s: %(message)s',
-                            datefmt='%b %d %H:%M',
-                            handler=logging.StreamHandler)
-
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -185,6 +169,13 @@ LOGGING_LOG_SQL = True
 APPEND_SLASH = True
 SOUTH_TESTS_MIGRATE = False 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+# ===========
+# = Logging =
+# ===========
+
+LOG_LEVEL = logging.DEBUG
+LOG_TO_STREAM = False
 
 # ===============
 # = Django Apps =

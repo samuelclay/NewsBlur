@@ -6,7 +6,6 @@ from django.core.cache import cache
 from apps.reader.models import UserSubscription, UserStory
 from optparse import OptionParser, make_option
 import os
-import logging
 import errno
 import re
 import datetime
