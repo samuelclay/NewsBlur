@@ -556,6 +556,7 @@
 
                 if (typeof item == "number") {
                     var feed = this.model.feeds[item];
+                    if (!feed) continue;
                     var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
                     if (depth == 0) {
@@ -2321,6 +2322,7 @@
             for (var f in updated_feeds) {
                 var feed_id = updated_feeds[f];
                 var feed = this.model.get_feed(feed_id);
+                if (!feed) continue;
                 var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 var selected = $feed_on_page.hasClass('selected');
