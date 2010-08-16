@@ -1,5 +1,5 @@
 import datetime
-import logging
+from utils import log as logging
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import urlparse
-import logging
+from utils import log as logging
 import oauth2 as oauth
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect

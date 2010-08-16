@@ -7,7 +7,7 @@ import datetime
 import lxml.etree
 from utils import json, urlnorm
 import utils.opml as opml
-import logging
+from utils import log as logging
 
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)

@@ -1,5 +1,5 @@
 import datetime
-import logging
+from utils import log as logging
 
 class LastSeenMiddleware(object):
 

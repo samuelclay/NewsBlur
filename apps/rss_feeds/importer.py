@@ -6,7 +6,7 @@ import urlparse
 import multiprocessing
 import traceback
 import feedparser
-import logging
+from utils import log as logging
 from apps.rss_feeds.models import FeedPage
 
 class PageImporter(object):
