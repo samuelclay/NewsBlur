@@ -17,6 +17,8 @@ class Command(BaseCommand):
             help='Wait timeout in seconds when connecting to feeds.'),
         make_option('-V', '--verbose', action='store_true',
             dest='verbose', default=False, help='Verbose output.'),
+        make_option('-S', '--skip', type='int',
+            dest='skip', default=0, help='Skip stories per month < #.'),
         make_option('-w', '--workerthreads', type='int', default=4,
             help='Worker threads that will fetch feeds in parallel.'),
     )
@@ -26,9 +28,17 @@ class Command(BaseCommand):
             daemonize()
             
         settings.LOG_TO_STREAM = True
+        now = datetime.datetime.now()
+        
+        if options['skip']:
+            feeds = Feed.objects.filter(next_scheduled_update__lte=now,
+                                        average_stories_per_month__lt=options['skip'])
+            print " ---> Skipping %s feeds" % feeds.count()
+            for feed in feeds:
+                feed.set_next_scheduled_update()
+                print '.',
             
         socket.setdefaulttimeout(options['timeout'])
-        now = datetime.datetime.now()
         feeds = Feed.objects.filter(next_scheduled_update__lte=now)#.order_by('?')
 
         num_workers = min(len(feeds), options['workerthreads'])
