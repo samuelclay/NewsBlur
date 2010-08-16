@@ -667,11 +667,8 @@
 
             var titles = [
                 "Fetching your feeds",
-                "Reticulating splines",
                 "Fishing for feeds",
-                "Gathering gumdrops",
                 "Herding feeds",
-                "Feed fetch disco",
                 "Fetching your feeds",
                 "Feeds are being fetched"
             ];

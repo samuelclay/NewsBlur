@@ -489,20 +489,21 @@ class Feed(models.Model):
         
     def get_next_scheduled_update(self):
         # Use stories per month to calculate next feed update
-        updates_per_day = max(30, self.stories_last_month) / 30.0
-        # 1 update per day = 12 hours
+        updates_per_day = self.stories_last_month / 30.0
+        # 0 updates per day = 24 hours
+        # 1 update per day = 6 hours
         # > 1 update per day:
         #   2 updates = 3 hours
         #   4 updates = 1 hour
         #   10 updates = 20 minutes
-        updates_per_day_delay = 60 * 12 / (updates_per_day ** 1.55)
+        updates_per_day_delay = 6 * 60 / max(.25, updates_per_day ** 1.55)
         
         # Lots of subscribers = lots of updates
-        # 72 hours for 0 subscribers.
-        # 6 hours for 1 subscriber.
-        # 45 min for 2 subscribers.
-        # 10 min for 3 subscribers.
-        subscriber_bonus = 6 * 60 / max(.083, self.num_subscribers**3)
+        # 144 hours for 0 subscribers.
+        # 24 hours for 1 subscriber.
+        # 3 hours for 2 subscribers.
+        # ~53 min for 3 subscribers.
+        subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**3)
         
         slow_punishment = 0
         if 30 <= self.last_load_time < 60:
