@@ -11,7 +11,6 @@ from utils import feedparser
 from django.db.models import Q
 from django.db import IntegrityError
 from utils.story_functions import pre_process_story
-from utils.feed_functions import fetch_address_from_page
 from utils import log as logging
 import sys
 import time
@@ -47,10 +46,7 @@ class FetchFeed:
     def fetch(self):
         """ Downloads and parses a feed.
         """
-        current_process = multiprocessing.current_process()
-        identity = "X"
-        if current_process._identity:
-            identity = current_process._identity[0]
+        identity = self.get_identity()
         log_msg = u'%2s ---> Fetching %s (%d)' % (identity,
                                                  self.feed.feed_title,
                                                  self.feed.id)
@@ -70,13 +66,18 @@ class FetchFeed:
                                     agent=USER_AGENT,
                                     etag=self.feed.etag,
                                     modified=modified)
-            
-        # feed_xml, _ = FeedXML.objects.get_or_create(feed=self.feed)
-        # feed_xml.rss_xml = self.fpf
-        # feed_xml.save()
         
         return FEED_OK, self.fpf
-    
+        
+    def get_identity(self):
+        identity = "X"
+
+        current_process = multiprocessing.current_process()
+        if current_process._identity:
+            identity = current_process._identity[0]
+
+        return identity
+        
 class ProcessFeed:
     def __init__(self, feed, fpf, options):
         self.feed = feed
@@ -309,6 +310,13 @@ class Dispatcher:
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
+        
+        time_taken = datetime.datetime.now() - self.time_start
+        history = FeedUpdateHistory(
+            number_of_feeds=len(feed_queue),
+            seconds_taken=time_taken.seconds
+        )
+        history.save()
         if not self.options['single_threaded']:
             logging.debug("---> DONE WITH PROCESS: %s" % current_process.name)
             sys.exit()
@@ -348,12 +356,6 @@ class Dispatcher:
                               for key in self.entry_keys)
                     ))
             logging.debug(done)
-            time_taken = datetime.datetime.now() - self.time_start
-            history = FeedUpdateHistory(
-                number_of_feeds=self.feeds_count,
-                seconds_taken=time_taken.seconds
-            )
-            history.save()
             return
 
                 

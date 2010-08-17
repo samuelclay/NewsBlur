@@ -43,7 +43,7 @@ def opml_upload(request):
 
         
 def reader_authorize(request):
-    logging.info(" ---> [%s]: Authorize Google Reader import (%s) - %s" % (
+    logging.info(" ---> [%s] Authorize Google Reader import (%s) - %s" % (
         request.user,
         request.session.session_key,
         request.META['REMOTE_ADDR'],
@@ -85,7 +85,7 @@ def reader_callback(request):
     access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
     consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
 
-    logging.info(" ---> [%s]: Google Reader callback (%s) - %s" % (
+    logging.info(" ---> [%s] Google Reader callback (%s) - %s" % (
         request.user,
         request.session.session_key,
         request.META['REMOTE_ADDR']

@@ -23,7 +23,7 @@ class LoginForm(forms.Form):
         if username:
             self.user_cache = authenticate(username=username, password=password)
             if self.user_cache is None:
-                print " ---> *** Bad Login: %s" % username
+                print " ***> [%s] Bad Login" % username
                 raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(_("This account is inactive."))

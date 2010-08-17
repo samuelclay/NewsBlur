@@ -1,6 +1,4 @@
 import datetime
-import time
-import sys
 from django.utils.translation import ungettext
 from utils import feedfinder
 
@@ -15,18 +13,6 @@ def encode(tstr):
     except UnicodeDecodeError:
         # it's already UTF8.. sigh
         return tstr.decode('utf-8').encode('utf-8')
-
-def prints(tstr):
-    """ lovely unicode
-    """
-    sys.stdout.write('%s\n' % (tstr.encode(sys.getdefaultencoding(),
-                         'replace')))
-    sys.stdout.flush()
-
-def mtime(ttime):
-    """ datetime auxiliar function.
-    """
-    return datetime.datetime.fromtimestamp(time.mktime(ttime))
 
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):

@@ -58,13 +58,13 @@ class UserSubscription(models.Model):
     def calculate_feed_scores(self, silent=False):
         if not self.feed.fetched_once:
             if not silent:
-                logging.info(' ---> [%s]: NOT Computing scores: %s' % (self.user, self.feed))
+                logging.info(' ---> [%s] NOT Computing scores: %s' % (self.user, self.feed))
             self.needs_unread_recalc = False
             self.save()
             return
 
         if not silent:
-            logging.info(' ---> [%s]: Computing scores: %s' % (self.user, self.feed))
+            logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.

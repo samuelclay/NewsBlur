@@ -66,7 +66,7 @@ def login(request):
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.info(" ---> Login: %s" % form.get_user())
+            logging.info(" ---> [%s] Login" % form.get_user())
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
@@ -78,7 +78,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.info(" ---> NEW SIGNUP: %s" % new_user)
+            logging.info(" ---> [%s] NEW SIGNUP" % new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
@@ -93,9 +93,10 @@ def logout(request):
     
 @json.json_view
 def load_feeds(request):
-    user = get_user(request)
-    feeds = {}
+    user            = get_user(request)
+    feeds           = {}
     not_yet_fetched = False
+
     
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
@@ -111,6 +112,7 @@ def load_feeds(request):
             # > 200 means that we counted enough, just move to refresh during live.
             sub.calculate_feed_scores()
             updated_count += 1
+            
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
             'feed_title': sub.feed.feed_title,
@@ -120,6 +122,7 @@ def load_feeds(request):
             'ng': sub.unread_count_negative,
             'updated': format_relative_date(sub.feed.last_update)
         }
+        
         if not sub.feed.fetched_once:
             not_yet_fetched = True
             feeds[sub.feed.pk]['not_yet_fetched'] = True
@@ -231,10 +234,10 @@ def load_single_feed(request):
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
         # FIXME: Why is this happening for `conesus` when logged into another account?!
-        logging.info(" ***> UserSub DNE, creating: %s %s" % (user, feed))
+        logging.info(" ***> [%s] UserSub DNE, creating: %s" % (user, feed))
         usersub = UserSubscription.objects.create(user=user, feed=feed)
             
-    logging.info("Loading feed: [%s] %s" % (request.user, feed.feed_title))
+    logging.info(" ---> [%s] Loading feed: %s" % (request.user, feed.feed_title))
     
     if stories:
         last_read_date = stories[-1]['story_date']
@@ -312,7 +315,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
-    logging.info(" ---> Marking all as read [%s]: %s days" % (request.user, days,))
+    logging.info(" ---> [%s] Marking all as read: %s days" % (request.user, days,))
     return dict(code=code)
     
 @ajax_login_required
@@ -321,7 +324,7 @@ def mark_story_as_read(request):
     story_ids = request.REQUEST['story_id'].split(',')
     feed_id = int(request.REQUEST['feed_id'])
     
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed_id)
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed_id).select_related('feed')
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
         usersub.save()
@@ -329,7 +332,7 @@ def mark_story_as_read(request):
     data = dict(code=0, payload=story_ids)
     
     for story_id in story_ids:
-        logging.debug("Marked Read: [%s] %s (%s)" % (request.user, story_id, feed_id))
+        logging.debug(" ---> [%s] Read story in feed: %s" % (request.user, usersub.feed))
         m = UserStory(story_id=int(story_id), user=request.user, feed_id=feed_id)
         try:
             m.save()
@@ -354,7 +357,7 @@ def mark_feed_as_read(request):
     else:
         code = 1
         
-    logging.info(" ---> Marking feed as read [%s]: %s" % (request.user, feed,))
+    logging.info(" ---> [%s] Marking feed as read: %s" % (request.user, feed,))
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return dict(code=code)
     
@@ -406,6 +409,8 @@ def add_url(request):
     url = request.POST['url']
     folder = request.POST['folder']
     feed = None
+    
+    logging.info(" ---> [%s] Adding URL: %s (in %s)" % (request.user, url, folder))
     
     if url:
         url = urlnorm.normalize(url)
@@ -466,6 +471,8 @@ def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST['parent_folder']
     
+    logging.info(" ---> [%s] Adding Folder: %s (in %s)" % (request.user, folder, parent_folder))
+    
     if folder:
         code = 1
         message = ""
@@ -500,7 +507,7 @@ def delete_feed(request):
         for k, folder in enumerate(old_folders):
             if isinstance(folder, int):
                 if folder == feed_id:
-                    logging.info(" ---> [%s] DEL'ED: %s'th item: %s folders/feeds" % (request.user, k, len(old_folders)))
+                    logging.info(" ---> [%s] Delete folder: %s'th item: %s folders/feeds" % (request.user, k, len(old_folders)))
                     # folders.remove(folder)
                 else:
                     new_folders.append(folder)
@@ -536,6 +543,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     page = int(request.POST.get('page', 0))
+    logging.info(" ---> [%s] Browse features: Page #%s" % (request.user, page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{'description': f['description'], 'date': f['date'].strftime("%b %d, %Y")} for f in features]
     return features
@@ -547,7 +555,7 @@ def save_feed_order(request):
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
         assert folders_list is not None
-        logging.info(" ---> [%s]: Feed re-ordering: %s folders/feeds" % (request.user, len(folders_list)))
+        logging.info(" ---> [%s] Feed re-ordering: %s folders/feeds" % (request.user, len(folders_list)))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()
@@ -571,7 +579,7 @@ def get_feeds_trainer(request):
             classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
             classifiers.append(classifier)
     
-    logging.info(" ---> [%s] Loading Trainer: %s" % (request.user, len(classifiers)))
+    logging.info(" ---> [%s] Loading Trainer: %s feeds" % (request.user, len(classifiers)))
     
     return classifiers
     
