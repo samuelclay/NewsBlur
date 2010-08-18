@@ -2737,6 +2737,8 @@
             var percentage = 0;
             var factor = 17500 * _.keys(this.model.feeds).length / 40000;
             
+            this.flags['count_unreads_after_import_finished'] = false;
+            
             $('.NB-progress-title', $progress).text('Counting is difficult');
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
