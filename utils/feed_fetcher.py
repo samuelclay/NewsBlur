@@ -264,9 +264,7 @@ class Dispatcher:
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
                             cache.delete('usersub:%s' % sub.user_id)
-                            # sub.calculate_feed_scores(silent=True)
-                            sub.needs_unread_recalc = True
-                            sub.save()
+                            sub.calculate_feed_scores(silent=True)
                     if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
                         feed.get_stories(force=True)
                 

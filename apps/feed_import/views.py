@@ -144,7 +144,8 @@ def import_from_google_reader(request):
             reader_importer = GoogleReaderImporter(content, request.user)
             reader_importer.process()
             code = 1
-            del request.session['import_from_google_reader']
+            if 'import_from_google_reader' in request.session:
+                del request.session['import_from_google_reader']
 
     return dict(code=code)
 
