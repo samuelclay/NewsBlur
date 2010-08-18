@@ -6,4 +6,5 @@ urlpatterns = patterns('apps.feed_import.views',
     url(r'^authorize/$', views.reader_authorize, name='opml-reader-authorize'),
     url(r'^callback/$', views.reader_callback, name='opml-reader-callback'),
     url(r'^signup/$', views.import_signup, name='import-signup')
+    url(r'^import_from_google_reader/$', views.import_from_google_reader, name='import-from-google-reader')
 )

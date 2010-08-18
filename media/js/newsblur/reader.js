@@ -59,12 +59,16 @@
         // = Initialization =
         // ==================
         
-        this.load_feeds();
+        if (NEWSBLUR.Flags['start_import_from_google_reader']) {
+          this.start_import_from_google_reader();
+        } else {
+          this.load_feeds();
+          this.setup_feed_refresh();
+        }
         this.apply_resizable_layout();
         this.cornerize_buttons();
         this.setup_feed_page_iframe_load();
         this.load_intelligence_slider();
-        this.setup_feed_refresh();
         this.handle_mouse_indicator_hover();
         this.position_mouse_indicator();
         this.handle_login_and_signup_forms();
@@ -2293,6 +2297,8 @@
             var self = this;
             var FEED_REFRESH_INTERVAL = (1000 * 60) / 2; // 1/2 minutes
             
+            clearInterval(this.flags.feed_refresh);
+            
             this.flags.feed_refresh = setInterval(function() {
                 self.model.refresh_feeds($.rescope(self.post_feed_refresh, self), self.flags['has_unfetched_feeds']);
             }, FEED_REFRESH_INTERVAL);
@@ -2644,6 +2650,30 @@
                         }, 10000);
                 });
             }
+        },
+        
+        // =============================
+        // = Import from Google Reader =
+        // =============================
+        
+        start_import_from_google_reader: function() {
+          
+        },
+        
+        finish_import_from_google_reader: function(e, data) {
+          if (data.code >= 1) {
+            this.start_count_unreads_after_import();
+          }
+        },
+        
+        start_count_unreads_after_import: function() {
+          
+        },
+        
+        finish_count_unreads_after_import: function(e, data) {
+          this.setup_feed_refresh();
+          // this.hide
+          this.post_feed_refresh(e, data);
         },
         
         // ==========

@@ -111,13 +111,8 @@ def json_view(func):
             # print message
             mail_admins(subject, message, fail_silently=True)
 
-            # Come what may, we're returning JSON.
-            if hasattr(e, 'message'):
-                msg = e.message
-            else:
-                msg = _('Internal error')+': '+str(e)
             response = {'result': 'error',
-                        'text': msg}
+                        'text': unicode(e)}
 
         json = json_encode(response)
         return HttpResponse(json, mimetype='application/json')

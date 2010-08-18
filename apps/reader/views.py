@@ -16,7 +16,6 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.feed_import.views import import_from_google_reader
 try:
     from apps.rss_feeds.models import Feed, Story, FeedPage
 except:
@@ -41,10 +40,6 @@ def index(request):
         login_form = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
 
-    if request.session.get('import_from_google_reader', False):
-        import_from_google_reader(request.user)
-        del request.session['import_from_google_reader']
-        
     features = Feature.objects.all()[:3]
     feature_form = None
     if request.user.is_staff:
@@ -56,7 +51,7 @@ def index(request):
         'signup_form': signup_form,
         'feature_form': feature_form,
         'features': features,
-        'import_from_google_reader': import_from_google_reader,
+        'start_import_from_google_reader': request.session.get('import_from_google_reader', False),
         'howitworks_page': howitworks_page,
     }, context_instance=RequestContext(request))
 
@@ -324,7 +319,7 @@ def mark_story_as_read(request):
     story_ids = request.REQUEST['story_id'].split(',')
     feed_id = int(request.REQUEST['feed_id'])
     
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed_id).select_related('feed')
+    usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
         usersub.save()

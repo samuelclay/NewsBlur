@@ -126,12 +126,14 @@ def reader_callback(request):
     
     return HttpResponseRedirect(reverse('import-signup'))
     
-def import_from_google_reader(user):
+@json.json_view
+def import_from_google_reader(request):
     scope = "http://www.google.com/reader/api"
     sub_url = "%s/0/subscription/list" % scope
-
-    if user.is_authenticated():
-        user_tokens = OAuthToken.objects.filter(user=user)
+    code = 0
+    
+    if request.user.is_authenticated():
+        user_tokens = OAuthToken.objects.filter(user=request.user)
         if user_tokens.count():
             user_token = user_tokens[0]
             consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
@@ -139,8 +141,11 @@ def import_from_google_reader(user):
             client = oauth.Client(consumer, token)
 
             resp, content = client.request(sub_url, 'GET')
-            reader_importer = GoogleReaderImporter(content, user)
-            return reader_importer.process()
+            reader_importer = GoogleReaderImporter(content, request.user)
+            reader_importer.process()
+            code = 1
+
+    return dict(code=code)
 
 def import_signup(request):
     if request.method == "POST":
