@@ -506,7 +506,7 @@ a img {
 /* = Feeds Progress Bar = */
 /* ====================== */
 
-#NB-feeds-progress {
+#NB-progress {
   height: 40px;
   width: 100%;
   position: absolute;
@@ -522,11 +522,11 @@ a img {
   z-index: 1;
 }
 
-.NB-feeds-progress-container {
+.NB-progress-container {
   border-top: 1px solid #E0E0E0;
 }
 
-#NB-feeds-progress .NB-feeds-progress-close {
+#NB-progress .NB-progress-close {
   width: 11px;
   height: 11px;
   float: right;
@@ -535,19 +535,47 @@ a img {
   background: transparent url('../img/icons/close.png') no-repeat 0 0;
 }
 
-#NB-feeds-progress .NB-feeds-progress-title {
+#NB-progress .NB-progress-title {
   padding: 5px 15px 0;
   font-size: 11px;
   text-transform: uppercase;
   height: 14px;
 }
 
-#NB-feeds-progress .NB-feeds-progress-bar {
+#NB-progress .NB-progress-bar {
   height:6px;
   margin:6px 50px 0;
 }
 
-#NB-feeds-progress .NB-feeds-progress-counts {
+#NB-progress .NB-progress-link {
+    display: none;
+    margin: -2px 0 0;
+}
+
+#NB-progress .NB-progress-link a {
+    -moz-box-shadow:1px 1px 1px #202020;
+    -webkit-box-shadow:1px 1px 1px #202020;
+    box-shadow:1px 1px 1px #202020;
+    -moz-border-radius:4px;
+    border-radius: 4px;
+    border:1px solid #606060;
+    font-size:12px;
+    margin:0 4px 0;
+    padding:0px 8px;
+    text-decoration:none;
+    text-transform:uppercase;
+    background-color: #217412;
+    color: #FFF;
+}
+
+#NB-progress.NB-progress-error .NB-progress-link {
+    display: block;
+}
+#NB-progress.NB-progress-error .NB-progress-bar {
+    display: none;
+}
+
+#NB-progress .NB-progress-counts {
   float: left;
   font-size: 10px;
   color: #B0B0B0;
@@ -555,7 +583,7 @@ a img {
   width: 50px;
 }
 
-#NB-feeds-progress .NB-feeds-progress-percentage {
+#NB-progress .NB-progress-percentage {
   float: right;
   clear: both;
   color: #B0B0B0;
@@ -1923,12 +1951,13 @@ a.NB-splash-link:hover {
     margin: 0 4px;
 }
 
-.NB-add .NB-opml-reader-oauth {
+.NB-add .NB-google-reader-oauth {
     margin: 4px 0 6px 0;
     text-decoration: none;
     float: left;
     display: block;
 }
+
 /* ================ */
 /* = Manage Feeds = */
 /* ================ */

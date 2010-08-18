@@ -61,7 +61,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         'Import feeds'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('a', { href: NEWSBLUR.URLs['opml-reader-authorize'], className: 'NB-opml-reader-oauth NB-modal-submit-save NB-modal-submit-button' }, [
+                        $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-save NB-modal-submit-button' }, [
                             'Import from Google Reader',
                             $.make('img', { className: 'NB-add-google-reader-arrow', src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/arrow_right.png' })
                         ]),

@@ -478,6 +478,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback, callback, {
             'ajax_group': 'statistics'
         });
+    },
+    
+    start_import_from_google_reader: function(callback) {
+        this.make_request('/import/import_from_google_reader/', {}, callback);
     }
     
 };

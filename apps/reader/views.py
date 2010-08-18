@@ -44,7 +44,7 @@ def index(request):
     feature_form = None
     if request.user.is_staff:
         feature_form = FeatureForm()
-    
+
     howitworks_page = random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
         'login_form': login_form,
@@ -100,14 +100,8 @@ def load_feeds(request):
         return data
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
-    updated_count = 0
     
     for sub in user_subs:
-        if updated_count < 200 and sub.needs_unread_recalc:
-            # > 200 means that we counted enough, just move to refresh during live.
-            sub.calculate_feed_scores()
-            updated_count += 1
-            
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
             'feed_title': sub.feed.feed_title,

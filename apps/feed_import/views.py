@@ -55,7 +55,7 @@ def reader_authorize(request):
                          "scope=%s&oauth_callback=http://%s%s") % (
                             scope,
                             Site.objects.get_current().domain,
-                            reverse('opml-reader-callback'),
+                            reverse('google-reader-callback'),
                          )
     authorize_url = 'https://www.google.com/accounts/OAuthAuthorizeToken'
     
@@ -131,7 +131,7 @@ def import_from_google_reader(request):
     scope = "http://www.google.com/reader/api"
     sub_url = "%s/0/subscription/list" % scope
     code = 0
-    
+
     if request.user.is_authenticated():
         user_tokens = OAuthToken.objects.filter(user=request.user)
         if user_tokens.count():
@@ -144,6 +144,7 @@ def import_from_google_reader(request):
             reader_importer = GoogleReaderImporter(content, request.user)
             reader_importer.process()
             code = 1
+            del request.session['import_from_google_reader']
 
     return dict(code=code)
 

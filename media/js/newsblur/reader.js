@@ -21,7 +21,7 @@
             $intelligence_slider: $('.NB-intelligence-slider'),
             $mouse_indicator: $('#mouse-indicator'),
             $feed_link_loader: $('#NB-feeds-list-loader'),
-            $feeds_progress: $('#NB-feeds-progress')
+            $feeds_progress: $('#NB-progress')
         };
         this.flags = {
             'feed_view_images_loaded': {},
@@ -63,7 +63,6 @@
           this.start_import_from_google_reader();
         } else {
           this.load_feeds();
-          this.setup_feed_refresh();
         }
         this.apply_resizable_layout();
         this.cornerize_buttons();
@@ -538,7 +537,6 @@
             this.make_feeds_folder($feed_list, folders, 0);
             this.$s.$feed_link_loader.fadeOut(250);
             
-            this.check_feed_fetch_progress();
             
             if (!folders.length) {
                 this.setup_ftux_add_feed_callout();
@@ -550,6 +548,11 @@
             
             $('.feed', $feed_list).tsort('.feed_title');
             $('.folder', $feed_list).tsort('.folder_title');
+            
+            if (NEWSBLUR.Globals.is_authenticated) {
+                this.start_count_unreads_after_import();
+                this.force_feed_refresh($.rescope(this.finish_count_unreads_after_import, this));
+            }
         },
         
         make_feeds_folder: function($feeds, items, depth) {
@@ -669,35 +672,39 @@
             var $progress = this.$s.$feeds_progress;
             var percentage = parseInt(this.counts['fetched_feeds'] / (this.counts['unfetched_feeds'] + this.counts['fetched_feeds']) * 100, 10);
 
-            var titles = [
-                "Fetching your feeds",
-                "Fishing for feeds",
-                "Herding feeds",
-                "Fetching your feeds",
-                "Feeds are being fetched"
-            ];
-            $('.NB-feeds-progress-title', $progress).text(titles[Math.floor(Math.random()*titles.length)]);
-            $('.NB-feeds-progress-counts-fetched', $progress).text(this.counts['fetched_feeds']);
-            $('.NB-feeds-progress-counts-total', $progress).text(this.counts['unfetched_feeds'] + this.counts['fetched_feeds']);
-            $('.NB-feeds-progress-percentage', $progress).text(percentage + '%');
-            $('.NB-feeds-progress-bar', $progress).progressbar({
+            $('.NB-progress-title', $progress).text('Fetching your feeds');
+            $('.NB-progress-counts', $progress).show();
+            $('.NB-progress-counts-fetched', $progress).text(this.counts['fetched_feeds']);
+            $('.NB-progress-counts-total', $progress).text(this.counts['unfetched_feeds'] + this.counts['fetched_feeds']);
+            $('.NB-progress-percentage', $progress).show().text(percentage + '%');
+            $('.NB-progress-bar', $progress).progressbar({
                 value: percentage
             });
             
             if (!$progress.is(':visible')) {
                 setTimeout(function() {
-                    $progress.css({'display': 'block', 'opacity': 0}).animate({
-                        'opacity': 1,
-                        'bottom': 31
-                    }, {
-                        'duration': 750
-                    });
-                    self.$s.$feed_list.animate({'bottom': 73}, {'duration': 750});
+                    self.show_progress_bar();
                 }, 1000);
             }
         },
+        
+        show_progress_bar: function($progress) {
+            $progress = $progress || this.$s.$feeds_progress;
+            
+            if (!$progress.is(':visible')) {
+                $progress.css({'display': 'block', 'opacity': 0}).animate({
+                    'opacity': 1,
+                    'bottom': 31
+                }, {
+                    'queue': false,
+                    'duration': 750
+                });
+            
+                this.$s.$feed_list.animate({'bottom': 73}, {'duration': 750, 'queue': false});
+            }
+        },
 
-        hide_unfetched_feed_progress: function(permanent) {
+        hide_progress_bar: function(permanent) {
             var $progress = this.$s.$feeds_progress;
           
             if (permanent) {
@@ -709,11 +716,20 @@
                 'bottom': 0
             }, {
                 'duration': 750,
+                'queue': false,
                 'complete': function() {
                     $progress.css({'display': 'none'});
                 }
             });
-            this.$s.$feed_list.animate({'bottom': '30px'}, {'duration': 750});
+            this.$s.$feed_list.animate({'bottom': '30px'}, {'duration': 750, 'queue': false});
+        },
+        
+        hide_unfetched_feed_progress: function(permanent) {
+            if (permanent) {
+                this.model.preference('hide_fetch_progress', true);
+            }
+            
+            this.hide_progress_bar();
         },
         
         load_sortable_feeds: function() {
@@ -2655,31 +2671,126 @@
         // =============================
         // = Import from Google Reader =
         // =============================
-        
+
         start_import_from_google_reader: function() {
-          
+            var self = this;
+            var $progress = this.$s.$feeds_progress;
+            var $bar = $('.NB-progress-bar', $progress);
+            var percentage = 0;
+            
+            $('.NB-progress-title', $progress).text('Importing from Google Reader');
+            $('.NB-progress-counts', $progress).hide();
+            $('.NB-progress-percentage', $progress).hide();
+            $bar.progressbar({
+                value: percentage
+            });
+            
+            var animate = function() {
+                var time = 50;
+                if (percentage > 90) {
+                    time = 500;
+                } else if (percentage > 80) {
+                    time = 400;
+                } else if (percentage > 70) {
+                    time = 300;
+                } else if (percentage > 60) {
+                    time = 200;
+                } else if (percentage > 50) {
+                    time = 100;
+                }
+                setTimeout(function() {
+                    if (!self.flags['import_from_google_reader_finished']) {
+                        percentage += 1;
+                        $bar.progressbar({value: percentage});
+                        animate();
+                    }
+                }, time);
+            };
+            animate();
+            
+            this.show_progress_bar();
+            
+            this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
         },
-        
+
         finish_import_from_google_reader: function(e, data) {
-          if (data.code >= 1) {
-            this.start_count_unreads_after_import();
-          }
+            var $progress = this.$s.$feeds_progress;
+            var $bar = $('.NB-progress-bar', $progress);
+            this.flags['import_from_google_reader_finished'] = true;
+            
+            if (data.code >= 1) {
+                $bar.progressbar({value: 100});
+                this.load_feeds();
+            } else {
+                NEWSBLUR.log(['Import Error!', data]);
+                this.$s.$feed_link_loader.fadeOut(250);
+                $progress.addClass('NB-progress-error');
+                $('.NB-progress-title', $progress).text('Error importing Google Reader');
+                $('.NB-progress-link', $progress).html($.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-splash-link' }, 'Try importing again'));
+            }
         },
-        
+
         start_count_unreads_after_import: function() {
-          
+            var self = this;
+            var $progress = this.$s.$feeds_progress;
+            var $bar = $('.NB-progress-bar', $progress);
+            var percentage = 0;
+            var factor = 17500 * _.keys(this.model.feeds).length / 40000;
+            
+            $('.NB-progress-title', $progress).text('Counting is difficult');
+            $('.NB-progress-counts', $progress).hide();
+            $('.NB-progress-percentage', $progress).hide();
+            $bar.progressbar({
+                value: percentage
+            });
+            
+            var animate = function() {
+                // 17,500 ticks
+                var time = factor;
+                if (percentage > 90) {
+                    time = factor * 100;
+                } else if (percentage > 80) {
+                    time = factor * 50;
+                } else if (percentage > 70) {
+                    time = factor * 20;
+                } else if (percentage > 60) {
+                    time = factor * 8;
+                } else if (percentage > 50) {
+                    time = factor * 2;
+                }
+                setTimeout(function() {
+                    if (!self.flags['count_unreads_after_import_finished']) {
+                        percentage += 1;
+                        $bar.progressbar({value: percentage});
+                        animate();
+                    }
+                }, time);
+            };
+            animate();
+            
+            setTimeout(function() {
+                if (!self.flags['count_unreads_after_import_finished']) {
+                    self.show_progress_bar();
+                }
+            }, 500);
         },
-        
+
         finish_count_unreads_after_import: function(e, data) {
-          this.setup_feed_refresh();
-          // this.hide
-          this.post_feed_refresh(e, data);
+            $('.NB-progress-bar', this.$s.$feeds_progress).progressbar({
+                value: 100
+            });
+            this.flags['count_unreads_after_import_finished'] = true;
+            this.$s.$feed_link_loader.fadeOut(250);
+            this.setup_feed_refresh();
+            if (!this.flags['has_unfetched_feeds']) {
+                this.hide_progress_bar();
+            }
         },
-        
+
         // ==========
         // = Events =
         // ==========
-        
+
         handle_clicks: function(elem, e) {
             var self = this;
             // var start = (new Date().getMilliseconds());
@@ -2868,7 +2979,7 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
-            $.targetIs(e, { tagSelector: '.NB-feeds-progress-close' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-progress-close' }, function($t, $p){
                 e.preventDefault();
                 self.hide_unfetched_feed_progress(true);
             });

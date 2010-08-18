@@ -73,7 +73,7 @@
           {% endif %}
       
           <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-          <a href="{% url opml-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
+          <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
         </div>
       </div>
       
@@ -268,17 +268,18 @@
     
     <ul class="left-center" id="feed_list"></ul>
     
-    <div id="NB-feeds-progress">
-      <div class="NB-feeds-progress-container">
-        <div class="NB-feeds-progress-close"></div>
-        <div class="NB-feeds-progress-title">Fetching your feeds</div>
-        <div class="NB-feeds-progress-percentage"></div>
-        <div class="NB-feeds-progress-counts">
-          <span class="NB-feeds-progress-counts-fetched"></span>
+    <div id="NB-progress">
+      <div class="NB-progress-container">
+        <div class="NB-progress-close"></div>
+        <div class="NB-progress-title">Fetching your feeds</div>
+        <div class="NB-progress-percentage"></div>
+        <div class="NB-progress-link"></div>
+        <div class="NB-progress-counts">
+          <span class="NB-progress-counts-fetched"></span>
           /
-          <span class="NB-feeds-progress-counts-total"></span>
+          <span class="NB-progress-counts-total"></span>
         </div>
-        <div class="NB-feeds-progress-bar"></div>
+        <div class="NB-progress-bar"></div>
       </div>
     </div>
     

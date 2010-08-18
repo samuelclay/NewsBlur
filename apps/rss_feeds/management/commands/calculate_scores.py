@@ -12,6 +12,7 @@ import re
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-a", "--all", dest="all", action="store_true", help="All feeds [for a user, or everybody]"),
+        make_option("-s", "--silent", dest="silent", action="store_true", help="Inverse verbosity."),
         make_option("-u", "--user", dest="user", nargs=1, help="Specify user id or username"),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
     )
@@ -32,7 +33,7 @@ class Command(BaseCommand):
                 feeds = feeds.filter(user__username=options['user'])
             
         for f in feeds:
-            f.calculate_feed_scores()
+            f.calculate_feed_scores(silent=options['silent'])
         
 def daemonize():
     """
