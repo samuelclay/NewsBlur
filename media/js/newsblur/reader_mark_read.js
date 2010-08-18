@@ -118,8 +118,10 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
         if (NEWSBLUR.Globals.is_authenticated) {
             this.model.save_mark_read(days, function() {
+                NEWSBLUR.reader.start_count_unreads_after_import();
+                $.modal.close();
                 NEWSBLUR.reader.force_feed_refresh(function() {
-                    $.modal.close();
+                    NEWSBLUR.reader.finish_count_unreads_after_import();
                 });
             });
         } else {
