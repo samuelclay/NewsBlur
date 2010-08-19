@@ -9,6 +9,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from utils.compressed_textfield import StoryField
 
 DAYS_OF_UNREAD = 14
+MONTH_AGO = datetime.datetime.now() - datetime.timedelta(days=30)
 
 class UserSubscription(models.Model):
     """
@@ -56,6 +57,11 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self, silent=False):
+        if self.user.profile.last_seen_on < MONTH_AGO:
+            if not silent:
+                logging.info(' ---> [%s] SKIPPING Computing scores: %s' % (self.user, self.feed))
+            return
+        
         if not self.feed.fetched_once:
             if not silent:
                 logging.info(' ---> [%s] NOT Computing scores: %s' % (self.user, self.feed))
