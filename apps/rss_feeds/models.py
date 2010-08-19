@@ -540,7 +540,7 @@ class Feed(models.Model):
         total, random_factor = self.get_next_scheduled_update()
 
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-                                minutes = total + random_factor)
+                                minutes = int(total + random_factor))
             
         self.next_scheduled_update = next_scheduled_update
 

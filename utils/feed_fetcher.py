@@ -231,7 +231,6 @@ class Dispatcher:
         connection.close()
         
         current_process = multiprocessing.current_process()
-        lock = multiprocessing.Lock()
         
         identity = "X"
         if current_process._identity:
@@ -245,7 +244,7 @@ class Dispatcher:
             }
             start_time = datetime.datetime.now()
         
-            feed.set_next_scheduled_update(lock=lock)
+            feed.set_next_scheduled_update()
             
             ### Uncomment to test feed fetcher
             # from random import randint
