@@ -90,8 +90,8 @@ class Feed(models.Model):
             self.count_errors_in_history(fetch_history)
         
     def count_errors_in_history(self, fetch_history):
-        non_errors = [h for h in fetch_history if h['status_code'] < 400]
-        errors = [h for h in fetch_history if h['status_code'] >= 400]
+        non_errors = [h for h in fetch_history if int(h['status_code']) < 400]
+        errors = [h for h in fetch_history if int(h['status_code']) >= 400]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             self.has_exception = True
