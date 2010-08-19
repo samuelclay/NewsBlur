@@ -429,6 +429,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             return NEWSBLUR.Preferences[preference];
         }
         
+        if (NEWSBLUR.Preferences[preference] == value) {
+          return $.isFunction(callback) && callback();
+        }
+        
         NEWSBLUR.Preferences[preference] = value;
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/profile/set_preference', {

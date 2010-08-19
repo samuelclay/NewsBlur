@@ -85,19 +85,11 @@ def reader_callback(request):
     access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
     consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
 
-    logging.info(" ---> [%s] Google Reader callback (%s) - %s" % (
-        request.user,
-        request.session.session_key,
-        request.META['REMOTE_ADDR']
-    ))
-
     if request.user.is_authenticated():
         user_token = OAuthToken.objects.get(user=request.user)
-        logging.info("Authenticated user_token: %s" % user_token)
     else:
         try:
             user_token = OAuthToken.objects.get(session_id=request.session.session_key)
-            logging.info("Found session user_token: %s" % user_token)
         except OAuthToken.DoesNotExist:
             user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
             logging.info("Found ip user_tokens: %s" % user_tokens)
@@ -105,7 +97,7 @@ def reader_callback(request):
                 user_token = user_tokens[0]
                 user_token.session_id = request.session.session_key
                 user_token.save()
-                logging.info("Found ip token in user_tokens: %s" % user_token)
+                
     logging.info("Google Reader request.GET: %s" % request.GET)
     # Authenticated in Google, so verify and fetch access tokens
     token = oauth.Token(user_token.request_token, user_token.request_token_secret)
@@ -113,9 +105,10 @@ def reader_callback(request):
     client = oauth.Client(consumer, token)
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
+    original_token = dict(urlparse.parse_qsl(token))
     logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (token, access_token, content))
-    user_token.access_token = access_token.get('oauth_token') or request.GET.get('oauth_token')
-    user_token.access_token_secret = access_token.get('oauth_token_secret') or request.GET.get('oauth_token_secret')
+    user_token.access_token = access_token.get('oauth_token') or original_token.get('oauth_token')
+    user_token.access_token_secret = access_token.get('oauth_token_secret') or original_token.get('oauth_token_secret')
     user_token.save()
     
     # Fetch imported feeds on next page load

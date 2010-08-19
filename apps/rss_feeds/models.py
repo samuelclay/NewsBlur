@@ -32,6 +32,7 @@ class Feed(models.Model):
     num_subscribers = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
     fetched_once = models.BooleanField(default=False)
+    has_exception = models.BooleanField(default=False)
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
@@ -70,7 +71,10 @@ class Feed(models.Model):
         old_fetch_histories = self.feed_fetch_history.all()[10:]
         for history in old_fetch_histories:
             history.delete()
-    
+        
+        if status_code >= 400:
+            self.count_errors_in_history(self.feed_fetch_history)
+        
     def save_page_history(self, status_code, message, exception=None):
         PageFetchHistory.objects.create(feed=self, 
                                         status_code=status_code,
@@ -79,7 +83,19 @@ class Feed(models.Model):
         old_fetch_histories = self.page_fetch_history.all()[10:]
         for history in old_fetch_histories:
             history.delete()
+            
+        if status_code >= 400:
+            self.count_errors_in_history(self.page_fetch_history)
         
+    def count_errors_in_history(self, history_model):
+        fetch_histories = history_model.all()
+        non_errors = [h for h in fetch_histories if h.status_code < 400]
+        errors = [h for h in fetch_histories if h.status_code >= 400]
+        if len(non_errors) == 0 and len(errors) >= 1:
+            self.exception = True
+            self.is_active = False
+            self.save()
+    
     def count_subscribers(self, verbose=False, lock=None):
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)

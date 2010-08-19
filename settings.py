@@ -72,6 +72,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.cache.CacheMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -116,6 +117,7 @@ COMPRESS_JS = {
             'js/newsblur/reader_mark_read.js',
             'js/newsblur/reader_preferences.js',
             'js/newsblur/reader_statistics.js',
+            'js/newsblur/reader_feed_exception.js',
         ),
         'output_filename': 'js/all-compressed-?.js'
     }

@@ -600,6 +600,7 @@
         
         make_feed_title_line: function(feed, list_item, type) {
             var unread_class = '';
+            var exception_class = '';
             if (feed.ps) {
                 unread_class += ' unread_positive';
             }
@@ -609,7 +610,13 @@
             if (feed.ng) {
                 unread_class += ' unread_negative';
             }
-            var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class }, [
+            if (feed.has_exception) {
+              exception_class += ' NB-feed-exception';
+            }
+            if (feed.not_yet_fetched && !feed.has_exception) {
+              exception_class += ' NB-feed-unfetched';
+            }
+            var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class + exception_class }, [
                 $.make('div', { className: 'feed_counts' }, [
                     $.make('div', { className: 'feed_counts_floater' }, [
                         $.make('span', { 
@@ -640,7 +647,9 @@
                     $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
                     $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated)
                 ])),
-                (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read'))
+                (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')),
+                (feed.has_exception && $.make('div', { className: 'NB-feed-exception-icon' })),
+                (feed.not_yet_fetched && $.make('div', { className: 'NB-feed-unfetched-icon' }))
             ]).data('feed_id', feed.id);  
             
             return $feed;  
@@ -1948,9 +1957,13 @@
         open_mark_read_modal: function() {
             NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead();
         },
-        
+                
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
+        },
+        
+        open_feed_exception_modal: function(feed_id) {
+            NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id);
         },
         
         open_feed_statistics_modal: function() {
@@ -2798,6 +2811,18 @@
             // var start = (new Date().getMilliseconds());
             
             // = Feeds =
+            
+            var exception = false;
+            $.targetIs(e, { tagSelector: '#feed_list .feed.NB-feed-exception' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if (!self.flags['sorting_feed']) {
+                    var feed_id = $t.data('feed_id');
+                    exception = true;
+                    self.open_feed_exception_modal(feed_id, $t);
+                }
+            });
+            if (exception) return;
             
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();

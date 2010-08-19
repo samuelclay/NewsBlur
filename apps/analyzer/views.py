@@ -1,4 +1,5 @@
 from utils import log as logging
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from apps.rss_feeds.models import Feed, Tag, StoryAuthor
 from apps.reader.models import UserSubscription
@@ -15,7 +16,8 @@ def index(requst):
 @json.json_view
 def save_classifier(request):
     post = request.POST
-    feed = Feed.objects.get(pk=post['feed_id'])
+    logging.info(" ---> [%s] Saving classifier: %s" % (request.user, post))
+    feed = get_object_or_404(Feed, pk=post['feed_id'])
     code = 0
     message = 'OK'
     payload = {}

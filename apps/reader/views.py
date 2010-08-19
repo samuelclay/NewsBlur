@@ -108,13 +108,15 @@ def load_feeds(request):
             'feed_link': sub.feed.feed_link,
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
-            'ng': sub.unread_count_negative,
+            'ng': sub.unread_count_negative, 
             'updated': format_relative_date(sub.feed.last_update)
         }
         
         if not sub.feed.fetched_once:
             not_yet_fetched = True
             feeds[sub.feed.pk]['not_yet_fetched'] = True
+        if sub.feed.has_exception:
+            feeds[sub.feed.pk]['has_exception'] = True
             
     if not_yet_fetched:
         for f in feeds:
@@ -191,6 +193,8 @@ def refresh_feeds(request):
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
+        if sub.feed.has_exception:
+            feeds[sub.feed.pk]['has_exception'] = True
         if request.POST.get('check_fetch_status', False):
             feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
             

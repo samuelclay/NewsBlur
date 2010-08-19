@@ -386,6 +386,42 @@ a img {
     background-color: #D7DDE6;
 }
 
+#feed_list .feed.NB-feed-exception {
+    background-color: #F7EDC6;
+}
+
+#feed_list .feed.NB-feed-unfetched {
+}
+
+#feed_list .feed.NB-feed-exception .feed_count {
+  display: none;
+}
+
+#feed_list .feed.NB-feed-exception .NB-feed-exception-icon {
+  background: url('../img/icons/silk/exclamation.png') no-repeat 0 0;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 4px;
+  top: 2px;
+}
+
+#feed_list .feed.NB-feed-unfetched .feed_favicon {
+  opacity: .5;
+}
+#feed_list .feed.NB-feed-unfetched .feed_title {
+  color: #A0A0A0;
+}
+#feed_list .feed.NB-feed-unfetched .NB-feed-unfetched-icon {
+  background: url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
+  opacity: .1;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 4px;
+  top: 2px;
+}
+
 .feed.NB-feed-sorting,
 #feed_list.NB-feed-sorting {
     cursor: move !important;
