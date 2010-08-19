@@ -2699,3 +2699,13 @@ background: transparent;
   color: #A8A8A8;
   padding-right: 4px;
 }
+
+/* ========================= */
+/* = Feed Exceptions Modal = */
+/* ========================= */
+
+.NB-modal-exception .NB-exception-explanation {
+    color: #606060;
+    font-size: 12px;
+    margin: 24px 0;
+}

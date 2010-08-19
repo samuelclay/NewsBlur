@@ -28,7 +28,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
-            'Not much to do yet. Soon you will be able to fix the URL, delete the feed, or force a retry.',
+            $.make('div', { className: 'NB-exception-explanation' }, 'Not much to do yet. Soon you will be able to fix the URL, delete the feed, or force a retry.'),
             $.make('form', { className: 'NB-exception-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Fill out proposed changes...' }),

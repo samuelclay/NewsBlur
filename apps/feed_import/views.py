@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import urlparse
+import time
 from utils import log as logging
 import oauth2 as oauth
 from django.contrib.sites.models import Site
@@ -105,10 +106,9 @@ def reader_callback(request):
     client = oauth.Client(consumer, token)
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
-    original_token = dict(urlparse.parse_qsl(token))
-    logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (token, access_token, content))
-    user_token.access_token = access_token.get('oauth_token') or original_token.get('oauth_token')
-    user_token.access_token_secret = access_token.get('oauth_token_secret') or original_token.get('oauth_token_secret')
+    logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (request.user, token, access_token))
+    user_token.access_token = access_token.get('oauth_token')
+    user_token.access_token_secret = access_token.get('oauth_token_secret')
     user_token.save()
     
     # Fetch imported feeds on next page load

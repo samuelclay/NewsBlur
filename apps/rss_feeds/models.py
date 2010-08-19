@@ -71,9 +71,10 @@ class Feed(models.Model):
         old_fetch_histories = self.feed_fetch_history.all()[10:]
         for history in old_fetch_histories:
             history.delete()
-        
+            
         if status_code >= 400:
-            self.count_errors_in_history(self.feed_fetch_history)
+            fetch_history = self.feed_fetch_history.all().values('status_code')
+            self.count_errors_in_history(fetch_history)
         
     def save_page_history(self, status_code, message, exception=None):
         PageFetchHistory.objects.create(feed=self, 
@@ -85,15 +86,16 @@ class Feed(models.Model):
             history.delete()
             
         if status_code >= 400:
-            self.count_errors_in_history(self.page_fetch_history)
+            fetch_history = self.page_fetch_history.all().values('status_code')
+            self.count_errors_in_history(fetch_history)
         
-    def count_errors_in_history(self, history_model):
-        fetch_histories = history_model.all()
-        non_errors = [h for h in fetch_histories if h.status_code < 400]
-        errors = [h for h in fetch_histories if h.status_code >= 400]
+    def count_errors_in_history(self, fetch_history):
+        non_errors = [h for h in fetch_history if h['status_code'] < 400]
+        errors = [h for h in fetch_history if h['status_code'] >= 400]
+
         if len(non_errors) == 0 and len(errors) >= 1:
-            self.exception = True
-            self.is_active = False
+            self.has_exception = True
+            self.active = False
             self.save()
     
     def count_subscribers(self, verbose=False, lock=None):
@@ -257,9 +259,9 @@ class Feed(models.Model):
                         s.save(force_insert=True)
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except IntegrityError, e:
+                    except IntegrityError:
                         ret_values[ENTRY_ERR] += 1
-                        print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        # print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                     [s.tags.add(tcat) for tcat in story_tags]
                 elif existing_story and story_has_changed:
                     # update story
@@ -300,9 +302,9 @@ class Feed(models.Model):
                         s.save(force_update=True)
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except IntegrityError, e:
+                    except IntegrityError:
                         ret_values[ENTRY_ERR] += 1
-                        print('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                        # print('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
