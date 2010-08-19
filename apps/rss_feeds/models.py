@@ -698,3 +698,8 @@ class PageFetchHistory(models.Model):
             self.message,
             self.exception[:50]
         )
+        
+class DuplicateFeed(models.Model):
+    duplicate_address = models.CharField(max_length=255, unique=True)
+    feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
+    

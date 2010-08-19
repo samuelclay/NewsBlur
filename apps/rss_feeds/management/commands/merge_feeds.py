@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor
+from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor, DuplicateFeed
 from apps.reader.models import UserSubscription, UserStory, UserSubscriptionFolders
 from apps.analyzer.models import FeatureCategory, Category, ClassifierTitle
 from apps.analyzer.models import ClassifierAuthor, ClassifierFeed, ClassifierTag
@@ -121,6 +121,14 @@ class Command(BaseCommand):
             switch_feed(ClassifierFeed)
             switch_feed(ClassifierTag)
             
+            try:
+                DuplicateFeed.objects.create(
+                    duplicate_address=duplicate_feed.feed_address,
+                    feed=original_feed
+                )
+            except IntegrityError:
+                pass
+                
             duplicate_feed.delete()
     
     def rewrite_folders(self, folders, original_feed, duplicate_feed):

@@ -1,7 +1,7 @@
 from collections import defaultdict
 from django.db import models
 from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 import datetime
 import lxml.etree
@@ -60,7 +60,15 @@ class OPMLImporter(Importer):
                 logging.info(' ---> \t%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
                 # feeds.append(feed_data)
-                feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
+
+                # See if it exists as a duplicate first
+                duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address)
+                if duplicate_feed:
+                    feed_db = duplicate_feed[0].feed
+                else:
+                    feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
+                                                            defaults=dict(**feed_data))
+                    
                 us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
                     user=self.user,
@@ -113,8 +121,15 @@ class GoogleReaderImporter(Importer):
             feed_link = urlnorm.normalize(feed_link)
             feed_address = urlnorm.normalize(feed_address)
 
-            feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
-            feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address, defaults=dict(**feed_data))
+            # See if it exists as a duplicate first
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address)
+            if duplicate_feed:
+                feed_db = duplicate_feed[0].feed
+            else:
+                feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
+                feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
+                                                        defaults=dict(**feed_data))
+
             us, _ = UserSubscription.objects.get_or_create(
                 feed=feed_db, 
                 user=self.user,
@@ -135,6 +150,6 @@ class GoogleReaderImporter(Importer):
             if folder == 'Root':
                 self.subscription_folders += items
             else:
-                folder_parents = folder.split(u' \u2014 ')
+                # folder_parents = folder.split(u' \u2014 ')
                 self.subscription_folders.append({folder: items})
         

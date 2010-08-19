@@ -17,7 +17,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, Story, FeedPage
+    from apps.rss_feeds.models import Feed, Story, FeedPage, DuplicateFeed
 except:
     pass
 from utils import json, urlnorm
@@ -407,8 +407,13 @@ def add_url(request):
     
     if url:
         url = urlnorm.normalize(url)
-        feed = Feed.objects.filter(Q(feed_address=url) 
-                                   | Q(feed_link__icontains=url))
+        # See if it exists as a duplicate first
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=url)
+        if duplicate_feed:
+            feed = [duplicate_feed[0].feed]
+        else:
+            feed = Feed.objects.filter(Q(feed_address=url) 
+                                         | Q(feed_link__icontains=url))
     
     if feed:
         feed = feed[0]
