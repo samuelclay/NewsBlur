@@ -121,49 +121,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         callback(read);
     },
     
-    mark_story_as_like: function(story_id, callback) {
-        var self = this;
-        var opinion;
-        
-        for (s in this.stories) {
-            if (this.stories[s].id == story_id) {
-                opinion = this.stories[s].opinion;
-                this.stories[s].opinion = 1;
-                break;
-            }
-        }
-        
-        NEWSBLUR.log(['Like', opinion, this.stories[s].opinion]);
-        if (opinion != 1) {
-            this.make_request('/reader/mark_story_as_like',
-                {
-                    story_id: story_id
-                }, callback
-            );
-        }
-    },
-    
-    mark_story_as_dislike: function(story_id, callback) {
-        var self = this;
-        var opinion;
-        
-        for (s in this.stories) {
-            if (this.stories[s].id == story_id) {
-                opinion = this.stories[s].opinion;
-                this.stories[s].opinion = -1;
-                break;
-            }
-        }
-        NEWSBLUR.log(['Dislike', opinion, this.stories[s].opinion]);
-        if (opinion != -1) {
-            this.make_request('/reader/mark_story_as_dislike',
-                {
-                    story_id: story_id
-                }, callback
-            );
-        }
-    },
-    
     mark_feed_as_read: function(feed_id, callback) {
         var self = this;
         

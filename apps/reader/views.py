@@ -354,38 +354,6 @@ def mark_feed_as_read(request):
     # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
     return dict(code=code)
     
-@ajax_login_required
-def mark_story_as_like(request):
-    return mark_story_with_opinion(request, 1)
-
-@ajax_login_required
-def mark_story_as_dislike(request):
-    return mark_story_with_opinion(request, -1)
-
-@ajax_login_required
-@json.json_view
-def mark_story_with_opinion(request, opinion):
-    story_id = request.REQUEST['story_id']
-    story = Story.objects.select_related("story_feed").get(id=story_id)
-    
-    previous_opinion = UserStory.objects.get(story=story, 
-                                                 user=request.user, 
-                                                 feed=story.story_feed)
-    if previous_opinion and previous_opinion.opinion != opinion:
-        previous_opinion.opinion = opinion
-        code = 0
-        previous_opinion.save()
-        logging.debug("Changed Opinion: [%s] %s %s" % (request.user, previous_opinion.opinion, opinion))
-    else:
-        logging.debug("Marked Opinion: [%s] %s %s" % (request.user, story_id, opinion))
-        m = UserStory(story=story, user=request.user, feed=story.story_feed, opinion=opinion)
-        code = 0
-        try:
-            m.save()
-        except:
-            code = 2
-    return dict(code=code)
-    
 def _parse_user_info(user):
     return {
         'user_info': {
