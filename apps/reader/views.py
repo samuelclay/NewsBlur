@@ -212,10 +212,15 @@ def load_single_feed(request):
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force_update', False)
     
+    now = datetime.datetime.now()
+    logging.info(" ---> [%s] Loading feed #1: %s" % (request.user, feed.feed_title))
+    
     stories = feed.get_stories(offset, limit) 
         
     if force_update:
         feed.update(force_update)
+    
+    logging.info(" ---> [%s] Loading feed #2: %s" % (request.user, datetime.datetime.now()-now))
     
     # Get intelligence classifier for user
     classifier_feeds = ClassifierFeed.objects.filter(user=user, feed=feed)
@@ -230,8 +235,9 @@ def load_single_feed(request):
         logging.info(" ***> [%s] UserSub DNE, creating: %s" % (user, feed))
         usersub = UserSubscription.objects.create(user=user, feed=feed)
             
-    logging.info(" ---> [%s] Loading feed: %s" % (request.user, feed.feed_title))
-    
+
+    logging.info(" ---> [%s] Loading feed #3: %s" % (request.user, datetime.datetime.now()-now))
+        
     if stories:
         last_read_date = stories[-1]['story_date']
     else:
@@ -258,6 +264,7 @@ def load_single_feed(request):
             'title': apply_classifier_titles(classifier_titles, story),
         }
     
+    logging.info(" ---> [%s] Loading feed #4: %s" % (request.user, datetime.datetime.now()-now))
     # Intelligence
     
     feed_tags = json.decode(feed.popular_tags) if feed.popular_tags else []
@@ -267,6 +274,8 @@ def load_single_feed(request):
     
     usersub.feed_opens += 1
     usersub.save()
+    
+    logging.info(" ---> [%s] Loading feed #5: %s" % (request.user, datetime.datetime.now()-now))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
