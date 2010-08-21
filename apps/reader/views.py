@@ -17,7 +17,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, Story, FeedPage, DuplicateFeed
+    from apps.rss_feeds.models import Feed, Story, MStory, FeedPage, DuplicateFeed
 except:
     pass
 from utils import json, urlnorm

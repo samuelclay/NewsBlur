@@ -15,3 +15,4 @@ build/
 *.mode1v3
 **/*.perspectivev*
 *.pbxuser
+data/

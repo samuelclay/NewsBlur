@@ -1,6 +1,7 @@
 import sys
 import logging
 import os
+from mongoengine import connect
 
 # ===========================
 # = Directory Declaractions =
@@ -164,12 +165,14 @@ DEBUG_TOOLBAR_PANELS = (
 
 AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
+TEST_DATABASE_NAME = 'newsblur_test'
 ROOT_URLCONF = 'urls'
 INTERNAL_IPS = ('127.0.0.1',)
 LOGGING_LOG_SQL = True
 APPEND_SLASH = True
 SOUTH_TESTS_MIGRATE = False 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+TEST_RUNNER = "utils.testrunner.TestRunner"
 
 # ===========
 # = Logging =
@@ -197,7 +200,7 @@ INSTALLED_APPS = (
     'apps.profile',
     'devserver',
     'south',
-    'test_utils',
+    # 'test_utils',
     'utils',
     'utils.typogrify',
     # 'debug_toolbar'
@@ -231,3 +234,9 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
+
+# =========
+# = Mongo =
+# =========
+
+connect(MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])

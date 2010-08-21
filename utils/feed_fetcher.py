@@ -1,10 +1,7 @@
-
-import socket
-socket.setdefaulttimeout(2)
-
-from apps.rss_feeds.models import Feed, Story, FeedUpdateHistory
+from apps.rss_feeds.models import Feed, Story, MStory, FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
+from django.conf import settings
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
@@ -19,6 +16,8 @@ import traceback
 import multiprocessing
 import urllib2
 import xml.sax
+import socket
+import pymongo
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -29,8 +28,6 @@ USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
-
-socket.setdefaulttimeout(30)
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -46,6 +43,7 @@ class FetchFeed:
     def fetch(self):
         """ Downloads and parses a feed.
         """
+        socket.setdefaulttimeout(30)
         identity = self.get_identity()
         log_msg = u'%2s ---> Fetching %s (%d)' % (identity,
                                                  self.feed.feed_title,
@@ -84,6 +82,8 @@ class ProcessFeed:
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
+        connection = pymongo.Connection(settings.MONGO_DB['HOST'])
+        self.db = connection[settings.MONGO_DB['NAME']]
 
     def process(self):
         """ Downloads and parses a feed.
@@ -175,17 +175,29 @@ class ProcessFeed:
             if story.get('published') > end_date:
                 end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        existing_stories = Story.objects.filter(
-            (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
-            | (Q(story_guid__in=story_guids)),
-            story_feed=self.feed
-        ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
+        existing_stories = self.db.stories.find({
+            'story_feed_id': self.feed.pk, 
+            '$or': [
+                {
+                    'story_date': {'$gte': start_date},
+                    'story_date': {'$lte': end_date}
+                },
+                {
+                    'story_guid': {'$in': story_guids}
+                }
+            ]
+        }).sort('story_date')
+        # MStory.objects(
+        #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
+        #     | (Q(story_guid__in=story_guids)),
+        #     story_feed=self.feed
+        # ).order_by('-story_date')
+        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
             
         self.feed.count_subscribers(lock=self.lock)
-        self.feed.count_stories(lock=self.lock)
-        self.feed.save_popular_authors(lock=self.lock)
-        self.feed.save_popular_tags(lock=self.lock)
+        # self.feed.count_stories(lock=self.lock)
+        # self.feed.save_popular_authors(lock=self.lock)
+        # self.feed.save_popular_tags(lock=self.lock)
         self.feed.save_feed_history(200, "OK")
         
         return FEED_OK, ret_values
