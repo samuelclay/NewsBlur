@@ -525,8 +525,7 @@ var classifier = {
             id: 'classifier_publisher',
             checked: false
         };
-        if (this.feed.feed_link in this.user_classifiers.feeds 
-            && this.user_classifiers.feeds[this.feed.feed_link].score == this.score) {
+        if (this.user_classifiers.feeds[this.feed_id] == this.score) {
             input_attrs['checked'] = true;
         }
         

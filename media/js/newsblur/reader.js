@@ -2276,7 +2276,6 @@
     
         update_opinions: function($modal, feed_id) {
             var self = this;
-            var feed = this.model.get_feed(feed_id);
             
             if (feed_id != this.model.feed_id) return;
             
@@ -2295,11 +2294,7 @@
                     } else if (name == 'author') {
                         self.model.classifiers.authors[value] = score;
                     } else if (name == 'publisher') {
-                        self.model.classifiers.feeds[feed.feed_link] = {
-                            'feed_link': feed.feed_link,
-                            'feed_title': feed.feed_title,
-                            'score': score
-                        };
+                        self.model.classifiers.feeds[feed_id] = score;
                     }
                 } else {
                     if (name == 'tag' && self.model.classifiers.tags[value] == score) {
@@ -2308,10 +2303,8 @@
                         delete self.model.classifiers.titles[value];
                     } else if (name == 'author' && self.model.classifiers.authors[value] == score) {
                         delete self.model.classifiers.authors[value];
-                    } else if (name == 'publisher' 
-                               && self.model.classifiers.feeds[feed.feed_link] 
-                               && self.model.classifiers.feeds[feed.feed_link].score == score) {
-                        delete self.model.classifiers.feeds[feed.feed_link];
+                    } else if (name == 'publisher' && self.model.classifiers.feeds[feed_id] == score) {
+                        delete self.model.classifiers.feeds[feed_id];
                     }
                 }
             });

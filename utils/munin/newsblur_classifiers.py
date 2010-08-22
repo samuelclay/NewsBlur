@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
+from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -14,10 +14,10 @@ graph_config = {
 }
 
 metrics = {
-    'feeds': ClassifierFeed.objects.count(),
-    'authors': ClassifierAuthor.objects.count(),
-    'tags': ClassifierTag.objects.count(),
-    'titles': ClassifierTitle.objects.count(),
+    'feeds': MClassifierFeed.objects.count(),
+    'authors': MClassifierAuthor.objects.count(),
+    'tags': MClassifierTag.objects.count(),
+    'titles': MClassifierTitle.objects.count(),
 }
 
 if __name__ == '__main__':

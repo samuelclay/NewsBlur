@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story, MStory
-from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
+from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 
 DAYS_OF_UNREAD = 14
@@ -90,10 +90,10 @@ class UserSubscription(models.Model):
         stories_db = [story for story in stories_db if story.id not in read_stories_ids]
         stories = self.feed.format_stories(stories_db)
         
-        classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
-        classifier_authors = ClassifierAuthor.objects.filter(user=self.user, feed=self.feed)
-        classifier_titles = ClassifierTitle.objects.filter(user=self.user, feed=self.feed)
-        classifier_tags = ClassifierTag.objects.filter(user=self.user, feed=self.feed)
+        classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
+        classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
+        classifier_titles = MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk)
+        classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         
         scores = {
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
