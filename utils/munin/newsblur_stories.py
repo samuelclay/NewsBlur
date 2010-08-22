@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from apps.rss_feeds.models import Story, Tag, StoryAuthor
+from apps.rss_feeds.models import MStory, StoryAuthor
 from apps.reader.models import UserStory
 
 graph_config = {
@@ -15,8 +15,7 @@ graph_config = {
 }
 
 metrics = {
-    'stories': Story.objects.count(),
-    'tags': Tag.objects.count(),
+    'stories': MStory.objects().count(),
     'authors': StoryAuthor.objects.count(),
     'read_stories': UserStory.objects.count(),
 }

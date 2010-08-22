@@ -119,10 +119,10 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-        stories_last_month = Story.objects.filter(story_feed=self, story_date__gte=month_ago).count()
+        stories_last_month = MStory.objects(story_feed=self.pk, story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        self.recount_feed(lock)
+        # self.recount_feed(lock)
         
         self.save(lock=lock)
             
@@ -254,8 +254,7 @@ class Feed(models.Model):
                            story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
-                           story_tags = self._shorten_and_encode_story_tags(story_tags),
-                           # tags = story_tags
+                           story_tags = story_tags
                     )
                     try:
                         s.save()
@@ -264,8 +263,6 @@ class Feed(models.Model):
                     except IntegrityError:
                         ret_values[ENTRY_ERR] += 1
                         # print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
-                    # for tcat in story_tags:
-                    #     Tag.objects.get_or_create(feed=self, tag=tcat)
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
@@ -296,10 +293,7 @@ class Feed(models.Model):
                     existing_story['story_author_name'] = story.get('author')
                     existing_story['story_permalink'] = story.get('link')
                     existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
-                    existing_story['story_tags'] = self._shorten_and_encode_story_tags(story_tags)
-                    # existing_story['tags'] = story_tags
-                    # s.tags.clear()
-                    # [s.tags.add(tcat) for tcat in story_tags]
+                    existing_story['story_tags'] = story_tags
                     try:
                         db.stories.update({'_id': existing_story['_id']}, existing_story)
                         ret_values[ENTRY_UPDATED] += 1
@@ -321,6 +315,7 @@ class Feed(models.Model):
         if not feed_tags:
             from apps.rss_feeds.models import Tag
             from django.db.models.aggregates import Count
+            # Map Reduce this
             all_tags = Tag.objects.filter(feed=self)\
                       .annotate(stories_count=Count('story'))\
                       .order_by('-stories_count')[:20]
@@ -352,15 +347,7 @@ class Feed(models.Model):
         authors_list = json.decode(feed_authors) if feed_authors else []
         if len(authors_list) > 1:
             self.save_popular_authors(authors_list[:-1])
-    
-    def _shorten_and_encode_story_tags(self, story_tags):
-        encoded_tags = json.encode([t.name for t in story_tags])
-        if len(encoded_tags) < 2000:
-            return encoded_tags
-        
-        if len(story_tags) > 1:
-            return self._shorten_and_encode_story_tags(story_tags[:-1])
-        
+            
     def trim_feed(self):
         from apps.reader.models import UserStory
         stories_deleted_count = 0
@@ -389,11 +376,8 @@ class Feed(models.Model):
                 user_stories_count)
                 
     def get_stories(self, offset=0, limit=25, force=False):
-        if not force:
-            stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
-        else:
-            stories = None
-
+        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
+        
         if not stories or force:
             stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
             stories = self.format_stories(stories_db)
@@ -407,8 +391,7 @@ class Feed(models.Model):
         # print "Formatting Stories: %s" % stories_db.count()
         for story_db in stories_db:
             story = {}
-            # story_tags = story_db.tags.all()
-            story['story_tags'] = (story_db.story_tags and json.decode(story_db.story_tags)) or []
+            story['story_tags'] = story_db.story_tags # or []
             story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
             story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
             story['story_date'] = story_db.story_date
@@ -445,10 +428,7 @@ class Feed(models.Model):
                     tagname = tagname.strip()
                     if not tagname or tagname == ' ':
                         continue
-                    if not Tag.objects.filter(name=tagname, feed=self):
-                        cobj = Tag(name=tagname, feed=self)
-                        cobj.save()
-                    fcat.append(Tag.objects.get(name=tagname, feed=self))
+                    fcat.append(tagname)
         return fcat
 
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
@@ -652,7 +632,7 @@ class Story(models.Model):
         
 class MStory(mongo.Document):
     '''A feed item'''
-    story_feed_id = mongo.IntField()
+    story_feed_id = mongo.IntField(unique_with='story_guid')
     story_date = mongo.DateTimeField()
     story_title = mongo.StringField(max_length=255)
     story_content = mongo.StringField()
@@ -663,12 +643,13 @@ class MStory(mongo.Document):
     story_permalink = mongo.StringField()
     story_guid = mongo.StringField(primary_key=True)
     story_guid_hash = mongo.StringField(max_length=40)
-    story_tags = mongo.StringField(max_length=2000)
-    tags = mongo.ListField(mongo.StringField(max_length=100))
+    story_tags = mongo.ListField(mongo.StringField(max_length=100))
     
     meta = {
         'collection': 'stories',
-        'indexes': ['story_feed_id', 'story_date']
+        'indexes': ['story_feed_id', 'story_date', ('story_feed_id', '-story_date')],
+        'ordering': ['-story_date'],
+        'allow_inheritance': False,
     }
         
 class FeedUpdateHistory(models.Model):

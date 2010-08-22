@@ -1,13 +1,7 @@
 from django.core.management.base import BaseCommand
-from django.core.handlers.wsgi import WSGIHandler
-from apps.rss_feeds.models import Feed, Story
-from django.core.cache import cache
-from django.db.models import Q
-from apps.reader.models import UserSubscription, UserStory
-from optparse import OptionParser, make_option
+from apps.rss_feeds.models import Feed
+from optparse import make_option
 from utils.management_functions import daemonize
-import os
-import errno
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -30,6 +24,3 @@ class Command(BaseCommand):
     def _refresh_feeds(self, feeds, force=False):
         for feed in feeds:
             feed.update(force=force, single_threaded=True)
-            usersubs = UserSubscription.objects.filter(
-                feed=feed.id
-            )

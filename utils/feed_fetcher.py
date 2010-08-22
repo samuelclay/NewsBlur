@@ -22,7 +22,7 @@ import pymongo
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.4'
+VERSION = '0.8'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
@@ -77,13 +77,12 @@ class FetchFeed:
         return identity
         
 class ProcessFeed:
-    def __init__(self, feed, fpf, options):
+    def __init__(self, feed, fpf, db, options):
         self.feed = feed
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
-        connection = pymongo.Connection(settings.MONGO_DB['HOST'])
-        self.db = connection[settings.MONGO_DB['NAME']]
+        self.db = db
 
     def process(self):
         """ Downloads and parses a feed.
@@ -242,6 +241,9 @@ class Dispatcher:
         from django.db import connection
         connection.close()
         
+        MONGO_DB = settings.MONGO_DB
+        db = pymongo.Connection(host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])[MONGO_DB['NAME']]
+        
         current_process = multiprocessing.current_process()
         lock = multiprocessing.Lock()
         
@@ -271,7 +273,7 @@ class Dispatcher:
                 delta = datetime.datetime.now() - start_time
                 
                 if fetched_feed and ret_feed == FEED_OK:
-                    pfeed = ProcessFeed(feed, fetched_feed, self.options)
+                    pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
                 
                     if ret_entries.get(ENTRY_NEW):

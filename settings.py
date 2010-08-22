@@ -239,4 +239,4 @@ DEBUG_TOOLBAR_CONFIG = {
 # = Mongo =
 # =========
 
-connect(MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])
+MONGODB = connect(MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])

@@ -1,12 +1,6 @@
-from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed, Story
-from apps.reader.models import UserSubscription, UserStory
 from apps.analyzer.models import Category, FeatureCategory
 from django.db.models.aggregates import Sum
-import datetime
-import re
 import math
-import itertools
 
 class Classifier:
     

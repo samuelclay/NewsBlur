@@ -1,4 +1,5 @@
 import datetime
+import mongoengine as mongo
 from utils import log as logging
 from django.db import models
 from django.contrib.auth.models import User
@@ -153,6 +154,14 @@ class UserStory(models.Model):
         verbose_name_plural = "user stories"
         verbose_name = "user story"
         unique_together = ("user", "feed", "story")
+        
+class MUserStory(mongo.Document):
+    """
+    Stories read by the user. These are deleted as the mark_read_date for the
+    UserSubscription passes the UserStory date.
+    """
+    
+    
         
 class UserSubscriptionFolders(models.Model):
     """

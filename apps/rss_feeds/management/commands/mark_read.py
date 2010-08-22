@@ -1,13 +1,7 @@
 from django.core.management.base import BaseCommand
-from django.core.handlers.wsgi import WSGIHandler
-from apps.rss_feeds.models import Feed, Story
 from django.contrib.auth.models import User
-from django.core.cache import cache
-from apps.reader.models import UserSubscription, UserStory
-from optparse import OptionParser, make_option
-import os
-import errno
-import re
+from apps.reader.models import UserSubscription
+from optparse import make_option
 import datetime
 
 class Command(BaseCommand):
