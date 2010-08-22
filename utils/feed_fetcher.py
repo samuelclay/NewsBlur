@@ -245,7 +245,6 @@ class Dispatcher:
         db = pymongo.Connection(host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])[MONGO_DB['NAME']]
         
         current_process = multiprocessing.current_process()
-        lock = multiprocessing.Lock()
         
         identity = "X"
         if current_process._identity:
@@ -259,7 +258,7 @@ class Dispatcher:
             }
             start_time = datetime.datetime.now()
         
-            feed.set_next_scheduled_update(lock=lock)
+            feed.set_next_scheduled_update()
             
             ### Uncomment to test feed fetcher
             # from random import randint

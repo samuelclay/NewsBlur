@@ -200,7 +200,7 @@ class Feed(models.Model):
     def add_feed(self, feed_address, feed_link, feed_title):
         print locals()
         
-    def update(self, force=False, feed=None, single_threaded=False):
+    def update(self, force=False, feed=None, single_threaded=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -522,7 +522,7 @@ class Feed(models.Model):
         total, random_factor = self.get_next_scheduled_update()
 
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-                                minutes = total + random_factor)
+                                minutes = int(total + random_factor))
             
         self.next_scheduled_update = next_scheduled_update
 
