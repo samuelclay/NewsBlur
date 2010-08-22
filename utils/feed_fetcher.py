@@ -1,11 +1,10 @@
-from apps.rss_feeds.models import Feed, Story, MStory, FeedUpdateHistory
+from apps.rss_feeds.models import Feed, FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from django.conf import settings
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
-from django.db.models import Q
 from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
@@ -194,9 +193,9 @@ class ProcessFeed:
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
             
         self.feed.count_subscribers(lock=self.lock)
-        # self.feed.count_stories(lock=self.lock)
-        # self.feed.save_popular_authors(lock=self.lock)
-        # self.feed.save_popular_tags(lock=self.lock)
+        self.feed.count_stories(lock=self.lock)
+        self.feed.save_popular_authors(lock=self.lock)
+        self.feed.save_popular_tags(lock=self.lock)
         self.feed.save_feed_history(200, "OK")
         
         return FEED_OK, ret_values

@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from apps.rss_feeds.models import MStory, StoryAuthor
-from apps.reader.models import UserStory
+from apps.rss_feeds.models import MStory
+from apps.reader.models import MUserStory
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -16,8 +16,7 @@ graph_config = {
 
 metrics = {
     'stories': MStory.objects().count(),
-    'authors': StoryAuthor.objects.count(),
-    'read_stories': UserStory.objects.count(),
+    'read_stories': MUserStory.objects().count(),
 }
 
 if __name__ == '__main__':

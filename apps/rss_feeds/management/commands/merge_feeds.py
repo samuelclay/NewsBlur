@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from apps.rss_feeds.models import Feed, Story, Tag, StoryAuthor, DuplicateFeed
+from apps.rss_feeds.models import Feed, Story, DuplicateFeed
 from apps.reader.models import UserSubscription, UserStory, UserSubscriptionFolders
 from apps.analyzer.models import FeatureCategory, Category, ClassifierTitle
 from apps.analyzer.models import ClassifierAuthor, ClassifierFeed, ClassifierTag
@@ -112,8 +112,6 @@ class Command(BaseCommand):
                         print "      !!!!> %s already exists" % duplicate
                         duplicates.delete()
             delete_story_feed(Story, 'story_feed')
-            delete_story_feed(Tag)
-            delete_story_feed(StoryAuthor)
             switch_feed(FeatureCategory)
             switch_feed(Category)
             switch_feed(ClassifierTitle)

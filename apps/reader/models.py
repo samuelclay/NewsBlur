@@ -4,10 +4,9 @@ from utils import log as logging
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from apps.rss_feeds.models import Feed, Story
+from apps.rss_feeds.models import Feed, Story, MStory
 from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from utils.compressed_textfield import StoryField
 
 DAYS_OF_UNREAD = 14
 MONTH_AGO = datetime.datetime.now() - datetime.timedelta(days=30)
@@ -43,8 +42,8 @@ class UserSubscription(models.Model):
         
     def mark_feed_read(self):
         now = datetime.datetime.now()
-        if self.feed.stories.all():
-            latest_story_date = self.feed.stories.order_by('-story_date')[0].story_date\
+        if MStory.objects(story_feed_id=self.feed.pk).first():
+            latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date')[0].story_date\
                                 + datetime.timedelta(minutes=1)
         else:
             latest_story_date = now
@@ -60,7 +59,7 @@ class UserSubscription(models.Model):
     def calculate_feed_scores(self, silent=False):
         if self.user.profile.last_seen_on < MONTH_AGO:
             if not silent:
-                logging.info(' ---> [%s] SKIPPING Computing scores: %s' % (self.user, self.feed))
+                logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 month+)' % (self.user, self.feed))
             return
         
         if not self.feed.fetched_once:
@@ -81,16 +80,16 @@ class UserSubscription(models.Model):
         else:
             self.mark_read_date = date_delta
             
-        read_stories = UserStory.objects.filter(user=self.user,
-                                                feed=self.feed,
-                                                story__story_date__gte=date_delta)
+        read_stories = MUserStory.objects(user_id=self.user.pk,
+                                          feed_id=self.feed.pk)
         read_stories_ids = [rs.story.id for rs in read_stories]
         from django.db import connection
         connection.queries = []
-        stories_db = Story.objects.filter(story_feed=self.feed,
-                                          story_date__gte=date_delta)\
-                                  .exclude(id__in=read_stories_ids)
+        stories_db = MStory.objects(story_feed_id=self.feed.pk,
+                                    story_date__gte=date_delta)
+        stories_db = [story for story in stories_db if story.id not in read_stories_ids]
         stories = self.feed.format_stories(stories_db)
+        
         classifier_feeds = ClassifierFeed.objects.filter(user=self.user, feed=self.feed)
         classifier_authors = ClassifierAuthor.objects.filter(user=self.user, feed=self.feed)
         classifier_titles = ClassifierTitle.objects.filter(user=self.user, feed=self.feed)
@@ -155,12 +154,22 @@ class UserStory(models.Model):
         verbose_name = "user story"
         unique_together = ("user", "feed", "story")
         
+        
 class MUserStory(mongo.Document):
     """
     Stories read by the user. These are deleted as the mark_read_date for the
     UserSubscription passes the UserStory date.
     """
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    read_date = mongo.DateTimeField()
+    story = mongo.ReferenceField(MStory, unique_with=('user_id', 'feed_id'))
     
+    meta = {
+        'collection': 'userstories',
+        'indexes': [('user_id', 'feed_id')],
+        'allow_inheritance': False,
+    }
     
         
 class UserSubscriptionFolders(models.Model):

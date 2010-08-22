@@ -1,9 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-import datetime
-from apps.rss_feeds.models import Feed, Story, StoryAuthor, Tag
-from utils.compressed_textfield import StoryField
-from utils import json
+from apps.rss_feeds.models import Feed, StoryAuthor, Tag
 
 class FeatureCategory(models.Model):
     user = models.ForeignKey(User)
@@ -52,11 +49,6 @@ class ClassifierAuthor(models.Model):
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.author.author_name, self.feed)
         
-    def apply_classifier(self, story):
-        if story['author'] == self.author:
-            return True
-        return False
-
 
 class ClassifierFeed(models.Model):
     user = models.ForeignKey(User)
@@ -70,11 +62,6 @@ class ClassifierFeed(models.Model):
     def __unicode__(self):
         return '%s: %s' % (self.user, self.feed)
         
-    def apply_classifier(self, story):
-        if self.feed == story.feed:
-            return True
-        return False
-
         
 class ClassifierTag(models.Model):
     user = models.ForeignKey(User)
@@ -105,7 +92,7 @@ def apply_classifier_feeds(classifiers, feed):
     
 def apply_classifier_authors(classifiers, story):
     for classifier in classifiers:
-        if story.get('story_authors') and classifier.author.author_name == story.get('story_authors'):
+        if story.get('story_author_name') and classifier.author.author_name == story.get('story_author_name'):
             # print 'Authors: %s -- %s' % (classifier.author.id, story['story_author_id'])
             return classifier.score
     return 0

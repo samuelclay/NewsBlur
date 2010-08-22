@@ -7,6 +7,7 @@ import random
 import re
 import mongoengine as mongo
 from collections import defaultdict
+from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
 from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
@@ -119,7 +120,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-        stories_last_month = MStory.objects(story_feed=self.pk, story_date__gte=month_ago).count()
+        stories_last_month = MStory.objects(story_feed_id=self.pk, story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
         # self.recount_feed(lock)
@@ -241,7 +242,6 @@ class Feed(models.Model):
                     story_content = story.get('summary')
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
-                story_author, _ = self._save_story_author(story.get('author'))
                 if existing_story is None:
                     # pub_date = datetime.datetime.timetuple(story.get('published'))
                     # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
@@ -250,7 +250,6 @@ class Feed(models.Model):
                            story_date = story.get('published'),
                            story_title = story.get('title'),
                            story_content = story_content,
-                           story_author_id = story_author.pk,
                            story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
@@ -289,7 +288,6 @@ class Feed(models.Model):
                     existing_story['story_title'] = story.get('title')
                     existing_story['story_content'] = story_content_diff
                     existing_story['story_original_content'] = original_content
-                    existing_story['story_author'] = story_author.pk
                     existing_story['story_author_name'] = story.get('author')
                     existing_story['story_permalink'] = story.get('link')
                     existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
@@ -307,20 +305,18 @@ class Feed(models.Model):
             
         return ret_values
         
-    def _save_story_author(self, author):
-        author, created = StoryAuthor.objects.get_or_create(feed=self, author_name=author)
-        return author, created
-    
     def save_popular_tags(self, feed_tags=None, lock=None):
         if not feed_tags:
-            from apps.rss_feeds.models import Tag
-            from django.db.models.aggregates import Count
-            # Map Reduce this
-            all_tags = Tag.objects.filter(feed=self)\
-                      .annotate(stories_count=Count('story'))\
-                      .order_by('-stories_count')[:20]
-            feed_tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
+            all_tags = MStory.objects(story_feed_id=self.pk).item_frequencies('story_tags')
+            feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, float) and int(v) > 1], 
+                               key=itemgetter(1), 
+                               reverse=True)[:20]
         popular_tags = json.encode(feed_tags)
+        
+        # TODO: This len() bullshit will be gone when feeds move to mongo
+        #       On second thought, it might stay, because we don't want
+        #       popular tags the size of a small planet. I'm looking at you
+        #       Tumblr writers.
         if len(popular_tags) < 1024:
             self.popular_tags = popular_tags
             self.save(lock=lock)
@@ -332,12 +328,13 @@ class Feed(models.Model):
     
     def save_popular_authors(self, feed_authors=None, lock=None):
         if not feed_authors:
-            from django.db.models.aggregates import Count
-            all_authors = StoryAuthor.objects.filter(feed=self, author_name__isnull=False)\
-                          .annotate(stories_count=Count('story'))\
-                          .order_by('-stories_count')[:20]
-            feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
-                                                                       if author.stories_count > 1]
+            authors = defaultdict(int)
+            for story in MStory.objects(story_feed_id=self.pk).only('story_author_name'):
+                authors[story.story_author_name] += 1
+            feed_authors = sorted([(k, v) for k, v in authors.items() if k], 
+                               key=itemgetter(1),
+                               reverse=True)[:20]
+
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
             self.popular_authors = popular_authors
@@ -638,7 +635,6 @@ class MStory(mongo.Document):
     story_content = mongo.StringField()
     story_original_content = mongo.StringField()
     story_content_type = mongo.StringField(max_length=255)
-    story_author_id = mongo.IntField()
     story_author_name = mongo.StringField(max_length=100)
     story_permalink = mongo.StringField()
     story_guid = mongo.StringField(primary_key=True)
