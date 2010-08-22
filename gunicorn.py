@@ -7,4 +7,6 @@ def numCPUs():
 
 bind = "127.0.0.1:8000"
 pidfile = "/tmp/gunicorn_newsblur.pid"
+logfile = "/home/conesus/newsblur/logs/production.log"
+loglevel = "debug"
 workers = numCPUs() #* 2 + 1
