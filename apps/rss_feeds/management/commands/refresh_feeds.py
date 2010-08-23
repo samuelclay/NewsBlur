@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 print '.',
             
         socket.setdefaulttimeout(options['timeout'])
-        feeds = Feed.objects.filter(next_scheduled_update__lte=now)#.order_by('?')
+        feeds = Feed.objects.filter(next_scheduled_update__lte=now).order_by('?')
         
         if options['force']:
             feeds = Feed.objects.all()
