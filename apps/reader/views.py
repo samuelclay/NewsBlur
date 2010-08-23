@@ -312,7 +312,7 @@ def mark_all_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_read(request):
-    story_ids = request.REQUEST['story_id'].split(',')
+    story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(request.REQUEST['feed_id'])
     
     usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
