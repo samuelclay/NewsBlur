@@ -141,7 +141,7 @@ class GoogleReaderImporter(Importer):
             if not category: category = "Root"
             folders[category].append(feed_db.pk)
         except Exception, e:
-            print ' *** -> Exception: %s' % e
+            logging.info(' *** -> Exception: %s' % e)
             
         return folders
         

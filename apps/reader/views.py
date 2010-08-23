@@ -264,7 +264,9 @@ def load_single_feed(request):
     usersub.save()
     
     diff = datetime.datetime.now()-now
-    logging.info(" ---> [%s] Loading feed: %s (%s.%s seconds)" % (request.user, feed, diff.seconds, diff.microseconds / 1000))
+    logging.info(" ---> [%s] Loading feed: %s (%s.%s seconds)" % (request.user, feed, 
+                                                                  diff.seconds, 
+                                                                  diff.microseconds / 1000))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
@@ -281,10 +283,11 @@ def load_feed_page(request):
         data = feed.feed_page.page_data
         
     if created:
-        data = "Give it 5-10 minutes...<br /><br />Your feed will be here in under 5 minutes (on average).<br />Soon there will be a progress bar. Until then, take a deep breath."
+        data = "Fetching feed..."
         
     if not data:
-        data = "There is something wrong with this feed. In the next week, there will be a way to correct this error."
+        data = ("There is something wrong with this feed. You shouldn't be seeing this "
+                "(as you are not allowed to open feeds that are throwing exceptions).")
     
     return HttpResponse(data, mimetype='text/html')
     
@@ -418,19 +421,6 @@ def add_url(request):
     
     return dict(code=code, message=message)
 
-def _add_object_to_folder(obj, folder, folders):
-    if not folder:
-        folders.append(obj)
-        return folders
-        
-    for k, v in enumerate(folders):
-        if isinstance(v, dict):
-            for f_k, f_v in v.items():
-                if f_k == folder:
-                    f_v.append(obj)
-                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
-    return folders
-
 @ajax_login_required
 @json.json_view
 def add_folder(request):
@@ -456,6 +446,19 @@ def add_folder(request):
         message = "Gotta write in a folder name."
         
     return dict(code=code, message=message)
+
+def _add_object_to_folder(obj, folder, folders):
+    if not folder:
+        folders.append(obj)
+        return folders
+        
+    for k, v in enumerate(folders):
+        if isinstance(v, dict):
+            for f_k, f_v in v.items():
+                if f_k == folder:
+                    f_v.append(obj)
+                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
+    return folders
     
 @ajax_login_required
 @json.json_view
@@ -472,7 +475,9 @@ def delete_feed(request):
         for k, folder in enumerate(old_folders):
             if isinstance(folder, int):
                 if folder == feed_id:
-                    logging.info(" ---> [%s] Delete folder: %s'th item: %s folders/feeds" % (request.user, k, len(old_folders)))
+                    logging.info(" ---> [%s] Delete folder: %s'th item: %s folders/feeds" % (
+                        request.user, k, len(old_folders)
+                    ))
                     # folders.remove(folder)
                 else:
                     new_folders.append(folder)
@@ -510,7 +515,10 @@ def load_features(request):
     page = int(request.POST.get('page', 0))
     logging.info(" ---> [%s] Browse features: Page #%s" % (request.user, page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
-    features = [{'description': f['description'], 'date': f['date'].strftime("%b %d, %Y")} for f in features]
+    features = [{
+        'description': f['description'], 
+        'date': f['date'].strftime("%b %d, %Y")
+    } for f in features]
     return features
 
 @json.json_view
@@ -520,7 +528,8 @@ def save_feed_order(request):
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
         assert folders_list is not None
-        logging.info(" ---> [%s] Feed re-ordering: %s folders/feeds" % (request.user, len(folders_list)))
+        logging.info(" ---> [%s] Feed re-ordering: %s folders/feeds" % (request.user, 
+                                                                        len(folders_list)))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()
