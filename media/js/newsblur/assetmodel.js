@@ -105,9 +105,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.read_stories[feed_id].push(story_id);
             NEWSBLUR.log(['Marking Read', this.read_stories, story_id]);
             
-            var story_ids = new Array(this.read_stories[feed_id]);
             this.make_request('/reader/mark_story_as_read', {
-                story_id: story_ids,
+                story_id: this.read_stories[feed_id],
                 feed_id: feed_id
             }, function() {}, function() {}, {
                 'ajax_group': 'queue_clear',

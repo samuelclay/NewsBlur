@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from apps.reader.models import Feature
+from utils import log as logging
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username"), max_length=30,
@@ -23,8 +24,18 @@ class LoginForm(forms.Form):
         if username:
             self.user_cache = authenticate(username=username, password=password)
             if self.user_cache is None:
-                print " ***> [%s] Bad Login" % username
-                raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
+                logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
+                jkless_password = password.replace('j', '').replace('k', '')
+                self.user_cache = authenticate(username=username, password=jkless_password)
+                if self.user_cache is None:
+                    logging.info(" ***> [%s] Bad Login" % username)
+                    raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
+                else:
+                    # Supreme fuck-up. Accidentally removed the letters J and K from
+                    # all user passwords. Re-save with correct password.
+                    logging.info(" ***> [%s] FIXING JK-LESS PASSWORD" % username)
+                    self.user_cache.set_password(password)
+                    self.user_cache.save()
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(_("This account is inactive."))
 
