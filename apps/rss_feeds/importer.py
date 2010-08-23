@@ -23,7 +23,7 @@ class PageImporter(object):
         try:
             request = urllib2.Request(self.url)
             response = urllib2.urlopen(request)
-            data = response.read().decode('utf-8')
+            data = response.read()
             html = self.rewrite_page(data)
             self.save_page(html)
         except ValueError, e:
