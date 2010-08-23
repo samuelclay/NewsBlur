@@ -25,11 +25,15 @@ def bootstrap_stories():
                             feed)
         sys.stdout.flush()
     
-        stories = Story.objects.filter(story_feed=feed).values()
+        stories = Story.objects.filter(story_feed=feed, average_stories_per_month__lte=55).values()
         for story in stories:
             print '.',
             # story['story_tags'] = [tag.name for tag in Tag.objects.filter(story=story['id'])]
-            story['story_tags'] = json.decode(story['story_tags'])
+            try:
+                print '\n\n!\n\n'
+                story['story_tags'] = json.decode(story['story_tags'])
+            except:
+                continue
             del story['id']
             del story['story_author_id']
             try:
