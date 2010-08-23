@@ -18,10 +18,8 @@ from utils.feed_functions import levenshtein_distance
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
-from utils.compressed_textfield import CompressedTextField, StoryField
+from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
-
-USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -64,6 +62,12 @@ class Feed(models.Model):
                 lock.release()
         else:
             super(Feed, self).save(*args, **kwargs)
+    
+    def update_all_statistics(self, lock=None):
+        self.count_subscribers(lock=lock)
+        self.count_stories(lock=lock)
+        self.save_popular_authors(lock=lock)
+        self.save_popular_tags(lock=lock)
         
     def save_feed_history(self, status_code, message, exception=None):
         FeedFetchHistory.objects.create(feed=self, 
@@ -119,18 +123,24 @@ class Feed(models.Model):
                 ),
 
     def count_stories(self, verbose=False, lock=None):
+        self.save_feed_stories_last_month(verbose, lock)
+        self.save_feed_story_history(lock)
+        
+    def save_feed_stories_last_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-        stories_last_month = MStory.objects(story_feed_id=self.pk, story_date__gte=month_ago).count()
+        stories_last_month = MStory.objects(story_feed_id=self.pk, 
+                                            story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        # self.recount_feed(lock)
+        # self.save_feed_story_history(lock)
         
         self.save(lock=lock)
             
         if verbose:
-            print "  ---> %s [%s]: %s stories" % (self.feed_title, self.pk, self.stories_last_month)
+            print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
+                                                             self.stories_last_month)
     
-    def recount_feed(self, lock=None):
+    def save_feed_story_history(self, lock=None):
         """
         Fills in missing months between earlier occurances and now.
         

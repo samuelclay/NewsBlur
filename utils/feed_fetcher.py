@@ -192,10 +192,7 @@ class ProcessFeed:
         # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
             
-        self.feed.count_subscribers(lock=self.lock)
-        self.feed.count_stories(lock=self.lock)
-        self.feed.save_popular_authors(lock=self.lock)
-        self.feed.save_popular_tags(lock=self.lock)
+        self.feed.update_all_statistics(lock=self.lock)
         self.feed.save_feed_history(200, "OK")
         
         return FEED_OK, ret_values
@@ -231,7 +228,6 @@ class Dispatcher:
         self.num_threads = num_threads
         self.time_start = datetime.datetime.now()
         self.workers = []
-
 
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
