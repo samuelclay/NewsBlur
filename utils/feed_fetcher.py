@@ -281,17 +281,11 @@ class Dispatcher:
                             sub.calculate_feed_scores(silent=True)
                     if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
                         feed.get_stories(force=True)
-                
-                if (fetched_feed and
-                    feed.feed_link and
-                    (ret_feed == FEED_OK or
-                     (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
-                    page_importer = PageImporter(feed.feed_link, feed)
-                    page_importer.fetch_page()
             except KeyboardInterrupt:
                 break
             except urllib2.HTTPError, e:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
+                fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
@@ -299,6 +293,14 @@ class Dispatcher:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
+                fetched_feed = None
+                
+            if (fetched_feed and
+                feed.feed_link and
+                (ret_feed == FEED_OK or
+                 (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
+                page_importer = PageImporter(feed.feed_link, feed)
+                page_importer.fetch_page()
 
             if not delta:
                 delta = datetime.datetime.now() - start_time
