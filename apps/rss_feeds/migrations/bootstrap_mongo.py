@@ -35,6 +35,7 @@ def bootstrap_stories():
             try:
                 MStory(**story).save()
             except:
+                print '\n\n!\n\n'
                 continue
 
     print "\nMongo DB stories: %s" % MStory.objects().count()
@@ -58,7 +59,11 @@ def bootstrap_userstories():
         del userstory['id']
         del userstory['opinion']
         del userstory['story_id']
-        MUserStory(**userstory).save()
+        try:
+            MUserStory(**userstory).save()
+        except:
+            print '\n\n!\n\n'
+            continue
 
     print "\nMongo DB userstories: %s" % MUserStory.objects().count()
 
@@ -86,11 +91,15 @@ def bootstrap_classifiers():
                 userclassifier['tag'] = tag.name
                 del userclassifier['tag_id']
             print '.',
-            mongo_classifier(**userclassifier).save()
+            try:
+                mongo_classifier(**userclassifier).save()
+            except:
+                print '\n\n!\n\n'
+                continue
             
         print "\nMongo DB classifiers: %s - %s" % (collection, mongo_classifier.objects().count())
     
 if __name__ == '__main__':
-    # bootstrap_stories()
-    # bootstrap_userstories()
+    bootstrap_stories()
+    bootstrap_userstories()
     bootstrap_classifiers()
