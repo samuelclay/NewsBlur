@@ -1,3 +1,5 @@
 #!/bin/sh
 #ps aux | grep 8080 | egrep -v 'grep' | awk '{print $2}' | xargs kill; ./manage.py runfcgi method=threaded host=127.0.0.1 port=8080
 sudo /etc/init.d/gunicorn restart
+echo '----\n'
+tail -f /home/conesus/newsblur/logs/newsblur.log
