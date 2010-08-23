@@ -32,7 +32,10 @@ def bootstrap_stories():
             story['story_tags'] = json.decode(story['story_tags'])
             del story['id']
             del story['story_author_id']
-            MStory(**story).save()
+            try:
+                MStory(**story).save()
+            except:
+                continue
 
     print "\nMongo DB stories: %s" % MStory.objects().count()
 
