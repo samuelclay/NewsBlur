@@ -393,7 +393,7 @@ a img {
 #feed_list .feed.NB-feed-unfetched {
 }
 
-#feed_list .feed.NB-feed-exception .feed_count {
+#feed_list .feed.NB-feed-exception .feed_counts {
   display: none;
 }
 

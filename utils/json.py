@@ -12,6 +12,8 @@ from django.db.models.query import QuerySet
 import sys
 
 def decode(data):
+    if not data:
+        return data
     return json.loads(data)
     
 def encode(data, *args, **kwargs):

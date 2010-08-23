@@ -1,9 +1,7 @@
+import mongoengine as mongo
 from django.db import models
 from django.contrib.auth.models import User
-import datetime
-from apps.rss_feeds.models import Feed, Story, StoryAuthor, Tag
-from utils.compressed_textfield import StoryField
-from utils import json
+from apps.rss_feeds.models import Feed, StoryAuthor, Tag
 
 class FeatureCategory(models.Model):
     user = models.ForeignKey(User)
@@ -38,7 +36,19 @@ class ClassifierTitle(models.Model):
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.title, self.feed)
         
-        
+class MClassifierTitle(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    title = mongo.StringField(max_length=255)
+    score = mongo.IntField()
+    creation_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'classifier_title',
+        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'allow_inheritance': False,
+    }
+            
 class ClassifierAuthor(models.Model):
     user = models.ForeignKey(User)
     score = models.SmallIntegerField()
@@ -52,11 +62,19 @@ class ClassifierAuthor(models.Model):
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.author.author_name, self.feed)
         
-    def apply_classifier(self, story):
-        if story['author'] == self.author:
-            return True
-        return False
-
+class MClassifierAuthor(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    author = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id'))
+    score = mongo.IntField()
+    creation_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'classifier_author',
+        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'allow_inheritance': False,
+    }
+    
 
 class ClassifierFeed(models.Model):
     user = models.ForeignKey(User)
@@ -70,11 +88,18 @@ class ClassifierFeed(models.Model):
     def __unicode__(self):
         return '%s: %s' % (self.user, self.feed)
         
-    def apply_classifier(self, story):
-        if self.feed == story.feed:
-            return True
-        return False
-
+class MClassifierFeed(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField(unique_with='user_id')
+    score = mongo.IntField()
+    creation_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'classifier_feed',
+        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'allow_inheritance': False,
+    }
+    
         
 class ClassifierTag(models.Model):
     user = models.ForeignKey(User)
@@ -89,6 +114,20 @@ class ClassifierTag(models.Model):
     def __unicode__(self):
         return '%s: %s (%s)' % (self.user, self.tag.name, self.feed)
         
+class MClassifierTag(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    tag = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id'))
+    score = mongo.IntField()
+    creation_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'classifier_tag',
+        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'allow_inheritance': False,
+    }
+    
+    
 def apply_classifier_titles(classifiers, story):
     for classifier in classifiers:
         if classifier.title.lower() in story['story_title'].lower():
@@ -98,44 +137,44 @@ def apply_classifier_titles(classifiers, story):
     
 def apply_classifier_feeds(classifiers, feed):
     for classifier in classifiers:
-        if classifier.feed == feed:
-            # print 'Feeds: %s -- %s' % (classifier.feed, feed)
+        if classifier.feed_id == feed.pk:
+            # print 'Feeds: %s -- %s' % (classifier.feed_id, feed.pk)
             return classifier.score
     return 0
     
 def apply_classifier_authors(classifiers, story):
     for classifier in classifiers:
-        if story.get('story_authors') and classifier.author.author_name == story.get('story_authors'):
-            # print 'Authors: %s -- %s' % (classifier.author.id, story['story_author_id'])
+        if story.get('story_authors') and classifier.author == story.get('story_authors'):
+            # print 'Authors: %s -- %s' % (classifier.author, story['story_authors'])
             return classifier.score
     return 0
     
 def apply_classifier_tags(classifiers, story):
     for classifier in classifiers:
-        if story['story_tags'] and classifier.tag.name in story['story_tags']:
-            # print 'Tags: (%s) %s -- %s' % (classifier.tag.name in story['story_tags'], classifier.tag.name, story['story_tags'])
+        if story['story_tags'] and classifier.tag in story['story_tags']:
+            # print 'Tags: (%s-%s) %s -- %s' % (classifier.tag in story['story_tags'], classifier.score, classifier.tag, story['story_tags'])
             return classifier.score
     return 0
     
-def get_classifiers_for_user(user, feed, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
-    if not classifier_feeds:
-        classifier_feeds = ClassifierFeed.objects.filter(user=user, feed=feed)
-    if not classifier_authors:
-        classifier_authors = ClassifierAuthor.objects.filter(user=user, feed=feed)
-    if not classifier_titles:
-        classifier_titles = ClassifierTitle.objects.filter(user=user, feed=feed)
-    if not classifier_tags:
-        classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
+def get_classifiers_for_user(user, feed_id, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
+    if classifier_feeds is None:
+        # print "Fetching Feeds"
+        classifier_feeds = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
+    if classifier_authors is None:
+        # print "Fetching Authors"
+        classifier_authors = MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id)
+    if classifier_titles is None:
+        # print "Fetching Titles"
+        classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
+    if classifier_tags is None:
+        # print "Fetching Tags"
+        classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
     payload = {
-        'feeds': dict((f.feed.feed_link, {
-            'feed_title': f.feed.feed_title, 
-            'feed_link': f.feed.feed_link, 
-            'score': f.score
-        }) for f in classifier_feeds),
-        'authors': dict([(a.author.author_name, a.score) for a in classifier_authors]),
+        'feeds': dict([(f.feed_id, f.score) for f in classifier_feeds]),
+        'authors': dict([(a.author, a.score) for a in classifier_authors]),
         'titles': dict([(t.title, t.score) for t in classifier_titles]),
-        'tags': dict([(t.tag.name, t.score) for t in classifier_tags]),
+        'tags': dict([(t.tag, t.score) for t in classifier_tags]),
     }
     
     return payload

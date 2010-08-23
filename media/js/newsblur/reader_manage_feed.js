@@ -156,9 +156,9 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         // Publisher
         var $publishers = $.make('div', { className: 'NB-classifiers NB-classifier-publishers'});
-        for (var p in classifiers.feeds) {
-            if (classifiers.feeds[p].score == score) {
-                var $publisher = this.make_publisher(classifiers.feeds[p], i++, opinion);
+        for (var feed_id in classifiers.feeds) {
+            if (classifiers.feeds[feed_id] == score) {
+                var $publisher = this.make_publisher(feed_id, i++, opinion);
                 $publishers.append($publisher);
             }
         }
@@ -206,7 +206,8 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         return $tag;
     },
     
-    make_publisher: function(publisher, i, opinion) {
+    make_publisher: function(feed_id, i, opinion) {
+        var publisher = this.model.get_feed(feed_id);
         var $publisher = $.make('div', { className: 'NB-classifier NB-classifier-publisher' }, [
             $.make('input', { type: 'checkbox', name: opinion+'publisher', value: this.feed_id, id: 'classifier_publisher', checked: 'checked' }),
             $.make('label', { 'for': 'classifier_publisher' }, [

@@ -5,7 +5,9 @@ import datetime
 import hashlib
 import random
 import re
+import mongoengine as mongo
 from collections import defaultdict
+from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
 from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
@@ -16,10 +18,8 @@ from utils.feed_functions import levenshtein_distance
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
-from utils.compressed_textfield import CompressedTextField, StoryField
+from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
-
-USER_AGENT = 'NewsBlur v1.0 - newsblur.com'
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -62,6 +62,12 @@ class Feed(models.Model):
                 lock.release()
         else:
             super(Feed, self).save(*args, **kwargs)
+    
+    def update_all_statistics(self, lock=None):
+        self.count_subscribers(lock=lock)
+        self.count_stories(lock=lock)
+        self.save_popular_authors(lock=lock)
+        self.save_popular_tags(lock=lock)
         
     def save_feed_history(self, status_code, message, exception=None):
         FeedFetchHistory.objects.create(feed=self, 
@@ -117,18 +123,24 @@ class Feed(models.Model):
                 ),
 
     def count_stories(self, verbose=False, lock=None):
+        self.save_feed_stories_last_month(verbose, lock)
+        self.save_feed_story_history(lock)
+        
+    def save_feed_stories_last_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-        stories_last_month = Story.objects.filter(story_feed=self, story_date__gte=month_ago).count()
+        stories_last_month = MStory.objects(story_feed_id=self.pk, 
+                                            story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        self.recount_feed(lock)
+        # self.save_feed_story_history(lock)
         
         self.save(lock=lock)
             
         if verbose:
-            print "  ---> %s [%s]: %s stories" % (self.feed_title, self.pk, self.stories_last_month)
+            print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
+                                                             self.stories_last_month)
     
-    def recount_feed(self, lock=None):
+    def save_feed_story_history(self, lock=None):
         """
         Fills in missing months between earlier occurances and now.
         
@@ -199,7 +211,7 @@ class Feed(models.Model):
     def add_feed(self, feed_address, feed_link, feed_title):
         print locals()
         
-    def update(self, force=False, feed=None, single_threaded=False):
+    def update(self, force=False, feed=None, single_threaded=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -219,7 +231,7 @@ class Feed(models.Model):
 
         return
 
-    def add_update_stories(self, stories, existing_stories):
+    def add_update_stories(self, stories, existing_stories, db):
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -240,38 +252,35 @@ class Feed(models.Model):
                     story_content = story.get('summary')
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
-                story_author, _ = self._save_story_author(story.get('author'))
                 if existing_story is None:
                     # pub_date = datetime.datetime.timetuple(story.get('published'))
                     # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
                     
-                    s = Story(story_feed = self,
+                    s = MStory(story_feed_id = self.pk,
                            story_date = story.get('published'),
                            story_title = story.get('title'),
                            story_content = story_content,
-                           story_author = story_author,
                            story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
                            story_guid = story.get('guid') or story.get('id') or story.get('link'),
-                           story_tags = self._shorten_story_tags(story_tags)
+                           story_tags = story_tags
                     )
                     try:
-                        s.save(force_insert=True)
+                        s.save()
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
                     except IntegrityError:
                         ret_values[ENTRY_ERR] += 1
                         # print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
-                    [s.tags.add(tcat) for tcat in story_tags]
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
-                    if existing_story.story_original_content:
-                        original_content = existing_story.story_original_content
+                    if existing_story.get('story_original_content'):
+                        original_content = existing_story.get('story_original_content')
                     else:
-                        original_content = existing_story.story_content
+                        original_content = existing_story.get('story_content')
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
                     if len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
@@ -280,26 +289,21 @@ class Feed(models.Model):
                         story_content_diff = original_content
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    if existing_story.story_title != story.get('title'):
+                    if existing_story.get('story_title') != story.get('title'):
                         # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                         pass
 
-                    s = Story(id = existing_story.id,
-                           story_feed = self,
-                           story_date = story.get('published'),
-                           story_title = story.get('title'),
-                           story_content = story_content_diff,
-                           story_original_content = original_content,
-                           story_author = story_author,
-                           story_author_name = story.get('author'),
-                           story_permalink = story.get('link'),
-                           story_guid = story.get('guid') or story.get('id') or story.get('link'),
-                           story_tags = self._shorten_story_tags(story_tags)
-                    )
-                    s.tags.clear()
-                    [s.tags.add(tcat) for tcat in story_tags]
+                    existing_story['story_feed'] = self.pk
+                    existing_story['story_date'] = story.get('published')
+                    existing_story['story_title'] = story.get('title')
+                    existing_story['story_content'] = story_content_diff
+                    existing_story['story_original_content'] = original_content
+                    existing_story['story_author_name'] = story.get('author')
+                    existing_story['story_permalink'] = story.get('link')
+                    existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
+                    existing_story['story_tags'] = story_tags
                     try:
-                        s.save(force_update=True)
+                        db.stories.update({'_id': existing_story['_id']}, existing_story)
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
                     except IntegrityError:
@@ -311,19 +315,18 @@ class Feed(models.Model):
             
         return ret_values
         
-    def _save_story_author(self, author):
-        author, created = StoryAuthor.objects.get_or_create(feed=self, author_name=author)
-        return author, created
-    
     def save_popular_tags(self, feed_tags=None, lock=None):
         if not feed_tags:
-            from apps.rss_feeds.models import Tag
-            from django.db.models.aggregates import Count
-            all_tags = Tag.objects.filter(feed=self)\
-                      .annotate(stories_count=Count('story'))\
-                      .order_by('-stories_count')[:20]
-            feed_tags = [(tag.name, tag.stories_count) for tag in all_tags if tag.stories_count > 1]
+            all_tags = MStory.objects(story_feed_id=self.pk).item_frequencies('story_tags')
+            feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, float) and int(v) > 1], 
+                               key=itemgetter(1), 
+                               reverse=True)[:20]
         popular_tags = json.encode(feed_tags)
+        
+        # TODO: This len() bullshit will be gone when feeds move to mongo
+        #       On second thought, it might stay, because we don't want
+        #       popular tags the size of a small planet. I'm looking at you
+        #       Tumblr writers.
         if len(popular_tags) < 1024:
             self.popular_tags = popular_tags
             self.save(lock=lock)
@@ -335,12 +338,13 @@ class Feed(models.Model):
     
     def save_popular_authors(self, feed_authors=None, lock=None):
         if not feed_authors:
-            from django.db.models.aggregates import Count
-            all_authors = StoryAuthor.objects.filter(feed=self, author_name__isnull=False)\
-                          .annotate(stories_count=Count('story'))\
-                          .order_by('-stories_count')[:20]
-            feed_authors = [(author.author_name, author.stories_count) for author in all_authors\
-                                                                       if author.stories_count > 1]
+            authors = defaultdict(int)
+            for story in MStory.objects(story_feed_id=self.pk).only('story_author_name'):
+                authors[story.story_author_name] += 1
+            feed_authors = sorted([(k, v) for k, v in authors.items() if k], 
+                               key=itemgetter(1),
+                               reverse=True)[:20]
+
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
             self.popular_authors = popular_authors
@@ -350,15 +354,7 @@ class Feed(models.Model):
         authors_list = json.decode(feed_authors) if feed_authors else []
         if len(authors_list) > 1:
             self.save_popular_authors(authors_list[:-1])
-    
-    def _shorten_story_tags(self, story_tags):
-        encoded_tags = json.encode([t.name for t in story_tags])
-        if len(encoded_tags) < 2000:
-            return encoded_tags
-        
-        if len(story_tags) > 1:
-            return self._shorten_story_tags(story_tags[:-1])
-        
+            
     def trim_feed(self):
         from apps.reader.models import UserStory
         stories_deleted_count = 0
@@ -387,13 +383,10 @@ class Feed(models.Model):
                 user_stories_count)
                 
     def get_stories(self, offset=0, limit=25, force=False):
-        if not force:
-            stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
-        else:
-            stories = None
-
+        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
+        
         if not stories or force:
-            stories_db = Story.objects.filter(story_feed=self)[offset:offset+limit]
+            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
             stories = self.format_stories(stories_db)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
@@ -405,8 +398,7 @@ class Feed(models.Model):
         # print "Formatting Stories: %s" % stories_db.count()
         for story_db in stories_db:
             story = {}
-            # story_tags = story_db.tags.all()
-            story['story_tags'] = (story_db.story_tags and json.decode(story_db.story_tags)) or []
+            story['story_tags'] = story_db.story_tags # or []
             story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
             story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
             story['story_date'] = story_db.story_date
@@ -443,10 +435,7 @@ class Feed(models.Model):
                     tagname = tagname.strip()
                     if not tagname or tagname == ' ':
                         continue
-                    if not Tag.objects.filter(name=tagname, feed=self):
-                        cobj = Tag(name=tagname, feed=self)
-                        cobj.save()
-                    fcat.append(Tag.objects.get(name=tagname, feed=self))
+                    fcat.append(tagname)
         return fcat
 
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
@@ -462,9 +451,9 @@ class Feed(models.Model):
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if story_published_now or\
                (story_pub_date > start_date and story_pub_date < end_date):
-                if story.get('guid') and story.get('guid') == existing_story.story_guid:
+                if story.get('guid') and story.get('guid') == existing_story['_id']:
                     story_in_system = existing_story
-                elif story.get('link') and story.get('link') == existing_story.story_permalink:
+                elif story.get('link') and story.get('link') == existing_story.get('story_permalink'):
                     story_in_system = existing_story
                 
                 # import pdb
@@ -472,12 +461,12 @@ class Feed(models.Model):
                 
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story.story_title)
-                seq = difflib.SequenceMatcher(None, story_content, existing_story.story_content)
+                                                              existing_story.get('story_title'))
+                seq = difflib.SequenceMatcher(None, story_content, existing_story.get('story_content'))
                 
                 if (seq
                     and story_content
-                    and existing_story.story_content
+                    and existing_story.get('story_content')
                     and seq.real_quick_ratio() > .9 
                     and seq.quick_ratio() > .95):
                     content_ratio = seq.ratio()
@@ -497,7 +486,7 @@ class Feed(models.Model):
                     break
                                         
                 if story_in_system:
-                    if story_content != existing_story.story_content:
+                    if story_content != existing_story.get('story_content'):
                         story_has_changed = True
                     break
         
@@ -540,7 +529,7 @@ class Feed(models.Model):
         total, random_factor = self.get_next_scheduled_update()
 
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-                                minutes = total + random_factor)
+                                minutes = int(total + random_factor))
             
         self.next_scheduled_update = next_scheduled_update
 
@@ -640,13 +629,34 @@ class Story(models.Model):
         db_table="stories"
         ordering=["-story_date"]
         unique_together = (("story_feed", "story_guid_hash"),)
-        
+
     def save(self, *args, **kwargs):
         if not self.story_guid_hash and self.story_guid:
             self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
         if len(self.story_title) > 255:
             self.story_title = self.story_title[:255]
         super(Story, self).save(*args, **kwargs)
+        
+class MStory(mongo.Document):
+    '''A feed item'''
+    story_feed_id = mongo.IntField(unique_with='story_guid')
+    story_date = mongo.DateTimeField()
+    story_title = mongo.StringField(max_length=255)
+    story_content = mongo.StringField()
+    story_original_content = mongo.StringField()
+    story_content_type = mongo.StringField(max_length=255)
+    story_author_name = mongo.StringField(max_length=100)
+    story_permalink = mongo.StringField()
+    story_guid = mongo.StringField(primary_key=True)
+    story_guid_hash = mongo.StringField(max_length=40)
+    story_tags = mongo.ListField(mongo.StringField(max_length=100))
+    
+    meta = {
+        'collection': 'stories',
+        'indexes': ['story_feed_id', 'story_date', ('story_feed_id', '-story_date')],
+        'ordering': ['-story_date'],
+        'allow_inheritance': False,
+    }
         
 class FeedUpdateHistory(models.Model):
     fetch_date = models.DateTimeField(default=datetime.datetime.now)

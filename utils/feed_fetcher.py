@@ -1,14 +1,10 @@
-
-import socket
-socket.setdefaulttimeout(2)
-
-from apps.rss_feeds.models import Feed, Story, FeedUpdateHistory
+from apps.rss_feeds.models import Feed, FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
+from django.conf import settings
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
-from django.db.models import Q
 from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
@@ -19,18 +15,18 @@ import traceback
 import multiprocessing
 import urllib2
 import xml.sax
+import socket
+import pymongo
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.4'
+VERSION = '0.8'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
-
-socket.setdefaulttimeout(30)
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -46,6 +42,7 @@ class FetchFeed:
     def fetch(self):
         """ Downloads and parses a feed.
         """
+        socket.setdefaulttimeout(30)
         identity = self.get_identity()
         log_msg = u'%2s ---> Fetching %s (%d)' % (identity,
                                                  self.feed.feed_title,
@@ -79,11 +76,12 @@ class FetchFeed:
         return identity
         
 class ProcessFeed:
-    def __init__(self, feed, fpf, options):
+    def __init__(self, feed, fpf, db, options):
         self.feed = feed
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
+        self.db = db
 
     def process(self):
         """ Downloads and parses a feed.
@@ -175,17 +173,26 @@ class ProcessFeed:
             if story.get('published') > end_date:
                 end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        existing_stories = Story.objects.filter(
-            (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
-            | (Q(story_guid__in=story_guids)),
-            story_feed=self.feed
-        ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
+        existing_stories = self.db.stories.find({
+            'story_feed_id': self.feed.pk, 
+            '$or': [
+                {
+                    'story_date': {'$gte': start_date},
+                    'story_date': {'$lte': end_date}
+                },
+                {
+                    'story_guid': {'$in': story_guids}
+                }
+            ]
+        }).sort('story_date')
+        # MStory.objects(
+        #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
+        #     | (Q(story_guid__in=story_guids)),
+        #     story_feed=self.feed
+        # ).order_by('-story_date')
+        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
             
-        self.feed.count_subscribers(lock=self.lock)
-        self.feed.count_stories(lock=self.lock)
-        self.feed.save_popular_authors(lock=self.lock)
-        self.feed.save_popular_tags(lock=self.lock)
+        self.feed.update_all_statistics(lock=self.lock)
         self.feed.save_feed_history(200, "OK")
         
         return FEED_OK, ret_values
@@ -222,7 +229,6 @@ class Dispatcher:
         self.time_start = datetime.datetime.now()
         self.workers = []
 
-
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
@@ -230,8 +236,10 @@ class Dispatcher:
         from django.db import connection
         connection.close()
         
+        MONGO_DB = settings.MONGO_DB
+        db = pymongo.Connection(host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])[MONGO_DB['NAME']]
+        
         current_process = multiprocessing.current_process()
-        lock = multiprocessing.Lock()
         
         identity = "X"
         if current_process._identity:
@@ -245,7 +253,7 @@ class Dispatcher:
             }
             start_time = datetime.datetime.now()
         
-            feed.set_next_scheduled_update(lock=lock)
+            feed.set_next_scheduled_update()
             
             ### Uncomment to test feed fetcher
             # from random import randint
@@ -259,7 +267,7 @@ class Dispatcher:
                 delta = datetime.datetime.now() - start_time
                 
                 if fetched_feed and ret_feed == FEED_OK:
-                    pfeed = ProcessFeed(feed, fetched_feed, self.options)
+                    pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
                 
                     if ret_entries.get(ENTRY_NEW):
@@ -269,17 +277,11 @@ class Dispatcher:
                             sub.calculate_feed_scores(silent=True)
                     if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
                         feed.get_stories(force=True)
-                
-                if (fetched_feed and
-                    feed.feed_link and
-                    (ret_feed == FEED_OK or
-                     (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
-                    page_importer = PageImporter(feed.feed_link, feed)
-                    page_importer.fetch_page()
             except KeyboardInterrupt:
                 break
             except urllib2.HTTPError, e:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
+                fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
@@ -287,6 +289,14 @@ class Dispatcher:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
+                fetched_feed = None
+                
+            if (fetched_feed and
+                feed.feed_link and
+                (ret_feed == FEED_OK or
+                 (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
+                page_importer = PageImporter(feed.feed_link, feed)
+                page_importer.fetch_page()
 
             if not delta:
                 delta = datetime.datetime.now() - start_time

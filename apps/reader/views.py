@@ -11,13 +11,13 @@ from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.conf import settings
-from apps.analyzer.models import ClassifierFeed, ClassifierAuthor, ClassifierTag, ClassifierTitle
+from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, UserStory, Feature
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, Story, FeedPage, DuplicateFeed
+    from apps.rss_feeds.models import Feed, FeedPage, DuplicateFeed, MStory
 except:
     pass
 from utils import json, urlnorm
@@ -208,20 +208,21 @@ def load_single_feed(request):
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
-    feed_id = request.REQUEST['feed_id']
+    feed_id = int(request.REQUEST['feed_id'])
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force_update', False)
     
+    now = datetime.datetime.now()
     stories = feed.get_stories(offset, limit) 
         
     if force_update:
         feed.update(force_update)
     
     # Get intelligence classifier for user
-    classifier_feeds = ClassifierFeed.objects.filter(user=user, feed=feed)
-    classifier_authors = ClassifierAuthor.objects.filter(user=user, feed=feed)
-    classifier_titles = ClassifierTitle.objects.filter(user=user, feed=feed)
-    classifier_tags = ClassifierTag.objects.filter(user=user, feed=feed)
+    classifier_feeds = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_authors = MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
     try:
         usersub = UserSubscription.objects.get(user=user, feed=feed)
@@ -230,24 +231,19 @@ def load_single_feed(request):
         logging.info(" ***> [%s] UserSub DNE, creating: %s" % (user, feed))
         usersub = UserSubscription.objects.create(user=user, feed=feed)
             
-    logging.info(" ---> [%s] Loading feed: %s" % (request.user, feed.feed_title))
-    
-    if stories:
-        last_read_date = stories[-1]['story_date']
-    else:
-        last_read_date = usersub.mark_read_date
-    userstory = UserStory.objects.filter(
-        user=user, 
-        feed=feed.id,
-        read_date__gt=last_read_date
-    ).values()
+
+    userstories = MUserStory.objects(user_id=user.pk, 
+                                     feed_id=feed.pk,
+                                     read_date__gte=usersub.mark_read_date)
+    userstories = [us.story.id for us in userstories]
     for story in stories:
-        for o in userstory:
-            if o['story_id'] == story.get('id'):
-                story['opinion'] = o['opinion']
-                story['read_status'] = (o['read_date'] is not None)
-                break
-        if not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
+        classifier_feeds.rewind()
+        classifier_authors.rewind()
+        classifier_tags.rewind()
+        classifier_titles.rewind()
+        if story.get('id') in userstories:
+            story['read_status'] = 1
+        elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] > usersub.last_read_date:
             story['read_status'] = 0
@@ -259,7 +255,6 @@ def load_single_feed(request):
         }
     
     # Intelligence
-    
     feed_tags = json.decode(feed.popular_tags) if feed.popular_tags else []
     feed_authors = json.decode(feed.popular_authors) if feed.popular_authors else []
     classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
@@ -267,6 +262,9 @@ def load_single_feed(request):
     
     usersub.feed_opens += 1
     usersub.save()
+    
+    diff = datetime.datetime.now()-now
+    logging.info(" ---> [%s] Loading feed: %s (%s.%s seconds)" % (request.user, feed, diff.seconds, diff.microseconds / 1000))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
@@ -314,7 +312,7 @@ def mark_all_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_story_as_read(request):
-    story_ids = request.REQUEST['story_id'].split(',')
+    story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(request.REQUEST['feed_id'])
     
     usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -326,7 +324,9 @@ def mark_story_as_read(request):
     
     for story_id in story_ids:
         logging.debug(" ---> [%s] Read story in feed: %s" % (request.user, usersub.feed))
-        m = UserStory(story_id=int(story_id), user=request.user, feed_id=feed_id)
+        story = MStory.objects(story_guid=story_id).first()
+        now = datetime.datetime.now()
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
         try:
             m.save()
             data.update({'code': 1})
@@ -351,9 +351,9 @@ def mark_feed_as_read(request):
         code = 1
         
     logging.info(" ---> [%s] Marking feed as read: %s" % (request.user, feed,))
-    # UserStory.objects.filter(user=request.user, feed=feed_id).delete()
+    MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
     return dict(code=code)
-    
+
 def _parse_user_info(user):
     return {
         'user_info': {
@@ -464,8 +464,7 @@ def delete_feed(request):
     user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
     user_sub.delete()
     
-    user_stories = UserStory.objects.filter(user=request.user, feed=feed_id)
-    user_stories.delete()
+    MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
     
     def _find_feed_in_folders(old_folders):
         new_folders = []
@@ -538,7 +537,7 @@ def get_feeds_trainer(request):
     for us in usersubs:
         if not us.is_trained and us.feed.stories_last_month > 0:
             classifier = dict()
-            classifier['classifiers'] = get_classifiers_for_user(request.user, us.feed)
+            classifier['classifiers'] = get_classifiers_for_user(request.user, us.feed.pk)
             classifier['feed_id'] = us.feed.pk
             classifier['stories_last_month'] = us.feed.stories_last_month
             classifier['feed_tags'] = json.decode(us.feed.popular_tags) if us.feed.popular_tags else []

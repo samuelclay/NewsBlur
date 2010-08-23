@@ -1,18 +1,14 @@
 from django.core.management.base import BaseCommand
-from django.core.handlers.wsgi import WSGIHandler
-from apps.rss_feeds.models import Feed, Story
-from django.core.cache import cache
-from apps.reader.models import UserSubscription, UserStory
-from optparse import OptionParser, make_option
-from utils import log as logging
+from apps.reader.models import UserSubscription
+from optparse import make_option
 import os
 import errno
 import re
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option("-a", "--all", dest="all", action="store_true", help="All feeds [for a user, or everybody]"),
-        make_option("-s", "--silent", dest="silent", action="store_true", help="Inverse verbosity."),
+        make_option("-a", "--all", dest="all", action="store_true", help="All feeds, need it or not (can be combined with a user)"),
+        make_option("-s", "--silent", dest="silent", default=False, action="store_true", help="Inverse verbosity."),
         make_option("-u", "--user", dest="user", nargs=1, help="Specify user id or username"),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
     )

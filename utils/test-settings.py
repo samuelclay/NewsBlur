@@ -8,12 +8,11 @@ DATABASES = {
         'HOST': '127.0.0.1',
     }
 }
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_USER = 'newsblur'
-DATABASE_PASSWORD = ''
-DATABASE_NAME = 'newsblur'
-DATABASE_HOST = '127.0.0.1'
-DATABASE_PORT = ''         
+MONGO_DB = {
+    'NAME': 'newsblur_test',
+    'HOST': '127.0.0.1',
+    'PORT': 27017
+}      
 
 TEST_DATABASE_NAME = ":memory:"
 
