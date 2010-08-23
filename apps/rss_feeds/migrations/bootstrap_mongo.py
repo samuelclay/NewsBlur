@@ -13,7 +13,7 @@ db = mongoengine.connect(MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB[
 
 def bootstrap_stories():
     print "Mongo DB stories: %s" % MStory.objects().count()
-    db.stories.drop()
+    # db.stories.drop()
     print "Dropped! Mongo DB stories: %s" % MStory.objects().count()
 
     print "Stories: %s" % Story.objects.all().count()
@@ -58,7 +58,11 @@ def bootstrap_userstories():
             story = Story.objects.get(pk=userstory['story_id'])
         except Story.DoesNotExist:
             continue
-        userstory['story'] = MStory.objects(story_feed_id=story.story_feed.pk, story_guid=story.story_guid)[0]
+        try:
+            userstory['story'] = MStory.objects(story_feed_id=story.story_feed.pk, story_guid=story.story_guid)[0]
+        except:
+            print '!',
+            continue
         print '.',
         del userstory['id']
         del userstory['opinion']
@@ -104,6 +108,6 @@ def bootstrap_classifiers():
         print "\nMongo DB classifiers: %s - %s" % (collection, mongo_classifier.objects().count())
     
 if __name__ == '__main__':
-    bootstrap_stories()
+    # bootstrap_stories()
     bootstrap_userstories()
     bootstrap_classifiers()
