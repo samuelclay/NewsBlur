@@ -20,17 +20,18 @@ def bootstrap_stories():
     pprint(db.stories.index_information())
 
     feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feed_count = feeds.count()
+    i = 0
     for feed in feeds:
-        print "%-5s: %s" % (Story.objects.select_related('story_author', 'tags').filter(story_feed=feed).count(),
-                            feed)
+        i += 1
+        print "%s/%s: %s (%s stories)" % (i, feed_count,
+                            feed, Story.objects.filter(story_feed=feed).count())
         sys.stdout.flush()
     
-        stories = Story.objects.filter(story_feed=feed, average_stories_per_month__lte=55).values()
+        stories = Story.objects.filter(story_feed=feed).values()
         for story in stories:
-            print '.',
             # story['story_tags'] = [tag.name for tag in Tag.objects.filter(story=story['id'])]
             try:
-                print '\n\n!\n\n'
                 story['story_tags'] = json.decode(story['story_tags'])
             except:
                 continue
@@ -39,7 +40,6 @@ def bootstrap_stories():
             try:
                 MStory(**story).save()
             except:
-                print '\n\n!\n\n'
                 continue
 
     print "\nMongo DB stories: %s" % MStory.objects().count()
