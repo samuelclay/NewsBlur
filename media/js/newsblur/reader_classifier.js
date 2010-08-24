@@ -698,7 +698,6 @@ var classifier = {
         
     save_publisher: function(keep_modal_open) {
         var $save = $('.NB-modal-submit-save', this.$modal);
-        var story_id = this.story_id;
         var data = this.serialize_classifier();
         
         NEWSBLUR.reader.update_opinions(this.$modal, this.feed_id);

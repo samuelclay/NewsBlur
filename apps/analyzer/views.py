@@ -77,7 +77,7 @@ def save_classifier(request):
     
 @json.json_view
 def get_classifiers_feed(request):
-    feed_id = request.POST['feed_id']
+    feed_id = int(request.POST['feed_id'])
     user = get_user(request)
     code = 0
     

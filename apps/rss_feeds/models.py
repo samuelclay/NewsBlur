@@ -649,7 +649,7 @@ class MStory(mongo.Document):
     story_permalink = mongo.StringField()
     story_guid = mongo.StringField(primary_key=True)
     story_guid_hash = mongo.StringField(max_length=40)
-    story_tags = mongo.ListField(mongo.StringField(max_length=100))
+    story_tags = mongo.ListField(mongo.StringField(max_length=250))
     
     meta = {
         'collection': 'stories',

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 import urlparse
-import time
 from utils import log as logging
 import oauth2 as oauth
 from django.contrib.sites.models import Site
@@ -10,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth import login as login_user
 from django.shortcuts import render_to_response
-from django.db.models import Q
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, OPMLImporter, GoogleReaderImporter
@@ -27,6 +24,7 @@ def opml_upload(request):
     
     if request.method == 'POST':
         if 'file' in request.FILES:
+            logging.info(" ---> [%s] OPML Upload" % request.user)
             file = request.FILES['file']
             xml_opml = file.read()
             
@@ -93,26 +91,28 @@ def reader_callback(request):
             user_token = OAuthToken.objects.get(session_id=request.session.session_key)
         except OAuthToken.DoesNotExist:
             user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
-            logging.info("Found ip user_tokens: %s" % user_tokens)
+            # logging.info("Found ip user_tokens: %s" % user_tokens)
             if user_tokens:
                 user_token = user_tokens[0]
                 user_token.session_id = request.session.session_key
                 user_token.save()
                 
-    logging.info("Google Reader request.GET: %s" % request.GET)
+    # logging.info("Google Reader request.GET: %s" % request.GET)
     # Authenticated in Google, so verify and fetch access tokens
     token = oauth.Token(user_token.request_token, user_token.request_token_secret)
     token.set_verifier(request.GET['oauth_verifier'])
     client = oauth.Client(consumer, token)
     resp, content = client.request(access_token_url, "POST")
     access_token = dict(urlparse.parse_qsl(content))
-    logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (request.user, token, access_token))
+    # logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (request.user, token, access_token))
     user_token.access_token = access_token.get('oauth_token')
     user_token.access_token_secret = access_token.get('oauth_token_secret')
     user_token.save()
     
     # Fetch imported feeds on next page load
     request.session['import_from_google_reader'] = True
+    
+    logging.info(" ---> [%s] Finishing Google Reader import" % request.user)
     
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))
