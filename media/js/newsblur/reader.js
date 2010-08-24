@@ -880,14 +880,18 @@
                 this.switch_taskbar_view(this.story_view);
                 // NEWSBLUR.log(['open_feed', this.flags, this.active_feed, feed_id]);
                 
+                _.defer(_.bind(function() {
+                    this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
+                }, this));
                 var feed_view_setting = this.model.view_setting(feed_id);
                 if (!feed_view_setting || feed_view_setting == 'page') {
-                    this.load_iframe(feed_id);
+                    _.defer(_.bind(function() {
+                        this.load_iframe(feed_id);
+                    }, this));
                 } else {
                     this.unload_iframe();
                     this.flags['iframe_prevented_from_loading'] = true;
                 }
-                this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
                 this.flags['opening_feed'] = false;
                 var $iframe_contents = this.$s.$story_iframe.contents();
                 $iframe_contents

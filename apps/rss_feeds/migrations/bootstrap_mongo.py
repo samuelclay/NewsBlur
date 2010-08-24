@@ -46,7 +46,7 @@ def bootstrap_stories():
 
 def bootstrap_userstories():
     print "Mongo DB userstories: %s" % MUserStory.objects().count()
-    db.userstories.drop()
+    # db.userstories.drop()
     print "Dropped! Mongo DB userstories: %s" % MUserStory.objects().count()
 
     print "UserStories: %s" % UserStory.objects.all().count()
@@ -82,7 +82,7 @@ def bootstrap_classifiers():
                                              (ClassifierTag, MClassifierTag)):
         collection = mongo_classifier.meta['collection']
         print "Mongo DB classifiers: %s - %s" % (collection, mongo_classifier.objects().count())
-        db[collection].drop()
+        # db[collection].drop()
         print "Dropped! Mongo DB classifiers: %s - %s" % (collection, mongo_classifier.objects().count())
 
         print "%s: %s" % (sql_classifier._meta.object_name, sql_classifier.objects.all().count())
