@@ -104,6 +104,9 @@ class Feed(models.Model):
             self.has_exception = True
             self.active = False
             self.save()
+        elif self.has_exception:
+            self.has_exception = False
+            self.save()
     
     def count_subscribers(self, verbose=False, lock=None):
         from apps.reader.models import UserSubscription
