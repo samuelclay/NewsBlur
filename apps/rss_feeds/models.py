@@ -82,6 +82,9 @@ class Feed(models.Model):
         if status_code >= 400:
             fetch_history = self.feed_fetch_history.all().values('status_code')
             self.count_errors_in_history(fetch_history)
+        elif self.has_exception:
+            self.has_exception = False
+            self.save()
         
     def save_page_history(self, status_code, message, exception=None):
         PageFetchHistory.objects.create(feed=self, 
@@ -95,6 +98,9 @@ class Feed(models.Model):
         if status_code >= 400:
             fetch_history = self.page_fetch_history.all().values('status_code')
             self.count_errors_in_history(fetch_history)
+        elif self.has_exception:
+            self.has_exception = False
+            self.save()
         
     def count_errors_in_history(self, fetch_history):
         non_errors = [h for h in fetch_history if int(h['status_code']) < 400]
@@ -103,9 +109,6 @@ class Feed(models.Model):
         if len(non_errors) == 0 and len(errors) >= 1:
             self.has_exception = True
             self.active = False
-            self.save()
-        elif self.has_exception:
-            self.has_exception = False
             self.save()
     
     def count_subscribers(self, verbose=False, lock=None):
