@@ -562,7 +562,7 @@
                 var item = items[i];
 
                 if (typeof item == "number") {
-                    var feed = this.model.feeds[item];
+                    var feed = this.model.get_feed(item);
                     if (!feed) continue;
                     var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
@@ -641,7 +641,7 @@
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, feed.feed_title),
-                $.make('div', { className: 'NB-feedbar-manage-feed', title: 'Manage Opinions' }),
+                $.make('div', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-statistics', title: 'Statistics' })),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
                     $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
@@ -1993,7 +1993,7 @@
                 ]),
                 $.make('li', { className: 'NB-menu-manage-trainer' }, [
                     $.make('div', { className: 'NB-menu-manage-image' }),
-                    $.make('div', { className: 'NB-menu-manage-title' }, 'Train intelligence'),
+                    $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
                     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
                 ]),
                 $.make('li', { className: 'NB-menu-manage-preferences' }, [
@@ -2016,15 +2016,15 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Manage opinions'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and don\'t like.')
-                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train intelligence'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose classifiers for this site.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site intelligence manager'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and don\'t like.')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -2337,7 +2337,7 @@
                 delete this.cache.refresh_callback;
             }
             
-            this.model.refresh_feeds($.rescope(this.post_feed_refresh, this));
+            this.model.refresh_feeds($.rescope(this.post_feed_refresh, this), this.flags['has_unfetched_feeds']);
         },
         
         post_feed_refresh: function(e, updated_feeds) {

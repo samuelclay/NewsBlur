@@ -13,6 +13,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
     
     runner: function() {
         this.make_modal();
+        this.change_retry_option_meta();
         this.handle_cancel();
         this.open_modal();
         
@@ -28,19 +29,77 @@ NEWSBLUR.ReaderFeedException.prototype = {
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
-            $.make('div', { className: 'NB-exception-explanation' }, 'Not much to do yet. Soon you will be able to fix the URL, delete the feed, or force a retry.'),
-            $.make('form', { className: 'NB-exception-form' }, [
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Fill out proposed changes...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 1:'),
+                    'Retry'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('input', { type: 'submit', value: 'Retry fetching and parsing', className: 'NB-modal-submit-save NB-modal-submit-retry' }),
+                        $.make('div', { className: 'NB-error' })
+                    ])
                 ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_preferences();
-                return false;
-            })
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-address NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 2:'),
+                    'Change Website Address'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('label', { 'for': 'NB-exception-input-link' }, [
+                            $.make('div', { className: 'NB-folder-icon' }),
+                            'Website URL: '
+                        ]),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link', name: 'feed_link', value: this.feed['feed_link'] }),
+                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-save NB-modal-submit-fetch' }),
+                        $.make('div', { className: 'NB-error' })
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-address NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 2:'),
+                    'Change RSS Feed Address'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('label', { 'for': 'NB-exception-input-address' }, [
+                            $.make('div', { className: 'NB-folder-icon' }),
+                            'RSS/XML URL: '
+                        ]),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address', name: 'feed_address', value: this.feed['feed_address'] }),
+                        $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-save NB-modal-submit-parse' }),
+                        $.make('div', { className: 'NB-error' })
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 3:'),
+                    'Just Delete This Feed'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('input', { type: 'submit', value: 'Delete It. It Just Won\'t Work!', className: 'NB-modal-submit-save NB-modal-submit-delete' }),
+                        $.make('div', { className: 'NB-error' })
+                    ])
+                ])
+            ])
         ]);
+    },
+    
+    change_retry_option_meta: function() {
+      var $meta = $('.NB-exception-option-retry .NB-exception-option-meta', this.$modal);
+      
+      $meta.addClass('NB-exception-option-meta-recommended');
+      $meta.text('Recommended');
     },
     
     open_modal: function() {
@@ -79,6 +138,26 @@ NEWSBLUR.ReaderFeedException.prototype = {
             $.modal.close();
         });
     },
+    
+    save_retry_feed: function() {
+        var self = this;
+        this.model.save_exception_retry(this.feed_id, function() {
+            NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
+            NEWSBLUR.reader.force_feed_refresh();
+            $.modal.close();
+        });
+    },
+    
+    delete_feed: function() {
+        var $loading = $('.NB-modal-loading', this.$model);
+        $loading.addClass('NB-active');
+        var feed_id = this.feed_id;
+        
+        this.model.delete_publisher(feed_id, function() {
+            NEWSBLUR.reader.delete_feed(feed_id);
+            $.modal.close();
+        });
+    },
             
     // ===========
     // = Actions =
@@ -86,11 +165,16 @@ NEWSBLUR.ReaderFeedException.prototype = {
 
     handle_click: function(elem, e) {
         var self = this;
-        
-        $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
+    
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-retry' }, function($t, $p) {
             e.preventDefault();
             
-            self.save_add_url();
+            self.save_retry_feed();
+        });
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-delete' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.delete_feed();
         });
     }
     

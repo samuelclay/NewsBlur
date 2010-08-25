@@ -406,6 +406,9 @@ a img {
   top: 2px;
 }
 
+#feed_list .feed.NB-feed-unfetched .feed_counts {
+  display: none;
+}
 #feed_list .feed.NB-feed-unfetched .feed_favicon {
   opacity: .5;
 }
@@ -2622,11 +2625,11 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-feed .NB-menu-manage-image {
-    margin-left: 18px;    
+/*    margin-left: 18px;    */
 }
 
 .NB-menu-manage .NB-menu-manage-feed {
-    padding-left: 54px;
+/*    padding-left: 54px;*/
 }
 
 /* ==================== */
@@ -2708,4 +2711,28 @@ background: transparent;
     color: #606060;
     font-size: 12px;
     margin: 24px 0;
+}
+
+.NB-modal-exception .NB-exception-option-option {
+  color: #A0A0A0;
+  padding: 0 8px 0 0;
+}
+
+.NB-modal-exception .NB-exception-option-meta {
+  float: right;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 0 0 0;
+}
+
+.NB-modal-exception .NB-exception-option-meta-recommended {
+  color: #4A9937;
+}
+
+.NB-modal-exception .NB-exception-option-address {
+  opacity: .2;
+}
+
+.NB-modal-exception .NB-modal-submit input.NB-modal-submit-save {
+  margin-bottom: 6px;
 }

@@ -29,3 +29,14 @@ def load_feed_statistics(request):
     logging.info(" ---> [%s] Statistics: %s" % (request.user, feed))
     
     return stats
+    
+@json.json_view
+def exception_retry(request):
+    feed_id = request.POST['feed_id']
+    feed = get_object_or_404(Feed, pk=feed_id)
+    
+    feed.has_exception = False
+    feed.fetched_once = False
+    feed.save()
+    
+    return {'code': 1}
