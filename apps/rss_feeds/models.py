@@ -15,12 +15,14 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from utils import json
+from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
 from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
+from utils import log as logging
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -69,13 +71,39 @@ class Feed(models.Model):
         self.count_stories(lock=lock)
         self.save_popular_authors(lock=lock)
         self.save_popular_tags(lock=lock)
+    
+    def check_feed_address_for_feed_link(self):
+        feed_address = None
+
+        if not feedfinder.isFeed(self.feed_address):
+            feed_address = feedfinder.feed(self.feed_address)
+            if not feed_address:
+                feed_address = feedfinder.feed(self.feed_link)
+        else:
+            feed_address_from_link = feedfinder.feed(self.feed_link)
+            if feed_address_from_link != self.feed_address:
+                feed_address = feed_address_from_link
         
+        if feed_address:
+            try:
+                self.feed_address = feed_address
+                self.next_scheduled_update = datetime.datetime.now()
+                self.has_exception = False
+                self.save()
+            except:
+                original_feed = Feed.objects.get(feed_address=feed_address)
+                original_feed.has_exception = False
+                original_feed.save()
+                merge_feeds(original_feed.pk, self.pk)
+        
+        return not not feed_address
+
     def save_feed_history(self, status_code, message, exception=None):
         FeedFetchHistory.objects.create(feed=self, 
                                         status_code=status_code,
                                         message=message,
                                         exception=exception)
-        old_fetch_histories = self.feed_fetch_history.all()[10:]
+        old_fetch_histories = self.feed_fetch_history.all().order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()
             
@@ -545,6 +573,11 @@ class Feed(models.Model):
         self.next_scheduled_update = next_scheduled_update
 
         self.save(lock=lock)
+
+    def reset_next_scheduled_update(self, lock=None):
+        self.next_scheduled_update = datetime.datetime.now()
+
+        self.save(lock=lock)
         
     def calculate_collocations_story_content(self,
                                              collocation_measures=TrigramAssocMeasures,
@@ -724,3 +757,111 @@ class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
     
+
+def merge_feeds(original_feed_id, duplicate_feed_id):
+    from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
+    from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+    try:
+        original_feed = Feed.objects.get(pk=original_feed_id)
+        duplicate_feed = Feed.objects.get(pk=duplicate_feed_id)
+    except Feed.DoesNotExist:
+        logging.info(" ***> Already deleted feed: %s" % duplicate_feed_id)
+        return
+        
+    logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
+                                             original_feed, original_feed.feed_link))
+    logging.info("            --> %s" % original_feed.feed_address)
+    logging.info("            --> %s" % duplicate_feed.feed_address)
+
+    user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
+    for user_sub in user_subs:
+        # Rewrite feed in subscription folders
+        try:
+            user_sub_folders = UserSubscriptionFolders.objects.get(user=user_sub.user)
+        except Exception, e:
+            logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
+            continue
+    
+        # Switch to original feed for the user subscription
+        logging.info("      ===> %s " % user_sub.user)
+        user_sub.feed = original_feed
+        user_sub.needs_unread_recalc = True
+        try:
+            user_sub.save()
+            folders = json.decode(user_sub_folders.folders)
+            folders = rewrite_folders(folders, original_feed, duplicate_feed)
+            user_sub_folders.folders = json.encode(folders)
+            user_sub_folders.save()
+        except IntegrityError:
+            logging.info("      !!!!> %s already subscribed" % user_sub.user)
+            user_sub.delete()
+
+    # Switch read stories
+    user_stories = MUserStory.objects(feed_id=duplicate_feed.pk)
+    logging.info(" ---> %s read stories" % user_stories.count())
+    for user_story in user_stories:
+        user_story.feed_id = original_feed.pk
+        duplicate_story = user_story.story
+        original_story = MStory.objects(story_guid=duplicate_story.story_guid,
+                                        story_feed_id=original_feed.pk)
+        
+        if original_story:
+            user_story.story = original_story[0]
+        else:
+            logging.info(" ***> Can't find original story: %s" % duplicate_story)
+        try:
+            user_story.save()
+        except IntegrityError:
+            logging.info(" ***> Story already saved: %s" % user_story)
+
+    def delete_story_feed(model, feed_field='feed_id'):
+        duplicate_stories = model.objects(**{feed_field: duplicate_feed.pk})
+        # if duplicate_stories.count():
+        #     logging.info(" ---> Deleting %s %s" % (duplicate_stories.count(), model))
+        duplicate_stories.delete()
+        
+    def switch_feed(model):
+        duplicates = model.objects(feed_id=duplicate_feed.pk)
+        if duplicates.count():
+            logging.info(" ---> Switching %s %s" % (duplicates.count(), model))
+        for duplicate in duplicates:
+            duplicate.feed_id = original_feed.pk
+            try:
+                duplicate.save()
+                pass
+            except IntegrityError:
+                logging.info("      !!!!> %s already exists" % duplicate)
+                duplicate.delete()
+        
+    delete_story_feed(MStory, 'story_feed_id')
+    switch_feed(MClassifierTitle)
+    switch_feed(MClassifierAuthor)
+    switch_feed(MClassifierFeed)
+    switch_feed(MClassifierTag)
+
+    try:
+        DuplicateFeed.objects.create(
+            duplicate_address=duplicate_feed.feed_address,
+            feed=original_feed
+        )
+    except IntegrityError:
+        pass
+    
+    duplicate_feed.delete()
+    
+                    
+def rewrite_folders(folders, original_feed, duplicate_feed):
+    new_folders = []
+    
+    for k, folder in enumerate(folders):
+        if isinstance(folder, int):
+            if folder == duplicate_feed.pk:
+                # logging.info("              ===> Rewrote %s'th item: %s" % (k+1, folders))
+                new_folders.append(original_feed.pk)
+            else:
+                new_folders.append(folder)
+        elif isinstance(folder, dict):
+            for f_k, f_v in folder.items():
+                new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})
+
+    return new_folders

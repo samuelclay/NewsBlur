@@ -127,7 +127,9 @@ class ProcessFeed:
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             if not self.fpf.entries:
-                self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                fixed_feed = self.feed.check_feed_address_for_feed_link()
+                if not fixed_feed:
+                    self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
                 return FEED_ERRPARSE, ret_values
                 
         # the feed has changed (or it is the first time we parse it)
@@ -235,6 +237,7 @@ class Dispatcher:
         # Close the DB so the connection can be re-opened on a per-process basis
         from django.db import connection
         connection.close()
+        delta = None
         
         MONGO_DB = settings.MONGO_DB
         db = pymongo.Connection(host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])[MONGO_DB['NAME']]
