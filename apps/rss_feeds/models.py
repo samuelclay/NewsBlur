@@ -700,7 +700,7 @@ class FeedFetchHistory(models.Model):
             self.fetch_date,
             self.status_code,
             self.message,
-            self.exception[:50]
+            self.exception and self.exception[:50]
         )
         
 class PageFetchHistory(models.Model):
@@ -717,7 +717,7 @@ class PageFetchHistory(models.Model):
             self.fetch_date,
             self.status_code,
             self.message,
-            self.exception[:50]
+            self.exception and self.exception[:50]
         )
         
 class DuplicateFeed(models.Model):
