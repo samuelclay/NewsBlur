@@ -98,9 +98,10 @@ class ProcessFeed:
             
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
-                logging.debug(u'[%d] HTTP status %d: %s' % (self.feed.id,
+                logging.debug(u'[%d] HTTP status %d: %s (%s)' % (self.feed.id,
                                                      self.fpf.status,
-                                                     self.feed.feed_address))
+                                                     self.feed.feed_address,
+                                                     self.fpf.bozo))
             if self.fpf.status == 304:
                 # this means the feed has not changed
                 if self.options['verbose']:
@@ -151,9 +152,6 @@ class ProcessFeed:
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
         self.feed.last_update = datetime.datetime.now()
         
-        if self.feed.has_exception:
-            self.feed.has_exception = False
-            
         guids = []
         for entry in self.fpf.entries:
             if entry.get('id', ''):
