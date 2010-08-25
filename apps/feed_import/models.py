@@ -56,6 +56,8 @@ class OPMLImporter(Importer):
                 if not hasattr(feed, 'title'):
                     setattr(feed, 'title', feed.htmlUrl)
                 feed_address = urlnorm.normalize(feed.xmlUrl)
+                if len(feed_address) > 255:
+                    continue
                 feed_link = urlnorm.normalize(feed.htmlUrl)
                 logging.info(' ---> \t%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
@@ -120,6 +122,9 @@ class GoogleReaderImporter(Importer):
         try:
             feed_link = urlnorm.normalize(feed_link)
             feed_address = urlnorm.normalize(feed_address)
+
+            if len(feed_address) > 255:
+                return folders
 
             # See if it exists as a duplicate first
             duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address)
