@@ -123,7 +123,9 @@ class ProcessFeed:
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             logging.debug("   ---> Non-xml feed: %s." % self.feed)
             if not self.fpf.entries:
-                self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
+                fixed_feed = self.feed.check_feed_address_for_feed_link()
+                if not fixed_feed:
+                    self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             if not self.fpf.entries:
