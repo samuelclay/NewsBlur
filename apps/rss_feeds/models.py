@@ -691,11 +691,11 @@ class MStory(mongo.Document):
     '''A feed item'''
     story_feed_id = mongo.IntField(unique_with='story_guid')
     story_date = mongo.DateTimeField()
-    story_title = mongo.StringField(max_length=255)
+    story_title = mongo.StringField(max_length=1024)
     story_content = mongo.StringField()
     story_original_content = mongo.StringField()
     story_content_type = mongo.StringField(max_length=255)
-    story_author_name = mongo.StringField(max_length=100)
+    story_author_name = mongo.StringField()
     story_permalink = mongo.StringField()
     story_guid = mongo.StringField(primary_key=True)
     story_guid_hash = mongo.StringField(max_length=40)
