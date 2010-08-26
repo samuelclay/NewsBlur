@@ -80,7 +80,7 @@ def exception_change_feed_link(request):
     feed_link = request.POST['feed_link']
     code = -1
     
-    if not feed.has_page_exception:
+    if not feed.has_page_exception and not feed.has_feed_exception:
         logging.info(" ***********> [%s] Incorrect feed link change: %s" % (request.user, feed))
         # This Forbidden-403 throws an error, which sounds pretty good to me right now
         return HttpResponseForbidden()
