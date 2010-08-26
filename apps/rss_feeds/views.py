@@ -1,7 +1,7 @@
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, merge_feeds
 from utils.user_functions import ajax_login_required
 from utils import json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
@@ -50,6 +50,7 @@ def exception_retry(request):
 def exception_change_feed_address(request):
     feed_id = request.POST['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
+    feed_address = request.POST['feed_address']
     
     if not feed.has_exception:
         logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
@@ -58,8 +59,15 @@ def exception_change_feed_address(request):
     feed.has_exception = False
     feed.active = True
     feed.fetched_once = False
-    feed.feed_address = request.POST['feed_address']
-    feed.save()
+    feed.feed_address = feed_address
+    try:
+        feed.save()
+    except:
+        original_feed = Feed.objects.get(feed_address=feed_address)
+        original_feed.has_exception = False
+        original_feed.active = True
+        original_feed.save()
+        merge_feeds(original_feed.pk, feed.pk)
     
     return {'code': 1}
     
@@ -73,6 +81,7 @@ def exception_change_feed_link(request):
     
     if not feed.has_exception:
         logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
+        # This Forbidden-403 throws an error, which sounds pretty good to me right now
         return HttpResponseForbidden()
     
     feed_address = feedfinder.feed(feed_link)
@@ -83,7 +92,14 @@ def exception_change_feed_link(request):
         feed.fetched_once = False
         feed.feed_link = feed_link
         feed.feed_address = feed_address
-        feed.save()
+        try:
+            feed.save()
+        except:
+            original_feed = Feed.objects.get(feed_address=feed_address)
+            original_feed.has_exception = False
+            original_feed.active = True
+            original_feed.save()
+            merge_feeds(original_feed.pk, feed.pk)
     
     return {'code': code}
     

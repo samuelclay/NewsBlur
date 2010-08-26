@@ -11,11 +11,13 @@ graph_config = {
     'feeds.label': 'feeds',
     'subscriptions.label': 'subscriptions',
     'update_queue.label': 'update_queue',
+    'exception_feeds.label': 'exception_feeds',
 }
 
 metrics = {
     'feeds': Feed.objects.count(),
     'subscriptions': UserSubscription.objects.count(),
+    'exception_feeds': Feed.objects.count(has_exception=True).count(),
     'update_queue': Feed.objects.filter(next_scheduled_update__lte=datetime.datetime.now()).count(),
 }
 
