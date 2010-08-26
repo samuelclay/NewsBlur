@@ -36,6 +36,7 @@ class Feed(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     fetched_once = models.BooleanField(default=False)
     has_exception = models.BooleanField(default=False)
+    exception_code = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
@@ -89,10 +90,12 @@ class Feed(models.Model):
                 self.feed_address = feed_address
                 self.next_scheduled_update = datetime.datetime.now()
                 self.has_exception = False
+                self.active = True
                 self.save()
             except:
                 original_feed = Feed.objects.get(feed_address=feed_address)
                 original_feed.has_exception = False
+                original_feed.active = True
                 original_feed.save()
                 merge_feeds(original_feed.pk, self.pk)
         
@@ -109,9 +112,10 @@ class Feed(models.Model):
             
         if status_code >= 400:
             fetch_history = self.feed_fetch_history.all().values('status_code')
-            self.count_errors_in_history(fetch_history)
+            self.count_errors_in_history(fetch_history, status_code)
         elif self.has_exception:
             self.has_exception = False
+            self.active = True
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
@@ -125,18 +129,20 @@ class Feed(models.Model):
             
         if status_code >= 400:
             fetch_history = self.page_fetch_history.all().values('status_code')
-            self.count_errors_in_history(fetch_history)
+            self.count_errors_in_history(fetch_history, status_code)
         elif self.has_exception:
             self.has_exception = False
+            self.active = True
             self.save()
         
-    def count_errors_in_history(self, fetch_history):
+    def count_errors_in_history(self, fetch_history, status_code):
         non_errors = [h for h in fetch_history if int(h['status_code']) < 400]
         errors = [h for h in fetch_history if int(h['status_code']) >= 400]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             self.has_exception = True
             self.active = False
+            self.exception_code = status_code
             self.save()
     
     def count_subscribers(self, verbose=False, lock=None):

@@ -1,7 +1,9 @@
 from utils import log as logging
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
 from apps.rss_feeds.models import Feed
-from utils import json
+from utils.user_functions import ajax_login_required
+from utils import json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 
 @json.json_view
@@ -30,6 +32,7 @@ def load_feed_statistics(request):
     
     return stats
     
+@ajax_login_required
 @json.json_view
 def exception_retry(request):
     feed_id = request.POST['feed_id']
@@ -40,3 +43,48 @@ def exception_retry(request):
     feed.save()
     
     return {'code': 1}
+    
+    
+@ajax_login_required
+@json.json_view
+def exception_change_feed_address(request):
+    feed_id = request.POST['feed_id']
+    feed = get_object_or_404(Feed, pk=feed_id)
+    
+    if not feed.has_exception:
+        logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
+        return HttpResponseForbidden()
+        
+    feed.has_exception = False
+    feed.active = True
+    feed.fetched_once = False
+    feed.feed_address = request.POST['feed_address']
+    feed.save()
+    
+    return {'code': 1}
+    
+@ajax_login_required
+@json.json_view
+def exception_change_feed_link(request):
+    feed_id = request.POST['feed_id']
+    feed = get_object_or_404(Feed, pk=feed_id)
+    feed_link = request.POST['feed_link']
+    code = -1
+    
+    if not feed.has_exception:
+        logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
+        return HttpResponseForbidden()
+    
+    feed_address = feedfinder.feed(feed_link)
+    if feed_address:
+        code = 1
+        feed.has_exception = False
+        feed.active = True
+        feed.fetched_once = False
+        feed.feed_link = feed_link
+        feed.feed_address = feed_address
+        feed.save()
+    
+    return {'code': code}
+    
+    

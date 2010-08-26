@@ -452,9 +452,31 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     save_exception_retry: function(feed_id, callback) {
         var self = this;
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/rss_feeds/exception_retry', {'feed_id': feed_id}, function() {
-              if ($.isFunction(callback)) callback();              
-            });
+            this.make_request('/rss_feeds/exception_retry', {'feed_id': feed_id}, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+        
+    save_exception_change_feed_link: function(feed_id, feed_link, callback) {
+        var self = this;
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/rss_feeds/exception_change_feed_link', {
+                'feed_id': feed_id,
+                'feed_link': feed_link
+            }, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+        
+    save_exception_change_feed_address: function(feed_id, feed_address, callback) {
+        var self = this;
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/rss_feeds/exception_change_feed_address', {
+                'feed_id': feed_id,
+                'feed_address': feed_address
+            }, callback);
         } else {
             if ($.isFunction(callback)) callback();
         }

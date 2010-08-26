@@ -43,7 +43,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-address NB-modal-submit' }, [
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-link NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('span', { className: 'NB-exception-option-option' }, 'Option 2:'),
                     'Change Website Address'
@@ -56,14 +56,14 @@ NEWSBLUR.ReaderFeedException.prototype = {
                             'Website URL: '
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link', name: 'feed_link', value: this.feed['feed_link'] }),
-                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-save NB-modal-submit-fetch' }),
+                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-save NB-modal-submit-link' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-address NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 2:'),
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 3:'),
                     'Change RSS Feed Address'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -74,14 +74,14 @@ NEWSBLUR.ReaderFeedException.prototype = {
                             'RSS/XML URL: '
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address', name: 'feed_address', value: this.feed['feed_address'] }),
-                        $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-save NB-modal-submit-parse' }),
+                        $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-save NB-modal-submit-address' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 3:'),
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Option 4:'),
                     'Just Delete This Feed'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -158,6 +158,36 @@ NEWSBLUR.ReaderFeedException.prototype = {
             $.modal.close();
         });
     },
+    
+    change_feed_address: function() {
+        var $loading = $('.NB-modal-loading', this.$model);
+        $loading.addClass('NB-active');
+        var feed_id = this.feed_id;
+        var feed_address = $('input[name=feed_address]', this.$modal).val();
+        
+        if (feed_address.length) {
+            this.model.save_exception_change_feed_address(feed_id, feed_address, function(code) {
+                NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
+                NEWSBLUR.reader.force_feed_refresh();
+                $.modal.close();
+            });
+        }
+    },
+    
+    change_feed_link: function() {
+        var $loading = $('.NB-modal-loading', this.$model);
+        $loading.addClass('NB-active');
+        var feed_id = this.feed_id;
+        var feed_link = $('input[name=feed_link]', this.$modal).val();
+        
+        if (feed_link.length) {
+            this.model.save_exception_change_feed_link(feed_id, feed_link, function(code) {
+                NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
+                NEWSBLUR.reader.force_feed_refresh();
+                $.modal.close();
+            });
+        }
+    },
             
     // ===========
     // = Actions =
@@ -175,6 +205,16 @@ NEWSBLUR.ReaderFeedException.prototype = {
             e.preventDefault();
             
             self.delete_feed();
+        });
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-address' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.change_feed_address();
+        });
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-link' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.change_feed_link();
         });
     }
     

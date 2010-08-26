@@ -118,6 +118,7 @@ def load_feeds(request):
         if sub.feed.has_exception:
             feeds[sub.feed.pk]['has_exception'] = True
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
+            feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
             
     if not_yet_fetched:
         for f in feeds:
@@ -197,6 +198,7 @@ def refresh_feeds(request):
         if sub.feed.has_exception:
             feeds[sub.feed.pk]['has_exception'] = True
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
+            feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
         if request.POST.get('check_fetch_status', False):
             feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
             

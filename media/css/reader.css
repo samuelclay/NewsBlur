@@ -2729,10 +2729,11 @@ background: transparent;
   color: #4A9937;
 }
 
-.NB-modal-exception .NB-exception-option-address {
-  opacity: .2;
-}
-
 .NB-modal-exception .NB-modal-submit input.NB-modal-submit-save {
   margin-bottom: 6px;
+}
+
+.NB-modal-exception input[type=text] {
+  width: 200px;
+  margin: 0 10px;
 }
