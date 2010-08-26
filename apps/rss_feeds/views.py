@@ -38,7 +38,8 @@ def exception_retry(request):
     feed_id = request.POST['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
     
-    feed.has_exception = False
+    feed.has_page_exception = False
+    feed.has_feed_exception = False
     feed.fetched_once = False
     feed.save()
     
@@ -52,11 +53,11 @@ def exception_change_feed_address(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     feed_address = request.POST['feed_address']
     
-    if not feed.has_exception:
+    if not feed.has_feed_exception:
         logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
         return HttpResponseForbidden()
         
-    feed.has_exception = False
+    feed.has_feed_exception = False
     feed.active = True
     feed.fetched_once = False
     feed.feed_address = feed_address
@@ -64,7 +65,7 @@ def exception_change_feed_address(request):
         feed.save()
     except:
         original_feed = Feed.objects.get(feed_address=feed_address)
-        original_feed.has_exception = False
+        original_feed.has_feed_exception = False
         original_feed.active = True
         original_feed.save()
         merge_feeds(original_feed.pk, feed.pk)
@@ -79,15 +80,15 @@ def exception_change_feed_link(request):
     feed_link = request.POST['feed_link']
     code = -1
     
-    if not feed.has_exception:
-        logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
+    if not feed.has_page_exception:
+        logging.info(" ***********> [%s] Incorrect feed link change: %s" % (request.user, feed))
         # This Forbidden-403 throws an error, which sounds pretty good to me right now
         return HttpResponseForbidden()
     
     feed_address = feedfinder.feed(feed_link)
     if feed_address:
         code = 1
-        feed.has_exception = False
+        feed.has_page_exception = False
         feed.active = True
         feed.fetched_once = False
         feed.feed_link = feed_link
@@ -96,7 +97,7 @@ def exception_change_feed_link(request):
             feed.save()
         except:
             original_feed = Feed.objects.get(feed_address=feed_address)
-            original_feed.has_exception = False
+            original_feed.has_page_exception = False
             original_feed.active = True
             original_feed.save()
             merge_feeds(original_feed.pk, feed.pk)

@@ -13,11 +13,13 @@ NEWSBLUR.ReaderFeedException.prototype = {
     
     runner: function() {
         this.make_modal();
-        this.change_retry_option_meta();
+        this.show_recommended_options_meta();
         this.handle_cancel();
         this.open_modal();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        
+        NEWSBLUR.log(['Exception Modal', this.feed]);
     },
     
     make_modal: function() {
@@ -43,8 +45,9 @@ NEWSBLUR.ReaderFeedException.prototype = {
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-link NB-modal-submit' }, [
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
                 $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option' }, 'Option 2:'),
                     'Change Website Address'
                 ]),
@@ -61,8 +64,9 @@ NEWSBLUR.ReaderFeedException.prototype = {
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-address NB-modal-submit' }, [
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
                 $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option' }, 'Option 3:'),
                     'Change RSS Feed Address'
                 ]),
@@ -95,11 +99,30 @@ NEWSBLUR.ReaderFeedException.prototype = {
         ]);
     },
     
-    change_retry_option_meta: function() {
-      var $meta = $('.NB-exception-option-retry .NB-exception-option-meta', this.$modal);
+    show_recommended_options_meta: function() {
+      var $meta_retry = $('.NB-exception-option-retry .NB-exception-option-meta', this.$modal);
+      var $meta_page = $('.NB-exception-option-page .NB-exception-option-meta', this.$modal);
+      var $meta_feed = $('.NB-exception-option-feed .NB-exception-option-meta', this.$modal);
+      var is_400 = (400 <= this.feed.exception_code && this.feed.exception_code < 500);
       
-      $meta.addClass('NB-exception-option-meta-recommended');
-      $meta.text('Recommended');
+      if (!is_400) {
+          $meta_retry.addClass('NB-exception-option-meta-recommended');
+          $meta_retry.text('Recommended');
+          return;
+      }
+      if (this.feed.exception_type == 'feed') {
+          $meta_page.addClass('NB-exception-option-meta-recommended');
+          $meta_page.text('Recommended');
+      }
+      if (this.feed.exception_type == 'page') {
+          if (is_400) {
+              $meta_feed.addClass('NB-exception-option-meta-recommended');
+              $meta_feed.text('Recommended');
+          } else {
+              $meta_page.addClass('NB-exception-option-meta-recommended');
+              $meta_page.text('Recommended');
+          }
+      }
     },
     
     open_modal: function() {

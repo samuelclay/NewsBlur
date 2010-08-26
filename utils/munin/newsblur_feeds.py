@@ -3,6 +3,7 @@ import datetime
 from utils.munin.base import MuninGraph
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
+from django.db.models import Q
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -17,7 +18,7 @@ graph_config = {
 metrics = {
     'feeds': Feed.objects.count(),
     'subscriptions': UserSubscription.objects.count(),
-    'exception_feeds': Feed.objects.filter(has_exception=True).count(),
+    'exception_feeds': Feed.objects.filter(Q(has_feed_exception=True) | Q(has_page_exception=True)).count(),
     'update_queue': Feed.objects.filter(next_scheduled_update__lte=datetime.datetime.now()).count(),
 }
 

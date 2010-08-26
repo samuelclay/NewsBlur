@@ -35,7 +35,9 @@ class Feed(models.Model):
     num_subscribers = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
     fetched_once = models.BooleanField(default=False)
-    has_exception = models.BooleanField(default=False)
+    has_exception = models.BooleanField(default=False) # TODO: Remove in lieu of below 2 columns
+    has_feed_exception = models.BooleanField(default=False)
+    has_page_exception = models.BooleanField(default=False)
     exception_code = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
@@ -89,12 +91,12 @@ class Feed(models.Model):
             try:
                 self.feed_address = feed_address
                 self.next_scheduled_update = datetime.datetime.now()
-                self.has_exception = False
+                self.has_feed_exception = False
                 self.active = True
                 self.save()
             except:
                 original_feed = Feed.objects.get(feed_address=feed_address)
-                original_feed.has_exception = False
+                original_feed.has_feed_exception = False
                 original_feed.active = True
                 original_feed.save()
                 merge_feeds(original_feed.pk, self.pk)
@@ -112,9 +114,9 @@ class Feed(models.Model):
             
         if status_code >= 400:
             fetch_history = self.feed_fetch_history.all().values('status_code')
-            self.count_errors_in_history(fetch_history, status_code)
-        elif self.has_exception:
-            self.has_exception = False
+            self.count_errors_in_history(fetch_history, status_code, 'feed')
+        elif self.has_feed_exception:
+            self.has_feed_exception = False
             self.active = True
             self.save()
         
@@ -129,18 +131,21 @@ class Feed(models.Model):
             
         if status_code >= 400:
             fetch_history = self.page_fetch_history.all().values('status_code')
-            self.count_errors_in_history(fetch_history, status_code)
-        elif self.has_exception:
-            self.has_exception = False
+            self.count_errors_in_history(fetch_history, status_code, 'page')
+        elif self.has_page_exception:
+            self.has_page_exception = False
             self.active = True
             self.save()
         
-    def count_errors_in_history(self, fetch_history, status_code):
+    def count_errors_in_history(self, fetch_history, status_code, exception_type):
         non_errors = [h for h in fetch_history if int(h['status_code']) < 400]
         errors = [h for h in fetch_history if int(h['status_code']) >= 400]
 
         if len(non_errors) == 0 and len(errors) >= 1:
-            self.has_exception = True
+            if exception_type == 'feed':
+                self.has_feed_exception = True
+            elif exception_type == 'page':
+                self.has_page_exception = True
             self.active = False
             self.exception_code = status_code
             self.save()

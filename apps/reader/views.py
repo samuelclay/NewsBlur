@@ -115,8 +115,9 @@ def load_feeds(request):
         if not sub.feed.fetched_once:
             not_yet_fetched = True
             feeds[sub.feed.pk]['not_yet_fetched'] = True
-        if sub.feed.has_exception:
+        if sub.feed.has_page_exception or sub.feed.has_feed_exception:
             feeds[sub.feed.pk]['has_exception'] = True
+            feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
             
@@ -195,8 +196,9 @@ def refresh_feeds(request):
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
-        if sub.feed.has_exception:
+        if sub.feed.has_feed_exception or sub.feed.has_page_exception:
             feeds[sub.feed.pk]['has_exception'] = True
+            feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
         if request.POST.get('check_fetch_status', False):
