@@ -53,7 +53,7 @@ def exception_change_feed_address(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     feed_address = request.POST['feed_address']
     
-    if not feed.has_feed_exception:
+    if not feed.has_feed_exception and not feed.has_page_exception:
         logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
         return HttpResponseForbidden()
         

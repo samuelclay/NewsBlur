@@ -269,8 +269,6 @@ class Dispatcher:
             try:
                 ffeed = FetchFeed(feed, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
-
-                delta = datetime.datetime.now() - start_time
                 
                 if fetched_feed and ret_feed == FEED_OK:
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
@@ -304,8 +302,7 @@ class Dispatcher:
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
-            if not delta:
-                delta = datetime.datetime.now() - start_time
+            delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:
                 comment = u' (SLOW FEED!)'
             else:

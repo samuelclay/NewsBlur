@@ -11,6 +11,7 @@ from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.conf import settings
+from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -281,7 +282,8 @@ def load_single_feed(request):
     return data
 
 def load_feed_page(request):
-    feed = get_object_or_404(Feed, id=request.REQUEST.get('feed_id'))
+    feed_id = request.GET.get('feed_id')
+    feed = get_object_or_404(Feed, pk=request.GET['feed_id'])
     feed_page, created = FeedPage.objects.get_or_create(feed=feed)
     data = None
     
@@ -343,7 +345,7 @@ def mark_story_as_read(request):
         try:
             m.save()
             data.update({'code': 1})
-        except IntegrityError:
+        except OperationError:
             data.update({'code': -1})
     
     return data
@@ -393,8 +395,7 @@ def add_url(request):
         if duplicate_feed:
             feed = [duplicate_feed[0].feed]
         else:
-            feed = Feed.objects.filter(Q(feed_address=url) 
-                                         | Q(feed_link__icontains=url))
+            feed = Feed.objects.filter(feed_address=url)
     
     if feed:
         feed = feed[0]
@@ -408,7 +409,7 @@ def add_url(request):
                 
     if not feed:    
         code = -1
-        message = "That URL does not point to a website or RSS feed."
+        message = "That URL does not point to an RSS feed or a website that has an RSS feed."
     else:
         us, _ = UserSubscription.objects.get_or_create(
             feed=feed, 

@@ -202,9 +202,34 @@ class Feed(models.Model):
         
         if not current_counts:
             current_counts = []
+        map_f = """
+            function() {
+                var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
+                emit(date, 1);
+            }
+        """
+
+        reduce_f = """
+            function(key, values) {
+                var total = 0;
+                for (var i=0; i < values.length; i++) {
+                    total += values[i];
+                }
+                return total;
+            }
+        """
+
+        dates = []
+        res = MStory.objects(story_feed_id=Feed.objects.all()[5].pk).map_reduce(map_f, reduce_f)
+        for r in res:
+            dates.append((r.key, r.value))
+        min_year = datetime.datetime.now().year
+        if dates:
+            min_year = dates[0][:4]
+        print dates, min_year
         
         # Count stories, aggregate by year and month
-        stories = Story.objects.filter(story_feed=self).extra(select={
+        stories = MStory.objects(story_feed=self).extra(select={
             'year': "EXTRACT(year FROM story_date)", 
             'month': "EXTRACT(month from story_date)"
         }).values('year', 'month')
@@ -238,12 +263,13 @@ class Feed(models.Model):
                         total += d.get(key, 0)
                         month_count += 1
         
-        self.story_count_history = json.encode(months)
-        if not total:
-            self.average_stories_per_month = 0
-        else:
-            self.average_stories_per_month = total / month_count
-        self.save(lock)
+        print months
+        # self.story_count_history = json.encode(months)
+        # if not total:
+        #     self.average_stories_per_month = 0
+        # else:
+        #     self.average_stories_per_month = total / month_count
+        # self.save(lock)
         
         
     def last_updated(self):
@@ -651,6 +677,19 @@ class StoryAuthor(models.Model):
 class FeedPage(models.Model):
     feed = models.OneToOneField(Feed, related_name="feed_page")
     page_data = StoryField(null=True, blank=True)
+    
+class MFeedPage(mongo.Document):
+    feed_id = mongo.IntField(primary_key=True)
+    page_data = mongo.StringField()
+    
+    meta = {
+        'collection': 'feed_page',
+        'allow_inheritance': False,
+    }
+    
+    def save(self, *args, **kwargs):
+        
+        super(MFeedPage, self).save(*args, **kwargs)
 
 class FeedXML(models.Model):
     feed = models.OneToOneField(Feed, related_name="feed_xml")
@@ -687,7 +726,7 @@ class Story(models.Model):
     def save(self, *args, **kwargs):
         if not self.story_guid_hash and self.story_guid:
             self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
-        if len(self.story_title) > 255:
+        if len(self.story_title) > self._meta.get_field('story_title').max_length:
             self.story_title = self.story_title[:255]
         super(Story, self).save(*args, **kwargs)
         
