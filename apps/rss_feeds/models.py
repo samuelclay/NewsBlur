@@ -170,7 +170,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False, lock=None):
         self.save_feed_stories_last_month(verbose, lock)
-        self.save_feed_story_history(lock)
+        self.save_feed_story_history_statistics(lock)
         
     def save_feed_stories_last_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
@@ -178,37 +178,36 @@ class Feed(models.Model):
                                             story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        # self.save_feed_story_history(lock)
-        
         self.save(lock=lock)
             
         if verbose:
             print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
                                                              self.stories_last_month)
     
-    def save_feed_story_history(self, lock=None):
+    def save_feed_story_history_statistics(self, lock=None, current_counts=None):
         """
         Fills in missing months between earlier occurances and now.
         
         Save format: [('YYYY-MM, #), ...]
         Example output: [(2010-12, 123), (2011-01, 146)]
         """
-        d = defaultdict(int)
         now = datetime.datetime.now()
         min_year = now.year
         total = 0
         month_count = 0
-        current_counts = self.story_count_history and json.decode(self.story_count_history)
+        if not current_counts:
+            current_counts = self.story_count_history and json.decode(self.story_count_history)
         
         if not current_counts:
             current_counts = []
+
+        # Count stories, aggregate by year and month. Map Reduce!
         map_f = """
             function() {
                 var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
                 emit(date, 1);
             }
         """
-
         reduce_f = """
             function(key, values) {
                 var total = 0;
@@ -218,37 +217,21 @@ class Feed(models.Model):
                 return total;
             }
         """
-
-        dates = []
-        res = MStory.objects(story_feed_id=Feed.objects.all()[5].pk).map_reduce(map_f, reduce_f)
+        dates = {}
+        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f)
         for r in res:
-            dates.append((r.key, r.value))
-        min_year = datetime.datetime.now().year
-        if dates:
-            min_year = dates[0][:4]
-        print dates, min_year
-        
-        # Count stories, aggregate by year and month
-        stories = MStory.objects(story_feed=self).extra(select={
-            'year': "EXTRACT(year FROM story_date)", 
-            'month': "EXTRACT(month from story_date)"
-        }).values('year', 'month')
-        for story in stories:
-            year = int(story['year'])
-            d['%s-%s' % (year, int(story['month']))] += 1
-            if year < min_year:
-                min_year = year
-        
+            dates[r.key] = r.value
+                
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
         # a month. Hacker News can have 1,000+ and still be counted.)
         for current_month, current_count in current_counts:
-            if current_month not in d or d[current_month] < current_count:
-                d[current_month] = current_count
-                year = re.findall(r"(\d{4})-\d{1,2}", current_month)[0]
+            if current_month not in dates or dates[current_month] < current_count:
+                dates[current_month] = current_count
+                year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
                 if year < min_year:
                     min_year = year
-                    
+
         # Assemble a list with 0's filled in for missing months, 
         # trimming left and right 0's.
         months = []
@@ -256,20 +239,19 @@ class Feed(models.Model):
         for year in range(min_year, now.year+1):
             for month in range(1, 12+1):
                 if datetime.datetime(year, month, 1) < now:
-                    key = '%s-%s' % (year, month)
-                    if d.get(key) or start:
+                    key = u'%s-%s' % (year, month)
+                    if dates.get(key) or start:
                         start = True
-                        months.append((key, d.get(key, 0)))
-                        total += d.get(key, 0)
+                        months.append((key, dates.get(key, 0)))
+                        total += dates.get(key, 0)
                         month_count += 1
         
-        print months
-        # self.story_count_history = json.encode(months)
-        # if not total:
-        #     self.average_stories_per_month = 0
-        # else:
-        #     self.average_stories_per_month = total / month_count
-        # self.save(lock)
+        self.story_count_history = json.encode(months)
+        if not total:
+            self.average_stories_per_month = 0
+        else:
+            self.average_stories_per_month = total / month_count
+        self.save(lock)
         
         
     def last_updated(self):
