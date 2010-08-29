@@ -105,16 +105,18 @@ class Feed(models.Model):
         return not not feed_address
 
     def save_feed_history(self, status_code, message, exception=None):
-        FeedFetchHistory.objects.create(feed=self, 
-                                        status_code=status_code,
-                                        message=message,
-                                        exception=exception)
-        old_fetch_histories = self.feed_fetch_history.all().order_by('-fetch_date')[10:]
+        MFeedFetchHistory.objects.create(feed_id=self.pk, 
+                                         status_code=int(status_code),
+                                         message=message,
+                                         exception=exception,
+                                         fetch_date=datetime.datetime.now())
+        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()
             
         if status_code >= 400:
-            fetch_history = self.feed_fetch_history.all().values('status_code')
+            fetch_history = map(lambda h: h.status_code, 
+                                MFeedFetchHistory.objects(feed_id=self.pk))
             self.count_errors_in_history(fetch_history, status_code, 'feed')
         elif self.has_feed_exception:
             self.has_feed_exception = False
@@ -122,16 +124,18 @@ class Feed(models.Model):
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
-        PageFetchHistory.objects.create(feed=self, 
-                                        status_code=status_code,
-                                        message=message,
-                                        exception=exception)
-        old_fetch_histories = self.page_fetch_history.all()[10:]
+        MPageFetchHistory.objects.create(feed_id=self.pk, 
+                                         status_code=int(status_code),
+                                         message=message,
+                                         exception=exception,
+                                         fetch_date=datetime.datetime.now())
+        old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()
             
         if status_code >= 400:
-            fetch_history = self.page_fetch_history.all().values('status_code')
+            fetch_history = map(lambda h: h.status_code, 
+                                MPageFetchHistory.objects(feed_id=self.pk))
             self.count_errors_in_history(fetch_history, status_code, 'page')
         elif self.has_page_exception:
             self.has_page_exception = False
@@ -139,8 +143,8 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, fetch_history, status_code, exception_type):
-        non_errors = [h for h in fetch_history if int(h['status_code']) < 400]
-        errors = [h for h in fetch_history if int(h['status_code']) >= 400]
+        non_errors = [h for h in fetch_history if int(h) < 400]
+        errors = [h for h in fetch_history if int(h) >= 400]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             if exception_type == 'feed':
@@ -780,6 +784,18 @@ class FeedFetchHistory(models.Model):
             self.exception and self.exception[:50]
         )
         
+class MFeedFetchHistory(mongo.Document):
+    feed_id = mongo.IntField()
+    status_code = mongo.IntField()
+    message = mongo.StringField()
+    exception = mongo.StringField()
+    fetch_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'feed_fetch_history',
+        'allow_inheritance': False,
+    }
+        
 class PageFetchHistory(models.Model):
     feed = models.ForeignKey(Feed, related_name='page_fetch_history')
     status_code = models.CharField(max_length=10, null=True, blank=True)
@@ -796,6 +812,18 @@ class PageFetchHistory(models.Model):
             self.message,
             self.exception and self.exception[:50]
         )
+        
+class MPageFetchHistory(mongo.Document):
+    feed_id = mongo.IntField()
+    status_code = mongo.IntField()
+    message = mongo.StringField()
+    exception = mongo.StringField()
+    fetch_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'page_fetch_history',
+        'allow_inheritance': False,
+    }
         
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)
