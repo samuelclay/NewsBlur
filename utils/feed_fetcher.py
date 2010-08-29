@@ -93,8 +93,7 @@ class ProcessFeed:
             ENTRY_SAME:0,
             ENTRY_ERR:0}
 
-        logging.debug(u' ---> [%d] Processing %s' % (self.feed.id,
-                                               self.feed.feed_title))
+        # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
             
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:

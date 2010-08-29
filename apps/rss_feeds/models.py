@@ -332,10 +332,10 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
-                    if existing_story.get('story_original_content'):
-                        original_content = existing_story.get('story_original_content')
+                    if existing_story.get('story_original_content_z'):
+                        original_content = zlib.decompress(existing_story.get('story_original_content_z'))
                     else:
-                        original_content = existing_story.get('story_content')
+                        original_content = zlib.decompress(existing_story.get('story_content_z'))
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
                     if len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
@@ -462,7 +462,7 @@ class Feed(models.Model):
             story['story_date'] = story_db.story_date
             story['story_authors'] = story_db.story_author_name
             story['story_title'] = story_db.story_title
-            story['story_content'] = story_db.story_content
+            story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
             story['story_permalink'] = story_db.story_permalink
             story['story_feed_id'] = self.pk
             story['id'] = story_db.id
@@ -720,7 +720,9 @@ class MStory(mongo.Document):
     story_date = mongo.DateTimeField()
     story_title = mongo.StringField(max_length=1024)
     story_content = mongo.StringField()
+    story_content_z = mongo.BinaryField()
     story_original_content = mongo.StringField()
+    story_original_content_z = mongo.BinaryField()
     story_content_type = mongo.StringField(max_length=255)
     story_author_name = mongo.StringField()
     story_permalink = mongo.StringField()
@@ -734,6 +736,15 @@ class MStory(mongo.Document):
         'ordering': ['-story_date'],
         'allow_inheritance': False,
     }
+    
+    def save(self, *args, **kwargs):
+        if self.story_content:
+            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content = None
+        if self.story_original_content:
+            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content = None
+        super(MStory, self).save(*args, **kwargs)
         
 class FeedUpdateHistory(models.Model):
     fetch_date = models.DateTimeField(default=datetime.datetime.now)

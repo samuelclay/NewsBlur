@@ -109,13 +109,13 @@ def bootstrap_classifiers():
     
 def bootstrap_feedpages():
     print "Mongo DB feed_pages: %s" % MFeedPage.objects().count()
-    db.feed_pages.drop()
+    # db.feed_pages.drop()
     print "Dropped! Mongo DB feed_pages: %s" % MFeedPage.objects().count()
 
     print "FeedPages: %s" % MFeedPage.objects().count()
     pprint(db.feed_pages.index_information())
 
-    feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feeds = Feed.objects.filter(average_stories_per_month=0).order_by('-average_stories_per_month')
     feed_count = feeds.count()
     i = 0
     for feed in feeds:
@@ -127,13 +127,31 @@ def bootstrap_feedpages():
         if feed_page:
             del feed_page[0]['id']
             feed_page[0]['feed_id'] = feed.pk
-            MFeedPage(**feed_page[0]).save()
+            try:
+                MFeedPage(**feed_page[0]).save()
+            except:
+                print '\n\n!\n\n'
+                continue
         
 
     print "\nMongo DB feed_pages: %s" % MFeedPage.objects().count()
 
+def compress_stories():
+    count = MStory.objects().count()
+    print "Mongo DB stories: %s" % count
+    p = 0.0
+    i = 0
+    for story in MStory.objects():
+        i += 1.0
+        if round(i / count * 100) != p:
+            p = round(i / count * 100)
+            print '%s%%' % p
+        story.save()
+        
+    
 if __name__ == '__main__':
     # bootstrap_stories()
     # bootstrap_userstories()
     # bootstrap_classifiers()
     bootstrap_feedpages()
+    compress_stories()
