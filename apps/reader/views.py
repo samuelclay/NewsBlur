@@ -1,5 +1,6 @@
 import datetime
 import random
+import zlib
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -18,7 +19,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, FeedPage, DuplicateFeed, MStory
+    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory
 except:
     pass
 from utils import json, urlnorm
@@ -282,13 +283,12 @@ def load_single_feed(request):
     return data
 
 def load_feed_page(request):
-    feed_id = request.GET.get('feed_id')
-    feed = get_object_or_404(Feed, pk=request.GET['feed_id'])
-    feed_page, created = FeedPage.objects.get_or_create(feed=feed)
+    feed_id = int(request.GET.get('feed_id'))
+    feed_page, created = MFeedPage.objects.get_or_create(feed_id=feed_id)
     data = None
     
     if not created:
-        data = feed.feed_page.page_data
+        data = zlib.decompress(feed_page.page_data)
         
     if created:
         data = "Fetching feed..."

@@ -7,6 +7,7 @@ import random
 import re
 import mongoengine as mongo
 import pymongo
+import zlib
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -662,15 +663,16 @@ class FeedPage(models.Model):
     
 class MFeedPage(mongo.Document):
     feed_id = mongo.IntField(primary_key=True)
-    page_data = mongo.StringField()
+    page_data = mongo.BinaryField()
     
     meta = {
-        'collection': 'feed_page',
+        'collection': 'feed_pages',
         'allow_inheritance': False,
     }
     
     def save(self, *args, **kwargs):
-        
+        if self.page_data:
+            self.page_data = zlib.compress(self.page_data)
         super(MFeedPage, self).save(*args, **kwargs)
 
 class FeedXML(models.Model):
