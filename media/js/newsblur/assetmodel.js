@@ -452,7 +452,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     save_exception_retry: function(feed_id, callback) {
         var self = this;
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/rss_feeds/exception_retry', {'feed_id': feed_id}, callback);
+            this.make_request('/rss_feeds/exception_retry', {
+              'feed_id': feed_id, 
+              'reset_fetch': true
+            }, callback);
         } else {
             if ($.isFunction(callback)) callback();
         }

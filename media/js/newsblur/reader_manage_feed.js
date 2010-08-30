@@ -73,13 +73,14 @@ NEWSBLUR.ReaderManageFeed.prototype = {
                         ]),
                         $.make('div', { className: 'NB-fieldset' }, [
                             $.make('h5', 'Management'),
-                            $.make('div', { className: 'NB-manage-management NB-fieldset-fields' }, [
+                            $.make('div', { className: 'NB-manage-management NB-fieldset-fields NB-modal-submit' }, [
                                 $.make('div', { className: 'NB-manage-rename' }, [
                                     $.make('label', { className: 'NB-manage-rename-label', 'for': 'id_rename' }, "Feed Title: "),
                                     $.make('input', { name: 'rename_title', id: 'id_rename' })
                                 ]),
+                                $.make('input', { type: 'submit', value: 'Fetch and refresh this site', className: 'NB-modal-submit-save NB-modal-submit-retry' }),
                                 $.make('div', { className: 'NB-manage-delete' }, [
-                                    $.make('a', { className: 'NB-delete', href: '#' }, "Delete this feed"),
+                                    $.make('input', { type: 'submit', value: 'Delete this site', className: 'NB-modal-submit-save NB-modal-submit-delete' }),
                                     $.make('a', { className: 'NB-delete-confirm', href: '#' }, "Yes, delete this feed!"),
                                     $.make('a', { className: 'NB-delete-cancel', href: '#' }, "cancel")
                                 ])
@@ -322,6 +323,19 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         });
     },
     
+    save_retry_feed: function() {
+        var self = this;
+        var $loading = $('.NB-modal-loading', this.$manage);
+        $loading.addClass('NB-active');
+        
+        $('.NB-modal-submit-retry', this.$manage).addClass('NB-disabled').attr('value', 'Fetching...');
+        this.model.save_exception_retry(this.feed_id, function() {
+            NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
+            NEWSBLUR.reader.force_feed_refresh();
+            $.modal.close();
+        });
+    },
+    
     delete_feed: function() {
         var $loading = $('.NB-modal-loading', this.$manage);
         $loading.addClass('NB-active');
@@ -336,12 +350,12 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     handle_click: function(elem, e) {
         var self = this;
         
-        $.targetIs(e, { tagSelector: '.NB-delete' }, function($t, $p){
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-delete' }, function($t, $p){
             e.preventDefault();
             
             var $confirm = $('.NB-delete-confirm', self.$manage);
             var $cancel = $('.NB-delete-cancel', self.$manage);
-            var $delete = $('.NB-delete', self.$manage);
+            var $delete = $('.NB-modal-submit-delete', self.$manage);
             
             $delete.animate({'opacity': 0}, {'duration': 500});
             $confirm.fadeIn(500);
@@ -353,7 +367,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
             
             var $confirm = $('.NB-delete-confirm', self.$manage);
             var $cancel = $('.NB-delete-cancel', self.$manage);
-            var $delete = $('.NB-delete', self.$manage);
+            var $delete = $('.NB-modal-submit-delete', self.$manage);
             
             $delete.css({'opacity': 1});
             $confirm.css({'display': 'none'});
@@ -369,6 +383,12 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         $.targetIs(e, { tagSelector: 'input', childOf: '.NB-classifier' }, function($t, $p) {
             var $submit = $('input[type=submit]', self.$manage);
             $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
+        });
+    
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-retry' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.save_retry_feed();
         });
     },
     

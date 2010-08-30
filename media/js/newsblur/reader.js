@@ -640,9 +640,11 @@
                     ])
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
-                $.make('span', { className: 'feed_title' }, feed.feed_title),
-                $.make('div', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
-                (type == 'story' && $.make('div', { className: 'NB-feedbar-statistics', title: 'Statistics' })),
+                $.make('span', { className: 'feed_title' }, [
+                  feed.feed_title,
+                  $.make('span', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
+                  (type == 'story' && $.make('span', { className: 'NB-feedbar-statistics', title: 'Statistics' }))
+                ]),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
                     $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
                     $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated)

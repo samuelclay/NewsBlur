@@ -26,6 +26,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-exception NB-modal' }, [
+            $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Fix a misbehaving site'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
@@ -164,6 +165,11 @@ NEWSBLUR.ReaderFeedException.prototype = {
     
     save_retry_feed: function() {
         var self = this;
+        var $loading = $('.NB-modal-loading', this.$modal);
+        $loading.addClass('NB-active');
+        
+        $('.NB-modal-submit-retry', this.$modal).addClass('NB-disabled').attr('value', 'Fetching...');
+        
         this.model.save_exception_retry(this.feed_id, function() {
             NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
             NEWSBLUR.reader.force_feed_refresh();
@@ -172,8 +178,11 @@ NEWSBLUR.ReaderFeedException.prototype = {
     },
     
     delete_feed: function() {
-        var $loading = $('.NB-modal-loading', this.$model);
+        var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
+        
+        $('.NB-modal-submit-delete', this.$modal).addClass('NB-disabled').attr('value', 'Deleting...');
+        
         var feed_id = this.feed_id;
         
         this.model.delete_publisher(feed_id, function() {
@@ -183,8 +192,11 @@ NEWSBLUR.ReaderFeedException.prototype = {
     },
     
     change_feed_address: function() {
-        var $loading = $('.NB-modal-loading', this.$model);
+        var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
+        
+        $('.NB-modal-submit-address', this.$modal).addClass('NB-disabled').attr('value', 'Parsing...');
+        
         var feed_id = this.feed_id;
         var feed_address = $('input[name=feed_address]', this.$modal).val();
         
@@ -198,8 +210,11 @@ NEWSBLUR.ReaderFeedException.prototype = {
     },
     
     change_feed_link: function() {
-        var $loading = $('.NB-modal-loading', this.$model);
+        var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
+        
+        $('.NB-modal-submit-link', this.$modal).addClass('NB-disabled').attr('value', 'Fetching...');
+        
         var feed_id = this.feed_id;
         var feed_link = $('input[name=feed_link]', this.$modal).val();
         

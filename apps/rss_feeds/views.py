@@ -1,3 +1,4 @@
+import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
@@ -36,12 +37,17 @@ def load_feed_statistics(request):
 @json.json_view
 def exception_retry(request):
     feed_id = request.POST['feed_id']
+    reset_fetch = request.POST.get('reset_fetch', False)
     feed = get_object_or_404(Feed, pk=feed_id)
     
+    feed.next_scheduled_update = datetime.datetime.now()
     feed.has_page_exception = False
     feed.has_feed_exception = False
-    feed.fetched_once = False
+    if reset_fetch:
+        feed.fetched_once = False
     feed.save()
+    
+    feed.update()
     
     return {'code': 1}
     
@@ -61,10 +67,12 @@ def exception_change_feed_address(request):
     feed.active = True
     feed.fetched_once = False
     feed.feed_address = feed_address
+    feed.next_scheduled_update = datetime.datetime.now()
     try:
         feed.save()
     except:
         original_feed = Feed.objects.get(feed_address=feed_address)
+        original_feed.next_scheduled_update = datetime.datetime.now()
         original_feed.has_feed_exception = False
         original_feed.active = True
         original_feed.save()
@@ -93,10 +101,12 @@ def exception_change_feed_link(request):
         feed.fetched_once = False
         feed.feed_link = feed_link
         feed.feed_address = feed_address
+        feed.next_scheduled_update = datetime.datetime.now()
         try:
             feed.save()
         except:
             original_feed = Feed.objects.get(feed_address=feed_address)
+            original_feed.next_scheduled_update = datetime.datetime.now()
             original_feed.has_page_exception = False
             original_feed.active = True
             original_feed.save()
