@@ -175,7 +175,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False, lock=None):
         self.save_feed_stories_last_month(verbose, lock)
-        self.save_feed_story_history_statistics(lock)
+        # self.save_feed_story_history_statistics(lock)
         
     def save_feed_stories_last_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
@@ -270,7 +270,7 @@ class Feed(models.Model):
     def add_feed(self, feed_address, feed_link, feed_title):
         print locals()
         
-    def update(self, force=False, feed=None, single_threaded=True):
+    def update(self, force=False, single_threaded=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}

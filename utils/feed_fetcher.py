@@ -21,7 +21,7 @@ import pymongo
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.8'
+VERSION = '0.9'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
