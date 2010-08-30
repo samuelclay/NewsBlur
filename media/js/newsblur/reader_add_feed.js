@@ -286,7 +286,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
-            $.modal.close();
+            _.defer(function() {
+              NEWSBLUR.reader.open_add_feed_modal();
+            });
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');
             $error.text(data.message);

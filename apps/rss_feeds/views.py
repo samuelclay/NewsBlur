@@ -2,6 +2,7 @@ import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
+from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from utils.user_functions import ajax_login_required
 from utils import json, feedfinder
@@ -70,7 +71,7 @@ def exception_change_feed_address(request):
     feed.next_scheduled_update = datetime.datetime.now()
     try:
         feed.save()
-    except:
+    except IntegrityError:
         original_feed = Feed.objects.get(feed_address=feed_address)
         original_feed.next_scheduled_update = datetime.datetime.now()
         original_feed.has_feed_exception = False
@@ -104,7 +105,7 @@ def exception_change_feed_link(request):
         feed.next_scheduled_update = datetime.datetime.now()
         try:
             feed.save()
-        except:
+        except IntegrityError:
             original_feed = Feed.objects.get(feed_address=feed_address)
             original_feed.next_scheduled_update = datetime.datetime.now()
             original_feed.has_page_exception = False

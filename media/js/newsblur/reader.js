@@ -1950,6 +1950,7 @@
         
         open_add_feed_modal: function() {
             clearInterval(this.flags['bouncing_callout']);
+            $.modal.close();
             
             NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
         },

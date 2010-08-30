@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -283,7 +283,10 @@ def load_single_feed(request):
     return data
 
 def load_feed_page(request):
-    feed_id = int(request.GET.get('feed_id'))
+    feed_id = int(request.GET.get('feed_id', 0))
+    if feed_id == 0:
+        raise Http404
+        
     feed_page, created = MFeedPage.objects.get_or_create(feed_id=feed_id)
     data = None
     

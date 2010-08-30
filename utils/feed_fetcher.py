@@ -58,10 +58,16 @@ class FetchFeed:
             feed.save_feed_history(303, "Already fetched")
             return FEED_SAME, None
         
+        etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
+        
+        if self.options['force']:
+            modified = None
+            etag = None
+            
         self.fpf = feedparser.parse(self.feed.feed_address,
                                     agent=USER_AGENT,
-                                    etag=self.feed.etag,
+                                    etag=etag,
                                     modified=modified)
         
         return FEED_OK, self.fpf
@@ -269,7 +275,7 @@ class Dispatcher:
                 ffeed = FetchFeed(feed, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
-                if fetched_feed and ret_feed == FEED_OK:
+                if (fetched_feed and ret_feed == FEED_OK):
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
                 

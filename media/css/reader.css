@@ -691,7 +691,7 @@ background: transparent;
     height: 16px;
     display: none;
     cursor: pointer;
-    padding: 3px 4px 0 24px;
+    padding: 0 0 0 38px;
 }
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
     background-color: #3090cf;
@@ -709,7 +709,7 @@ background: transparent;
     display: none;
 }
 #story_titles .NB-feedbar .NB-feedbar-statistics {
-    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat center center;    
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat left center;    
     width: 16px;
     height: 16px;
     display: none;
@@ -1661,7 +1661,7 @@ a.NB-splash-link:hover {
 .NB-modal .NB-modal-submit .NB-modal-submit-button {
     border: 1px solid #606060;
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 4px 12px;
     text-transform: uppercase;
     margin: 2px 4px 2px;
     border: 1px solid #606060;
@@ -1691,7 +1691,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-modal .NB-modal-submit .NB-modal-submit-delete {
-  background-color: #5E120D;
+  background-color: #7E020D;
 }
 .NB-modal .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
@@ -1961,7 +1961,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-add input[type=text] {
-    width: 350px;
+    width: 340px;
     font-size: 14px;
     padding: 2px;
     margin: 2px 4px 2px;
