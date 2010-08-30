@@ -105,11 +105,11 @@ class Feed(models.Model):
         return not not feed_address
 
     def save_feed_history(self, status_code, message, exception=None):
-        MFeedFetchHistory.objects.create(feed_id=self.pk, 
-                                         status_code=int(status_code),
-                                         message=message,
-                                         exception=exception,
-                                         fetch_date=datetime.datetime.now())
+        MFeedFetchHistory(feed_id=self.pk, 
+                          status_code=int(status_code),
+                          message=message,
+                          exception=exception,
+                          fetch_date=datetime.datetime.now()).save()
         old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()
@@ -124,11 +124,11 @@ class Feed(models.Model):
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
-        MPageFetchHistory.objects.create(feed_id=self.pk, 
-                                         status_code=int(status_code),
-                                         message=message,
-                                         exception=exception,
-                                         fetch_date=datetime.datetime.now())
+        MPageFetchHistory(feed_id=self.pk, 
+                          status_code=int(status_code),
+                          message=message,
+                          exception=exception,
+                          fetch_date=datetime.datetime.now()).save()
         old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()

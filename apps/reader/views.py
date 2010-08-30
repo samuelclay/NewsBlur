@@ -288,7 +288,7 @@ def load_feed_page(request):
     data = None
     
     if not created:
-        data = zlib.decompress(feed_page.page_data)
+        data = feed_page.page_data and zlib.decompress(feed_page.page_data)
         
     if created:
         data = "Fetching feed..."
