@@ -33,12 +33,13 @@ def mtime(ttime):
     """
     return datetime.datetime.fromtimestamp(time.mktime(ttime))
     
+    
 class FetchFeed:
     def __init__(self, feed, options):
         self.feed = feed
         self.options = options
         self.fpf = None
-
+    
     def fetch(self):
         """ Downloads and parses a feed.
         """
@@ -57,7 +58,9 @@ class FetchFeed:
             logging.debug(log_msg)
             feed.save_feed_history(303, "Already fetched")
             return FEED_SAME, None
-        
+        else:
+            feed.set_next_scheduled_update()
+            
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         
@@ -263,9 +266,7 @@ class Dispatcher:
                 ENTRY_ERR: 0
             }
             start_time = datetime.datetime.now()
-        
-            feed.set_next_scheduled_update()
-            
+                    
             ### Uncomment to test feed fetcher
             # from random import randint
             # if randint(0,10) < 10:

@@ -112,7 +112,7 @@ def bootstrap_feedpages():
     # db.feed_pages.drop()
     print "Dropped! Mongo DB feed_pages: %s" % MFeedPage.objects().count()
 
-    print "FeedPages: %s" % MFeedPage.objects().count()
+    print "FeedPages: %s" % FeedPage.objects.count()
     pprint(db.feed_pages.index_information())
 
     feeds = Feed.objects.all().order_by('-average_stories_per_month')
