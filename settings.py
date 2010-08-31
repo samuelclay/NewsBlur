@@ -236,6 +236,13 @@ DEBUG_TOOLBAR_CONFIG = {
     'HIDE_DJANGO_SQL': False,
 }
 
+# ==========
+# = Celery =
+# ==========
+
+import djcelery
+djcelery.setup_loader()
+
 # =========
 # = Mongo =
 # =========
