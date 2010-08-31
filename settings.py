@@ -192,6 +192,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'djcelery',
     'compress',
     'apps.rss_feeds',
     'apps.reader',
