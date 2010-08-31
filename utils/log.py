@@ -11,7 +11,7 @@ def getlogger():
         hdlr = logging.StreamHandler()
     else:
         hdlr = logging.FileHandler(settings.LOG_FILE)
-    formatter = logging.Formatter('[%(asctime)-12s] %(message)s','%b %d %H:%M') 
+    formatter = logging.Formatter('[%(asctime)-12s] %(message)s','%b %d %H:%M:%S') 
     
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)

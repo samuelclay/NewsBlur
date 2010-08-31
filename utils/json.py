@@ -5,9 +5,8 @@ from django.utils.encoding import force_unicode
 from django.utils import simplejson as json
 from decimal import Decimal
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.core.mail import mail_admins
-from django.utils.translation import ugettext as _
 from django.db.models.query import QuerySet
 import sys
 
@@ -115,7 +114,9 @@ def json_view(func):
 
             response = {'result': 'error',
                         'text': unicode(e)}
-
+        
+        if isinstance(response, HttpResponseForbidden):
+            return response
         json = json_encode(response)
         return HttpResponse(json, mimetype='application/json')
     return wrap
@@ -123,7 +124,7 @@ def json_view(func):
 def main():
     test = {1: True, 2: u"string", 3: 30}
     json_test = json_encode(test)
-    # print test, json_test
+    print test, json_test
     
 if __name__ == '__main__':
     main()

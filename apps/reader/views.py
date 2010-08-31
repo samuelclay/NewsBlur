@@ -1,5 +1,6 @@
 import datetime
 import random
+import zlib
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -9,15 +10,16 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
+from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, FeedPage, DuplicateFeed, MStory
+    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory
 except:
     pass
 from utils import json, urlnorm
@@ -115,8 +117,9 @@ def load_feeds(request):
         if not sub.feed.fetched_once:
             not_yet_fetched = True
             feeds[sub.feed.pk]['not_yet_fetched'] = True
-        if sub.feed.has_exception:
+        if sub.feed.has_page_exception or sub.feed.has_feed_exception:
             feeds[sub.feed.pk]['has_exception'] = True
+            feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
             
@@ -195,8 +198,9 @@ def refresh_feeds(request):
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
-        if sub.feed.has_exception:
+        if sub.feed.has_feed_exception or sub.feed.has_page_exception:
             feeds[sub.feed.pk]['has_exception'] = True
+            feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
         if request.POST.get('check_fetch_status', False):
@@ -279,12 +283,15 @@ def load_single_feed(request):
     return data
 
 def load_feed_page(request):
-    feed = get_object_or_404(Feed, id=request.REQUEST.get('feed_id'))
-    feed_page, created = FeedPage.objects.get_or_create(feed=feed)
+    feed_id = int(request.GET.get('feed_id', 0))
+    if feed_id == 0:
+        raise Http404
+        
+    feed_page, created = MFeedPage.objects.get_or_create(feed_id=feed_id)
     data = None
     
     if not created:
-        data = feed.feed_page.page_data
+        data = feed_page.page_data and zlib.decompress(feed_page.page_data)
         
     if created:
         data = "Fetching feed..."
@@ -341,7 +348,7 @@ def mark_story_as_read(request):
         try:
             m.save()
             data.update({'code': 1})
-        except IntegrityError:
+        except OperationError:
             data.update({'code': -1})
     
     return data
@@ -391,8 +398,7 @@ def add_url(request):
         if duplicate_feed:
             feed = [duplicate_feed[0].feed]
         else:
-            feed = Feed.objects.filter(Q(feed_address=url) 
-                                         | Q(feed_link__icontains=url))
+            feed = Feed.objects.filter(feed_address=url)
     
     if feed:
         feed = feed[0]
@@ -406,7 +412,7 @@ def add_url(request):
                 
     if not feed:    
         code = -1
-        message = "That URL does not point to a website or RSS feed."
+        message = "That URL does not point to an RSS feed or a website that has an RSS feed."
     else:
         us, _ = UserSubscription.objects.get_or_create(
             feed=feed, 

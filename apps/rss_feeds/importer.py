@@ -7,7 +7,7 @@ import multiprocessing
 import traceback
 import feedparser
 from utils import log as logging
-from apps.rss_feeds.models import FeedPage
+from apps.rss_feeds.models import MFeedPage
 
 class PageImporter(object):
     
@@ -81,6 +81,6 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            feed_page, _ = FeedPage.objects.get_or_create(feed=self.feed)
+            feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
             feed_page.page_data = html
             feed_page.save()

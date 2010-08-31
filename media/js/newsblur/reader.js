@@ -474,7 +474,7 @@
                     scroll = 0;
                 }
                 $feed_list.scrollTop(scroll);
-                this.open_feed(feed_id, $next_feed);
+                // this.open_feed(feed_id, $next_feed);
             }
         },
         
@@ -571,6 +571,7 @@
                     }
                     
                     if (feed.not_yet_fetched) {
+                        NEWSBLUR.log(['Feed not fetched', feed]);
                         if (!this.model.preference('hide_fetch_progress')) {
                             this.flags['has_unfetched_feeds'] = true;
                         }
@@ -640,9 +641,11 @@
                     ])
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
-                $.make('span', { className: 'feed_title' }, feed.feed_title),
-                $.make('div', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
-                (type == 'story' && $.make('div', { className: 'NB-feedbar-statistics', title: 'Statistics' })),
+                $.make('span', { className: 'feed_title' }, [
+                  feed.feed_title,
+                  $.make('span', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
+                  (type == 'story' && $.make('span', { className: 'NB-feedbar-statistics', title: 'Statistics' }))
+                ]),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
                     $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
                     $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated)
@@ -838,7 +841,8 @@
                 'page_view_showing_feed_view': false,
                 'iframe_fetching_story_locations': false,
                 'story_titles_loaded': false,
-                'iframe_prevented_from_loading': false
+                'iframe_prevented_from_loading': false,
+                'pause_feed_refreshing': false
             });
             
             $.extend(this.cache, {
@@ -857,12 +861,16 @@
             this.$s.$story_titles.data('feed_id', null);
         },
         
-        open_feed: function(feed_id, $feed_link) {
+        open_feed: function(feed_id, $feed_link, force) {
             var self = this;
             var $story_titles = this.$s.$story_titles;
             this.flags['opening_feed'] = true;
             
-            if (feed_id != this.active_feed) {
+            if (!$feed_link) {
+              $feed_link = $('.feed.selected', this.$feed_list).eq(0);
+            }
+            
+            if (feed_id != this.active_feed || force) {
                 $story_titles.empty().scrollTop('0px');
                 this.reset_feed();
                 this.hide_splash_page();
@@ -1793,7 +1801,7 @@
         },
         
         determine_feed_view_story_position: function($story, story) {
-            if ($story.is(':visible')) {
+            if ($story && $story.is(':visible')) {
                 var position_original = parseInt($story.offset().top, 10);
                 var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
                 var position = position_original + position_offset;
@@ -1948,6 +1956,7 @@
         
         open_add_feed_modal: function() {
             clearInterval(this.flags['bouncing_callout']);
+            $.modal.close();
             
             NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
         },
@@ -2321,26 +2330,34 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = (1000 * 60) / 2; // 1/2 minutes
+            var FEED_REFRESH_INTERVAL = (1000 * 60) / 12; // 1/2 minutes
             
             clearInterval(this.flags.feed_refresh);
             
             this.flags.feed_refresh = setInterval(function() {
-                self.model.refresh_feeds($.rescope(self.post_feed_refresh, self), self.flags['has_unfetched_feeds']);
+                if (!self.flags['pause_feed_refreshing']) {
+                  self.model.refresh_feeds(_.bind(function(updated_feeds) {
+                      self.post_feed_refresh(updated_feeds);
+                  }, self), self.flags['has_unfetched_feeds']);
+                }
             }, FEED_REFRESH_INTERVAL);
         },
         
-        force_feed_refresh: function(callback) {
+        force_feed_refresh: function(callback, update_all) {
             if (callback) {
                 this.cache.refresh_callback = callback;
             } else {
                 delete this.cache.refresh_callback;
             }
-            
-            this.model.refresh_feeds($.rescope(this.post_feed_refresh, this), this.flags['has_unfetched_feeds']);
+
+            this.flags['pause_feed_refreshing'] = true;
+
+            this.model.refresh_feeds(_.bind(function(updated_feeds) {
+              this.post_feed_refresh(updated_feeds, update_all);
+            }, this), this.flags['has_unfetched_feeds']);
         },
         
-        post_feed_refresh: function(e, updated_feeds) {
+        post_feed_refresh: function(updated_feeds, update_all) {
             var feeds = this.model.feeds;
             
             if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
@@ -2354,16 +2371,14 @@
                 if (!feed) continue;
                 var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
-                var selected = $feed_on_page.hasClass('selected');
                 
                 $('.unread_count', $feed).corner('4px');
-                if (selected) {
-                    $feed.addClass('selected');
-                }
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     var limit = $('.story', this.$s.$story_titles).length;
-                    this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                    // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                    $feed_on_page.replaceWith($feed);
+                    this.mark_feed_as_selected(this.active_feed, $feed);
                 } else {
                     if (!this.flags['has_unfetched_feeds']) {
                         NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
@@ -2373,6 +2388,8 @@
             }
             
             this.check_feed_fetch_progress();
+
+            this.flags['pause_feed_refreshing'] = false;
         },
         
         post_refresh_active_feed: function(e, data, first_load) {

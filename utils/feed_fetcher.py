@@ -21,7 +21,7 @@ import pymongo
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.8'
+VERSION = '0.9'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
@@ -51,17 +51,23 @@ class FetchFeed:
                                                  
         # Check if feed still needs to be updated
         feed = Feed.objects.get(pk=self.feed.pk)
-        if feed.last_update > datetime.datetime.now() and not self.options.get('force'):
+        if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
             log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
                                                                  self.feed.id)
             logging.debug(log_msg)
             feed.save_feed_history(303, "Already fetched")
             return FEED_SAME, None
         
+        etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
+        
+        if self.options.get('force'):
+            modified = None
+            etag = None
+            
         self.fpf = feedparser.parse(self.feed.feed_address,
                                     agent=USER_AGENT,
-                                    etag=self.feed.etag,
+                                    etag=etag,
                                     modified=modified)
         
         return FEED_OK, self.fpf
@@ -93,8 +99,7 @@ class ProcessFeed:
             ENTRY_SAME:0,
             ENTRY_ERR:0}
 
-        logging.debug(u' ---> [%d] Processing %s' % (self.feed.id,
-                                               self.feed.feed_title))
+        # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
             
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -269,19 +274,17 @@ class Dispatcher:
             try:
                 ffeed = FetchFeed(feed, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
-
-                delta = datetime.datetime.now() - start_time
                 
-                if fetched_feed and ret_feed == FEED_OK:
+                if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
-                
-                    if ret_entries.get(ENTRY_NEW):
+
+                    if ret_entries.get(ENTRY_NEW) or self.options['force']:
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
                             cache.delete('usersub:%s' % sub.user_id)
                             sub.calculate_feed_scores(silent=True)
-                    if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
+                    if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                         feed.get_stories(force=True)
             except KeyboardInterrupt:
                 break
@@ -297,15 +300,15 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
                 
-            if (fetched_feed and
-                feed.feed_link and
-                (ret_feed == FEED_OK or
-                 (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
+            if ((self.options['force']) or 
+                (fetched_feed and
+                 feed.feed_link and
+                 (ret_feed == FEED_OK or
+                  (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
-            if not delta:
-                delta = datetime.datetime.now() - start_time
+            delta = datetime.datetime.now() - start_time
             if delta.seconds > SLOWFEED_WARNING:
                 comment = u' (SLOW FEED!)'
             else:

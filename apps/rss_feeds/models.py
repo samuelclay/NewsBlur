@@ -7,6 +7,7 @@ import random
 import re
 import mongoengine as mongo
 import pymongo
+import zlib
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -35,7 +36,9 @@ class Feed(models.Model):
     num_subscribers = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
     fetched_once = models.BooleanField(default=False)
-    has_exception = models.BooleanField(default=False)
+    has_exception = models.BooleanField(default=False) # TODO: Remove in lieu of below 2 columns
+    has_feed_exception = models.BooleanField(default=False)
+    has_page_exception = models.BooleanField(default=False)
     exception_code = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
@@ -89,12 +92,12 @@ class Feed(models.Model):
             try:
                 self.feed_address = feed_address
                 self.next_scheduled_update = datetime.datetime.now()
-                self.has_exception = False
+                self.has_feed_exception = False
                 self.active = True
                 self.save()
             except:
                 original_feed = Feed.objects.get(feed_address=feed_address)
-                original_feed.has_exception = False
+                original_feed.has_feed_exception = False
                 original_feed.active = True
                 original_feed.save()
                 merge_feeds(original_feed.pk, self.pk)
@@ -102,45 +105,52 @@ class Feed(models.Model):
         return not not feed_address
 
     def save_feed_history(self, status_code, message, exception=None):
-        FeedFetchHistory.objects.create(feed=self, 
-                                        status_code=status_code,
-                                        message=message,
-                                        exception=exception)
-        old_fetch_histories = self.feed_fetch_history.all().order_by('-fetch_date')[10:]
+        MFeedFetchHistory(feed_id=self.pk, 
+                          status_code=int(status_code),
+                          message=message,
+                          exception=exception,
+                          fetch_date=datetime.datetime.now()).save()
+        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()
             
         if status_code >= 400:
-            fetch_history = self.feed_fetch_history.all().values('status_code')
-            self.count_errors_in_history(fetch_history, status_code)
-        elif self.has_exception:
-            self.has_exception = False
+            fetch_history = map(lambda h: h.status_code, 
+                                MFeedFetchHistory.objects(feed_id=self.pk))
+            self.count_errors_in_history(fetch_history, status_code, 'feed')
+        elif self.has_feed_exception:
+            self.has_feed_exception = False
             self.active = True
             self.save()
         
     def save_page_history(self, status_code, message, exception=None):
-        PageFetchHistory.objects.create(feed=self, 
-                                        status_code=status_code,
-                                        message=message,
-                                        exception=exception)
-        old_fetch_histories = self.page_fetch_history.all()[10:]
+        MPageFetchHistory(feed_id=self.pk, 
+                          status_code=int(status_code),
+                          message=message,
+                          exception=exception,
+                          fetch_date=datetime.datetime.now()).save()
+        old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
         for history in old_fetch_histories:
             history.delete()
             
         if status_code >= 400:
-            fetch_history = self.page_fetch_history.all().values('status_code')
-            self.count_errors_in_history(fetch_history, status_code)
-        elif self.has_exception:
-            self.has_exception = False
+            fetch_history = map(lambda h: h.status_code, 
+                                MPageFetchHistory.objects(feed_id=self.pk))
+            self.count_errors_in_history(fetch_history, status_code, 'page')
+        elif self.has_page_exception:
+            self.has_page_exception = False
             self.active = True
             self.save()
         
-    def count_errors_in_history(self, fetch_history, status_code):
-        non_errors = [h for h in fetch_history if int(h['status_code']) < 400]
-        errors = [h for h in fetch_history if int(h['status_code']) >= 400]
+    def count_errors_in_history(self, fetch_history, status_code, exception_type):
+        non_errors = [h for h in fetch_history if int(h) < 400]
+        errors = [h for h in fetch_history if int(h) >= 400]
 
         if len(non_errors) == 0 and len(errors) >= 1:
-            self.has_exception = True
+            if exception_type == 'feed':
+                self.has_feed_exception = True
+            elif exception_type == 'page':
+                self.has_page_exception = True
             self.active = False
             self.exception_code = status_code
             self.save()
@@ -165,7 +175,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False, lock=None):
         self.save_feed_stories_last_month(verbose, lock)
-        self.save_feed_story_history(lock)
+        # self.save_feed_story_history_statistics(lock)
         
     def save_feed_stories_last_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
@@ -173,52 +183,60 @@ class Feed(models.Model):
                                             story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        # self.save_feed_story_history(lock)
-        
         self.save(lock=lock)
             
         if verbose:
             print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
                                                              self.stories_last_month)
     
-    def save_feed_story_history(self, lock=None):
+    def save_feed_story_history_statistics(self, lock=None, current_counts=None):
         """
         Fills in missing months between earlier occurances and now.
         
         Save format: [('YYYY-MM, #), ...]
         Example output: [(2010-12, 123), (2011-01, 146)]
         """
-        d = defaultdict(int)
         now = datetime.datetime.now()
         min_year = now.year
         total = 0
         month_count = 0
-        current_counts = self.story_count_history and json.decode(self.story_count_history)
+        if not current_counts:
+            current_counts = self.story_count_history and json.decode(self.story_count_history)
         
         if not current_counts:
             current_counts = []
-        
-        # Count stories, aggregate by year and month
-        stories = Story.objects.filter(story_feed=self).extra(select={
-            'year': "EXTRACT(year FROM story_date)", 
-            'month': "EXTRACT(month from story_date)"
-        }).values('year', 'month')
-        for story in stories:
-            year = int(story['year'])
-            d['%s-%s' % (year, int(story['month']))] += 1
-            if year < min_year:
-                min_year = year
-        
+
+        # Count stories, aggregate by year and month. Map Reduce!
+        map_f = """
+            function() {
+                var date = (this.story_date.getFullYear()) + "-" + (this.story_date.getMonth()+1);
+                emit(date, 1);
+            }
+        """
+        reduce_f = """
+            function(key, values) {
+                var total = 0;
+                for (var i=0; i < values.length; i++) {
+                    total += values[i];
+                }
+                return total;
+            }
+        """
+        dates = {}
+        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f)
+        for r in res:
+            dates[r.key] = r.value
+                
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
         # a month. Hacker News can have 1,000+ and still be counted.)
         for current_month, current_count in current_counts:
-            if current_month not in d or d[current_month] < current_count:
-                d[current_month] = current_count
-                year = re.findall(r"(\d{4})-\d{1,2}", current_month)[0]
+            if current_month not in dates or dates[current_month] < current_count:
+                dates[current_month] = current_count
+                year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
                 if year < min_year:
                     min_year = year
-                    
+
         # Assemble a list with 0's filled in for missing months, 
         # trimming left and right 0's.
         months = []
@@ -226,11 +244,11 @@ class Feed(models.Model):
         for year in range(min_year, now.year+1):
             for month in range(1, 12+1):
                 if datetime.datetime(year, month, 1) < now:
-                    key = '%s-%s' % (year, month)
-                    if d.get(key) or start:
+                    key = u'%s-%s' % (year, month)
+                    if dates.get(key) or start:
                         start = True
-                        months.append((key, d.get(key, 0)))
-                        total += d.get(key, 0)
+                        months.append((key, dates.get(key, 0)))
+                        total += dates.get(key, 0)
                         month_count += 1
         
         self.story_count_history = json.encode(months)
@@ -252,7 +270,7 @@ class Feed(models.Model):
     def add_feed(self, feed_address, feed_link, feed_title):
         print locals()
         
-    def update(self, force=False, feed=None, single_threaded=True):
+    def update(self, force=False, single_threaded=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -318,10 +336,10 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
-                    if existing_story.get('story_original_content'):
-                        original_content = existing_story.get('story_original_content')
+                    if existing_story.get('story_original_content_z'):
+                        original_content = zlib.decompress(existing_story.get('story_original_content_z'))
                     else:
-                        original_content = existing_story.get('story_content')
+                        original_content = zlib.decompress(existing_story.get('story_content_z'))
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
                     if len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
@@ -448,7 +466,7 @@ class Feed(models.Model):
             story['story_date'] = story_db.story_date
             story['story_authors'] = story_db.story_author_name
             story['story_title'] = story_db.story_title
-            story['story_content'] = story_db.story_content
+            story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
             story['story_permalink'] = story_db.story_permalink
             story['story_feed_id'] = self.pk
             story['id'] = story_db.id
@@ -646,6 +664,20 @@ class StoryAuthor(models.Model):
 class FeedPage(models.Model):
     feed = models.OneToOneField(Feed, related_name="feed_page")
     page_data = StoryField(null=True, blank=True)
+    
+class MFeedPage(mongo.Document):
+    feed_id = mongo.IntField(primary_key=True)
+    page_data = mongo.BinaryField()
+    
+    meta = {
+        'collection': 'feed_pages',
+        'allow_inheritance': False,
+    }
+    
+    def save(self, *args, **kwargs):
+        if self.page_data:
+            self.page_data = zlib.compress(self.page_data)
+        super(MFeedPage, self).save(*args, **kwargs)
 
 class FeedXML(models.Model):
     feed = models.OneToOneField(Feed, related_name="feed_xml")
@@ -682,7 +714,7 @@ class Story(models.Model):
     def save(self, *args, **kwargs):
         if not self.story_guid_hash and self.story_guid:
             self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
-        if len(self.story_title) > 255:
+        if len(self.story_title) > self._meta.get_field('story_title').max_length:
             self.story_title = self.story_title[:255]
         super(Story, self).save(*args, **kwargs)
         
@@ -692,7 +724,9 @@ class MStory(mongo.Document):
     story_date = mongo.DateTimeField()
     story_title = mongo.StringField(max_length=1024)
     story_content = mongo.StringField()
+    story_content_z = mongo.BinaryField()
     story_original_content = mongo.StringField()
+    story_original_content_z = mongo.BinaryField()
     story_content_type = mongo.StringField(max_length=255)
     story_author_name = mongo.StringField()
     story_permalink = mongo.StringField()
@@ -706,6 +740,15 @@ class MStory(mongo.Document):
         'ordering': ['-story_date'],
         'allow_inheritance': False,
     }
+    
+    def save(self, *args, **kwargs):
+        if self.story_content:
+            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content = None
+        if self.story_original_content:
+            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content = None
+        super(MStory, self).save(*args, **kwargs)
         
 class FeedUpdateHistory(models.Model):
     fetch_date = models.DateTimeField(default=datetime.datetime.now)
@@ -741,6 +784,18 @@ class FeedFetchHistory(models.Model):
             self.exception and self.exception[:50]
         )
         
+class MFeedFetchHistory(mongo.Document):
+    feed_id = mongo.IntField()
+    status_code = mongo.IntField()
+    message = mongo.StringField()
+    exception = mongo.StringField()
+    fetch_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'feed_fetch_history',
+        'allow_inheritance': False,
+    }
+        
 class PageFetchHistory(models.Model):
     feed = models.ForeignKey(Feed, related_name='page_fetch_history')
     status_code = models.CharField(max_length=10, null=True, blank=True)
@@ -757,6 +812,18 @@ class PageFetchHistory(models.Model):
             self.message,
             self.exception and self.exception[:50]
         )
+        
+class MPageFetchHistory(mongo.Document):
+    feed_id = mongo.IntField()
+    status_code = mongo.IntField()
+    message = mongo.StringField()
+    exception = mongo.StringField()
+    fetch_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'page_fetch_history',
+        'allow_inheritance': False,
+    }
         
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)

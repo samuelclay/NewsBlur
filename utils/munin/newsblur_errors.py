@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from apps.rss_feeds.models import FeedFetchHistory, PageFetchHistory
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
 import datetime
 
 
@@ -18,10 +18,10 @@ graph_config = {
 last_day = datetime.datetime.now() - datetime.timedelta(days=1)
 
 metrics = {
-    'feed_errors': FeedFetchHistory.objects.filter(fetch_date__gte=last_day).exclude(status_code__in=[200, 304]).count(),
-    'feed_success': FeedFetchHistory.objects.filter(fetch_date__gte=last_day).filter(status_code__in=[200, 304]).count(),
-    'page_errors': PageFetchHistory.objects.filter(fetch_date__gte=last_day).exclude(status_code__in=[200, 304]).count(),
-    'page_success': PageFetchHistory.objects.filter(fetch_date__gte=last_day).filter(status_code__in=[200, 304]).count(),
+    'feed_errors': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
+    'feed_success': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
+    'page_errors': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
+    'page_success': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
 }
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 from pprint import pprint
 from django.conf import settings
 from apps.reader.models import MUserStory, UserStory
-from apps.rss_feeds.models import Feed, Story, MStory, StoryAuthor, Tag
+from apps.rss_feeds.models import Feed, Story, MStory, StoryAuthor, Tag, MFeedPage, FeedPage
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag
 import mongoengine
@@ -107,7 +107,61 @@ def bootstrap_classifiers():
             
         print "\nMongo DB classifiers: %s - %s" % (collection, mongo_classifier.objects().count())
     
+def bootstrap_feedpages():
+    print "Mongo DB feed_pages: %s" % MFeedPage.objects().count()
+    # db.feed_pages.drop()
+    print "Dropped! Mongo DB feed_pages: %s" % MFeedPage.objects().count()
+
+    print "FeedPages: %s" % MFeedPage.objects().count()
+    pprint(db.feed_pages.index_information())
+
+    feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feed_count = feeds.count()
+    i = 0
+    for feed in feeds:
+        i += 1
+        print "%s/%s: %s" % (i, feed_count, feed,)
+        sys.stdout.flush()
+        
+        if not MFeedPage.objects(feed_id=feed.pk):
+            feed_page = FeedPage.objects.filter(feed=feed).values()
+            if feed_page:
+                del feed_page[0]['id']
+                feed_page[0]['feed_id'] = feed.pk
+                try:
+                    MFeedPage(**feed_page[0]).save()
+                except:
+                    print '\n\n!\n\n'
+                    continue
+        
+
+    print "\nMongo DB feed_pages: %s" % MFeedPage.objects().count()
+
+def compress_stories():
+    count = MStory.objects().count()
+    print "Mongo DB stories: %s" % count
+    p = 0.0
+    i = 0
+
+    feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feed_count = feeds.count()
+    f = 0
+    for feed in feeds:
+        f += 1
+        print "%s/%s: %s" % (f, feed_count, feed,)
+        sys.stdout.flush()
+    
+        for story in MStory.objects(story_feed_id=feed.pk):
+            i += 1.0
+            if round(i / count * 100) != p:
+                p = round(i / count * 100)
+                print '%s%%' % p
+            story.save()
+        
+    
 if __name__ == '__main__':
     # bootstrap_stories()
-    bootstrap_userstories()
-    bootstrap_classifiers()
+    # bootstrap_userstories()
+    # bootstrap_classifiers()
+    bootstrap_feedpages()
+    compress_stories()

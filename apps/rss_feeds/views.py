@@ -1,6 +1,8 @@
+import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
+from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from utils.user_functions import ajax_login_required
 from utils import json, feedfinder
@@ -36,11 +38,20 @@ def load_feed_statistics(request):
 @json.json_view
 def exception_retry(request):
     feed_id = request.POST['feed_id']
+    reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = get_object_or_404(Feed, pk=feed_id)
     
-    feed.has_exception = False
-    feed.fetched_once = False
+    feed.next_scheduled_update = datetime.datetime.now()
+    feed.has_page_exception = False
+    feed.has_feed_exception = False
+    if reset_fetch:
+        logging.info(' ---> [%s] Refreshing exception feed: %s' % (request.user, feed))
+        feed.fetched_once = False
+    else:
+        logging.info(' ---> [%s] Forcing refreshing feed: %s' % (request.user, feed))
     feed.save()
+    
+    feed.update(force=True)
     
     return {'code': 1}
     
@@ -52,19 +63,21 @@ def exception_change_feed_address(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     feed_address = request.POST['feed_address']
     
-    if not feed.has_exception:
+    if not feed.has_feed_exception and not feed.has_page_exception:
         logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
         return HttpResponseForbidden()
         
-    feed.has_exception = False
+    feed.has_feed_exception = False
     feed.active = True
     feed.fetched_once = False
     feed.feed_address = feed_address
+    feed.next_scheduled_update = datetime.datetime.now()
     try:
         feed.save()
-    except:
+    except IntegrityError:
         original_feed = Feed.objects.get(feed_address=feed_address)
-        original_feed.has_exception = False
+        original_feed.next_scheduled_update = datetime.datetime.now()
+        original_feed.has_feed_exception = False
         original_feed.active = True
         original_feed.save()
         merge_feeds(original_feed.pk, feed.pk)
@@ -79,24 +92,26 @@ def exception_change_feed_link(request):
     feed_link = request.POST['feed_link']
     code = -1
     
-    if not feed.has_exception:
-        logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
+    if not feed.has_page_exception and not feed.has_feed_exception:
+        logging.info(" ***********> [%s] Incorrect feed link change: %s" % (request.user, feed))
         # This Forbidden-403 throws an error, which sounds pretty good to me right now
         return HttpResponseForbidden()
     
     feed_address = feedfinder.feed(feed_link)
     if feed_address:
         code = 1
-        feed.has_exception = False
+        feed.has_page_exception = False
         feed.active = True
         feed.fetched_once = False
         feed.feed_link = feed_link
         feed.feed_address = feed_address
+        feed.next_scheduled_update = datetime.datetime.now()
         try:
             feed.save()
-        except:
+        except IntegrityError:
             original_feed = Feed.objects.get(feed_address=feed_address)
-            original_feed.has_exception = False
+            original_feed.next_scheduled_update = datetime.datetime.now()
+            original_feed.has_page_exception = False
             original_feed.active = True
             original_feed.save()
             merge_feeds(original_feed.pk, feed.pk)

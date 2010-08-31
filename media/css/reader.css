@@ -663,7 +663,7 @@ background: transparent;
 #story_titles .NB-feedbar {
     font-weight: bold;
     font-size: 16px;
-    padding: 2px 28px 2px 4px;
+    padding: 2px 208px 2px 4px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-bottom: 2px solid #404040;
     position: relative;
@@ -680,17 +680,18 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .feed .feed_title {
-    float: left;
+/*    float: left;*/
+  display: block;
+  margin-left: 24px;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-manage-feed {
     background: transparent url("../img/icons/silk/cog.png") no-repeat center center;
-    float: left;
     width: 16px;
     height: 16px;
     display: none;
     cursor: pointer;
-    padding: 3px 4px 0 16px;
+    padding: 0 0 0 38px;
 }
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
     background-color: #3090cf;
@@ -698,6 +699,7 @@ background: transparent;
     cursor: pointer;
     position: absolute;
     right: 95px;
+    top: 2px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
@@ -707,13 +709,12 @@ background: transparent;
     display: none;
 }
 #story_titles .NB-feedbar .NB-feedbar-statistics {
-    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat 0 0;    
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat left center;    
     width: 16px;
-    height: 16px;    
-    float: left;
+    height: 16px;
     display: none;
     cursor: pointer;
-    padding: 0 4px 0 0px;
+    padding: 0 4px 0 24px;
     margin: 3px 0 0 0;
 }
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
@@ -721,6 +722,7 @@ background: transparent;
     text-shadow: 0 1px 0 #e6e6e6;
     position: absolute;
     right: 54px;
+    top: 2px;
     font-size: 9px;
     line-height: 15px;
     font-weight: bold;
@@ -730,7 +732,10 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
-#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-statistics,
+#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-statistics {
+  display: inline;
+}
+
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-mark-feed-read {
     display: block;
 }
@@ -1656,7 +1661,7 @@ a.NB-splash-link:hover {
 .NB-modal .NB-modal-submit .NB-modal-submit-button {
     border: 1px solid #606060;
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 4px 12px;
     text-transform: uppercase;
     margin: 2px 4px 2px;
     border: 1px solid #606060;
@@ -1679,12 +1684,17 @@ a.NB-splash-link:hover {
     color: #909090;
     font-weight: bold;
 }
-.NB-modal .NB-modal-submit .NB-modal-submit-save {
+.NB-modal .NB-modal-submit .NB-modal-submit-green {
     background-color: #217412;
     font-weight: bold;
     color: #FCFCFC;
 }
 
+.NB-modal .NB-modal-submit .NB-modal-submit-delete {
+    background-color: #7E020D;
+    font-weight: bold;
+    color: #FCFCFC;
+}
 .NB-modal .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
     color: #909090;
@@ -1830,7 +1840,7 @@ a.NB-splash-link:hover {
     color: #FFF;
     background-color: #4679BB;
 }
-.NB-modal-trainer .NB-modal-submit .NB-modal-submit-save {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-green {
     float: right;
     padding-left: 12px !important;
     padding-right: 12px !important;
@@ -1953,7 +1963,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-add input[type=text] {
-    width: 350px;
+    width: 340px;
     font-size: 14px;
     padding: 2px;
     margin: 2px 4px 2px;
@@ -2069,7 +2079,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-manage .NB-manage-delete {
-    margin: 0 0 4px 12px;
+    margin: 6px 0 4px;
     font-size: 12px;
 }
 
@@ -2729,7 +2739,7 @@ background: transparent;
   color: #4A9937;
 }
 
-.NB-modal-exception .NB-modal-submit input.NB-modal-submit-save {
+.NB-modal-exception .NB-modal-submit input.NB-modal-submit-green {
   margin-bottom: 6px;
 }
 

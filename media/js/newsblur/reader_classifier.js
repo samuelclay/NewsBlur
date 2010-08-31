@@ -145,7 +145,7 @@ var classifier = {
         this.trainer_data = data;
         
         $begin.text('Begin Training')
-              .addClass('NB-modal-submit-save')
+              .addClass('NB-modal-submit-green')
               .removeClass('NB-disabled');
     },
     
@@ -202,7 +202,7 @@ var classifier = {
             (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
             $.make('div', { className: 'NB-modal-submit' }, [
                 (!NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-close NB-modal-submit-button' }, 'Close')),
-                (NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-save NB-modal-submit-begin NB-modal-submit-button NB-disabled' }, 'Loading Training...'))
+                (NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-begin NB-modal-submit-button NB-disabled' }, 'Loading Training...'))
             ])
         ]);
         
@@ -287,14 +287,14 @@ var classifier = {
                     $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                     $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
-                    $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
+                    $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
                     $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-close' }, 'Close')
                 ])),
                 (!this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-disabled', value: 'Check what you like above...' }),
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ]))
@@ -356,7 +356,7 @@ var classifier = {
                     $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-disabled', value: 'Check what you like above...' }),
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
