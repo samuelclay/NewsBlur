@@ -795,6 +795,11 @@ class MFeedFetchHistory(mongo.Document):
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
     }
+    
+    def save(self, *args, **kwargs):
+        if not isinstance(self.exception, basestring):
+            self.exception = unicode(self.exception)
+        super(MFeedFetchHistory, self).save(*args, **kwargs)
         
 class PageFetchHistory(models.Model):
     feed = models.ForeignKey(Feed, related_name='page_fetch_history')
