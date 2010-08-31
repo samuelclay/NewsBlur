@@ -6,7 +6,7 @@ from apps.reader.models import UserSubscription
 
 graph_config = {
     'graph_category' : 'NewsBlur',
-    'graph_title' : 'NewsBlur Feeds',
+    'graph_title' : 'NewsBlur Feeds & Subscriptions',
     'graph_vlabel' : 'Feeds & Subscribers',
     'feeds.label': 'feeds',
     'subscriptions.label': 'subscriptions',
