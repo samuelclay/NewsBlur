@@ -5,7 +5,7 @@ class RefreshFeed(Task):
     name = 'refresh-feed'
     max_retries = 0
 
-    def run_task(self, feed_pk, **kwargs):
+    def run(self, feed_pk, **kwargs):
         feed = Feed.objects.get(pk=feed_pk)
         feed.update()
 
