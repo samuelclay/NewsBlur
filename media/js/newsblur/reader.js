@@ -2330,7 +2330,7 @@
         
         setup_feed_refresh: function() {
             var self = this;
-            var FEED_REFRESH_INTERVAL = (1000 * 60) / 12; // 1/2 minutes
+            var FEED_REFRESH_INTERVAL = (1000 * 60) / 2; // 1/2 minutes
             
             clearInterval(this.flags.feed_refresh);
             
