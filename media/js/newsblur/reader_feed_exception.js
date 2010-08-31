@@ -41,7 +41,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('input', { type: 'submit', value: 'Retry fetching and parsing', className: 'NB-modal-submit-save NB-modal-submit-retry' }),
+                        $.make('input', { type: 'submit', value: 'Retry fetching and parsing', className: 'NB-modal-submit-green NB-modal-submit-retry' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -60,7 +60,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
                             'Website URL: '
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link', name: 'feed_link', value: this.feed['feed_link'] }),
-                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-save NB-modal-submit-link' }),
+                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -79,7 +79,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
                             'RSS/XML URL: '
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address', name: 'feed_address', value: this.feed['feed_address'] }),
-                        $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-save NB-modal-submit-address' }),
+                        $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])
@@ -92,7 +92,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('input', { type: 'submit', value: 'Delete It. It Just Won\'t Work!', className: 'NB-modal-submit-save NB-modal-submit-delete' }),
+                        $.make('input', { type: 'submit', value: 'Delete It. It Just Won\'t Work!', className: 'NB-modal-submit-red NB-modal-submit-delete' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])

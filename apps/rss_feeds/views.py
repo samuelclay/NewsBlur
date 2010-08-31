@@ -38,17 +38,20 @@ def load_feed_statistics(request):
 @json.json_view
 def exception_retry(request):
     feed_id = request.POST['feed_id']
-    reset_fetch = request.POST.get('reset_fetch', False)
+    reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = get_object_or_404(Feed, pk=feed_id)
     
     feed.next_scheduled_update = datetime.datetime.now()
     feed.has_page_exception = False
     feed.has_feed_exception = False
     if reset_fetch:
+        logging.info(' ---> [%s] Refreshing exception feed: %s' % (request.user, feed))
         feed.fetched_once = False
+    else:
+        logging.info(' ---> [%s] Forcing refreshing feed: %s' % (request.user, feed))
     feed.save()
     
-    feed.update()
+    feed.update(force=True)
     
     return {'code': 1}
     

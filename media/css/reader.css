@@ -1684,14 +1684,16 @@ a.NB-splash-link:hover {
     color: #909090;
     font-weight: bold;
 }
-.NB-modal .NB-modal-submit .NB-modal-submit-save {
+.NB-modal .NB-modal-submit .NB-modal-submit-green {
     background-color: #217412;
     font-weight: bold;
     color: #FCFCFC;
 }
 
 .NB-modal .NB-modal-submit .NB-modal-submit-delete {
-  background-color: #7E020D;
+    background-color: #7E020D;
+    font-weight: bold;
+    color: #FCFCFC;
 }
 .NB-modal .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
@@ -1838,7 +1840,7 @@ a.NB-splash-link:hover {
     color: #FFF;
     background-color: #4679BB;
 }
-.NB-modal-trainer .NB-modal-submit .NB-modal-submit-save {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-green {
     float: right;
     padding-left: 12px !important;
     padding-right: 12px !important;
@@ -2737,7 +2739,7 @@ background: transparent;
   color: #4A9937;
 }
 
-.NB-modal-exception .NB-modal-submit input.NB-modal-submit-save {
+.NB-modal-exception .NB-modal-submit input.NB-modal-submit-green {
   margin-bottom: 6px;
 }
 

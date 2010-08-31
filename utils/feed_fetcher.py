@@ -51,7 +51,7 @@ class FetchFeed:
                                                  
         # Check if feed still needs to be updated
         feed = Feed.objects.get(pk=self.feed.pk)
-        if feed.last_update > datetime.datetime.now() and not self.options.get('force'):
+        if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
             log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
                                                                  self.feed.id)
             logging.debug(log_msg)
@@ -61,7 +61,7 @@ class FetchFeed:
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         
-        if self.options['force']:
+        if self.options.get('force'):
             modified = None
             etag = None
             
@@ -275,16 +275,16 @@ class Dispatcher:
                 ffeed = FetchFeed(feed, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
-                if (fetched_feed and ret_feed == FEED_OK):
+                if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
-                
-                    if ret_entries.get(ENTRY_NEW):
+
+                    if ret_entries.get(ENTRY_NEW) or self.options['force']:
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         for sub in user_subs:
                             cache.delete('usersub:%s' % sub.user_id)
                             sub.calculate_feed_scores(silent=True)
-                    if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED):
+                    if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                         feed.get_stories(force=True)
             except KeyboardInterrupt:
                 break
@@ -300,10 +300,11 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
                 
-            if (fetched_feed and
-                feed.feed_link and
-                (ret_feed == FEED_OK or
-                 (ret_feed == FEED_SAME and feed.stories_last_month > 10))):
+            if ((self.options['force']) or 
+                (fetched_feed and
+                 feed.feed_link and
+                 (ret_feed == FEED_OK or
+                  (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 

@@ -30,7 +30,7 @@ NEWSBLUR.ReaderMarkRead.prototype = {
                 $.make('div', { className: 'NB-markread-slider'}),
                 $.make('div', { className: 'NB-markread-explanation'}),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save', value: 'Do it' }),
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Do it' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])

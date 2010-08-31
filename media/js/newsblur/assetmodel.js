@@ -454,7 +454,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/rss_feeds/exception_retry', {
               'feed_id': feed_id, 
-              'reset_fetch': true
+              'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
             }, callback);
         } else {
             if ($.isFunction(callback)) callback();
