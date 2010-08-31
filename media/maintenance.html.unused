@@ -1,0 +1,5 @@
+<h1>NewsBlur is upgrading...</h1>
+
+<p>As of Sunday, August 22nd 8:30pm, NewsBlur is going through wonderful backend changes that will make it much, much faster. (PostgreSQL -> MongoDB, for you nerd types.)</p>
+
+<p>This change will take a few hours. Rest easy knowing I won't sleep until it's done.</p>
