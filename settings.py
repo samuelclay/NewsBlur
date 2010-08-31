@@ -217,6 +217,14 @@ DEVSERVER_MODULES = (
     'devserver.modules.cache.CacheSummaryModule',
 )
 
+# ==========
+# = Celery =
+# ==========
+
+from celeryconfig import *
+import djcelery
+djcelery.setup_loader()
+
 # ==================
 # = Configurations =
 # ==================
@@ -235,13 +243,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-
-# ==========
-# = Celery =
-# ==========
-
-import djcelery
-djcelery.setup_loader()
 
 # =========
 # = Mongo =
