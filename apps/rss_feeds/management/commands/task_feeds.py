@@ -26,5 +26,6 @@ class Command(BaseCommand):
         print " ---> Tasking %s feeds..." % feeds.count()
 
         for f in feeds:
+            f.set_next_scheduled_update()
             RefreshFeed.apply_async(args=(f.pk,))
             
