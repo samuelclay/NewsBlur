@@ -21,11 +21,21 @@ class Command(BaseCommand):
         feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True).order_by('?')
         
         if options['force']:
-            feeds = Feed.objects.all()
+            feeds = Feed.objects.all().order_by('pk')
 
         print " ---> Tasking %s feeds..." % feeds.count()
-
+        
+        i = 0
+        feed_queue = []
         for f in feeds:
             f.set_next_scheduled_update()
-            RefreshFeed.apply_async(args=(f.pk,))
+            i += 1
+            feed_queue.append(f.pk)
             
+            if i == 10:
+                print feed_queue
+                RefreshFeed.apply_async(args=(feed_queue,))
+                feed_queue = []
+                i = 0
+        if feed_queue:
+            RefreshFeed.apply_async(args=(feed_queue,))
