@@ -1,4 +1,4 @@
-from apps.rss_feeds.models import Feed, FeedUpdateHistory
+from apps.rss_feeds.models import FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from django.conf import settings
@@ -82,15 +82,15 @@ class FetchFeed:
         logging.debug(log_msg)
                                                  
         # Check if feed still needs to be updated
-        feed = Feed.objects.get(pk=self.feed.pk)
-        if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
-            log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
-                                                                 self.feed.id)
-            logging.debug(log_msg)
-            feed.save_feed_history(303, "Already fetched")
-            return FEED_SAME, None
-        else:
-            feed.set_next_scheduled_update()
+        # feed = Feed.objects.get(pk=self.feed.pk)
+        # if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
+        #     log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
+        #                                                          self.feed.id)
+        #     logging.debug(log_msg)
+        #     feed.save_feed_history(303, "Already fetched")
+        #     return FEED_SAME, None
+        # else:
+        #     feed.set_next_scheduled_update()
             
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
