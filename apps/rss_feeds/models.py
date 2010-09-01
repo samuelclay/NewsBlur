@@ -699,7 +699,6 @@ class Story(models.Model):
     story_guid_hash = models.CharField(max_length=40)
     story_past_trim_date = models.BooleanField(default=False)
     story_tags = models.CharField(max_length=2000, null=True, blank=True)
-    tags = models.ManyToManyField('Tag')
 
     def __unicode__(self):
         return self.story_title
