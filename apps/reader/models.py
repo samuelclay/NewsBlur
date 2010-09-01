@@ -28,17 +28,13 @@ class UserSubscription(models.Model):
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
-    unread_count_updated = models.DateTimeField(default=datetime.datetime(2000,1,1))
+    unread_count_updated = models.DateTimeField(auto_now=True)
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
     is_trained = models.BooleanField(default=False)
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
-
-    def save(self, force_insert=False, force_update=False, *args, **kwargs):
-        self.unread_count_updated = datetime.datetime.now()
-        super(UserSubscription, self).save(force_insert, force_update, *args, **kwargs)
         
     def mark_feed_read(self):
         now = datetime.datetime.now()
