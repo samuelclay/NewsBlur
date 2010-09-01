@@ -276,9 +276,10 @@ class Dispatcher:
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
-        # Close the DB so the connection can be re-opened on a per-process basis
-        from django.db import connection
-        connection.close()
+        if not self.options['single_threaded']:
+            # Close the DB so the connection can be re-opened on a per-process basis
+            from django.db import connection
+            connection.close()
         delta = None
         
         MONGO_DB = settings.MONGO_DB
