@@ -831,6 +831,11 @@ class MPageFetchHistory(mongo.Document):
         'allow_inheritance': False,
         'indexes': ['feed_id', ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
+    
+    def save(self, *args, **kwargs):
+        if not isinstance(self.exception, basestring):
+            self.exception = unicode(self.exception)
+        super(MPageFetchHistory, self).save(*args, **kwargs)
         
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)

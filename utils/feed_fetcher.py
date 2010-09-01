@@ -1,4 +1,4 @@
-from apps.rss_feeds.models import Feed, FeedUpdateHistory
+from apps.rss_feeds.models import FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from django.conf import settings
@@ -33,6 +33,36 @@ def mtime(ttime):
     """
     return datetime.datetime.fromtimestamp(time.mktime(ttime))
     
+import threading
+class TimeoutError(Exception): pass
+def timelimit(timeout):
+    """borrowed from web.py"""
+    def _1(function):
+        def _2(*args, **kw):
+            class Dispatch(threading.Thread):
+                def __init__(self):
+                    threading.Thread.__init__(self)
+                    self.result = None
+                    self.error = None
+                    
+                    self.setDaemon(True)
+                    self.start()
+
+                def run(self):
+                    try:
+                        self.result = function(*args, **kw)
+                    except:
+                        self.error = sys.exc_info()
+
+            c = Dispatch()
+            c.join(timeout)
+            if c.isAlive():
+                raise TimeoutError, 'took too long'
+            if c.error:
+                raise c.error[0], c.error[1]
+            return c.result
+        return _2
+    return _1
     
 class FetchFeed:
     def __init__(self, feed, options):
@@ -40,6 +70,7 @@ class FetchFeed:
         self.options = options
         self.fpf = None
     
+    @timelimit(20)
     def fetch(self):
         """ Downloads and parses a feed.
         """
@@ -51,15 +82,15 @@ class FetchFeed:
         logging.debug(log_msg)
                                                  
         # Check if feed still needs to be updated
-        feed = Feed.objects.get(pk=self.feed.pk)
-        if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
-            log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
-                                                                 self.feed.id)
-            logging.debug(log_msg)
-            feed.save_feed_history(303, "Already fetched")
-            return FEED_SAME, None
-        else:
-            feed.set_next_scheduled_update()
+        # feed = Feed.objects.get(pk=self.feed.pk)
+        # if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
+        #     log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
+        #                                                          self.feed.id)
+        #     logging.debug(log_msg)
+        #     feed.save_feed_history(303, "Already fetched")
+        #     return FEED_SAME, None
+        # else:
+        #     feed.set_next_scheduled_update()
             
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
