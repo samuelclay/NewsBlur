@@ -18,7 +18,7 @@ class Command(BaseCommand):
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.now()
         
-        feeds = Feed.objects.filter(next_scheduled_update__lte=now).order_by('?')
+        feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True).order_by('?')
         
         if options['force']:
             feeds = Feed.objects.all()
