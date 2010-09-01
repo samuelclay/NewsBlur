@@ -338,7 +338,7 @@ class Feed(models.Model):
                     original_content = None
                     if existing_story.get('story_original_content_z'):
                         original_content = zlib.decompress(existing_story.get('story_original_content_z'))
-                    else:
+                    elif existing_story.get('story_content_z'):
                         original_content = zlib.decompress(existing_story.get('story_content_z'))
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
                     if len(story_content) > 10:
