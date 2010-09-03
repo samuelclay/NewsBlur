@@ -3047,6 +3047,16 @@
                 var page = $t.prevAll('.NB-module-page-indicator').length;
                 self.load_howitworks_page(page);
             }); 
+            $.targetIs(e, { tagSelector: '.NB-splash-meta-about' }, function($t, $p){
+              e.preventDefault();
+              NEWSBLUR.about = new NEWSBLUR.About();
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-splash-meta-faq' }, function($t, $p){
+              e.preventDefault();
+              NEWSBLUR.faq = new NEWSBLUR.Faq();
+            }); 
+            
+            
             
             // NEWSBLUR.log(['End', (new Date().getMilliseconds()) - start]);
         },

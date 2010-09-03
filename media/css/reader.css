@@ -1499,7 +1499,7 @@ form.opml_import_form input {
     bottom: -1px;
     background: transparent url('../img/reader/newsblur_logo.png') no-repeat 0 0;
     height: 52px;
-    right: 250px;
+    right: 0;
     width: 230px;
 }
 
@@ -1512,11 +1512,11 @@ form.opml_import_form input {
 
 #NB-splash .NB-splash-links {
     position: absolute;
-    right: 50px;
-    width: 186px;
+    right: 236px;
+    width: 242px;
+    text-align: right;
     bottom: 0;
     display: block;
-    font-size: 11px;
     line-height: 16px;
     margin: 0;
     padding: 0;
@@ -1527,22 +1527,39 @@ form.opml_import_form input {
 }
 
 #NB-splash .NB-splash-links .NB-splash-link {
+  display: block;
+  line-height: 12px;
+  margin: 1px 0;
+  padding: 0;
+}
+
+
+#NB-splash .NB-splash-links .NB-splash-link a {
+  background-color: #F3F6F9;
+  margin: 0;
+  padding: 2px 4px;
+}
+
+#NB-splash .NB-splash-links .NB-splash-link a:hover {
+  background-color: #E9ECF6;
+}
+#NB-splash .NB-splash-links a {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
     display: block;
 }
 
-#NB-splash .NB-splash-links a {
-    font-weight: bold;
-}
-
 #NB-splash .NB-splash-links a,
+.NB-modal-about a,
 a.NB-splash-link {
     color: #405BA8;
-    font-size: 12px;
     text-decoration: none;
     font-weight: bold;
 }
 
 #NB-splash .NB-splash-links a:hover,
+.NB-modal-about a:hover,
 a.NB-splash-link:hover {
     color: #A85B40;
 }
@@ -1555,6 +1572,24 @@ a.NB-splash-link:hover {
     bottom: 0;
     width: 500px;
     height: 56px;
+}
+
+/* ===================== */
+/* = Splash Meta Links = */
+/* ===================== */
+
+.NB-splash-meta {
+  bottom: 47px;
+  margin: 0;
+  position: absolute;
+  right: 250px;
+  width: 230px;
+}
+
+.NB-splash-meta .NB-splash-meta-link {
+  cursor: pointer;
+  float: right;
+  margin: 0 0 0 4px;
 }
 
 /* ========== */
@@ -2746,4 +2781,42 @@ background: transparent;
 .NB-modal-exception input[type=text] {
   width: 200px;
   margin: 0 10px;
+}
+
+/* =============== */
+/* = About Modal = */
+/* =============== */
+
+.NB-modal-about ul {
+  margin: 2px 0 4px;
+  padding: 0 0 1px;
+  font-size: 13px;
+}
+
+.NB-modal-about ul li {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.NB-modal-about ul li.last {
+  margin-bottom: 0;
+}
+
+.NB-modal-about ul.NB-about-what li {
+  background: transparent url('../img/icons/silk/bullet_blue.png') no-repeat 0 0;
+}
+.NB-modal-about ul.NB-about-server li {
+  background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+}
+.NB-modal-about ul.NB-about-client li {
+  background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 0 0;
+}
+.NB-modal-about ul.NB-about-who li {
+  background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
+}
+
+.NB-modal-about .NB-link-about-faq {
+  float: right;
+  line-height: 30px;
 }
