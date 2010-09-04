@@ -184,7 +184,6 @@ var classifier = {
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
                     ' are stories you like'
-
                 ]),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),

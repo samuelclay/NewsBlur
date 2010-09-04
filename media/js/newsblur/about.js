@@ -8,7 +8,6 @@ NEWSBLUR.About = function(options) {
 NEWSBLUR.About.prototype = {
     
     runner: function() {
-        $.modal.close();
         this.make_modal();
         this.open_modal();
         
@@ -32,6 +31,33 @@ NEWSBLUR.About.prototype = {
                       $.make('li', 'Read the original site or the RSS feed.'),
                       $.make('li', 'Automatically highlight stories you want to read.'),
                       $.make('li', { className: 'last' }, 'Filter out stories you don\'t want to read.')
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Who:'),
+                    'A Labor of Love'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('ul', { className: 'NB-about-who' }, [
+                      $.make('li', [
+                        'Hand-crafted by: ',
+                        $.make('a', { href: 'http://www.samuelclay.com' }, 'Samuel Clay')
+                      ]),
+                      $.make('li', [
+                        'Find him on Twitter: ',
+                        $.make('a', { href: 'http://twitter.com/samuelclay' }, '@samuelclay')
+                      ]),
+                      $.make('li', [
+                        'E-mail: ',
+                        $.make('a', { href: 'mailto:samuel@ofbrooklyn.com' }, 'samuel@ofbrooklyn.com')
+                      ]),
+                      $.make('li', { className: 'last' }, [
+                        'Made in: ',
+                        $.make('a', { href: 'http://www.newyorkfieldguide.com' }, 'New York City')
+                      ])
                     ])
                 ])
             ]),
@@ -91,33 +117,6 @@ NEWSBLUR.About.prototype = {
                       ])
                     ])
                 ])
-            ]),
-            $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option' }, 'Who:'),
-                    'A Feed Reader with Intelligence'
-                ]),
-                $.make('div', { className: 'NB-fieldset-fields' }, [
-                    $.make('ul', { className: 'NB-about-who' }, [
-                      $.make('li', [
-                        'Hand-crafted by: ',
-                        $.make('a', { href: 'http://www.samuelclay.com' }, 'Samuel Clay')
-                      ]),
-                      $.make('li', [
-                        'Find him on Twitter: ',
-                        $.make('a', { href: 'http://twitter.com/samuelclay' }, '@samuelclay')
-                      ]),
-                      $.make('li', [
-                        'E-mail him at: ',
-                        $.make('a', { href: 'mailto:samuel@ofbrooklyn.com' }, 'samuel@ofbrooklyn.com')
-                      ]),
-                      $.make('li', { className: 'last' }, [
-                        'Made in: ',
-                        $.make('a', { href: 'http://www.newyorkfieldguide.com' }, 'New York City')
-                      ])
-                    ])
-                ])
             ])
         ]);
     },
@@ -138,12 +137,12 @@ NEWSBLUR.About.prototype = {
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
             },
-            'onClose': function(dialog) {
+            'onClose': function(dialog, callback) {
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
                     dialog.overlay.empty().remove();
-                    $.modal.close();
+                    $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
             }
@@ -168,8 +167,10 @@ NEWSBLUR.About.prototype = {
         
         $.targetIs(e, { tagSelector: '.NB-link-about-faq' }, function($t, $p) {
             e.preventDefault();
-
-            NEWSBLUR.faq = new NEWSBLUR.Faq();
+            
+            $.modal.close(function() {
+              NEWSBLUR.faq = new NEWSBLUR.Faq();
+            });
         });
     }
     

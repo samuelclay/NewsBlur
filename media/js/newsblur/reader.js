@@ -2815,7 +2815,7 @@
                 this.hide_progress_bar();
             }
         },
-
+        
         // ==========
         // = Events =
         // ==========

@@ -20,101 +20,118 @@ NEWSBLUR.Faq.prototype = {
         
         this.$modal = $.make('div', { className: 'NB-modal-about NB-modal-exception NB-modal' }, [
             $.make('a', { href: '#faq', className: 'NB-link-about-faq' }, 'About NewsBlur'),
-            $.make('h2', { className: 'NB-modal-title' }, 'Frequently [enough] Asked Question'),
+            $.make('h2', { className: 'NB-modal-title' }, 'Frequently Asked Questions'),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option' }, 'What:'),
-                    'A Feed Reader with Intelligence'
+                    'The Reader'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'NB-about-what' }, [
-                      $.make('li', 'Read the original site or the RSS feed.'),
-                      $.make('li', 'Automatically highlight stories you want to read.'),
-                      $.make('li', { className: 'last' }, 'Filter out stories you don\'t want to read.')
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-question' }, 'What is the different between the three views: Original, Feed, and Story?'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'Original view is the original site. Feed view is the RSS feed from the site. And Story view is the same as Feed view, but only shows one story at a time. It\'s all personal preference, really.')
+                      ]),
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-question' }, 'Am I actually at the original site? Can NewsBlur see what I see?'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'In order to show you the original site, NewsBlur takes a snapshot of the page. You may have noticed that if you are logged into the original site, you are not logged into NewsBlur\'s snapshot of the page. This is because NewsBlur fetched the site for you.')
+                      ]),
+                      $.make('li', { className: 'last' }, [
+                        $.make('div', { className: 'NB-faq-question' }, 'Why doesn\'t NewsBlur follow me when I click on links on the page?'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'When you click on a link, you are technically leaving NewsBlur, although only for a portion of the page. In order to track what you\'re reading, you need to read NewsBlur\'s snapshot of the page, or switch to the Feed view.'),
+                        $.make('div', { className: 'NB-faq-answer last' }, 'This may change one day. There is a way to fix this behavior so it works like you would expect. It is not easy to do, however. One day.')
+                      ])
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option' }, 'How:'),
-                    'Server-side technologies'
+                    'The Intelligence'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'NB-about-server' }, [
                       $.make('li', [
-                        $.make('a', { href: 'http://www.djangoproject.com' }, 'Django'),
-                        ': Web framework written in Python, used to serve all pages.'
-                      ]),
-                      $.make('li', [
-                        $.make('a', { href: 'http://ask.github.com/celery' }, 'Celery'),
-                        ' &amp; ',
-                        $.make('a', { href: 'http://www.rabbitmq.com' }, 'RabbitMQ'),
-                        ': Asynchronous queueing server, used to fetch and parse RSS feeds.'
-                      ]),
-                      $.make('li', [
-                        $.make('a', { href: 'http://www.mongodb.com' }, 'MongoDB'),
-                        ', ',
-                        $.make('a', { href: 'http://www.mongodb.com/pymongo' }, 'Pymongo'),
-                        ', &amp; ',
-                        $.make('a', { href: 'http://www.github.com/hmarr/mongoengine' }, 'Mongoengine'),
-                        ': Non-relational database, used to store stories, read stories, feed/page fetch histories, and proxied sites.'
+                        $.make('div', { className: 'NB-faq-question' }, [
+                            'What does the three-color slider do?'
+                        ]),
+                        $.make('div', { className: 'NB-faq-answer' }, [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', className: 'NB-faq-image', width: 114, height: 29 }),
+                            'This is called the intelligence slider. Slide it to the right to only show stories you like.'
+                        ]),
+                        $.make('div', { className: 'NB-faq-answer last' }, [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_negative.png', className: 'NB-faq-image', width: 114, height: 29 }),
+                            'Slide it to the left to show stories you dislike. Stories all start off neutral, in the center of the slider.'
+                        ]),
+                        $.make('div', { className: 'NB-faq-answer' }, [
+                            $.make('br'),
+                            $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
+                            ' are stories you don\'t like',
+                            $.make('br'),
+                            $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
+                            ' are stories you have not yet rated',
+                            $.make('br'),
+                            $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
+                            ' are stories you like'
+                        ])
                       ]),
                       $.make('li', { className: 'last' }, [
-                        $.make('a', { href: 'http://www.postgresql.com' }, 'PostgreSQL'),
-                        ': Relational database, used to store feeds, subscriptions, and user accounts.'
+                        $.make('div', { className: 'NB-faq-question' }, 'How does NewsBlur know whether I like or dislike a story?'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'When you like or dislike a story, you mark a facet of that story by checking a tag, author, part of the title, or entire publisher. When these facets are found in future stories, the stories are then weighted with your preferences. It is a very simple, explicit process where you tell NewsBlur what you like and don\'t like.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'The idea is that by explicitly telling NewsBlur what your story preferences are, there is increased likelihood that you will like what the intelligence slider does for you.'),
+                        $.make('div', { className: 'NB-faq-answer last'}, 'Currently, there is not an automated way of detecting stories you like or dislike without having to train NewsBlur. This implicit, automatic intelligence will come in the near-term future, but it will require an evolution to the interface that has not been easy to figure out how to make in a simple, clear, and effective manner. Soon.')
                       ])
                     ])
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option' }, 'How:'),
-                    'Client-side and design'
-                ]),
-                $.make('div', { className: 'NB-fieldset-fields' }, [
-                    $.make('ul', { className: 'NB-about-client' }, [
-                      $.make('li', [
-                        $.make('a', { href: 'http://www.jquery.com' }, 'jQuery'),
-                        ': Cross-browser compliant JavaScript code. IE works without effort.'
-                      ]),
-                      $.make('li', [
-                        $.make('a', { href: 'http://documentcloud.github.com/underscore/' }, 'Underscore.js'),
-                        ': Functional programming for JavaScript. Indispensible.'
-                      ]),
-                      $.make('li', [
-                        $.make('b', 'Miscellaneous jQuery Plugins:'),
-                        ' Everything from resizable layouts, to progress bars, sortables, date handling, colors, corners, JSON, animations. See the complete list on ',
-                        $.make('a', { href: 'http://github.com/samuelclay/NewsBlur/' }, 'NewsBlur\'s GitHub repository')
-                      ])
-                    ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
-                $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option' }, 'Who:'),
-                    'A Feed Reader with Intelligence'
+                    $.make('span', { className: 'NB-exception-option-option', style: 'float:right' }, 'September - October 2010'),
+                    'What\'s Coming'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'NB-about-who' }, [
                       $.make('li', [
-                        'Hand-crafted by: ',
-                        $.make('a', { href: 'http://www.samuelclay.com' }, 'Samuel Clay')
+                        $.make('div', { className: 'NB-faq-answer' }, 'An iPhone app.')
                       ]),
                       $.make('li', [
-                        'Find him on Twitter: ',
-                        $.make('a', { href: 'http://twitter.com/samuelclay' }, '@samuelclay')
+                        $.make('div', { className: 'NB-faq-answer' }, 'Indication of story titles that are below the intelligence slider threshold.')
                       ]),
                       $.make('li', [
-                        'E-mail him at: ',
-                        $.make('a', { href: 'mailto:samuel@ofbrooklyn.com' }, 'samuel@ofbrooklyn.com')
+                        $.make('div', { className: 'NB-faq-answer' }, 'Sort sites alphabetically, by popularity, use, unread counts, and hiding sites with no unreads.')
+                      ]),
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-answer' }, 'Account management, password recovery.')
+                      ]),
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-answer' }, 'Actions on folders and sites, such as deleting, renaming, and moving them.')
                       ]),
                       $.make('li', { className: 'last' }, [
-                        'Made in: ',
-                        $.make('a', { href: 'http://www.newyorkfieldguide.com' }, 'New York City')
+                        $.make('div', { className: 'NB-faq-answer last' }, 'Collapsible folders.')
+                      ])
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
+                $.make('h5', [
+                    'Something\'s Wrong'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('ul', { className: 'NB-about-client' }, [
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-question' }, 'Help! A site shows unread stories, but when I open the site, there are no unread stories to read.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'This is a bug and has been noticed in many places. It is not easy to fix, however. But it will hopefully be fixed once and for all any day now. Just know that it has been noticed.')
+                      ]),
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-question' }, 'Help! All of the stories are several days old and new stories are not showing up.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'There are two potential causes for new stories that are on the site to not show up. First, sites that only have a signle subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.'),
+                        $.make('div', { className: 'NB-faq-answer last' }, 'Second, it is possible that a bug remains in certain circumstances where some RSS feeds are not parsed correctly, resulting in new stories not being shown. This has been noticed and sites should be gradually fixed as they are manually inspected.')
+                      ]),
+                      $.make('li', { className: 'last' }, [
+                        $.make('div', { className: 'NB-faq-question' }, 'Help! I have an issue and it\'s not mentioned here.'),
+                        $.make('div', { className: 'NB-faq-answer last' }, [
+                            'Please, please, please e-mail ',
+                            $.make('a', { href: 'mailto:samuel@ofbrooklyn.com' }, 'samuel@ofbrooklyn.com'),
+                            '. If you have an issue it is entirely possible that other people do, too.'
+                        ])
                       ])
                     ])
                 ])
@@ -138,12 +155,12 @@ NEWSBLUR.Faq.prototype = {
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
             },
-            'onClose': function(dialog) {
+            'onClose': function(dialog, callback) {
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
                     dialog.overlay.empty().remove();
-                    $.modal.close();
+                    $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
             }
@@ -169,7 +186,9 @@ NEWSBLUR.Faq.prototype = {
         $.targetIs(e, { tagSelector: '.NB-link-about-faq' }, function($t, $p) {
             e.preventDefault();
             
-            NEWSBLUR.about = new NEWSBLUR.About();
+            $.modal.close(function() {
+              NEWSBLUR.about = new NEWSBLUR.About();
+            });
         });
     }
     

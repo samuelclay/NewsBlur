@@ -2788,7 +2788,7 @@ background: transparent;
 /* =============== */
 
 .NB-modal-about ul {
-  margin: 2px 0 4px;
+  margin: 2px 12px 4px 0;
   padding: 0 0 1px;
   font-size: 13px;
 }
@@ -2810,7 +2810,7 @@ background: transparent;
   background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
 }
 .NB-modal-about ul.NB-about-client li {
-  background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 0 0;
+  background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 .NB-modal-about ul.NB-about-who li {
   background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
@@ -2819,4 +2819,28 @@ background: transparent;
 .NB-modal-about .NB-link-about-faq {
   float: right;
   line-height: 30px;
+}
+
+.NB-modal-about ul li .NB-faq-question {
+  display: block;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.NB-modal-about ul li .NB-faq-answer {
+  line-height: 18px;
+  color: #404040;
+  margin: 0 0 16px 0;
+  font-size: 12px;
+}
+
+.NB-modal-about ul li .NB-faq-answer.last {
+  margin-bottom: 0;
+}
+
+.NB-modal-about .NB-faq-image {
+  float: right;
+  border-color:#C0C0C0 #A0A0A0 #A0A0A0 #C0C0C0;
+  border-style:solid;
+  border-width:1px;
 }

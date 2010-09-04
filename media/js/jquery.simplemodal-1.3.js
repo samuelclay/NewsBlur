@@ -6,6 +6,13 @@
  * Revision: $Id$
  */
 
+/*
+
+  Samuel Clay
+  - Added callback on $.modal.close();
+  
+*/
+
 /**
  * SimpleModal is a lightweight jQuery plugin that provides a simple
  * interface to create a modal dialog.
@@ -78,8 +85,8 @@
 	/*
 	 * Close the modal dialog.
 	 */
-	$.modal.close = function () {
-		$.modal.impl.close();
+	$.modal.close = function (callback) {
+		$.modal.impl.close(callback);
 	};
 
 	/*
@@ -631,7 +638,7 @@
 		 *     function was internal or external. If it was external, the
 		 *     onClose callback will be ignored
 		 */
-		close: function () {
+		close: function (callback) {
 			var s = this;
 
 			// prevent close when dialog does not exist
@@ -647,7 +654,7 @@
 				s.occb = true;
 
 				// execute the onClose callback
-				s.o.onClose.apply(s, [s.d]);
+				s.o.onClose.apply(s, [s.d, callback]);
 			}
 			else {
 				// if the data came from the DOM, put it back
@@ -680,6 +687,8 @@
 
 					// reset the dialog object
 					s.d = {};
+					
+					$.isFunction(callback) && callback();
 				}, 10);
 			}
 		}
