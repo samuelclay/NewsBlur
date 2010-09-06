@@ -117,7 +117,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             });
         }
         
-        callback(read);
+        $.isFunction(callback) && callback(read);
     },
     
     mark_feed_as_read: function(feed_id, callback) {
@@ -413,6 +413,24 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.make_request('/profile/set_view_setting', {
                 'feed_id': feed_id+'',
                 'feed_view_setting': feed_view_setting
+            }, callback, null);
+        }
+    },
+    
+    collapsed_folders: function(folder_title, is_collapsed, callback) {
+        var folders = NEWSBLUR.Preferences.collapsed_folders;
+        var changed = false;
+        
+        if (is_collapsed && NEWSBLUR.Preferences.collapsed_folders.indexOf(folder_title) == -1) {
+            NEWSBLUR.Preferences.collapsed_folders.push(folder_title);
+            changed = true;
+        } else if (!is_collapsed && NEWSBLUR.Preferences.collapsed_folders.indexOf(folder_title) != -1) {
+            NEWSBLUR.Preferences.collapsed_folders = _.without(folders, folder_title);
+            changed = true;
+        }
+        if (NEWSBLUR.Globals.is_authenticated && changed) {
+            this.make_request('/profile/set_collapsed_folders', {
+                'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
             }, callback, null);
         }
     },

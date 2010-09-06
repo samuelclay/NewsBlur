@@ -7,6 +7,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile")
     preferences = models.TextField(default="{}")
     view_settings = models.TextField(default="{}")
+    collapsed_folders = models.TextField(default="[]")
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
     

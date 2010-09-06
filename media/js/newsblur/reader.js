@@ -547,7 +547,7 @@
             }
             
             $('.feed', $feed_list).tsort('.feed_title');
-            $('.folder', $feed_list).tsort('.folder_title');
+            $('.folder', $feed_list).tsort('.folder_title_text');
             
             if (NEWSBLUR.Globals.is_authenticated) {
                 this.start_count_unreads_after_import();
@@ -555,7 +555,7 @@
             }
         },
         
-        make_feeds_folder: function($feeds, items, depth) {
+        make_feeds_folder: function($feeds, items, depth, collapsed_parent) {
             var self = this;
             
             for (var i in items) {
@@ -580,23 +580,36 @@
                     for (var o in item) {
                         var folder = item[o];
                         var $folder = $.make('li', { className: 'folder' }, [
-                            $.make('ul', { className: 'folder' }, [
-                                $.make('li', { className: 'folder_title' }, o)
-                            ])
+                            $.make('div', { className: 'folder_title' }, [
+                                $.make('span', { className: 'folder_title_text' }, o)
+                            ]),
+                            $.make('ul', { className: 'folder' })
                         ]).css({'display': 'none'});
-                        (function($feeds, $folder) {
+                        var is_collapsed = NEWSBLUR.Preferences.collapsed_folders.indexOf(o) != -1;
+
+                        (function($feeds, $folder, is_collapsed, collapsed_parent) {
                             setTimeout(function() {
-                                $feeds.append($folder.fadeIn(500));
-                                $('.unread_count', $feeds).corner('4px');
+                                if (is_collapsed) {
+                                    $('ul.folder', $folder).css({'display': 'none'});
+                                    self.collapse_folder($('.folder_title', $folder).eq(0), true);
+                                    $feeds.append($folder.fadeIn(500));
+                                    if (collapsed_parent) {
+                                        $folder.parents('li.folder').each(function() {
+                                            self.collapse_folder($('.folder_title', this).eq(0), true);
+                                        });
+                                    }
+                                } else {
+                                    $feeds.append($folder.fadeIn(500));
+                                }
                             }, 50);
-                        })($feeds, $folder);
-                        this.make_feeds_folder($('ul.folder', $folder), folder, depth+1);
+                        })($feeds, $folder, is_collapsed, collapsed_parent);
+                        this.make_feeds_folder($('ul.folder', $folder), folder, depth+1, is_collapsed);
                     }
                 }
             }
             
             $('.feed', $feeds).tsort('.feed_title');
-            $('.folder', $feeds).tsort('.folder_title');
+            $('.folder', $feeds).tsort('.folder_title_text');
         },
         
         make_feed_title_line: function(feed, list_item, type) {
@@ -619,26 +632,7 @@
             }
             var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class + exception_class }, [
                 $.make('div', { className: 'feed_counts' }, [
-                    $.make('div', { className: 'feed_counts_floater' }, [
-                        $.make('span', { 
-                            className: 'unread_count unread_count_positive '
-                                        + (feed.ps
-                                           ? "unread_count_full"
-                                           : "unread_count_empty")
-                        }, ''+feed.ps),
-                        $.make('span', { 
-                            className: 'unread_count unread_count_neutral '
-                                        + (feed.nt
-                                           ? "unread_count_full"
-                                           : "unread_count_empty") 
-                        }, ''+feed.nt),
-                        $.make('span', { 
-                            className: 'unread_count unread_count_negative '
-                                        + (feed.ng
-                                           ? "unread_count_full"
-                                           : "unread_count_empty")
-                        }, ''+feed.ng)
-                    ])
+                    this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng)
                 ]),
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
@@ -656,6 +650,40 @@
             ]).data('feed_id', feed.id);  
             
             return $feed;  
+        },
+        
+        make_feed_counts_floater: function(positive_count, neutral_count, negative_count) {
+            var unread_class = "";
+            if (positive_count) {
+                unread_class += ' unread_positive';
+            }
+            if (neutral_count) {
+                unread_class += ' unread_neutral';
+            }
+            if (negative_count) {
+                unread_class += ' unread_negative';
+            }
+            
+            return $.make('div', { className: 'feed_counts_floater ' + unread_class }, [
+                $.make('span', { 
+                    className: 'unread_count unread_count_positive '
+                                + (positive_count
+                                   ? "unread_count_full"
+                                   : "unread_count_empty")
+                }, ''+positive_count),
+                $.make('span', { 
+                    className: 'unread_count unread_count_neutral '
+                                + (neutral_count
+                                   ? "unread_count_full"
+                                   : "unread_count_empty") 
+                }, ''+neutral_count),
+                $.make('span', { 
+                    className: 'unread_count unread_count_negative '
+                                + (negative_count
+                                   ? "unread_count_full"
+                                   : "unread_count_empty")
+                }, ''+negative_count)
+            ]);
         },
         
         check_feed_fetch_progress: function() {
@@ -747,9 +775,9 @@
         load_sortable_feeds: function() {
             var self = this;
             
-            $('ul#feed_list,ul#feed_list ul.folder').sortable({
-                connectWith: '.folder, ul#feed_list',
-                items: '.feed',
+            $('ul#feed_list, ul#feed_list ul.folder, li.folder').sortable({
+                connectWith: 'ul.folder, li.folder, ul#feed_list',
+                items: '.feed, li.folder',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 3,
@@ -760,10 +788,16 @@
                     ui.item.addClass('NB-feed-sorting');
                     self.$s.$feed_list.addClass('NB-feed-sorting');
                     ui.placeholder.html(ui.item.children().clone());
+                    if (ui.item.is('li.folder')) {
+                        ui.item.data('previously_collapsed', ui.item.data('collapsed'));
+                        self.collapse_folder($('.folder_title', ui.item).eq(0), true);
+                        self.collapse_folder($('.folder_title', ui.placeholder).eq(0), true);
+                        ui.item.css('height', $('.folder_title', ui.item.parent()).eq(0).outerHeight(true) + 'px');
+                    }
                 },
                 sort: function(e, ui) {
                     $('.feed', ui.placeholder.parents('.folder')).tsort('.feed_title');
-                    $('.folder', ui.placeholder.parents('.folder')).tsort('.folder_title');
+                    $('.folder', ui.placeholder.parents('.folder')).tsort('.folder_title_text');
                 },
                 stop: function(e, ui) {
                     setTimeout(function() {
@@ -772,11 +806,15 @@
                     ui.item.removeClass('NB-feed-sorting');
                     self.$s.$feed_list.removeClass('NB-feed-sorting');
                     $('.feed', e.target).tsort('.feed_title');
-                    $('.folder', e.target).tsort('.folder_title');
+                    $('.folder', e.target).tsort('.folder_title_text');
                     self.save_feed_order();
                     ui.item.css({'backgroundColor': '#D7DDE6'})
                            .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                            .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
+                    if (!ui.item.data('previously_collapsed')) {
+                        self.collapse_folder($('.folder_title', ui.item).eq(0));
+                        self.collapse_folder($('.folder_title', ui.placeholder).eq(0));
+                    }
                 }
             });
         },
@@ -792,7 +830,7 @@
                     if ($item.hasClass('feed')) {
                         folders.push($item.data('feed_id'));
                     } else if ($item.hasClass('folder')) {
-                        var folder_title = $item.find('.folder_title').eq(0).text();
+                        var folder_title = $item.find('.folder_title_text').eq(0).text();
                         var child_folders = {};
                         child_folders[folder_title] = combine_folders($item.children('ul.folder').eq(0));
                         folders.push(child_folders);
@@ -807,27 +845,80 @@
             this.model.save_feed_order(combined_folders);
         },
         
-        delete_feed: function(feed_id) {
+        collapse_folder: function($folder_title, force_collapse) {
             var self = this;
-            var $feeds = this.find_feed_in_feed_list(feed_id);
+            var $feed_list = this.$s.$feed_list;
+            var $folder = $folder_title.parent('.folder');
+            var $children = $folder.children('.folder, .feed');
             
-            if ($feeds.length) {
-                $feeds.slideUp(500);
-            }
-            
-            var feed_active = false;
-            $feeds.each(function() {
-                if (self.active_feed == $(this).data('feed_id')) {
-                    feed_active = true;
-                    return false;
-                }
-            });
-            
-            if (feed_active) {
-                this.reset_feed();
-                this.show_splash_page();
+            // Hiding / Collapsing
+            if (force_collapse || 
+                ($children.length && 
+                 $children.eq(0).is(':visible') && 
+                 !$folder.data('collapsed'))) {
+                this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), true);
+                $folder.data('collapsed', true);
+                $children.animate({'opacity': 0}, {
+                    'queue': false,
+                    'duration': force_collapse ? 0 : 200,
+                    'complete': function() {
+                        self.show_collapsed_folder_count($folder_title, $children);
+                        $children.slideUp({
+                            'duration': 240,
+                            'easing': 'easeOutQuint'
+                        });
+                    }
+                });
+            } 
+            // Showing / Expanding
+            else if ($children.length && 
+                       ($folder.data('collapsed') || !$children.eq(0).is(':visible'))) {
+                this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), false);
+                $folder.data('collapsed', false);
+                this.hide_collapsed_folder_count($folder_title);
+                $children.css({'opacity': 0}).slideDown({
+                    'duration': 240,
+                    'easing': 'easeOutQuint',
+                    'complete': function() {
+                        $children.animate({'opacity': 1}, {'queue': false, 'duration': 200});
+                    }
+                });
             }
         },
+        
+        show_collapsed_folder_count: function($folder_title, $children) {
+            var $counts = $('.feed_counts_floater', $folder_title);
+            $counts.remove();
+            
+            var positive_count = 0;
+            var neutral_count = 0;
+            var negative_count = 0;
+            $('.unread_count_positive.unread_count_full', $children).each(function() {
+                positive_count += parseInt($(this).text(), 10);
+            });
+            $('.unread_count_neutral.unread_count_full', $children).each(function() {
+                neutral_count += parseInt($(this).text(), 10);
+            });
+            $('.unread_count_negative.unread_count_full', $children).each(function() {
+                negative_count += parseInt($(this).text(), 10);
+            });
+            var $counts = this.make_feed_counts_floater(positive_count, neutral_count, negative_count);
+            $folder_title.prepend($counts.css({
+                'opacity': 0
+            }));
+            $counts.animate({'opacity': 1}, {'duration': 400});
+        },
+        
+        hide_collapsed_folder_count: function($folder_title) {
+            var $counts = $('.feed_counts_floater', $folder_title);
+            $counts.animate({'opacity': 0}, {
+                'duration': 300 
+            });
+        },
+        
+        // ===============================
+        // = Feed bar - Individual Feeds =
+        // ===============================
         
         reset_feed: function() {
             $.extend(this.flags, {
@@ -859,6 +950,7 @@
             this.active_feed = null;
             this.$s.$story_titles.data('page', 0);
             this.$s.$story_titles.data('feed_id', null);
+            this.$s.$feed_view.empty();
         },
         
         open_feed: function(feed_id, $feed_link, force) {
@@ -955,6 +1047,28 @@
                         this.prefetch_story_locations_in_story_frame();
                     }
                 }
+            }
+        },
+        
+        delete_feed: function(feed_id) {
+            var self = this;
+            var $feeds = this.find_feed_in_feed_list(feed_id);
+            
+            if ($feeds.length) {
+                $feeds.slideUp(500);
+            }
+            
+            var feed_active = false;
+            $feeds.each(function() {
+                if (self.active_feed == $(this).data('feed_id')) {
+                    feed_active = true;
+                    return false;
+                }
+            });
+            
+            if (feed_active) {
+                this.reset_feed();
+                this.show_splash_page();
             }
         },
         
@@ -1198,7 +1312,7 @@
             
             var callback = function(read) {
                 if (read) return;
-                
+            
                 var unread_count_positive = feed.ps;
                 var unread_count_neutral = feed.nt;
                 var unread_count_negative = feed.ng;
@@ -1242,6 +1356,15 @@
                     $('.feed', $content_pane).animate({'opacity': .1}, {'duration': 250, 'queue': false});
                 }, 400);
 
+                
+                if (!$feed.is(':visible')) {
+                    // NEWSBLUR.log(['Under collapsed folder', $feed, $feed.parents(':visible'),
+                    //               $feed.parents(':visible').eq(0).children('.folder_title')]);
+                    var $folder_title = $feed.parents(':visible').eq(0).children('.folder_title');
+                    var $children = $folder_title.parent('.folder').children('.folder, .feed');
+                    self.show_collapsed_folder_count($folder_title, $children);
+                }
+                
                 return;
             };
 
@@ -1644,8 +1767,10 @@
         mark_feed_as_selected: function(feed_id, $feed_link) {
             $('#feed_list .selected').removeClass('selected');
             $('#feed_list .after_selected').removeClass('after_selected');
-            $feed_link.addClass('selected');
-            $feed_link.parent('.feed').next('.feed').children('a').addClass('after_selected');
+            if ($feed_link) {
+                $feed_link.addClass('selected');
+                $feed_link.parent('.feed').next('.feed').children('a').addClass('after_selected');
+            }
         },
         
         open_feed_intelligence_modal: function(score) {
@@ -1767,7 +1892,7 @@
                             story_load = false;
                             self.determine_feed_view_story_position($story, story);
                             self.process_stories_location_in_feed_view(story_index+1);
-                        }, 2000);
+                        }, 600);
                         
                         // NEWSBLUR.log(['Feed view story not loaded', $('img', $story).length + " images", $story, story_index]);
                         // Load each image, loading next story on last image
@@ -2372,7 +2497,6 @@
                 var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 
-                $('.unread_count', $feed).corner('4px');
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     var limit = $('.story', this.$s.$story_titles).length;
@@ -2843,6 +2967,12 @@
                 if (!self.flags['sorting_feed']) {
                     var feed_id = $t.data('feed_id');
                     self.open_feed(feed_id, $t);
+                }
+            });
+            $.targetIs(e, { tagSelector: '#feed_list .folder_title' }, function($folder, $p){
+                e.preventDefault();
+                if (!self.flags['sorting_feed']) {
+                    self.collapse_folder($folder);
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){

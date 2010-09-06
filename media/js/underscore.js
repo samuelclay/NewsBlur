@@ -260,7 +260,7 @@
   // Returns everything but the first entry of the array. Aliased as "tail".
   // Especially useful on the arguments object. Passing an "index" will return
   // the rest of the values in the array from that index onward. The "guard"
-   //check allows it to work with _.map.
+  // check allows it to work with _.map.
   _.rest = function(array, index, guard) {
     return slice.call(array, _.isUndefined(index) || guard ? 1 : index);
   };

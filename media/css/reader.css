@@ -357,20 +357,25 @@ a img {
     height: auto !important;
 }
 
-#feed_list ul.folder {
-    margin: 6px 0px 4px;
-    padding: 0 0 0 22px;
-    list-style: none;
-    background: transparent url('../img/icons/silk/folder.png') no-repeat 3px 1px;
+#feed_list li.folder {
+      margin: 6px 0px 4px;
 }
 
-#feed_list ul.folder .folder_title {
-    padding: 3px 0 4px;
+#feed_list ul.folder {
+    margin: 0;
+    padding: 0 0 0 22px;
+    list-style: none;
+}
+
+#feed_list .folder_title {
+    background: transparent url('../img/icons/silk/folder.png') no-repeat 3px 1px;
+    padding: 3px 0 4px 22px;
     font-weight: bold;
     display: block;
     color: #606060;
     text-transform: uppercase;
     text-shadow: 1px 1px 0 #EEEEEE;
+    cursor: pointer;
 }
 
 #feed_list .feeds {
@@ -480,7 +485,21 @@ a img {
 .NB-feed-sorting {
     border: none !important;
 }
-.feed .unread_count {
+
+#feed_list .folder_title .unread_count {
+    margin-top: -3px;
+    line-height: 20px;
+}
+
+#feed_list .folder_title .unread_count {
+  text-shadow: none;
+}
+
+/* ================= */
+/* = Unread Counts = */
+/* ================= */
+
+.unread_count {
     float: right;
     font-weight: bold;
     color: #FFF;
@@ -488,56 +507,57 @@ a img {
     margin: 3px 1px 0;
     background-color: #8eb6e8;
     display: none;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
-
-.feed .unread_count_positive {
+.unread_count_positive {
     background-color: #559F4D;
 }
 
-.feed .unread_count_neutral {
+.unread_count_neutral {
     color: #303030;
     background-color: #F9C72A;
 }
 
-.feed .unread_count_negative {
+.unread_count_negative {
     background-color: #CC2A2E;
 }
 
-#feed_list.unread_view_positive .feed.unread_positive .unread_count_positive {
+.unread_view_positive .unread_positive .unread_count_positive {
     display: block;
 }
 
-#feed_list.unread_view_neutral .feed.unread_positive .unread_count_positive,
-#feed_list.unread_view_neutral .feed.unread_neutral .unread_count_neutral {
+.unread_view_neutral .unread_positive .unread_count_positive,
+.unread_view_neutral .unread_neutral .unread_count_neutral {
     display: block;
 }
 
-#feed_list.unread_view_negative .feed.unread_positive .unread_count_positive,
-#feed_list.unread_view_negative .feed.unread_neutral .unread_count_neutral,
-#feed_list.unread_view_negative .feed.unread_negative .unread_count_negative {
+.unread_view_negative .unread_positive .unread_count_positive,
+.unread_view_negative .unread_neutral .unread_count_neutral,
+.unread_view_negative .unread_negative .unread_count_negative {
     display: block;
 }
 
-#feed_list.unread_view_positive .feed.unread_positive {
+.unread_view_positive .unread_positive {
     font-weight: bold;
 }
 
-#feed_list.unread_view_neutral .feed.unread_positive,
-#feed_list.unread_view_neutral .feed.unread_neutral {
+.unread_view_neutral .unread_positive,
+.unread_view_neutral .unread_neutral {
     font-weight: bold;
 }
 
-#feed_list.unread_view_negative .feed.unread_positive,
-#feed_list.unread_view_negative .feed.unread_neutral,
-#feed_list.unread_view_negative .feed.unread_negative {
+.unread_view_negative .unread_positive,
+.unread_view_negative .unread_neutral,
+.unread_view_negative .unread_negative {
     font-weight: bold;
 }
 
-#feed_list.unread_view_positive .unread_count {
+.unread_view_positive .unread_count {
     padding: 0 6px;
 }
 
-#feed_list.unread_view_neutral .unread_count {
+.unread_view_neutral .unread_count {
     padding: 0 3px;
 }
 

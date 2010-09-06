@@ -6,7 +6,7 @@ from utils import json
 @require_POST
 @json.json_view
 def set_preference(request):
-    code = 0
+    code = 1
     preference_name = request.POST['preference']
     preference_value = request.POST['value']
     
@@ -21,7 +21,7 @@ def set_preference(request):
 @login_required
 @json.json_view
 def get_preference(request):
-    code = 0
+    code = 1
     preference_name = request.POST['preference']
     preferences = json.decode(request.user.profile.preferences)
     
@@ -32,7 +32,7 @@ def get_preference(request):
 @require_POST
 @json.json_view
 def set_view_setting(request):
-    code = 0
+    code = 1
     feed_id = request.POST['feed_id']
     feed_view_setting = request.POST['feed_view_setting']
     
@@ -47,9 +47,23 @@ def set_view_setting(request):
 @login_required
 @json.json_view
 def get_view_setting(request):
-    code = 0
+    code = 1
     feed_id = request.POST['feed_id']
     view_settings = json.decode(request.user.profile.view_settings)
     
     response = dict(code=code, payload=view_settings.get(feed_id))
+    return response
+    
+
+@login_required
+@require_POST
+@json.json_view
+def set_collapsed_folders(request):
+    code = 1
+    collapsed_folders = request.POST['collapsed_folders']
+    
+    request.user.profile.collapsed_folders = collapsed_folders
+    request.user.profile.save()
+    
+    response = dict(code=code)
     return response

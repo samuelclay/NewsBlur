@@ -122,7 +122,7 @@ NEWSBLUR.Faq.prototype = {
                       ]),
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! All of the stories are several days old and new stories are not showing up.'),
-                        $.make('div', { className: 'NB-faq-answer' }, 'There are two potential causes for new stories that are on the site to not show up. First, sites that only have a signle subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'There are two potential causes for new stories to not show up. First, sites that only have a signle subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.'),
                         $.make('div', { className: 'NB-faq-answer last' }, 'Second, it is possible that a bug remains in certain circumstances where some RSS feeds are not parsed correctly, resulting in new stories not being shown. This has been noticed and sites should be gradually fixed as they are manually inspected.')
                       ]),
                       $.make('li', { className: 'last' }, [
