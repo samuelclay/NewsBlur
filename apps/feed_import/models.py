@@ -59,9 +59,9 @@ class OPMLImporter(Importer):
                 feed_link = urlnorm.normalize(feed.htmlUrl)
                 if len(feed_address) > Feed._meta.get_field('feed_address').max_length:
                     continue
-                if len(feed_link) > Feed._meta.get_field('feed_link').max_length:
+                if feed_link and len(feed_link) > Feed._meta.get_field('feed_link').max_length:
                     continue
-                if len(feed.title) > Feed._meta.get_field('feed_title').max_length:
+                if feed.title and len(feed.title) > Feed._meta.get_field('feed_title').max_length:
                     feed.title = feed.title[:255]
                 logging.info(' ---> \t%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
