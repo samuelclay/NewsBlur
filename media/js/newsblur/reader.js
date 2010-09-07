@@ -1308,6 +1308,7 @@
             var feed = this.model.get_feed(feed_id);
             var $feed_list = this.$s.$feed_list;
             var $feed = $('.feed.selected', $feed_list);
+            var $feed_counts = $('.feed_counts_floater', $feed);
             var $content_pane = this.$s.$content_pane;
             
             var callback = function(read) {
@@ -1325,8 +1326,10 @@
                     $('.unread_count_positive', $content_pane).text(count);
                     if (count == 0) {
                         $feed.removeClass('unread_positive');
+                        $feed_counts.removeClass('unread_positive');
                     } else {
                         $feed.addClass('unread_positive');
+                        $feed_counts.addClass('unread_positive');
                     }
                 } else if ($story_title.is('.NB-story-neutral')) {
                     var count = Math.max(unread_count_neutral-1, 0);
@@ -1335,8 +1338,10 @@
                     $('.unread_count_neutral', $content_pane).text(count);
                     if (count == 0) {
                         $feed.removeClass('unread_neutral');
+                        $feed_counts.removeClass('unread_neutral');
                     } else {
                         $feed.addClass('unread_neutral');
+                        $feed_counts.addClass('unread_neutral');
                     }
                 } else if ($story_title.is('.NB-story-negative')) {
                     var count = Math.max(unread_count_negative-1, 0);
@@ -1345,8 +1350,10 @@
                     $('.unread_count_negative', $content_pane).text(count);
                     if (count == 0) {
                         $feed.removeClass('unread_negative');
+                        $feed_counts.removeClass('unread_negative');
                     } else {
                         $feed.addClass('unread_negative');
+                        $feed_counts.addClass('unread_negative');
                     }
                 }
                 

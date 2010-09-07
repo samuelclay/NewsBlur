@@ -358,7 +358,8 @@ a img {
 }
 
 #feed_list li.folder {
-      margin: 6px 0px 4px;
+    padding: 2px 0 0;
+    margin: 4px 0 0;
 }
 
 #feed_list ul.folder {
