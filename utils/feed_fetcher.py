@@ -76,8 +76,8 @@ class FetchFeed:
         """
         socket.setdefaulttimeout(30)
         identity = self.get_identity()
-        log_msg = u'%2s ---> Fetching %s (%d)' % (identity,
-                                                 self.feed.feed_title,
+        log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
+                                                 unicode(self.feed)[:30],
                                                  self.feed.id)
         logging.debug(log_msg)
                                                  
@@ -122,6 +122,12 @@ class ProcessFeed:
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
         self.db = db
+        self.entry_trans = {
+            ENTRY_NEW:'new',
+            ENTRY_UPDATED:'updated',
+            ENTRY_SAME:'same',
+            ENTRY_ERR:'error'}
+        self.entry_keys = sorted(self.entry_trans.keys())
 
     def process(self):
         """ Downloads and parses a feed.
@@ -137,37 +143,33 @@ class ProcessFeed:
             
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
-                logging.debug(u'[%d] HTTP status %d: %s (%s)' % (self.feed.id,
+                logging.debug(u'   ---> [%-30s] Fetched feed, HTTP status %d: %s (bozo: %s)' % (unicode(self.feed)[:30],
                                                      self.fpf.status,
                                                      self.feed.feed_address,
                                                      self.fpf.bozo))
+                if self.fpf.bozo:
+                    logging.debug(u'   ---> [%-30s] BOZO exception: %s' % (
+                                  unicode(self.feed)[:30],
+                                  self.fpf.bozo_exception,))
             if self.fpf.status == 304:
-                # this means the feed has not changed
-                if self.options['verbose']:
-                    logging.debug('[%d] Feed has not changed since ' \
-                           'last check: %s' % (self.feed.id,
-                                               self.feed.feed_address))
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
 
             if self.fpf.status >= 400:
-                # http error, ignore
-                logging.debug('[%d] !HTTP_ERROR! %d: %s' % (self.feed.id,
-                                                     self.fpf.status,
-                                                     self.feed.feed_address))
                 self.feed.save()
                 self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            logging.debug("   ---> Non-xml feed: %s." % self.feed)
             if not self.fpf.entries:
+                logging.debug("   ---> [%-30s] Feed is Non-XML. Checking address..." % unicode(self.feed)[:30])
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
+            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). Checking address..." % unicode(self.feed)[:30])
             if not self.fpf.entries:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
@@ -235,7 +237,11 @@ class ProcessFeed:
         #     story_feed=self.feed
         # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
-            
+        
+        logging.debug(u'   ---> [%-30s] Parsed Feed: %s' % (
+                      unicode(self.feed)[:30], 
+                      u' '.join(u'%s=%d' % (self.entry_trans[key],
+                              ret_values[key]) for key in self.entry_keys),))
         self.feed.update_all_statistics(lock=self.lock)
         self.feed.save_feed_history(200, "OK")
         
@@ -256,18 +262,12 @@ class Dispatcher:
             FEED_ERRPARSE:0,
             FEED_ERRHTTP:0,
             FEED_ERREXC:0}
-        self.entry_trans = {
-            ENTRY_NEW:'new',
-            ENTRY_UPDATED:'updated',
-            ENTRY_SAME:'same',
-            ENTRY_ERR:'error'}
         self.feed_trans = {
             FEED_OK:'ok',
             FEED_SAME:'unchanged',
             FEED_ERRPARSE:'cant_parse',
             FEED_ERRHTTP:'http_error',
             FEED_ERREXC:'exception'}
-        self.entry_keys = sorted(self.entry_trans.keys())
         self.feed_keys = sorted(self.feed_trans.keys())
         self.num_threads = num_threads
         self.time_start = datetime.datetime.now()
@@ -314,6 +314,7 @@ class Dispatcher:
 
                     if ret_entries.get(ENTRY_NEW) or self.options['force']:
                         user_subs = UserSubscription.objects.filter(feed=feed)
+                        logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (unicode(feed)[:30], user_subs.count()))
                         for sub in user_subs:
                             cache.delete('usersub:%s' % sub.user_id)
                             silent = False if self.options['verbose'] >= 2 else True
@@ -339,28 +340,23 @@ class Dispatcher:
                  feed.feed_link and
                  (ret_feed == FEED_OK or
                   (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
+                  
+                logging.debug(u'   ---> [%-30s] Fetching page' % (unicode(feed)[:30]))
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
             delta = datetime.datetime.now() - start_time
-            if delta.seconds > SLOWFEED_WARNING:
-                comment = u' (SLOW FEED!)'
-            else:
-                comment = u''
             
             feed.last_load_time = max(1, delta.seconds)
             feed.fetched_once = True
             try:
                 feed.save()
             except IntegrityError:
-                logging.debug(" ---> IntegrityError on feed: %s - %s" % (feed, feed.feed_address,))
+                logging.debug("   ---> [%-30s] IntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
             
-            done_msg = (u'%2s ---> Processed %s (%d) in %s\n        ---> [%s] [%s]%s' % (
-                identity, feed.feed_title, feed.id, unicode(delta),
-                u' '.join(u'%s=%d' % (self.entry_trans[key],
-                          ret_entries[key]) for key in self.entry_keys),
-                self.feed_trans[ret_feed],
-                comment))
+            done_msg = (u'%2s ---> [%-30s] Processed in %s [%s]' % (
+                identity, feed.feed_title[:30], unicode(delta),
+                self.feed_trans[ret_feed],))
             logging.debug(done_msg)
             
             self.feed_stats[ret_feed] += 1
