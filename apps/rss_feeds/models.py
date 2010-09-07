@@ -563,12 +563,13 @@ class Feed(models.Model):
         subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**3)
         
         slow_punishment = 0
-        if 30 <= self.last_load_time < 60:
-            slow_punishment = self.last_load_time
-        elif 60 <= self.last_load_time < 100:
-            slow_punishment = 4 * self.last_load_time
-        elif self.last_load_time >= 100:
-            slow_punishment = 12 * self.last_load_time
+        if self.num_subscribers <= 1:
+            if 30 <= self.last_load_time < 60:
+                slow_punishment = self.last_load_time
+            elif 60 <= self.last_load_time < 100:
+                slow_punishment = 4 * self.last_load_time
+            elif self.last_load_time >= 100:
+                slow_punishment = 12 * self.last_load_time
         
         total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
         random_factor = random.randint(0, total) / 4
@@ -579,7 +580,7 @@ class Feed(models.Model):
         total, random_factor = self.get_next_scheduled_update()
 
         next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
-                                minutes = int(total + random_factor))
+                                minutes = total + random_factor)
             
         self.next_scheduled_update = next_scheduled_update
 
