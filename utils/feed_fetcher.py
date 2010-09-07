@@ -147,7 +147,7 @@ class ProcessFeed:
                                                      self.fpf.status,
                                                      self.feed.feed_address,
                                                      self.fpf.bozo))
-                if self.fpf.bozo:
+                if self.fpf.bozo and self.fpf.status != 304:
                     logging.debug(u'   ---> [%-30s] BOZO exception: %s' % (
                                   unicode(self.feed)[:30],
                                   self.fpf.bozo_exception,))
@@ -319,8 +319,9 @@ class Dispatcher:
                             cache.delete('usersub:%s' % sub.user_id)
                             silent = False if self.options['verbose'] >= 2 else True
                             sub.calculate_feed_scores(silent=silent)
-                    if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
-                        feed.get_stories(force=True)
+                    cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
+                    # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
+                    #     feed.get_stories(force=True)
             except KeyboardInterrupt:
                 break
             except urllib2.HTTPError, e:

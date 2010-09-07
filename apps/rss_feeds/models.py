@@ -275,6 +275,8 @@ class Feed(models.Model):
         disp.add_jobs([[self]])
         disp.run_jobs()
         disp.poll()
+        
+        self.set_next_scheduled_update()
 
         return
 
