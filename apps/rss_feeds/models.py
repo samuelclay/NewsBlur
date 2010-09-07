@@ -1,4 +1,3 @@
-import time
 import settings
 import difflib
 import datetime
@@ -34,9 +33,9 @@ class Feed(models.Model):
     feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=0)
-    last_update = models.DateTimeField(auto_now=True)
+    last_update = models.DateTimeField(default=datetime.datetime.now)
     fetched_once = models.BooleanField(default=False)
-    has_exception = models.BooleanField(default=False) # TODO: Remove in lieu of below 2 columns
+    has_exception = models.BooleanField(default=False) # TODO: Remove due to below 2 columns
     has_feed_exception = models.BooleanField(default=False)
     has_page_exception = models.BooleanField(default=False)
     exception_code = models.IntegerField(default=0)
@@ -258,17 +257,6 @@ class Feed(models.Model):
             self.average_stories_per_month = total / month_count
         self.save(lock)
         
-        
-    def last_updated(self):
-        return time.time() - time.mktime(self.last_update.timetuple())
-    
-    def new_stories_since_date(self, date):
-        stories = Story.objects.filter(story_date__gte=date,
-                                       story_feed=self)
-        return stories
-        
-    def add_feed(self, feed_address, feed_link, feed_title):
-        print locals()
         
     def update(self, force=False, single_threaded=True):
         from utils import feed_fetcher
