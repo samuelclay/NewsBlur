@@ -25,13 +25,13 @@ class Command(BaseCommand):
                               AND f.feed_tagline = f2.feed_tagline 
                               AND f.feed_link = f2.feed_link 
                               AND f.feed_title = f2.feed_title
-                          ORDER BY original_id ASC;""")
-        
+                          ORDER BY original_id ASC LIMIT 10;""")
+
         feed_fields = ('original_id', 'duplicate_id', 'original_feed_address', 'duplicate_feed_address')
         for feeds_values in cursor.fetchall():
             feeds = dict(zip(feed_fields, feeds_values))
 
-            original_stories = MStory.objects(story_feed_id=feeds['original_id']).only('story_guid')[10:12]
+            original_stories = MStory.objects(story_feed_id=feeds['original_id']).only('story_guid')[10:13]
             original_story_ids = [story.id for story in original_stories]
             if MStory.objects(story_feed_id=feeds['duplicate_id'], story_guid__in=original_story_ids).count() != 3:
                 print "Skipping: %s" % (feeds)
@@ -39,4 +39,3 @@ class Command(BaseCommand):
             else:
                 print "Merging: %s" % feeds
                 # merge_feeds(feeds['original_id'], feeds['duplicate_id'])
-       
