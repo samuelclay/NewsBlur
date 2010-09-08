@@ -47,6 +47,7 @@ class Feed(models.Model):
     average_stories_per_month = models.IntegerField(default=0)
     story_count_history = models.TextField(blank=True, null=True)
     next_scheduled_update = models.DateTimeField(default=datetime.datetime.now, db_index=True)
+    queued_date = models.DateTimeField(default=datetime.datetime.now, db_index=True)
     last_load_time = models.IntegerField(default=0)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)

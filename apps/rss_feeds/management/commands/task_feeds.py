@@ -28,6 +28,7 @@ class Command(BaseCommand):
         i = 0
         feed_queue = []
         for f in feeds:
+            f.queued_date = datetime.datetime.now()
             f.set_next_scheduled_update()
             i += 1
             feed_queue.append(f.pk)

@@ -14,7 +14,7 @@ graph_config = {
 hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
 
 metrics = {
-    'update_queue': Feed.objects.filter(next_scheduled_update__lte=datetime.datetime.now(), active=True).count(),
+    'update_queue': Feed.objects.filter(queued_date__gte=hour_ago).count(),
     'feeds_fetched': Feed.objects.filter(last_update__gte=hour_ago).count()
 }
 
