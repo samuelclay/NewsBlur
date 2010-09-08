@@ -96,6 +96,9 @@ class UserSubscription(models.Model):
         }
         
         for story in stories:
+            classifier_authors.rewind()
+            classifier_tags.rewind()
+            classifier_titles.rewind()
             scores.update({
                 'author': apply_classifier_authors(classifier_authors, story),
                 'tags': apply_classifier_tags(classifier_tags, story),

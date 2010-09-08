@@ -19,7 +19,7 @@ metrics = {
     'feeds': Feed.objects.count(),
     'subscriptions': UserSubscription.objects.count(),
     'exception_feeds': Feed.objects.filter(Q(has_feed_exception=True) | Q(has_page_exception=True)).count(),
-    'update_queue': Feed.objects.filter(next_scheduled_update__lte=datetime.datetime.now()).count(),
+    'update_queue': Feed.objects.filter(next_scheduled_update__lte=datetime.datetime.now(), active=True).count(),
 }
 
 if __name__ == '__main__':

@@ -45,7 +45,7 @@ class MClassifierTitle(mongo.Document):
     
     meta = {
         'collection': 'classifier_title',
-        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
             
@@ -71,7 +71,7 @@ class MClassifierAuthor(mongo.Document):
     
     meta = {
         'collection': 'classifier_author',
-        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
@@ -96,7 +96,7 @@ class MClassifierFeed(mongo.Document):
     
     meta = {
         'collection': 'classifier_feed',
-        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
@@ -123,7 +123,7 @@ class MClassifierTag(mongo.Document):
     
     meta = {
         'collection': 'classifier_tag',
-        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
