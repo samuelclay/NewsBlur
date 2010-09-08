@@ -32,8 +32,12 @@ class Command(BaseCommand):
             feeds = dict(zip(feed_fields, feeds_values))
 
             original_stories = MStory.objects(story_feed_id=int(feeds['original_id'])).only('story_guid')[10:13]
+            print original_stories
             original_story_ids = [story.id for story in original_stories]
-            if MStory.objects(story_feed_id=int(feeds['duplicate_id']), story_guid__in=original_story_ids).count() != 3:
+            print original_story_ids
+            duplicate_stories = MStory.objects(story_feed_id=int(feeds['duplicate_id']), story_guid__in=original_story_ids)
+            print duplicate_stories
+            if duplicate_stories.count() != original_stories.count():
                 print "Skipping: %s" % (feeds)
                 continue
             else:
