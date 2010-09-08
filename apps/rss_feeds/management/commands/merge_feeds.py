@@ -28,18 +28,21 @@ class Command(BaseCommand):
                           ORDER BY original_id ASC;""")
 
         feed_fields = ('original_id', 'duplicate_id', 'original_feed_address', 'duplicate_feed_address')
+        skips = 0
+        merges = 0
         for feeds_values in cursor.fetchall():
             feeds = dict(zip(feed_fields, feeds_values))
-
-            original_stories = MStory.objects(story_feed_id=int(feeds['original_id'])).only('story_guid')[10:13]
-            print original_stories
-            original_story_ids = [story.id for story in original_stories]
-            print original_story_ids
-            duplicate_stories = MStory.objects(story_feed_id=int(feeds['duplicate_id']), story_guid__in=original_story_ids)
-            print duplicate_stories
-            if duplicate_stories.count() != original_stories.count():
-                print "Skipping: %s" % (feeds)
-                continue
+            duplicate_stories = MStory.objects(story_feed_id=feeds['duplicate_id']).only('story_guid')[10:13]
+            duplicate_story_ids = [story.id for story in duplicate_stories]
+            original_stories = MStory.objects(story_feed_id=feeds['original_id'], story_guid__in=duplicate_story_ids)
+            if duplicate_stories.count() == original_stories.count():
+                merges += 1
+                merge_feeds(feeds['original_id'], feeds['duplicate_id'])
             else:
-                print "Merging: %s" % feeds
-                # merge_feeds(feeds['original_id'], feeds['duplicate_id'])
+                # print duplicate_stories
+                # print duplicate_story_ids
+                # print original_stories
+                # print "Skipping: %s" % feeds
+                skips += 1
+
+        print "Skips: %s, Merges: %s" % (skips, merges)
