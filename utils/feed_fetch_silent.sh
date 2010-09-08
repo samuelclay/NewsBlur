@@ -5,7 +5,5 @@ python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
 python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
 python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
 python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
-python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
-python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
-python /home/conesus/newsblur/manage.py refresh_feeds -s > /dev/null 2>&1 &
+
 
