@@ -236,8 +236,6 @@ class ProcessFeed:
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
-        print story_guids
-        print existing_stories
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
         
         logging.debug(u'   ---> [%-30s] Parsed Feed: %s' % (

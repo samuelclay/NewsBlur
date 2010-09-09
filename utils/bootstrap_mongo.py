@@ -171,21 +171,13 @@ def reindex_stories():
         f += 1
         print "%s/%s: %s" % (f, feed_count, feed,)
         sys.stdout.flush()
-    
         for story in MStory.objects(story_feed_id=feed.pk):
             i += 1.0
             if round(i / count * 100) != p:
                 p = round(i / count * 100)
                 print '%s%%' % p
-            if isinstance(story.id, unicode) and story.id:
-                story.story_guid = story.id
-                story.id = pymongo.objectid.ObjectId()
-                try:
-                    story.save()
-                except mongoengine.queryset.OperationError:
-                    print 'Dupe!'
-                    continue
-        
+            if isinstance(story.id, unicode):
+                story.delete()
     
 if __name__ == '__main__':
     # bootstrap_stories()
