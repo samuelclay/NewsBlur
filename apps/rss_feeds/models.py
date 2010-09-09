@@ -876,8 +876,12 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
     for user_story in user_stories:
         user_story.feed_id = original_feed.pk
         duplicate_story = user_story.story
-        original_story = MStory.objects(story_guid=duplicate_story.story_guid,
-                                        story_feed_id=original_feed.pk)
+        try:
+            original_story = MStory.objects(story_guid=duplicate_story.story_guid,
+                                            story_feed_id=original_feed.pk)
+        except KeyError:
+            print " ***> Bad Story, deleting"
+            duplicate_story.delete()
         
         if original_story:
             user_story.story = original_story[0]
