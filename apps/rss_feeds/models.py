@@ -499,13 +499,14 @@ class Feed(models.Model):
         end_date = story_pub_date + datetime.timedelta(hours=8)
         
         for existing_story in existing_stories:
+            print existing_story
             content_ratio = 0
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if story_published_now or\
                (story_pub_date > start_date and story_pub_date < end_date):
-                if story.get('guid') and story.get('guid') == existing_story['_id']:
+                if story.get('guid') and story.get('guid') == existing_story['story_guid']:
                     story_in_system = existing_story
-                elif story.get('link') and story.get('link') == existing_story.get('story_permalink'):
+                elif story.get('link') and story.get('link') == existing_story['story_permalink']:
                     story_in_system = existing_story
                 
                 # import pdb
@@ -513,12 +514,13 @@ class Feed(models.Model):
                 
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story.get('story_title'))
-                seq = difflib.SequenceMatcher(None, story_content, existing_story.get('story_content'))
+                                                              existing_story['story_title'])
+                existing_story_content = zlib.decompress(existing_story['story_content_z'])
+                seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
                 
                 if (seq
                     and story_content
-                    and existing_story.get('story_content')
+                    and existing_story_content
                     and seq.real_quick_ratio() > .9 
                     and seq.quick_ratio() > .95):
                     content_ratio = seq.ratio()
@@ -538,7 +540,7 @@ class Feed(models.Model):
                     break
                                         
                 if story_in_system:
-                    if story_content != existing_story.get('story_content'):
+                    if story_content != existing_story_content:
                         story_has_changed = True
                     break
         
@@ -720,8 +722,7 @@ class MStory(mongo.Document):
     story_content_type = mongo.StringField(max_length=255)
     story_author_name = mongo.StringField()
     story_permalink = mongo.StringField()
-    story_guid = mongo.StringField(primary_key=True)
-    story_guid_hash = mongo.StringField(max_length=40)
+    story_guid = mongo.StringField()
     story_tags = mongo.ListField(mongo.StringField(max_length=250))
     
     meta = {

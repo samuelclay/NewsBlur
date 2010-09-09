@@ -46,7 +46,7 @@ class Command(BaseCommand):
         
         if options['force']:
             feeds = Feed.objects.all()
-            
+        
         num_workers = min(len(feeds), options['workerthreads'])
         if options['single_threaded']:
             num_workers = 1

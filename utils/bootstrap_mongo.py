@@ -158,10 +158,40 @@ def compress_stories():
                 print '%s%%' % p
             story.save()
         
+def reindex_stories():
+    count = MStory.objects().count()
+    print "Mongo DB stories: %s" % count
+    p = 0.0
+    i = 0
+
+    feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feed_count = feeds.count()
+    f = 0
+    for feed in feeds:
+        f += 1
+        print "%s/%s: %s" % (f, feed_count, feed,)
+        sys.stdout.flush()
+    
+        for story in MStory.objects(story_feed_id=feed.pk):
+            i += 1.0
+            if round(i / count * 100) != p:
+                p = round(i / count * 100)
+                print '%s%%' % p
+            if isinstance(story.id, unicode) and story.id:
+                print story.id
+                story.story_guid = story.id
+                story.id = None
+                try:
+                    story.save()
+                except mongoengine.queryset.OperationError:
+                    print 'Dupe!'
+                    continue
+        
     
 if __name__ == '__main__':
     # bootstrap_stories()
     # bootstrap_userstories()
     # bootstrap_classifiers()
-    bootstrap_feedpages()
-    compress_stories()
+    # bootstrap_feedpages()
+    # compress_stories()
+    reindex_stories()

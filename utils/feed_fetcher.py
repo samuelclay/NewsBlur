@@ -90,7 +90,7 @@ class FetchFeed:
         #     feed.save_feed_history(303, "Already fetched")
         #     return FEED_SAME, None
         # else:
-        #     feed.set_next_scheduled_update()
+        self.feed.set_next_scheduled_update()
             
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
@@ -230,12 +230,14 @@ class ProcessFeed:
                     'story_guid': {'$in': story_guids}
                 }
             ]
-        }).sort('story_date')
+        }).sort('-story_date')
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
+        print story_guids
+        print existing_stories
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
         
         logging.debug(u'   ---> [%-30s] Parsed Feed: %s' % (
