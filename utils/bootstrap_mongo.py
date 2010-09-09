@@ -4,7 +4,7 @@ from apps.reader.models import MUserStory, UserStory
 from apps.rss_feeds.models import Feed, Story, MStory, StoryAuthor, Tag, MFeedPage, FeedPage
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag
-import mongoengine
+import mongoengine, pymongo
 import sys
 from utils import json
 
@@ -180,7 +180,8 @@ def reindex_stories():
             if isinstance(story.id, unicode) and story.id:
                 print story.id
                 story.story_guid = story.id
-                story.id = None
+                story.id = pymongo.objectid.ObjectId()
+                print story.id
                 try:
                     story.save()
                 except mongoengine.queryset.OperationError:
