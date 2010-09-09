@@ -159,6 +159,7 @@ def compress_stories():
             story.save()
         
 def reindex_stories():
+    db = pymongo.Connection().newsblur
     count = MStory.objects().count()
     print "Mongo DB stories: %s" % count
     p = 0.0
@@ -177,7 +178,7 @@ def reindex_stories():
                 p = round(i / count * 100)
                 print '%s%%' % p
             if isinstance(story.id, unicode):
-                story.delete()
+                db.remove({"_id": story.story_guid})
     
 if __name__ == '__main__':
     # bootstrap_stories()
