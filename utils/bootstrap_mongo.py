@@ -178,7 +178,7 @@ def reindex_stories():
                 p = round(i / count * 100)
                 print '%s%%' % p
             if isinstance(story.id, unicode):
-                db.remove({"_id": story.story_guid})
+                db.remove({"_id": story.id})
     
 if __name__ == '__main__':
     # bootstrap_stories()
