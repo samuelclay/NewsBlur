@@ -178,10 +178,8 @@ def reindex_stories():
                 p = round(i / count * 100)
                 print '%s%%' % p
             if isinstance(story.id, unicode) and story.id:
-                print story.id
                 story.story_guid = story.id
                 story.id = pymongo.objectid.ObjectId()
-                print story.id
                 try:
                     story.save()
                 except mongoengine.queryset.OperationError:
