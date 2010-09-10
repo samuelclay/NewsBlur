@@ -6,6 +6,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag
 import mongoengine, pymongo
 import sys
+from mongoengine.queryset import OperationError
 from utils import json
 
 MONGO_DB = settings.MONGO_DB
@@ -180,7 +181,10 @@ def reindex_stories():
             if isinstance(story.id, unicode):
                 story.story_guid = story.id
                 story.id = pymongo.objectid.ObjectId()
-                story.save()
+                try:
+                    story.save()
+                except OperationError, e:
+                    print " ***> OperationError: %s" % e
                 db.stories.remove({"_id": story.story_guid})
     
 if __name__ == '__main__':
