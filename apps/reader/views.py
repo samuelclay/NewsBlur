@@ -243,13 +243,13 @@ def load_single_feed(request):
     userstories = MUserStory.objects(user_id=user.pk, 
                                      feed_id=feed.pk,
                                      read_date__gte=usersub.mark_read_date)
-    userstories = [us.story.id for us in userstories]
+    userstories = [us.story.story_guid for us in userstories]
     for story in stories:
         classifier_feeds.rewind()
         classifier_authors.rewind()
         classifier_tags.rewind()
         classifier_titles.rewind()
-        if story.get('id') in userstories:
+        if story.get('story_guid') in userstories:
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
             story['read_status'] = 1

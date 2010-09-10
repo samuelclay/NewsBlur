@@ -459,7 +459,7 @@ class Feed(models.Model):
             story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
             story['story_permalink'] = story_db.story_permalink
             story['story_feed_id'] = self.pk
-            story['id'] = story_db.id
+            story['id'] = story_db.story_guid
             
             stories.append(story)
             
@@ -501,9 +501,9 @@ class Feed(models.Model):
         for existing_story in existing_stories:
             content_ratio = 0
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
-            if story_published_now or\
-               (story_pub_date > start_date and story_pub_date < end_date):
-                if isinstance(existing_story['_id'], unicode):
+            if (story_published_now or
+                (story_pub_date > start_date and story_pub_date < end_date)):
+                if isinstance(existing_story['_id'], unicode) and not existing_story['story_guid']:
                     existing_story['story_guid'] = existing_story['_id']
                 if story.get('guid') and story.get('guid') == existing_story['story_guid']:
                     story_in_system = existing_story
@@ -878,12 +878,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
     for user_story in user_stories:
         user_story.feed_id = original_feed.pk
         duplicate_story = user_story.story
-        try:
-            original_story = MStory.objects(story_guid=duplicate_story.story_guid,
-                                            story_feed_id=original_feed.pk)
-        except KeyError:
-            print " ***> Bad Story, deleting"
-            duplicate_story.delete()
+        original_story = MStory.objects(story_guid=duplicate_story.story_guid,
+                                        story_feed_id=original_feed.pk)
         
         if original_story:
             user_story.story = original_story[0]

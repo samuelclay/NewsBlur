@@ -79,8 +79,6 @@ class UserSubscription(models.Model):
         read_stories = MUserStory.objects(user_id=self.user.pk,
                                           feed_id=self.feed.pk)
         read_stories_ids = [rs.story.id for rs in read_stories]
-        from django.db import connection
-        connection.queries = []
         stories_db = MStory.objects(story_feed_id=self.feed.pk,
                                     story_date__gte=date_delta)
         stories_db = [story for story in stories_db if story.id not in read_stories_ids]
