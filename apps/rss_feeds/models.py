@@ -504,7 +504,7 @@ class Feed(models.Model):
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
                 (story_pub_date > start_date and story_pub_date < end_date)):
-                if isinstance(existing_story['_id'], unicode) and not existing_story['story_guid']:
+                if isinstance(existing_story['_id'], unicode):
                     existing_story['story_guid'] = existing_story['_id']
                 if story.get('guid') and story.get('guid') == existing_story['story_guid']:
                     story_in_system = existing_story
@@ -887,7 +887,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
             user_story.story = original_story[0]
             user_story.save()
         else:
-            logging.info(" ***> Can't find original story: %s" % duplicate_story)
+            logging.info(" ***> Can't find original story: %s" % duplicate_story.id)
             user_story.delete()
 
     def delete_story_feed(model, feed_field='feed_id'):
