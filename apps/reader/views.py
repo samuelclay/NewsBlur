@@ -342,7 +342,7 @@ def mark_story_as_read(request):
         logging.debug(" ---> [%s] Read story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
-        story = MStory.objects(story_guid=story_id).first()
+        story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).first()
         now = datetime.datetime.now()
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
         try:

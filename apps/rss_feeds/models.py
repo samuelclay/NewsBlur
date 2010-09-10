@@ -874,7 +874,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
             folders = rewrite_folders(folders, original_feed, duplicate_feed)
             user_sub_folders.folders = json.encode(folders)
             user_sub_folders.save()
-        except IntegrityError:
+        except (IntegrityError, OperationError):
             logging.info("      !!!!> %s already subscribed" % user_sub.user)
             user_sub.delete()
 
@@ -910,7 +910,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
             try:
                 duplicate.save()
                 pass
-            except IntegrityError:
+            except (IntegrityError, OperationError):
                 logging.info("      !!!!> %s already exists" % duplicate)
                 duplicate.delete()
         
@@ -925,8 +925,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
             duplicate_address=duplicate_feed.feed_address,
             feed=original_feed
         )
-    except IntegrityError:
-        pass
+    except (IntegrityError, OperationError), e:
+        logging.info(" ***> Could not save DuplicateFeed: %s" % e)
     
     duplicate_feed.delete()
     
