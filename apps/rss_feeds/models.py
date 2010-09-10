@@ -885,12 +885,10 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
         
         if original_story:
             user_story.story = original_story[0]
+            user_story.save()
         else:
             logging.info(" ***> Can't find original story: %s" % duplicate_story)
-        try:
-            user_story.save()
-        except IntegrityError:
-            logging.info(" ***> Story already saved: %s" % user_story)
+            user_story.delete()
 
     def delete_story_feed(model, feed_field='feed_id'):
         duplicate_stories = model.objects(**{feed_field: duplicate_feed.pk})
