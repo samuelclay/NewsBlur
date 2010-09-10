@@ -253,7 +253,7 @@ def load_single_feed(request):
         classifier_authors.rewind()
         classifier_tags.rewind()
         classifier_titles.rewind()
-        if story.get('story_guid') in userstories:
+        if story['id'] in userstories:
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
             story['read_status'] = 1
