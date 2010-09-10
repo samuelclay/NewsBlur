@@ -14,6 +14,7 @@ from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder,
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
+from mongoengine.queryset import OperationError
 from utils import json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
@@ -318,7 +319,7 @@ class Feed(models.Model):
                         s.save()
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except IntegrityError:
+                    except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
                         # print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
@@ -355,7 +356,7 @@ class Feed(models.Model):
                         db.stories.update({'_id': existing_story['_id']}, existing_story)
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except IntegrityError:
+                    except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
                         # print('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                 else:

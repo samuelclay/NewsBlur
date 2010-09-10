@@ -178,7 +178,10 @@ def reindex_stories():
                 p = round(i / count * 100)
                 print '%s%%' % p
             if isinstance(story.id, unicode):
-                db.stories.remove({"_id": story.id})
+                story.story_guid = story.id
+                story.id = pymongo.objectid.ObjectId()
+                story.save()
+                db.stories.remove({"_id": story.story_guid})
     
 if __name__ == '__main__':
     # bootstrap_stories()
