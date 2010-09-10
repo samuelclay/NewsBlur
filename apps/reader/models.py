@@ -89,11 +89,11 @@ class UserSubscription(models.Model):
                                     story_date__gte=date_delta)
         unread_stories_db = []
         for story in stories_db:
-            if hasattr(us.story, 'story_guid') and story.story_guid not in read_stories_ids:
+            if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
                 unread_stories_db.append(story)
-            elif isinstance(us.story.id, unicode) and story.id not in read_stories_ids:
+            elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
                 unread_stories_db.append(story)
-        stories = self.feed.format_stories(stories_db)
+        stories = self.feed.format_stories(unread_stories_db)
         
         classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
