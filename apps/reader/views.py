@@ -349,11 +349,7 @@ def mark_story_as_read(request):
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
         now = datetime.datetime.now()
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
-        try:
-            m.save()
-            data.update({'code': 1})
-        except OperationError:
-            data.update({'code': -1})
+        m.save()
     
     return data
     
