@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.db import IntegrityError
 from django.views.decorators.cache import never_cache
-from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
@@ -239,11 +238,16 @@ def load_single_feed(request):
         logging.info(" ***> [%s] UserSub DNE, creating: %s" % (user, feed))
         usersub = UserSubscription.objects.create(user=user, feed=feed)
             
-
-    userstories = MUserStory.objects(user_id=user.pk, 
-                                     feed_id=feed.pk,
-                                     read_date__gte=usersub.mark_read_date)
-    userstories = [us.story.story_guid for us in userstories]
+    userstories = []
+    userstories_db = MUserStory.objects(user_id=user.pk, 
+                                        feed_id=feed.pk,
+                                        read_date__gte=usersub.mark_read_date)
+    for us in userstories_db:
+        if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
+            userstories.append(us.story.story_guid)
+        elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
+            userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
+            
     for story in stories:
         classifier_feeds.rewind()
         classifier_authors.rewind()
@@ -342,7 +346,7 @@ def mark_story_as_read(request):
         logging.debug(" ---> [%s] Read story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
-        story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).first()
+        story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
         now = datetime.datetime.now()
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
         try:
