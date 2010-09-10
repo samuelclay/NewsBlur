@@ -166,7 +166,7 @@ def reindex_stories():
     p = 0.0
     i = 0
 
-    feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feeds = Feed.objects.all().order_by('-average_stories_per_month')[100000]
     feed_count = feeds.count()
     f = 0
     for feed in feeds:
@@ -185,6 +185,8 @@ def reindex_stories():
                     story.save()
                 except OperationError, e:
                     print " ***> OperationError: %s" % e
+                except e:
+                    print ' ***> Unknown Error: %s' % e
                 db.stories.remove({"_id": story.story_guid})
     
 if __name__ == '__main__':
