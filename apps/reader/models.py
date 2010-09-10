@@ -77,11 +77,22 @@ class UserSubscription(models.Model):
             self.mark_read_date = date_delta
             
         read_stories = MUserStory.objects(user_id=self.user.pk,
-                                          feed_id=self.feed.pk)
-        read_stories_ids = [rs.story.id for rs in read_stories]
+                                          feed_id=self.feed.pk,
+                                          read_date__gte=self.mark_read_date)
+        read_stories_ids = []
+        for us in read_stories:
+            if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
+                read_stories_ids.append(us.story.story_guid)
+            elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
+                read_stories_ids.append(us.story.id) # TODO: Remove me after migration from story.id->guid
         stories_db = MStory.objects(story_feed_id=self.feed.pk,
                                     story_date__gte=date_delta)
-        stories_db = [story for story in stories_db if story.id not in read_stories_ids]
+        unread_stories_db = []
+        for story in stories_db:
+            if hasattr(us.story, 'story_guid') and story.story_guid not in read_stories_ids:
+                unread_stories_db.append(story)
+            elif isinstance(us.story.id, unicode) and story.id not in read_stories_ids:
+                unread_stories_db.append(story)
         stories = self.feed.format_stories(stories_db)
         
         classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
