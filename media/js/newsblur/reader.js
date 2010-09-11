@@ -567,6 +567,8 @@
                     var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
                     if (depth == 0) {
+                        this.hover_over_feed_titles();
+                        $feed.addClass('NB-toplevel');
                         $feed.css({'display': 'none'}).fadeIn(500);
                     }
                     
@@ -580,8 +582,9 @@
                     for (var o in item) {
                         var folder = item[o];
                         var $folder = $.make('li', { className: 'folder' }, [
-                            $.make('div', { className: 'folder_title' }, [
-                                $.make('span', { className: 'folder_title_text' }, o)
+                            $.make('div', { className: 'folder_title ' + (depth==0 ? 'NB-toplevel':'') }, [
+                                $.make('span', { className: 'folder_title_text' }, o),
+                                $.make('div', { className: 'NB-feedlist-manage-icon' })
                             ]),
                             $.make('ul', { className: 'folder' })
                         ]).css({'display': 'none'});
@@ -601,6 +604,7 @@
                                 } else {
                                     $feeds.append($folder.fadeIn(500));
                                 }
+                                self.hover_over_feed_titles($folder);
                             }, 50);
                         })($feeds, $folder, is_collapsed, collapsed_parent);
                         this.make_feeds_folder($('ul.folder', $folder), folder, depth+1, is_collapsed);
@@ -646,7 +650,8 @@
                 ])),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')),
                 (feed.has_exception && $.make('div', { className: 'NB-feed-exception-icon' })),
-                (feed.not_yet_fetched && $.make('div', { className: 'NB-feed-unfetched-icon' }))
+                (feed.not_yet_fetched && $.make('div', { className: 'NB-feed-unfetched-icon' })),
+                (type == 'feed' && $.make('div', { className: 'NB-feedlist-manage-icon' }))
             ]).data('feed_id', feed.id);  
             
             return $feed;  
@@ -914,6 +919,26 @@
             $counts.animate({'opacity': 0}, {
                 'duration': 300 
             });
+        },
+        
+        hover_over_feed_titles: function($folder) {
+            var $feed_list = $folder || this.$s.$feed_list;
+            var $feeds = $('.feed, .folder_title', $feed_list);
+            $feeds.each(function() {
+                $(this).unbind('mouseenter').unbind('mouseleave');
+            });
+            
+            $feeds.hover(function() {
+                $('.NB-hover', $feed_list).removeClass('NB-hover');
+                $(this).addClass("NB-hover");
+            }, function() {
+                $('.NB-hover', $feed_list).removeClass('NB-hover');
+                $(this).removeClass("NB-hover");                
+            });
+        },
+        
+        open_feedlist_manage_menu: function($feed, type) {
+            NEWSBLUR.log(['Showing', $feed, $feed.data('feed_id'), type]);
         },
         
         // ===============================
@@ -1736,11 +1761,11 @@
             });
             $('.story', $story_titles)
                 .hover(function() {
-                    $(this).siblings('.story.NB-story-hover').removeClass('NB-story-hover');
-                    $(this).addClass("NB-story-hover");
+                    $(this).siblings('.story.NB-hover').removeClass('NB-hover');
+                    $(this).addClass("NB-hover");
                 }, function() {
-                    $(this).siblings('.story.NB-story-hover').removeClass('NB-story-hover');
-                    $(this).removeClass("NB-story-hover");                
+                    $(this).siblings('.story.NB-hover').removeClass('NB-hover');
+                    $(this).removeClass("NB-hover");                
                 });
         },
         
@@ -2957,7 +2982,20 @@
             
             // = Feeds =
             
-            var exception = false;
+            var stopPropagation = false;
+            $.targetIs(e, { tagSelector: '#feed_list .NB-feedlist-manage-icon' }, function($t, $p) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!self.flags['sorting_feed']) {
+                    stopPropagation = true;
+                    if ($t.parent().hasClass('feed')) {
+                        self.open_feedlist_manage_menu($t.parents('.feed').eq(0), 'feed');
+                    } else {
+                        self.open_feedlist_manage_menu($t.parents('.folder').eq(0), 'folder');
+                    }
+                }
+            });
+            if (stopPropagation) return;
             $.targetIs(e, { tagSelector: '#feed_list .feed.NB-feed-exception' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
@@ -2967,7 +3005,7 @@
                     self.open_feed_exception_modal(feed_id, $t);
                 }
             });
-            if (exception) return;
+            if (stopPropagation) return;
             
             $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
                 e.preventDefault();

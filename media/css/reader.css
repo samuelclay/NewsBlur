@@ -377,6 +377,7 @@ a img {
     text-transform: uppercase;
     text-shadow: 1px 1px 0 #EEEEEE;
     cursor: pointer;
+    position: relative;
 }
 
 #feed_list .feeds {
@@ -443,6 +444,9 @@ a img {
     position: absolute;
     top: 2px;
     left: 2px;
+    background: transparent url('../img/icons/silk/building.png') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
 }
 #feed_list .feed_title {
     display: block;
@@ -450,7 +454,7 @@ a img {
     text-decoration: none;
     color: #272727;
     line-height: 1.3em;
-    height: 1.2em;
+    height: 14px;
     overflow: hidden;
     text-shadow: 0 1px 0 #EBF3FA;
 }
@@ -458,6 +462,44 @@ a img {
 #feed_list .feed.selected .feed_title {
     text-shadow: 0 1px 0 #FFC97D;
     color: #000000;
+}
+
+#feed_list .feed .NB-feedlist-manage-icon,
+#feed_list .folder_title .NB-feedlist-manage-icon {
+  opacity: 0;
+  position: absolute;
+  left: -20px;
+  top: -1px;
+  width: 20px;
+  height: 22px;
+  background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 0px 3px;
+}
+
+#feed_list .feed .NB-feedlist-manage-icon:hover,
+#feed_list .folder_title .NB-feedlist-manage-icon:hover {
+  background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat -1px 3px;
+}
+
+#feed_list .feed.NB-toplevel .NB-feedlist-manage-icon,
+#feed_list .folder_title.NB-toplevel .NB-feedlist-manage-icon {
+  left: 0;
+  opacity: 1;
+  display: none;
+  background-position: 4px 3px !important;
+}
+
+#feed_list .feed.NB-hover .NB-feedlist-manage-icon,
+#feed_list .folder_title.NB-hover .NB-feedlist-manage-icon {
+  opacity: 1;
+  display: block;
+  background-position: 3px 3px;
+}
+
+#feed_list .feed.NB-hover.NB-toplevel .feed_favicon {
+  display: none;
+}
+#feed_list .folder_title.NB-hover.NB-toplevel {
+  background: none;
 }
 
 #feed_list .feed_counts {
@@ -710,10 +752,20 @@ background: transparent;
     background: transparent url("../img/icons/silk/cog.png") no-repeat center center;
     width: 16px;
     height: 16px;
-    display: none;
+/*    display: none;*/
     cursor: pointer;
     padding: 0 0 0 38px;
 }
+#story_titles .NB-feedbar .NB-feedbar-statistics {
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat left center;    
+    width: 16px;
+    height: 16px;
+/*    display: none;*/
+    cursor: pointer;
+    padding: 0 4px 0 24px;
+    margin: 3px 0 0 0;
+}
+
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
     background-color: #3090cf;
     color: #F0F0F0;
@@ -728,15 +780,6 @@ background: transparent;
     padding: 0px 4px 0;
     text-transform: uppercase;
     display: none;
-}
-#story_titles .NB-feedbar .NB-feedbar-statistics {
-    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat left center;    
-    width: 16px;
-    height: 16px;
-    display: none;
-    cursor: pointer;
-    padding: 0 4px 0 24px;
-    margin: 3px 0 0 0;
 }
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
     color: #808080;
@@ -859,7 +902,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 14px 50%;
 }
 
-#story_titles .story.NB-story-hover {
+#story_titles .story.NB-hover {
     background: #f0f0f0;
 }
 
@@ -905,7 +948,7 @@ background: transparent;
     display: none;
 }
 
-#story_titles .NB-story-hover .NB-story-sentiment {
+#story_titles .NB-hover .NB-story-sentiment {
     display: block;
 }
 
