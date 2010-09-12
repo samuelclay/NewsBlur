@@ -472,12 +472,18 @@ a img {
   top: -1px;
   width: 20px;
   height: 22px;
-  background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 0px 3px;
+  background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
+}
+#feed_list .folder_title .NB-feedlist-manage-icon {
+  background-position: 3px 3px;
 }
 
 #feed_list .feed .NB-feedlist-manage-icon:hover,
 #feed_list .folder_title .NB-feedlist-manage-icon:hover {
-  background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat -1px 3px;
+  background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 3px 4px;
+}
+#feed_list .folder_title .NB-feedlist-manage-icon:hover {
+  background-position: 3px 3px;
 }
 
 #feed_list .feed.NB-toplevel .NB-feedlist-manage-icon,
@@ -485,14 +491,15 @@ a img {
   left: 0;
   opacity: 1;
   display: none;
-  background-position: 4px 3px !important;
+  background-position: 5px 4px;
 }
-
+#feed_list .folder_title.NB-toplevel .NB-feedlist-manage-icon {
+  background-position: 5px 3px;
+}
 #feed_list .feed.NB-hover .NB-feedlist-manage-icon,
 #feed_list .folder_title.NB-hover .NB-feedlist-manage-icon {
   opacity: 1;
   display: block;
-  background-position: 3px 3px;
 }
 
 #feed_list .feed.NB-hover.NB-toplevel .feed_favicon {
@@ -500,6 +507,16 @@ a img {
 }
 #feed_list .folder_title.NB-hover.NB-toplevel {
   background: none;
+}
+
+#feed_list .feed.NB-manage-menu-showing > .NB-feedlist-manage-icon,
+#feed_list .folder.NB-manage-menu-showing > .folder_title .NB-feedlist-manage-icon {
+  background-color: #F0FFF0;
+  background-image: url('../img/icons/silk/bullet_arrow_down.png');
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  display: block;
+  opacity: 1;
 }
 
 #feed_list .feed_counts {
@@ -2557,9 +2574,7 @@ background: transparent;
     position: absolute;
     display: none;
     opacity: 0;
-    bottom: 30px;
-    left: 40px;
-    width: 300px;
+    width: 260px;
     padding: 0;
     margin: 0;
     background-color: #F0FFF0;
@@ -2583,6 +2598,19 @@ background: transparent;
 .NB-menu-manage.NB-menu-manage-notop {
 }
 
+.NB-menu-manage-container .NB-menu-manage-arrow {
+  width: 19px;
+  height: 20px;
+  background: #F0FFF0 url('../img/icons/silk/bullet_arrow_down.png') no-repeat 2px 2px;
+    border-top: 1px solid #8ABCBE;
+    border-left: 1px solid #8ABCBE;
+    border-right: 1px solid #6A9C9E;
+    z-index: 10;
+    position: absolute;
+    top: -21px;
+    left: -1px;
+}
+
 .NB-menu-manage li {
     margin: 0 0 0 0;
     padding: 5px 8px 5px 36px;
@@ -2599,8 +2627,8 @@ background: transparent;
 }
 
 .NB-menu-manage li.NB-menu-separator {
-    background-color: #E2E8D8;
-    border-bottom: 1px solid #72924A;
+    background-color: #72924A;
+    border-bottom: 1px solid #E2E8D8;
     padding: 0;
     height: 1px;
 }
@@ -2622,8 +2650,8 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-title {
-  font-size: 16px;
-  text-shadow: 0 1px 0 #FFF;
+  font-size: 14px;
+  text-shadow: 0 1px 0 #F0F0F0;
 }
 
 .NB-menu-manage li:hover:not(.NB-disabled) .NB-menu-manage-title {
@@ -2636,7 +2664,7 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-subtitle {
-  font-size: 12px;
+  font-size: 11px;
   color: #718C7B;
 }
 
@@ -2696,24 +2724,12 @@ background: transparent;
     background: transparent url('../img/icons/silk/cut.png') no-repeat  0 0;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-delete {
+.NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  0 0;  
-    float: right;
-    width: 16px;
-    height: 16px;
-    margin: 0 4px 0 0;
-    cursor: pointer;
-    visibility: hidden;
 }
-.NB-menu-manage .NB-menu-manage-feed-info:hover .NB-menu-manage-feed-delete {
-    visibility: visible;
-}
-.NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel {
+.NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 0;  
-    display: block;
-    visibility: visible;
 }
-
 .NB-menu-manage .NB-menu-manage-feed-delete-confirm .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 1px;   
     font-weight: bold; 
