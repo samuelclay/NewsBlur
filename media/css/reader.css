@@ -485,6 +485,10 @@ a img {
 #feed_list .folder_title .NB-feedlist-manage-icon:hover {
   background-position: 3px 3px;
 }
+#feed_list .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
+#feed_list .folder_title.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+  background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 3px 2px;
+}
 
 #feed_list .feed.NB-toplevel .NB-feedlist-manage-icon,
 #feed_list .folder_title.NB-toplevel .NB-feedlist-manage-icon {
@@ -507,16 +511,6 @@ a img {
 }
 #feed_list .folder_title.NB-hover.NB-toplevel {
   background: none;
-}
-
-#feed_list .feed.NB-manage-menu-showing > .NB-feedlist-manage-icon,
-#feed_list .folder.NB-manage-menu-showing > .folder_title .NB-feedlist-manage-icon {
-  background-color: #F0FFF0;
-  background-image: url('../img/icons/silk/bullet_arrow_down.png');
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  display: block;
-  opacity: 1;
 }
 
 #feed_list .feed_counts {
@@ -2595,6 +2589,10 @@ background: transparent;
     padding: 0;
 }
 
+.NB-menu-manage.NB-inverse {
+  margin: 0 0 4px;
+}
+
 .NB-menu-manage.NB-menu-manage-notop {
 }
 
@@ -2609,6 +2607,14 @@ background: transparent;
     position: absolute;
     top: -21px;
     left: -1px;
+}
+
+.NB-menu-manage-container .NB-menu-manage-arrow.NB-inverse {
+    background-image: url('../img/icons/silk/bullet_arrow_up.png');
+    border-top: none;
+    border-bottom: 1px solid #6A9C9E;
+    bottom: -21px;
+    top: auto;
 }
 
 .NB-menu-manage li {
@@ -2633,6 +2639,13 @@ background: transparent;
     height: 1px;
 }
 
+.NB-menu-manage li.NB-menu-separator-inverse {
+    background-color: #E2E8D8;
+    border-bottom: 1px solid #72924A;
+    padding: 0;
+    height: 1px;
+}
+
 .NB-menu-manage li.NB-menu-separator-top {
     background-color: #72924A;
     border-bottom: 1px solid #F8FFFF;
@@ -2641,10 +2654,21 @@ background: transparent;
     height: 1px;
 }
 
-.NB-menu-manage li.NB-menu-separator:hover,
+.NB-menu-manage li.NB-menu-separator:hover {
+    background-color: #72924A;
+    color: inherit;
+    cursor: default;
+}
+
 .NB-menu-manage li.NB-menu-manage-feed-info:hover,
 .NB-menu-manage li.NB-menu-manage-site-info:hover {
     background-color: inherit;
+    color: inherit;
+    cursor: default;
+}
+
+.NB-menu-manage li.NB-menu-separator-inverse:hover {
+    background-color: #E2E8D8;
     color: inherit;
     cursor: default;
 }
@@ -2659,7 +2683,7 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-disabled {
-    opacity: .7;
+    opacity: .4;
     cursor: default;
 }
 
@@ -2723,15 +2747,18 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-mark-read .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/cut.png') no-repeat  0 0;    
 }
+.NB-menu-manage .NB-menu-manage-feed-exception .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 -1px;    
+}
 
 .NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  0 0;  
+    background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  -2px -1px;  
 }
 .NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 0;  
+    background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 -1px;  
 }
 .NB-menu-manage .NB-menu-manage-feed-delete-confirm .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 1px;   
+    background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 -1px;   
     font-weight: bold; 
 }
 
