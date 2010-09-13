@@ -1416,6 +1416,7 @@
             feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var $feed = this.find_feed_in_feed_list(feed_id);
+            var $feed_counts = $('.feed_counts_floater', $feed);
             var $content_pane = this.$s.$content_pane;
             var $story_titles = this.$s.$story_titles;
             
@@ -1436,6 +1437,9 @@
             $feed.removeClass('unread_neutral');
             $feed.removeClass('unread_positive');
             $feed.removeClass('unread_negative');
+            $feed_counts.removeClass('unread_neutral');
+            $feed_counts.removeClass('unread_positive');
+            $feed_counts.removeClass('unread_negative');
 
             this.model.mark_feed_as_read(feed_id, callback);
         },
@@ -2217,7 +2221,7 @@
                 }
             } else if (type == 'folder') {
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
-                    (!inverse && $.make('li', { className: 'NB-menu-separator-inverse' })),
+                    $.make('li', { className: 'NB-menu-separator-inverse' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
@@ -2230,8 +2234,7 @@
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
-                    ]),
-                    (inverse && $.make('li', { className: 'NB-menu-separator-inverse' }))
+                    ])
                 ]);
             }
             

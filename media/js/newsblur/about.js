@@ -117,6 +117,26 @@ NEWSBLUR.About.prototype = {
                       ])
                     ])
                 ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
+                    $.make('span', { className: 'NB-exception-option-option' }, 'Why:'),
+                    'What\'s the point?'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('ul', { className: 'NB-about-why' }, [
+                      $.make('li', [
+                        'To learn how to build and scale the entire web stack: front-end JavaScript, HTML5 layout, back-end view processing, large dataset schema migrations, relational and non-relational database clusters across multiple servers, and getting multiple machines to talk to each other.'
+                      ]),
+                      $.make('li', [
+                        'All of this just to prove that I could do it.'
+                      ]),
+                      $.make('li', [
+                        'But most importantly, to meet future co-founders.'
+                      ])
+                    ])
+                ])
             ])
         ]);
     },
