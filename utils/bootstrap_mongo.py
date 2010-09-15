@@ -166,7 +166,7 @@ def reindex_stories():
     p = 0.0
     i = 0
 
-    feeds = Feed.objects.all().order_by('-average_stories_per_month')[100000]
+    feeds = Feed.objects.all().order_by('-average_stories_per_month')
     feed_count = feeds.count()
     f = 0
     for feed in feeds:

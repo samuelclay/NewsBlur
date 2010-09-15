@@ -218,6 +218,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             var updated_feeds = [];
 
             for (var f in data.feeds) {
+                if (!self.feeds[f]) continue;
                 var updated = false;
                 f = parseInt(f, 10);
                 var feed = data.feeds[f];

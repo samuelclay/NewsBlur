@@ -32,8 +32,8 @@ class Command(BaseCommand):
         merges = 0
         for feeds_values in cursor.fetchall():
             feeds = dict(zip(feed_fields, feeds_values))
-            duplicate_stories = MStory.objects(story_feed_id=feeds['duplicate_id']).only('story_guid')[10:13]
-            duplicate_story_ids = [story.id for story in duplicate_stories]
+            duplicate_stories = MStory.objects(story_feed_id=feeds['duplicate_id']).only('story_guid')[5:8]
+            duplicate_story_ids = [story.story_guid for story in duplicate_stories]
             original_stories = MStory.objects(story_feed_id=feeds['original_id'], story_guid__in=duplicate_story_ids)
             if duplicate_stories.count() == original_stories.count():
                 merges += 1

@@ -40,7 +40,7 @@ def levenshtein_distance(first, second):
     
     
 def fetch_address_from_page(url, existing_feed=None):
-    from apps.rss_feeds.models import Feed
+    from apps.rss_feeds.models import Feed, DuplicateFeed
     feed_finder_url = feedfinder.feed(url)
     if feed_finder_url:
         if existing_feed:
@@ -50,12 +50,17 @@ def fetch_address_from_page(url, existing_feed=None):
             existing_feed.save()
             feed = existing_feed
         else:
-            try:
-                feed = Feed.objects.get(feed_address=feed_finder_url)
-            except Feed.DoesNotExist:
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_finder_url)
+            if duplicate_feed:
+                feed = [duplicate_feed[0].feed]
+            else:
+                feed = Feed.objects.filter(feed_address=feed_finder_url)
+            if not feed:
                 feed = Feed(feed_address=feed_finder_url)
                 feed.save()
                 feed.update()
+            else:
+                feed = feed[0]
         return feed
         
 def _do_timesince(d, chunks, now=None):
