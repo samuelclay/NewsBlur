@@ -98,14 +98,8 @@ NEWSBLUR.Faq.prototype = {
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-answer' }, 'Sort sites alphabetically, by popularity, use, unread counts, and hiding sites with no unreads.')
                       ]),
-                      $.make('li', [
-                        $.make('div', { className: 'NB-faq-answer' }, 'Account management, password recovery.')
-                      ]),
-                      $.make('li', [
-                        $.make('div', { className: 'NB-faq-answer' }, 'Actions on folders and sites, such as deleting, renaming, and moving them.')
-                      ]),
                       $.make('li', { className: 'last' }, [
-                        $.make('div', { className: 'NB-faq-answer last' }, 'Collapsible folders.')
+                        $.make('div', { className: 'NB-faq-answer' }, 'Account management, password recovery.')
                       ])
                     ])
                 ])
@@ -117,13 +111,8 @@ NEWSBLUR.Faq.prototype = {
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'NB-about-client' }, [
                       $.make('li', [
-                        $.make('div', { className: 'NB-faq-question' }, 'Help! A site shows unread stories, but when I open the site, there are no unread stories to read.'),
-                        $.make('div', { className: 'NB-faq-answer' }, 'This is a bug and has been noticed in many places. It is not easy to fix, however. But it will hopefully be fixed once and for all any day now. Just know that it has been noticed.')
-                      ]),
-                      $.make('li', [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! All of the stories are several days old and new stories are not showing up.'),
-                        $.make('div', { className: 'NB-faq-answer' }, 'There are two potential causes for new stories to not show up. First, sites that only have a signle subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.'),
-                        $.make('div', { className: 'NB-faq-answer last' }, 'Second, it is possible that a bug remains in certain circumstances where some RSS feeds are not parsed correctly, resulting in new stories not being shown. This has been noticed and sites should be gradually fixed as they are manually inspected.')
+                        $.make('div', { className: 'NB-faq-answer' }, 'Sites that only have a signle subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.')
                       ]),
                       $.make('li', { className: 'last' }, [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! I have an issue and it\'s not mentioned here.'),

@@ -478,11 +478,40 @@ def _add_object_to_folder(obj, folder, folders):
 @json.json_view
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
-    user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
-    user_sub.delete()
+    # user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
+    # user_sub.delete()
+    # 
+    # MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
+    # 
+    # def _find_feed_in_folders(old_folders):
+    #     new_folders = []
+    #     
+    #     for k, folder in enumerate(old_folders):
+    #         if isinstance(folder, int):
+    #             if folder == feed_id:
+    #                 logging.info(" ---> [%s] Delete folder: %s'th item: %s folders/feeds" % (
+    #                     request.user, k, len(old_folders)
+    #                 ))
+    #                 # folders.remove(folder)
+    #             else:
+    #                 new_folders.append(folder)
+    #         elif isinstance(folder, dict):
+    #             for f_k, f_v in folder.items():
+    #                 new_folders.append({f_k: _find_feed_in_folders(f_v)})
+    # 
+    #     return new_folders
+    #     
+    # user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
+    # user_sub_folders = json.decode(user_sub_folders_object.folders)
+    # user_sub_folders = _find_feed_in_folders(user_sub_folders)
+    # user_sub_folders_object.folders = json.encode(user_sub_folders)
+    # user_sub_folders_object.save()
     
-    MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
+    return dict(code=1)
     
+@ajax_login_required
+@json.json_view
+def delete_folder(request):
     def _find_feed_in_folders(old_folders):
         new_folders = []
         

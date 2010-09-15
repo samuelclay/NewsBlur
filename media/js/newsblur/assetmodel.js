@@ -362,10 +362,21 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
-    delete_publisher: function(feed_id, callback) {
+    delete_feed: function(feed_id, in_folder, callback) {
         delete this.feeds[feed_id];
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/delete_feed', {'feed_id': feed_id}, callback, null);
+            this.make_request('/reader/delete_feed', {
+                'feed_id': feed_id, 
+                'in_folder': in_folder
+            }, callback, null);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+    
+    delete_folder: function(folder_name, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/delete_folder', {'folder_name': folder_name}, callback, null);
         } else {
             if ($.isFunction(callback)) callback();
         }

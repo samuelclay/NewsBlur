@@ -2744,25 +2744,25 @@ background: transparent;
     background: transparent url('../img/icons/silk/chart_curve.png') no-repeat  0 0;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-mark-read .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/cut.png') no-repeat  0 0;    
 }
 .NB-menu-manage .NB-menu-manage-feed-exception .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 -1px;    
 }
 
-.NB-menu-manage .NB-menu-manage-feed-delete .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-delete .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bin_closed.png') no-repeat  -2px -1px;  
 }
-.NB-menu-manage .NB-menu-manage-feed-delete.NB-menu-manage-feed-delete-cancel .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-delete.NB-menu-manage-delete-cancel .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 -1px;  
 }
-.NB-menu-manage .NB-menu-manage-feed-delete-confirm .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-delete-confirm .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 -1px;   
     font-weight: bold; 
 }
 
-.NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-site-mark-read .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat  0 0;
 }
 .NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
@@ -2772,7 +2772,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 0;
 }
 
-.NB-menu-manage .NB-menu-manage-feed-delete-confirm {
+.NB-menu-manage .NB-menu-manage-delete-confirm {
     display: none;
 }
 
