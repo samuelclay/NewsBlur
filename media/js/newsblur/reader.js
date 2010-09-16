@@ -1437,34 +1437,64 @@
         mark_feed_as_read: function(feed_id) {
             var self = this;
             feed_id = feed_id || this.active_feed;
-            var feed = this.model.get_feed(feed_id);
-            var $feed = this.find_feed_in_feed_list(feed_id);
-            var $feed_counts = $('.feed_counts_floater', $feed);
-            var $content_pane = this.$s.$content_pane;
-            var $story_titles = this.$s.$story_titles;
             
-            var callback = function() {
-                return;
-            };
-            
-            feed.ps = 0;
-            feed.nt = 0;
-            feed.ng = 0;
-            $('.unread_count_neutral', $feed).text(0);
-            $('.unread_count_positive', $feed).text(0);
-            $('.unread_count_negative', $feed).text(0);
-            $('.unread_count_neutral', $content_pane).text(0);
-            $('.unread_count_positive', $content_pane).text(0);
-            $('.unread_count_negative', $content_pane).text(0);
-            $('.story:not(.read)', $story_titles).addClass('read');
-            $feed.removeClass('unread_neutral');
-            $feed.removeClass('unread_positive');
-            $feed.removeClass('unread_negative');
-            $feed_counts.removeClass('unread_neutral');
-            $feed_counts.removeClass('unread_positive');
-            $feed_counts.removeClass('unread_negative');
+            this.mark_feed_as_read_update_counts(feed_id);
 
-            this.model.mark_feed_as_read(feed_id, callback);
+            this.model.mark_feed_as_read([feed_id]);
+        },
+        
+        mark_folder_as_read: function(folder_name, $folder) {
+            var self = this;
+            var $feeds = $('.feed', $folder);
+            var $feed_counts = $('.feed_counts_floater', $folder);
+            var feeds = _.map($('.feed', $folder), function(o) {
+                return $(o).data('feed_id');
+            });
+            
+            _.each(feeds, _.bind(function(feed_id) {
+                this.mark_feed_as_read_update_counts(feed_id);
+            }, this));
+            this.mark_feed_as_read_update_counts(null, $folder);
+            this.model.mark_feed_as_read(feeds);
+        },
+        
+        mark_feed_as_read_update_counts: function(feed_id, $folder) {
+            if (feed_id) {
+                var feed = this.model.get_feed(feed_id);
+                var $feed = this.find_feed_in_feed_list(feed_id);
+                var $feed_counts = $('.feed_counts_floater', $feed);
+                var $content_pane = this.$s.$content_pane;
+                var $story_titles = this.$s.$story_titles;
+
+                feed.ps = 0;
+                feed.nt = 0;
+                feed.ng = 0;
+                $('.unread_count_neutral', $feed).text(0);
+                $('.unread_count_positive', $feed).text(0);
+                $('.unread_count_negative', $feed).text(0);
+                if (feed_id == this.active_feed) {
+                    $('.unread_count_neutral', $content_pane).text(0);
+                    $('.unread_count_positive', $content_pane).text(0);
+                    $('.unread_count_negative', $content_pane).text(0);
+                    $('.story:not(.read)', $story_titles).addClass('read');
+                }
+                $feed.removeClass('unread_neutral');
+                $feed.removeClass('unread_positive');
+                $feed.removeClass('unread_negative');
+                $feed_counts.removeClass('unread_neutral');
+                $feed_counts.removeClass('unread_positive');
+                $feed_counts.removeClass('unread_negative');
+            }
+            
+            if ($folder) {
+                $('.unread_count_neutral', $folder).text(0);
+                $('.unread_count_positive', $folder).text(0);
+                $('.unread_count_negative', $folder).text(0);
+                $feed_counts = $('.feed_counts_floater', $folder);
+                $feed_counts.removeClass('unread_neutral');
+                $feed_counts.removeClass('unread_positive');
+                $feed_counts.removeClass('unread_negative');
+            }
         },
         
         mark_story_as_like: function(story_id, $button) {
@@ -2435,8 +2465,13 @@
         
         manage_menu_delete_folder: function(folder, $folder) {
             var self = this;
+            var in_folder = '';
+            var $parent = $folder.parents('li.folder');
+            if ($parent.length) {
+                in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
+            }
         
-            this.model.delete_folder(folder, function() {
+            this.model.delete_folder(folder, in_folder, function() {
                 self.delete_folder(folder, $folder);
             });
         },
@@ -3294,6 +3329,12 @@
                 e.preventDefault();
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 self.mark_feed_as_read(feed_id);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-mark-read' }, function($t, $p){
+                e.preventDefault();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.mark_folder_as_read(folder_name, $folder);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-site-mark-read' }, function($t, $p){
                 e.preventDefault();

@@ -349,27 +349,31 @@ def mark_story_as_read(request):
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
         now = datetime.datetime.now()
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
-        m.save()
+        try:
+            m.save()
+        except OperationError:
+            logging.info(' ---> [%s] *** Marked story as read: Duplicate Story -> %s' % (request.user, story_id))
     
     return data
     
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
-    feed_id = int(request.REQUEST['feed_id'])
-    feed = Feed.objects.get(id=feed_id)
-    code = 0
+    feed_ids = request.REQUEST.getlist('feed_id')
+    for feed_id in feed_ids:
+        feed = Feed.objects.get(id=feed_id)
+        code = 0
     
-    us = UserSubscription.objects.get(feed=feed, user=request.user)
-    try:
-        us.mark_feed_read()
-    except IntegrityError:
-        code = -1
-    else:
-        code = 1
+        us = UserSubscription.objects.get(feed=feed, user=request.user)
+        try:
+            us.mark_feed_read()
+        except IntegrityError:
+            code = -1
+        else:
+            code = 1
         
-    logging.info(" ---> [%s] Marking feed as read: %s" % (request.user, feed,))
-    MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
+        logging.info(" ---> [%s] Marking feed as read: %s" % (request.user, feed,))
+        MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
     return dict(code=code)
 
 def _parse_user_info(user):
@@ -479,70 +483,23 @@ def _add_object_to_folder(obj, folder, folders):
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', '')
-
-    def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
-        new_folders = []
-        for k, folder in enumerate(old_folders):
-            if isinstance(folder, int):
-                if (folder == feed_id and (
-                    (folder_name != in_folder) or
-                    (folder_name == in_folder and deleted))):
-                    multiples_found = True
-                    logging.info(" ---> [%s] Deleting folder, and a multiple has been found in '%s'" % (request.user, folder_name))
-                if folder == feed_id and folder_name == in_folder and not deleted:
-                    logging.info(" ---> [%s] Delete folder: %s'th item: %s folders/feeds" % (
-                        request.user, k, len(old_folders)
-                    ))
-                    deleted = True
-                else:
-                    new_folders.append(folder)
-            elif isinstance(folder, dict):
-                for f_k, f_v in folder.items():
-                    nf, multiples_found, deleted = _find_feed_in_folders(f_v, f_k, multiples_found, deleted)
-                    new_folders.append({f_k: nf})
     
-        return new_folders, multiples_found, deleted
-        
-    user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
-    user_sub_folders = json.decode(user_sub_folders_object.folders)
-    user_sub_folders, multiples_found, deleted = _find_feed_in_folders(user_sub_folders)
-    user_sub_folders_object.folders = json.encode(user_sub_folders)
-    user_sub_folders_object.save()
-
-    if not multiples_found and deleted:
-        user_sub = get_object_or_404(UserSubscription, user=request.user, feed=feed_id)
-        user_sub.delete()
-        MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
-
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders.delete_feed(feed_id, in_folder)
+    
     return dict(code=1)
     
 @ajax_login_required
 @json.json_view
 def delete_folder(request):
-    def _find_feed_in_folders(old_folders):
-        new_folders = []
-        
-        for k, folder in enumerate(old_folders):
-            if isinstance(folder, int):
-                if folder == feed_id:
-                    logging.info(" ---> [%s] Delete folder: %s'th item: %s folders/feeds" % (
-                        request.user, k, len(old_folders)
-                    ))
-                    # folders.remove(folder)
-                else:
-                    new_folders.append(folder)
-            elif isinstance(folder, dict):
-                for f_k, f_v in folder.items():
-                    new_folders.append({f_k: _find_feed_in_folders(f_v)})
+    folder_to_delete = request.POST['folder_name']
+    in_folder = request.POST.get('in_folder', '')
 
-        return new_folders
-        
-    user_sub_folders_object = UserSubscriptionFolders.objects.get(user=request.user)
-    user_sub_folders = json.decode(user_sub_folders_object.folders)
-    user_sub_folders = _find_feed_in_folders(user_sub_folders)
-    user_sub_folders_object.folders = json.encode(user_sub_folders)
-    user_sub_folders_object.save()
-    
+    # Works piss poor with duplicate folder titles, if they are both in the same folder.
+    # Deletes all, but only in the same folder parnet. But nobody should be doing this, right?
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders.delete_folder(folder_to_delete, in_folder)
+
     return dict(code=1)
     
 @login_required

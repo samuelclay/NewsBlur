@@ -1,6 +1,7 @@
 import datetime
 import mongoengine as mongo
 from utils import log as logging
+from utils import json
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -195,7 +196,68 @@ class UserSubscriptionFolders(models.Model):
     class Meta:
         verbose_name_plural = "folders"
         verbose_name = "folder"
+        
+    def delete_feed(self, feed_id, in_folder):
+        def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
+            new_folders = []
+            for k, folder in enumerate(old_folders):
+                if isinstance(folder, int):
+                    if (folder == feed_id and (
+                        (folder_name != in_folder) or
+                        (folder_name == in_folder and deleted))):
+                        multiples_found = True
+                        logging.info(" ---> [%s] Deleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
+                    if folder == feed_id and folder_name == in_folder and not deleted:
+                        logging.info(" ---> [%s] Delete feed: %s'th item: %s folders/feeds" % (
+                            self.user, k, len(old_folders)
+                        ))
+                        deleted = True
+                    else:
+                        new_folders.append(folder)
+                elif isinstance(folder, dict):
+                    for f_k, f_v in folder.items():
+                        nf, multiples_found, deleted = _find_feed_in_folders(f_v, f_k, multiples_found, deleted)
+                        new_folders.append({f_k: nf})
+    
+            return new_folders, multiples_found, deleted
+        
+        user_sub_folders = json.decode(self.folders)
+        user_sub_folders, multiples_found, deleted = _find_feed_in_folders(user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
 
+        if not multiples_found and deleted:
+            user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
+            user_sub.delete()
+            MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
+
+    def delete_folder(self, folder_to_delete, in_folder):
+        def _find_folder_in_folders(old_folders, folder_name=''):
+            new_folders = []
+            for k, folder in enumerate(old_folders):
+                if isinstance(folder, int):
+                    if (folder == folder_to_delete and (
+                        (folder_name != in_folder) or
+                        (folder_name == in_folder and deleted))):
+                        multiples_found = True
+                        logging.info(" ---> [%s] Deleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
+                    if folder == folder_to_delete and folder_name == in_folder and not deleted:
+                        logging.info(" ---> [%s] Delete feed: %s'th item: %s folders/feeds" % (
+                            self.user, k, len(old_folders)
+                        ))
+                    else:
+                        new_folders.append(folder)
+                elif isinstance(folder, dict):
+                    for f_k, f_v in folder.items():
+                        nf = _find_folder_in_folders(f_v, f_k, multiples_found, deleted)
+                        new_folders.append({f_k: nf})
+    
+            return new_folders
+            
+        user_sub_folders = json.decode(self.folders)
+        user_sub_folders, multiples_found, deleted = _find_folder_in_folders(user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
 
 class Feature(models.Model):
     """
