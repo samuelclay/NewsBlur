@@ -19,8 +19,8 @@ class UserSubscription(models.Model):
     Also has a dirty flag (needs_unread_recalc) which means that the unread counts
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
+    user = models.ForeignKey(User, related_name='subscriptions')
+    feed = models.ForeignKey(Feed, related_name='subscribers')
     last_read_date = models.DateTimeField(default=datetime.datetime.now()
                                                   - datetime.timedelta(days=DAYS_OF_UNREAD))
     mark_read_date = models.DateTimeField(default=datetime.datetime.now()
