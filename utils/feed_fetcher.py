@@ -16,7 +16,7 @@ import multiprocessing
 import urllib2
 import xml.sax
 import socket
-import pymongo
+import mongoengine
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -283,7 +283,7 @@ class Dispatcher:
         delta = None
         
         MONGO_DB = settings.MONGO_DB
-        db = pymongo.Connection(host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])[MONGO_DB['NAME']]
+        db = mongoengine.connection.connect(db=MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])
         
         current_process = multiprocessing.current_process()
         

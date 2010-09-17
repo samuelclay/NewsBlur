@@ -26,6 +26,7 @@ from utils.diff import HTMLDiff
 from utils import log as logging
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
+SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=21)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
@@ -33,7 +34,8 @@ class Feed(models.Model):
     feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
     feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True)
-    num_subscribers = models.IntegerField(default=0)
+    num_subscribers = models.IntegerField(default=-1)
+    active_subscribers = models.IntegerField(default=-1)
     last_update = models.DateTimeField(default=datetime.datetime.now, db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -159,7 +161,8 @@ class Feed(models.Model):
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
-
+        subs = UserSubscription.objects.filter(feed=self, user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE)
+        self.active_subscribers = subs.count()
         self.save(lock=lock)
         
         if verbose:
