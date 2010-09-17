@@ -29,7 +29,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         if (this.feed_id) {
             this.make_modal();
-            this.initialize_feed(this.feed_id);
+            this.initialize_feed();
             this.handle_cancel();
             this.open_modal();
             this.load_feed_classifier();
@@ -41,8 +41,8 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     },
     
     initialize_feed: function(feed_id) {
-        this.feed_id = feed_id;
-        this.feed = this.model.get_feed(feed_id);
+        if (feed_id) this.feed_id = feed_id;
+        this.feed = this.model.get_feed(this.feed_id);
         $('.NB-modal-title', this.$manage).html(this.feed['feed_title']);
         $('input[name=feed_id]', this.$manage).val(this.feed_id);
         $('input[name=rename_title]', this.$manage).val(this.feed['feed_title']);

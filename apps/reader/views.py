@@ -546,12 +546,16 @@ def save_feed_order(request):
 @json.json_view
 def get_feeds_trainer(request):
     classifiers = []
+    feed_id = request.POST['feed_id']
     
-    usersubs = UserSubscription.objects.filter(user=request.user).select_related('feed')\
-                                       .order_by('-feed__stories_last_month')
+    usersubs = UserSubscription.objects.filter(user=request.user)
+    if feed_id:
+        feed = get_object_or_404(Feed, pk=feed_id)
+        usersubs = usersubs.filter(feed=feed)
+    usersubs = usersubs.select_related('feed').order_by('-feed__stories_last_month')
                 
     for us in usersubs:
-        if not us.is_trained and us.feed.stories_last_month > 0:
+        if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
             classifier['classifiers'] = get_classifiers_for_user(request.user, us.feed.pk)
             classifier['feed_id'] = us.feed.pk

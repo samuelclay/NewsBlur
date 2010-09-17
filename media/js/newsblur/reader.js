@@ -1868,10 +1868,13 @@
             }
         },
         
-        open_feed_intelligence_modal: function(score, feed_id) {
+        open_feed_intelligence_modal: function(score, feed_id, feed_loaded) {
             feed_id = feed_id || this.active_feed;
 
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {'score': score});
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {
+                'score': score,
+                'feed_loaded': feed_loaded
+            });
         },
         
         open_trainer_modal: function(score) {
@@ -3286,7 +3289,7 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                    self.open_feed_intelligence_modal(1, feed_id);
+                    self.open_feed_intelligence_modal(1, feed_id, false);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-trainer' }, function($t, $p){

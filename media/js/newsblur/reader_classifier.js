@@ -21,14 +21,17 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
 NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     var defaults = {
         'score': 1,
-        'training': false
+        'training': false,
+        'feed_loaded': true
     };
     
     this.flags = {
         'publisher': true,
         'story': false
     };
+    this.cache = {};
     this.feed_id = feed_id;
+    this.trainer_iterator = 0;
     this.options = $.extend({}, defaults, options);
     this.score = this.options['score'];
     this.model = NEWSBLUR.AssetModel.reader();
@@ -71,12 +74,20 @@ var classifier = {
     },
     
     runner_feed: function() {
-        this.user_classifiers = this.model.classifiers;
         
-        this.find_story_and_feed();
-        this.make_modal_feed();
-        this.make_modal_title();
-        this.make_modal_intelligence_slider();
+        if (this.options.feed_loaded) {
+            this.user_classifiers = this.model.classifiers;
+            this.find_story_and_feed();
+            this.make_modal_feed();
+            this.make_modal_title();
+            this.make_modal_intelligence_slider();
+        } else {
+            this.make_trainer_intro();
+            _.defer(_.bind(function() {
+                this.load_single_feed_trainer();
+            }, this));
+            this.user_classifiers = {};
+        }
         this.handle_select_checkboxes();
         this.handle_cancel();
         this.handle_select_title();
@@ -96,46 +107,61 @@ var classifier = {
         this.open_modal();
     },
     
-    load_next_feed_in_trainer: function(backwards) {
+    load_previous_feed_in_trainer: function() {
         var trainer_data_length = this.trainer_data.length;
-        if (backwards) {
-            this.trainer_iterator = this.trainer_iterator - 1;
-            if (this.trainer_iterator < 1) {
-                this.make_trainer_intro();
-                this.load_feeds_trainer(null, this.trainer_data);
-            }
-        } else {
-            this.trainer_iterator = this.trainer_iterator + 1;
-            if (this.trainer_iterator > trainer_data_length) {
-                this.make_trainer_outro();
-                this.load_feeds_trainer(null, this.trainer_data);
-            }
+        var trainer_data = this.trainer_data[this.trainer_iterator];
+        
+        this.trainer_iterator = this.trainer_iterator - 1;
+        if (this.trainer_iterator < 1) {
+            this.make_trainer_intro();
+            this.load_feeds_trainer(null, this.trainer_data);
         }
 
         // Show only feeds, not the trainer intro if going backwards.
         if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
-            var trainer_data = this.trainer_data[this.trainer_iterator-1];
-            this.feed_id = trainer_data['feed_id'];
-            this.feed = this.model.get_feed(this.feed_id);
-            this.feed_tags = trainer_data['feed_tags'];
-            this.feed_authors = trainer_data['feed_authors'];
-            this.user_classifiers = trainer_data['classifiers'];
+            this.load_feed(trainer_data);
+        }
+    },
+    
+    load_next_feed_in_trainer: function(backwards) {
+        var trainer_data_length = this.trainer_data.length;
+        var trainer_data = this.trainer_data[this.trainer_iterator];
         
-            this.make_modal_feed();
-            this.make_modal_title();
-            this.make_modal_trainer_count();
-        
-            if (backwards || this.feed_id in this.cache) {
-                this.$modal = this.cache[this.feed_id];
-            }
+        this.trainer_iterator = this.trainer_iterator + 1;
+        if (this.trainer_iterator > trainer_data_length) {
+            this.make_trainer_outro();
+            this.load_feeds_trainer(null, this.trainer_data);
+        }
+
+        // Show only feeds, not the trainer intro if going backwards.
+        if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
+            this.load_feed(trainer_data);
+        }
+    },
+    
+    load_feed: function(trainer_data) {
+        this.feed_id = trainer_data['feed_id']; // DELETE THIS!!! Note for train
+        this.feed = this.model.get_feed(this.feed_id);
+        this.feed_tags = trainer_data['feed_tags'];
+        this.feed_authors = trainer_data['feed_authors'];
+        this.user_classifiers = trainer_data['classifiers'];
+        NEWSBLUR.log(['trainer_data', trainer_data, this.feed_id, this.feed, this.model]);
+        this.make_modal_feed();
+        this.make_modal_title();
+        this.make_modal_trainer_count();
+    
+        if (this.feed_id in this.cache) {
+            this.$modal = this.cache[this.feed_id];
         }
         
         $('.NB-modal').replaceWith(this.$modal);
-        $.modal.impl.resize(this.$modal);
+        _.defer(_.bind(function() {
+            $.modal.impl.resize(this.$modal);
+        }, this));
     },
     
     get_feeds_trainer: function() {
-        this.model.get_feeds_trainer($.rescope(this.load_feeds_trainer, this));
+        this.model.get_feeds_trainer(null, $.rescope(this.load_feeds_trainer, this));
     },
     
     load_feeds_trainer: function(e, data) {
@@ -153,12 +179,23 @@ var classifier = {
         if (this.story_id) {
             this.story = this.model.get_story(this.story_id);
         }
+        
         this.feed = this.model.get_feed(this.feed_id);
         this.feed_tags = this.model.get_feed_tags();
         this.feed_authors = this.model.get_feed_authors();
-        
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', this.google_favicon_url + this.feed['feed_link']);
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
+    },
+    
+    load_single_feed_trainer: function() {
+        var self = this;
+        var $loading = $('.NB-modal-loading', this.$modal);
+        $loading.addClass('NB-active');
+    
+        this.model.get_feeds_trainer(this.feed_id, function(data) {
+            self.trainer_data = data;
+            self.load_feed(data);
+        });
     },
     
     make_trainer_intro: function() {
@@ -662,7 +699,7 @@ var classifier = {
 
         $.targetIs(e, { tagSelector: '.NB-modal-submit-back' }, function($t, $p){
             e.preventDefault();
-            self.load_next_feed_in_trainer(true);
+            self.load_previous_feed_in_trainer();
         });
 
         $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){

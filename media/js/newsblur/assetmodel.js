@@ -200,12 +200,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         $.isFunction(callback) && callback(data, first_load);
     },
     
-    get_feeds_trainer: function(callback) {
+    get_feeds_trainer: function(feed_id, callback) {
         var self = this;
         
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/get_feeds_trainer', {}, callback,
-                              null, {'ajax_group': 'feed'});
+            this.make_request('/reader/get_feeds_trainer', {
+                'feed_id': feed_id
+            }, callback, null, {'ajax_group': 'feed'});
         } else {
             if ($.isFunction(callback)) callback();
         }
