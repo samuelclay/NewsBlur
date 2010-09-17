@@ -38,10 +38,11 @@ class Command(BaseCommand):
             i += 1
             feed_queue.append(f.pk)
             
-            if i == 10:
+            if i == 12:
                 print feed_queue
                 RefreshFeed.apply_async(args=(feed_queue,))
                 feed_queue = []
                 i = 0
         if feed_queue:
+            print feed_queue
             RefreshFeed.apply_async(args=(feed_queue,))
