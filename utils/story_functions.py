@@ -32,7 +32,8 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry):
-    entry['published'] = datetime.datetime(*entry.get('published_parsed', entry.get('updated_parsed', datetime.datetime.utcnow()))[:6])
+    publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
+    entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
     
     entry_link = entry.get('link', '')
     protocol_index = entry_link.find("://")

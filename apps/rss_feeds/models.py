@@ -521,11 +521,12 @@ class Feed(models.Model):
                 story_title_difference = levenshtein_distance(story.get('title'),
                                                               existing_story['story_title'])
                 if 'story_content_z' in existing_story:
-                    existing_story_content = zlib.decompress(existing_story['story_content_z'])
+                    existing_story_content = unicode(zlib.decompress(existing_story['story_content_z']))
                 elif 'story_content' in existing_story:
                     existing_story_content = existing_story['story_content']
                 else:
-                    existing_story_content = ''
+                    existing_story_content = u''
+                
                 seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
                 
                 if (seq
