@@ -2,6 +2,7 @@ import socket
 socket.setdefaulttimeout(15)
 import urllib2
 import re
+import zlib
 import urlparse
 import multiprocessing
 import traceback
@@ -82,5 +83,5 @@ class PageImporter(object):
     def save_page(self, html):
         if html and len(html) > 100:
             feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
-            feed_page.page_data = html
+            feed_page.page_data = zlib.compress(html)
             feed_page.save()
