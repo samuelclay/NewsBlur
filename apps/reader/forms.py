@@ -3,6 +3,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.db.models import Q
 from apps.reader.models import Feature
 from utils import log as logging
 
@@ -21,7 +22,7 @@ class LoginForm(forms.Form):
         username = self.cleaned_data.get('username').lower()
         password = self.cleaned_data.get('password', '')
         
-        user = User.objects.filter(username__iexact=username)
+        user = User.objects.filter(Q(username__iexact=username) | Q(email=username))
         if username and user:
             self.user_cache = authenticate(username=user[0].username, password=password)
             if self.user_cache is None:
