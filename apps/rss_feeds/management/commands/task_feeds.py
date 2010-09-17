@@ -22,7 +22,7 @@ class Command(BaseCommand):
             next_scheduled_update__lte=now, 
             active=True
         ).exclude(
-            active_subscribers__not=0
+            active_subscribers=0
         ).order_by('?')
         
         if options['force']:
