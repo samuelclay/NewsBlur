@@ -18,7 +18,12 @@ class Command(BaseCommand):
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.now()
         
-        feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True).order_by('?')
+        feeds = Feed.objects.filter(
+            next_scheduled_update__lte=now, 
+            active=True
+        ).exclude(
+            active_subscribers__not=0
+        ).order_by('?')
         
         if options['force']:
             feeds = Feed.objects.all().order_by('pk')
