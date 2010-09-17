@@ -37,7 +37,7 @@ class UserSubscription(models.Model):
         return '[' + self.feed.feed_title + '] '
         
     def mark_feed_read(self):
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         if MStory.objects(story_feed_id=self.feed.pk).first():
             latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date')[0].story_date\
                                 + datetime.timedelta(minutes=1)
@@ -70,7 +70,7 @@ class UserSubscription(models.Model):
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = datetime.datetime.now()-datetime.timedelta(days=DAYS_OF_UNREAD)
+        date_delta = datetime.datetime.utcnow()-datetime.timedelta(days=DAYS_OF_UNREAD)
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:

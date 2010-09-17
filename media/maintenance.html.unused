@@ -1,5 +1,5 @@
 <h1>NewsBlur is upgrading...</h1>
 
-<p>As of Sunday, August 22nd 8:30pm, NewsBlur is going through wonderful backend changes that will make it much, much faster. (PostgreSQL -> MongoDB, for you nerd types.)</p>
+<p>You may have noticed that many stories were missing. Sometimes feeds would not update. The problem has been identified and corrected. Unfortunately, this means a data migration that will take about a day. Let's hope it will be done by Thursday evening.</p>
 
-<p>This change will take a few hours. Rest easy knowing I won't sleep until it's done.</p>
+<p>This change will be a one-time upgrade. Rest easy knowing I won't sleep until it's done.</p>

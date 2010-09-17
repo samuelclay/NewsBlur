@@ -219,7 +219,7 @@ def load_single_feed(request):
     feed = Feed.objects.get(id=feed_id)
     force_update = request.GET.get('force_update', False)
     
-    now = datetime.datetime.now()
+    now = datetime.datetime.utcnow()
     stories = feed.get_stories(offset, limit) 
         
     if force_update:
@@ -275,7 +275,7 @@ def load_single_feed(request):
     usersub.feed_opens += 1
     usersub.save()
     
-    diff = datetime.datetime.now()-now
+    diff = datetime.datetime.utcnow()-now
     logging.info(" ---> [%s] Loading feed: %s (%s.%s seconds)" % (request.user, feed, 
                                                                   diff.seconds, 
                                                                   diff.microseconds / 1000))
@@ -318,7 +318,7 @@ def mark_all_as_read(request):
         if days == 0:
             sub.mark_feed_read()
         else:
-            read_date = datetime.datetime.now() - datetime.timedelta(days=days)
+            read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
             if sub.mark_read_date < read_date:
                 sub.needs_unread_recalc = True
                 sub.mark_read_date = read_date
@@ -347,7 +347,7 @@ def mark_story_as_read(request):
         
     for story_id in story_ids:
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
         m.save()
     
