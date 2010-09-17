@@ -178,7 +178,7 @@ class ProcessFeed:
                 
         # the feed has changed (or it is the first time we parse it)
         # saving the etag and last_modified fields
-        self.feed.etag = self.fpf.get('etag')
+        self.feed.etag = self.fpf.get('etag')[:255]
         # some times this is None (it never should) *sigh*
         if self.feed.etag is None:
             self.feed.etag = ''

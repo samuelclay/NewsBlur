@@ -44,7 +44,7 @@ class Feed(models.Model):
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
-    etag = models.CharField(max_length=50, blank=True, null=True)
+    etag = models.CharField(max_length=255, blank=True, null=True)
     last_modified = models.DateTimeField(null=True, blank=True)
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
