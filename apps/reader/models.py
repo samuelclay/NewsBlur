@@ -80,7 +80,7 @@ class UserSubscription(models.Model):
                                           feed_id=self.feed.pk,
                                           read_date__gte=self.mark_read_date)
         if not silent:
-            logging.info(' ---> [%s]    Read stories: %s' % (datetime.datetime.now() - now))
+            logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = []
         for us in read_stories:
             if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
@@ -90,7 +90,7 @@ class UserSubscription(models.Model):
         stories_db = MStory.objects(story_feed_id=self.feed.pk,
                                     story_date__gte=date_delta)
         if not silent:
-            logging.info(' ---> [%s]    MStory: %s' % (datetime.datetime.now() - now))
+            logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
         unread_stories_db = []
         for story in stories_db:
             if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
@@ -99,7 +99,7 @@ class UserSubscription(models.Model):
                 unread_stories_db.append(story)
         stories = self.feed.format_stories(unread_stories_db)
         if not silent:
-            logging.info(' ---> [%s]    Format stories: %s' % (datetime.datetime.now() - now))
+            logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
         classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
@@ -107,7 +107,7 @@ class UserSubscription(models.Model):
         classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         
         if not silent:
-            logging.info(' ---> [%s]    Classifiers: %s' % (datetime.datetime.now() - now))
+            logging.info(' ---> [%s]    Classifiers: %s' % (self.user, datetime.datetime.now() - now))
             
         scores = {
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
@@ -133,7 +133,7 @@ class UserSubscription(models.Model):
                 feed_scores['neutral'] += 1
         
         if not silent:
-            logging.info(' ---> [%s]    End classifiers: %s' % (datetime.datetime.now() - now))
+            logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
             
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
