@@ -64,7 +64,7 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = False
             self.save()
             return
-
+        now = datetime.datetime.now()
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)
@@ -79,6 +79,8 @@ class UserSubscription(models.Model):
         read_stories = MUserStory.objects(user_id=self.user.pk,
                                           feed_id=self.feed.pk,
                                           read_date__gte=self.mark_read_date)
+        if not silent:
+            logging.info(' ---> [%s]    Read stories: %s' % (datetime.datetime.now() - now))
         read_stories_ids = []
         for us in read_stories:
             if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
@@ -87,6 +89,8 @@ class UserSubscription(models.Model):
                 read_stories_ids.append(us.story.id) # TODO: Remove me after migration from story.id->guid
         stories_db = MStory.objects(story_feed_id=self.feed.pk,
                                     story_date__gte=date_delta)
+        if not silent:
+            logging.info(' ---> [%s]    MStory: %s' % (datetime.datetime.now() - now))
         unread_stories_db = []
         for story in stories_db:
             if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
@@ -94,12 +98,17 @@ class UserSubscription(models.Model):
             elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
                 unread_stories_db.append(story)
         stories = self.feed.format_stories(unread_stories_db)
+        if not silent:
+            logging.info(' ---> [%s]    Format stories: %s' % (datetime.datetime.now() - now))
         
         classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_titles = MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         
+        if not silent:
+            logging.info(' ---> [%s]    Classifiers: %s' % (datetime.datetime.now() - now))
+            
         scores = {
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
         }
@@ -123,6 +132,9 @@ class UserSubscription(models.Model):
             if max_score == 0 and min_score == 0:
                 feed_scores['neutral'] += 1
         
+        if not silent:
+            logging.info(' ---> [%s]    End classifiers: %s' % (datetime.datetime.now() - now))
+            
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
