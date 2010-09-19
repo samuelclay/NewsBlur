@@ -106,7 +106,7 @@ class UserSubscription(models.Model):
         classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         
         if not silent:
-            logging.info(' ---> [%s]    Classifiers: %s' % (self.user, datetime.datetime.now() - now))
+            logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
             
         scores = {
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
