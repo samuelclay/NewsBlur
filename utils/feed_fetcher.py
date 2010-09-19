@@ -2,7 +2,8 @@ from apps.rss_feeds.models import FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from django.conf import settings
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, MUserStory
+from apps.rss_feeds.models import MStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
 from django.db import IntegrityError
@@ -27,6 +28,8 @@ USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
+
+UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -314,13 +317,19 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
 
-                    if ret_entries.get(ENTRY_NEW) or self.options['force']:
+                    if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
+                        if not feed.fetched_once:
+                            feed.fetched_once = True
+                            feed.save()
+                        MUserStory.delete_old_stories()
                         user_subs = UserSubscription.objects.filter(feed=feed)
                         logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (unicode(feed)[:30], user_subs.count()))
+                        stories_db = MStory.objects(story_feed_id=feed.pk,
+                                                    story_date__gte=UNREAD_CUTOFF)
                         for sub in user_subs:
                             cache.delete('usersub:%s' % sub.user_id)
                             silent = False if self.options['verbose'] >= 2 else True
-                            sub.calculate_feed_scores(silent=silent)
+                            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)

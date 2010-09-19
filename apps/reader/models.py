@@ -2,14 +2,15 @@ import datetime
 import mongoengine as mongo
 from utils import log as logging
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story, MStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 
-DAYS_OF_UNREAD = 14
-MONTH_AGO = datetime.datetime.now() - datetime.timedelta(days=30)
+UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+MONTH_AGO = datetime.datetime.utcnow() - datetime.timedelta(days=30)
 
 class UserSubscription(models.Model):
     """
@@ -21,10 +22,8 @@ class UserSubscription(models.Model):
     """
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
-    last_read_date = models.DateTimeField(default=datetime.datetime.now()
-                                                  - datetime.timedelta(days=DAYS_OF_UNREAD))
-    mark_read_date = models.DateTimeField(default=datetime.datetime.now()
-                                                 - datetime.timedelta(days=DAYS_OF_UNREAD))
+    last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
+    mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
@@ -52,7 +51,7 @@ class UserSubscription(models.Model):
         self.needs_unread_relcalc = False
         self.save()
     
-    def calculate_feed_scores(self, silent=False):
+    def calculate_feed_scores(self, silent=False, stories_db=None):
         if self.user.profile.last_seen_on < MONTH_AGO:
             if not silent:
                 logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 month+)' % (self.user, self.feed))
@@ -70,7 +69,7 @@ class UserSubscription(models.Model):
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = datetime.datetime.utcnow()-datetime.timedelta(days=DAYS_OF_UNREAD)
+        date_delta = UNREAD_CUTOFF
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:
@@ -87,8 +86,8 @@ class UserSubscription(models.Model):
                 read_stories_ids.append(us.story.story_guid)
             elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
                 read_stories_ids.append(us.story.id) # TODO: Remove me after migration from story.id->guid
-        stories_db = MStory.objects(story_feed_id=self.feed.pk,
-                                    story_date__gte=date_delta)
+        stories_db = stories_db or MStory.objects(story_feed_id=self.feed.pk,
+                                                  story_date__gte=date_delta)
         if not silent:
             logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
         unread_stories_db = []
@@ -190,6 +189,10 @@ class MUserStory(mongo.Document):
         'indexes': [('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
+    
+    @classmethod
+    def delete_old_stories(cls):
+        MUserStory.objects(read_date__lte=UNREAD_CUTOFF).delete()
     
         
 class UserSubscriptionFolders(models.Model):
