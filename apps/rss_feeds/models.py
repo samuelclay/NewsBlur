@@ -270,7 +270,7 @@ class Feed(models.Model):
             pass
         
         options = {
-            'verbose': 1,
+            'verbose': 1 if not force else 2,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
