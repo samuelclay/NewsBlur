@@ -92,6 +92,8 @@ class UserSubscription(models.Model):
             logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
         unread_stories_db = []
         for story in stories_db:
+            if story.story_date < date_delta:
+                continue
             if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
                 unread_stories_db.append(story)
             elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
