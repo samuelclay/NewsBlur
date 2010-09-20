@@ -10,6 +10,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 
 DAYS_OF_UNREAD = 14
 MONTH_AGO = datetime.datetime.now() - datetime.timedelta(days=30)
+WEEK_AGO = datetime.datetime.now() - datetime.timedelta(days=7)
 
 class UserSubscription(models.Model):
     """
@@ -49,13 +50,13 @@ class UserSubscription(models.Model):
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
         self.unread_count_updated = max(now, latest_story_date)
-        self.needs_unread_relcalc = False
+        self.needs_unread_recalc = False
         self.save()
     
     def calculate_feed_scores(self, silent=False):
-        if self.user.profile.last_seen_on < MONTH_AGO:
+        if self.user.profile.last_seen_on < WEEK_AGO:
             if not silent:
-                logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 month+)' % (self.user, self.feed))
+                logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return
         
         if not self.feed.fetched_once:
