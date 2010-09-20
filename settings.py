@@ -227,18 +227,20 @@ import djcelery
 djcelery.setup_loader()
 CELERY_ROUTES = {
     "apps.rss_feeds.tasks.NewFeeds": {
-        "queue": "new_feeds"
+        "queue": "new_feeds",
+        "binding_key": "celery"
     },
     "apps.rss_feeds.tasks.UpdateFeeds": {
-        "queue": "update_feeds"
+        "queue": "update_feeds",
+        "binding_key": "celery"
     },
 }
 CELERY_QUEUES = {
     "new_feeds": {
-        "binding_key": "new_feeds"
+        "binding_key": "celery"
     },
     "update_feeds": {
-        "binding_key": "update_feeds"
+        "binding_key": "celery"
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
