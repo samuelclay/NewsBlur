@@ -2,6 +2,7 @@ import datetime
 import mongoengine as mongo
 from utils import log as logging
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from apps.rss_feeds.models import Feed, Story, MStory
@@ -9,8 +10,7 @@ from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifier
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 
 DAYS_OF_UNREAD = 14
-MONTH_AGO = datetime.datetime.now() - datetime.timedelta(days=30)
-WEEK_AGO = datetime.datetime.now() - datetime.timedelta(days=7)
+UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
 class UserSubscription(models.Model):
     """
@@ -22,10 +22,8 @@ class UserSubscription(models.Model):
     """
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
-    last_read_date = models.DateTimeField(default=datetime.datetime.now()
-                                                  - datetime.timedelta(days=DAYS_OF_UNREAD))
-    mark_read_date = models.DateTimeField(default=datetime.datetime.now()
-                                                 - datetime.timedelta(days=DAYS_OF_UNREAD))
+    last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
+    mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
@@ -53,8 +51,8 @@ class UserSubscription(models.Model):
         self.needs_unread_recalc = False
         self.save()
     
-    def calculate_feed_scores(self, silent=False):
-        if self.user.profile.last_seen_on < WEEK_AGO:
+    def calculate_feed_scores(self, silent=False, stories_db=None):
+        if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             if not silent:
                 logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return
@@ -65,13 +63,13 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = False
             self.save()
             return
-
+        now = datetime.datetime.now()
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = datetime.datetime.utcnow()-datetime.timedelta(days=DAYS_OF_UNREAD)
+        date_delta = UNREAD_CUTOFF
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:
@@ -80,27 +78,38 @@ class UserSubscription(models.Model):
         read_stories = MUserStory.objects(user_id=self.user.pk,
                                           feed_id=self.feed.pk,
                                           read_date__gte=self.mark_read_date)
+        if not silent:
+            logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = []
         for us in read_stories:
             if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
                 read_stories_ids.append(us.story.story_guid)
             elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
                 read_stories_ids.append(us.story.id) # TODO: Remove me after migration from story.id->guid
-        stories_db = MStory.objects(story_feed_id=self.feed.pk,
-                                    story_date__gte=date_delta)
+        stories_db = stories_db or MStory.objects(story_feed_id=self.feed.pk,
+                                                  story_date__gte=date_delta)
+        if not silent:
+            logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
         unread_stories_db = []
         for story in stories_db:
+            if story.story_date < date_delta:
+                continue
             if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
                 unread_stories_db.append(story)
             elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
                 unread_stories_db.append(story)
         stories = self.feed.format_stories(unread_stories_db)
+        if not silent:
+            logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
         classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_titles = MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         
+        if not silent:
+            logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
+            
         scores = {
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
         }
@@ -124,6 +133,9 @@ class UserSubscription(models.Model):
             if max_score == 0 and min_score == 0:
                 feed_scores['neutral'] += 1
         
+        if not silent:
+            logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
+            
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
@@ -179,6 +191,10 @@ class MUserStory(mongo.Document):
         'indexes': [('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
+    
+    @classmethod
+    def delete_old_stories(cls):
+        MUserStory.objects(read_date__lte=UNREAD_CUTOFF).delete()
     
         
 class UserSubscriptionFolders(models.Model):
