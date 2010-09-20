@@ -1856,6 +1856,10 @@ a.NB-splash-link:hover {
     -moz-border-radius: 14px;
 }
 
+.NB-classifier .NB-modal-loading {
+  margin: 8px 120px 0 0;
+}
+
 .NB-classifier h2.NB-like {
     color: #007000;
 }

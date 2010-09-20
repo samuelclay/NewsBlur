@@ -84,6 +84,8 @@ var classifier = {
         } else {
             this.find_story_and_feed();
             this.make_modal_feed();
+            this.make_modal_title();
+            this.make_modal_intelligence_slider();
             _.defer(_.bind(function() {
                 this.load_single_feed_trainer();
             }, this));
@@ -154,10 +156,10 @@ var classifier = {
             this.$modal = this.cache[this.feed_id];
         }
         
-        $('.NB-modal').replaceWith(this.$modal);
-        _.defer(_.bind(function() {
+        setTimeout(_.bind(function() {
+          $('.NB-modal').empty().append(this.$modal.children());
           $(window).trigger('resize.simplemodal');
-        }, this));
+        }, this), 100);
     },
     
     get_feeds_trainer: function() {
@@ -301,7 +303,7 @@ var classifier = {
             $.make('div', { className: 'NB-modal-loading' }),
             (!this.options['training'] && this.make_modal_intelligence_slider()),
             (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
-            $.make('h2', { className: 'NB-modal-title' }),
+            $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
