@@ -82,7 +82,8 @@ var classifier = {
             this.make_modal_title();
             this.make_modal_intelligence_slider();
         } else {
-            this.make_trainer_intro();
+            this.find_story_and_feed();
+            this.make_modal_feed();
             _.defer(_.bind(function() {
                 this.load_single_feed_trainer();
             }, this));
@@ -140,12 +141,11 @@ var classifier = {
     },
     
     load_feed: function(trainer_data) {
-        this.feed_id = trainer_data['feed_id']; // DELETE THIS!!! Note for train
         this.feed = this.model.get_feed(this.feed_id);
         this.feed_tags = trainer_data['feed_tags'];
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
-        NEWSBLUR.log(['trainer_data', trainer_data, this.feed_id, this.feed, this.model]);
+        this.options.feed_loaded = true;
         this.make_modal_feed();
         this.make_modal_title();
         this.make_modal_trainer_count();
@@ -156,7 +156,7 @@ var classifier = {
         
         $('.NB-modal').replaceWith(this.$modal);
         _.defer(_.bind(function() {
-            $.modal.impl.resize(this.$modal);
+          $(window).trigger('resize.simplemodal');
         }, this));
     },
     
@@ -181,10 +181,13 @@ var classifier = {
         }
         
         this.feed = this.model.get_feed(this.feed_id);
-        this.feed_tags = this.model.get_feed_tags();
-        this.feed_authors = this.model.get_feed_authors();
-        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', this.google_favicon_url + this.feed['feed_link']);
-        $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
+        
+        if (this.options.feed_loaded) {
+          this.feed_tags = this.model.get_feed_tags();
+          this.feed_authors = this.model.get_feed_authors();
+          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', this.google_favicon_url + this.feed['feed_link']);
+          $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
+        }
     },
     
     load_single_feed_trainer: function() {
@@ -194,7 +197,10 @@ var classifier = {
     
         this.model.get_feeds_trainer(this.feed_id, function(data) {
             self.trainer_data = data;
-            self.load_feed(data);
+            if (data && data.length) {
+              // Should only be one feed
+              self.load_feed(data[0]);
+            }
         });
     },
     
@@ -300,45 +306,47 @@ var classifier = {
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
-            $.make('form', { method: 'post', className: 'NB-publisher' }, [
-                (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                    $.make('h5', 'Authors'),
-                    $.make('div', { className: 'NB-classifier-authors NB-fieldset-fields NB-classifiers' },
-                        this.make_authors(this.feed_authors, opinion)
-                    )
-                ])),
-                (this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                    $.make('h5', 'Categories &amp; Tags'),
-                    $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
-                        this.make_tags(this.feed_tags, opinion)
-                    )
-                ])),
-                $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                    $.make('h5', 'Everything by This Publisher'),
-                    $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                        this.make_publisher(feed, opinion)
-                    )
-                ]),
-                (this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
-                    $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
-                    $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
-                    $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-close' }, 'Close')
-                ])),
-                (!this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
-                    $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
-                    $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
-                ]))
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_publisher();
-                return false;
-            })
+            (this.options['feed_loaded'] &&
+              $.make('form', { method: 'post', className: 'NB-publisher' }, [
+                  (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                      $.make('h5', 'Authors'),
+                      $.make('div', { className: 'NB-classifier-authors NB-fieldset-fields NB-classifiers' },
+                          this.make_authors(this.feed_authors, opinion)
+                      )
+                  ])),
+                  (this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                      $.make('h5', 'Categories &amp; Tags'),
+                      $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
+                          this.make_tags(this.feed_tags, opinion)
+                      )
+                  ])),
+                  $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                      $.make('h5', 'Everything by This Publisher'),
+                      $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                          this.make_publisher(feed, opinion)
+                      )
+                  ]),
+                  (this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
+                      $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
+                      $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
+                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
+                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
+                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-close' }, 'Close')
+                  ])),
+                  (!this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
+                      $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
+                      $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
+                      $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
+                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
+                      ' or ',
+                      $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                  ]))
+              ]).bind('submit', function(e) {
+                  e.preventDefault();
+                  self.save_publisher();
+                  return false;
+              })
+            )
         ]);
     },
         

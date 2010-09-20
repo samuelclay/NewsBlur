@@ -158,7 +158,7 @@ except:
 # older 2.x series.  If it doesn't, and you can figure out why, I'll accept a
 # patch and modify the compatibility statement accordingly.
 try:
-    import BeautifulSoup
+    raise Exception # import BeautifulSoup
 except:
     BeautifulSoup = None
 
