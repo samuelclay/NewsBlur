@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from apps.rss_feeds.models import Feed
 from optparse import make_option
-from apps.rss_feeds.tasks import RefreshFeed
+from apps.rss_feeds.tasks import UpdateFeeds
 import datetime
 
 
@@ -18,7 +18,12 @@ class Command(BaseCommand):
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.now()
         
-        feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True).order_by('?')
+        feeds = Feed.objects.filter(
+            next_scheduled_update__lte=now, 
+            active=True
+        ).exclude(
+            active_subscribers=0
+        ).order_by('?')
         
         if options['force']:
             feeds = Feed.objects.all().order_by('pk')
@@ -33,10 +38,11 @@ class Command(BaseCommand):
             i += 1
             feed_queue.append(f.pk)
             
-            if i == 10:
+            if i == 12:
                 print feed_queue
-                RefreshFeed.apply_async(args=(feed_queue,))
+                UpdateFeeds.apply_async(args=(feed_queue,))
                 feed_queue = []
                 i = 0
         if feed_queue:
-            RefreshFeed.apply_async(args=(feed_queue,))
+            print feed_queue
+            UpdateFeeds.apply_async(args=(feed_queue,))

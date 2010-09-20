@@ -1,6 +1,5 @@
 from django.utils.dateformat import DateFormat
 import datetime
-from utils.dateutil.parser import parse as dateutil_parse
 from django.utils.http import urlquote
 
 def format_story_link_date__short(date):
@@ -33,23 +32,8 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry):
-    date_published = entry.get('published', entry.get('updated'))
-    if not date_published:
-        date_published = str(datetime.datetime.now())
-        entry['published_now'] = True
-    if not isinstance(date_published, datetime.datetime):
-        date_published = dateutil_parse(date_published)
-    # Change the date to UTC and remove timezone info since 
-    # MySQL doesn't support it.
-    timezone_diff = datetime.datetime.utcnow() - datetime.datetime.now()
-    date_published_offset = date_published.utcoffset()
-    if date_published_offset:
-        date_published = (date_published - date_published_offset
-                          - timezone_diff).replace(tzinfo=None)
-    else:
-        date_published = date_published.replace(tzinfo=None)
-
-    entry['published'] = date_published
+    publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
+    entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
     
     entry_link = entry.get('link', '')
     protocol_index = entry_link.find("://")

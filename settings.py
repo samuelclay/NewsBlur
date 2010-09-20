@@ -31,7 +31,7 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = 'GMT'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 USE_I18N = False
@@ -174,6 +174,7 @@ APPEND_SLASH = True
 SOUTH_TESTS_MIGRATE = False 
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 TEST_RUNNER = "utils.testrunner.TestRunner"
+DAYS_OF_UNREAD = 14
 
 # ===========
 # = Logging =
@@ -222,9 +223,40 @@ DEVSERVER_MODULES = (
 # = Celery =
 # ==========
 
-from celeryconfig import *
 import djcelery
 djcelery.setup_loader()
+CELERY_ROUTES = {
+    "apps.rss_feeds.tasks.NewFeeds": {
+        "queue": "new_feeds",
+        "binding_key": "celery"
+    },
+    "apps.rss_feeds.tasks.UpdateFeeds": {
+        "queue": "update_feeds",
+        "binding_key": "celery"
+    },
+}
+CELERY_QUEUES = {
+    "new_feeds": {
+        "binding_key": "celery"
+    },
+    "update_feeds": {
+        "binding_key": "celery"
+    },
+}
+CELERY_DEFAULT_QUEUE = "update_feeds"
+BROKER_HOST = "db01.newsblur.com"
+BROKER_PORT = 5672
+BROKER_USER = "newsblur"
+BROKER_PASSWORD = "newsblur"
+BROKER_VHOST = "newsblurvhost"
+
+CELERY_RESULT_BACKEND = "amqp"
+
+CELERY_IMPORTS = ("apps.rss_feeds.tasks", )
+CELERYD_CONCURRENCY = 4
+CELERY_IGNORE_RESULT = True
+CELERYD_MAX_TASKS_PER_CHILD = 100
+CELERY_DISABLE_RATE_LIMITS = True
 
 # ==================
 # = Configurations =

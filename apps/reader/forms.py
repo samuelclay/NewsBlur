@@ -3,6 +3,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.db.models import Q
 from apps.reader.models import Feature
 from utils import log as logging
 
@@ -18,17 +19,18 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        username = self.cleaned_data.get('username')
+        username = self.cleaned_data.get('username').lower()
         password = self.cleaned_data.get('password', '')
-
-        if username:
-            self.user_cache = authenticate(username=username, password=password)
+        
+        user = User.objects.filter(Q(username__iexact=username) | Q(email=username))
+        if username and user:
+            self.user_cache = authenticate(username=user[0].username, password=password)
             if self.user_cache is None:
                 email_username = User.objects.filter(email=username)
                 if email_username:
                     self.user_cache = authenticate(username=email_username[0].username, password=password)
                 if self.user_cache is None:
-                    logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
+                    # logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
                     jkless_password = password.replace('j', '').replace('k', '')
                     self.user_cache = authenticate(username=username, password=jkless_password)
                     if self.user_cache is None:
@@ -42,7 +44,9 @@ class LoginForm(forms.Form):
                         self.user_cache.save()
                 elif not self.user_cache.is_active:
                     raise forms.ValidationError(_("This account is inactive."))
-
+        elif username and not user:
+            raise forms.ValidationError(_("That username is not registered. Create an account with it instead."))
+            
         return self.cleaned_data
 
     def get_user_id(self):
@@ -70,12 +74,13 @@ class SignupForm(forms.Form):
                                       # error_messages={'required': 'Please enter a password.'})
     
     def clean_signup_username(self):
+        username = self.cleaned_data['signup_username']
         try:
-            User.objects.get(username__iexact=self.cleaned_data['signup_username'])
+            User.objects.get(username__iexact=username)
         except User.DoesNotExist:
-            return self.cleaned_data['signup_username']
+            return username
         raise forms.ValidationError(_(u'Someone is already using that username.'))
-        return self.cleaned_data['signup_username']
+        return username
 
     def clean_signup_password(self):
         if not self.cleaned_data['signup_password']:

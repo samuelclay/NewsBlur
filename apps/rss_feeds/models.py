@@ -26,6 +26,7 @@ from utils.diff import HTMLDiff
 from utils import log as logging
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
+SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=21)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
@@ -33,7 +34,8 @@ class Feed(models.Model):
     feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
     feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True)
-    num_subscribers = models.IntegerField(default=0)
+    num_subscribers = models.IntegerField(default=-1)
+    active_subscribers = models.IntegerField(default=-1)
     last_update = models.DateTimeField(default=datetime.datetime.now, db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -42,7 +44,7 @@ class Feed(models.Model):
     min_to_decay = models.IntegerField(default=15)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
-    etag = models.CharField(max_length=50, blank=True, null=True)
+    etag = models.CharField(max_length=255, blank=True, null=True)
     last_modified = models.DateTimeField(null=True, blank=True)
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
@@ -159,7 +161,8 @@ class Feed(models.Model):
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
-
+        subs = UserSubscription.objects.filter(feed=self, user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE)
+        self.active_subscribers = subs.count()
         self.save(lock=lock)
         
         if verbose:
@@ -267,7 +270,7 @@ class Feed(models.Model):
             pass
         
         options = {
-            'verbose': 1,
+            'verbose': 1 if not force else 2,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
@@ -518,11 +521,12 @@ class Feed(models.Model):
                 story_title_difference = levenshtein_distance(story.get('title'),
                                                               existing_story['story_title'])
                 if 'story_content_z' in existing_story:
-                    existing_story_content = zlib.decompress(existing_story['story_content_z'])
+                    existing_story_content = unicode(zlib.decompress(existing_story['story_content_z']))
                 elif 'story_content' in existing_story:
                     existing_story_content = existing_story['story_content']
                 else:
-                    existing_story_content = ''
+                    existing_story_content = u''
+                
                 seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
                 
                 if (seq
