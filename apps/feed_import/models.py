@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.tasks import NewFeeds
 import datetime
 import lxml.etree
 from utils import json, urlnorm
@@ -26,6 +27,13 @@ class Importer:
         UserSubscriptionFolders.objects.filter(user=self.user).delete()
         UserSubscription.objects.filter(user=self.user).delete()
         
+    def queue_new_feeds(self):
+        new_feeds = UserSubscription.objects.filter(user=self.user, feed__fetched_once=False).values('feed_id')
+        new_feeds = list(set([f['feed_id'] for f in new_feeds]))
+        logging.info(" ---> [%s] Queueing NewFeeds: (%s) %s" % (self.user, len(new_feeds), new_feeds))
+        size = 4
+        for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
+            NewFeeds.apply_async(args=[t], queue="new_feeds")
     
 class OPMLImporter(Importer):
     
@@ -38,7 +46,7 @@ class OPMLImporter(Importer):
         self.clear_feeds()
         folders = self.process_outline(outline)
         UserSubscriptionFolders.objects.create(user=self.user, folders=json.encode(folders))
-
+        self.queue_new_feeds()
         return folders
         
     def process_outline(self, outline):
@@ -106,6 +114,7 @@ class GoogleReaderImporter(Importer):
         logging.info(" ---> [%s] Google Reader import: %s" % (self.user, self.subscription_folders))
         UserSubscriptionFolders.objects.create(user=self.user,
                                                folders=json.encode(self.subscription_folders))
+        self.queue_new_feeds()
 
     def parse(self):
         self.feeds = lxml.etree.fromstring(self.feeds_xml).xpath('/object/list/object')

@@ -223,9 +223,38 @@ DEVSERVER_MODULES = (
 # = Celery =
 # ==========
 
-from celeryconfig import *
 import djcelery
 djcelery.setup_loader()
+CELERY_ROUTES = {
+    "apps.rss_feeds.tasks.NewFeeds": {
+        "queue": "new_feeds"
+    },
+    "apps.rss_feeds.tasks.UpdateFeeds": {
+        "queue": "update_feeds"
+    },
+}
+CELERY_QUEUES = {
+    "new_feeds": {
+        "binding_key": "new_feeds"
+    },
+    "update_feeds": {
+        "binding_key": "update_feeds"
+    },
+}
+CELERY_DEFAULT_QUEUE = "update_feeds"
+BROKER_HOST = "db01.newsblur.com"
+BROKER_PORT = 5672
+BROKER_USER = "newsblur"
+BROKER_PASSWORD = "newsblur"
+BROKER_VHOST = "newsblurvhost"
+
+CELERY_RESULT_BACKEND = "amqp"
+
+CELERY_IMPORTS = ("apps.rss_feeds.tasks", )
+CELERYD_CONCURRENCY = 4
+CELERY_IGNORE_RESULT = True
+CELERYD_MAX_TASKS_PER_CHILD = 100
+CELERY_DISABLE_RATE_LIMITS = True
 
 # ==================
 # = Configurations =

@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from apps.rss_feeds.models import Feed
 from optparse import make_option
-from apps.rss_feeds.tasks import RefreshFeed
+from apps.rss_feeds.tasks import UpdateFeeds
 import datetime
 
 
@@ -40,9 +40,9 @@ class Command(BaseCommand):
             
             if i == 12:
                 print feed_queue
-                RefreshFeed.apply_async(args=(feed_queue,))
+                UpdateFeeds.apply_async(args=(feed_queue,))
                 feed_queue = []
                 i = 0
         if feed_queue:
             print feed_queue
-            RefreshFeed.apply_async(args=(feed_queue,))
+            UpdateFeeds.apply_async(args=(feed_queue,))

@@ -1,8 +1,8 @@
 from celery.task import Task
 from apps.rss_feeds.models import Feed
 
-class RefreshFeed(Task):
-    name = 'refresh-feed'
+class UpdateFeeds(Task):
+    name = 'update-feeds'
     max_retries = 0
     ignore_result = True
 
@@ -14,3 +14,5 @@ class RefreshFeed(Task):
             feed = Feed.objects.get(pk=feed_pk)
             feed.update()
 
+class NewFeeds(UpdateFeeds):
+    name = 'new-feeds'
