@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from apps.reader.models import UserSubscription
+from django.conf import settings
 from optparse import make_option
 import os
 import errno
@@ -14,6 +15,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        settings.LOG_TO_STREAM = True
         if options['daemonize']:
             daemonize()
         

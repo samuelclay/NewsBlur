@@ -361,6 +361,17 @@
             return $story;
         },
         
+        get_feed_ids_in_folder: function($folder) {
+            $folder = $folder || this.$s.$feed_list;
+            
+            var $feeds = $('.feed', $folder);
+            var feeds = _.map($('.feed', $folder), function(o) {
+                return $(o).data('feed_id');
+            });
+            
+            return feeds;
+        },
+        
         // ==============
         // = Navigation =
         // ==============
@@ -1106,24 +1117,21 @@
         
         delete_folder: function(folder_name, $folder) {
             var self = this;
-            
+            var feeds = this.get_feed_ids_in_folder($folder);
+
             if ($folder.length) {
                 $folder.slideUp(500);
             }
             
             // If the active feed is under this folder, deselect it.
-            // var feed_active = false;
-            // $feeds.each(function() {
-            //     if (self.active_feed == $(this).data('feed_id')) {
-            //         feed_active = true;
-            //         return false;
-            //     }
-            // });
-            // 
-            // if (feed_active) {
-            //     this.reset_feed();
-            //     this.show_splash_page();
-            // }
+            var feed_active = false;
+            feeds.each(_.bind(function(feed_id) {
+                if (self.active_feed == feed_id) {
+                    this.reset_feed();
+                    this.show_splash_page();
+                    return false;
+                }
+            }, this));
         },
         
         // ==========================
@@ -1445,11 +1453,7 @@
         
         mark_folder_as_read: function(folder_name, $folder) {
             var self = this;
-            var $feeds = $('.feed', $folder);
-            var $feed_counts = $('.feed_counts_floater', $folder);
-            var feeds = _.map($('.feed', $folder), function(o) {
-                return $(o).data('feed_id');
-            });
+            var feeds = this.get_feed_ids_in_folder($folder);
             
             _.each(feeds, _.bind(function(feed_id) {
                 this.mark_feed_as_read_update_counts(feed_id);

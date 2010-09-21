@@ -566,24 +566,25 @@ class Feed(models.Model):
         # 1 update per day = 6 hours
         # > 1 update per day:
         #   2 updates = 3 hours
-        #   4 updates = 1 hour
-        #   10 updates = 20 minutes
-        updates_per_day_delay = 6 * 60 / max(.25, updates_per_day ** 1.55)
+        #   4 updates = 2 hours
+        #   10 updates = 50 minutes
+        updates_per_day_delay = 6 * 60 / max(.25, updates_per_day ** .85)
         
         # Lots of subscribers = lots of updates
         # 144 hours for 0 subscribers.
         # 24 hours for 1 subscriber.
-        # 3 hours for 2 subscribers.
-        # ~53 min for 3 subscribers.
-        subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**3)
+        # 6 hours for 2 subscribers.
+        # 2.5 hours for 3 subscribers.
+        # 15 min for 10 subscribers.
+        subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**2)
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
             if 30 <= self.last_load_time < 60:
                 slow_punishment = self.last_load_time
-            elif 60 <= self.last_load_time < 100:
+            elif 60 <= self.last_load_time < 200:
                 slow_punishment = 4 * self.last_load_time
-            elif self.last_load_time >= 100:
+            elif self.last_load_time >= 200:
                 slow_punishment = 12 * self.last_load_time
         
         total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
