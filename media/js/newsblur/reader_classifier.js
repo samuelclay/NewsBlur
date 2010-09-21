@@ -135,6 +135,8 @@ var classifier = {
         var trainer_data_length = this.trainer_data.length;
         var trainer_data = this.trainer_data[this.trainer_iterator];
         
+        this.feed_id = trainer_data['feed_id'];
+        
         this.trainer_iterator = this.trainer_iterator + 1;
         if (this.trainer_iterator > trainer_data_length) {
             this.make_trainer_outro();

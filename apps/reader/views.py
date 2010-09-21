@@ -546,7 +546,7 @@ def save_feed_order(request):
 @json.json_view
 def get_feeds_trainer(request):
     classifiers = []
-    feed_id = request.POST['feed_id']
+    feed_id = request.POST.get('feed_id')
     
     usersubs = UserSubscription.objects.filter(user=request.user)
     if feed_id:
