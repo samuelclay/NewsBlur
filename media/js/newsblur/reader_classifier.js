@@ -6,7 +6,9 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
     
     this.flags = {
         'publisher': true,
-        'story': false
+        'story': false,
+        'modal_loading': false,
+        'modal_loaded': false
     };
     this.cache = {};
     this.trainer_iterator = 0;
@@ -27,7 +29,9 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     
     this.flags = {
         'publisher': true,
-        'story': false
+        'story': false,
+        'modal_loading': false,
+        'modal_loaded': false
     };
     this.cache = {};
     this.feed_id = feed_id;
@@ -47,7 +51,9 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     
     this.flags = {
         'publisher': false,
-        'story': true
+        'story': true,
+        'modal_loading': false,
+        'modal_loaded': false
     };
     this.story_id = story_id;
     this.feed_id = feed_id;
@@ -77,24 +83,23 @@ var classifier = {
         
         if (this.options.feed_loaded) {
             this.user_classifiers = this.model.classifiers;
-            this.find_story_and_feed();
-            this.make_modal_feed();
-            this.make_modal_title();
-            this.make_modal_intelligence_slider();
         } else {
-            this.find_story_and_feed();
-            this.make_modal_feed();
-            this.make_modal_title();
-            this.make_modal_intelligence_slider();
-            _.defer(_.bind(function() {
-                this.load_single_feed_trainer();
-            }, this));
             this.user_classifiers = {};
         }
+        this.find_story_and_feed();
+        this.make_modal_feed();
+        this.make_modal_title();
+        this.make_modal_intelligence_slider();
         this.handle_select_checkboxes();
         this.handle_cancel();
         this.handle_select_title();
         this.open_modal();
+
+        if (!this.options.feed_loaded) {
+            _.defer(_.bind(function() {
+                this.load_single_feed_trainer();
+            }, this));
+        }
     },
     
     runner_story: function() {
@@ -156,10 +161,16 @@ var classifier = {
             this.$modal = this.cache[this.feed_id];
         }
         
-        setTimeout(_.bind(function() {
-          $('.NB-modal').empty().append(this.$modal.children());
-          $(window).trigger('resize.simplemodal');
-        }, this), 100);
+        this.flags.modal_loading = setInterval(_.bind(function() {
+            if (this.flags.modal_loaded) {
+                clearInterval(this.flags.modal_loading);
+                $('.NB-modal').empty().append(this.$modal.children());
+                this.$modal = $('.NB-modal'); // This is bonkers. I shouldn't have to reattach like this
+                $(window).trigger('resize.simplemodal');
+                this.handle_select_checkboxes();
+                this.handle_cancel();
+            }
+        }, this), 125);
     },
     
     get_feeds_trainer: function() {
@@ -612,6 +623,9 @@ var classifier = {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
                     dialog.data.fadeIn(200);
+                    setTimeout(function() {
+                        self.flags.modal_loaded = true;
+                    }, 200);
                 });
             },
             'onShow': function(dialog) {
