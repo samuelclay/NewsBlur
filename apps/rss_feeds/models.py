@@ -178,7 +178,7 @@ class Feed(models.Model):
 
     def count_stories(self, verbose=False, lock=None):
         self.save_feed_stories_last_month(verbose, lock)
-        # self.save_feed_story_history_statistics(lock)
+        self.save_feed_story_history_statistics(lock)
         
     def save_feed_stories_last_month(self, verbose=False, lock=None):
         month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
