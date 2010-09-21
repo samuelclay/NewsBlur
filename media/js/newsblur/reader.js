@@ -2287,11 +2287,11 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
                     ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
-                    ]),
+                    // $.make('li', { className: 'NB-menu-separator' }),
+                    // $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
+                    //     $.make('div', { className: 'NB-menu-manage-image' }),
+                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
+                    // ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete-confirm NB-menu-manage-folder-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')

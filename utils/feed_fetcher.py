@@ -226,16 +226,9 @@ class ProcessFeed:
             story_guids.append(story.get('guid') or story.get('link'))
         existing_stories = self.db.stories.find({
             'story_feed_id': self.feed.pk, 
-            '$or': [
-                {
-                    'story_date': {'$gte': start_date},
-                    'story_date': {'$lte': end_date}
-                },
-                {
-                    'story_guid': {'$in': story_guids}
-                }
-            ]
-        })
+            'story_date': {'$gte': start_date},
+            'story_guid': {'$in': story_guids}
+        }).limit(len(story_guids))
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
         #     | (Q(story_guid__in=story_guids)),
