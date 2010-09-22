@@ -2623,7 +2623,7 @@ background: transparent;
 
 .NB-menu-manage li {
     margin: 0 0 0 0;
-    padding: 5px 8px 5px 36px;
+    padding: 0;
     cursor: pointer;
     clear: both;
     position: relative;
@@ -2684,6 +2684,10 @@ background: transparent;
 
 .NB-menu-manage li:hover:not(.NB-disabled) .NB-menu-manage-title {
     text-shadow: 0 1px 0 #000;
+}
+
+.NB-menu-manage li.NB-menu-manage-site-info:hover .NB-menu-manage-title {
+  text-shadow: none;
 }
 
 .NB-menu-manage .NB-disabled {
@@ -2780,8 +2784,17 @@ background: transparent;
     display: none;
 }
 
-.NB-menu-manage .NB-menu-manage-feed .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-image {
 /*    margin-left: 18px;    */
+  padding: 5px 0 5px 36px;
+}
+.NB-menu-manage .NB-menu-manage-title {
+  padding: 5px 0 5px 0;
+  margin-left: 36px;
+}
+.NB-menu-manage .NB-menu-manage-subtitle {
+  margin: -5px 0 0 36px;
+  padding: 0 0 5px 0;
 }
 
 .NB-menu-manage .NB-menu-manage-feed {

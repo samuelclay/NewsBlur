@@ -494,11 +494,13 @@ def delete_feed(request):
 def delete_folder(request):
     folder_to_delete = request.POST['folder_name']
     in_folder = request.POST.get('in_folder', '')
-
+    feed_ids_in_folder = request.REQUEST.getlist('feed_id')
+    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder]
+    
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
-    # Deletes all, but only in the same folder parnet. But nobody should be doing this, right?
+    # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
-    user_sub_folders.delete_folder(folder_to_delete, in_folder)
+    user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
 
     return dict(code=1)
     

@@ -1125,7 +1125,7 @@
             
             // If the active feed is under this folder, deselect it.
             var feed_active = false;
-            feeds.each(_.bind(function(feed_id) {
+            _.each(feeds, _.bind(function(feed_id) {
                 if (self.active_feed == feed_id) {
                     this.reset_feed();
                     this.show_splash_page();
@@ -2219,7 +2219,7 @@
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                     $.make('li', { className: 'NB-menu-manage-site-info' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('span', { className: 'feed_title' }, "Manage NewsBlur")
+                        $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
                     ]).corner('tl tr 8px'),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
@@ -2287,11 +2287,11 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
                     ]),
-                    // $.make('li', { className: 'NB-menu-separator' }),
-                    // $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
-                    // ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete-confirm NB-menu-manage-folder-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
@@ -2474,11 +2474,12 @@
             var self = this;
             var in_folder = '';
             var $parent = $folder.parents('li.folder');
+            var feeds = this.get_feed_ids_in_folder($folder);
             if ($parent.length) {
                 in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
             }
         
-            this.model.delete_folder(folder, in_folder, function() {
+            this.model.delete_folder(folder, in_folder, feeds, function() {
                 self.delete_folder(folder, $folder);
             });
         },

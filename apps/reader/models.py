@@ -248,33 +248,30 @@ class UserSubscriptionFolders(models.Model):
             user_sub.delete()
             MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
 
-    def delete_folder(self, folder_to_delete, in_folder):
-        def _find_folder_in_folders(old_folders, folder_name=''):
+    def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder):
+        def _find_folder_in_folders(old_folders, folder_name, feeds_to_delete):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
-                    if (folder == folder_to_delete and (
-                        (folder_name != in_folder) or
-                        (folder_name == in_folder and deleted))):
-                        multiples_found = True
-                        logging.info(" ---> [%s] Deleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
-                    if folder == folder_to_delete and folder_name == in_folder and not deleted:
-                        logging.info(" ---> [%s] Delete feed: %s'th item: %s folders/feeds" % (
-                            self.user, k, len(old_folders)
-                        ))
-                    else:
-                        new_folders.append(folder)
+                    new_folders.append(folder)
+                    if folder in feeds_to_delete:
+                        feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
-                        nf = _find_folder_in_folders(f_v, f_k, multiples_found, deleted)
-                        new_folders.append({f_k: nf})
+                        if f_k == folder_to_delete and folder_name == in_folder:
+                            logging.info(" ---> [%s] Deleting folder '%s' in '%s': %s" % (self.user, f_k, folder_name, folder))
+                        else:
+                            nf, feeds_to_delete = _find_folder_in_folders(f_v, f_k, feeds_to_delete)
+                            new_folders.append({f_k: nf})
     
-            return new_folders
+            return new_folders, feeds_to_delete
             
         user_sub_folders = json.decode(self.folders)
-        user_sub_folders, multiples_found, deleted = _find_folder_in_folders(user_sub_folders)
+        user_sub_folders, feeds_to_delete = _find_folder_in_folders(user_sub_folders, '', feed_ids_in_folder)
         self.folders = json.encode(user_sub_folders)
         self.save()
+        
+        UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
 
 class Feature(models.Model):
     """

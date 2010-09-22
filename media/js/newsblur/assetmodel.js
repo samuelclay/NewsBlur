@@ -379,11 +379,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    delete_folder: function(folder_name, in_folder, callback) {
+    delete_folder: function(folder_name, in_folder, feeds, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_folder', {
                 'folder_name': folder_name,
-                'in_folder': in_folder
+                'in_folder': in_folder,
+                'feed_id': feeds
             }, callback, null);
         } else {
             if ($.isFunction(callback)) callback();
