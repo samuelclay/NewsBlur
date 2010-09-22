@@ -189,13 +189,13 @@ class MUserStory(mongo.Document):
     
     meta = {
         'collection': 'userstories',
-        'indexes': [('user_id', 'feed_id')],
+        'indexes': ['feed_id', ('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
     @classmethod
-    def delete_old_stories(cls):
-        MUserStory.objects(read_date__lte=UNREAD_CUTOFF).delete()
+    def delete_old_stories(cls, feed_id):
+        MUserStory.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF).delete()
     
         
 class UserSubscriptionFolders(models.Model):
