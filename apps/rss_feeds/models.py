@@ -412,15 +412,19 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1], lock=lock)
             
     def trim_feed(self):
-        # from apps.reader.models import MUserStory
+        from apps.reader.models import MUserStory
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > 500:
-            print 'Found %s stories in %s. Trimming...' % (stories.count(), self)
+            # print 'Found %s stories in %s. Trimming...' % (stories.count(), self),
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=stories[500].story_date)
             extra_stories.delete()
-            print "Deleted stories, %s left." % MStory.objects(story_feed_id=self.pk).count()
+            # print "Deleted stories, %s left." % MStory.objects(story_feed_id=self.pk).count()
+            userstories = MUserStory.objects(feed_id=self.pk, read_date__lte=stories[500].story_date)
+            if userstories.count():
+                # print "Found %s user stories. Deleting..." % userstories.count()
+                userstories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])

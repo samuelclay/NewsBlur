@@ -241,6 +241,7 @@ class ProcessFeed:
                       u' '.join(u'%s=%d' % (self.entry_trans[key],
                               ret_values[key]) for key in self.entry_keys),))
         self.feed.update_all_statistics(lock=self.lock)
+        self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
         return FEED_OK, ret_values
