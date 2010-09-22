@@ -549,6 +549,7 @@
         },
         
         make_feeds: function() {
+            var self = this;
             var $feed_list = this.$s.$feed_list.empty();
             var folders = this.model.folders;
             var feeds = this.model.feeds;
@@ -559,7 +560,6 @@
 
             this.make_feeds_folder($feed_list, folders, 0);
             this.$s.$feed_link_loader.fadeOut(250);
-            
             
             if (!folders.length) {
                 this.setup_ftux_add_feed_callout();
@@ -627,6 +627,12 @@
                                 } else {
                                     $feeds.append($folder.fadeIn(500));
                                 }
+                                $('.feed', $folder).rightClick(function() {
+                                  self.show_manage_menu('feed', $(this));
+                                });
+                                $('.folder_title', $folder).rightClick(function() {
+                                  self.show_manage_menu('folder', $(this).parents('li.folder').eq(0));
+                                });
                                 self.hover_over_feed_titles($folder);
                             }, 50);
                         })($feeds, $folder, is_collapsed, collapsed_parent);

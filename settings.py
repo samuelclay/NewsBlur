@@ -96,6 +96,7 @@ COMPRESS_JS = {
             'js/jquery.ajaxmanager.3.js',
             'js/jquery.simplemodal-1.3.js',
             'js/jquery.color.js',
+            'js/jquery.rightclick.js',
             'js/jquery.ui.core.js',
             'js/jquery.ui.widget.js',
             'js/jquery.ui.mouse.js',
