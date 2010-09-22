@@ -675,7 +675,7 @@
                 ]),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
                     $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
-                    $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated)
+                    $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated + ' ago')
                 ])),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')),
                 (feed.has_exception && $.make('div', { className: 'NB-feed-exception-icon' })),
@@ -1088,6 +1088,7 @@
                 this.hover_over_story_titles();
                 this.make_story_feed_entries(stories, first_load);
                 this.show_correct_stories_in_page_and_feed_view();
+                $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
                 if (this.flags['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_unread_story(true);
                 }
@@ -1793,7 +1794,6 @@
         },
         
         load_page_of_feed_stories: function() {
-            var $feedbar;
             var $story_titles = this.$s.$story_titles;
             var feed_id = $story_titles.data('feed_id');
             var page = $story_titles.data('page');

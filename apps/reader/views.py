@@ -23,7 +23,7 @@ except:
     pass
 from utils import json, urlnorm
 from utils.user_functions import get_user, ajax_login_required
-from utils.feed_functions import fetch_address_from_page, format_relative_date
+from utils.feed_functions import fetch_address_from_page, relative_timesince
 from utils import log as logging
 
 SINGLE_DAY = 60*60*24
@@ -110,7 +110,7 @@ def load_feeds(request):
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative, 
-            'updated': format_relative_date(sub.feed.last_update)
+            'updated': relative_timesince(sub.feed.last_update)
         }
         
         if not sub.feed.fetched_once:
@@ -279,11 +279,12 @@ def load_single_feed(request):
     logging.info(" ---> [%s] Loading feed: %s (%s.%s seconds)" % (request.user, feed, 
                                                                   diff.seconds, 
                                                                   diff.microseconds / 1000))
-    
+    last_update = relative_timesince(feed.last_update)
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
-                classifiers=classifiers)
+                classifiers=classifiers,
+                last_update=last_update)
     return data
 
 def load_feed_page(request):
