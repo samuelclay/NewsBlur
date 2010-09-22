@@ -413,12 +413,13 @@ class Feed(models.Model):
             
     def trim_feed(self):
         # from apps.reader.models import MUserStory
-        stories = MStory.objects.filter(
+        stories = MStory.objects(
             story_feed_id=self.pk,
-        ).order_by('-story_date')[500:]
+        ).order_by('-story_date')
         print 'Found %s extra stories in %s. Trimming...' % (stories.count(), self)
         if stories.count() > 500:
-            stories.delete()
+            extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=stories[500].story_date)
+            extra_stories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
