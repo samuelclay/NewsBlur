@@ -13,8 +13,11 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        if not options['feed']:
+            feeds = Feed.objects.filter(fetched_once=True, average_stories_per_month__gte=30)
+        else:
+            feeds = Feed.objects.filter(feed_id=options['feed'])
             
-        feeds = Feed.objects.filter(fetched_once=True)
         for f in feeds:
             f.trim_feed()
         
