@@ -417,7 +417,8 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')[500:]
         print 'Found %s extra stories in %s. Trimming...' % (stories.count(), self)
-        stories.delete()
+        if stories.count() > 500:
+            stories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
