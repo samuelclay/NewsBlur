@@ -413,15 +413,25 @@ class Feed(models.Model):
             
     def trim_feed(self):
         from apps.reader.models import MUserStory
+        trim_cutoff = 500
+        if self.active_subscribers <= 1:
+            trim_cutoff = 200
+        elif self.active_subscribers <= 3:
+            trim_cutoff = 250
+        elif self.active_subscribers <= 5:
+            trim_cutoff = 300
+        elif self.active_subscribers <= 10:
+            trim_cutoff = 400
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
-        if stories.count() > 500:
+        if stories.count() > trim_cutoff:
             # print 'Found %s stories in %s. Trimming...' % (stories.count(), self),
-            extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=stories[500].story_date)
+            story_trim_date = stories[trim_cutoff].story_date
+            extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories.delete()
             # print "Deleted stories, %s left." % MStory.objects(story_feed_id=self.pk).count()
-            userstories = MUserStory.objects(feed_id=self.pk, read_date__lte=stories[500].story_date)
+            userstories = MUserStory.objects(feed_id=self.pk, read_date__lte=story_trim_date)
             if userstories.count():
                 # print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
