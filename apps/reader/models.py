@@ -134,8 +134,8 @@ class UserSubscription(models.Model):
             if max_score == 0 and min_score == 0:
                 feed_scores['neutral'] += 1
         
-        if not silent:
-            logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
+        # if not silent:
+        #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
             
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
