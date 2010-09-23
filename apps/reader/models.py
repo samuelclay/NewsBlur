@@ -54,8 +54,8 @@ class UserSubscription(models.Model):
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
-            if not silent:
-                logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
+            # if not silent:
+            #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return
         
         if not self.feed.fetched_once:
@@ -79,8 +79,8 @@ class UserSubscription(models.Model):
         read_stories = MUserStory.objects(user_id=self.user.pk,
                                           feed_id=self.feed.pk,
                                           read_date__gte=self.mark_read_date)
-        if not silent:
-            logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
+        # if not silent:
+        #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = []
         for us in read_stories:
             if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
@@ -89,8 +89,8 @@ class UserSubscription(models.Model):
                 read_stories_ids.append(us.story.id) # TODO: Remove me after migration from story.id->guid
         stories_db = stories_db or MStory.objects(story_feed_id=self.feed.pk,
                                                   story_date__gte=date_delta)
-        if not silent:
-            logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+        # if not silent:
+        #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
         unread_stories_db = []
         for story in stories_db:
             if story.story_date < date_delta:
@@ -100,16 +100,16 @@ class UserSubscription(models.Model):
             elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
                 unread_stories_db.append(story)
         stories = self.feed.format_stories(unread_stories_db)
-        if not silent:
-            logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
+        # if not silent:
+        #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
         classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_titles = MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
         
-        if not silent:
-            logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
+        # if not silent:
+        #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
             
         scores = {
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),

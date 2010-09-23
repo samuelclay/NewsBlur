@@ -55,7 +55,8 @@ class OPMLImporter(Importer):
         for item in outline:
             if not hasattr(item, 'xmlUrl'):
                 folder = item
-                logging.info(' ---> [%s] New Folder: %s' % (self.user, folder.text))
+                if hasattr(folder, 'text'):
+                    logging.info(' ---> [%s] New Folder: %s' % (self.user, folder.text))
                 folders.append({folder.text: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
@@ -80,6 +81,8 @@ class OPMLImporter(Importer):
                 if duplicate_feed:
                     feed_db = duplicate_feed[0].feed
                 else:
+                    feed_data['active_subscribers'] = 1
+                    feed_data['num_subscribers'] = 1
                     feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
                                                             defaults=dict(**feed_data))
                     
@@ -145,6 +148,8 @@ class GoogleReaderImporter(Importer):
                 feed_db = duplicate_feed[0].feed
             else:
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
+                feed_data['active_subscribers'] = 1
+                feed_data['num_subscribers'] = 1
                 feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
                                                         defaults=dict(**feed_data))
 
