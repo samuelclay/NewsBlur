@@ -18,7 +18,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory
+    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, FeedLoadtime
 except:
     pass
 from utils import json, urlnorm
@@ -276,9 +276,10 @@ def load_single_feed(request):
     usersub.save()
     
     diff = datetime.datetime.utcnow()-now
-    logging.info(" ---> [%s] Loading feed: %s (%s.%s seconds)" % (request.user, feed, 
-                                                                  diff.seconds, 
-                                                                  diff.microseconds / 1000))
+    timediff = float("%s.%s" % (diff.seconds, (diff.microseconds / 1000)))
+    logging.info(" ---> [%s] Loading feed: %s (%s seconds)" % (request.user, feed, timediff))
+    FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
+    
     last_update = relative_timesince(feed.last_update)
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 

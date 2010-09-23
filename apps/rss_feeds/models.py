@@ -568,7 +568,8 @@ class Feed(models.Model):
         #   2 updates = 3 hours
         #   4 updates = 2 hours
         #   10 updates = 50 minutes
-        updates_per_day_delay = 6 * 60 / max(.25, ((self.num_subscribers**.55) * (updates_per_day**.85)))
+        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.55) 
+                                                   * (updates_per_day**.85)))
         
         # Lots of subscribers = lots of updates
         # 144 hours for 0 subscribers.
@@ -839,7 +840,16 @@ class MPageFetchHistory(mongo.Document):
         if not isinstance(self.exception, basestring):
             self.exception = unicode(self.exception)
         super(MPageFetchHistory, self).save(*args, **kwargs)
-        
+
+
+class FeedLoadtime(models.Model):
+    feed = models.ForeignKey(Feed)
+    date_accessed = models.DateTimeField(default=datetime.datetime.now)
+    loadtime = models.FloatField()
+    
+    def __unicode__(self):
+        return "%s: %s sec" % (self.feed, self.loadtime)
+    
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
