@@ -2208,6 +2208,10 @@
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },
         
+        open_feedchooser_modal: function() {
+            NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser();
+        },
+        
         open_feed_exception_modal: function(feed_id) {
             NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id);
         },
@@ -2222,6 +2226,7 @@
             var $manage_menu;
             
             if (type == 'site') {
+                var show_chooser = _.size(this.model.feeds) > 54;
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                     $.make('li', { className: 'NB-menu-manage-site-info' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -2242,7 +2247,12 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
-                    ])
+                    ]),
+                    (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
+                    ]))
                 ]);
                 $manage_menu.addClass('NB-menu-manage-notop');
             } else if (type == 'feed') {
@@ -3365,6 +3375,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_preferences_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feedchooser' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_feedchooser_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
