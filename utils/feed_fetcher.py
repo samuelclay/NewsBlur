@@ -29,7 +29,6 @@ SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
 
-UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -275,6 +274,8 @@ class Dispatcher:
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        
         if not self.options['single_threaded']:
             # Close the DB so the connection can be re-opened on a per-process basis
             from django.db import connection

@@ -110,7 +110,8 @@ def load_feeds(request):
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative, 
-            'updated': relative_timesince(sub.feed.last_update)
+            'updated': relative_timesince(sub.feed.last_update),
+            'subs': sub.feed.num_subscribers,
         }
         
         if not sub.feed.fetched_once:

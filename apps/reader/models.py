@@ -10,9 +10,6 @@ from apps.rss_feeds.models import Feed, Story, MStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 
-DAYS_OF_UNREAD = 14
-UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
 class UserSubscription(models.Model):
     """
     A feed which a user has subscrubed to. Carries all of the cached information
@@ -21,6 +18,7 @@ class UserSubscription(models.Model):
     Also has a dirty flag (needs_unread_recalc) which means that the unread counts
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
+    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
     last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
@@ -53,6 +51,7 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
@@ -195,6 +194,7 @@ class MUserStory(mongo.Document):
     
     @classmethod
     def delete_old_stories(cls, feed_id):
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         MUserStory.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF).delete()
     
         

@@ -137,8 +137,36 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     initial_load_feeds: function() {
         var self = this;
         var $feeds = $('.feed', this.$modal);
+        
+        // Get feed subscribers
+        var min_subscribers = _.last(_.first(_.pluck(this.model.get_feeds(), 'subs').sort(function(a,b) { 
+            return b-a; 
+        }), this.MAX_FEEDS));
+        
+        // Decline everything
+        var priority_feeds = [];
+        var feeds = [];
         $feeds.each(function() {
-            self.add_feed_to_decline($(this).data('feed_id'));
+            var feed_id = $(this).data('feed_id');
+            
+            self.add_feed_to_decline(feed_id);
+            
+            if (self.model.get_feed(feed_id)['subs'] > min_subscribers) {
+                priority_feeds.push(feed_id);
+            }
+            if (self.model.get_feed(feed_id)['subs'] >= min_subscribers) {
+                feeds.push(feed_id);
+            }
+        });
+        feeds = _.first(feeds, priority_feeds.length);
+        
+        // Approve feeds in subs
+        _.each(feeds, function(feed_id) {
+            NEWSBLUR.log(['feed', feed_id, self.model.get_feed(feed_id)['subs'], min_subscribers, self.approve_list.length, self.MAX_FEEDS]);
+            if (self.model.get_feed(feed_id)['subs'] >= min_subscribers &&
+                self.approve_list.length < self.MAX_FEEDS) {
+                self.add_feed_to_approve(feed_id);
+            }
         });
     },
     

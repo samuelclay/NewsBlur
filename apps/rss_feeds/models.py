@@ -26,7 +26,6 @@ from utils.diff import HTMLDiff
 from utils import log as logging
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
-SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=21)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
@@ -158,6 +157,7 @@ class Feed(models.Model):
             self.save()
     
     def count_subscribers(self, verbose=False, lock=None):
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=21)
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()

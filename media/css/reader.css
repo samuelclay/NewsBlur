@@ -444,7 +444,7 @@ a img {
     position: absolute;
     top: 2px;
     left: 2px;
-    background: transparent url('../img/icons/silk/building.png') no-repeat 0 0;
+/*    background: transparent url('../img/icons/silk/building.png') no-repeat 0 0;*/
     width: 16px;
     height: 16px;
 }
