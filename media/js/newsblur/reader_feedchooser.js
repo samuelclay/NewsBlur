@@ -10,11 +10,11 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
 NEWSBLUR.ReaderFeedchooser.prototype = {
     
     runner: function() {
-        this.MAX_FEEDS = 4;
+        this.MAX_FEEDS = 40;
         this.approve_list = [];
         this.make_modal();
-        this.initial_load_feeds();
         this.open_modal();
+        this.initial_load_feeds();
         
         this.$modal.bind('mousedown', $.rescope(this.handle_click, this));
     },
@@ -38,7 +38,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             this.make_feeds(),
             $.make('form', { className: 'NB-feedchooser-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
@@ -128,10 +128,22 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     update_counts: function() {
         var $count = $('.NB-feedchooser-info-counts');
         var approved = this.approve_list.length;
+        var $submit = $('.NB-modal-submit-save', this.$modal);
+        var difference = approved - this.MAX_FEEDS;
         
         $count.text(approved + '/' + this.MAX_FEEDS);
         $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
         $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
+        
+        if (approved > this.MAX_FEEDS) {
+          $submit.removeClass('NB-disabled').attr('disabled', true).val('Too many sites! Deselect ' + (
+            difference == 1 ?
+            '1 site...' :
+            difference + ' sites...'
+          ));
+        } else {
+          $submit.removeClass('NB-disabled').attr('disabled', false).val('OK! These are my ' + approved + '.');
+        }
     },
     
     initial_load_feeds: function() {
@@ -139,31 +151,36 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $feeds = $('.feed', this.$modal);
         
         // Get feed subscribers
-        var min_subscribers = _.last(_.first(_.pluck(this.model.get_feeds(), 'subs').sort(function(a,b) { 
-            return b-a; 
-        }), this.MAX_FEEDS));
+        var min_subscribers = _.last(
+          _.first(
+            _.pluck(this.model.get_feeds(), 'subs').sort(function(a,b) { 
+              return b-a; 
+            }), 
+            this.MAX_FEEDS
+          )
+        );
         
         // Decline everything
-        var priority_feeds = [];
         var feeds = [];
         $feeds.each(function() {
             var feed_id = $(this).data('feed_id');
             
             self.add_feed_to_decline(feed_id);
             
-            if (self.model.get_feed(feed_id)['subs'] > min_subscribers) {
-                priority_feeds.push(feed_id);
-            }
             if (self.model.get_feed(feed_id)['subs'] >= min_subscribers) {
                 feeds.push(feed_id);
             }
         });
-        feeds = _.first(feeds, priority_feeds.length);
         
         // Approve feeds in subs
         _.each(feeds, function(feed_id) {
-            NEWSBLUR.log(['feed', feed_id, self.model.get_feed(feed_id)['subs'], min_subscribers, self.approve_list.length, self.MAX_FEEDS]);
-            if (self.model.get_feed(feed_id)['subs'] >= min_subscribers &&
+            if (self.model.get_feed(feed_id)['subs'] > min_subscribers &&
+                self.approve_list.length < self.MAX_FEEDS) {
+                self.add_feed_to_approve(feed_id);
+            }
+        });
+        _.each(feeds, function(feed_id) {
+            if (self.model.get_feed(feed_id)['subs'] == min_subscribers &&
                 self.approve_list.length < self.MAX_FEEDS) {
                 self.add_feed_to_approve(feed_id);
             }
@@ -186,6 +203,11 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             } else {
                 this.add_feed_to_approve(feed_id);
             }
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-save' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            
         }, this));
     },
 
