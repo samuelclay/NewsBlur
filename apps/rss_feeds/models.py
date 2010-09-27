@@ -114,7 +114,7 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.now()).save()
-        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
+        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
             
@@ -133,7 +133,7 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.now()).save()
-        old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[10:]
+        old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
             
@@ -800,7 +800,7 @@ class MFeedFetchHistory(mongo.Document):
     meta = {
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
-        'indexes': ['feed_id', ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': ['feed_id', ('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
     def save(self, *args, **kwargs):
@@ -835,7 +835,7 @@ class MPageFetchHistory(mongo.Document):
     meta = {
         'collection': 'page_fetch_history',
         'allow_inheritance': False,
-        'indexes': ['feed_id', ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': ['feed_id', ('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
     def save(self, *args, **kwargs):
