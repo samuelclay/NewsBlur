@@ -1,7 +1,39 @@
 import datetime
+import threading
+import sys
 from django.utils.translation import ungettext
 from utils import feedfinder
 
+class TimeoutError(Exception): pass
+def timelimit(timeout):
+    """borrowed from web.py"""
+    def _1(function):
+        def _2(*args, **kw):
+            class Dispatch(threading.Thread):
+                def __init__(self):
+                    threading.Thread.__init__(self)
+                    self.result = None
+                    self.error = None
+                    
+                    self.setDaemon(True)
+                    self.start()
+
+                def run(self):
+                    try:
+                        self.result = function(*args, **kw)
+                    except:
+                        self.error = sys.exc_info()
+
+            c = Dispatch()
+            c.join(timeout)
+            if c.isAlive():
+                raise TimeoutError, 'took too long'
+            if c.error:
+                raise c.error[0], c.error[1]
+            return c.result
+        return _2
+    return _1
+    
 def encode(tstr):
     """ Encodes a unicode string in utf-8
     """
