@@ -18,6 +18,7 @@ from mongoengine.queryset import OperationError
 from utils import json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
+from utils.feed_functions import timelimit
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
@@ -78,6 +79,7 @@ class Feed(models.Model):
         self.save_popular_authors(lock=lock)
         self.save_popular_tags(lock=lock)
     
+    @timelimit(20)
     def check_feed_address_for_feed_link(self):
         feed_address = None
 
