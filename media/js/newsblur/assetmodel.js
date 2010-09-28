@@ -521,6 +521,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         } else {
             if ($.isFunction(callback)) callback();
         }
+    },
+    
+    save_feed_chooser: function(approved_feeds, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/save_feed_chooser', {
+                'approved_feeds': approved_feeds
+            }, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
     }
 
 };

@@ -159,11 +159,11 @@ class Feed(models.Model):
             self.save()
     
     def count_subscribers(self, verbose=False, lock=None):
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=21)
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=30)
         from apps.reader.models import UserSubscription
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
-        subs = UserSubscription.objects.filter(feed=self, user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE)
+        subs = UserSubscription.objects.filter(feed=self, active=True, user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE)
         self.active_subscribers = subs.count()
         self.save(lock=lock)
         
@@ -417,9 +417,9 @@ class Feed(models.Model):
         from apps.reader.models import MUserStory
         trim_cutoff = 500
         if self.active_subscribers <= 1:
-            trim_cutoff = 200
+            trim_cutoff = 100
         elif self.active_subscribers <= 3:
-            trim_cutoff = 250
+            trim_cutoff = 200
         elif self.active_subscribers <= 5:
             trim_cutoff = 300
         elif self.active_subscribers <= 10:

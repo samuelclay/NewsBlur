@@ -38,15 +38,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             this.make_feeds(),
             $.make('form', { className: 'NB-feedchooser-form' }, [
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' })
                 ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_preferences();
-                return false;
-            })
+            ])
         ]);
     },
     
@@ -59,8 +53,15 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             'style': ''
         });
         
+        // Expand collapsed folders
+        $('ul.folder', $feeds).css({
+            'display': 'block',
+            'opacity': 1
+        });
+        
         $('.unread_count_positive', $feeds).text('On');
         $('.unread_count_negative', $feeds).text('Off');
+        
         return $feeds;
     },
     
@@ -136,54 +137,86 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
         
         if (approved > this.MAX_FEEDS) {
-          $submit.removeClass('NB-disabled').attr('disabled', true).val('Too many sites! Deselect ' + (
+          $submit.addClass('NB-disabled').attr('disabled', true).val('Too many sites! Deselect ' + (
             difference == 1 ?
             '1 site...' :
             difference + ' sites...'
           ));
         } else {
-          $submit.removeClass('NB-disabled').attr('disabled', false).val('OK! These are my ' + approved + '.');
+          $submit.removeClass('NB-disabled').attr('disabled', false).val('OK, These are my ' + approved + '. Save them, please!');
         }
     },
     
     initial_load_feeds: function() {
         var self = this;
         var $feeds = $('.feed', this.$modal);
+        var feeds = this.model.get_feeds();
         
-        // Get feed subscribers
-        var min_subscribers = _.last(
-          _.first(
-            _.pluck(this.model.get_feeds(), 'subs').sort(function(a,b) { 
-              return b-a; 
-            }), 
-            this.MAX_FEEDS
-          )
-        );
+        var active_feeds = _.any(_.pluck(feeds, 'active'));
         
-        // Decline everything
-        var feeds = [];
-        $feeds.each(function() {
-            var feed_id = $(this).data('feed_id');
+        if (!active_feeds) {
+            // Get feed subscribers
+            var min_subscribers = _.last(
+              _.first(
+                _.pluck(this.model.get_feeds(), 'subs').sort(function(a,b) { 
+                  return b-a; 
+                }), 
+                this.MAX_FEEDS
+              )
+            );
+        
+            // Decline everything
+            var feeds = [];
+            $feeds.each(function() {
+                var feed_id = $(this).data('feed_id');
             
-            self.add_feed_to_decline(feed_id);
+                self.add_feed_to_decline(feed_id);
             
-            if (self.model.get_feed(feed_id)['subs'] >= min_subscribers) {
-                feeds.push(feed_id);
-            }
-        });
+                if (self.model.get_feed(feed_id)['subs'] >= min_subscribers) {
+                    feeds.push(feed_id);
+                }
+            });
         
-        // Approve feeds in subs
-        _.each(feeds, function(feed_id) {
-            if (self.model.get_feed(feed_id)['subs'] > min_subscribers &&
-                self.approve_list.length < self.MAX_FEEDS) {
-                self.add_feed_to_approve(feed_id);
-            }
-        });
-        _.each(feeds, function(feed_id) {
-            if (self.model.get_feed(feed_id)['subs'] == min_subscribers &&
-                self.approve_list.length < self.MAX_FEEDS) {
-                self.add_feed_to_approve(feed_id);
-            }
+            // Approve feeds in subs
+            _.each(feeds, function(feed_id) {
+                if (self.model.get_feed(feed_id)['subs'] > min_subscribers &&
+                    self.approve_list.length < self.MAX_FEEDS) {
+                    self.add_feed_to_approve(feed_id);
+                }
+            });
+            _.each(feeds, function(feed_id) {
+                if (self.model.get_feed(feed_id)['subs'] == min_subscribers &&
+                    self.approve_list.length < self.MAX_FEEDS) {
+                    self.add_feed_to_approve(feed_id);
+                }
+            });
+        } else {
+            // Get active feeds
+            var active_feeds = _.pluck(_.select(feeds, function(feed) {
+                if (feed.active) return true;
+            }), 'id');
+            
+            // Approve or decline
+            var feeds = [];
+            $feeds.each(function() {
+                var feed_id = $(this).data('feed_id');
+                
+                if (_.contains(active_feeds, feed_id)) {
+                    self.add_feed_to_approve(feed_id);
+                } else {
+                    self.add_feed_to_decline(feed_id);
+                }
+            });
+        }
+    },
+    
+    save: function() {
+        var $submit = $('.NB-modal-submit-save', this.$modal);
+        $submit.addClass('NB-disabled').val('Saving...');
+        
+        this.model.save_feed_chooser(this.approve_list, function() {
+            NEWSBLUR.reader.load_feeds();
+            $.modal.close();
         });
     },
     
@@ -207,7 +240,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         $.targetIs(e, { tagSelector: '.NB-modal-submit-save' }, _.bind(function($t, $p) {
             e.preventDefault();
-            
+            this.save();
         }, this));
     },
 

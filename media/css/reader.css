@@ -397,6 +397,10 @@ a img {
     background-color: #F7EDC6;
 }
 
+#feed_list.NB-feedlist .feed.NB-feed-inactive {
+  display: none;
+}
+
 .NB-feedlist .feed.NB-feed-unfetched {
 }
 
@@ -3011,6 +3015,12 @@ background: transparent;
 .NB-modal-feedchooser .feed.NB-feedchooser-approve {
     font-weight: bold;
 }
+.NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_favicon {
+  opacity: .3;
+}
+.NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_title {
+  color: #707070;
+}
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts,
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts .unread_count_positive {
     display: block;
@@ -3019,16 +3029,28 @@ background: transparent;
 .NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_counts .unread_count_negative {
     display: block;
 }
-
-.NB-feedlist .feed .NB-feedlist-manage-icon:hover,
-.NB-feedlist .folder_title .NB-feedlist-manage-icon:hover {
-    background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
+.NB-modal-feedchooser .NB-feedlist .folder_title {
+  cursor: default;
 }
-.NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
-.NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+
+.NB-modal-feedchooser .NB-feedlist .feed .NB-feedlist-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
+.NB-modal-feedchooser .NB-feedlist .folder_title .NB-feedlist-manage-icon {
+    background: none;
+}
+
+.NB-modal-feedchooser .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
+}
+
+.NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon {
+    background: none;
+}
+.NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover {
+    background: transparent url('../img/icons/silk/folder.png') no-repeat 3px 1px;
+}
 .NB-modal-feedchooser .NB-feedchooser-info-counts {
     float: right;
     text-align: center;
@@ -3037,6 +3059,7 @@ background: transparent;
     color: #50A050;
     margin: 100px 0 0 0;
     font-weight: bold;
+    text-shadow:2px 2px 0 #F0F0F0;
 }
 .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
 /*    color: #5090D0;*/
@@ -3045,3 +3068,10 @@ background: transparent;
     color: #C05050;
 }
 
+.NB-modal-feedchooser .unread_count_positive {
+  color: yellow;
+}
+
+.NB-modal-feedchooser .unread_count_negative {
+  color: orange;
+}

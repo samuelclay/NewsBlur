@@ -112,6 +112,7 @@ def load_feeds(request):
             'ng': sub.unread_count_negative, 
             'updated': relative_timesince(sub.feed.last_update),
             'subs': sub.feed.num_subscribers,
+            'active': sub.active
         }
         
         if not sub.feed.fetched_once:
@@ -584,5 +585,23 @@ def login_as(request):
     login_user(request, user)
     return HttpResponseRedirect(reverse('index'))
 
+@ajax_login_required
+@json.json_view
+def save_feed_chooser(request):
+    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')]
+    activated = 0
+    
+    usersubs = UserSubscription.objects.filter(user=request.user)
+    for sub in usersubs:
+        if sub.feed.pk in approved_feeds:
+            sub.active = True
+            activated += 1
+            sub.save()
+        elif sub.active:
+            sub.active = False
+            sub.save()
+            
+    return {'activated': activated}
+    
 def iframe_buster(request):
     return HttpResponse(status=204)

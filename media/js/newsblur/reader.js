@@ -542,6 +542,7 @@
             var self = this;
             
             if ($('#feed_list').length) {
+                this.flags['has_chosen_feeds'] = false;
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.$s.$feed_link_loader.css({'display': 'block'});
                 this.model.load_feeds($.rescope(this.make_feeds, this));
@@ -572,10 +573,12 @@
             $('.feed', $feed_list).tsort('.feed_title');
             $('.folder', $feed_list).tsort('.folder_title_text');
             
-            if (NEWSBLUR.Globals.is_authenticated) {
+            if (NEWSBLUR.Globals.is_authenticated && this.flags['has_chosen_feeds']) {
                 this.start_count_unreads_after_import();
                 this.force_feed_refresh($.rescope(this.finish_count_unreads_after_import, this));
-            }
+            } else if (!this.flags['has_chosen_feeds']) {
+                this.show_feed_chooser_button();
+            } 
         },
         
         make_feeds_folder: function($feeds, items, depth, collapsed_parent) {
@@ -592,7 +595,9 @@
                     if (depth == 0) {
                         this.hover_over_feed_titles();
                         $feed.addClass('NB-toplevel');
-                        $feed.css({'display': 'none'}).fadeIn(500);
+                        if (feed.active) {
+                            $feed.css({'display': 'none'}).fadeIn(500);
+                        }
                     }
                     
                     if (feed.not_yet_fetched) {
@@ -658,11 +663,17 @@
                 unread_class += ' unread_negative';
             }
             if (feed.has_exception) {
-              exception_class += ' NB-feed-exception';
+                exception_class += ' NB-feed-exception';
             }
             if (feed.not_yet_fetched && !feed.has_exception) {
-              exception_class += ' NB-feed-unfetched';
+                exception_class += ' NB-feed-unfetched';
             }
+            if (!feed.active) {
+                exception_class += ' NB-feed-inactive';
+            } else {
+                this.flags['has_chosen_feeds'] = true;
+            }
+            
             var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class + exception_class }, [
                 $.make('div', { className: 'feed_counts' }, [
                     this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng)
@@ -975,6 +986,21 @@
             });
         },
         
+        show_feed_chooser_button: function() {
+            var self = this;
+            var $progress = this.$s.$feeds_progress;
+            var $bar = $('.NB-progress-bar', $progress);
+            var percentage = 0;
+            
+            $('.NB-progress-title', $progress).text('Get Started');
+            $('.NB-progress-counts', $progress).hide();
+            $('.NB-progress-percentage', $progress).hide();
+            $progress.addClass('NB-progress-error');
+            $('.NB-progress-link', $progress).html($.make('a', { href: '#', className: 'NB-splash-link NB-menu-manage-feedchooser' }, 'Choose your 64'));
+            
+            this.show_progress_bar();
+        },
+        
         // ===============================
         // = Feed bar - Individual Feeds =
         // ===============================
@@ -993,7 +1019,8 @@
                 'story_titles_loaded': false,
                 'iframe_prevented_from_loading': false,
                 'pause_feed_refreshing': false,
-                'feed_list_showing_manage_menu': false
+                'feed_list_showing_manage_menu': false,
+                'has_chosen_feeds': false
             });
             
             $.extend(this.cache, {

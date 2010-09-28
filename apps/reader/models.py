@@ -21,12 +21,13 @@ class UserSubscription(models.Model):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
+    active = models.BooleanField(default=False)
     last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
-    unread_count_updated = models.DateTimeField(auto_now=True)
+    unread_count_updated = models.DateTimeField(default=datetime.datetime.now)
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
     is_trained = models.BooleanField(default=False)
@@ -37,16 +38,16 @@ class UserSubscription(models.Model):
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
         if MStory.objects(story_feed_id=self.feed.pk).first():
-            latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date')[0].story_date\
+            latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date')[0]['story_date']\
                                 + datetime.timedelta(minutes=1)
         else:
             latest_story_date = now
-        self.last_read_date = max(now, latest_story_date)
-        self.mark_read_date = max(now, latest_story_date)
+        self.last_read_date = latest_story_date
+        self.mark_read_date = latest_story_date
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
-        self.unread_count_updated = max(now, latest_story_date)
+        self.unread_count_updated = latest_story_date
         self.needs_unread_recalc = False
         self.save()
     
@@ -63,7 +64,6 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = False
             self.save()
             return
-        now = datetime.datetime.now()
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)
