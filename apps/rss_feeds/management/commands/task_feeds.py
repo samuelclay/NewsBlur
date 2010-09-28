@@ -3,6 +3,7 @@ from django.conf import settings
 from apps.rss_feeds.models import Feed
 from optparse import make_option
 from apps.rss_feeds.tasks import UpdateFeeds
+from celery.task import Task
 import datetime
 
 
@@ -30,19 +31,17 @@ class Command(BaseCommand):
 
         print " ---> Tasking %s feeds..." % feeds.count()
         
-        i = 0
+        publisher = Task.get_publisher()
+
         feed_queue = []
+        size = 12
         for f in feeds:
             f.queued_date = datetime.datetime.now()
             f.set_next_scheduled_update()
-            i += 1
-            feed_queue.append(f.pk)
-            
-            if i == 12:
-                print feed_queue
-                UpdateFeeds.apply_async(args=(feed_queue,), queue='update_feeds')
-                feed_queue = []
-                i = 0
-        if feed_queue:
+        for feed_queue in (feeds[pos:pos + size] for pos in xrange(0, len(feeds), size)):
             print feed_queue
-            UpdateFeeds.apply_async(args=(feed_queue,), queue='update_feeds')
+            feed_ids = [feed.pk for feed in feed_queue]
+            print feed_ids
+            UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds', publisher=publisher)
+
+        publisher.connection.close()

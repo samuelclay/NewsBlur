@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.tasks import NewFeeds
+from celery.task import Task
 import datetime
 import lxml.etree
 from utils import json, urlnorm
@@ -32,8 +33,10 @@ class Importer:
         new_feeds = list(set([f['feed_id'] for f in new_feeds]))
         logging.info(" ---> [%s] Queueing NewFeeds: (%s) %s" % (self.user, len(new_feeds), new_feeds))
         size = 4
+        publisher = Task.get_publisher(exchange="new_feeds")
         for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
-            NewFeeds.apply_async(args=[t], queue="new_feeds")
+            NewFeeds.apply_async(args=(t,), queue="new_feeds", publisher=publisher)
+        publisher.connection.close()
     
 class OPMLImporter(Importer):
     
