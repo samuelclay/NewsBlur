@@ -685,8 +685,15 @@ a img {
     color: #FFF;
 }
 
+#NB-progress.NB-progress-error {
+  height: 120px;
+}
+#NB-progress.NB-progress-error .NB-progress-title {
+  font-size: 18px;
+}
 #NB-progress.NB-progress-error .NB-progress-link {
     display: block;
+    font-size: 18px;
 }
 #NB-progress.NB-progress-error .NB-progress-bar {
     display: none;
