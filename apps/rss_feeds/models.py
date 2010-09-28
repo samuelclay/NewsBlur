@@ -58,6 +58,9 @@ class Feed(models.Model):
     
     
     def __unicode__(self):
+        if not self.feed_title:
+            self.feed_title = "[Untitled]"
+            self.save()
         return self.feed_title
 
     def save(self, lock=None, *args, **kwargs):
@@ -590,7 +593,7 @@ class Feed(models.Model):
             elif self.last_load_time >= 200:
                 slow_punishment = 12 * self.last_load_time
         total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
-        print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
+        # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
         return total, random_factor
