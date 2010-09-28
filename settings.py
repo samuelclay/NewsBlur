@@ -228,21 +228,25 @@ DEVSERVER_MODULES = (
 import djcelery
 djcelery.setup_loader()
 CELERY_ROUTES = {
-    "apps.rss_feeds.tasks.NewFeeds": {
+    "new-feeds": {
         "queue": "new_feeds",
-        "binding_key": "celery"
+        "binding_key": "new_feeds"
     },
-    "apps.rss_feeds.tasks.UpdateFeeds": {
+    "update-feeds": {
         "queue": "update_feeds",
-        "binding_key": "celery"
+        "binding_key": "update_feeds"
     },
 }
 CELERY_QUEUES = {
     "new_feeds": {
-        "binding_key": "celery"
+        "exchange": "new_feeds",
+        "exchange_type": "direct",
+        "binding_key": "new_feeds"
     },
     "update_feeds": {
-        "binding_key": "celery"
+        "exchange": "update_feeds",
+        "exchange_type": "direct",
+        "binding_key": "update_feeds"
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
