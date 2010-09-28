@@ -40,9 +40,9 @@ class Command(BaseCommand):
             
             if i == 12:
                 print feed_queue
-                UpdateFeeds.apply_async(args=(feed_queue,))
+                UpdateFeeds.apply_async(args=(feed_queue,), queue='update_feeds')
                 feed_queue = []
                 i = 0
         if feed_queue:
             print feed_queue
-            UpdateFeeds.apply_async(args=(feed_queue,))
+            UpdateFeeds.apply_async(args=(feed_queue,), queue='update_feeds')
