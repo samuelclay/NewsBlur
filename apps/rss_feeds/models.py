@@ -66,15 +66,19 @@ class Feed(models.Model):
     def save(self, lock=None, *args, **kwargs):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
-            
-        if lock:
-            lock.acquire()
-            try:
+
+        try:
+            if lock:
+                lock.acquire()
+                try:
+                    super(Feed, self).save(*args, **kwargs)
+                finally:
+                    lock.release()
+            else:
                 super(Feed, self).save(*args, **kwargs)
-            finally:
-                lock.release()
-        else:
-            super(Feed, self).save(*args, **kwargs)
+        except IntegrityError:
+            # Feed has been deleted. Just ignore it.
+            pass
     
     def update_all_statistics(self, lock=None):
         self.count_subscribers(lock=lock)
