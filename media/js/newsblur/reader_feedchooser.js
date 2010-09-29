@@ -10,10 +10,12 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
 NEWSBLUR.ReaderFeedchooser.prototype = {
     
     runner: function() {
+        this.start = new Date();
         this.MAX_FEEDS = 40;
         this.approve_list = [];
         this.make_modal();
         this.open_modal();
+        this.find_feeds_in_feed_list();
         this.initial_load_feeds();
         
         this.$modal.bind('mousedown', $.rescope(this.handle_click, this));
@@ -93,37 +95,42 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         });
     },
     
-    add_feed_to_decline: function(feed_id) {
+    add_feed_to_decline: function(feed_id, update) {
         this.approve_list = _.without(this.approve_list, feed_id);
-        var $feed = this.find_feed_in_feed_list(feed_id);
+        var $feed = this.$feeds[feed_id];
         
         $feed.removeClass('NB-feedchooser-approve');
         $feed.addClass('NB-feedchooser-decline');
-        this.update_counts();
+        if (update) {
+            this.update_counts();
+        }
     },
     
-    add_feed_to_approve: function(feed_id) {
+    add_feed_to_approve: function(feed_id, update) {
         if (!_.contains(this.approve_list, feed_id)) {
             this.approve_list.push(feed_id);
-            var $feed = this.find_feed_in_feed_list(feed_id);
-            
+            var $feed = this.$feeds[feed_id];
             $feed.removeClass('NB-feedchooser-decline');
             $feed.addClass('NB-feedchooser-approve');
+            if (update) {
+                this.update_counts();
+            }
         }
-        this.update_counts();
     },
         
-    find_feed_in_feed_list: function(feed_id) {
+    find_feeds_in_feed_list: function() {
         var $feed_list = $('.NB-feedchooser', this.$modal);
-        var $feeds = $([]);
+        var $feeds = {};
         
         $('.feed', $feed_list).each(function() {
-            if ($(this).data('feed_id') == feed_id) {
-                $feeds.push($(this).get(0));
+            var feed_id = $(this).data('feed_id');
+            if (!_.contains(_.keys($feeds), feed_id)) {
+                $feeds[feed_id] = $([]);
             }
+            $feeds[feed_id].push($(this).get(0));
         });
         
-        return $feeds;
+        this.$feeds = $feeds;
     },
     
     update_counts: function() {
@@ -148,12 +155,12 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
     
     initial_load_feeds: function() {
+        var start = new Date();
         var self = this;
         var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
         
         var active_feeds = _.any(_.pluck(feeds, 'active'));
-        
         if (!active_feeds) {
             // Get feed subscribers
             var min_subscribers = _.last(
@@ -166,25 +173,23 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             );
         
             // Decline everything
-            var feeds = [];
-            $feeds.each(function() {
-                var feed_id = $(this).data('feed_id');
+            var approve_feeds = [];
+            _.each(feeds, function(feed, feed_id) {
+                self.add_feed_to_decline(parseInt(feed_id, 10));
             
-                self.add_feed_to_decline(feed_id);
-            
-                if (self.model.get_feed(feed_id)['subs'] >= min_subscribers) {
-                    feeds.push(feed_id);
+                if (feed['subs'] >= min_subscribers) {
+                    approve_feeds.push(parseInt(feed_id, 10));
                 }
             });
         
             // Approve feeds in subs
-            _.each(feeds, function(feed_id) {
+            _.each(approve_feeds, function(feed_id) {
                 if (self.model.get_feed(feed_id)['subs'] > min_subscribers &&
                     self.approve_list.length < self.MAX_FEEDS) {
                     self.add_feed_to_approve(feed_id);
                 }
             });
-            _.each(feeds, function(feed_id) {
+            _.each(approve_feeds, function(feed_id) {
                 if (self.model.get_feed(feed_id)['subs'] == min_subscribers &&
                     self.approve_list.length < self.MAX_FEEDS) {
                     self.add_feed_to_approve(feed_id);
@@ -195,6 +200,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             var active_feeds = _.pluck(_.select(feeds, function(feed) {
                 if (feed.active) return true;
             }), 'id');
+            this.approve_list = active_feeds;
             
             // Approve or decline
             var feeds = [];
@@ -208,6 +214,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 }
             });
         }
+        this.update_counts();
     },
     
     save: function() {
@@ -232,9 +239,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             
             var feed_id = $t.data('feed_id');
             if (_.contains(this.approve_list, feed_id)) {
-                this.add_feed_to_decline(feed_id);
+                this.add_feed_to_decline(feed_id, true);
             } else {
-                this.add_feed_to_approve(feed_id);
+                this.add_feed_to_approve(feed_id, true);
             }
         }, this));
         
