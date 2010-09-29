@@ -184,19 +184,19 @@ class ProcessFeed:
             self.lock.release()
 
         # Compare new stories to existing stories, adding and updating
-        start_date = datetime.datetime.now()
-        end_date = datetime.datetime.now()
+        # start_date = datetime.datetime.now()
+        # end_date = datetime.datetime.now()
         story_guids = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
-            if story.get('published') < start_date:
-                start_date = story.get('published')
-            if story.get('published') > end_date:
-                end_date = story.get('published')
+            # if story.get('published') < start_date:
+            #     start_date = story.get('published')
+            # if story.get('published') > end_date:
+            #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
         existing_stories = self.db.stories.find({
             'story_feed_id': self.feed.pk, 
-            'story_date': {'$gte': start_date},
+            # 'story_date': {'$gte': start_date},
             'story_guid': {'$in': story_guids}
         }).limit(len(story_guids))
         # MStory.objects(
