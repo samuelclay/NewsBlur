@@ -16,6 +16,7 @@ graph_config = {
     'feed_loadtimes_avg_day.label': 'Feed Loadtimes Avg (Day)',
     'feed_loadtimes_min_day.label': 'Feed Loadtimes Min (Day)',
     'feed_loadtimes_max_day.label': 'Feed Loadtimes Max (Day)',
+    'feeds_loaded_hour.label': 'Feeds Loaded (Hour)',
 }
 
 day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
