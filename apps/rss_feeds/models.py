@@ -508,12 +508,14 @@ class Feed(models.Model):
         story_published_now = story.get('published_now', False)
         start_date = story_pub_date - datetime.timedelta(hours=8)
         end_date = story_pub_date + datetime.timedelta(hours=8)
+        existing_stories.rewind()
         
         for existing_story in existing_stories:
             content_ratio = 0
+            existing_story_pub_date = existing_story['story_date']
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
-                (story_pub_date > start_date and story_pub_date < end_date)):
+                (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
                 if isinstance(existing_story['_id'], unicode):
                     existing_story['story_guid'] = existing_story['_id']
                 if story.get('guid') and story.get('guid') == existing_story['story_guid']:
