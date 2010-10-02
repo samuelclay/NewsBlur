@@ -288,11 +288,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         for (var f in this.feeds) {
             var feed = this.feeds[f];
-
-            if (feed['not_yet_fetched']) {
-                counts['unfetched_feeds'] += 1;
-            } else {
-                counts['fetched_feeds'] += 1;
+            
+            if (feed.active) {
+                if (feed['not_yet_fetched']) {
+                    counts['unfetched_feeds'] += 1;
+                } else {
+                    counts['fetched_feeds'] += 1;
+                }
             }
         }
         

@@ -688,6 +688,9 @@ a img {
 #NB-progress.NB-progress-error {
   height: 120px;
 }
+#NB-progress.NB-progress-big {
+  height: 72px;
+}
 #NB-progress.NB-progress-error .NB-progress-title {
   font-size: 18px;
 }
@@ -697,6 +700,14 @@ a img {
 }
 #NB-progress.NB-progress-error .NB-progress-bar {
     display: none;
+}
+
+#NB-progress.NB-progress-big .NB-progress-link {
+  margin: 14px 0 0;
+}
+
+#NB-progress.NB-progress-big .NB-progress-link a {
+  font-size: 20px;
 }
 
 #NB-progress .NB-progress-counts {
@@ -2990,16 +3001,78 @@ background: transparent;
 /* = Feedchooser Modal = */
 /* ===================== */
 
+.NB-modal-feedchooser {
+    overflow: hidden;
+}
+
 .NB-modal-feedchooser .NB-modal-subtitle {
   font-weight: normal;
   font-size: 12px;
   color: #606060;
   text-shadow: 1px 1px 0 #F0F0F0;
+  width: 685px;
 }
 .NB-modal-feedchooser .NB-modal-subtitle b {
-  display: block;
-  margin: 0 0 4px 0;
+/*  margin: 0 0 4px 0;*/
+    padding-right: 8px;
   color: #303030;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-subtitle-type-prefix {
+    color: #C0C0C0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-type {
+  float: left;
+  width: 330px;
+  margin: 24px 24px 0 0;
+  padding: 0 24px 0 0;
+  border-right: 1px solid #E0E0E0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-type.NB-last {
+  padding-right: 0;
+  margin-right: 0;
+  border-right: none;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-info {
+    overflow: hidden;
+}
+.NB-modal-feedchooser .NB-feedchooser-info-type {
+    padding: 12px;
+    background-color: #505050;
+    color: white;
+    text-shadow: 1px 1px 0 #000;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    border: 1px solid #202020;
+}
+.NB-modal-feedchooser .NB-feedchooser-info-counts {
+    float: right;
+    font-size: 14px;
+    line-height: 16px;
+    color: #707070;
+    margin: 24px 0 0;
+    font-weight: bold;
+    text-shadow:1px 1px 0 #F0F0F0;
+}
+.NB-modal-feedchooser .NB-feedchooser-info-sort {
+    font-size: 12px;
+    line-height: 16px;
+    color: #C0C0C0;
+    margin: 24px 0 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow:1px 1px 0 #F6F6F6;
+}
+.NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
+/*    color: #5090D0;*/
+}
+.NB-modal-feedchooser .NB-feedchooser-info-counts.NB-error {
+    color: #C05050;
 }
 
 .NB-modal-feedchooser .NB-feedchooser {
@@ -3007,10 +3080,11 @@ background: transparent;
     overflow-y: auto;
     font-size: 11px;
     list-style: none;
-    margin: 12px 0;
+/*    margin: 12px 0;*/
     padding: 0;
     max-height: 400px;
-    width: 300px;
+    min-height: 186px;
+    width: auto;
     border: 1px solid #909090;
 }
 
@@ -3022,11 +3096,14 @@ background: transparent;
 .NB-modal-feedchooser .feed.NB-feedchooser-approve {
     font-weight: bold;
 }
+.NB-modal-feedchooser .feed.NB-feedchooser-decline {
+    font-weight: normal;
+}
 .NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_favicon {
   opacity: .3;
 }
 .NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_title {
-  color: #707070;
+  color: #808080;
 }
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts,
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts .unread_count_positive {
@@ -3058,22 +3135,6 @@ background: transparent;
 .NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover {
     background: transparent url('../img/icons/silk/folder.png') no-repeat 3px 1px;
 }
-.NB-modal-feedchooser .NB-feedchooser-info-counts {
-    float: right;
-    text-align: center;
-    width: 250px;
-    font-size: 32px;
-    color: #50A050;
-    margin: 100px 0 0 0;
-    font-weight: bold;
-    text-shadow:2px 2px 0 #F0F0F0;
-}
-.NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
-/*    color: #5090D0;*/
-}
-.NB-modal-feedchooser .NB-feedchooser-info-counts.NB-error {
-    color: #C05050;
-}
 
 .NB-modal-feedchooser .unread_count_positive {
   color: yellow;
@@ -3081,4 +3142,17 @@ background: transparent;
 
 .NB-modal-feedchooser .unread_count_negative {
   color: orange;
+}
+
+.NB-modal-feedchooser .NB-modal-submit {
+    text-align: center;
+    position: relative;
+    margin-top: 24px;
+}
+
+.NB-modal-feedchooser .NB-modal-submit .NB-modal-submit-or {
+    position: absolute;
+    right: -12px;
+    padding: 12px;
+    background-color: #FFF;
 }

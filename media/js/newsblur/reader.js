@@ -562,23 +562,23 @@
             this.make_feeds_folder($feed_list, folders, 0);
             this.$s.$feed_link_loader.fadeOut(250);
             
-            if (!folders.length) {
-                this.setup_ftux_add_feed_callout();
-            } else {
+            if (folders.length) {
                 $('.NB-task-manage').removeClass('NB-disabled');
                 $('.NB-callout-ftux').fadeOut(500);
                 this.load_sortable_feeds();
+                $('.feed', $feed_list).tsort('.feed_title');
+                $('.folder', $feed_list).tsort('.folder_title_text');
             }
-            
-            $('.feed', $feed_list).tsort('.feed_title');
-            $('.folder', $feed_list).tsort('.folder_title_text');
             
             if (NEWSBLUR.Globals.is_authenticated && this.flags['has_chosen_feeds']) {
                 this.start_count_unreads_after_import();
                 this.force_feed_refresh($.rescope(this.finish_count_unreads_after_import, this));
-            } else if (!this.flags['has_chosen_feeds']) {
+            } else if (!this.flags['has_chosen_feeds'] && folders.length) {
                 this.show_feed_chooser_button();
-            } 
+                // _.defer(_.bind(this.open_feedchooser_modal, this), 1000);
+            } else {
+                this.setup_ftux_add_feed_callout();
+            }
         },
         
         make_feeds_folder: function($feeds, items, depth, collapsed_parent) {
@@ -601,7 +601,7 @@
                     }
                     
                     if (feed.not_yet_fetched) {
-                        NEWSBLUR.log(['Feed not fetched', feed]);
+                        // NEWSBLUR.log(['Feed not fetched', feed]);
                         if (!this.model.preference('hide_fetch_progress')) {
                             this.flags['has_unfetched_feeds'] = true;
                         }
@@ -776,7 +776,10 @@
         show_progress_bar: function($progress) {
             $progress = $progress || this.$s.$feeds_progress;
             
-            if (!$progress.is(':visible')) {
+            NEWSBLUR.log(['showing', this.flags['showing_progress_bar']]);
+            
+            if (!this.flags['showing_progress_bar']) {
+                this.flags['showing_progress_bar'] = true;
                 $progress.css({'display': 'block', 'opacity': 0}).animate({
                     'opacity': 1,
                     'bottom': 31
@@ -790,11 +793,15 @@
         },
 
         hide_progress_bar: function(permanent) {
+            var self = this;
             var $progress = this.$s.$feeds_progress;
           
             if (permanent) {
                 this.model.preference('hide_fetch_progress', true);
             }
+            
+            NEWSBLUR.log(['hiding']);
+            this.flags['showing_progress_bar'] = false;
             
             $progress.animate({
                 'opacity': 0,
@@ -803,7 +810,10 @@
                 'duration': 750,
                 'queue': false,
                 'complete': function() {
-                    $progress.css({'display': 'none'});
+                    NEWSBLUR.log(['actually hide?', self.flags['showing_progress_bar']]);
+                    if (!self.flags['showing_progress_bar']) {
+                        $progress.css({'display': 'none'});
+                    }
                 }
             });
             this.$s.$feed_list.animate({'bottom': '30px'}, {'duration': 750, 'queue': false});
@@ -995,10 +1005,18 @@
             $('.NB-progress-title', $progress).text('Get Started');
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
-            $progress.addClass('NB-progress-error');
+            $progress.addClass('NB-progress-error').addClass('NB-progress-big');
             $('.NB-progress-link', $progress).html($.make('a', { href: '#', className: 'NB-splash-link NB-menu-manage-feedchooser' }, 'Choose your 64'));
             
             this.show_progress_bar();
+        },
+        
+        hide_feed_chooser_button: function() {
+            var $progress = this.$s.$feeds_progress;
+            var $bar = $('.NB-progress-bar', $progress);
+            $progress.removeClass('NB-progress-error').removeClass('NB-progress-big');
+            
+            this.hide_progress_bar();
         },
         
         // ===============================
@@ -3035,7 +3053,7 @@
                 'display': 'block'
             }).animate({
                 'opacity': 1,
-                'bottom': 36
+                'bottom': 6
             }, {
                 'duration': 750,
                 'easing': 'easeInOutQuint'
@@ -3192,6 +3210,7 @@
             this.$s.$feed_link_loader.fadeOut(250);
             this.setup_feed_refresh();
             if (!this.flags['has_unfetched_feeds']) {
+                NEWSBLUR.log(['has_unfetched_feeds']);
                 this.hide_progress_bar();
             }
         },
