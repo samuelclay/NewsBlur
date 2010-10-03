@@ -82,8 +82,7 @@ class FetchFeed:
         
 class ProcessFeed:
     def __init__(self, feed_id, fpf, db, options):
-        feed = Feed.objects.get(pk=feed_id) 
-        self.feed = feed
+        self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
@@ -94,11 +93,15 @@ class ProcessFeed:
             ENTRY_SAME:'same',
             ENTRY_ERR:'error'}
         self.entry_keys = sorted(self.entry_trans.keys())
-
+    
+    def refresh_feed(self):
+        self.feed = Feed.objects.get(pk=self.feed_id) 
+        
     def process(self, first_run=True):
         """ Downloads and parses a feed.
         """
-
+        self.refresh_feed()
+        
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -129,7 +132,11 @@ class ProcessFeed:
             if self.fpf.status in (302, 301):
                 self.feed.feed_address = self.fpf.href
                 self.feed.save()
-                return self.process(first_run=False)
+                if first_run:
+                    return self.process(first_run=False)
+                else:
+                    self.feed.save_feed_history(self.fpf.status, "HTTP Error")
+                    return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
                 self.feed.save()
