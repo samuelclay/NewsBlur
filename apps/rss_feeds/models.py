@@ -131,8 +131,7 @@ class Feed(models.Model):
         old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
-            
-        if status_code >= 400:
+        if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
                                 MFeedFetchHistory.objects(feed_id=self.pk))
             self.count_errors_in_history(fetch_history, status_code, 'feed')
@@ -151,7 +150,7 @@ class Feed(models.Model):
         for history in old_fetch_histories:
             history.delete()
             
-        if status_code >= 400:
+        if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
                                 MPageFetchHistory.objects(feed_id=self.pk))
             self.count_errors_in_history(fetch_history, status_code, 'page')
@@ -161,8 +160,8 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, fetch_history, status_code, exception_type):
-        non_errors = [h for h in fetch_history if int(h) < 400]
-        errors = [h for h in fetch_history if int(h) >= 400]
+        non_errors = [h for h in fetch_history if int(h) in (200, 304)]
+        errors = [h for h in fetch_history if int(h) not in (200, 304)]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             if exception_type == 'feed':
@@ -285,6 +284,8 @@ class Feed(models.Model):
         except:
             pass
         
+        self.set_next_scheduled_update()
+        
         options = {
             'verbose': 1 if not force else 2,
             'timeout': 10,
@@ -296,7 +297,6 @@ class Feed(models.Model):
         disp.run_jobs()
         disp.poll()
         
-        self.set_next_scheduled_update()
 
         return
 

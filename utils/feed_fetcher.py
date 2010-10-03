@@ -278,12 +278,7 @@ class Dispatcher:
                 ENTRY_ERR: 0
             }
             start_time = datetime.datetime.now()
-                    
-            ### Uncomment to test feed fetcher
-            # from random import randint
-            # if randint(0,10) < 10:
-            #     continue
-            
+
             try:
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
