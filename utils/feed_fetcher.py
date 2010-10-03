@@ -39,7 +39,8 @@ def mtime(ttime):
     
     
 class FetchFeed:
-    def __init__(self, feed, options):
+    def __init__(self, feed_id, options):
+        feed = Feed.objects.get(pk=feed_id) 
         self.feed = feed
         self.options = options
         self.fpf = None
@@ -80,7 +81,8 @@ class FetchFeed:
         return identity
         
 class ProcessFeed:
-    def __init__(self, feed, fpf, db, options):
+    def __init__(self, feed_id, fpf, db, options):
+        feed = Feed.objects.get(pk=feed_id) 
         self.feed = feed
         self.options = options
         self.fpf = fpf
@@ -256,7 +258,7 @@ class Dispatcher:
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
-        for feed in feed_queue:
+        for feed_id in feed_queue:
             ret_entries = {
                 ENTRY_NEW: 0,
                 ENTRY_UPDATED: 0,
@@ -271,14 +273,14 @@ class Dispatcher:
             #     continue
             
             try:
-                ffeed = FetchFeed(feed, self.options)
+                ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
-                    pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
+                    pfeed = ProcessFeed(feed_id, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
-                    feed = Feed.objects.get(pk=feed.pk) # Update feed, since it may have changed
+                    feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
@@ -309,7 +311,8 @@ class Dispatcher:
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
-                
+            
+            feed = Feed.objects.get(pk=feed_id) 
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and

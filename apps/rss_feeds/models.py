@@ -292,7 +292,7 @@ class Feed(models.Model):
             'force': force,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
-        disp.add_jobs([[self]])
+        disp.add_jobs([[self.pk]])
         disp.run_jobs()
         disp.poll()
         
