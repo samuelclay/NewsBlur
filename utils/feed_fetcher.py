@@ -95,7 +95,7 @@ class ProcessFeed:
             ENTRY_ERR:'error'}
         self.entry_keys = sorted(self.entry_trans.keys())
 
-    def process(self):
+    def process(self, first_run=True):
         """ Downloads and parses a feed.
         """
 
@@ -125,7 +125,12 @@ class ProcessFeed:
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
-
+            
+            if self.fpf.status in (302, 301):
+                self.feed.feed_address = self.fpf.href
+                self.feed.save()
+                return self.process(first_run=False)
+                
             if self.fpf.status >= 400:
                 self.feed.save()
                 self.feed.save_feed_history(self.fpf.status, "HTTP Error")
