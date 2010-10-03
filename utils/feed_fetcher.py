@@ -65,11 +65,10 @@ class FetchFeed:
         #     return FEED_SAME, None
         # else:
         self.feed.set_next_scheduled_update()
-            
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         
-        if self.options.get('force'):
+        if self.options.get('force') or not self.feed.fetched_once:
             modified = None
             etag = None
             
@@ -143,6 +142,7 @@ class ProcessFeed:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
+                self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). Checking address..." % unicode(self.feed)[:30])
@@ -150,6 +150,7 @@ class ProcessFeed:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                self.feed.save()
                 return FEED_ERRPARSE, ret_values
                 
         # the feed has changed (or it is the first time we parse it)

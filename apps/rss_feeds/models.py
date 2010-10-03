@@ -816,7 +816,7 @@ class MFeedFetchHistory(mongo.Document):
     meta = {
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
-        'indexes': ['feed_id', ('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
     def save(self, *args, **kwargs):
@@ -851,7 +851,7 @@ class MPageFetchHistory(mongo.Document):
     meta = {
         'collection': 'page_fetch_history',
         'allow_inheritance': False,
-        'indexes': ['feed_id', ('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
     def save(self, *args, **kwargs):
