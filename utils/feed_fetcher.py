@@ -115,6 +115,8 @@ class ProcessFeed:
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
             
+        self.feed.last_update = datetime.datetime.now()
+
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 logging.debug(u'   ---> [%-30s] Fetched feed, HTTP status %d: %s (bozo: %s)' % (unicode(self.feed)[:30],

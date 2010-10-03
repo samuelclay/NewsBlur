@@ -37,7 +37,7 @@ class Feed(models.Model):
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1)
-    last_update = models.DateTimeField(default=datetime.datetime.now, db_index=True)
+    last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
@@ -50,8 +50,8 @@ class Feed(models.Model):
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
     story_count_history = models.TextField(blank=True, null=True)
-    next_scheduled_update = models.DateTimeField(default=datetime.datetime.now, db_index=True)
-    queued_date = models.DateTimeField(default=datetime.datetime.now, db_index=True)
+    next_scheduled_update = models.DateTimeField(db_index=True)
+    queued_date = models.DateTimeField(db_index=True)
     last_load_time = models.IntegerField(default=0)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
@@ -66,6 +66,13 @@ class Feed(models.Model):
     def save(self, lock=None, *args, **kwargs):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
+        if not self.last_update:
+            self.last_update = datetime.datetime.now()
+        if not self.next_scheduled_update:
+            self.next_scheduled_update = datetime.datetime.now()
+        if not self.queued_date:
+            self.queued_date = datetime.datetime.now()
+        
 
         try:
             if lock:
@@ -766,7 +773,7 @@ class MStory(mongo.Document):
         super(MStory, self).save(*args, **kwargs)
         
 class FeedUpdateHistory(models.Model):
-    fetch_date = models.DateTimeField(default=datetime.datetime.now)
+    fetch_date = models.DateTimeField(auto_now=True)
     number_of_feeds = models.IntegerField()
     seconds_taken = models.IntegerField()
     average_per_feed = models.DecimalField(decimal_places=1, max_digits=4)
@@ -787,7 +794,7 @@ class FeedFetchHistory(models.Model):
     status_code = models.CharField(max_length=10, null=True, blank=True)
     message = models.CharField(max_length=255, null=True, blank=True)
     exception = models.TextField(null=True, blank=True)
-    fetch_date = models.DateTimeField(default=datetime.datetime.now)
+    fetch_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
         return "[%s] %s (%s): %s %s: %s" % (
@@ -822,7 +829,7 @@ class PageFetchHistory(models.Model):
     status_code = models.CharField(max_length=10, null=True, blank=True)
     message = models.CharField(max_length=255, null=True, blank=True)
     exception = models.TextField(null=True, blank=True)
-    fetch_date = models.DateTimeField(default=datetime.datetime.now)
+    fetch_date = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
         return "[%s] %s (%s): %s %s: %s" % (
@@ -855,7 +862,7 @@ class MPageFetchHistory(mongo.Document):
 
 class FeedLoadtime(models.Model):
     feed = models.ForeignKey(Feed)
-    date_accessed = models.DateTimeField(default=datetime.datetime.now)
+    date_accessed = models.DateTimeField(auto_now=True)
     loadtime = models.FloatField()
     
     def __unicode__(self):
