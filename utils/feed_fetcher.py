@@ -121,12 +121,12 @@ class ProcessFeed:
             if self.fpf.status == 304:
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
-                return FEED_SAME, ret_values
+                return FEED_SAME, ret_values, self.feed
 
             if self.fpf.status >= 400:
                 self.feed.save()
                 self.feed.save_feed_history(self.fpf.status, "HTTP Error")
-                return FEED_ERRHTTP, ret_values
+                return FEED_ERRHTTP, ret_values, self.feed
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             if not self.fpf.entries:
@@ -135,7 +135,7 @@ class ProcessFeed:
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 self.feed.save()
-                return FEED_ERRPARSE, ret_values
+                return FEED_ERRPARSE, ret_values, self.feed
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). Checking address..." % unicode(self.feed)[:30])
             if not self.fpf.entries:
@@ -143,7 +143,7 @@ class ProcessFeed:
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
                 self.feed.save()
-                return FEED_ERRPARSE, ret_values
+                return FEED_ERRPARSE, ret_values, self.feed
                 
         # the feed has changed (or it is the first time we parse it)
         # saving the etag and last_modified fields
