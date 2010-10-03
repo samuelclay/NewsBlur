@@ -3,7 +3,7 @@ from apps.rss_feeds.models import FeedUpdateHistory
 from django.core.cache import cache
 from django.conf import settings
 from apps.reader.models import UserSubscription, MUserStory
-from apps.rss_feeds.models import MStory
+from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
 from django.db import IntegrityError
@@ -105,6 +105,7 @@ class ProcessFeed:
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
         
+        self.feed.fetched_once = True
         self.feed.last_update = datetime.datetime.now()
 
         if hasattr(self.fpf, 'status'):
@@ -121,12 +122,12 @@ class ProcessFeed:
             if self.fpf.status == 304:
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
-                return FEED_SAME, ret_values, self.feed
+                return FEED_SAME, ret_values
 
             if self.fpf.status >= 400:
                 self.feed.save()
                 self.feed.save_feed_history(self.fpf.status, "HTTP Error")
-                return FEED_ERRHTTP, ret_values, self.feed
+                return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             if not self.fpf.entries:
@@ -135,7 +136,7 @@ class ProcessFeed:
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 self.feed.save()
-                return FEED_ERRPARSE, ret_values, self.feed
+                return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). Checking address..." % unicode(self.feed)[:30])
             if not self.fpf.entries:
@@ -143,7 +144,7 @@ class ProcessFeed:
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
                 self.feed.save()
-                return FEED_ERRPARSE, ret_values, self.feed
+                return FEED_ERRPARSE, ret_values
                 
         # the feed has changed (or it is the first time we parse it)
         # saving the etag and last_modified fields
@@ -210,7 +211,7 @@ class ProcessFeed:
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
-        return FEED_OK, ret_values, self.feed
+        return FEED_OK, ret_values
 
         
 class Dispatcher:
@@ -275,8 +276,10 @@ class Dispatcher:
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
-                    ret_feed, ret_entries, feed = pfeed.process()
-
+                    ret_feed, ret_entries = pfeed.process()
+                    
+                    feed = Feed.objects.get(pk=feed.pk) # Update feed, since it may have changed
+                    
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
                             feed.fetched_once = True
