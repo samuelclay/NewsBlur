@@ -55,15 +55,6 @@ class FetchFeed:
                                                  self.feed.id)
         logging.debug(log_msg)
                                                  
-        # Check if feed still needs to be updated
-        # feed = Feed.objects.get(pk=self.feed.pk)
-        # if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
-        #     log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
-        #                                                          self.feed.id)
-        #     logging.debug(log_msg)
-        #     feed.save_feed_history(303, "Already fetched")
-        #     return FEED_SAME, None
-        # else:
         self.feed.set_next_scheduled_update()
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
@@ -113,7 +104,7 @@ class ProcessFeed:
             ENTRY_ERR:0}
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
-            
+        
         self.feed.last_update = datetime.datetime.now()
 
         if hasattr(self.fpf, 'status'):
@@ -123,9 +114,10 @@ class ProcessFeed:
                                                      self.feed.feed_address,
                                                      self.fpf.bozo))
                 if self.fpf.bozo and self.fpf.status != 304:
-                    logging.debug(u'   ---> [%-30s] BOZO exception: %s' % (
+                    logging.debug(u'   ---> [%-30s] BOZO exception: %s (%s entries)' % (
                                   unicode(self.feed)[:30],
-                                  self.fpf.bozo_exception,))
+                                  self.fpf.bozo_exception,
+                                  len(self.fpf.entries)))
             if self.fpf.status == 304:
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
@@ -218,7 +210,7 @@ class ProcessFeed:
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
-        return FEED_OK, ret_values
+        return FEED_OK, ret_values, self.feed
 
         
 class Dispatcher:
@@ -283,7 +275,7 @@ class Dispatcher:
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
                     pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
-                    ret_feed, ret_entries = pfeed.process()
+                    ret_feed, ret_entries, feed = pfeed.process()
 
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
