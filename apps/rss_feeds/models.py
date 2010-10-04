@@ -113,7 +113,7 @@ class Feed(models.Model):
                 self.has_feed_exception = False
                 self.active = True
                 self.save()
-            except:
+            except IntegrityError:
                 original_feed = Feed.objects.get(feed_address=feed_address)
                 original_feed.has_feed_exception = False
                 original_feed.active = True
@@ -621,7 +621,7 @@ class Feed(models.Model):
 
         self.save(lock=lock)
 
-    def reset_next_scheduled_update(self, lock=None):
+    def schedule_feed_fetch_immediately(self, lock=None):
         self.next_scheduled_update = datetime.datetime.now()
 
         self.save(lock=lock)

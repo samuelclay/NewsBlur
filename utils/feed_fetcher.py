@@ -133,10 +133,9 @@ class ProcessFeed:
                 self.feed.feed_address = self.fpf.href
                 self.feed.save()
                 if first_run:
-                    return self.process(first_run=False)
-                else:
-                    self.feed.save_feed_history(self.fpf.status, "HTTP Error")
-                    return FEED_ERRHTTP, ret_values
+                    self.feed.schedule_feed_fetch_immediately()
+                self.feed.save_feed_history(self.fpf.status, "HTTP Error")
+                return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
                 self.feed.save()
@@ -149,6 +148,8 @@ class ProcessFeed:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
+                else:
+                    self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
@@ -157,6 +158,8 @@ class ProcessFeed:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                else:
+                    self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
                 
@@ -372,8 +375,6 @@ class Dispatcher:
                 feed_queue = self.feeds_queue[i]
                 self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper,
                                                             args=(feed_queue,)))
-                # worker.setName("Thread #%s" % (i+1))
-                # worker.setDaemon(True)
             for i in range(self.num_threads):
                 self.workers[i].start()
             
@@ -383,14 +384,11 @@ class Dispatcher:
         if not self.options['single_threaded']:
             for i in range(self.num_threads):
                 self.workers[i].join()
-            done = (u'* DONE in %s\n* Feeds: %s\n* Entries: %s' % (
+            done = (u'* DONE in %s\n* Feeds: %s\n' % (
                     unicode(datetime.datetime.now() - self.time_start),
                     u' '.join(u'%s=%d' % (self.feed_trans[key],
                               self.feed_stats[key])
                               for key in self.feed_keys),
-                    u' '.join(u'%s=%d' % (self.entry_trans[key],
-                              self.entry_stats[key])
-                              for key in self.entry_keys)
                     ))
             logging.debug(done)
             return
