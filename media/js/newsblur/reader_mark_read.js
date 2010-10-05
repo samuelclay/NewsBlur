@@ -5,7 +5,6 @@ NEWSBLUR.ReaderMarkRead = function(options) {
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner();
 };
 

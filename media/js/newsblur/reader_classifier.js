@@ -16,7 +16,6 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
     this.options = $.extend({}, defaults, options);
     this.score = this.options['score'];
     this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner_trainer();
 };
 
@@ -39,7 +38,6 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     this.options = $.extend({}, defaults, options);
     this.score = this.options['score'];
     this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner_feed();
 };
 
@@ -60,7 +58,6 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.options = $.extend({}, defaults, options);
     this.score = this.options['score'];
     this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner_story();
 };
 
@@ -200,7 +197,7 @@ var classifier = {
         if (this.options.feed_loaded) {
           this.feed_tags = this.model.get_feed_tags();
           this.feed_authors = this.model.get_feed_authors();
-          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', this.google_favicon_url + this.feed['feed_link']);
+          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', NEWSBLUR.Globals.google_favicon_url + this.feed['feed_link']);
           $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
         }
     },
@@ -318,7 +315,7 @@ var classifier = {
             (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
             $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
             (this.options['feed_loaded'] &&
@@ -591,7 +588,7 @@ var classifier = {
         var $publisher = $.make('div', { className: 'NB-classifier NB-classifier-publisher' }, [
             $.make('input', input_attrs),
             $.make('label', { 'for': 'classifier_publisher' }, [
-                $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + publisher.feed_link }),
+                $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + publisher.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
                     $.make('b', 'Publisher: '),
                     $.make('span', publisher.feed_title)

@@ -4,7 +4,6 @@ NEWSBLUR.ReaderManageFeed = function(feed_id, options) {
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.feed_id = feed_id;
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.counters = {
         'classifier': 0
     };
@@ -212,7 +211,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         var $publisher = $.make('div', { className: 'NB-classifier NB-classifier-publisher' }, [
             $.make('input', { type: 'checkbox', name: opinion+'publisher', value: this.feed_id, id: 'classifier_publisher', checked: 'checked' }),
             $.make('label', { 'for': 'classifier_publisher' }, [
-                $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + publisher.feed_link }),
+                $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + publisher.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
                     $.make('b', 'Publisher: '),
                     $.make('span', publisher.feed_title)

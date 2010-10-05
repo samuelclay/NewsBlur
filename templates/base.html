@@ -12,7 +12,9 @@
     NEWSBLUR.Globals = {
       'is_authenticated': {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous': {{ user.is_anonymous|yesno:"true,false" }},
+      'is_premium': {{ user.profile.is_premium|yesno:"true,false" }},
       'username': "{{ user.username|safe }}",
+      'google_favicon_url': 'http://www.google.com/s2/favicons?domain_url=',
       'MEDIA_URL': "{{ MEDIA_URL }}"
     };
     NEWSBLUR.Flags = {

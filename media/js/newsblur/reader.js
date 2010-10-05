@@ -8,7 +8,6 @@
         // ===========
         
         this.model = NEWSBLUR.AssetModel.reader();
-        this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
         this.story_view = 'page';
         this.$s = {
             $body: $('body'),
@@ -542,7 +541,6 @@
             var self = this;
             
             if ($('#feed_list').length) {
-                this.flags['has_chosen_feeds'] = false;
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.$s.$feed_link_loader.css({'display': 'block'});
                 this.model.load_feeds($.rescope(this.make_feeds, this));
@@ -558,7 +556,8 @@
             // NEWSBLUR.log(['Making feeds', {'folders': folders, 'feeds': feeds}]);
             
             $('#story_taskbar').css({'display': 'block'});
-
+            
+            this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
             this.make_feeds_folder($feed_list, folders, 0);
             this.$s.$feed_link_loader.fadeOut(250);
             
@@ -576,9 +575,19 @@
             } else if (!this.flags['has_chosen_feeds'] && folders.length) {
                 this.show_feed_chooser_button();
                 // _.defer(_.bind(this.open_feedchooser_modal, this), 1000);
-            } else {
+            } else if (NEWSBLUR.Globals.is_authenticated) {
                 this.setup_ftux_add_feed_callout();
             }
+        },
+        
+        detect_all_inactive_feeds: function() {
+          var feeds = this.model.feeds;
+          var has_chosen_feeds = _.any(feeds, function(feed) {
+            NEWSBLUR.log(['active?', feed, feed.active]);
+            return feed.active;
+          });
+          
+          return has_chosen_feeds;
         },
         
         make_feeds_folder: function($feeds, items, depth, collapsed_parent) {
@@ -670,15 +679,13 @@
             }
             if (!feed.active) {
                 exception_class += ' NB-feed-inactive';
-            } else {
-                this.flags['has_chosen_feeds'] = true;
             }
             
             var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class + exception_class }, [
                 $.make('div', { className: 'feed_counts' }, [
                     this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng)
                 ]),
-                $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
+                $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
                   feed.feed_title,
                   $.make('span', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
@@ -776,8 +783,6 @@
         show_progress_bar: function($progress) {
             $progress = $progress || this.$s.$feeds_progress;
             
-            NEWSBLUR.log(['showing', this.flags['showing_progress_bar']]);
-            
             if (!this.flags['showing_progress_bar']) {
                 this.flags['showing_progress_bar'] = true;
                 $progress.css({'display': 'block', 'opacity': 0}).animate({
@@ -800,7 +805,6 @@
                 this.model.preference('hide_fetch_progress', true);
             }
             
-            NEWSBLUR.log(['hiding']);
             this.flags['showing_progress_bar'] = false;
             
             $progress.animate({
@@ -810,7 +814,6 @@
                 'duration': 750,
                 'queue': false,
                 'complete': function() {
-                    NEWSBLUR.log(['actually hide?', self.flags['showing_progress_bar']]);
                     if (!self.flags['showing_progress_bar']) {
                         $progress.css({'display': 'none'});
                     }
@@ -1037,8 +1040,7 @@
                 'story_titles_loaded': false,
                 'iframe_prevented_from_loading': false,
                 'pause_feed_refreshing': false,
-                'feed_list_showing_manage_menu': false,
-                'has_chosen_feeds': false
+                'feed_list_showing_manage_menu': false
             });
             
             $.extend(this.cache, {
@@ -2271,7 +2273,7 @@
             var $manage_menu;
             
             if (type == 'site') {
-                var show_chooser = _.size(this.model.feeds) > 54;
+                var show_chooser = !NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated;
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                     $.make('li', { className: 'NB-menu-manage-site-info' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

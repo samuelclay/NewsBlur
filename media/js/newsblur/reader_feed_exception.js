@@ -3,7 +3,6 @@ NEWSBLUR.ReaderFeedException = function(feed_id, options) {
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.feed_id = feed_id;
     this.feed = this.model.get_feed(feed_id);
     this.runner();
@@ -29,7 +28,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Fix a misbehaving site'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit' }, [

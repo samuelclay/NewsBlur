@@ -601,6 +601,18 @@ def save_feed_chooser(request):
             sub.save()
             
     return {'activated': activated}
+
+@login_required
+def activate_premium_account(request):
+    request.user.profile.is_premium = True
+    request.user.profile.save()
     
+    usersubs = UserSubscription.objects.filter(user=request.user)
+    for sub in usersubs:
+        sub.active = True
+        sub.save()
+        
+    return HttpResponseRedirect(reverse('index'))
+
 def iframe_buster(request):
     return HttpResponse(status=204)

@@ -3105,6 +3105,10 @@ background: transparent;
 .NB-modal-feedchooser .feed.NB-feedchooser-decline .feed_title {
   color: #808080;
 }
+.NB-modal-feedchooser .feed .feed_counts .unread_count_negative,
+.NB-modal-feedchooser .feed .feed_counts .unread_count_positive {
+    display: none;
+}
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts,
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_counts .unread_count_positive {
     display: block;
@@ -3155,4 +3159,50 @@ background: transparent;
     right: -12px;
     padding: 12px;
     background-color: #FFF;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+    font-size: 13px;
+    color: #505050;
+    text-shadow: 1px 1px 0 #F0F0F0;
+    font-weight: bold;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
+    margin: 0 0 8px 20px;
+    padding: 3px 8px 4px;
+    background-color: #F6F6F6;
+    position: relative;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li .NB-feedchooser-premium-bullet-image {
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+}
+    
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-1 .NB-feedchooser-premium-bullet-image {
+    background: transparent url('../img/icons/silk/lightning.png') no-repeat 0 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-2 .NB-feedchooser-premium-bullet-image {
+    background: transparent url('../img/icons/silk/pictures.png') no-repeat 0 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-3 .NB-feedchooser-premium-bullet-image {
+    background: transparent url('../img/icons/silk/lorry.png') no-repeat 0 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-4 .NB-feedchooser-premium-bullet-image {
+    background: transparent url('../img/icons/silk/lightbulb.png') no-repeat 0 0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets .NB-feedchooser-premium-poor-hungry-dog {
+    display: block;
+    margin: 12px auto 4px;
+    border: 1px solid #303030;
+    width: 128px;
+    height: 96px;
 }

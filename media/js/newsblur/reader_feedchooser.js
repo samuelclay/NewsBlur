@@ -3,7 +3,6 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner();
 };
 
@@ -32,7 +31,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                     $.make('span', { style: 'color: #303060;' }, 'Standard Account'),
                     ', which can follow up to '+this.MAX_FEEDS+' sites at a time.'
                 ]),
-                'You can always switch these.'
+                'You can always change these.'
             ]),
             $.make('div', { className: 'NB-feedchooser-type'}, [
               $.make('div', { className: 'NB-feedchooser-info'}, [
@@ -59,10 +58,21 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   ])
               ]),
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
-                $.make('li', { className: 'NB-feedchooser-premium-cost' }, [
-                    
+                $.make('li', { className: 'NB-1' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'Sites are updated 10x more often.'
                 ]),
-                $.make('li', { className: 'NB-feedchooser-premium-cost' }, [
+                $.make('li', { className: 'NB-2' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'Unlimited number of sites.'
+                ]),
+                $.make('li', { className: 'NB-3' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'You feed my poor, hungry dog for 6 days!',
+                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
+                ]),
+                $.make('li', { className: 'NB-4' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   $.make('span', { className: 'NB-feedchooser-premium-cost-dollars' }, '$12'),
                   '/',
                   $.make('span', { className: 'NB-feedchooser-premium-cost-time' }, 'year'),
@@ -71,11 +81,17 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               ]),
               $.make('form', { className: 'NB-feedchooser-form' }, [
                   $.make('div', { className: 'NB-modal-submit' }, [
-                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-premium NB-modal-submit-green', value: 'Upgrade my account, please!' })
+                      // this.make_google_checkout()
                   ])
               ])
             ])
         ]);
+    },
+    
+    make_google_checkout: function() {
+      var checkout = '<script type="text/javascript" src="https://images-na.ssl-images-amazon.com/images/G/01/cba/js/jquery.js"></script><script type="text/javascript" src="https://images-na.ssl-images-amazon.com/images/G/01/cba/js/widget/widget.js"></script><form method=POST action="https://payments.amazon.com/checkout/A215TOHXICT770"><input type="hidden" name="order-input" value="type:cba-signed-order/sha1-hmac/1;order:PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnPz48T3JkZXIgeG1sbnM9J2h0dHA6Ly9wYXltZW50cy5hbWF6b24uY29tL2NoZWNrb3V0LzIwMDgtMTEtMzAvJz48Q2FydD48SXRlbXM+PEl0ZW0+PE1lcmNoYW50SWQ+QTIxNVRPSFhJQ1Q3NzA8L01lcmNoYW50SWQ+PFRpdGxlPk5ld3NCbHVyIFByZW1pdW0gLSAxIFllYXI8L1RpdGxlPjxEZXNjcmlwdGlvbj5UaGFuayB5b3UsIHRoYW5rIHlvdSwgdGhhbmsgeW91ITwvRGVzY3JpcHRpb24+PFByaWNlPjxBbW91bnQ+MTI8L0Ftb3VudD48Q3VycmVuY3lDb2RlPlVTRDwvQ3VycmVuY3lDb2RlPjwvUHJpY2U+PFF1YW50aXR5PjE8L1F1YW50aXR5PjxGdWxmaWxsbWVudE5ldHdvcms+TUVSQ0hBTlQ8L0Z1bGZpbGxtZW50TmV0d29yaz48L0l0ZW0+PC9JdGVtcz48L0NhcnQ+PC9PcmRlcj4=;signature:Zfg83JluKTIhItevtaGpspjdbfQ="><input alt="Checkout with Amazon Payments" src="https://payments.amazon.com/gp/cba/button?ie=UTF8&color=tan&background=white&cartOwnerId=A215TOHXICT770&size=large" type="image"></form>';
+      var $checkout = $(checkout);
+      return $checkout;
     },
     
     make_feeds: function() {
