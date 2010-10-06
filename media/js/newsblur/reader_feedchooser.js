@@ -54,7 +54,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
                     $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Super-Mega'),
-                    ' Fancy Account'
+                    ' Premium Account'
                   ])
               ]),
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
@@ -68,10 +68,14 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'Access to future premium-only features like search, starring, sending to Instapaper.'
+                ]),
+                $.make('li', { className: 'NB-4' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   'You feed my poor, hungry dog for 6 days!',
                   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
                 ]),
-                $.make('li', { className: 'NB-4' }, [
+                $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   $.make('span', { className: 'NB-feedchooser-premium-cost-dollars' }, '$12'),
                   '/',
@@ -104,7 +108,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         });
         
         // Expand collapsed folders
-        $('ul.folder', $feeds).css({
+        $('.folder', $feeds).css({
             'display': 'block',
             'opacity': 1
         });
@@ -149,9 +153,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 $('#simplemodal-container').corner('6px');
             },
             'onClose': function(dialog) {
-                if (!self.approve_list.length) {
-                    NEWSBLUR.reader.show_feed_chooser_button();
-                }
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {

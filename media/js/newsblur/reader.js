@@ -583,7 +583,6 @@
         detect_all_inactive_feeds: function() {
           var feeds = this.model.feeds;
           var has_chosen_feeds = _.any(feeds, function(feed) {
-            NEWSBLUR.log(['active?', feed, feed.active]);
             return feed.active;
           });
           
@@ -631,15 +630,18 @@
                             setTimeout(function() {
                                 if (is_collapsed) {
                                     $('ul.folder', $folder).css({'display': 'none'});
+                                    $feeds.append($folder);
                                     self.collapse_folder($('.folder_title', $folder).eq(0), true);
-                                    $feeds.append($folder.fadeIn(500));
                                     if (collapsed_parent) {
                                         $folder.parents('li.folder').each(function() {
                                             self.collapse_folder($('.folder_title', this).eq(0), true);
                                         });
                                     }
                                 } else {
-                                    $feeds.append($folder.fadeIn(500));
+                                    $feeds.append($folder);
+                                }
+                                if (self.flags['has_chosen_feeds']) {
+                                  $folder.fadeIn(500);
                                 }
                                 $('.feed', $folder).rightClick(function() {
                                   self.show_manage_menu('feed', $(this));
@@ -947,6 +949,7 @@
         show_collapsed_folder_count: function($folder_title, $children) {
             var $counts = $('.feed_counts_floater', $folder_title);
             $counts.remove();
+            $children = $('li.feed', $children).not('.NB-feed-inactive');
             
             var positive_count = 0;
             var neutral_count = 0;
@@ -1066,7 +1069,7 @@
             this.flags['opening_feed'] = true;
             
             if (!$feed_link) {
-              $feed_link = $('.feed.selected', this.$feed_list).eq(0);
+              $feed_link = $('.feed.selected', this.$s.$feed_list).eq(0);
             }
             
             if (feed_id != this.active_feed || force) {

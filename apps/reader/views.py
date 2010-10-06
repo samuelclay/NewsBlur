@@ -92,7 +92,6 @@ def load_feeds(request):
     user            = get_user(request)
     feeds           = {}
     not_yet_fetched = False
-
     
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
@@ -589,7 +588,6 @@ def login_as(request):
 def save_feed_chooser(request):
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')]
     activated = 0
-    
     usersubs = UserSubscription.objects.filter(user=request.user)
     for sub in usersubs:
         if sub.feed.pk in approved_feeds:

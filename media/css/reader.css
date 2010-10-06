@@ -3120,6 +3120,9 @@ background: transparent;
 .NB-modal-feedchooser .NB-feedlist .folder_title {
   cursor: default;
 }
+.NB-modal-feedchooser .NB-feedlist .folder_title .feed_counts_floater {
+  display: none;
+}
 
 .NB-modal-feedchooser .NB-feedlist .feed .NB-feedlist-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
@@ -3193,9 +3196,12 @@ background: transparent;
     background: transparent url('../img/icons/silk/pictures.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-3 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('../img/icons/silk/lorry.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/zoom.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-4 .NB-feedchooser-premium-bullet-image {
+    background: transparent url('../img/icons/silk/lorry.png') no-repeat 0 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-5 .NB-feedchooser-premium-bullet-image {
     background: transparent url('../img/icons/silk/lightbulb.png') no-repeat 0 0;
 }
 
