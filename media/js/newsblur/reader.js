@@ -164,8 +164,8 @@
                     prevent_bust -= 2;
                     if (!self.flags['iframe_view_loaded'] && self.story_view == 'page' && self.active_feed) {
                       $('.task_view_feed').click();
-                      window.top.location = '/reader/buster';
                       $('.NB-feed-frame').attr('src', '');
+                      window.top.location = '/reader/buster';
                     }
                 }
             }, 1);
