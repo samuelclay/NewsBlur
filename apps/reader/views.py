@@ -81,7 +81,7 @@ def signup(request):
         
 @never_cache
 def logout(request):
-    logging.info("Logout: %s" % request.user)
+    logging.info(" ---> [%s] Logout" % request.user)
     from django.contrib.auth import logout
     logout(request)
     

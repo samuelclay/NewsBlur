@@ -1,5 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from apps.reader.models import UserSubscription
+
 from utils import json
 
 @login_required
@@ -67,3 +71,14 @@ def set_collapsed_folders(request):
     
     response = dict(code=code)
     return response
+    
+@login_required
+def activate_premium(request):
+    request.user.profile.is_premium = True
+    request.user.profile.save()
+    
+    subs = UserSubscription.objects.filter(user=request.user)
+    for sub in subs:
+        sub.feed.setup_feed_for_premium_subscribers()
+    
+    return HttpResponseRedirect(reverse('index'))

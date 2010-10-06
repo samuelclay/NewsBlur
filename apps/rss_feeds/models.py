@@ -36,6 +36,7 @@ class Feed(models.Model):
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1)
+    premium_subscribers = models.IntegerField(default=-1)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -92,6 +93,10 @@ class Feed(models.Model):
         self.save_popular_authors(lock=lock)
         self.save_popular_tags(lock=lock)
     
+    def setup_feed_for_premium_subscribers(self):
+        self.count_subscribers()
+        self.set_next_scheduled_update()
+        
     @timelimit(20)
     def check_feed_address_for_feed_link(self):
         feed_address = None
@@ -174,10 +179,24 @@ class Feed(models.Model):
     def count_subscribers(self, verbose=False, lock=None):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=30)
         from apps.reader.models import UserSubscription
+        
         subs = UserSubscription.objects.filter(feed=self)
         self.num_subscribers = subs.count()
-        subs = UserSubscription.objects.filter(feed=self, active=True, user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE)
-        self.active_subscribers = subs.count()
+        
+        active_subs = UserSubscription.objects.filter(
+            feed=self, 
+            active=True,
+            user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
+        )
+        self.active_subscribers = active_subs.count()
+        
+        premium_subs = UserSubscription.objects.filter(
+            feed=self, 
+            active=True,
+            user__profile__is_premium=True
+        )
+        self.premium_subscribers = premium_subs.count()
+        
         self.save(lock=lock)
         
         if verbose:
@@ -596,6 +615,7 @@ class Feed(models.Model):
         # 2.5 hours for 3 subscribers.
         # 15 min for 10 subscribers.
         subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**2)
+        subscriber_bonus = subscriber_bonus / (10 * self.premium_subscribers)
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
