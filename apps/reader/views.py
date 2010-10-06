@@ -584,5 +584,5 @@ def login_as(request):
     return HttpResponseRedirect(reverse('index'))
 
 def iframe_buster(request):
-    logging.info(" ---> [%s] iFrame bust!" % (request.user,)
+    logging.info(" ---> [%s] iFrame bust!" % (request.user,))
     return HttpResponse(status=204)
