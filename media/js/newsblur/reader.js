@@ -157,16 +157,16 @@
             var self = this;
             var prevent_bust = 0;
             window.onbeforeunload = function() { 
-              if (!self.flags['iframe_view_loaded'] && self.story_view == 'page') { 
-                prevent_bust++;
-              } 
+              prevent_bust++;
             };
             setInterval(function() {
                 if (prevent_bust > 0) {
                     prevent_bust -= 2;
-                    $('.task_view_feed').click();
-                    window.top.location = '/reader/buster';
-                    $('.NB-feed-frame').attr('src', '');
+                    if (!self.flags['iframe_view_loaded'] && self.story_view == 'page' && self.active_feed) {
+                      $('.task_view_feed').click();
+                      window.top.location = '/reader/buster';
+                      $('.NB-feed-frame').attr('src', '');
+                    }
                 }
             }, 1);
         },
