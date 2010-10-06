@@ -59,7 +59,7 @@ class Command(BaseCommand):
             
         i = 0
         for feed in feeds:
-            feeds_queue[i%num_workers].append(feed)
+            feeds_queue[i%num_workers].append(feed.pk)
             i += 1
         disp.add_jobs(feeds_queue, i)
         

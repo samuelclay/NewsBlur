@@ -17,3 +17,4 @@ build/
 *.pbxuser
 data/
 logs
+mongo/

@@ -113,7 +113,7 @@ class Feed(models.Model):
                 self.has_feed_exception = False
                 self.active = True
                 self.save()
-            except:
+            except IntegrityError:
                 original_feed = Feed.objects.get(feed_address=feed_address)
                 original_feed.has_feed_exception = False
                 original_feed.active = True
@@ -131,8 +131,7 @@ class Feed(models.Model):
         old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
-            
-        if status_code >= 400:
+        if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
                                 MFeedFetchHistory.objects(feed_id=self.pk))
             self.count_errors_in_history(fetch_history, status_code, 'feed')
@@ -151,7 +150,7 @@ class Feed(models.Model):
         for history in old_fetch_histories:
             history.delete()
             
-        if status_code >= 400:
+        if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
                                 MPageFetchHistory.objects(feed_id=self.pk))
             self.count_errors_in_history(fetch_history, status_code, 'page')
@@ -161,8 +160,8 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, fetch_history, status_code, exception_type):
-        non_errors = [h for h in fetch_history if int(h) < 400]
-        errors = [h for h in fetch_history if int(h) >= 400]
+        non_errors = [h for h in fetch_history if int(h) in (200, 304)]
+        errors = [h for h in fetch_history if int(h) not in (200, 304)]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             if exception_type == 'feed':
@@ -285,6 +284,8 @@ class Feed(models.Model):
         except:
             pass
         
+        self.set_next_scheduled_update()
+        
         options = {
             'verbose': 1 if not force else 2,
             'timeout': 10,
@@ -292,11 +293,10 @@ class Feed(models.Model):
             'force': force,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
-        disp.add_jobs([[self]])
+        disp.add_jobs([[self.pk]])
         disp.run_jobs()
         disp.poll()
         
-        self.set_next_scheduled_update()
 
         return
 
@@ -621,7 +621,7 @@ class Feed(models.Model):
 
         self.save(lock=lock)
 
-    def reset_next_scheduled_update(self, lock=None):
+    def schedule_feed_fetch_immediately(self, lock=None):
         self.next_scheduled_update = datetime.datetime.now()
 
         self.save(lock=lock)
@@ -816,7 +816,7 @@ class MFeedFetchHistory(mongo.Document):
     meta = {
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
-        'indexes': ['feed_id', ('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
     def save(self, *args, **kwargs):
@@ -851,7 +851,7 @@ class MPageFetchHistory(mongo.Document):
     meta = {
         'collection': 'page_fetch_history',
         'allow_inheritance': False,
-        'indexes': ['feed_id', ('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
     def save(self, *args, **kwargs):

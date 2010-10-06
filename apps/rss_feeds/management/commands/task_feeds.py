@@ -38,6 +38,7 @@ class Command(BaseCommand):
         for f in feeds:
             f.queued_date = datetime.datetime.now()
             f.set_next_scheduled_update()
+
         for feed_queue in (feeds[pos:pos + size] for pos in xrange(0, len(feeds), size)):
             print feed_queue
             feed_ids = [feed.pk for feed in feed_queue]

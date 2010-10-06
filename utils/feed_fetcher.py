@@ -3,7 +3,7 @@ from apps.rss_feeds.models import FeedUpdateHistory
 from django.core.cache import cache
 from django.conf import settings
 from apps.reader.models import UserSubscription, MUserStory
-from apps.rss_feeds.models import MStory
+from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
 from django.db import IntegrityError
@@ -39,7 +39,8 @@ def mtime(ttime):
     
     
 class FetchFeed:
-    def __init__(self, feed, options):
+    def __init__(self, feed_id, options):
+        feed = Feed.objects.get(pk=feed_id) 
         self.feed = feed
         self.options = options
         self.fpf = None
@@ -55,21 +56,11 @@ class FetchFeed:
                                                  self.feed.id)
         logging.debug(log_msg)
                                                  
-        # Check if feed still needs to be updated
-        # feed = Feed.objects.get(pk=self.feed.pk)
-        # if feed.next_scheduled_update > datetime.datetime.now() and not self.options.get('force'):
-        #     log_msg = u'        ---> Already fetched %s (%d)' % (self.feed.feed_title,
-        #                                                          self.feed.id)
-        #     logging.debug(log_msg)
-        #     feed.save_feed_history(303, "Already fetched")
-        #     return FEED_SAME, None
-        # else:
         self.feed.set_next_scheduled_update()
-            
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         
-        if self.options.get('force'):
+        if self.options.get('force') or not self.feed.fetched_once:
             modified = None
             etag = None
             
@@ -90,8 +81,8 @@ class FetchFeed:
         return identity
         
 class ProcessFeed:
-    def __init__(self, feed, fpf, db, options):
-        self.feed = feed
+    def __init__(self, feed_id, fpf, db, options):
+        self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
@@ -102,11 +93,15 @@ class ProcessFeed:
             ENTRY_SAME:'same',
             ENTRY_ERR:'error'}
         self.entry_keys = sorted(self.entry_trans.keys())
-
-    def process(self):
+    
+    def refresh_feed(self):
+        self.feed = Feed.objects.get(pk=self.feed_id) 
+        
+    def process(self, first_run=True):
         """ Downloads and parses a feed.
         """
-
+        self.refresh_feed()
+        
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -114,7 +109,8 @@ class ProcessFeed:
             ENTRY_ERR:0}
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
-            
+        
+        self.feed.fetched_once = True
         self.feed.last_update = datetime.datetime.now()
 
         if hasattr(self.fpf, 'status'):
@@ -124,14 +120,23 @@ class ProcessFeed:
                                                      self.feed.feed_address,
                                                      self.fpf.bozo))
                 if self.fpf.bozo and self.fpf.status != 304:
-                    logging.debug(u'   ---> [%-30s] BOZO exception: %s' % (
+                    logging.debug(u'   ---> [%-30s] BOZO exception: %s (%s entries)' % (
                                   unicode(self.feed)[:30],
-                                  self.fpf.bozo_exception,))
+                                  self.fpf.bozo_exception,
+                                  len(self.fpf.entries)))
             if self.fpf.status == 304:
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
                 return FEED_SAME, ret_values
-
+            
+            if self.fpf.status in (302, 301):
+                self.feed.feed_address = self.fpf.href
+                self.feed.save()
+                if first_run:
+                    self.feed.schedule_feed_fetch_immediately()
+                self.feed.save_feed_history(self.fpf.status, "HTTP Error")
+                return FEED_ERRHTTP, ret_values
+                
             if self.fpf.status >= 400:
                 self.feed.save()
                 self.feed.save_feed_history(self.fpf.status, "HTTP Error")
@@ -143,6 +148,9 @@ class ProcessFeed:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
+                else:
+                    self.feed.schedule_feed_fetch_immediately()
+                self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). Checking address..." % unicode(self.feed)[:30])
@@ -150,6 +158,9 @@ class ProcessFeed:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                else:
+                    self.feed.schedule_feed_fetch_immediately()
+                self.feed.save()
                 return FEED_ERRPARSE, ret_values
                 
         # the feed has changed (or it is the first time we parse it)
@@ -262,7 +273,7 @@ class Dispatcher:
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
-        for feed in feed_queue:
+        for feed_id in feed_queue:
             ret_entries = {
                 ENTRY_NEW: 0,
                 ENTRY_UPDATED: 0,
@@ -270,20 +281,17 @@ class Dispatcher:
                 ENTRY_ERR: 0
             }
             start_time = datetime.datetime.now()
-                    
-            ### Uncomment to test feed fetcher
-            # from random import randint
-            # if randint(0,10) < 10:
-            #     continue
-            
+
             try:
-                ffeed = FetchFeed(feed, self.options)
+                ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
-                    pfeed = ProcessFeed(feed, fetched_feed, db, self.options)
+                    pfeed = ProcessFeed(feed_id, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
-
+                    
+                    feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+                    
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
                             feed.fetched_once = True
@@ -313,7 +321,8 @@ class Dispatcher:
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
-                
+            
+            feed = Feed.objects.get(pk=feed_id) 
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and
@@ -366,8 +375,6 @@ class Dispatcher:
                 feed_queue = self.feeds_queue[i]
                 self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper,
                                                             args=(feed_queue,)))
-                # worker.setName("Thread #%s" % (i+1))
-                # worker.setDaemon(True)
             for i in range(self.num_threads):
                 self.workers[i].start()
             
@@ -377,14 +384,11 @@ class Dispatcher:
         if not self.options['single_threaded']:
             for i in range(self.num_threads):
                 self.workers[i].join()
-            done = (u'* DONE in %s\n* Feeds: %s\n* Entries: %s' % (
+            done = (u'* DONE in %s\n* Feeds: %s\n' % (
                     unicode(datetime.datetime.now() - self.time_start),
                     u' '.join(u'%s=%d' % (self.feed_trans[key],
                               self.feed_stats[key])
                               for key in self.feed_keys),
-                    u' '.join(u'%s=%d' % (self.entry_trans[key],
-                              self.entry_stats[key])
-                              for key in self.entry_keys)
                     ))
             logging.debug(done)
             return
