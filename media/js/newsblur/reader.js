@@ -70,7 +70,7 @@
         this.handle_mouse_indicator_hover();
         this.position_mouse_indicator();
         this.handle_login_and_signup_forms();
-        // this.iframe_buster_buster();
+        this.iframe_buster_buster();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -155,13 +155,17 @@
         iframe_buster_buster: function() {
             var self = this;
             var prevent_bust = 0;
-            window.onbeforeunload = function() { prevent_bust++; };
+            window.onbeforeunload = function() { 
+              prevent_bust++;
+            };
             setInterval(function() {
                 if (prevent_bust > 0) {
                     prevent_bust -= 2;
-                    window.top.location = '/reader/buster';
-                    $('.NB-feed-frame').attr('src', '');
-                    $('.task_view_feed').click();
+                    if (!self.flags['iframe_view_loaded'] && self.story_view == 'page' && self.active_feed) {
+                      $('.task_view_feed').click();
+                      $('.NB-feed-frame').attr('src', '');
+                      window.top.location = '/reader/buster';
+                    }
                 }
             }, 1);
         },
@@ -1275,10 +1279,8 @@
             var $feed_view = this.$s.$feed_view;
 
             if (!story || !$story || !$story.length) {
-                NEWSBLUR.log(['no story', story, $story]);
                 $story = $('.story:first', $feed_view);
                 story = this.model.get_story($story.data('story'));
-                NEWSBLUR.log(['now story', story, $story]);
             }
             if (!story || !$story || !$story.length) {
                 return;

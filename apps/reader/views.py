@@ -613,4 +613,5 @@ def activate_premium_account(request):
     return HttpResponseRedirect(reverse('index'))
 
 def iframe_buster(request):
+    logging.info(" ---> [%s] iFrame bust!" % (request.user,))
     return HttpResponse(status=204)
