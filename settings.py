@@ -72,7 +72,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.cache.CacheMiddleware',
+#    'django.middleware.cache.CacheMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -195,6 +195,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'gunicorn',
     'djcelery',
     'compress',
     'apps.rss_feeds',
@@ -267,6 +268,7 @@ CELERY_DISABLE_RATE_LIMITS = True
 # = Configurations =
 # ==================
 
+from gunicorn_conf import *
 from local_settings import *
 
 COMPRESS = not DEBUG
