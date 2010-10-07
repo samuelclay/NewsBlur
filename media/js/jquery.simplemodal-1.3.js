@@ -531,7 +531,6 @@
 		        this.d.data = data;
 	        }
 		    w = this.getDimensions();
-		    NEWSBLUR.log(['resize', w]);
 		    this.setContainerDimensions();
 		},
 		setContainerDimensions: function () {
