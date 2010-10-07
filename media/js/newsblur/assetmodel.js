@@ -29,11 +29,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
-        this.ajax['queue'] = $.manageAjax.create('queue', {queue: false, domSuccessTrigger: true, traditional: true}); 
-        this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear', domSuccessTrigger: true, traditional: true}); 
-        this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domSuccessTrigger: true, traditional: true}); 
-        this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domSuccessTrigger: true, domCompleteTrigger: true, traditional: true}); 
-        this.ajax['statistics'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domSuccessTrigger: true, traditional: true}); 
+        this.ajax['queue'] = $.manageAjax.create('queue', {queue: false}); 
+        this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear'}); 
+        this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domCompleteTrigger: true}); 
+        this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domCompleteTrigger: true}); 
+        this.ajax['statistics'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true}); 
+        $.ajaxSettings.traditional = true;
         return;
     },
     
@@ -42,6 +43,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var options = $.extend({
             'ajax_group': 'queue',
             'traditional': true,
+            'domSuccessTrigger': true,
             'preventDoubbleRequests': false
         }, options);
         var request_type = 'POST';
@@ -166,7 +168,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     load_feed_precallback: function(data, feed_id, callback, first_load) {
         // NEWSBLUR.log(['pre_callback', data]);
-        if (feed_id != this.feed_id) {
+        if (feed_id != this.feed_id && data) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;
             this.feed_authors = data.feed_authors;
@@ -176,7 +178,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             for (var s in data.stories) {
                 this.story_keys.push(data.stories[s].id);
             }
-        } else {
+        } else if (data) {
             $.merge(this.stories, data.stories);
             
             // Assemble key cache for later, removing dupes

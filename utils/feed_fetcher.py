@@ -46,7 +46,8 @@ class FetchFeed:
     
     @timelimit(20)
     def fetch(self):
-        """ Downloads and parses a feed.
+        """ 
+        Uses feedparser to download the feed. Will be parsed later.
         """
         socket.setdefaulttimeout(30)
         identity = self.get_identity()
@@ -130,11 +131,12 @@ class ProcessFeed:
             
             if self.fpf.status in (302, 301):
                 self.feed.feed_address = self.fpf.href
-                self.feed.save()
                 if first_run:
                     self.feed.schedule_feed_fetch_immediately()
-                self.feed.save_feed_history(self.fpf.status, "HTTP Error")
-                return FEED_ERRHTTP, ret_values
+                if not self.fpf.entries:
+                    self.feed.save()
+                    self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
+                    return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
                 self.feed.save()
@@ -143,7 +145,7 @@ class ProcessFeed:
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             if not self.fpf.entries:
-                logging.debug("   ---> [%-30s] Feed is Non-XML. Checking address..." % unicode(self.feed)[:30])
+                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30]), len(self.fpf.entries))
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
@@ -152,7 +154,7 @@ class ProcessFeed:
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). Checking address..." % unicode(self.feed)[:30])
+            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30]), len(self.fpf.entries))
             if not self.fpf.entries:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
@@ -255,6 +257,9 @@ class Dispatcher:
         self.time_start = datetime.datetime.now()
         self.workers = []
 
+    def refresh_feed(self, feed_id):
+        return Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
@@ -283,6 +288,8 @@ class Dispatcher:
             }
             start_time = datetime.datetime.now()
 
+            feed = self.refresh_feed(feed_id)
+            
             try:
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
@@ -291,7 +298,7 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed_id, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
-                    feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+                    feed = self.refresh_feed(feed_id)
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
@@ -323,7 +330,7 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
             
-            feed = Feed.objects.get(pk=feed_id) 
+            feed = self.refresh_feed(feed_id)
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and
@@ -334,6 +341,7 @@ class Dispatcher:
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
+            feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.now() - start_time
             
             feed.last_load_time = max(1, delta.seconds)
