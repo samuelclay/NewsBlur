@@ -80,7 +80,7 @@ class Feed(models.Model):
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
             if duplicate_feed:
-                merge_feeds(self.pk, duplicate_feed.pk)
+                merge_feeds(self.pk, duplicate_feed[0].pk)
             # Feed has been deleted. Just ignore it.
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             pass
