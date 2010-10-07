@@ -77,6 +77,10 @@ class Feed(models.Model):
         try:
             super(Feed, self).save(*args, **kwargs)
         except IntegrityError, e:
+            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
+            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+            if duplicate_feed:
+                merge_feeds(self.pk, duplicate_feed.pk)
             # Feed has been deleted. Just ignore it.
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             pass
@@ -870,6 +874,8 @@ class DuplicateFeed(models.Model):
 def merge_feeds(original_feed_id, duplicate_feed_id):
     from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
     from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+    if original_feed_id > duplicate_feed_id:
+        original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
     try:
         original_feed = Feed.objects.get(pk=original_feed_id)
         duplicate_feed = Feed.objects.get(pk=duplicate_feed_id)
