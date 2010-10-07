@@ -131,10 +131,10 @@ class ProcessFeed:
             
             if self.fpf.status in (302, 301):
                 self.feed.feed_address = self.fpf.href
-                self.feed.save()
                 if first_run:
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
+                    self.feed.save()
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
                 
@@ -257,6 +257,9 @@ class Dispatcher:
         self.time_start = datetime.datetime.now()
         self.workers = []
 
+    def refresh_feed(self, feed_id):
+        return Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
@@ -291,7 +294,7 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed_id, fetched_feed, db, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
-                    feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+                    feed = self.refresh_feed(feed_id)
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
@@ -323,7 +326,7 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
             
-            feed = Feed.objects.get(pk=feed_id) 
+            feed = self.refresh_feed(feed_id)
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and
@@ -334,6 +337,7 @@ class Dispatcher:
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
+            feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.now() - start_time
             
             feed.last_load_time = max(1, delta.seconds)
