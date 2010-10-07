@@ -75,16 +75,10 @@ class Feed(models.Model):
         
 
         try:
-            if lock:
-                lock.acquire()
-                try:
-                    super(Feed, self).save(*args, **kwargs)
-                finally:
-                    lock.release()
-            else:
-                super(Feed, self).save(*args, **kwargs)
+            super(Feed, self).save(*args, **kwargs)
         except IntegrityError:
             # Feed has been deleted. Just ignore it.
+            logging.debug(' ***> [%-30s] Feed deleted. Could not save.' % self)
             pass
     
     def update_all_statistics(self, lock=None):
