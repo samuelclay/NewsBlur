@@ -2,28 +2,12 @@
  * project-site: http://plugins.jquery.com/project/AjaxManager
  * repository: http://github.com/aFarkas/Ajaxmanager
  * @author Alexander Farkas
- * @version 3.0
+ * @version 3.06
  * Copyright 2010, Alexander Farkas
  * Dual licensed under the MIT or GPL Version 2 licenses.
  */
 
 (function($){
-	
-	//this can be deleted if jQuery 1.4.2 is out
-	$.support.ajax = !!(window.XMLHttpRequest);
-	if(window.ActiveXObject){
-		try{
-			new ActiveXObject("Microsoft.XMLHTTP");
-			$.support.ajax = true;
-		} catch(e){
-			if(window.XMLHttpRequest){
-				$.ajaxSetup({xhr: function(){
-					return new XMLHttpRequest();
-				}});
-			}
-		}
-	}
-	
 	var managed = {},
 		cache   = {}
 	;
@@ -33,8 +17,17 @@
 			return managed[name];
 		}
 		
+		function destroy(name){
+			if(managed[name]){
+				managed[name].clear(true);
+				delete managed[name];
+			}
+		}
+
+		
 		var publicFns = {
-			create: create
+			create: create,
+			destroy: destroy
 		};
 		
 		return publicFns;
@@ -47,7 +40,7 @@
 		this.qName = name;
 		
 		this.opts = $.extend({}, $.ajaxSettings, $.manageAjax.defaults, opts);
-		if(opts.queue && opts.queue !== true && typeof opts.queue === 'string' && opts.queue !== 'clear'){
+		if(opts && opts.queue && opts.queue !== true && typeof opts.queue === 'string' && opts.queue !== 'clear'){
 			this.qName = opts.queue;
 		}
 	};
@@ -56,24 +49,23 @@
 		add: function(o){
 			o = $.extend({}, this.opts, o);
 			
-			var origCom		= o.complete,
-				origSuc		= o.success,
-				beforeSend	= o.beforeSend,
-				origError 	= o.error,
+			var origCom		= o.complete || $.noop,
+				origSuc		= o.success || $.noop,
+				beforeSend	= o.beforeSend || $.noop,
+				origError 	= o.error || $.noop,
 				strData 	= (typeof o.data == 'string') ? o.data : $.param(o.data || {}),
 				xhrID 		= o.type + o.url + strData,
 				that 		= this,
 				ajaxFn 		= this._createAjax(xhrID, o, origSuc, origCom)
 			;
+			
 			if(this.requests[xhrID] && o.preventDoubbleRequests){
 				return;
 			}
 			ajaxFn.xhrID = xhrID;
 			o.xhrID = xhrID;
 			
-            // NEWSBLUR.log(['add', o, o.queue, this.opts, this.requests[xhrID], this.qName]);
 			o.beforeSend = function(xhr, opts){
-                // NEWSBLUR.log(['o.beforeSend', xhr, opts]);
 				var ret = beforeSend.call(this, xhr, opts);
 				if(ret === false){
 					that._removeXHR(xhrID);
@@ -82,29 +74,29 @@
 				return ret;
 			};
 			o.complete = function(xhr, status){
-                // NEWSBLUR.log(['o.complete', xhr, status, o]);
 				that._complete.call(that, this, origCom, xhr, status, xhrID, o);
 				xhr = null;
 			};
 			
 			o.success = function(data, status, xhr){
-                // NEWSBLUR.log(['o.success', data, status]);
 				that._success.call(that, this, origSuc, data, status, xhr, o);
 				xhr = null;
 			};
 						
 			//always add some error callback
 			o.error =  function(ahr, status, errorStr){
-                // NEWSBLUR.log(['o.error', errorStr, status]);
-				ahr = (ahr || {});
-				var httpStatus 	= ahr.status,
-					content 	= ahr.responseXML || ahr.responseText
+				var httpStatus 	= '',
+					content 	= ''
 				;
+				if(status !== 'timeout' && ahr){
+					httpStatus = ahr.status;
+					content = ahr.responseXML || ahr.responseText;
+				}
 				if(origError) {
 					origError.call(this, ahr, status, errorStr, o);
 				} else {
 					setTimeout(function(){
-						throw status + ':: status: ' + httpStatus + ' | URL: ' + o.url + ' | data: '+ strData + ' | thrown: '+ errorStr + ' | response: '+ content;
+						throw status + '| status: ' + httpStatus + ' | URL: ' + o.url + ' | data: '+ strData + ' | thrown: '+ errorStr + ' | response: '+ content;
 					}, 0);
 				}
 				ahr = null;
@@ -115,7 +107,6 @@
 			}
 			
 			if(o.queue){
-                // NEWSBLUR.log(['Queueing', o.queue, this.qName]);
 				$.queue(document, this.qName, ajaxFn);
 				if(this.inProgress < o.maxRequests){
 					$.dequeue(document, this.qName);
@@ -129,18 +120,21 @@
 			return function(){
 				if(o.beforeCreate.call(o.context || that, id, o) === false){return;}
 				that.inProgress++;
+				if(that.inProgress === 1){
+					$.event.trigger(that.name +'AjaxStart');
+				}
 				if(o.cacheResponse && cache[id]){
 					that.requests[id] = {};
 					setTimeout(function(){
-						that._complete.call(that, o.context || o, origCom, {}, 'success', id, o);
-						that._success.call(that, o.context || o, origSuc, cache[id], 'success', {}, o);
+						that._complete.call(that, o.context || o, origCom, cache[id], 'success', id, o);
+						that._success.call(that, o.context || o, origSuc, cache[id]._successData, 'success', cache[id], o);
 					}, 0);
 				} else {
-                    // NEWSBLUR.log(['create_ajax', o, o.complete, o.error, o.success]);
-					that.requests[id] = $.ajax(o);
-				}
-				if(that.inProgress === 1){
-					$.event.trigger(that.name +'AjaxStart');
+					if (o.async) {
+						that.requests[id] = $.ajax(o);
+					} else {
+						$.ajax(o);
+					}
 				}
 				return id;
 			};
@@ -159,16 +153,19 @@
 			return ret;
 		},
 		_complete: function(context, origFn, xhr, status, xhrID, o){
-            // NEWSBLUR.log(['complete', o]);
 			if(this._isAbort(xhr, o)){
 				status = 'abort';
 				o.abort.call(context, xhr, status, o);
 			}
 			origFn.call(context, xhr, status, o);
+			
 			$.event.trigger(this.name +'AjaxComplete', [xhr, status, o]);
 			
 			if(o.domCompleteTrigger){
-				$(o.domCompleteTrigger).trigger(this.name +'DOMComplete', [xhr, status, o]);
+				$(o.domCompleteTrigger)
+					.trigger(this.name +'DOMComplete', [xhr, status, o])
+					.trigger('DOMComplete', [xhr, status, o])
+				;
 			}
 			
 			this._removeXHR(xhrID);
@@ -178,7 +175,6 @@
 			xhr = null;
 		},
 		_success: function(context, origFn, data, status, xhr, o){
-            // NEWSBLUR.log(['_success', data, status]);
 			var that = this;
 			if(this._isAbort(xhr, o)){
 				xhr = null;
@@ -193,17 +189,39 @@
 				});
 			}
 			if(o.cacheResponse && !cache[o.xhrID]){
-				cache[o.xhrID] = data;
+				cache[o.xhrID] = {
+					status: xhr.status,
+					statusText: xhr.statusText,
+					responseText: xhr.responseText,
+					responseXML: xhr.responseXML,
+					_successData: data
+				};
+				if(xhr.getAllResponseHeaders){
+					var responseHeaders = xhr.getAllResponseHeaders();
+					$.extend(cache[o.xhrID], {
+						getAllResponseHeaders: function() {return responseHeaders;},
+						getResponseHeader: (function(){
+							var parsedHeaders = {};
+							$.each(responseHeaders.split("\n"), function(i, headerLine){
+								var delimiter = headerLine.indexOf(":");
+			                    parsedHeaders[headerLine.substr(0, delimiter)] = headerLine.substr(delimiter + 2);
+							});
+							return function(name) {return parsedHeaders[name];};
+						}())
+					});
+				}
 			}
 			origFn.call(context, data, status, xhr, o);
 			$.event.trigger(this.name +'AjaxSuccess', [xhr, o, data]);
 			if(o.domSuccessTrigger){
-				$(o.domSuccessTrigger).trigger(this.name +'DOMSuccess', [data, o]);
+				$(o.domSuccessTrigger)
+					.trigger(this.name +'DOMSuccess', [data, o])
+					.trigger('DOMSuccess', [data, o])
+				;
 			}
 			xhr = null;
 		},
 		getData: function(id){
-            // NEWSBLUR.log(['getData', id]);
 			if( id ){
 				var ret = this.requests[id];
 				if(!ret && this.opts.queue) {
@@ -220,7 +238,6 @@
 			};
 		},
 		abort: function(id){
-            // NEWSBLUR.log(['abort', id]);
 			var xhr;
 			if(id){
 				xhr = this.getData(id);
@@ -251,7 +268,6 @@
 			});
 		},
 		clear: function(shouldAbort){
-            // NEWSBLUR.log(['clear', shouldAbort]);
 			$(document).clearQueue(this.qName); 
 			if(shouldAbort){
 				this.abort();
@@ -260,9 +276,6 @@
 	};
 	$.manageAjax._manager.prototype.getXHR = $.manageAjax._manager.prototype.getData;
 	$.manageAjax.defaults = {
-		complete: $.noop,
-		success: $.noop,
-		beforeSend: $.noop,
 		beforeCreate: $.noop,
 		abort: $.noop,
 		abortIsNoSuccess: true,
