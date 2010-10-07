@@ -362,6 +362,7 @@ def mark_story_as_read(request):
 @json.json_view
 def mark_feed_as_read(request):
     feed_ids = request.REQUEST.getlist('feed_id')
+    code = 0
     for feed_id in feed_ids:
         feed = Feed.objects.get(id=feed_id)
         code = 0

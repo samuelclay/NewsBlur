@@ -34,6 +34,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domCompleteTrigger: true}); 
         this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domCompleteTrigger: true}); 
         this.ajax['statistics'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true}); 
+        $.ajaxSettings.traditional = true;
         return;
     },
     
