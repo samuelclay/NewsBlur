@@ -122,6 +122,9 @@ def load_feeds(request):
             feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
+        if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
+            sub.feed.count_subscribers()
+            sub.feed.schedule_feed_fetch_immediately()
             
     if not_yet_fetched:
         for f in feeds:
@@ -587,7 +590,7 @@ def login_as(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
-    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')]
+    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     for sub in usersubs:

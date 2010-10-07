@@ -481,8 +481,7 @@ class Feed(models.Model):
     
     def format_stories(self, stories_db):
         stories = []
-        # from django.db import connection
-        # print "Formatting Stories: %s" % stories_db.count()
+
         for story_db in stories_db:
             story = {}
             story['story_tags'] = story_db.story_tags or []
@@ -546,9 +545,6 @@ class Feed(models.Model):
                     story_in_system = existing_story
                 elif story.get('link') and story.get('link') == existing_story['story_permalink']:
                     story_in_system = existing_story
-                
-                # import pdb
-                # pdb.set_trace()
                 
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
