@@ -287,6 +287,8 @@ class Dispatcher:
             }
             start_time = datetime.datetime.now()
 
+            feed = self.refresh_feed(feed_id)
+            
             try:
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
