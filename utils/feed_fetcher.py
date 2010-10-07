@@ -134,8 +134,9 @@ class ProcessFeed:
                 self.feed.save()
                 if first_run:
                     self.feed.schedule_feed_fetch_immediately()
-                self.feed.save_feed_history(self.fpf.status, "HTTP Error")
-                return FEED_ERRHTTP, ret_values
+                if not self.fpf.entries:
+                    self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
+                    return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
                 self.feed.save()
