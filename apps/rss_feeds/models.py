@@ -76,9 +76,9 @@ class Feed(models.Model):
 
         try:
             super(Feed, self).save(*args, **kwargs)
-        except IntegrityError:
+        except IntegrityError, e:
             # Feed has been deleted. Just ignore it.
-            logging.debug(' ***> [%-30s] Feed deleted. Could not save.' % self)
+            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             pass
     
     def update_all_statistics(self, lock=None):
