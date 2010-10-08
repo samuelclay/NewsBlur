@@ -65,4 +65,3 @@ class Command(BaseCommand):
         
         print " ---> Fetching %s feeds..." % feeds.count()
         disp.run_jobs()
-        disp.poll()

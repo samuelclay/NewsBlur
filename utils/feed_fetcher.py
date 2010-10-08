@@ -10,7 +10,6 @@ from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit
-import sys
 import time
 import datetime
 import traceback
@@ -146,7 +145,7 @@ class ProcessFeed:
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             if not self.fpf.entries:
-                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30]), len(self.fpf.entries))
+                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
@@ -155,7 +154,7 @@ class ProcessFeed:
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30]), len(self.fpf.entries))
+            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
             if not self.fpf.entries:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
@@ -259,15 +258,13 @@ class Dispatcher:
         self.workers = []
 
     def refresh_feed(self, feed_id):
-        return Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        return feed
         
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
-        if not self.options['single_threaded']:
-            # Close the DB so the connection can be re-opened on a per-process basis
-            from django.db import connection
-            connection.close()
+
         delta = None
         
         MONGO_DB = settings.MONGO_DB
@@ -320,6 +317,9 @@ class Dispatcher:
             except urllib2.HTTPError, e:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
                 fetched_feed = None
+            except Feed.DoesNotExist, e:
+                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed)[:30]))
+                return
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
@@ -365,9 +365,6 @@ class Dispatcher:
             seconds_taken=time_taken.seconds
         )
         history.save()
-        if not self.options['single_threaded']:
-            logging.debug("---> DONE WITH PROCESS: %s" % current_process.name)
-            sys.exit()
 
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
@@ -385,20 +382,5 @@ class Dispatcher:
                                                             args=(feed_queue,)))
             for i in range(self.num_threads):
                 self.workers[i].start()
-            
-    def poll(self):
-        """ polls the active threads
-        """
-        if not self.options['single_threaded']:
-            for i in range(self.num_threads):
-                self.workers[i].join()
-            done = (u'* DONE in %s\n* Feeds: %s\n' % (
-                    unicode(datetime.datetime.now() - self.time_start),
-                    u' '.join(u'%s=%d' % (self.feed_trans[key],
-                              self.feed_stats[key])
-                              for key in self.feed_keys),
-                    ))
-            logging.debug(done)
-            return
 
                 

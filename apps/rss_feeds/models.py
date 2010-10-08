@@ -79,10 +79,11 @@ class Feed(models.Model):
         except IntegrityError, e:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             if duplicate_feed:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
+                return duplicate_feed[0].pk
             # Feed has been deleted. Just ignore it.
-            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             pass
     
     def update_all_statistics(self, lock=None):
@@ -293,10 +294,6 @@ class Feed(models.Model):
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
-        disp.poll()
-        
-
-        return
 
     def add_update_stories(self, stories, existing_stories, db):
         ret_values = {
