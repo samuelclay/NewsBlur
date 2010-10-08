@@ -609,10 +609,14 @@ def activate_premium_account(request):
     request.user.profile.is_premium = True
     request.user.profile.save()
     
-    usersubs = UserSubscription.objects.filter(user=request.user)
+    usersubs = UserSubscription.objects.select_related('feed').filter(user=request.user)
     for sub in usersubs:
         sub.active = True
         sub.save()
+        if sub.feed.premium_subscribers <= 0:
+            sub.feed.count_subscribers()
+            sub.feed.schedule_feed_fetch_immediately()
+        
         
     return HttpResponseRedirect(reverse('index'))
 
