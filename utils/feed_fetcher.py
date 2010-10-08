@@ -258,7 +258,8 @@ class Dispatcher:
         self.workers = []
 
     def refresh_feed(self, feed_id):
-        return Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        return feed
         
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
@@ -316,6 +317,9 @@ class Dispatcher:
             except urllib2.HTTPError, e:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
                 fetched_feed = None
+            except Feed.DoesNotExist, e:
+                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed)[:30]))
+                return
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
