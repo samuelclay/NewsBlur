@@ -10,7 +10,6 @@ from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit
-import sys
 import time
 import datetime
 import traceback
@@ -264,10 +263,7 @@ class Dispatcher:
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
-        if not self.options['single_threaded']:
-            # Close the DB so the connection can be re-opened on a per-process basis
-            from django.db import connection
-            connection.close()
+
         delta = None
         
         MONGO_DB = settings.MONGO_DB
@@ -365,9 +361,6 @@ class Dispatcher:
             seconds_taken=time_taken.seconds
         )
         history.save()
-        if not self.options['single_threaded']:
-            logging.debug("---> DONE WITH PROCESS: %s" % current_process.name)
-            sys.exit()
 
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
@@ -385,20 +378,5 @@ class Dispatcher:
                                                             args=(feed_queue,)))
             for i in range(self.num_threads):
                 self.workers[i].start()
-            
-    def poll(self):
-        """ polls the active threads
-        """
-        if not self.options['single_threaded']:
-            for i in range(self.num_threads):
-                self.workers[i].join()
-            done = (u'* DONE in %s\n* Feeds: %s\n' % (
-                    unicode(datetime.datetime.now() - self.time_start),
-                    u' '.join(u'%s=%d' % (self.feed_trans[key],
-                              self.feed_stats[key])
-                              for key in self.feed_keys),
-                    ))
-            logging.debug(done)
-            return
 
                 

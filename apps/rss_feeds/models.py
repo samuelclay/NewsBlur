@@ -293,10 +293,6 @@ class Feed(models.Model):
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
-        disp.poll()
-        
-
-        return
 
     def add_update_stories(self, stories, existing_stories, db):
         ret_values = {

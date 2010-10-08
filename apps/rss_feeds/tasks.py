@@ -11,6 +11,9 @@ class UpdateFeeds(Task):
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
             
+        from django.db import connection
+        connection.close()
+        
         for feed_pk in feed_pks:
             feed = Feed.objects.get(pk=feed_pk)
             logging.debug(' Updating: [%s] %s' % (feed_pks, feed))
