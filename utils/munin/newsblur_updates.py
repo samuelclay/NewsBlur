@@ -11,7 +11,7 @@ graph_config = {
     'feeds_fetched.label': 'Fetched feeds last hour',
 }
 
-hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
+hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
 
 metrics = {
     'update_queue': Feed.objects.filter(queued_date__gte=hour_ago).count(),
