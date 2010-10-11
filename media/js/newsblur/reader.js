@@ -60,6 +60,8 @@
         // = Initialization =
         // ==================
         
+        
+        this.unload_iframe();
         if (NEWSBLUR.Flags['start_import_from_google_reader']) {
           this.start_import_from_google_reader();
         } else {
@@ -579,7 +581,7 @@
             
             if (NEWSBLUR.Globals.is_authenticated) {
                 this.start_count_unreads_after_import();
-                this.force_feed_refresh($.rescope(this.finish_count_unreads_after_import, this));
+                this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this));
             }
         },
         
@@ -677,8 +679,8 @@
                     $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated + ' ago')
                 ])),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')),
-                (feed.has_exception && $.make('div', { className: 'NB-feed-exception-icon' })),
-                (feed.not_yet_fetched && $.make('div', { className: 'NB-feed-unfetched-icon' })),
+                $.make('div', { className: 'NB-feed-exception-icon' }),
+                $.make('div', { className: 'NB-feed-unfetched-icon' }),
                 (type == 'feed' && $.make('div', { className: 'NB-feedlist-manage-icon' }))
             ]).data('feed_id', feed.id);  
             
@@ -2233,6 +2235,21 @@
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
         
+        force_feed_refresh: function(feed_id) {
+            var self = this;
+            var $feed = this.find_feed_in_feed_list(feed_id);
+            $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
+            
+            this.model.save_exception_retry(feed_id, function() {
+                self.force_feeds_refresh(function() {
+                    $feed.removeClass('NB-feed-unfetched');
+                    if (self.active_feed == feed_id) {
+                        self.open_feed(feed_id, null, true);
+                    }
+                }, true);
+            });
+        },
+
         make_manage_menu: function(type, feed_id, inverse, $item) {
             var $manage_menu;
             
@@ -2276,6 +2293,10 @@
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-reload' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
@@ -2701,7 +2722,7 @@
             }, this.FEED_REFRESH_INTERVAL);
         },
         
-        force_feed_refresh: function(callback, update_all) {
+        force_feeds_refresh: function(callback, update_all) {
             if (callback) {
                 this.cache.refresh_callback = callback;
             } else {
@@ -3330,6 +3351,13 @@
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                     NEWSBLUR.log(['statistics feed_id', feed_id]);
                     self.open_feed_statistics_modal(feed_id);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-reload' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                    self.force_feed_refresh(feed_id);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-delete' }, function($t, $p){
