@@ -2216,9 +2216,13 @@
             
             NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
         },
-        
+
         open_mark_read_modal: function() {
             NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead();
+        },
+
+        open_keyboard_shortcuts_modal: function() {
+            NEWSBLUR.keyboard = new NEWSBLUR.ReaderKeyboard();
         },
                 
         open_preferences_modal: function() {
@@ -2241,8 +2245,9 @@
             $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
             
             this.model.save_exception_retry(feed_id, function() {
-                self.force_feeds_refresh(function() {
-                    $feed.removeClass('NB-feed-unfetched');
+                self.force_feeds_refresh(function(feeds) {
+                    var $new_feed = self.make_feed_title_line(feeds[feed_id]);
+                    $feed.replaceWith($new_feed);
                     if (self.active_feed == feed_id) {
                         self.open_feed(feed_id, null, true);
                     }
@@ -2259,7 +2264,12 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
                     ]).corner('tl tr 8px'),
-                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-separator' }), 
+                    $.make('li', { className: 'NB-menu-manage-keyboard' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
@@ -2740,7 +2750,7 @@
             var feeds = this.model.feeds;
             
             if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
-                this.cache.refresh_callback();
+                this.cache.refresh_callback(feeds);
                 delete this.cache.refresh_callback;
             }
             
@@ -3397,6 +3407,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_mark_read_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_keyboard_shortcuts_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-exception' }, function($t, $p){
