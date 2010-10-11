@@ -15,7 +15,7 @@ graph_config = {
     'page_success.label': 'Page Success',
 }
 
-last_day = datetime.datetime.now() - datetime.timedelta(days=1)
+last_day = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
 metrics = {
     'feed_errors': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),

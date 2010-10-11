@@ -16,7 +16,7 @@ graph_config = {
     'feeds_loaded_hour.label': 'Feeds Loaded (Hour)',
 }
 
-hour_ago = datetime.datetime.now() - datetime.timedelta(minutes=60)
+hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
 
 averages = dict(avg=Avg('loadtime'), max=Max('loadtime'), min=Min('loadtime'), count=Count('loadtime'))
 hour = FeedLoadtime.objects.filter(date_accessed__gte=hour_ago).aggregate(**averages)

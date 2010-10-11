@@ -112,7 +112,7 @@ def _do_timesince(d, chunks, now=None):
         d = datetime.datetime(d.year, d.month, d.day)
 
     if not now:
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
 
     # ignore microsecond part of 'd' since we removed it from 'now'
     delta = now - (d - datetime.timedelta(0, 0, d.microsecond))
@@ -143,7 +143,7 @@ def relative_timeuntil(value):
       (60, lambda n: ungettext('minute', 'minutes', n))
     )
     
-    now = datetime.datetime.now()
+    now = datetime.datetime.utcnow()
     
     return _do_timesince(now, chunks, value)
         
@@ -151,7 +151,7 @@ def format_relative_date(date, future=False):
     if not date or date < datetime.datetime(2010, 1, 1):
         return "Soon"
         
-    now = datetime.datetime.now()
+    now = datetime.datetime.utcnow()
     diff = abs(now - date)
     if diff < datetime.timedelta(minutes=60):
         minutes = diff.seconds / 60
