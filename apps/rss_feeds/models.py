@@ -1,4 +1,3 @@
-import settings
 import difflib
 import datetime
 import hashlib
@@ -14,6 +13,7 @@ from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder,
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
+from django.conf import settings
 from mongoengine.queryset import OperationError
 from utils import json
 from utils import feedfinder
@@ -295,7 +295,7 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
 
-    def add_update_stories(self, stories, existing_stories, db):
+    def add_update_stories(self, stories, existing_stories):
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -367,7 +367,7 @@ class Feed(models.Model):
                     existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
                     existing_story['story_tags'] = story_tags
                     try:
-                        db.stories.update({'_id': existing_story['_id']}, existing_story)
+                        settings.MONGODB.stories.update({'_id': existing_story['_id']}, existing_story)
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
