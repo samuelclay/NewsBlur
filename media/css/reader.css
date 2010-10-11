@@ -404,13 +404,17 @@ a img {
   display: none;
 }
 
-#feed_list .feed.NB-feed-exception .NB-feed-exception-icon {
+#feed_list .feed .NB-feed-exception-icon {
   background: url('../img/icons/silk/exclamation.png') no-repeat 0 0;
   width: 16px;
   height: 16px;
   position: absolute;
   right: 4px;
   top: 2px;
+  display: none;
+}
+#feed_list .feed.NB-feed-exception .NB-feed-exception-icon {
+    display: block;
 }
 
 #feed_list .feed.NB-feed-unfetched .feed_counts {
@@ -422,7 +426,8 @@ a img {
 #feed_list .feed.NB-feed-unfetched .feed_title {
   color: #A0A0A0;
 }
-#feed_list .feed.NB-feed-unfetched .NB-feed-unfetched-icon {
+
+#feed_list .feed .NB-feed-unfetched-icon {
   background: url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
   opacity: .1;
   width: 16px;
@@ -430,6 +435,10 @@ a img {
   position: absolute;
   right: 4px;
   top: 2px;
+  display: none;
+}
+#feed_list .feed.NB-feed-unfetched .NB-feed-unfetched-icon {
+  display: block;
 }
 
 .feed.NB-feed-sorting,
@@ -2746,6 +2755,9 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 0;    
+}
+.NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/car.png') no-repeat  0 -1px;    
 }
 
 .NB-menu-manage .NB-menu-manage-feed-stats .NB-menu-manage-image {

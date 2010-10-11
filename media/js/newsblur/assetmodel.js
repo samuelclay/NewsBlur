@@ -168,7 +168,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     load_feed_precallback: function(data, feed_id, callback, first_load) {
         // NEWSBLUR.log(['pre_callback', data]);
-        if (feed_id != this.feed_id && data) {
+        if ((feed_id != this.feed_id && data) || first_load) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;
             this.feed_authors = data.feed_authors;
