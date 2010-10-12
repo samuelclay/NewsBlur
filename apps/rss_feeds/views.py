@@ -41,7 +41,7 @@ def exception_retry(request):
     reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = get_object_or_404(Feed, pk=feed_id)
     
-    feed.next_scheduled_update = datetime.datetime.now()
+    feed.next_scheduled_update = datetime.datetime.utcnow()
     feed.has_page_exception = False
     feed.has_feed_exception = False
     if reset_fetch:
@@ -71,16 +71,21 @@ def exception_change_feed_address(request):
     feed.active = True
     feed.fetched_once = False
     feed.feed_address = feed_address
-    feed.next_scheduled_update = datetime.datetime.now()
+    feed.next_scheduled_update = datetime.datetime.utcnow()
+    retry_feed = feed
     try:
         feed.save()
     except IntegrityError:
         original_feed = Feed.objects.get(feed_address=feed_address)
-        original_feed.next_scheduled_update = datetime.datetime.now()
+        retry_feed = original_feed
+        original_feed.next_scheduled_update = datetime.datetime.utcnow()
         original_feed.has_feed_exception = False
         original_feed.active = True
         original_feed.save()
         merge_feeds(original_feed.pk, feed.pk)
+    
+    logging.info(" ---> [%s] Fixing feed exception by address: %s" % (request.user, retry_feed.feed_address))
+    retry_feed.update()
     
     return {'code': 1}
     
@@ -97,6 +102,7 @@ def exception_change_feed_link(request):
         # This Forbidden-403 throws an error, which sounds pretty good to me right now
         return HttpResponseForbidden()
     
+    retry_feed = feed
     feed_address = feedfinder.feed(feed_link)
     if feed_address:
         code = 1
@@ -105,16 +111,20 @@ def exception_change_feed_link(request):
         feed.fetched_once = False
         feed.feed_link = feed_link
         feed.feed_address = feed_address
-        feed.next_scheduled_update = datetime.datetime.now()
+        feed.next_scheduled_update = datetime.datetime.utcnow()
         try:
             feed.save()
         except IntegrityError:
             original_feed = Feed.objects.get(feed_address=feed_address)
-            original_feed.next_scheduled_update = datetime.datetime.now()
+            retry_feed = original_feed
+            original_feed.next_scheduled_update = datetime.datetime.utcnow()
             original_feed.has_page_exception = False
             original_feed.active = True
             original_feed.save()
             merge_feeds(original_feed.pk, feed.pk)
+    
+    logging.info(" ---> [%s] Fixing feed exception by link: %s" % (request.user, retry_feed.feed_link))
+    retry_feed.update()
     
     return {'code': code}
     

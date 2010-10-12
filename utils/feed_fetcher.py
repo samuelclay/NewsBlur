@@ -109,7 +109,7 @@ class ProcessFeed:
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
         
         self.feed.fetched_once = True
-        self.feed.last_update = datetime.datetime.now()
+        self.feed.last_update = datetime.datetime.utcnow()
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -179,7 +179,7 @@ class ProcessFeed:
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
         self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
-        self.feed.last_update = datetime.datetime.now()
+        self.feed.last_update = datetime.datetime.utcnow()
         
         guids = []
         for entry in self.fpf.entries:
@@ -197,8 +197,8 @@ class ProcessFeed:
             self.lock.release()
 
         # Compare new stories to existing stories, adding and updating
-        # start_date = datetime.datetime.now()
-        # end_date = datetime.datetime.now()
+        # start_date = datetime.datetime.utcnow()
+        # end_date = datetime.datetime.utcnow()
         story_guids = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
@@ -252,7 +252,7 @@ class Dispatcher:
             FEED_ERREXC:'exception'}
         self.feed_keys = sorted(self.feed_trans.keys())
         self.num_threads = num_threads
-        self.time_start = datetime.datetime.now()
+        self.time_start = datetime.datetime.utcnow()
         self.workers = []
 
     def refresh_feed(self, feed_id):
@@ -275,7 +275,7 @@ class Dispatcher:
                 ENTRY_SAME: 0,
                 ENTRY_ERR: 0
             }
-            start_time = datetime.datetime.now()
+            start_time = datetime.datetime.utcnow()
 
             feed = self.refresh_feed(feed_id)
             
@@ -334,7 +334,7 @@ class Dispatcher:
                 page_importer.fetch_page()
 
             feed = self.refresh_feed(feed_id)
-            delta = datetime.datetime.now() - start_time
+            delta = datetime.datetime.utcnow() - start_time
             
             feed.last_load_time = max(1, delta.seconds)
             feed.fetched_once = True
@@ -352,7 +352,7 @@ class Dispatcher:
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
         
-        time_taken = datetime.datetime.now() - self.time_start
+        time_taken = datetime.datetime.utcnow() - self.time_start
         history = FeedUpdateHistory(
             number_of_feeds=len(feed_queue),
             seconds_taken=time_taken.seconds

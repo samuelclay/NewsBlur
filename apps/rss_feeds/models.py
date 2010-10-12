@@ -27,7 +27,7 @@ from utils.diff import HTMLDiff
 from utils import log as logging
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
-SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=21)
+SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=21)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
@@ -67,11 +67,11 @@ class Feed(models.Model):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
         if not self.last_update:
-            self.last_update = datetime.datetime.now()
+            self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
-            self.next_scheduled_update = datetime.datetime.now()
+            self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
-            self.queued_date = datetime.datetime.now()
+            self.queued_date = datetime.datetime.utcnow()
         
 
         try:
@@ -108,7 +108,7 @@ class Feed(models.Model):
         if feed_address:
             try:
                 self.feed_address = feed_address
-                self.next_scheduled_update = datetime.datetime.now()
+                self.next_scheduled_update = datetime.datetime.utcnow()
                 self.has_feed_exception = False
                 self.active = True
                 self.save()
@@ -126,7 +126,7 @@ class Feed(models.Model):
                           status_code=int(status_code),
                           message=message,
                           exception=exception,
-                          fetch_date=datetime.datetime.now()).save()
+                          fetch_date=datetime.datetime.utcnow()).save()
         old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
@@ -144,7 +144,7 @@ class Feed(models.Model):
                           status_code=int(status_code),
                           message=message,
                           exception=exception,
-                          fetch_date=datetime.datetime.now()).save()
+                          fetch_date=datetime.datetime.utcnow()).save()
         old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
@@ -195,7 +195,7 @@ class Feed(models.Model):
         # self.save_feed_story_history_statistics(lock)
         
     def save_feed_stories_last_month(self, verbose=False, lock=None):
-        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+        month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
                                             story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
@@ -213,7 +213,7 @@ class Feed(models.Model):
         Save format: [('YYYY-MM, #), ...]
         Example output: [(2010-12, 123), (2011-01, 146)]
         """
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         min_year = now.year
         total = 0
         month_count = 0
@@ -609,7 +609,7 @@ class Feed(models.Model):
     def set_next_scheduled_update(self, lock=None):
         total, random_factor = self.get_next_scheduled_update()
 
-        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
+        next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
             
         self.next_scheduled_update = next_scheduled_update
@@ -617,7 +617,7 @@ class Feed(models.Model):
         self.save(lock=lock)
 
     def schedule_feed_fetch_immediately(self, lock=None):
-        self.next_scheduled_update = datetime.datetime.now()
+        self.next_scheduled_update = datetime.datetime.utcnow()
 
         self.save(lock=lock)
         

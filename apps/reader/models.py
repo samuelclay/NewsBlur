@@ -64,7 +64,7 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = False
             self.save()
             return
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)

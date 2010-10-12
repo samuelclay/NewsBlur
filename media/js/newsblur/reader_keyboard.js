@@ -1,17 +1,11 @@
-// Preferences:
-//  - Feed sort order
-//  - New window behavior
-
-NEWSBLUR.ReaderPreferences = function(options) {
+NEWSBLUR.ReaderKeyboard = function(options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
-    this.google_favicon_url = 'http://www.google.com/s2/favicons?domain_url=';
     this.runner();
 };
 
-NEWSBLUR.ReaderPreferences.prototype = {
+NEWSBLUR.ReaderKeyboard.prototype = {
     
     runner: function() {
         this.make_modal();
@@ -24,33 +18,14 @@ NEWSBLUR.ReaderPreferences.prototype = {
     make_modal: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Preferences'),
-            $.make('form', { className: 'NB-preferences-form' }, [
-                $.make('div', { className: 'NB-fieldset NB-preference' }, [
-                    $.make('h5', [
-                        'Interaction'
-                    ]),
-                    $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('div', [
-                            $.make('label', { 'for': 'NB-add-folder' }, [
-                                $.make('div', { className: 'NB-folder-icon' })
-                            ]),
-                            $.make('input', { type: 'radio', id: 'NB-preference-window-same', className: 'NB-preference-radio', name: 'new_window' }),
-                            $.make('input', { type: 'radio', id: 'NB-preference-window-new', className: 'NB-preference-radio', name: 'new_window' })
-                        ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
-                ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save_preferences();
-                return false;
-            })
+        this.$modal = $.make('div', { className: 'NB-modal-keyboard NB-modal' }, [
+            $.make('h2', { className: 'NB-modal-title' }, 'Keyboard shortcuts'),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, 'j'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next story')
+              ])
+            ])
         ]);
     },
     
