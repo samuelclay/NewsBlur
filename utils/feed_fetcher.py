@@ -17,7 +17,6 @@ import multiprocessing
 import urllib2
 import xml.sax
 import socket
-import mongoengine
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -81,12 +80,11 @@ class FetchFeed:
         return identity
         
 class ProcessFeed:
-    def __init__(self, feed_id, fpf, db, options):
+    def __init__(self, feed_id, fpf, options):
         self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
-        self.db = db
         self.entry_trans = {
             ENTRY_NEW:'new',
             ENTRY_UPDATED:'updated',
@@ -209,7 +207,7 @@ class ProcessFeed:
             # if story.get('published') > end_date:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        existing_stories = self.db.stories.find({
+        existing_stories = settings.MONGODB.stories.find({
             'story_feed_id': self.feed.pk, 
             # 'story_date': {'$gte': start_date},
             'story_guid': {'$in': story_guids}
@@ -219,7 +217,7 @@ class ProcessFeed:
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
+        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
         
         logging.debug(u'   ---> [%-30s] Parsed Feed: %s' % (
                       unicode(self.feed)[:30], 
@@ -266,12 +264,7 @@ class Dispatcher:
         """
 
         delta = None
-        
-        MONGO_DB = settings.MONGO_DB
-        db = mongoengine.connection.connect(db=MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])
-        
         current_process = multiprocessing.current_process()
-        
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
@@ -291,7 +284,7 @@ class Dispatcher:
                 ret_feed, fetched_feed = ffeed.fetch()
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
-                    pfeed = ProcessFeed(feed_id, fetched_feed, db, self.options)
+                    pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
                     feed = self.refresh_feed(feed_id)
