@@ -22,8 +22,33 @@ NEWSBLUR.ReaderKeyboard.prototype = {
             $.make('h2', { className: 'NB-modal-title' }, 'Keyboard shortcuts'),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-key' }, 'j'),
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next story')
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next/Preview story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'u',
+                    $.make('span', 'or'),
+                    'j'
+                ]),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'd',
+                    $.make('span', 'or'),
+                    'k'
+                ]),
+                $.make('div', { className: 'NB-keyboard-shortcut-image' }, [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/keyboard_updown.png' })
+                ])
+              ]),
+              
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Switch views'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    '&lt;'
+                ]),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    '>'
+                ]),
+                $.make('div', { className: 'NB-keyboard-shortcut-image' }, [
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/keyboard_leftright.png' })
+                ])
               ])
             ])
         ]);
