@@ -1875,6 +1875,7 @@
         },
         
         open_feed_link: function(feed_id, $fd) {
+            if (!feed_id) feed_id = this.active_feed;
             this.mark_feed_as_read(feed_id);
             var feed = this.model.get_feed(feed_id);
             window.open(feed['feed_link'], '_blank');
@@ -3680,6 +3681,14 @@
             $document.bind('keydown', 'right', function(e) {
                 e.preventDefault();
                 self.switch_taskbar_view_direction(1);
+            });
+            $document.bind('keydown', 'enter', function(e) {
+                e.preventDefault();
+                self.open_feed_link();
+            });
+            $document.bind('keydown', 'return', function(e) {
+                e.preventDefault();
+                self.open_feed_link();
             });
             $document.bind('keydown', 'space', function(e) {
                 e.preventDefault();
