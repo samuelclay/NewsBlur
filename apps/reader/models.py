@@ -127,11 +127,11 @@ class UserSubscription(models.Model):
             
             max_score = max(scores['feed'], scores['author'], scores['tags'], scores['title'])
             min_score = min(scores['feed'], scores['author'], scores['tags'], scores['title'])
-            if max_score > 0:
+            if max_score > 0 and max_score >= abs(min_score):
                 feed_scores['positive'] += 1
-            if min_score < 0:
+            elif min_score < 0 and abs(min_score) >= max_score:
                 feed_scores['negative'] += 1
-            if max_score == 0 and min_score == 0:
+            elif max_score == 0 and min_score == 0:
                 feed_scores['neutral'] += 1
         
         # if not silent:
