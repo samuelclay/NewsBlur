@@ -3662,6 +3662,10 @@
                 e.preventDefault();
                 self.open_keyboard_shortcuts_modal();
             });
+            $document.bind('keydown', 'shift+/', function(e) {
+                e.preventDefault();
+                self.open_keyboard_shortcuts_modal();
+            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
