@@ -3107,7 +3107,7 @@ background: transparent;
     text-transform: uppercase;
 }
 
-.NB-modal-feedchooser .feed.NB-feedchooser-approve {
+.NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_title {
     font-weight: bold;
 }
 .NB-modal-feedchooser .feed.NB-feedchooser-decline {

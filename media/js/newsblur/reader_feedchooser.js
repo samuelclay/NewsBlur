@@ -277,7 +277,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 var feed_id = $(this).data('feed_id');
                 
                 if (_.contains(active_feeds, feed_id)) {
-                    self.add_feed_to_decline(feed_id);
+                    self.add_feed_to_approve(feed_id);
                 } else {
                     self.add_feed_to_decline(feed_id);
                 }
