@@ -3658,6 +3658,10 @@
             var self = this;
             var $document = $(document);
             
+            $document.bind('keydown', '?', function(e) {
+                e.preventDefault();
+                self.open_keyboard_shortcuts_modal();
+            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
