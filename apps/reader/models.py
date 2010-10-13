@@ -125,14 +125,20 @@ class UserSubscription(models.Model):
                 'title': apply_classifier_titles(classifier_titles, story),
             })
             
-            max_score = max(scores['feed'], scores['author'], scores['tags'], scores['title'])
-            min_score = min(scores['feed'], scores['author'], scores['tags'], scores['title'])
-            if max_score > 0 and max_score >= abs(min_score):
+            max_score = max(scores['author'], scores['tags'], scores['title'])
+            min_score = min(scores['author'], scores['tags'], scores['title'])
+            if max_score > 0:
                 feed_scores['positive'] += 1
-            elif min_score < 0 and abs(min_score) >= max_score:
+            elif min_score < 0:
                 feed_scores['negative'] += 1
-            elif max_score == 0 and min_score == 0:
-                feed_scores['neutral'] += 1
+            else:
+                if scores['feed'] > 0:
+                    feed_scores['positive'] += 1
+                elif scores['feed'] < 0:
+                    feed_scores['negative'] += 1
+                else:
+                    feed_scores['neutral'] += 1
+                
         
         # if not silent:
         #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
