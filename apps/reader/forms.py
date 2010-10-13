@@ -108,6 +108,6 @@ class FeatureForm(forms.Form):
     
     def save(self):
         feature = Feature(description=self.cleaned_data['description'],
-                          date=datetime.datetime.now() + datetime.timedelta(minutes=1))
+                          date=datetime.datetime.utcnow() + datetime.timedelta(minutes=1))
         feature.save()
         return feature

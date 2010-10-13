@@ -24,5 +24,5 @@ class Command(BaseCommand):
             if options['days'] == 0:
                 sub.mark_feed_read()
             else:
-                sub.mark_read_date = datetime.datetime.now() - datetime.timedelta(days=int(options['days']))
+                sub.mark_read_date = datetime.datetime.utcnow() - datetime.timedelta(days=int(options['days']))
                 sub.save()

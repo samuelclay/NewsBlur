@@ -756,6 +756,7 @@ var classifier = {
     },
         
     save_publisher: function(keep_modal_open) {
+        var self = this;
         var $save = $('.NB-modal-submit-save', this.$modal);
         var data = this.serialize_classifier();
         
@@ -771,13 +772,15 @@ var classifier = {
         
         this.model.save_classifier_publisher(data, function() {
             if (!keep_modal_open) {
-                NEWSBLUR.reader.force_feed_refresh();
+                NEWSBLUR.reader.force_feeds_refresh();
+                NEWSBLUR.reader.load_feed(self.feed_id, null, true);
                 $.modal.close();
             }
         });
     },
     
     save_story: function() {
+        var self = this;
         var $save = $('.NB-modal-submit-save', this.$modal);
         var story_id = this.story_id;
         var data = this.serialize_classifier();
@@ -786,7 +789,8 @@ var classifier = {
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_story(story_id, data, function() {
-            NEWSBLUR.reader.force_feed_refresh();
+            NEWSBLUR.reader.force_feeds_refresh();
+            NEWSBLUR.reader.open_feed(self.feed_id, true);
             $.modal.close();
         });
     }

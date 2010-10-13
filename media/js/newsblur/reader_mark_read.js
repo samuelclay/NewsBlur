@@ -119,7 +119,7 @@ NEWSBLUR.ReaderMarkRead.prototype = {
             this.model.save_mark_read(days, function() {
                 NEWSBLUR.reader.start_count_unreads_after_import();
                 $.modal.close();
-                NEWSBLUR.reader.force_feed_refresh(function() {
+                NEWSBLUR.reader.force_feeds_refresh(function() {
                     NEWSBLUR.reader.finish_count_unreads_after_import();
                 });
             });

@@ -39,6 +39,12 @@ NEWSBLUR.ReaderStatistics.prototype = {
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
         ]);
+        
+        var $stats = this.make_stats({
+            'last_update': '',
+            'next_update': ''
+        });
+        $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
     },
         
     initialize_feed: function(feed_id) {
@@ -141,7 +147,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
             $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Last Update'),
-                $.make('div', { className: 'NB-statistics-count' }, data['last_update'] + ' ago')
+                $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' ago')))
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Every'),
@@ -149,7 +155,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
-                $.make('div', { className: 'NB-statistics-count' }, 'in ' + data['next_update'])
+                $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))
               ])
             ]),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [

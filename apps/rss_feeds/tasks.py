@@ -1,5 +1,6 @@
 from celery.task import Task
 from apps.rss_feeds.models import Feed
+from utils import log as logging
 
 class UpdateFeeds(Task):
     name = 'update-feeds'
@@ -12,6 +13,7 @@ class UpdateFeeds(Task):
             
         for feed_pk in feed_pks:
             feed = Feed.objects.get(pk=feed_pk)
+            logging.debug(' Updating: [%s] %s' % (feed_pks, feed))
             feed.update()
 
 class NewFeeds(Task):

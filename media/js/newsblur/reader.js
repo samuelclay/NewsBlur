@@ -59,6 +59,8 @@
         // = Initialization =
         // ==================
         
+        
+        this.unload_iframe();
         if (NEWSBLUR.Flags['start_import_from_google_reader']) {
           this.start_import_from_google_reader();
         } else {
@@ -501,7 +503,7 @@
                     scroll = 0;
                 }
                 $feed_list.scrollTop(scroll);
-                // this.open_feed(feed_id, $next_feed);
+                // this.open_feed(feed_id);
             }
         },
         
@@ -576,7 +578,7 @@
             
             if (NEWSBLUR.Globals.is_authenticated && this.flags['has_chosen_feeds']) {
                 this.start_count_unreads_after_import();
-                this.force_feed_refresh($.rescope(this.finish_count_unreads_after_import, this));
+                this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this));
             } else if (!this.flags['has_chosen_feeds'] && folders.length) {
                 this.show_feed_chooser_button();
                 // _.defer(_.bind(this.open_feedchooser_modal, this), 1000);
@@ -697,8 +699,8 @@
                     $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated + ' ago')
                 ])),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')),
-                (feed.has_exception && $.make('div', { className: 'NB-feed-exception-icon' })),
-                (feed.not_yet_fetched && $.make('div', { className: 'NB-feed-unfetched-icon' })),
+                $.make('div', { className: 'NB-feed-exception-icon' }),
+                $.make('div', { className: 'NB-feed-unfetched-icon' }),
                 (type == 'feed' && $.make('div', { className: 'NB-feedlist-manage-icon' }))
             ]).data('feed_id', feed.id);  
             
@@ -1077,14 +1079,11 @@
             this.$s.$feed_view.empty();
         },
         
-        open_feed: function(feed_id, $feed_link, force) {
+        open_feed: function(feed_id, force, $feed_link) {
             var self = this;
             var $story_titles = this.$s.$story_titles;
             this.flags['opening_feed'] = true;
             
-            if (!$feed_link) {
-              $feed_link = $('.feed.selected', this.$s.$feed_list).eq(0);
-            }
             
             if (feed_id != this.active_feed || force) {
                 $story_titles.empty().scrollTop('0px');
@@ -1096,9 +1095,9 @@
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
                 this.story_view = this.model.view_setting(this.active_feed);
-            
-                this.show_feed_title_in_stories($story_titles, feed_id);
+                $feed_link = $feed_link || $('.feed.selected', this.$s.$feed_list).eq(0);
                 this.mark_feed_as_selected(feed_id, $feed_link);
+                this.show_feed_title_in_stories($story_titles, feed_id);
                 this.show_feedbar_loading();
                 this.make_content_pane_feed_counter(feed_id);
                 this.switch_taskbar_view(this.story_view);
@@ -1136,7 +1135,7 @@
         
         post_open_feed: function(e, data, first_load) {
             if (!data) {
-                return this.open_feed(this.active_feed, null, true);
+                return this.open_feed(this.active_feed, true);
             }
             var stories = data.stories;
             var tags = data.tags;
@@ -1928,6 +1927,7 @@
         },
         
         open_feed_link: function(feed_id, $fd) {
+            if (!feed_id) feed_id = this.active_feed;
             this.mark_feed_as_read(feed_id);
             var feed = this.model.get_feed(feed_id);
             window.open(feed['feed_link'], '_blank');
@@ -1935,6 +1935,10 @@
         },
         
         mark_feed_as_selected: function(feed_id, $feed_link) {
+            if (!$feed_link) {
+              $feed_link = $('.feed.selected', this.$feed_list).eq(0);
+            }
+            
             $('#feed_list .selected').removeClass('selected');
             $('#feed_list .after_selected').removeClass('after_selected');
             if ($feed_link) {
@@ -2264,9 +2268,13 @@
             
             NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
         },
-        
+
         open_mark_read_modal: function() {
             NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead();
+        },
+
+        open_keyboard_shortcuts_modal: function() {
+            NEWSBLUR.keyboard = new NEWSBLUR.ReaderKeyboard();
         },
                 
         open_preferences_modal: function() {
@@ -2287,6 +2295,22 @@
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
         
+        force_feed_refresh: function(feed_id) {
+            var self = this;
+            var $feed = this.find_feed_in_feed_list(feed_id);
+            $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
+            
+            this.model.save_exception_retry(feed_id, function() {
+                self.force_feeds_refresh(function(feeds) {
+                    var $new_feed = self.make_feed_title_line(feeds[feed_id]);
+                    $feed.replaceWith($new_feed);
+                    if (self.active_feed == feed_id) {
+                        self.open_feed(feed_id, true, $new_feed);
+                    }
+                }, true);
+            });
+        },
+
         make_manage_menu: function(type, feed_id, inverse, $item) {
             var $manage_menu;
             
@@ -2297,7 +2321,12 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
                     ]).corner('tl tr 8px'),
-                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-separator' }), 
+                    $.make('li', { className: 'NB-menu-manage-keyboard' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
@@ -2333,6 +2362,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-reload' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
@@ -2761,7 +2794,7 @@
             }, this.FEED_REFRESH_INTERVAL);
         },
         
-        force_feed_refresh: function(callback, update_all) {
+        force_feeds_refresh: function(callback, update_all) {
             if (callback) {
                 this.cache.refresh_callback = callback;
             } else {
@@ -2779,7 +2812,7 @@
             var feeds = this.model.feeds;
             
             if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
-                this.cache.refresh_callback();
+                this.cache.refresh_callback(feeds);
                 delete this.cache.refresh_callback;
             }
             
@@ -3274,7 +3307,7 @@
                 e.preventDefault();
                 if (!self.flags['sorting_feed']) {
                     var feed_id = $t.data('feed_id');
-                    self.open_feed(feed_id, $t);
+                    self.open_feed(feed_id, false, $t);
                 }
             });
             $.targetIs(e, { tagSelector: '#feed_list .folder_title' }, function($folder, $p){
@@ -3393,6 +3426,13 @@
                     self.open_feed_statistics_modal(feed_id);
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-reload' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                    self.force_feed_refresh(feed_id);
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-delete' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
@@ -3430,6 +3470,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_mark_read_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_keyboard_shortcuts_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-exception' }, function($t, $p){
@@ -3681,6 +3727,14 @@
             var self = this;
             var $document = $(document);
             
+            $document.bind('keydown', '?', function(e) {
+                e.preventDefault();
+                self.open_keyboard_shortcuts_modal();
+            });
+            $document.bind('keydown', 'shift+/', function(e) {
+                e.preventDefault();
+                self.open_keyboard_shortcuts_modal();
+            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
@@ -3704,6 +3758,14 @@
             $document.bind('keydown', 'right', function(e) {
                 e.preventDefault();
                 self.switch_taskbar_view_direction(1);
+            });
+            $document.bind('keydown', 'enter', function(e) {
+                e.preventDefault();
+                self.open_feed_link();
+            });
+            $document.bind('keydown', 'return', function(e) {
+                e.preventDefault();
+                self.open_feed_link();
             });
             $document.bind('keydown', 'space', function(e) {
                 e.preventDefault();

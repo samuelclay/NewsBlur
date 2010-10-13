@@ -408,13 +408,17 @@ a img {
   display: none;
 }
 
-.NB-feedlist .feed.NB-feed-exception .NB-feed-exception-icon {
+.NB-feedlist .feed .NB-feed-exception-icon {
   background: url('../img/icons/silk/exclamation.png') no-repeat 0 0;
   width: 16px;
   height: 16px;
   position: absolute;
   right: 4px;
   top: 2px;
+  display: none;
+}
+#feed_list .feed.NB-feed-exception .NB-feed-exception-icon {
+    display: block;
 }
 
 .NB-feedlist .feed.NB-feed-unfetched .feed_counts {
@@ -426,7 +430,7 @@ a img {
 .NB-feedlist .feed.NB-feed-unfetched .feed_title {
   color: #A0A0A0;
 }
-.NB-feedlist .feed.NB-feed-unfetched .NB-feed-unfetched-icon {
+.NB-feedlist .feed .NB-feed-unfetched-icon {
   background: url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
   opacity: .1;
   width: 16px;
@@ -434,6 +438,10 @@ a img {
   position: absolute;
   right: 4px;
   top: 2px;
+  display: none;
+}
+#feed_list .feed.NB-feed-unfetched .NB-feed-unfetched-icon {
+  display: block;
 }
 
 .feed.NB-feed-sorting,
@@ -2769,6 +2777,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 0;    
 }
+.NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/car.png') no-repeat  0 -1px;    
+}
 
 .NB-menu-manage .NB-menu-manage-feed-stats .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/chart_curve.png') no-repeat  0 0;    
@@ -2776,6 +2787,9 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/cut.png') no-repeat  0 0;    
+}
+.NB-menu-manage .NB-menu-manage-keyboard .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/keyboard.png') no-repeat  0 -1px;    
 }
 .NB-menu-manage .NB-menu-manage-feed-exception .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 -1px;    
@@ -2793,10 +2807,10 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-site-mark-read .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat  0 0;
+    background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat  0 -1px;
 }
 .NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 0;
+    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 -1px;
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 0;
@@ -3211,4 +3225,65 @@ background: transparent;
     border: 1px solid #303030;
     width: 128px;
     height: 96px;
+}
+
+/* ============================ */
+/* = Keyboard Shortcuts Modal = */
+/* ============================ */
+
+.NB-modal-keyboard .NB-keyboard-group {
+  clear: both;
+  margin: 16px 0 0 0;
+  overflow: hidden;
+  background-color: #F0F0F0;
+  padding: 8px;
+}
+.NB-modal-keyboard .NB-keyboard-shortcut {
+  width: 270px;
+  float: left;
+  margin-right: 20px;
+}
+.NB-modal-keyboard .NB-keyboard-shortcut.NB-last {
+  margin-right: 0;
+} 
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-key {
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-top: 1px solid #717171;
+  border-left: 1px solid #717171;
+  border-bottom: 1px solid #303030;
+  border-right: 1px solid #303030;
+  background-color: #505050;
+  color: #FFF;
+  text-shadow: 1px 1px 0 #000;
+  font-weight: bold;
+  padding: 4px 6px;
+  float: left;
+  margin: 0 4px 0 0;
+}
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-key span {
+  color: #A0A0A0;
+  padding: 0 4px;
+}
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-explanation {
+  float: right;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 6px 0 0 0;
+  color: #404030;
+  text-shadow: 1px 1px 0 #E0E0E0;
+}
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-image {
+  clear: both;
+}
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-image img {
+  margin: 8px 0 0 0;
+  border: 1px solid #202020;
+  width: 268px;
 }

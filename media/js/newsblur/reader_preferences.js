@@ -1,3 +1,7 @@
+// Preferences:
+//  - Feed sort order
+//  - New window behavior
+
 NEWSBLUR.ReaderPreferences = function(options) {
     var defaults = {};
     
@@ -22,6 +26,20 @@ NEWSBLUR.ReaderPreferences.prototype = {
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, 'Preferences'),
             $.make('form', { className: 'NB-preferences-form' }, [
+                $.make('div', { className: 'NB-fieldset NB-preference' }, [
+                    $.make('h5', [
+                        'Interaction'
+                    ]),
+                    $.make('div', { className: 'NB-fieldset-fields' }, [
+                        $.make('div', [
+                            $.make('label', { 'for': 'NB-add-folder' }, [
+                                $.make('div', { className: 'NB-folder-icon' })
+                            ]),
+                            $.make('input', { type: 'radio', id: 'NB-preference-window-same', className: 'NB-preference-radio', name: 'new_window' }),
+                            $.make('input', { type: 'radio', id: 'NB-preference-window-new', className: 'NB-preference-radio', name: 'new_window' })
+                        ])
+                    ])
+                ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled', value: 'Check what you like above...' }),
                     ' or ',

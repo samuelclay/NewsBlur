@@ -53,6 +53,8 @@ class UserSubscription(models.Model):
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        now = datetime.datetime.utcnow()
+
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
@@ -64,6 +66,7 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = False
             self.save()
             return
+
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
         feed_scores = dict(negative=0, neutral=0, positive=0)

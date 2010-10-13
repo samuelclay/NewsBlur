@@ -29,7 +29,7 @@ class Command(BaseCommand):
             daemonize()
             
         settings.LOG_TO_STREAM = True
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         
         if options['skip']:
             feeds = Feed.objects.filter(next_scheduled_update__lte=now,
@@ -65,4 +65,3 @@ class Command(BaseCommand):
         
         print " ---> Fetching %s feeds..." % feeds.count()
         disp.run_jobs()
-        disp.poll()

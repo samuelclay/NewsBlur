@@ -14,8 +14,8 @@ graph_config = {
     'daily.label': 'daily',
 }
 
-last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-last_day = datetime.datetime.now() - datetime.timedelta(minutes=60*24)
+last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+last_day = datetime.datetime.utcnow() - datetime.timedelta(minutes=60*24)
 
 metrics = {
     'all': User.objects.count(),

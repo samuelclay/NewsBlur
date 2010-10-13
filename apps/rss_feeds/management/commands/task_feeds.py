@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         settings.LOG_TO_STREAM = True
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         
         feeds = Feed.objects.filter(
             next_scheduled_update__lte=now, 
@@ -36,7 +36,7 @@ class Command(BaseCommand):
         feed_queue = []
         size = 12
         for f in feeds:
-            f.queued_date = datetime.datetime.now()
+            f.queued_date = datetime.datetime.utcnow()
             f.set_next_scheduled_update()
 
         for feed_queue in (feeds[pos:pos + size] for pos in xrange(0, len(feeds), size)):

@@ -25,7 +25,7 @@ def format_story_link_date__long(date):
 def _extract_date_tuples(date):
     parsed_date = DateFormat(date)
     date_tuple = datetime.datetime.timetuple(date)[:3]
-    today_tuple = datetime.datetime.timetuple(datetime.datetime.now())[:3]
+    today_tuple = datetime.datetime.timetuple(datetime.datetime.utcnow())[:3]
     today = datetime.datetime.today()
     yesterday_tuple = datetime.datetime.timetuple(today - datetime.timedelta(1))[:3]
     

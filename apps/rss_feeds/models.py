@@ -1,4 +1,3 @@
-import settings
 import difflib
 import datetime
 import hashlib
@@ -14,6 +13,7 @@ from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder,
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
+from django.conf import settings
 from mongoengine.queryset import OperationError
 from utils import json
 from utils import feedfinder
@@ -67,11 +67,11 @@ class Feed(models.Model):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
         if not self.last_update:
-            self.last_update = datetime.datetime.now()
+            self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
-            self.next_scheduled_update = datetime.datetime.now()
+            self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
-            self.queued_date = datetime.datetime.now()
+            self.queued_date = datetime.datetime.utcnow()
         
 
         try:
@@ -79,10 +79,11 @@ class Feed(models.Model):
         except IntegrityError, e:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             if duplicate_feed:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
+                return duplicate_feed[0].pk
             # Feed has been deleted. Just ignore it.
-            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             pass
     
     def update_all_statistics(self, lock=None):
@@ -111,7 +112,7 @@ class Feed(models.Model):
         if feed_address:
             try:
                 self.feed_address = feed_address
-                self.next_scheduled_update = datetime.datetime.now()
+                self.next_scheduled_update = datetime.datetime.utcnow()
                 self.has_feed_exception = False
                 self.active = True
                 self.save()
@@ -129,7 +130,7 @@ class Feed(models.Model):
                           status_code=int(status_code),
                           message=message,
                           exception=exception,
-                          fetch_date=datetime.datetime.now()).save()
+                          fetch_date=datetime.datetime.utcnow()).save()
         old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
@@ -147,7 +148,7 @@ class Feed(models.Model):
                           status_code=int(status_code),
                           message=message,
                           exception=exception,
-                          fetch_date=datetime.datetime.now()).save()
+                          fetch_date=datetime.datetime.utcnow()).save()
         old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
         for history in old_fetch_histories:
             history.delete()
@@ -213,7 +214,7 @@ class Feed(models.Model):
         # self.save_feed_story_history_statistics(lock)
         
     def save_feed_stories_last_month(self, verbose=False, lock=None):
-        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+        month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
                                             story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
@@ -231,7 +232,7 @@ class Feed(models.Model):
         Save format: [('YYYY-MM, #), ...]
         Example output: [(2010-12, 123), (2011-01, 146)]
         """
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         min_year = now.year
         total = 0
         month_count = 0
@@ -312,12 +313,8 @@ class Feed(models.Model):
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
-        disp.poll()
-        
 
-        return
-
-    def add_update_stories(self, stories, existing_stories, db):
+    def add_update_stories(self, stories, existing_stories):
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -389,7 +386,7 @@ class Feed(models.Model):
                     existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
                     existing_story['story_tags'] = story_tags
                     try:
-                        db.stories.update({'_id': existing_story['_id']}, existing_story)
+                        settings.MONGODB.stories.update({'_id': existing_story['_id']}, existing_story)
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
@@ -446,15 +443,15 @@ class Feed(models.Model):
             
     def trim_feed(self):
         from apps.reader.models import MUserStory
-        trim_cutoff = 500
+        trim_cutoff = 250
         if self.active_subscribers <= 1:
             trim_cutoff = 100
         elif self.active_subscribers <= 3:
-            trim_cutoff = 200
+            trim_cutoff = 150
         elif self.active_subscribers <= 5:
-            trim_cutoff = 300
+            trim_cutoff = 200
         elif self.active_subscribers <= 10:
-            trim_cutoff = 400
+            trim_cutoff = 250
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
@@ -628,7 +625,7 @@ class Feed(models.Model):
     def set_next_scheduled_update(self, lock=None):
         total, random_factor = self.get_next_scheduled_update()
 
-        next_scheduled_update = datetime.datetime.now() + datetime.timedelta(
+        next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
             
         self.next_scheduled_update = next_scheduled_update
@@ -636,7 +633,7 @@ class Feed(models.Model):
         self.save(lock=lock)
 
     def schedule_feed_fetch_immediately(self, lock=None):
-        self.next_scheduled_update = datetime.datetime.now()
+        self.next_scheduled_update = datetime.datetime.utcnow()
 
         self.save(lock=lock)
         

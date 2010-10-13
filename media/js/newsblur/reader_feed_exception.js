@@ -171,7 +171,7 @@ NEWSBLUR.ReaderFeedException.prototype = {
         
         this.model.save_exception_retry(this.feed_id, function() {
             NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
-            NEWSBLUR.reader.force_feed_refresh();
+            NEWSBLUR.reader.force_feed_refresh(self.feed_id);
             $.modal.close();
         });
     },

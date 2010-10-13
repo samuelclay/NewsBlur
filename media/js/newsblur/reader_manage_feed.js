@@ -310,6 +310,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
     },
     
     save: function() {
+        var self = this;
         var $save = $('.NB-modal-submit-save', this.$manage);
         var data = this.serialize_classifier();
         
@@ -317,7 +318,7 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_publisher(data, function() {
-            NEWSBLUR.reader.force_feed_refresh();
+            NEWSBLUR.reader.force_feed_refresh(self.feed_id);
             $.modal.close();
         });
     },
@@ -329,9 +330,9 @@ NEWSBLUR.ReaderManageFeed.prototype = {
         
         $('.NB-modal-submit-retry', this.$manage).addClass('NB-disabled').attr('value', 'Fetching...');
         this.model.save_exception_retry(this.feed_id, function() {
-            NEWSBLUR.reader.force_feed_refresh(function() {
+            NEWSBLUR.reader.force_feed_refresh(self.feed_id, function() {
               if (NEWSBLUR.reader.active_feed == self.feed_id) {
-                NEWSBLUR.reader.open_feed(self.feed_id, null, true);
+                NEWSBLUR.reader.open_feed(self.feed_id, true);
               }
               $.modal.close();
             }, true);

@@ -10,7 +10,6 @@ from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit
-import sys
 import time
 import datetime
 import traceback
@@ -18,7 +17,6 @@ import multiprocessing
 import urllib2
 import xml.sax
 import socket
-import mongoengine
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -81,12 +79,11 @@ class FetchFeed:
         return identity
         
 class ProcessFeed:
-    def __init__(self, feed_id, fpf, db, options):
+    def __init__(self, feed_id, fpf, options):
         self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
         self.lock = multiprocessing.Lock()
-        self.db = db
         self.entry_trans = {
             ENTRY_NEW:'new',
             ENTRY_UPDATED:'updated',
@@ -111,7 +108,7 @@ class ProcessFeed:
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
         
         self.feed.fetched_once = True
-        self.feed.last_update = datetime.datetime.now()
+        self.feed.last_update = datetime.datetime.utcnow()
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -145,7 +142,7 @@ class ProcessFeed:
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             if not self.fpf.entries:
-                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30]), len(self.fpf.entries))
+                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
@@ -154,7 +151,7 @@ class ProcessFeed:
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30]), len(self.fpf.entries))
+            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
             if not self.fpf.entries:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
@@ -181,7 +178,7 @@ class ProcessFeed:
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
         self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
-        self.feed.last_update = datetime.datetime.now()
+        self.feed.last_update = datetime.datetime.utcnow()
         
         guids = []
         for entry in self.fpf.entries:
@@ -199,8 +196,8 @@ class ProcessFeed:
             self.lock.release()
 
         # Compare new stories to existing stories, adding and updating
-        # start_date = datetime.datetime.now()
-        # end_date = datetime.datetime.now()
+        # start_date = datetime.datetime.utcnow()
+        # end_date = datetime.datetime.utcnow()
         story_guids = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
@@ -209,7 +206,7 @@ class ProcessFeed:
             # if story.get('published') > end_date:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        existing_stories = self.db.stories.find({
+        existing_stories = settings.MONGODB.stories.find({
             'story_feed_id': self.feed.pk, 
             # 'story_date': {'$gte': start_date},
             'story_guid': {'$in': story_guids}
@@ -219,7 +216,7 @@ class ProcessFeed:
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, self.db)
+        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
         
         logging.debug(u'   ---> [%-30s] Parsed Feed: %s' % (
                       unicode(self.feed)[:30], 
@@ -254,28 +251,20 @@ class Dispatcher:
             FEED_ERREXC:'exception'}
         self.feed_keys = sorted(self.feed_trans.keys())
         self.num_threads = num_threads
-        self.time_start = datetime.datetime.now()
+        self.time_start = datetime.datetime.utcnow()
         self.workers = []
 
     def refresh_feed(self, feed_id):
-        return Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
+        return feed
         
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         
-        if not self.options['single_threaded']:
-            # Close the DB so the connection can be re-opened on a per-process basis
-            from django.db import connection
-            connection.close()
         delta = None
-        
-        MONGO_DB = settings.MONGO_DB
-        db = mongoengine.connection.connect(db=MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])
-        
         current_process = multiprocessing.current_process()
-        
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
@@ -286,7 +275,7 @@ class Dispatcher:
                 ENTRY_SAME: 0,
                 ENTRY_ERR: 0
             }
-            start_time = datetime.datetime.now()
+            start_time = datetime.datetime.utcnow()
 
             feed = self.refresh_feed(feed_id)
             
@@ -295,7 +284,7 @@ class Dispatcher:
                 ret_feed, fetched_feed = ffeed.fetch()
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
-                    pfeed = ProcessFeed(feed_id, fetched_feed, db, self.options)
+                    pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
                     feed = self.refresh_feed(feed_id)
@@ -321,6 +310,9 @@ class Dispatcher:
             except urllib2.HTTPError, e:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
                 fetched_feed = None
+            except Feed.DoesNotExist, e:
+                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed)[:30]))
+                return
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
@@ -342,7 +334,7 @@ class Dispatcher:
                 page_importer.fetch_page()
 
             feed = self.refresh_feed(feed_id)
-            delta = datetime.datetime.now() - start_time
+            delta = datetime.datetime.utcnow() - start_time
             
             feed.last_load_time = max(1, delta.seconds)
             feed.fetched_once = True
@@ -360,15 +352,12 @@ class Dispatcher:
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
         
-        time_taken = datetime.datetime.now() - self.time_start
+        time_taken = datetime.datetime.utcnow() - self.time_start
         history = FeedUpdateHistory(
             number_of_feeds=len(feed_queue),
             seconds_taken=time_taken.seconds
         )
         history.save()
-        if not self.options['single_threaded']:
-            logging.debug("---> DONE WITH PROCESS: %s" % current_process.name)
-            sys.exit()
 
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
@@ -386,20 +375,5 @@ class Dispatcher:
                                                             args=(feed_queue,)))
             for i in range(self.num_threads):
                 self.workers[i].start()
-            
-    def poll(self):
-        """ polls the active threads
-        """
-        if not self.options['single_threaded']:
-            for i in range(self.num_threads):
-                self.workers[i].join()
-            done = (u'* DONE in %s\n* Feeds: %s\n' % (
-                    unicode(datetime.datetime.now() - self.time_start),
-                    u' '.join(u'%s=%d' % (self.feed_trans[key],
-                              self.feed_stats[key])
-                              for key in self.feed_keys),
-                    ))
-            logging.debug(done)
-            return
 
                 
