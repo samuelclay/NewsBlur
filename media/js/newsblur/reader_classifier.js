@@ -184,6 +184,7 @@ var classifier = {
         
         $begin.text('Begin Training')
               .addClass('NB-modal-submit-green')
+              .removeClass('NB-modal-submit-close')
               .removeClass('NB-disabled');
     },
     
@@ -256,7 +257,7 @@ var classifier = {
             (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
             $.make('div', { className: 'NB-modal-submit' }, [
                 (!NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-close NB-modal-submit-button' }, 'Close')),
-                (NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-begin NB-modal-submit-button NB-disabled' }, 'Loading Training...'))
+                (NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-begin NB-modal-submit-button NB-modal-submit-close NB-disabled' }, 'Loading Training...'))
             ])
         ]);
         
@@ -624,6 +625,7 @@ var classifier = {
                     dialog.data.fadeIn(200);
                     setTimeout(function() {
                         self.flags.modal_loaded = true;
+                        $(window).resize();
                     }, 200);
                 });
             },

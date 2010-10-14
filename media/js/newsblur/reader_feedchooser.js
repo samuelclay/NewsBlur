@@ -17,6 +17,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.find_feeds_in_feed_list();
         this.initial_load_feeds();
         
+        this.flags = {
+            'has_saved': false
+        };
+        
         this.$modal.bind('mousedown', $.rescope(this.handle_click, this));
     },
     
@@ -153,6 +157,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 $('#simplemodal-container').corner('6px');
             },
             'onClose': function(dialog) {
+                if (!self.flags['has_saved'] && !NEWSBLUR.reader.flags['has_chosen_feeds']) {
+                    NEWSBLUR.reader.show_feed_chooser_button();
+                }
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
@@ -277,7 +284,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 var feed_id = $(this).data('feed_id');
                 
                 if (_.contains(active_feeds, feed_id)) {
-                    self.add_feed_to_approve(feed_id);
+                    self.add_feed_to_decline(feed_id);
                 } else {
                     self.add_feed_to_decline(feed_id);
                 }
@@ -287,11 +294,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
     
     save: function() {
+        var self = this;
         var approve_list = this.approve_list;
         var $submit = $('.NB-modal-submit-save', this.$modal);
         $submit.addClass('NB-disabled').val('Saving...');
         
         this.model.save_feed_chooser(approve_list, function() {
+            self.flags['has_saved'] = true;
             NEWSBLUR.reader.hide_feed_chooser_button();
             NEWSBLUR.reader.load_feeds();
             $.modal.close();

@@ -555,7 +555,7 @@ def save_feed_order(request):
 def get_feeds_trainer(request):
     classifiers = []
     feed_id = request.POST.get('feed_id')
-    
+    import time; time.sleep(60)
     usersubs = UserSubscription.objects.filter(user=request.user)
     if feed_id:
         feed = get_object_or_404(Feed, pk=feed_id)
