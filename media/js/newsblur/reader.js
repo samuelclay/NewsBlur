@@ -575,7 +575,7 @@
                 $('.feed', $feed_list).tsort('.feed_title');
                 $('.folder', $feed_list).tsort('.folder_title_text');
             }
-            
+
             if (NEWSBLUR.Globals.is_authenticated && this.flags['has_chosen_feeds']) {
                 this.start_count_unreads_after_import();
                 this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this));
@@ -591,7 +591,6 @@
           var has_chosen_feeds = _.any(feeds, function(feed) {
             return feed.active;
           });
-          
           return has_chosen_feeds;
         },
         

@@ -1,6 +1,6 @@
 NEWSBLUR.ReaderFeedchooser = function(options) {
     var defaults = {};
-    
+
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.runner();
@@ -13,7 +13,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.MAX_FEEDS = 40;
         this.approve_list = [];
         this.make_modal();
-        this.open_modal();
+        _.defer(_.bind(function() { this.open_modal(); }, this));
         this.find_feeds_in_feed_list();
         this.initial_load_feeds();
         
@@ -132,7 +132,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     resize_modal: function(previous_height) {
         var height = this.$modal.height() + 24;
         var parent_height = this.$modal.parent().height();
-        NEWSBLUR.log(['resize', $('#NB-feedchooser-feeds').height(), height, parent_height]);
         if (height > parent_height && previous_height != height) {
             var chooser_height = $('#NB-feedchooser-feeds').height();
             var diff = Math.max(4, height - parent_height);
@@ -143,7 +142,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     open_modal: function() {
         var self = this;
-        
         this.$modal.modal({
             'minWidth': 750,
             'maxWidth': 750,

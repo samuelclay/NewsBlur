@@ -394,7 +394,11 @@ a img {
 }
 
 .NB-feedlist .feed.NB-feed-exception {
-    background-color: #F7EDC6;
+/*    background-color: #F7EDC6;*/
+  
+}
+.NB-feedlist .feed.NB-feed-exception .feed_title {
+  color: #A0A0A0;
 }
 
 #feed_list.NB-feedlist .feed.NB-feed-inactive {
