@@ -1,5 +1,3 @@
 <h1>NewsBlur is upgrading...</h1>
 
-<p>You may have noticed that many stories were missing. Sometimes feeds would not update. The problem has been identified and corrected. Unfortunately, this means a data migration that will take about a day. Let's hope it will be done by Thursday evening.</p>
-
-<p>This change will be a one-time upgrade. Rest easy knowing I won't sleep until it's done.</p>
+<p>Upgrading the database will take about an hour. We should be back by 2am ET later tonight.</p>
