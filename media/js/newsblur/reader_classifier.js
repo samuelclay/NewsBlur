@@ -775,7 +775,9 @@ var classifier = {
         this.model.save_classifier_publisher(data, function() {
             if (!keep_modal_open) {
                 NEWSBLUR.reader.force_feeds_refresh();
-                NEWSBLUR.reader.load_feed(self.feed_id, null, true);
+                if (self.feed_id == NEWSBLUR.reader.active_feed) {
+                  NEWSBLUR.reader.load_feed(self.feed_id, null, true);
+                }
                 $.modal.close();
             }
         });
