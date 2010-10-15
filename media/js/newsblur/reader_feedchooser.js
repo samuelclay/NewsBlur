@@ -52,7 +52,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
                       $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' })
                   ])
-              ])
+              ]).bind('submit', function(e) {
+                  e.preventDefault();
+                  return false;
+              })
             ]),
             $.make('div', { className: 'NB-feedchooser-type NB-last'}, [
               $.make('div', { className: 'NB-feedchooser-info'}, [
@@ -284,7 +287,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 var feed_id = $(this).data('feed_id');
                 
                 if (_.contains(active_feeds, feed_id)) {
-                    self.add_feed_to_decline(feed_id);
+                    self.add_feed_to_approve(feed_id);
                 } else {
                     self.add_feed_to_decline(feed_id);
                 }

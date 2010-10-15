@@ -546,7 +546,7 @@
         
         load_feeds: function() {
             var self = this;
-            
+
             if ($('#feed_list').length) {
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.$s.$feed_link_loader.css({'display': 'block'});

@@ -676,14 +676,14 @@
 					// otherwise, remove it
 					s.d.data.hide().remove();
 				}
-
 				// remove the remaining elements
-				s.d.container.hide().remove();
-				s.d.overlay.hide();
+				s.d.container && s.d.container.length && s.d.container.hide().remove();
+				s.d.overlay && s.d.overlay.length && s.d.overlay.hide();
 				s.d.iframe && s.d.iframe.hide().remove();
+
 				setTimeout(function(){
 					// opera work-around
-					s.d.overlay.remove();
+					s.d.overlay && s.d.overlay.length && s.d.overlay.remove();
 
 					// reset the dialog object
 					s.d = {};
