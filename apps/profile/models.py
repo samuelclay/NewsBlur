@@ -2,6 +2,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from paypal.standard.ipn.signals import subscription_signup
      
 class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile")
@@ -18,3 +19,20 @@ def create_profile(sender, instance, created, **kwargs):
     else:
         Profile.objects.get_or_create(user=instance)
 post_save.connect(create_profile, sender=User)
+
+
+def paypal_signup(sender, **kwargs):
+    ipn_obj = sender
+    # Undertake some action depending upon `ipn_obj`.
+    if ipn_obj.custom == "subscription_signup":
+        user = User.objects.get(username=ipn_obj.username)
+        user.profile.is_premium = True
+        user.profile.save()
+    
+        from apps.rss_feeds.models import UserSubscription
+        subs = UserSubscription.objects.filter(user=user)
+        for sub in subs:
+            sub.active = True
+            sub.save()
+            sub.feed.setup_feed_for_premium_subscribers()
+subscription_signup.connect(paypal_signup)

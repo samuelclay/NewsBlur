@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from apps.reader.models import UserSubscription
-
 from utils import json
+from paypal.standard.forms import PayPalPaymentsForm
+from utils.user_functions import ajax_login_required
 
 @login_required
 @require_POST
@@ -71,14 +71,30 @@ def set_collapsed_folders(request):
     
     response = dict(code=code)
     return response
+
+@ajax_login_required
+def paypal_form(request):
+    paypal_dict = {
+        "cmd": "_xclick-subscriptions",
+        "business": "samuel@ofbrooklyn.com",
+        "a3": "12.00",                     # price 
+        "p3": 1,                           # duration of each unit (depends on unit)
+        "t3": "Y",                         # duration unit ("M for Month")
+        "src": "1",                        # make payments recur
+        "sra": "1",                        # reattempt payment on payment error
+        "no_note": "1",                    # remove extra notes (optional)
+        "item_name": "NewsBlur Premium Account",
+        "notify_url": "http://www.newsblur.com/profile/paypal_ipn/?username=%s" % request.user.username,
+        "return_url": "http://www.newsblur.com/profile/paypal_return/?username=%s" % request.user.username,
+        "cancel_return": "http://www.newsblur.com/profile/paypal_cancel/?username=%s" % request.user.username,
+    }
+
+    # Create the instance.
+    form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
+
+    # Output the button.
+    return HttpResponse(form.render(), mimetype='text/html')
     
 @login_required
 def activate_premium(request):
-    request.user.profile.is_premium = True
-    request.user.profile.save()
-    
-    subs = UserSubscription.objects.filter(user=request.user)
-    for sub in subs:
-        sub.feed.setup_feed_for_premium_subscribers()
-    
     return HttpResponseRedirect(reverse('index'))

@@ -30,7 +30,7 @@ ADMINS = (
     ('Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
 MANAGERS = ADMINS
-
+PAYPAL_RECEIVER_EMAIL = 'samuel@ofbrooklyn.com'
 TIME_ZONE = 'GMT'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
@@ -196,7 +196,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
-    'gunicorn',
     'djcelery',
     'compress',
     'apps.rss_feeds',
@@ -209,8 +208,14 @@ INSTALLED_APPS = (
     # 'test_utils',
     'utils',
     'utils.typogrify',
+    'utils.paypal.standard.ipn',
     # 'debug_toolbar'
 )
+
+if not DEVELOPMENT:
+    INSTALLED_APPS += [
+        'gunicorn',
+    ]
 
 DEVSERVER_MODULES = (
    'devserver.modules.sql.SQLRealTimeModule',
@@ -268,8 +273,10 @@ CELERY_DISABLE_RATE_LIMITS = True
 # ==================
 # = Configurations =
 # ==================
-
-from gunicorn_conf import *
+try:
+    from gunicorn_conf import *
+except ImportError, e:
+    pass
 from local_settings import *
 
 COMPRESS = not DEBUG
