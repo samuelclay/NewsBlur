@@ -1,0 +1,24 @@
+<html>
+
+<head>
+<title></title>
+</head>
+<body>
+
+<form action="" method="post">
+    <table>
+        <tbody>
+            {% if errors %}<tr><td colspan="2" align="center">{{ errors }}</td></tr>{% endif %}
+            <tr><td colspan="2" align="center"><a href="?express">Pay by PayPal</a></td></tr>
+            {{ form.as_table }}
+            <tr><td colspan="2" align="right"><input type="submit" /></td></tr>
+        </tbody>
+    </table>
+</form>
+
+</body>
+
+
+</html>
+
+

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% ifequal pdt_obj.st 'SUCCESS' %}
+<h1>Transaction complete</h1>
+<p>Thank you for your payment</p>
+<p>Please print this page for your records</p>
+
+<div>	
+	<table>
+	<tr><td>Payer:</td><td>{{ pdt_obj.first_name }} {{ pdt_obj.last_name }} </td></tr>
+	<tr><td>Payer Email:</td><td>{{ pdt_obj.payer_email }}</td></tr>	
+	<tr><td>Amount:</td><td>{{ pdt_obj.mc_currency }} {{ pdt_obj.mc_gross }}</td></tr>		
+	<tr><td>Reference:</td><td>{{ pdt_obj.txn_id }}</td></tr>
+	
+	</table>
+</div>
+	
+{% else %}	
+<h1>Transaction Failed</h1>
+<p>Sorry transaction failed, please try a different form of payment</p>	
+{% endifequal %}		
+
+{% endblock %}
+
+
