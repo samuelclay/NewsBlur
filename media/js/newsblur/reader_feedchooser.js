@@ -91,11 +91,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   '. That\'s a single dollar a month.'
                 ])
               ]),
-              $.make('form', { className: 'NB-feedchooser-form' }, [
-                  $.make('div', { className: 'NB-modal-submit' }, [
-                      // this.make_google_checkout()
-                      $.make('div', { className: 'NB-feedchooser-paypal' })
-                  ])
+              $.make('div', { className: 'NB-modal-submit' }, [
+                  // this.make_google_checkout()
+                  $.make('div', { className: 'NB-feedchooser-paypal' })
               ])
             ])
         ]);
@@ -205,6 +203,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
         
     find_feeds_in_feed_list: function() {
+        var self = this;
         var $feed_list = $('.NB-feedchooser', this.$modal);
         var $feeds = {};
         
@@ -214,6 +213,15 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 $feeds[feed_id] = $([]);
             }
             $feeds[feed_id].push($(this).get(0));
+        });
+
+        // Remove invalid feeds that only show up in the assetmodel.
+        // This occurs when a feed is still subscribed, but not in the user's folders.
+        var found_feeds = _.uniq(_.keys($feeds)).sort();
+        var invalid_feeds = _.each(self.model.feeds, function(feed_id) { 
+            if (!_.contains(found_feeds, feed_id)) {
+                delete self.model.feeds[feed_id];
+            }
         });
         
         this.$feeds = $feeds;

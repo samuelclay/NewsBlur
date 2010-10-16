@@ -72,7 +72,7 @@ def set_collapsed_folders(request):
     response = dict(code=code)
     return response
 
-@ajax_login_required
+@login_required
 def paypal_form(request):
     paypal_dict = {
         "cmd": "_xclick-subscriptions",
