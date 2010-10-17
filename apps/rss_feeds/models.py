@@ -606,7 +606,7 @@ class Feed(models.Model):
         # 2.5 hours for 3 subscribers.
         # 15 min for 10 subscribers.
         subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**2)
-        subscriber_bonus = subscriber_bonus / (10 * self.premium_subscribers)
+        subscriber_bonus = subscriber_bonus / max(1, (10 * self.premium_subscribers))
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
