@@ -76,7 +76,8 @@ def set_collapsed_folders(request):
 def paypal_form(request):
     paypal_dict = {
         "cmd": "_xclick-subscriptions",
-        "business": "samuel@ofbrooklyn.com",
+        # "business": "samuel@ofbrooklyn.com",
+        "business": "samuel_1287279745_biz@conesus.com",
         "a3": "12.00",                     # price 
         "p3": 1,                           # duration of each unit (depends on unit)
         "t3": "Y",                         # duration unit ("M for Month")
