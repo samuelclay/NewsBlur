@@ -2,6 +2,7 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from apps.reader.models import UserSubscription
 from paypal.standard.ipn.signals import subscription_signup
      
 class Profile(models.Model):
@@ -28,7 +29,6 @@ def paypal_signup(sender, **kwargs):
     user.profile.is_premium = True
     user.profile.save()
 
-    from apps.rss_feeds.models import UserSubscription
     subs = UserSubscription.objects.filter(user=user)
     for sub in subs:
         sub.active = True
