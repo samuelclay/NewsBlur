@@ -136,7 +136,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(subscriptions) {
-            self.feeds = subscriptions.feeds;
+            var flat_feeds = function(feeds) {
+                var flattened = _.flatten(_.map(feeds, _.values));
+                return _.flatten(_.map(flattened, function(feed) {
+                    if (!_.isNumber(feed)) return flat_feeds(feed);
+                    else return feed;
+                }));
+            };
+            var valid_feeds = flat_feeds(subscriptions.folders);
+
+            _.each(subscriptions.feeds, function(feed, feed_id) {
+                if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
+                    self.feeds[feed_id] = feed;
+                }
+            });
             self.folders = subscriptions.folders;
             callback();
         };
