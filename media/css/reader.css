@@ -3100,10 +3100,14 @@ background: transparent;
     list-style: none;
 /*    margin: 12px 0;*/
     padding: 0;
-    max-height: 400px;
+    max-height: 260px;
     min-height: 186px;
     width: auto;
     border: 1px solid #909090;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-paypal {
+  min-height: 48px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser .feed_counts {

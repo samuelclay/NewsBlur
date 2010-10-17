@@ -93,7 +93,7 @@ def paypal_form(request):
     form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
 
     # Output the button.
-    return HttpResponse(form.render(), mimetype='text/html')
+    return HttpResponse(form.sandbox(), mimetype='text/html')
     
 @login_required
 def activate_premium(request):
