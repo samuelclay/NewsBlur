@@ -84,16 +84,16 @@ def paypal_form(request):
         "sra": "1",                        # reattempt payment on payment error
         "no_note": "1",                    # remove extra notes (optional)
         "item_name": "NewsBlur Premium Account",
-        "notify_url": "http://www.newsblur.com/profile/paypal_ipn/?username=%s" % request.user.username,
-        "return_url": "http://www.newsblur.com/profile/paypal_return/?username=%s" % request.user.username,
-        "cancel_return": "http://www.newsblur.com/profile/paypal_cancel/?username=%s" % request.user.username,
+        "notify_url": "http://dev.newsblur.com/profile/paypal_ipn/?username=%s" % request.user.username,
+        "return_url": "http://dev.newsblur.com/profile/paypal_return/?username=%s" % request.user.username,
+        "cancel_return": "http://dev.newsblur.com/profile/paypal_cancel/?username=%s" % request.user.username,
     }
 
     # Create the instance.
     form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
 
     # Output the button.
-    return HttpResponse(form.render(), mimetype='text/html')
+    return HttpResponse(form.sandbox(), mimetype='text/html')
     
 @login_required
 def activate_premium(request):
