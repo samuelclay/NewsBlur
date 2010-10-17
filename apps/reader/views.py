@@ -427,7 +427,10 @@ def add_url(request):
         us, _ = UserSubscription.objects.get_or_create(
             feed=feed, 
             user=request.user,
-            defaults={'needs_unread_recalc': True}
+            defaults={
+                'needs_unread_recalc': True,
+                'active': True,
+            }
         )
         code = 1
         message = ""
