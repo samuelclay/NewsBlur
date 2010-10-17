@@ -23,16 +23,15 @@ post_save.connect(create_profile, sender=User)
 
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
-    # Undertake some action depending upon `ipn_obj`.
-    if ipn_obj.custom == "subscription_signup":
-        user = User.objects.get(username=ipn_obj.username)
-        user.profile.is_premium = True
-        user.profile.save()
     
-        from apps.rss_feeds.models import UserSubscription
-        subs = UserSubscription.objects.filter(user=user)
-        for sub in subs:
-            sub.active = True
-            sub.save()
-            sub.feed.setup_feed_for_premium_subscribers()
+    user = User.objects.get(username=ipn_obj.custom)
+    user.profile.is_premium = True
+    user.profile.save()
+
+    from apps.rss_feeds.models import UserSubscription
+    subs = UserSubscription.objects.filter(user=user)
+    for sub in subs:
+        sub.active = True
+        sub.save()
+        sub.feed.setup_feed_for_premium_subscribers()
 subscription_signup.connect(paypal_signup)

@@ -85,9 +85,10 @@ def paypal_form(request):
         "sra": "1",                        # reattempt payment on payment error
         "no_note": "1",                    # remove extra notes (optional)
         "item_name": "NewsBlur Premium Account",
-        "notify_url": "http://dev.newsblur.com/profile/paypal_ipn/?username=%s" % request.user.username,
-        "return_url": "http://dev.newsblur.com/profile/paypal_return/?username=%s" % request.user.username,
-        "cancel_return": "http://dev.newsblur.com/profile/paypal_cancel/?username=%s" % request.user.username,
+        "notify_url": "http://dev.newsblur.com/profile/paypal_ipn/",
+        "return_url": "http://dev.newsblur.com/profile/paypal_return/",
+        "cancel_return": "http://dev.newsblur.com/profile/paypal_cancel/",
+        "custom": request.user.username,
     }
 
     # Create the instance.
