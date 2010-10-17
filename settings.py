@@ -195,6 +195,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_extensions',
+    'gunicorn',
     'djcelery',
     'compress',
     'apps.rss_feeds',
@@ -268,6 +269,7 @@ CELERY_DISABLE_RATE_LIMITS = True
 # = Configurations =
 # ==================
 
+from gunicorn_conf import *
 from local_settings import *
 
 COMPRESS = not DEBUG

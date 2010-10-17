@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
      
 class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile")
+    is_premium = models.BooleanField(default=False)
     preferences = models.TextField(default="{}")
     view_settings = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")

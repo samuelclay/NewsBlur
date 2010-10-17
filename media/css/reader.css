@@ -2986,3 +2986,64 @@ background: transparent;
   border-style:solid;
   border-width:1px;
 }
+
+/* ============================ */
+/* = Keyboard Shortcuts Modal = */
+/* ============================ */
+
+.NB-modal-keyboard .NB-keyboard-group {
+  clear: both;
+  margin: 16px 0 0 0;
+  overflow: hidden;
+  background-color: #F0F0F0;
+  padding: 8px;
+}
+.NB-modal-keyboard .NB-keyboard-shortcut {
+  width: 270px;
+  float: left;
+  margin-right: 20px;
+}
+.NB-modal-keyboard .NB-keyboard-shortcut.NB-last {
+  margin-right: 0;
+} 
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-key {
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-top: 1px solid #717171;
+  border-left: 1px solid #717171;
+  border-bottom: 1px solid #303030;
+  border-right: 1px solid #303030;
+  background-color: #505050;
+  color: #FFF;
+  text-shadow: 1px 1px 0 #000;
+  font-weight: bold;
+  padding: 4px 6px;
+  float: left;
+  margin: 0 4px 0 0;
+}
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-key span {
+  color: #A0A0A0;
+  padding: 0 4px;
+}
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-explanation {
+  float: right;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 6px 0 0 0;
+  color: #404030;
+  text-shadow: 1px 1px 0 #E0E0E0;
+}
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-image {
+  clear: both;
+}
+
+.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-image img {
+  margin: 8px 0 0 0;
+  border: 1px solid #202020;
+  width: 268px;
+}
