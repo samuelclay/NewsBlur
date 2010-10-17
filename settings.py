@@ -48,6 +48,7 @@ SECRET_KEY = '6yx-@2u@v$)-=fqm&tc8lhk3$6d68+c7gd%p$q2@o7b4o8-*fz'
 # ===============
 
 PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
+STAGING = __file__.find('/home/conesus/staging') == 0
 DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
@@ -213,9 +214,9 @@ INSTALLED_APPS = (
 )
 
 if not DEVELOPMENT:
-    INSTALLED_APPS += [
+    INSTALLED_APPS += (
         'gunicorn',
-    ]
+    )
 
 DEVSERVER_MODULES = (
    'devserver.modules.sql.SQLRealTimeModule',
