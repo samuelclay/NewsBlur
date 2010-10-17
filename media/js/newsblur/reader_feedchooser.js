@@ -10,7 +10,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     runner: function() {
         this.start = new Date();
-        this.MAX_FEEDS = 40;
+        this.MAX_FEEDS = 64;
         this.approve_list = [];
         this.make_modal();
         this.make_paypal_button();
