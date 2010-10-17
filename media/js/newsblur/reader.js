@@ -567,22 +567,26 @@
             this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
             this.make_feeds_folder($feed_list, folders, 0);
             this.$s.$feed_link_loader.fadeOut(250);
-            
+
             if (folders.length) {
                 $('.NB-task-manage').removeClass('NB-disabled');
                 $('.NB-callout-ftux').fadeOut(500);
-                this.load_sortable_feeds();
-                $('.feed', $feed_list).tsort('.feed_title');
-                $('.folder', $feed_list).tsort('.folder_title_text');
             }
-
+            
             if (NEWSBLUR.Globals.is_authenticated && this.flags['has_chosen_feeds']) {
                 this.start_count_unreads_after_import();
                 this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this));
             } else if (!this.flags['has_chosen_feeds'] && folders.length) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                return;
             } else if (NEWSBLUR.Globals.is_authenticated) {
                 this.setup_ftux_add_feed_callout();
+            }
+            
+            if (folders.length) {
+                this.load_sortable_feeds();
+                $('.feed', $feed_list).tsort('.feed_title');
+                $('.folder', $feed_list).tsort('.folder_title_text');
             }
         },
         
