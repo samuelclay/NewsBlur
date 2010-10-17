@@ -36,7 +36,7 @@ class Feed(models.Model):
     active = models.BooleanField(default=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1)
-    premium_subscribers = models.IntegerField(default=-1, null=True)
+    premium_subscribers = models.IntegerField(default=-1)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
