@@ -3502,6 +3502,18 @@
                     self.open_feedchooser_modal();
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-module-account-upgrade' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_feedchooser_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-account-train' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_trainer_modal();
+                }
+            });  
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
                 e.preventDefault();
                 var view;

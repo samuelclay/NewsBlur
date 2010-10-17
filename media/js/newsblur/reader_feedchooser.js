@@ -137,7 +137,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
     
     resize_modal: function(previous_height) {
-        var height = this.$modal.height() + 24;
+        var height = this.$modal.height() + 16;
         var parent_height = this.$modal.parent().height();
         if (height > parent_height && previous_height != height) {
             var chooser_height = $('#NB-feedchooser-feeds').height();

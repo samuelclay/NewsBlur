@@ -184,18 +184,56 @@
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
         </h5>
+        <div class="NB-module-account">
+          <div class="NB-module-account-image">
+            {% if user.profile.is_premium %}
+              <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
+            {% else %}
+              <img src="{{ MEDIA_URL }}/img/reader/account_standard_{{ account_images|random }}.jpg" />
+            {% endif %}
+          </div>
+          <h3>
+            {% if user.profile.is_premium %}
+              <span class="NB-module-account-subtitle">
+                {{ feed_count }} site{{ feed_count|pluralize }}
+              </span>
+              Premium Account
+            {% else %}
+              <span class="NB-module-account-subtitle">
+                {{ feed_count }} of 64 sites
+              </span>
+              Standard Account
+            {% endif %}
+          </h3>
+          <div class="NB-module-account-title">
+            {% if user.profile.is_premium %}
+              
+            {% else %}
+              
+              <div class="NB-modal-submit">
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="NB-module-account NB-last">
+          <div class="NB-module-account-image">
+              <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
+          </div>
+          <h3>
+              <span class="NB-module-account-subtitle">
+                {{ train_count }} of {{ feed_count }} site{{ feed_count|pluralize }}
+              </span>
+              Intelligence Trainer
+          </h3>
+          <div class="NB-module-account-title">
+              <div class="NB-modal-submit">
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Train Your Filters</div>
+              </div>
+          </div>
+        </div>
       </div>
-      <!--
-      <div class="NB-module NB-module-features">
-        <h5 class="NB-module-header">Intelligence Trainer</h5>
       
-        <table class="" cellpadding="0" cellspacing="0">
-            <tr class="NB-module-feature NB-module-feature-new">
-              <td class="NB-module-feature-date">Today, August 25th</td>
-              <td class="NB-module-feature-description">I am aware that approximately 20% of all feeds are failing to fetch and parse. The fix will be coming sometime today or tomorrow.</td>
-            </tr>
-        </table>
-      </div>-->
     {% endif %}
     
     <div class="NB-module NB-module-features">
@@ -236,26 +274,6 @@
         </form>
       {% endif %}
     </div>
-    
-    {% if user.is_authenticated and false %}
-      <div class="NB-module NB-module-stats">
-        <h5 class="NB-module-header">
-          Spread the Love
-        </h5>
-      
-        <table class="NB-module-features" cellpadding="0" cellspacing="0">
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %}">
-            <td class="NB-module-feature-description"><a href="http://twitter.com/?status=NewsBlur, an intelligent feed reader, makes me swoon: http://www.newsblur.com."><b>Tweet your support</b></a> <img class="NB-module-feature-arrow" src="{{ MEDIA_URL }}/img/icons/silk/arrow_right.png" /> The more people who use NewsBlur, the more incentive there is to continually improve it. <a href="http://twitter.com/samuelclay">Follow @samuelclay</a> for fun.</td>
-          </tr>
-        </table>
-        {% if user.is_staff %}
-          <form action="{% url add-feature %}" id="add-feature-form" method="post">
-            {{ feature_form.description }}
-            <input type="submit" value="Add feature" />
-          </form>
-        {% endif %}
-      </div>
-    {% endif %}
     
   </div>
 

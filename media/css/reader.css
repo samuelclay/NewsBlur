@@ -1801,8 +1801,8 @@ a.NB-splash-link:hover {
     float: left;
 }
 
-.NB-modal .NB-modal-submit input[type=submit],
-.NB-modal .NB-modal-submit .NB-modal-submit-button {
+.NB-modal-submit input[type=submit],
+.NB-modal-submit .NB-modal-submit-button {
     border: 1px solid #606060;
     font-size: 12px;
     padding: 4px 12px;
@@ -1818,28 +1818,28 @@ a.NB-splash-link:hover {
     text-decoration: none;
 }
 
-.NB-modal .NB-modal-submit .NB-modal-submit-back {
+.NB-modal-submit .NB-modal-submit-back {
     background-color: #d5d4dB;
     color: #909090;
     
 }
-.NB-modal .NB-modal-submit .NB-modal-submit-close {
+.NB-modal-submit .NB-modal-submit-close {
     background-color: #d5d4dB;
     color: #909090;
     font-weight: bold;
 }
-.NB-modal .NB-modal-submit .NB-modal-submit-green {
+.NB-modal-submit .NB-modal-submit-green {
     background-color: #217412;
     font-weight: bold;
     color: #FCFCFC;
 }
 
-.NB-modal .NB-modal-submit .NB-modal-submit-delete {
+.NB-modal-submit .NB-modal-submit-delete {
     background-color: #7E020D;
     font-weight: bold;
     color: #FCFCFC;
 }
-.NB-modal .NB-modal-submit .NB-disabled {
+.NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
     color: #909090;
     border: 1px solid #A0A0A0;
@@ -2463,6 +2463,58 @@ background: transparent;
     float: right;
 }
 
+.NB-account .NB-module .NB-module-account {
+    position: relative;
+    min-height: 77px;
+    margin: 0 0 12px;
+}
+
+.NB-account .NB-module .NB-module-account.NB-last {
+    margin-bottom: 0;
+}
+
+.NB-account .NB-module .NB-module-account h3 {
+    border-bottom: 1px solid #F0F0F0;
+    padding: 4px 0 0px;
+    margin: 4px 0 4px 128px;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #134160;
+    text-shadow: 1px 1px 0 #E0E0E0;
+}
+
+.NB-account .NB-module .NB-module-account .NB-module-account-subtitle {
+    float: right;
+    color: #C0C0C0;
+    text-shadow: none;
+    margin-right: 12px;
+}
+
+.NB-account .NB-module .NB-module-account .NB-module-account-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.NB-account .NB-module .NB-module-account .NB-module-account-image img {
+    width: 100px;
+    height: 75px;
+    overflow: hidden;
+    margin: 0 8px 2px 12px;
+    border: 1px solid #606060;
+    -moz-box-shadow: 1px 1px 0 #303030;
+    -webkit-box-shadow: 1px 1px 0 #303030;
+    box-shadow: 1px 1px 0 #303030;
+}
+
+.NB-account .NB-module .NB-module-account .NB-module-account-title {
+    margin: 0 0 4px 128px;
+}
+.NB-account .NB-module .NB-module-account .NB-modal-submit-button {
+    float: left;
+    margin: 4px 0 0 0;
+}
+
 /* ============ */
 /* = Features = */
 /* ============ */
@@ -2500,10 +2552,12 @@ background: transparent;
     padding: 4px 8px;
     margin: 0;
     color: #134160;
+    text-shadow: 1px 1px 0 #E0E0E0;
     font-size: 12px;
     font-weight: bold;
     line-height: 20px;
     white-space: nowrap;
+    min-width: 100px;
 }
 
 .NB-module-features .NB-module-feature.last .NB-module-feature-date {
@@ -3100,7 +3154,7 @@ background: transparent;
     list-style: none;
 /*    margin: 12px 0;*/
     padding: 0;
-    max-height: 260px;
+    max-height: 256px;
     min-height: 186px;
     width: auto;
     border: 1px solid #909090;

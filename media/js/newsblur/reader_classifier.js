@@ -227,7 +227,7 @@ var classifier = {
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135, height: 20 }),
                     $.make('b', 'You will see a bunch of tags and authors.'),
-                    ' Check the features you want to see in stories. If you check too many options, you won\'t filter the good stories from the neutral stories.'
+                    ' Check the features you want to see in stories. If you check too many options, you won\'t find the good among the neutral.'
                 ]),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
@@ -244,14 +244,14 @@ var classifier = {
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),
                     $.make('b', 'Stop at any time you like.'),
-                    ' You can always come back to this trainer.'
+                    ' You can always come back to this.'
                 ]),
                 $.make('li', [
                     $.make('b', 'Don\'t worry if you don\'t know what you like right now.'),
                     ' Just skip the site. You can click the ',
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs-up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs-down.png', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
-                    ' buttons next to stories as you read them.'
+                    ' buttons as you read stories.'
                 ])
             ]),
             (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
@@ -626,7 +626,7 @@ var classifier = {
                     setTimeout(function() {
                         self.flags.modal_loaded = true;
                         $(window).resize();
-                    }, 200);
+                    });
                 });
             },
             'onShow': function(dialog) {
