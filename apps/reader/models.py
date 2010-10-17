@@ -23,6 +23,7 @@ class UserSubscription(models.Model):
     """
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
+    active = models.BooleanField(default=False)
     last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     unread_count_neutral = models.IntegerField(default=0)
