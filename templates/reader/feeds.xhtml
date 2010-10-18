@@ -184,7 +184,7 @@
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
         </h5>
-        <div class="NB-module-account">
+        <div class="NB-module-account {% if train_count == feed_count %}NB-last{% endif %}">
           <div class="NB-module-account-image">
             {% if user.profile.is_premium %}
               <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
@@ -216,22 +216,24 @@
             {% endif %}
           </div>
         </div>
-        <div class="NB-module-account NB-last">
-          <div class="NB-module-account-image">
-              <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
+        {% if train_count != feed_count %}
+          <div class="NB-module-account NB-last">
+            <div class="NB-module-account-image">
+                <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
+            </div>
+            <h3>
+                <span class="NB-module-account-subtitle">
+                  {{ train_count }} of {{ feed_count }} site{{ feed_count|pluralize }}
+                </span>
+                Intelligence Trainer
+            </h3>
+            <div class="NB-module-account-title">
+                <div class="NB-modal-submit">
+                  <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Train Your Filters</div>
+                </div>
+            </div>
           </div>
-          <h3>
-              <span class="NB-module-account-subtitle">
-                {{ train_count }} of {{ feed_count }} site{{ feed_count|pluralize }}
-              </span>
-              Intelligence Trainer
-          </h3>
-          <div class="NB-module-account-title">
-              <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Train Your Filters</div>
-              </div>
-          </div>
-        </div>
+        {% endif %}
       </div>
       
     {% endif %}

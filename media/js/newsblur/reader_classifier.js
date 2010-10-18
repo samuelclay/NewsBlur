@@ -115,11 +115,12 @@ var classifier = {
     load_previous_feed_in_trainer: function() {
         var trainer_data_length = this.trainer_data.length;
         var trainer_data = this.trainer_data[this.trainer_iterator];
-        
+        NEWSBLUR.log(['previous', trainer_data_length, this.trainer_iterator]);
         this.trainer_iterator = this.trainer_iterator - 1;
         if (this.trainer_iterator < 1) {
             this.make_trainer_intro();
             this.load_feeds_trainer(null, this.trainer_data);
+            this.reload_modal();
         }
 
         // Show only feeds, not the trainer intro if going backwards.
@@ -132,17 +133,18 @@ var classifier = {
         var trainer_data_length = this.trainer_data.length;
         var trainer_data = this.trainer_data[this.trainer_iterator];
         
-        this.feed_id = trainer_data['feed_id'];
-        
-        this.trainer_iterator = this.trainer_iterator + 1;
-        if (this.trainer_iterator > trainer_data_length) {
+        NEWSBLUR.log(['next', trainer_data_length, this.trainer_iterator]);
+        if (!trainer_data || this.trainer_iterator >= trainer_data_length) {
             this.make_trainer_outro();
             this.load_feeds_trainer(null, this.trainer_data);
-        }
-
-        // Show only feeds, not the trainer intro if going backwards.
-        if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
-            this.load_feed(trainer_data);
+            this.reload_modal();
+        } else {
+            this.feed_id = trainer_data['feed_id'];
+            this.trainer_iterator = this.trainer_iterator + 1;
+            // Show only feeds, not the trainer intro if going backwards.
+            if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
+                this.load_feed(trainer_data);
+            }
         }
     },
     
@@ -160,6 +162,10 @@ var classifier = {
             this.$modal = this.cache[this.feed_id];
         }
         
+        this.reload_modal();
+    },
+    
+    reload_modal: function() {
         this.flags.modal_loading = setInterval(_.bind(function() {
             if (this.flags.modal_loaded) {
                 clearInterval(this.flags.modal_loading);
@@ -307,7 +313,7 @@ var classifier = {
         var self = this;
         var feed = this.feed;
         var opinion = (this.score == 1 ? 'like_' : 'dislike_');
-                
+        
         // NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
         
         this.$modal = $.make('div', { className: 'NB-classifier NB-modal ' + (this.options['training'] && 'NB-modal-trainer') }, [
@@ -734,7 +740,7 @@ var classifier = {
 
         $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
             e.preventDefault();
-            self.save_publisher();
+            $.modal.close();
         });
     },
     
