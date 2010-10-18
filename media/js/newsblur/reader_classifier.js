@@ -651,6 +651,30 @@ var classifier = {
         });
     },
     
+    update_homepage_counts: function() {
+      var $count = $('.NB-module-account-trainer-count');
+      
+      $count.text(_.size(this.model.get_feeds()) - (this.trainer_data.length - this.trainer_iterator) - 1);
+    },
+    
+    end: function() {
+      _.defer(function() {
+        $('.NB-module-account-trainer').animate({
+          'opacity': 0
+        }, {
+          'duration': 1000,
+          'complete': function() {
+            $('.NB-module-account-trainer').slideUp(350);
+          }
+        });
+      }, 1000);
+      $.modal.close();
+    },
+    
+    // ==========
+    // = Events =
+    // ==========
+    
     handle_text_highlight: function() {
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
         var $title = $('.NB-classifier-title-text', this.$modal);
@@ -726,6 +750,7 @@ var classifier = {
             e.preventDefault();
             self.save_publisher(true);
             self.load_next_feed_in_trainer();
+            self.update_homepage_counts();
         });
 
         $.targetIs(e, { tagSelector: '.NB-modal-submit-back' }, function($t, $p){
@@ -740,7 +765,7 @@ var classifier = {
 
         $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
             e.preventDefault();
-            $.modal.close();
+            self.end();
         });
     },
     

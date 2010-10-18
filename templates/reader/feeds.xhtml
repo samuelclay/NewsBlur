@@ -200,7 +200,7 @@
               Premium Account
             {% else %}
               <span class="NB-module-account-subtitle">
-                {{ feed_count }} of 64 sites
+                <span class="NB-module-account-feedcount">{{ feed_count }}</span> of 64 sites
               </span>
               Standard Account
             {% endif %}
@@ -211,19 +211,19 @@
             {% else %}
               
               <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
+                <div class="{% if feed_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
               </div>
             {% endif %}
           </div>
         </div>
         {% if train_count != feed_count %}
-          <div class="NB-module-account NB-last">
+          <div class="NB-module-account NB-module-account-trainer NB-last">
             <div class="NB-module-account-image">
                 <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
             </div>
             <h3>
                 <span class="NB-module-account-subtitle">
-                  {{ train_count }} of {{ feed_count }} site{{ feed_count|pluralize }}
+                  <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ feed_count }} site{{ feed_count|pluralize }}
                 </span>
                 Intelligence Trainer
             </h3>

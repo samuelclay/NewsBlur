@@ -316,6 +316,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var approve_list = this.approve_list;
         var $submit = $('.NB-modal-submit-save', this.$modal);
         $submit.addClass('NB-disabled').val('Saving...');
+        this.update_homepage_count();
         
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
@@ -323,6 +324,15 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             NEWSBLUR.reader.load_feeds();
             $.modal.close();
         });
+    },
+    
+    update_homepage_count: function() {
+      var $count = $('.NB-module-account-feedcount');
+      var $button = $('.NB-module-account-upgrade');
+      var approve_list = this.approve_list;
+      
+      $count.text(approve_list.length);
+      $button.removeClass('NB-modal-submit-green').addClass('NB-modal-submit-close');
     },
     
     // ===========

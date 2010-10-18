@@ -2507,6 +2507,9 @@ background: transparent;
     box-shadow: 1px 1px 0 #303030;
 }
 
+.NB-account .NB-module .NB-modal-submit-close {
+  color: #505050;
+}
 .NB-account .NB-module .NB-module-account .NB-module-account-title {
     margin: 0 0 4px 128px;
 }
