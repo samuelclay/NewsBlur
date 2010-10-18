@@ -51,8 +51,8 @@ class FetchFeed:
         socket.setdefaulttimeout(30)
         identity = self.get_identity()
         log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
-                                                 unicode(self.feed)[:30],
-                                                 self.feed.id)
+                                                            unicode(self.feed)[:30],
+                                                            self.feed.id)
         logging.debug(log_msg)
                                                  
         self.feed.set_next_scheduled_update()
@@ -190,11 +190,7 @@ class ProcessFeed:
             elif entry.link:
                 guids.append(entry.link)
         
-        self.lock.acquire()
-        try:
-            self.feed.save()
-        finally:
-            self.lock.release()
+        self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
         # start_date = datetime.datetime.utcnow()
