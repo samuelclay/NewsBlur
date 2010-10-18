@@ -113,54 +113,54 @@ var classifier = {
     },
     
     load_previous_feed_in_trainer: function() {
-        var trainer_data_length = this.trainer_data.length;
-        var trainer_data = this.trainer_data[this.trainer_iterator];
-        NEWSBLUR.log(['previous', trainer_data_length, this.trainer_iterator]);
         this.trainer_iterator = this.trainer_iterator - 1;
+        
+        var trainer_data_length = this.trainer_data.length;
+        
         if (this.trainer_iterator < 1) {
+            NEWSBLUR.log(['intro', this.trainer_iterator]);
             this.make_trainer_intro();
             this.load_feeds_trainer(null, this.trainer_data);
             this.reload_modal();
-        }
-
-        // Show only feeds, not the trainer intro if going backwards.
-        if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
+        } else if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
+            var trainer_data = this.trainer_data[this.trainer_iterator-1];
+            NEWSBLUR.log(['previous', trainer_data_length, this.trainer_iterator-1, trainer_data]);
             this.load_feed(trainer_data);
         }
     },
     
     load_next_feed_in_trainer: function(backwards) {
-        var trainer_data_length = this.trainer_data.length;
-        var trainer_data = this.trainer_data[this.trainer_iterator];
+        this.trainer_iterator = this.trainer_iterator + 1;
         
-        NEWSBLUR.log(['next', trainer_data_length, this.trainer_iterator]);
-        if (!trainer_data || this.trainer_iterator >= trainer_data_length) {
+        var trainer_data_length = this.trainer_data.length;
+
+        if (this.trainer_iterator > trainer_data_length) {
+            NEWSBLUR.log(['outro', this.trainer_iterator, trainer_data_length]);
             this.make_trainer_outro();
             this.load_feeds_trainer(null, this.trainer_data);
             this.reload_modal();
         } else {
-            this.feed_id = trainer_data['feed_id'];
-            this.trainer_iterator = this.trainer_iterator + 1;
-            // Show only feeds, not the trainer intro if going backwards.
-            if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
-                this.load_feed(trainer_data);
-            }
+            var trainer_data = this.trainer_data[this.trainer_iterator-1];
+            NEWSBLUR.log(['next', trainer_data_length, this.trainer_iterator-1, trainer_data]);
+            this.load_feed(trainer_data);
         }
     },
     
     load_feed: function(trainer_data) {
+        this.feed_id = trainer_data['feed_id'];
         this.feed = this.model.get_feed(this.feed_id);
         this.feed_tags = trainer_data['feed_tags'];
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
         this.options.feed_loaded = true;
-        this.make_modal_feed();
-        this.make_modal_title();
-        this.make_modal_trainer_count();
-    
         if (this.feed_id in this.cache) {
             this.$modal = this.cache[this.feed_id];
+        } else {
+            this.make_modal_feed();
+            this.make_modal_title();
+            this.make_modal_trainer_count();
         }
+    
         
         this.reload_modal();
     },

@@ -87,7 +87,7 @@ def paypal_form(request):
         "item_name": "NewsBlur Premium Account",
         "notify_url": "http://dev.newsblur.com/profile/paypal_ipn/",
         "return_url": "http://dev.newsblur.com/profile/paypal_return/",
-        "cancel_return": "http://dev.newsblur.com/profile/paypal_cancel/",
+        "cancel_return": "http://dev.newsblur.com/",
         "custom": request.user.username,
     }
 
