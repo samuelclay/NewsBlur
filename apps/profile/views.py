@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 from utils import json
 from paypal.standard.forms import PayPalPaymentsForm
 from utils.user_functions import ajax_login_required
@@ -85,9 +87,9 @@ def paypal_form(request):
         "sra": "1",                        # reattempt payment on payment error
         "no_note": "1",                    # remove extra notes (optional)
         "item_name": "NewsBlur Premium Account",
-        "notify_url": "http://dev.newsblur.com/profile/paypal_ipn/",
-        "return_url": "http://dev.newsblur.com/profile/paypal_return/",
-        "cancel_return": "http://dev.newsblur.com/",
+        "notify_url": reverse('paypal-ipn'),
+        "return_url": reverse('paypal-return'),
+        "cancel_return": reverse('index'),
         "custom": request.user.username,
     }
 
@@ -96,6 +98,11 @@ def paypal_form(request):
 
     # Output the button.
     return HttpResponse(form.sandbox(), mimetype='text/html')
+
+def paypal_return(request):
+
+    return render_to_response('reader/paypal_return.xhtml', {
+    }, context_instance=RequestContext(request))
     
 @login_required
 def activate_premium(request):

@@ -11,6 +11,7 @@ from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
+from django.core.mail import mail_admins
 from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -617,17 +618,21 @@ def save_feed_chooser(request):
 
 @login_required
 def activate_premium_account(request):
+    try:
+        usersubs = UserSubscription.objects.select_related('feed').filter(user=request.user)
+        for sub in usersubs:
+            sub.active = True
+            sub.save()
+            if sub.feed.premium_subscribers <= 0:
+                sub.feed.count_subscribers()
+                sub.feed.schedule_feed_fetch_immediately()
+    except Exception, e:
+        subject = "Premium activation failed"
+        message = "%s -- %s\n\n%s" % (request.user, usersubs, e)
+        mail_admins(subject, message, fail_silently=True)
+        
     request.user.profile.is_premium = True
     request.user.profile.save()
-    
-    usersubs = UserSubscription.objects.select_related('feed').filter(user=request.user)
-    for sub in usersubs:
-        sub.active = True
-        sub.save()
-        if sub.feed.premium_subscribers <= 0:
-            sub.feed.count_subscribers()
-            sub.feed.schedule_feed_fetch_immediately()
-        
         
     return HttpResponseRedirect(reverse('index'))
 

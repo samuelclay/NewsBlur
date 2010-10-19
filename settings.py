@@ -132,6 +132,7 @@ COMPRESS_CSS = {
     'all': {
         'source_filenames': (
             'css/reader.css',
+            'css/paypal_return.css',
             'css/jquery-ui/jquery.theme.css',
         ),
         'output_filename': 'css/all-compressed-?.css'

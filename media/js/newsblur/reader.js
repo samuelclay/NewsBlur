@@ -3799,9 +3799,3 @@
     };
 
 })(jQuery);
-
-$(document).ready(function() {
-
-    NEWSBLUR.reader = new NEWSBLUR.Reader();
-
-});
