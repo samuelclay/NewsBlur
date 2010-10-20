@@ -64,7 +64,7 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.runner_story();
 };
 
-var classifier = {
+var classifier_prototype = {
     
     runner_trainer: function() {
         this.user_classifiers = {};
@@ -512,21 +512,8 @@ var classifier = {
                 && this.user_classifiers.authors[author] == this.score) {
                 input_attrs['checked'] = 'checked';
             }
-        
-            var $author = $.make('span', { className: 'NB-classifier-container NB-classifier-author-container' }, [
-                $.make('span', { className: 'NB-classifier NB-classifier-author' }, [
-                    $.make('input', input_attrs),
-                    $.make('label', { 'for': 'classifier_author_'+a }, [
-                        $.make('b', 'Author: '),
-                        $.make('span', author)
-                    ])
-                ]),
-                (author_count && $.make('span', { className: 'NB-classifier-tag-count' }, [
-                    '&times;&nbsp;',
-                    author_count
-                ]))
-            ]);
-            $authors.push($author);
+            
+            var $author = this.make_classifier(author, author, 'author', author_count);            $authors.push($author);
         }
         return $authors;
     },
@@ -546,58 +533,83 @@ var classifier = {
             
             if (!tag) continue;
             
-            var input_attrs = { 
-                type: 'checkbox', 
-                name: opinion+'tag', 
-                value: tag, 
-                id: 'classifier_tag_'+t 
-            };
-            
-            if (tag in this.user_classifiers.tags && this.user_classifiers.tags[tag] == this.score) {
-                input_attrs['checked'] = 'checked';
-            }
-            
-            var $tag = $.make('span', { className: 'NB-classifier-container NB-classifier-tag-container' }, [
-                $.make('span', { className: 'NB-classifier NB-classifier-tag' }, [
-                    $.make('input', input_attrs),
-                    $.make('label', { 'for': 'classifier_tag_'+t }, [
-                        $.make('b', 'Tag: '),
-                        $.make('span', tag)
-                    ])
-                ]),
-                (tag_count && $.make('span', { className: 'NB-classifier-tag-count' }, [
-                    '&times;&nbsp;',
-                    tag_count
-                ]))
-            ]);
+            var $tag = this.make_classifier(tag, tag, 'tag', tag_count);
             $tags.push($tag);
         }
         
         return $tags;
     },
-        
-    make_publisher: function(publisher, opinion) {
-        var input_attrs = { 
-            type: 'checkbox', 
-            name: opinion+'publisher', 
-            value: this.feed_id,
-            id: 'classifier_publisher',
-            checked: false
-        };
-        if (this.user_classifiers.feeds[this.feed_id] == this.score) {
-            input_attrs['checked'] = true;
+    
+    make_classifier: function(classifier_title, classifier_value, classifier_type, classifier_count) {
+        var score = 0;
+        NEWSBLUR.log(['make_classifier', this.user_classifiers, classifier_title, classifier_value, classifier_type, classifier_count]);
+        if (classifier_value in this.user_classifiers[classifier_type+'s']) {
+            score = this.user_classifiers[classifier_type+'s'][classifier_value];
         }
         
-        var $publisher = $.make('div', { className: 'NB-classifier NB-classifier-publisher' }, [
-            $.make('input', input_attrs),
-            $.make('label', { 'for': 'classifier_publisher' }, [
-                $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + publisher.feed_link }),
-                $.make('span', { className: 'feed_title' }, [
-                    $.make('b', 'Publisher: '),
-                    $.make('span', publisher.feed_title)
+        var classifier_type_title = Inflector.capitalize(classifier_type=='feed' ?
+                                    'publisher' :
+                                    classifier_type);
+                                    
+        var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
+            $.make('span', { className: 'NB-classifier NB-classifier-'+classifier_type }, [
+                $.make('input', { 
+                    type: 'checkbox', 
+                    className: 'NB-classifier-input-like', 
+                    name: 'like_'+classifier_type, 
+                    value: classifier_value 
+                }),
+                $.make('input', { 
+                    type: 'checkbox', 
+                    className: 'NB-classifier-input-dislike', 
+                    name: 'dislike_'+classifier_type, 
+                    value: classifier_value
+                }),
+                $.make('div', { className: 'NB-classifier-icon-like' }),
+                $.make('div', { className: 'NB-classifier-icon-dislike' }, [
+                    $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
+                ]),
+                $.make('label', [
+                    (classifier_type == 'feed' && 
+                        $.make('img', { 
+                            className: 'feed_favicon', 
+                            src: this.google_favicon_url + this.feed.feed_link 
+                        })),
+                    $.make('b', classifier_type_title+': '),
+                    $.make('span', classifier_title)
                 ])
-            ])
+            ]),
+            (classifier_count && $.make('span', { className: 'NB-classifier-count' }, [
+                '&times;&nbsp;',
+                classifier_count
+            ]))
         ]);
+        
+        if (score > 0) {
+            $classifier.addClass('NB-classifier-like');
+            $('.NB-classifier-input-like', $classifier).attr('checked', true);
+        } else if (score < 0) {
+            $classifier.addClass('NB-classifier-dislike');
+            $('.NB-classifier-input-dislike', $classifier).attr('checked', true);
+        }
+        
+        $('.NB-classifier', $classifier).bind('mouseover', function(e) {
+            $(e.currentTarget).addClass('NB-classifier-hover-like');
+        }).bind('mouseout', function(e) {
+            $(e.currentTarget).removeClass('NB-classifier-hover-like');
+        });
+        
+        $('.NB-classifier-icon-dislike', $classifier).bind('mouseover', function(e) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-hover-dislike');
+        }).bind('mouseout', function(e) {
+            $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
+        });
+        
+        return $classifier;
+    },
+        
+    make_publisher: function(publisher, opinion) {
+        var $publisher = this.make_classifier(publisher.feed_title, this.feed_id, 'feed');
         return $publisher;
     },
     
@@ -800,6 +812,6 @@ var classifier = {
     
 };
 
-NEWSBLUR.ReaderClassifierStory.prototype = classifier;
-NEWSBLUR.ReaderClassifierFeed.prototype = classifier;
-NEWSBLUR.ReaderClassifierTrainer.prototype = classifier;
+NEWSBLUR.ReaderClassifierStory.prototype = classifier_prototype;
+NEWSBLUR.ReaderClassifierFeed.prototype = classifier_prototype;
+NEWSBLUR.ReaderClassifierTrainer.prototype = classifier_prototype;
