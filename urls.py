@@ -1,8 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from apps.reader import views as reader_views
-from django.contrib import admin
-admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', reader_views.index, name='index'),
@@ -11,8 +9,6 @@ urlpatterns = patterns('',
     (r'^classifier/', include('apps.analyzer.urls')),
     (r'^profile/', include('apps.profile.urls')),
     (r'^import/', include('apps.feed_import.urls')),
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^admin/(.*)', admin.site.root)
 )
 
 if settings.DEVELOPMENT:

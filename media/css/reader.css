@@ -2268,6 +2268,7 @@ background: transparent;
     text-transform: uppercase;
     background-color: #F5CD09;
     position: relative;
+    border: 1px solid transparent;
 }
 
 .NB-classifiers .NB-classifier input[type=checkbox] {
@@ -2316,12 +2317,12 @@ background: transparent;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-dislike {
-  width: 26px;
-  height: 20px;
+  width: 27px;
+  height: 22px;
   position: absolute;
-  top: 0;
-  right: 0;
-  background: transparent url('../img/reader/thumbs-down.png') no-repeat 6px -2px;
+  top: -1px;
+  right: -1px;
+  background: transparent url('../img/reader/thumbs-down.png') no-repeat 5px -1px;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-dislike-inner {
@@ -2331,32 +2332,63 @@ background: transparent;
   border-left: 1px solid #F5E529;
 }
 
+.NB-classifiers .NB-classifier.NB-classifier-like {
+  background-color: #54B54E;
+  border: 1px solid #202020;
+  -webkit-box-shadow: 1px 1px 1px #BDC0D7;
+  -moz-box-shadow: 1px 1px 1px #BDC0D7;
+  box-shadow: 1px 1px 1px #BDC0D7;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike {
+  background-color: #C92123;
+  border: 1px solid #000;
+  -webkit-box-shadow: 1px 1px 1px #BDC0D7;
+  -moz-box-shadow: 1px 1px 1px #BDC0D7;
+  box-shadow: 1px 1px 1px #BDC0D7;
+}
+
 .NB-classifiers .NB-classifier.NB-classifier-hover-like {
   background-color: #54B54E;
 }
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like {
+  border: 1px solid transparent;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like label b,
 .NB-classifiers .NB-classifier.NB-classifier-hover-like label b {
   color: white;
 }
+.NB-classifiers .NB-classifier.NB-classifier-like label span,
 .NB-classifiers .NB-classifier.NB-classifier-hover-like label span {
   color: white;
   text-shadow: 1px 1px 0 #254E18;
 }
+.NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-dislike,
 .NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-dislike {
   opacity: .1;
 }
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike {
   background-color: #C92123;
 }
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-dislike {
+  border: 1px solid transparent;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like.NB-classifier-hover-dislike {
+  border: 1px solid #000;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike label b,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike label b {
   color: white;
 }
+.NB-classifiers .NB-classifier.NB-classifier-dislike label span,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike label span {
   color: white;
   text-shadow: 1px 1px 0 #7F1012;
 }
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
   opacity: 1;
 }
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-like {
   opacity: .1;
 }

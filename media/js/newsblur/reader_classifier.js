@@ -89,11 +89,11 @@ var classifier_prototype = {
         this.find_story_and_feed();
         this.make_modal_feed();
         this.make_modal_title();
-        this.make_modal_intelligence_slider();
         this.handle_select_checkboxes();
         this.handle_cancel();
         this.handle_select_title();
         this.open_modal();
+        this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
         if (!this.options.feed_loaded) {
             _.defer(_.bind(function() {
@@ -113,6 +113,7 @@ var classifier_prototype = {
         this.handle_cancel();
         this.handle_select_title();
         this.open_modal();
+        this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
     },
     
     load_previous_feed_in_trainer: function() {
@@ -314,7 +315,6 @@ var classifier_prototype = {
         
         this.$modal = $.make('div', { className: 'NB-classifier NB-modal ' + (this.options['training'] && 'NB-modal-trainer') }, [
             $.make('div', { className: 'NB-modal-loading' }),
-            (!this.options['training'] && this.make_modal_intelligence_slider()),
             (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
             $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
@@ -377,7 +377,6 @@ var classifier_prototype = {
         story.story_title = $('<div/>').html(story.story_title).text();
         
         this.$modal = $.make('div', { className: 'NB-classifier NB-modal' }, [
-            this.make_modal_intelligence_slider(),
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post' }, [
                 (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -452,40 +451,6 @@ var classifier_prototype = {
         $count.html(count + '/' + total);
     },
     
-    make_modal_intelligence_slider: function() {
-        var self = this;
-        var $slider = $.make('div', { className: 'NB-taskbar-intelligence NB-modal-slider' }, [
-            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative' }),
-            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral' }),
-            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive' }),
-            $.make('div', { className: 'NB-intelligence-slider' })
-        ]);
-        
-        $('.NB-intelligence-slider', $slider).slider({
-            range: 'max',
-            min: 0,
-            max: 2,
-            step: 2,
-            value: this.score + 1,
-            slide: function(e, ui) {
-                // self.switch_feed_view_unread_view(ui.value);
-                self.score = ui.value - 1;
-                self.make_modal_title();
-                $('input[name^=like],input[name^=dislike]', self.$modal).attr('name', function(i, current_name) {
-                    if (self.score == -1) {
-                        return 'dis' + current_name.substr(current_name.indexOf('like_'));
-                    } else if (self.score == 1) {
-                        return current_name.substr(current_name.indexOf('like_'));
-                    }
-                });
-                var $submit = $('input[type=submit]', self.$modal);
-                $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
-            }
-        });
-        
-        return $slider;
-    },
-    
     make_authors: function(authors, opinion) {
         var $authors = [];
         
@@ -501,19 +466,8 @@ var classifier_prototype = {
             
             if (!author) continue;
             
-            var input_attrs = { 
-                type: 'checkbox', 
-                name: opinion+'author', 
-                value: author, 
-                id: 'classifier_author_'+a
-            };
-        
-            if (author in this.user_classifiers.authors 
-                && this.user_classifiers.authors[author] == this.score) {
-                input_attrs['checked'] = 'checked';
-            }
-            
-            var $author = this.make_classifier(author, author, 'author', author_count);            $authors.push($author);
+            var $author = this.make_classifier(author, author, 'author', author_count);            
+            $authors.push($author);
         }
         return $authors;
     },
@@ -540,9 +494,13 @@ var classifier_prototype = {
         return $tags;
     },
     
+    make_publisher: function(publisher, opinion) {
+        var $publisher = this.make_classifier(publisher.feed_title, this.feed_id, 'feed');
+        return $publisher;
+    },
+    
     make_classifier: function(classifier_title, classifier_value, classifier_type, classifier_count) {
         var score = 0;
-        NEWSBLUR.log(['make_classifier', this.user_classifiers, classifier_title, classifier_value, classifier_type, classifier_count]);
         if (classifier_value in this.user_classifiers[classifier_type+'s']) {
             score = this.user_classifiers[classifier_type+'s'][classifier_value];
         }
@@ -608,20 +566,33 @@ var classifier_prototype = {
         return $classifier;
     },
         
-    make_publisher: function(publisher, opinion) {
-        var $publisher = this.make_classifier(publisher.feed_title, this.feed_id, 'feed');
-        return $publisher;
-    },
-    
-    make_title: function(title, t, opinion) {
-        var $title = $.make('div', { className: 'NB-classifier NB-classifier-title' }, [
-            $.make('input', { type: 'checkbox', name: opinion+'title', value: title, id: 'classifier_title_'+t, checked: 'checked' }),
-            $.make('label', { 'for': 'classifier_title_'+t }, [
-                $.make('b', 'Title: '),
-                $.make('span', title)
-            ])
-        ]);
-        return $title;
+    change_classifier: function($classifier, classifier_opinion) {
+        var $like = $('.NB-classifier-input-like', $classifier);
+        var $dislike = $('.NB-classifier-input-dislike', $classifier);
+        
+        if (classifier_opinion == 'like') {
+            if ($classifier.is('.NB-classifier-like')) {
+                $classifier.removeClass('NB-classifier-like');
+                $dislike.attr('checked', false).trigger('change');
+                $like.attr('checked', false).trigger('change');
+            } else {
+                $classifier.removeClass('NB-classifier-dislike');
+                $classifier.addClass('NB-classifier-like');
+                $dislike.attr('checked', false).trigger('change');
+                $like.attr('checked', true).trigger('change');
+            }
+        } else if (classifier_opinion == 'dislike') {
+            if ($classifier.is('.NB-classifier-dislike')) {
+                $classifier.removeClass('NB-classifier-dislike');
+                $like.attr('checked', false).trigger('change');
+                $dislike.attr('checked', false).trigger('change');
+            } else {
+                $classifier.removeClass('NB-classifier-like');
+                $classifier.addClass('NB-classifier-dislike');
+                $like.attr('checked', false).trigger('change');
+                $dislike.attr('checked', true).trigger('change');
+            }
+        }
     },
     
     open_modal: function() {
@@ -657,6 +628,10 @@ var classifier_prototype = {
             }
         });
     },
+    
+    // ==========
+    // = Events =
+    // ==========
     
     handle_text_highlight: function() {
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
@@ -748,6 +723,18 @@ var classifier_prototype = {
         $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
             e.preventDefault();
             self.save_publisher();
+        });
+        
+        var stop = false;
+        $.targetIs(e, { tagSelector: '.NB-classifier-icon-dislike' }, function($t, $p){
+            e.preventDefault();
+            stop = true;
+            self.change_classifier($t.parents('.NB-classifier').eq(0), 'dislike');
+        });
+        if (stop) return;
+        $.targetIs(e, { tagSelector: '.NB-classifier' }, function($t, $p){
+            e.preventDefault();
+            self.change_classifier($t, 'like');
         });
     },
     
