@@ -2696,7 +2696,7 @@
                         self.model.classifiers.titles[value] = score;
                     } else if (name == 'author') {
                         self.model.classifiers.authors[value] = score;
-                    } else if (name == 'publisher') {
+                    } else if (name == 'feed') {
                         self.model.classifiers.feeds[feed_id] = score;
                     }
                 } else {
@@ -2706,7 +2706,7 @@
                         delete self.model.classifiers.titles[value];
                     } else if (name == 'author' && self.model.classifiers.authors[value] == score) {
                         delete self.model.classifiers.authors[value];
-                    } else if (name == 'publisher' && self.model.classifiers.feeds[feed_id] == score) {
+                    } else if (name == 'feed' && self.model.classifiers.feeds[feed_id] == score) {
                         delete self.model.classifiers.feeds[feed_id];
                     }
                 }
