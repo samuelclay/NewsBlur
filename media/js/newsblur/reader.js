@@ -618,7 +618,7 @@
                             ]),
                             $.make('ul', { className: 'folder' })
                         ]).css({'display': 'none'});
-                        var is_collapsed = NEWSBLUR.Preferences.collapsed_folders.indexOf(o) != -1;
+                        var is_collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, o);
 
                         (function($feeds, $folder, is_collapsed, collapsed_parent) {
                             setTimeout(function() {
