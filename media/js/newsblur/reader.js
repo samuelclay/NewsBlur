@@ -471,40 +471,39 @@
             }    
         },
         
-        show_next_feed: function(direction) {
+        show_next_feed: function(direction, $current_feed) {
             var $feed_list = this.$s.$feed_list;
-            var $current_feed = $('.selected', $feed_list);
+            var $current_feed = $current_feed || $('.selected', $feed_list);
             var $next_feed,
                 scroll;
+            var $feeds = $('.feed', $feed_list);
             
             if (!$current_feed.length) {
                 $current_feed = $('.feed:first', $feed_list);
                 $next_feed = $current_feed;
-            } else if (direction == 1) {
-                $next_feed = $current_feed.next('.feed');
-            } else if (direction == -1) {
-                $next_feed = $current_feed.prev('.feed');
-            }
-            
-            if (!$next_feed.length) {
-                if (direction == 1) {
-                    $next_feed = $current_feed.parents('.folder').next('.folder').find('.feed:first');
-                } else if (direction == -1) {
-                    $next_feed = $current_feed.parents('.folder').prev('.folder').find('.feed:last');
-                }
+            } else {
+                $feeds.each(function(i) {
+                    if (this == $current_feed[0]) {
+                        current_feed = i;
+                        return false;
+                    }
+                });
+                $next_feed = $feeds.eq(current_feed+direction);
             }
             
             var feed_id = $next_feed.data('feed_id');
-            if (feed_id) {
+            if (feed_id && feed_id == this.active_feed) {
+                this.show_next_feed(direction, $next_feed);
+            } else if (feed_id) {
                 var position = $feed_list.scrollTop() + $next_feed.offset().top - $next_feed.outerHeight();
-                var showing = $feed_list.height();
+                var showing = $feed_list.height() - 100;
                 if (position > showing) {
                     scroll = position;
                 } else {
                     scroll = 0;
                 }
                 $feed_list.scrollTop(scroll);
-                // this.open_feed(feed_id);
+                this.open_feed(feed_id, false, $next_feed);
             }
         },
         
@@ -3681,6 +3680,14 @@
             $document.bind('keydown', 'k', function(e) {
                 e.preventDefault();
                 self.show_next_story(-1);
+            });                                     
+            $document.bind('keydown', 'shift+j', function(e) {
+                e.preventDefault();
+                self.show_next_feed(1);
+            });
+            $document.bind('keydown', 'shift+k', function(e) {
+                e.preventDefault();
+                self.show_next_feed(-1);
             });
             $document.bind('keydown', 'left', function(e) {
                 e.preventDefault();
