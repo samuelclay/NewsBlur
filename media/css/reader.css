@@ -2256,7 +2256,7 @@ background: transparent;
     display: block;
     margin: 2px 6px 6px 0;
     cursor: pointer;
-    padding: 0 34px 0 26px;
+    padding: 0 30px 0 26px;
     font-size: 12px;
     text-transform: uppercase;
     background-color: #F5CD09;
@@ -2307,6 +2307,7 @@ background: transparent;
   position: absolute;
   left: 6px;
   top: 2px;
+  opacity: .2;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-dislike {
@@ -2316,24 +2317,25 @@ background: transparent;
   top: -1px;
   right: -1px;
   background: transparent url('../img/reader/thumbs-down.png') no-repeat 5px -1px;
+  opacity: .2;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-dislike-inner {
   margin: 4px 4px 0 0;
   width: 18px;
   height: 13px;
-  border-left: 1px solid #F5E529;
+  border-left: 1px solid #EBEBE1;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-like {
-  background-color: #54B54E;
+  background-color: #34912E;
   border: 1px solid #202020;
   -webkit-box-shadow: 1px 1px 1px #BDC0D7;
   -moz-box-shadow: 1px 1px 1px #BDC0D7;
   box-shadow: 1px 1px 1px #BDC0D7;
 }
 .NB-classifiers .NB-classifier.NB-classifier-dislike {
-  background-color: #C92123;
+  background-color: #A90103;
   border: 1px solid #000;
   -webkit-box-shadow: 1px 1px 1px #BDC0D7;
   -moz-box-shadow: 1px 1px 1px #BDC0D7;
@@ -2341,7 +2343,10 @@ background: transparent;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-hover-like {
-  background-color: #54B54E;
+  background-color: #54A54E;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-like {
+  background-color: #34912E;
 }
 .NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like {
   border: 1px solid transparent;
@@ -2359,14 +2364,48 @@ background: transparent;
 .NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-dislike {
   opacity: .1;
 }
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-like {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like .NB-classifier-icon-like {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like .NB-classifier-icon-dislike {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-dislike .NB-classifier-icon-like {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
+  opacity: 1;
+}
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike {
   background-color: #C92123;
 }
 .NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-dislike {
   border: 1px solid transparent;
 }
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-like.NB-classifier-hover-dislike {
+  background-color: #C92123;
+}
 .NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like.NB-classifier-hover-dislike {
   border: 1px solid #000;
+  background-color: #A90103;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike-inner,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike-inner {
+  border-left-color: #C17C52;
 }
 .NB-classifiers .NB-classifier.NB-classifier-dislike label b,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike label b {
@@ -2376,14 +2415,6 @@ background: transparent;
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike label span {
   color: white;
   text-shadow: 1px 1px 0 #7F1012;
-}
-.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
-.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
-  opacity: 1;
-}
-.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like,
-.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-like {
-  opacity: .1;
 }
 /* =================== */
 /* = Mouse Indicator = */

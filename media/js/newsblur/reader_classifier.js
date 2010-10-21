@@ -547,15 +547,15 @@ var classifier_prototype = {
             $('.NB-classifier-input-dislike', $classifier).attr('checked', true);
         }
         
-        $('.NB-classifier', $classifier).bind('mouseover', function(e) {
+        $('.NB-classifier', $classifier).bind('mouseenter', function(e) {
             $(e.currentTarget).addClass('NB-classifier-hover-like');
-        }).bind('mouseout', function(e) {
+        }).bind('mouseleave', function(e) {
             $(e.currentTarget).removeClass('NB-classifier-hover-like');
         });
         
-        $('.NB-classifier-icon-dislike', $classifier).bind('mouseover', function(e) {
+        $('.NB-classifier-icon-dislike', $classifier).bind('mouseenter', function(e) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-hover-dislike');
-        }).bind('mouseout', function(e) {
+        }).bind('mouseleave', function(e) {
             $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
         });
         
