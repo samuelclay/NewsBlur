@@ -883,12 +883,12 @@ background: transparent;
 
 #story_titles .NB-feedbar .NB-feed-like {
     right: 24px;
-    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+    background: transparent url('../img/reader/thumbs_up.png') no-repeat 0 0;
 }
 
 #story_titles .NB-feedbar .NB-feed-dislike {
     right: 4px;
-    background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 -4px;
+    background: transparent url('../img/reader/thumbs_down.png') no-repeat 0 -4px;
 }
 
 #story_titles .feed .unread_count.unread_count_full {
@@ -974,12 +974,12 @@ background: transparent;
 
 #story_titles .NB-story-like {
     left: 22px;
-    background: transparent url('../img/reader/thumbs-up.png') no-repeat 2px 0;
+    background: transparent url('../img/reader/thumbs_up.png') no-repeat 2px 0;
 }
 
 #story_titles .NB-story-dislike {
     left: 0px;
-    background: transparent url('../img/reader/thumbs-down.png') no-repeat 4px -4px;
+    background: transparent url('../img/reader/thumbs_down.png') no-repeat 4px -4px;
 }
 
 #story_titles .story.read {
@@ -1918,14 +1918,14 @@ a.NB-splash-link:hover {
 .NB-modal-classifiers .NB-modal-title .NB-classifier-title-like {
     color: #3D931B;
     padding-left: 20px;
-    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 6px;
+    background: transparent url('../img/reader/thumbs_up.png') no-repeat 0 6px;
 
 }
 
 .NB-modal-classifiers .NB-modal-title .NB-classifier-title-dislike {
     color: #932C15;
     padding-right: 20px;
-    background: transparent url('../img/reader/thumbs-down.png') no-repeat right 2px;
+    background: transparent url('../img/reader/thumbs_down.png') no-repeat right 2px;
 }
 
 .simplemodal-wrap {
@@ -2134,14 +2134,14 @@ a.NB-splash-link:hover {
 .NB-manage .NB-classifier-title-like {
     color: #3D931B;
     padding-left: 20px;
-    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+    background: transparent url('../img/reader/thumbs_up.png') no-repeat 0 0;
 
 }
 
 .NB-manage .NB-classifier-title-dislike {
     color: #932C15;
     padding-left: 20px;
-    background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 0;
+    background: transparent url('../img/reader/thumbs_down.png') no-repeat 0 0;
 }
 
 .NB-manage .NB-manage-classifier {
@@ -2303,7 +2303,7 @@ background: transparent;
 .NB-classifiers .NB-classifier .NB-classifier-icon-like {
   width: 16px;
   height: 16px;
-  background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+  background: transparent url('../img/reader/thumbs_up.png') no-repeat 0 0;
   position: absolute;
   left: 6px;
   top: 2px;
@@ -2316,7 +2316,7 @@ background: transparent;
   position: absolute;
   top: -1px;
   right: -1px;
-  background: transparent url('../img/reader/thumbs-down.png') no-repeat 5px -1px;
+  background: transparent url('../img/reader/thumbs_down.png') no-repeat 5px -1px;
   opacity: .2;
 }
 
