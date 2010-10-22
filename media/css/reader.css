@@ -768,8 +768,8 @@ background: transparent;
   margin-left: 24px;
 }
 
-#story_titles .NB-feedbar .NB-feedbar-manage-feed {
-    background: transparent url("../img/icons/silk/cog.png") no-repeat center center;
+#story_titles .NB-feedbar .NB-feedbar-train-feed {
+    background: transparent url("../img/icons/silk/bricks.png") no-repeat center center;
     width: 16px;
     height: 16px;
 /*    display: none;*/
@@ -1866,17 +1866,17 @@ a.NB-splash-link:hover {
 }
 
 .NB-classifier .NB-modal-loading {
-  margin: 8px 120px 0 0;
+  margin: 8px 0px 0 0;
 }
 
-.NB-classifier h2.NB-like {
+.NB-modal-classifiers h2.NB-like {
     color: #007000;
 }
 
-.NB-classifier h2.NB-dislike {
+.NB-modal-classifiers h2.NB-dislike {
     color: #700000;
 }
-.NB-classifier .NB-classifier-facet-disabled {
+.NB-modal-classifiers .NB-classifier-facet-disabled {
     color: #A0A0A0;
 }
 
@@ -1885,7 +1885,7 @@ a.NB-splash-link:hover {
     text-shadow: none;
 }
 
-.NB-classifier .NB-classifier-title-highlight {
+.NB-modal-classifiers .NB-classifier-title-highlight {
     margin-bottom: 6px;
 }
 
@@ -1893,56 +1893,44 @@ a.NB-splash-link:hover {
     margin: 6px 0 0 0;
 }
 
-.NB-classifier .NB-publisher .NB-classifier-authors input {
+.NB-modal-classifiers .NB-publisher .NB-classifier-authors input {
     float: none;
     margin: 4px 6px 0 0;
 }
 
-.NB-classifier .NB-classifier-container {
+.NB-modal-classifiers .NB-classifier-container {
     white-space: nowrap;
     float: left;
     display: block;
     margin: 2px 6px 6px 0;
 }
 
-.NB-classifier .NB-classifier-container .NB-classifier {
+.NB-modal-classifiers .NB-classifier-container .NB-classifier {
     margin: 0 2px 0 0;
 }
 
-.NB-classifier .NB-classifier-tag {
-    background-color: #E0E0FF;
-    padding: 2px 6px 2px 0px;
-}
-
-.NB-classifier .NB-classifier-tag input[type=checkbox] {
-    margin: 0px 4px 0px;
-    float: none;
-}
-
-.NB-classifier .NB-classifier-tag label {
-}
-
-.NB-classifier .NB-classifier-tag-count {
+.NB-classifier .NB-classifier-count {
     font-size: 10px;
     font-weight: bold;
     margin: 0 6px 0 2px;
 }
 
-.NB-classifier .NB-modal-title .NB-classifier-like {
+.NB-modal-classifiers .NB-modal-title .NB-classifier-title-like {
     color: #3D931B;
+    padding-left: 20px;
+    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 6px;
+
 }
 
-.NB-classifier .NB-modal-title .NB-classifier-dislike {
+.NB-modal-classifiers .NB-modal-title .NB-classifier-title-dislike {
     color: #932C15;
+    padding-right: 20px;
+    background: transparent url('../img/reader/thumbs-down.png') no-repeat right 2px;
 }
 
 .simplemodal-wrap {
     overflow: auto;
 }
-
-.NB-classifiers {
-}
-
 
 /* ====================== */
 /* = Classifier Trainer = */
@@ -1971,7 +1959,7 @@ a.NB-splash-link:hover {
 .NB-modal-trainer .NB-classifier-trainer-counts {
     float: right;
     color: #606060;
-    font-size: 17px;
+    font-size: 14px;
 }
 
 .NB-modal-trainer .NB-trainer-points li {
@@ -2143,12 +2131,17 @@ a.NB-splash-link:hover {
     padding: 0 18px 18px 0;
 }
 
-.NB-manage .NB-classifier-like {
+.NB-manage .NB-classifier-title-like {
     color: #3D931B;
+    padding-left: 20px;
+    background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+
 }
 
-.NB-manage .NB-classifier-dislike {
+.NB-manage .NB-classifier-title-dislike {
     color: #932C15;
+    padding-left: 20px;
+    background: transparent url('../img/reader/thumbs-down.png') no-repeat 0 0;
 }
 
 .NB-manage .NB-manage-classifier {
@@ -2263,9 +2256,12 @@ background: transparent;
     display: block;
     margin: 2px 6px 6px 0;
     cursor: pointer;
-    padding: 0 9px 0 4px;
+    padding: 0 30px 0 26px;
     font-size: 12px;
     text-transform: uppercase;
+    background-color: #F5CD09;
+    position: relative;
+    border: 1px solid transparent;
 }
 
 .NB-classifiers .NB-classifier input[type=checkbox] {
@@ -2283,43 +2279,143 @@ background: transparent;
 }
 
 .NB-classifiers .NB-classifier label b {
-    color: #303030;
+    color: #957D09;
     text-shadow: none;
     font-weight: normal;
 }
 
-.NB-classifiers .NB-classifier.NB-classifier-tag {
-    background-color: #FFA200;
-}
-.NB-classifiers .NB-classifier.NB-classifier-tag label {
-    text-shadow: 1px 1px 0 #cF7200;
-}
-
-.NB-classifiers .NB-classifier.NB-classifier-title {
-    background-color: #FF7940;
-}
-.NB-classifiers .NB-classifier.NB-classifier-title label {
-    text-shadow: 1px 1px 0 #cF4910;
-}
-
-.NB-classifiers .NB-classifier.NB-classifier-author {
-    background-color: #60D6A7;
-}
-.NB-classifiers .NB-classifier.NB-classifier-author label {
-    text-shadow: 1px 1px 0 #30a677;
-}
-
-.NB-classifiers .NB-classifier.NB-classifier-publisher {
-    background-color: #6a93d4;
-}
-.NB-classifiers .NB-classifier.NB-classifier-publisher label {
-    text-shadow: 1px 1px 0 #3A63A4;
+.NB-classifiers .NB-classifier label span {
+    text-shadow: 1px 1px 0 #F4E576;
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-facet-disabled {
     background-color: white;
 }
 
+.NB-classifiers .NB-classifier input {
+  display: none;
+}
+
+.NB-classifiers .NB-classifier .feed_favicon {
+  margin-top: -2px;
+}
+
+.NB-classifiers .NB-classifier .NB-classifier-icon-like {
+  width: 16px;
+  height: 16px;
+  background: transparent url('../img/reader/thumbs-up.png') no-repeat 0 0;
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  opacity: .2;
+}
+
+.NB-classifiers .NB-classifier .NB-classifier-icon-dislike {
+  width: 27px;
+  height: 22px;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: transparent url('../img/reader/thumbs-down.png') no-repeat 5px -1px;
+  opacity: .2;
+}
+
+.NB-classifiers .NB-classifier .NB-classifier-icon-dislike-inner {
+  margin: 4px 4px 0 0;
+  width: 18px;
+  height: 13px;
+  border-left: 1px solid #EBEBE1;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-like {
+  background-color: #34912E;
+  border: 1px solid #202020;
+  -webkit-box-shadow: 1px 1px 1px #BDC0D7;
+  -moz-box-shadow: 1px 1px 1px #BDC0D7;
+  box-shadow: 1px 1px 1px #BDC0D7;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike {
+  background-color: #A90103;
+  border: 1px solid #000;
+  -webkit-box-shadow: 1px 1px 1px #BDC0D7;
+  -moz-box-shadow: 1px 1px 1px #BDC0D7;
+  box-shadow: 1px 1px 1px #BDC0D7;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-hover-like {
+  background-color: #54A54E;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-like {
+  background-color: #34912E;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like {
+  border: 1px solid transparent;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like label b,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like label b {
+  color: white;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like label span,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like label span {
+  color: white;
+  text-shadow: 1px 1px 0 #254E18;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-dislike {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-like {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like .NB-classifier-icon-like {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like .NB-classifier-icon-dislike {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-hover-like.NB-classifier-hover-dislike .NB-classifier-icon-like {
+  opacity: .1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-like,
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike {
+  opacity: 1;
+}
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike {
+  background-color: #C92123;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-dislike {
+  border: 1px solid transparent;
+}
+.NB-classifiers .NB-classifier.NB-classifier-like.NB-classifier-hover-like.NB-classifier-hover-dislike {
+  background-color: #C92123;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike.NB-classifier-hover-like.NB-classifier-hover-dislike {
+  border: 1px solid #000;
+  background-color: #A90103;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike-inner,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike .NB-classifier-icon-dislike-inner {
+  border-left-color: #C17C52;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike label b,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike label b {
+  color: white;
+}
+.NB-classifiers .NB-classifier.NB-classifier-dislike label span,
+.NB-classifiers .NB-classifier.NB-classifier-hover-dislike label span {
+  color: white;
+  text-shadow: 1px 1px 0 #7F1012;
+}
 /* =================== */
 /* = Mouse Indicator = */
 /* =================== */

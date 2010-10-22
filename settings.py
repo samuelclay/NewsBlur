@@ -85,6 +85,7 @@ COMPRESS_JS = {
     'all': {
         'source_filenames': (
             'js/jquery-1.4.2.js',
+            'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
             'js/jquery.newsblur.js',

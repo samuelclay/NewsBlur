@@ -443,10 +443,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var folders = NEWSBLUR.Preferences.collapsed_folders;
         var changed = false;
         
-        if (is_collapsed && NEWSBLUR.Preferences.collapsed_folders.indexOf(folder_title) == -1) {
+        if (is_collapsed && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title)) {
             NEWSBLUR.Preferences.collapsed_folders.push(folder_title);
             changed = true;
-        } else if (!is_collapsed && NEWSBLUR.Preferences.collapsed_folders.indexOf(folder_title) != -1) {
+        } else if (!is_collapsed && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title)) {
             NEWSBLUR.Preferences.collapsed_folders = _.without(folders, folder_title);
             changed = true;
         }

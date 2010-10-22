@@ -11,7 +11,7 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
         'modal_loaded': false
     };
     this.cache = {};
-    this.trainer_iterator = 0;
+    this.trainer_iterator = -1;
     this.feed_id = null;
     this.options = $.extend({}, defaults, options);
     this.score = this.options['score'];
@@ -35,7 +35,7 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     };
     this.cache = {};
     this.feed_id = feed_id;
-    this.trainer_iterator = 0;
+    this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
     this.score = this.options['score'];
     this.model = NEWSBLUR.AssetModel.reader();
@@ -64,16 +64,14 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.runner_story();
 };
 
-var classifier = {
+var classifier_prototype = {
     
     runner_trainer: function() {
         this.user_classifiers = {};
 
         this.make_trainer_intro();
         this.get_feeds_trainer();
-        this.handle_select_checkboxes();
         this.handle_cancel();
-        this.handle_select_title();
         this.open_modal();
             
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
@@ -89,11 +87,9 @@ var classifier = {
         this.find_story_and_feed();
         this.make_modal_feed();
         this.make_modal_title();
-        this.make_modal_intelligence_slider();
-        this.handle_select_checkboxes();
         this.handle_cancel();
-        this.handle_select_title();
         this.open_modal();
+        this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
         if (!this.options.feed_loaded) {
             _.defer(_.bind(function() {
@@ -109,42 +105,36 @@ var classifier = {
         this.make_modal_story();
         this.make_modal_title();
         this.handle_text_highlight();
-        this.handle_select_checkboxes();
         this.handle_cancel();
-        this.handle_select_title();
         this.open_modal();
+        this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
     },
     
     load_previous_feed_in_trainer: function() {
         var trainer_data_length = this.trainer_data.length;
-        var trainer_data = this.trainer_data[this.trainer_iterator];
-        
         this.trainer_iterator = this.trainer_iterator - 1;
-        if (this.trainer_iterator < 1) {
+        var trainer_data = this.trainer_data[this.trainer_iterator];
+        NEWSBLUR.log(['load_previous_feed_in_trainer', this.trainer_iterator, trainer_data]);
+        if (!trainer_data || this.trainer_iterator < 0) {
             this.make_trainer_intro();
-            this.load_feeds_trainer(null, this.trainer_data);
-        }
-
-        // Show only feeds, not the trainer intro if going backwards.
-        if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
+            this.reload_modal();
+        } else {
+            this.feed_id = trainer_data['feed_id'];
             this.load_feed(trainer_data);
         }
     },
     
     load_next_feed_in_trainer: function(backwards) {
         var trainer_data_length = this.trainer_data.length;
-        var trainer_data = this.trainer_data[this.trainer_iterator];
-        
-        this.feed_id = trainer_data['feed_id'];
-        
         this.trainer_iterator = this.trainer_iterator + 1;
-        if (this.trainer_iterator > trainer_data_length) {
+        var trainer_data = this.trainer_data[this.trainer_iterator];
+        NEWSBLUR.log(['load_next_feed_in_trainer', this.trainer_iterator, trainer_data]);
+        if (!trainer_data || this.trainer_iterator >= trainer_data_length) {
             this.make_trainer_outro();
+            this.reload_modal();
             this.load_feeds_trainer(null, this.trainer_data);
-        }
-
-        // Show only feeds, not the trainer intro if going backwards.
-        if (this.trainer_iterator > 0 && this.trainer_iterator <= trainer_data_length) {
+        } else {
+            this.feed_id = trainer_data['feed_id'];
             this.load_feed(trainer_data);
         }
     },
@@ -163,13 +153,16 @@ var classifier = {
             this.$modal = this.cache[this.feed_id];
         }
         
+        this.reload_modal();
+    },
+    
+    reload_modal: function() {
         this.flags.modal_loading = setInterval(_.bind(function() {
             if (this.flags.modal_loaded) {
                 clearInterval(this.flags.modal_loading);
                 $('.NB-modal').empty().append(this.$modal.children());
                 this.$modal = $('.NB-modal'); // This is bonkers. I shouldn't have to reattach like this
                 $(window).trigger('resize.simplemodal');
-                this.handle_select_checkboxes();
                 this.handle_cancel();
             }
         }, this), 125);
@@ -184,10 +177,15 @@ var classifier = {
         
         NEWSBLUR.log(['data', data]);
         this.trainer_data = data;
-        
-        $begin.text('Begin Training')
-              .addClass('NB-modal-submit-green')
-              .removeClass('NB-disabled');
+
+        if (!data || !data.length) {
+            this.make_trainer_outro();
+            this.reload_modal();
+        } else {
+          $begin.text('Begin Training')
+                .addClass('NB-modal-submit-green')
+                .removeClass('NB-disabled');
+        }
     },
     
     find_story_and_feed: function() {
@@ -222,7 +220,7 @@ var classifier = {
     make_trainer_intro: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal NB-modal-trainer'}, [
+        this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal NB-modal-trainer'}, [
             $.make('h2', { className: 'NB-modal-title' }, 'Intelligence Trainer'),
             $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
             $.make('ol', { className: 'NB-trainer-points' }, [
@@ -268,7 +266,7 @@ var classifier = {
     make_trainer_outro: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal NB-modal-trainer'}, [
+        this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal NB-modal-trainer'}, [
             $.make('h2', { className: 'NB-modal-title' }, 'Congratulations! You\'re done.'),
             $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what happens next:'),
             $.make('ol', { className: 'NB-trainer-points' }, [
@@ -308,59 +306,58 @@ var classifier = {
     make_modal_feed: function() {
         var self = this;
         var feed = this.feed;
-        var opinion = (this.score == 1 ? 'like_' : 'dislike_');
                 
         // NEWSBLUR.log(['Make feed', feed, this.feed_authors, this.feed_tags]);
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal ' + (this.options['training'] && 'NB-modal-trainer') }, [
+        this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal ' + (this.options['training'] && 'NB-modal-trainer') }, [
             $.make('div', { className: 'NB-modal-loading' }),
-            (!this.options['training'] && this.make_modal_intelligence_slider()),
-            (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
             $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
+                (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: this.google_favicon_url + this.feed.feed_link }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
             (this.options['feed_loaded'] &&
               $.make('form', { method: 'post', className: 'NB-publisher' }, [
+                  (!_.isEmpty(this.user_classifiers.titles) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                      $.make('h5', 'Titles and Phrases'),
+                      $.make('div', { className: 'NB-classifier-titles NB-fieldset-fields NB-classifiers' },
+                          this.make_user_titles()
+                      )
+                  ])),
                   (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
                       $.make('h5', 'Authors'),
                       $.make('div', { className: 'NB-classifier-authors NB-fieldset-fields NB-classifiers' },
-                          this.make_authors(this.feed_authors, opinion)
+                          this.make_authors(this.feed_authors).concat(this.make_user_authors())
                       )
                   ])),
                   (this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
                       $.make('h5', 'Categories &amp; Tags'),
                       $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
-                          this.make_tags(this.feed_tags, opinion)
+                          this.make_tags(this.feed_tags).concat(this.make_user_tags())
                       )
                   ])),
                   $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
                       $.make('h5', 'Everything by This Publisher'),
                       $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                          this.make_publisher(feed, opinion)
+                          this.make_publisher(feed)
                       )
                   ]),
                   (this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
                       $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                       $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                       $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
-                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
+                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-next NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
                       $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-close' }, 'Close')
                   ])),
                   (!this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
-                      $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                       $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                       $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                       $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
                       ' or ',
                       $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                   ]))
-              ]).bind('submit', function(e) {
-                  e.preventDefault();
-                  self.save_publisher();
-                  return false;
-              })
+              ])
             )
         ]);
     },
@@ -376,21 +373,14 @@ var classifier = {
         // HTML entities decoding.
         story.story_title = $('<div/>').html(story.story_title).text();
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal' }, [
-            this.make_modal_intelligence_slider(),
+        this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post' }, [
                 (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                     $.make('h5', 'Story Title'),
                     $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                         $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
-                        $.make('div', { className: 'NB-classifier NB-classifier-title NB-classifier-facet-disabled' }, [
-                            $.make('input', { type: 'checkbox', name: opinion+'title', value: '', id: 'classifier_title' }),
-                            $.make('label', { 'for': 'classifier_title' }, [
-                                $.make('b', 'Look for: '),
-                                $.make('span', { className: 'NB-classifier-title-text' }, 'Highlight phrases to look for in future stories')
-                            ])
-                        ])
+                        this.make_classifier('<span class="NB-classifier-title-text">Highlight phrases to look for in future stories</span>', '', 'title')
                     ])
                 ])),
                 (story.story_authors && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -412,7 +402,6 @@ var classifier = {
                     )
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
@@ -430,60 +419,37 @@ var classifier = {
     make_modal_title: function() {
         var $modal_title = $('.NB-modal-title', this.$modal);
         
-        if (this.flags['publisher']) {
-            if (this.score == 1) {
-                $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this site?');
-            } else if (this.score == -1) {
-                $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this site?');
-            }
-        } else if (this.flags['story']) {
-            if (this.score == 1) {
-                $modal_title.html('What do you <b class="NB-classifier-like">like</b> about this story?');
-            } else if (this.score == -1) {
-                $modal_title.html('What do you <b class="NB-classifier-dislike">dislike</b> about this story?');
-            }
-        }
+        var $title = $.make('div', [
+            'What do you ',
+            $.make('b', { className: 'NB-classifier-title-like' }, 'like'),
+            ' and ',
+            $.make('b', { className: 'NB-classifier-title-dislike' }, 'dislike'),
+            ' about this ',
+            (this.flags['publisher'] && 'site'),
+            (this.flags['story'] && 'story'),
+            '?'
+        ]);
+
+        $modal_title.html($title);
     },
     
     make_modal_trainer_count: function() {
         var $count = $('.NB-classifier-trainer-counts', this.$modal);
-        var count = this.trainer_iterator;
+        var count = this.trainer_iterator + 1;
         var total = this.trainer_data.length;
         $count.html(count + '/' + total);
     },
     
-    make_modal_intelligence_slider: function() {
-        var self = this;
-        var $slider = $.make('div', { className: 'NB-taskbar-intelligence NB-modal-slider' }, [
-            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative' }),
-            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral' }),
-            $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive' }),
-            $.make('div', { className: 'NB-intelligence-slider' })
-        ]);
+    make_user_titles: function() {
+        var $titles = [];
+        var titles = _.keys(this.user_classifiers.titles);
         
-        $('.NB-intelligence-slider', $slider).slider({
-            range: 'max',
-            min: 0,
-            max: 2,
-            step: 2,
-            value: this.score + 1,
-            slide: function(e, ui) {
-                // self.switch_feed_view_unread_view(ui.value);
-                self.score = ui.value - 1;
-                self.make_modal_title();
-                $('input[name^=like],input[name^=dislike]', self.$modal).attr('name', function(i, current_name) {
-                    if (self.score == -1) {
-                        return 'dis' + current_name.substr(current_name.indexOf('like_'));
-                    } else if (self.score == 1) {
-                        return current_name.substr(current_name.indexOf('like_'));
-                    }
-                });
-                var $submit = $('input[type=submit]', self.$modal);
-                $submit.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
-            }
-        });
+        _.each(titles, _.bind(function(title) {
+            var $title = this.make_classifier(title, title, 'title');
+            $titles.push($title);
+        }, this));
         
-        return $slider;
+        return $titles;
     },
     
     make_authors: function(authors, opinion) {
@@ -501,37 +467,25 @@ var classifier = {
             
             if (!author) continue;
             
-            var input_attrs = { 
-                type: 'checkbox', 
-                name: opinion+'author', 
-                value: author, 
-                id: 'classifier_author_'+a
-            };
-        
-            if (author in this.user_classifiers.authors 
-                && this.user_classifiers.authors[author] == this.score) {
-                input_attrs['checked'] = 'checked';
-            }
-        
-            var $author = $.make('span', { className: 'NB-classifier-container NB-classifier-author-container' }, [
-                $.make('span', { className: 'NB-classifier NB-classifier-author' }, [
-                    $.make('input', input_attrs),
-                    $.make('label', { 'for': 'classifier_author_'+a }, [
-                        $.make('b', 'Author: '),
-                        $.make('span', author)
-                    ])
-                ]),
-                (author_count && $.make('span', { className: 'NB-classifier-tag-count' }, [
-                    '&times;&nbsp;',
-                    author_count
-                ]))
-            ]);
+            var $author = this.make_classifier(author, author, 'author', author_count);            
             $authors.push($author);
         }
         return $authors;
     },
     
-    make_tags: function(tags, opinion) {
+    make_user_authors: function() {
+        var $authors = [];
+        var user_authors = _.keys(this.user_classifiers.authors);
+        var feed_authors = _.map(this.feed_authors, function(author) { return author[0]; });
+        var authors = _.reduce(user_authors, function(memo, author, i) {
+            if (!_.contains(feed_authors, author)) return memo.concat(author);
+            return memo;
+        }, []);
+        
+        return this.make_authors(authors);
+    },
+    
+    make_tags: function(tags) {
         var $tags = [];
         
         for (var t in tags) {
@@ -546,70 +500,136 @@ var classifier = {
             
             if (!tag) continue;
             
-            var input_attrs = { 
-                type: 'checkbox', 
-                name: opinion+'tag', 
-                value: tag, 
-                id: 'classifier_tag_'+t 
-            };
-            
-            if (tag in this.user_classifiers.tags && this.user_classifiers.tags[tag] == this.score) {
-                input_attrs['checked'] = 'checked';
-            }
-            
-            var $tag = $.make('span', { className: 'NB-classifier-container NB-classifier-tag-container' }, [
-                $.make('span', { className: 'NB-classifier NB-classifier-tag' }, [
-                    $.make('input', input_attrs),
-                    $.make('label', { 'for': 'classifier_tag_'+t }, [
-                        $.make('b', 'Tag: '),
-                        $.make('span', tag)
-                    ])
-                ]),
-                (tag_count && $.make('span', { className: 'NB-classifier-tag-count' }, [
-                    '&times;&nbsp;',
-                    tag_count
-                ]))
-            ]);
+            var $tag = this.make_classifier(tag, tag, 'tag', tag_count);
             $tags.push($tag);
         }
         
         return $tags;
     },
+    
+    make_user_tags: function() {
+        var $tags = [];
+        var user_tags = _.keys(this.user_classifiers.tags);
+        var feed_tags = _.map(this.feed_tags, function(tag) { return tag[0]; });
+        var tags = _.reduce(user_tags, function(memo, tag, i) {
+            if (!_.contains(feed_tags, tag)) return memo.concat(tag);
+            return memo;
+        }, []);
         
+        return this.make_tags(tags);
+    },
+    
     make_publisher: function(publisher, opinion) {
-        var input_attrs = { 
-            type: 'checkbox', 
-            name: opinion+'publisher', 
-            value: this.feed_id,
-            id: 'classifier_publisher',
-            checked: false
-        };
-        if (this.user_classifiers.feeds[this.feed_id] == this.score) {
-            input_attrs['checked'] = true;
-        }
-        
-        var $publisher = $.make('div', { className: 'NB-classifier NB-classifier-publisher' }, [
-            $.make('input', input_attrs),
-            $.make('label', { 'for': 'classifier_publisher' }, [
-                $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + publisher.feed_link }),
-                $.make('span', { className: 'feed_title' }, [
-                    $.make('b', 'Publisher: '),
-                    $.make('span', publisher.feed_title)
-                ])
-            ])
-        ]);
+        var $publisher = this.make_classifier(publisher.feed_title, this.feed_id, 'feed');
         return $publisher;
     },
     
-    make_title: function(title, t, opinion) {
-        var $title = $.make('div', { className: 'NB-classifier NB-classifier-title' }, [
-            $.make('input', { type: 'checkbox', name: opinion+'title', value: title, id: 'classifier_title_'+t, checked: 'checked' }),
-            $.make('label', { 'for': 'classifier_title_'+t }, [
-                $.make('b', 'Title: '),
-                $.make('span', title)
-            ])
+    make_classifier: function(classifier_title, classifier_value, classifier_type, classifier_count) {
+        var score = 0;
+        // NEWSBLUR.log(['classifiers', this.user_classifiers, classifier_value, this.user_classifiers[classifier_type+'s']]);
+        if (classifier_value in this.user_classifiers[classifier_type+'s']) {
+            score = this.user_classifiers[classifier_type+'s'][classifier_value];
+        }
+        
+        var classifier_type_title = Inflector.capitalize(classifier_type=='feed' ?
+                                    'publisher' :
+                                    classifier_type);
+                                    
+        var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
+            $.make('span', { className: 'NB-classifier NB-classifier-'+classifier_type }, [
+                $.make('input', { 
+                    type: 'checkbox', 
+                    className: 'NB-classifier-input-like', 
+                    name: 'like_'+classifier_type, 
+                    value: classifier_value
+                }),
+                $.make('input', { 
+                    type: 'checkbox', 
+                    className: 'NB-classifier-input-dislike', 
+                    name: 'dislike_'+classifier_type, 
+                    value: classifier_value
+                }),
+                $.make('div', { className: 'NB-classifier-icon-like' }),
+                $.make('div', { className: 'NB-classifier-icon-dislike' }, [
+                    $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
+                ]),
+                $.make('label', [
+                    (classifier_type == 'feed' && 
+                        $.make('img', { 
+                            className: 'feed_favicon', 
+                            src: this.google_favicon_url + this.feed.feed_link 
+                        })),
+                    $.make('b', classifier_type_title+': '),
+                    $.make('span', classifier_title)
+                ])
+            ]),
+            (classifier_count && $.make('span', { className: 'NB-classifier-count' }, [
+                '&times;&nbsp;',
+                classifier_count
+            ]))
         ]);
-        return $title;
+        
+        if (score > 0) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-like');
+            $('.NB-classifier-input-like', $classifier).attr('checked', true);
+        } else if (score < 0) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-dislike');
+            $('.NB-classifier-input-dislike', $classifier).attr('checked', true);
+        }
+        
+        $('.NB-classifier', $classifier).bind('mouseenter', function(e) {
+            $(e.currentTarget).addClass('NB-classifier-hover-like');
+        }).bind('mouseleave', function(e) {
+            $(e.currentTarget).removeClass('NB-classifier-hover-like');
+        });
+        
+        $('.NB-classifier-icon-dislike', $classifier).bind('mouseenter', function(e) {
+            $('.NB-classifier', $classifier).addClass('NB-classifier-hover-dislike');
+        }).bind('mouseleave', function(e) {
+            $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
+        });
+        
+        return $classifier;
+    },
+        
+    change_classifier: function($classifier, classifier_opinion) {
+        var $like = $('.NB-classifier-input-like', $classifier);
+        var $dislike = $('.NB-classifier-input-dislike', $classifier);
+        
+        var $save = $('.NB-modal-submit-save', this.$modal);
+        var $close = $('.NB-modal-submit-close', this.$modal);
+        var $back = $('.NB-modal-submit-back', this.$modal);
+        
+        if (classifier_opinion == 'like') {
+            if ($classifier.is('.NB-classifier-like')) {
+                $classifier.removeClass('NB-classifier-like');
+                $dislike.attr('checked', false);
+                $like.attr('checked', false);
+            } else {
+                $classifier.removeClass('NB-classifier-dislike');
+                $classifier.addClass('NB-classifier-like');
+                $dislike.attr('checked', false);
+                $like.attr('checked', true);
+            }
+        } else if (classifier_opinion == 'dislike') {
+            if ($classifier.is('.NB-classifier-dislike')) {
+                $classifier.removeClass('NB-classifier-dislike');
+                $like.attr('checked', false);
+                $dislike.attr('checked', false);
+            } else {
+                $classifier.removeClass('NB-classifier-like');
+                $classifier.addClass('NB-classifier-dislike');
+                $like.attr('checked', false);
+                $dislike.attr('checked', true);
+            }
+        }
+        
+        if (this.options['training']) {
+            $close.val('Save & Close');
+        } else {
+            $save.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
+        }
+        // NEWSBLUR.log(['change_classifier', classifier_opinion, $classifier, $like.is(':checked'), $dislike.is(':checked')]);
     },
     
     open_modal: function() {
@@ -646,58 +666,32 @@ var classifier = {
         });
     },
     
+    // ==========
+    // = Events =
+    // ==========
+    
     handle_text_highlight: function() {
+        var self = this;
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
         var $title = $('.NB-classifier-title-text', this.$modal);
-        var $title_checkbox = $('#classifier_title', this.$modal);
-        
+        var $title_classifier = $title.parents('.NB-classifier').eq(0);
+        var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
+
         var update = function() {
             var text = $.trim($(this).getSelection().text);
             
-            if ($title.text() != text && text.length) {
-                $title_checkbox.attr('checked', 'checked').change();
+            if (text.length && $title.text() != text) {
                 $title.text(text);
-                $title_checkbox.parents('.NB-classifier-facet-disabled')
-                    .removeClass('NB-classifier-facet-disabled');
-                $title_checkbox.val(text);
+                $title_checkboxs.val(text);
+                if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($title.parents('.NB-classifier').eq(0), 'like');
+                }
             }
         };
         
         $title_highlight
             .keydown(update).keyup(update)
             .mousedown(update).mouseup(update).mousemove(update);
-    },
-    
-    handle_select_title: function() {
-        var $title_checkbox = $('#classifier_title', this.$modal);
-        var $title = $('.NB-classifier-title-text', this.$modal);
-        var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
-        
-        $title_checkbox.change(function() {;
-            if ($title.parents('.NB-classifier-facet-disabled').length) {
-                var text = $title_highlight.val();
-                $title.text(text);
-                $title_checkbox.parents('.NB-classifier-facet-disabled')
-                    .removeClass('NB-classifier-facet-disabled');
-                $title_checkbox.val(text);
-            }
-        });
-    },
-    
-    handle_select_checkboxes: function() {
-        var self = this;
-        var $save = $('.NB-modal-submit-save', this.$modal);
-        var $close = $('.NB-modal-submit-close', this.$modal);
-        var $back = $('.NB-modal-submit-back', this.$modal);
-        
-        $('input', this.$modal).change(function() {
-            // var count = $('input:checked', self.$modal).length;
-            if (self.options['training']) {
-                $close.val('Save & Close');
-            } else {
-                $save.removeClass("NB-disabled").removeAttr('disabled').attr('value', 'Save');
-            }
-        });
     },
     
     handle_cancel: function() {
@@ -712,49 +706,71 @@ var classifier = {
     handle_clicks: function(elem, e) {
         var self = this;
                 
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-begin' }, function($t, $p){
-            e.preventDefault();
-            self.load_next_feed_in_trainer();
-        });
+        if (this.options['training']) {
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-begin' }, function($t, $p){
+                e.preventDefault();
+                self.load_next_feed_in_trainer();
+            });
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-save.NB-modal-submit-next' }, function($t, $p){
+                e.preventDefault();
+                self.save_publisher(true);
+                self.load_next_feed_in_trainer();
+            });
 
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-save:not(.NB-modal-submit-begin)' }, function($t, $p){
-            e.preventDefault();
-            self.save_publisher(true);
-            self.load_next_feed_in_trainer();
-        });
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-back' }, function($t, $p){
+                e.preventDefault();
+                self.load_previous_feed_in_trainer();
+            });
 
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-back' }, function($t, $p){
-            e.preventDefault();
-            self.load_previous_feed_in_trainer();
-        });
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){
+                e.preventDefault();
+                self.save_publisher();
+            });
 
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
+                e.preventDefault();
+                NEWSBLUR.reader.force_feeds_refresh();
+                // NEWSBLUR.reader.open_feed(self.feed_id, true);
+                // TODO: Update counts in active feed.
+                $.modal.close();
+            });
+        } else {
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-save:not(.NB-modal-submit-next)' }, function($t, $p){
+                e.preventDefault();
+                self.save_publisher();
+                return false;
+            });
+        }
+        
+        var stop = false;
+        $.targetIs(e, { tagSelector: '.NB-classifier-icon-dislike' }, function($t, $p){
             e.preventDefault();
-            self.save_publisher();
+            stop = true;
+            self.change_classifier($t.parents('.NB-classifier').eq(0), 'dislike');
         });
-
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
+        if (stop) return;
+        $.targetIs(e, { tagSelector: '.NB-classifier' }, function($t, $p){
             e.preventDefault();
-            self.save_publisher();
+            self.change_classifier($t, 'like');
         });
     },
     
     serialize_classifier: function() {
-        var checked_data = $('input', this.$modal).serialize();
-        
-        var $unchecked = $('input[type=checkbox]:not(:checked)', this.$modal);
-        $unchecked.attr('checked', true);
-        $unchecked.each(function() {
-           $(this).attr('name', 'remove_' + $(this).attr('name'));
+        var data = [];
+        $('.NB-classifier', this.$modal).each(function() {
+            if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
+                data.push([$('input:checked', this).attr('name'), $('.NB-classifier-input-like', this).val()]);
+            } else {
+                data.push(['remove_'+$('.NB-classifier-input-like', this).attr('name'), $('.NB-classifier-input-like', this).val()]);
+            }
         });
-        
-        var unchecked_data = $unchecked.serialize();
-        $unchecked.each(function() {
-           $(this).attr('name', $(this).attr('name').replace(/^remove_/, ''));
-        });
-        $unchecked.attr('checked', false);
-        
-        var data = [checked_data, unchecked_data].join('&');
+        data.push(['feed_id', this.feed_id]);
+        if (this.story_id) {
+            data.push(['story_id', this.story_id]);
+        }
+        data = _.map(data, function(c) { 
+            return [c[0], '=', c[1]].join(''); 
+        }).join('&');
         return data;
     },
         
@@ -776,7 +792,8 @@ var classifier = {
         this.model.save_classifier_publisher(data, function() {
             if (!keep_modal_open) {
                 NEWSBLUR.reader.force_feeds_refresh();
-                NEWSBLUR.reader.load_feed(self.feed_id, null, true);
+                // NEWSBLUR.reader.open_feed(self.feed_id, true);
+                // TODO: Update counts in active feed.
                 $.modal.close();
             }
         });
@@ -800,6 +817,6 @@ var classifier = {
     
 };
 
-NEWSBLUR.ReaderClassifierStory.prototype = classifier;
-NEWSBLUR.ReaderClassifierFeed.prototype = classifier;
-NEWSBLUR.ReaderClassifierTrainer.prototype = classifier;
+NEWSBLUR.ReaderClassifierStory.prototype = classifier_prototype;
+NEWSBLUR.ReaderClassifierFeed.prototype = classifier_prototype;
+NEWSBLUR.ReaderClassifierTrainer.prototype = classifier_prototype;
