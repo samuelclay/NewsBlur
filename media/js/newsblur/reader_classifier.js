@@ -72,7 +72,6 @@ var classifier_prototype = {
         this.make_trainer_intro();
         this.get_feeds_trainer();
         this.handle_cancel();
-        this.handle_select_title();
         this.open_modal();
             
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
@@ -89,7 +88,6 @@ var classifier_prototype = {
         this.make_modal_feed();
         this.make_modal_title();
         this.handle_cancel();
-        this.handle_select_title();
         this.open_modal();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
@@ -108,7 +106,6 @@ var classifier_prototype = {
         this.make_modal_title();
         this.handle_text_highlight();
         this.handle_cancel();
-        this.handle_select_title();
         this.open_modal();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
     },
@@ -354,7 +351,6 @@ var classifier_prototype = {
                       $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-close' }, 'Close')
                   ])),
                   (!this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
-                      $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                       $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                       $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                       $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
@@ -377,20 +373,14 @@ var classifier_prototype = {
         // HTML entities decoding.
         story.story_title = $('<div/>').html(story.story_title).text();
         
-        this.$modal = $.make('div', { className: 'NB-classifier NB-modal' }, [
+        this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('form', { method: 'post' }, [
                 (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                     $.make('h5', 'Story Title'),
                     $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                         $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
-                        $.make('div', { className: 'NB-classifier NB-classifier-title NB-classifier-facet-disabled' }, [
-                            $.make('input', { type: 'checkbox', name: opinion+'title', value: '', id: 'classifier_title' }),
-                            $.make('label', { 'for': 'classifier_title' }, [
-                                $.make('b', 'Look for: '),
-                                $.make('span', { className: 'NB-classifier-title-text' }, 'Highlight phrases to look for in future stories')
-                            ])
-                        ])
+                        this.make_classifier('<span class="NB-classifier-title-text">Highlight phrases to look for in future stories</span>', '', 'title')
                     ])
                 ])),
                 (story.story_authors && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -412,7 +402,6 @@ var classifier_prototype = {
                     )
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { name: 'score', value: this.score, type: 'hidden' }),
                     $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-save NB-modal-submit-green NB-disabled', value: 'Check what you like above...' }),
@@ -682,41 +671,27 @@ var classifier_prototype = {
     // ==========
     
     handle_text_highlight: function() {
+        var self = this;
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
         var $title = $('.NB-classifier-title-text', this.$modal);
-        var $title_checkbox = $('#classifier_title', this.$modal);
-        
+        var $title_classifier = $title.parents('.NB-classifier').eq(0);
+        var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
+
         var update = function() {
             var text = $.trim($(this).getSelection().text);
             
-            if ($title.text() != text && text.length) {
-                $title_checkbox.attr('checked', 'checked').change();
+            if (text.length && $title.text() != text) {
                 $title.text(text);
-                $title_checkbox.parents('.NB-classifier-facet-disabled')
-                    .removeClass('NB-classifier-facet-disabled');
-                $title_checkbox.val(text);
+                $title_checkboxs.val(text);
+                if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($title.parents('.NB-classifier').eq(0), 'like');
+                }
             }
         };
         
         $title_highlight
             .keydown(update).keyup(update)
             .mousedown(update).mouseup(update).mousemove(update);
-    },
-    
-    handle_select_title: function() {
-        var $title_checkbox = $('#classifier_title', this.$modal);
-        var $title = $('.NB-classifier-title-text', this.$modal);
-        var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
-        
-        $title_checkbox.change(function() {;
-            if ($title.parents('.NB-classifier-facet-disabled').length) {
-                var text = $title_highlight.val();
-                $title.text(text);
-                $title_checkbox.parents('.NB-classifier-facet-disabled')
-                    .removeClass('NB-classifier-facet-disabled');
-                $title_checkbox.val(text);
-            }
-        });
     },
     
     handle_cancel: function() {
