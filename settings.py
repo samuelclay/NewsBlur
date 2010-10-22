@@ -86,6 +86,7 @@ COMPRESS_JS = {
     'all': {
         'source_filenames': (
             'js/jquery-1.4.2.js',
+            'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
             'js/jquery.newsblur.js',
@@ -114,7 +115,6 @@ COMPRESS_JS = {
             'js/newsblur/reader.js',
             'js/newsblur/reader_classifier.js',
             'js/newsblur/reader_add_feed.js',
-            'js/newsblur/reader_manage_feed.js',
             'js/newsblur/reader_mark_read.js',
             'js/newsblur/reader_preferences.js',
             'js/newsblur/reader_feedchooser.js',

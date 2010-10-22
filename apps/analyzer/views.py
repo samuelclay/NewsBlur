@@ -68,7 +68,7 @@ def save_classifier(request):
     _save_classifier(MClassifierAuthor, 'author')
     _save_classifier(MClassifierTag, 'tag')
     _save_classifier(MClassifierTitle, 'title')
-    _save_classifier(MClassifierFeed, 'publisher')
+    _save_classifier(MClassifierFeed, 'feed')
     
     logging.info(" ---> [%s] Feed training: %s" % (request.user, feed))
 

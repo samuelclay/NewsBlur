@@ -85,7 +85,7 @@
     if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
     var results = [];
     each(obj, function(value, index, list) {
-      results.push(iterator.call(context, value, index, list));
+      results[results.length] = iterator.call(context, value, index, list);
     });
     return results;
   };
@@ -132,7 +132,7 @@
     if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterator, context);
     var results = [];
     each(obj, function(value, index, list) {
-      iterator.call(context, value, index, list) && results.push(value);
+      if (iterator.call(context, value, index, list)) results[results.length] = value;
     });
     return results;
   };
@@ -141,7 +141,7 @@
   _.reject = function(obj, iterator, context) {
     var results = [];
     each(obj, function(value, index, list) {
-      !iterator.call(context, value, index, list) && results.push(value);
+      if (!iterator.call(context, value, index, list)) results[results.length] = value;
     });
     return results;
   };
@@ -285,7 +285,7 @@
   _.flatten = function(array) {
     return _.reduce(array, function(memo, value) {
       if (_.isArray(value)) return memo.concat(_.flatten(value));
-      memo.push(value);
+      memo[memo.length] = value;
       return memo;
     }, []);
   };
@@ -300,7 +300,7 @@
   // been sorted, you have the option of using a faster algorithm.
   _.uniq = function(array, isSorted) {
     return _.reduce(array, function(memo, el, i) {
-      if (0 == i || (isSorted === true ? _.last(memo) != el : !_.include(memo, el))) memo.push(el);
+      if (0 == i || (isSorted === true ? _.last(memo) != el : !_.include(memo, el))) memo[memo.length] = el;
       return memo;
     }, []);
   };
@@ -322,7 +322,7 @@
     var args = _.toArray(arguments);
     var length = _.max(_.pluck(args, 'length'));
     var results = new Array(length);
-    for (var i = 0; i < length; i++) results[i] = _.pluck(args, String(i));
+    for (var i = 0; i < length; i++) results[i] = _.pluck(args, "" + i);
     return results;
   };
 
@@ -434,7 +434,7 @@
   _.keys = nativeKeys || function(obj) {
     if (_.isArray(obj)) return _.range(0, obj.length);
     var keys = [];
-    for (var key in obj) if (hasOwnProperty.call(obj, key)) keys.push(key);
+    for (var key in obj) if (hasOwnProperty.call(obj, key)) keys[keys.length] = key;
     return keys;
   };
 
@@ -525,7 +525,7 @@
 
   // Is a given variable an arguments object?
   _.isArguments = function(obj) {
-    return obj && obj.callee;
+    return !!(obj && obj.callee);
   };
 
   // Is a given value a function?
@@ -630,8 +630,8 @@
     var c  = _.templateSettings;
     var endMatch = new RegExp("'(?=[^"+c.end.substr(0, 1)+"]*"+escapeRegExp(c.end)+")","g");
     var fn = new Function('obj',
-      'var p=[],print=function(){p.push.apply(p,arguments);};' +
-      'with(obj||{}){p.push(\'' +
+      'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
+      'with(obj||{}){__p.push(\'' +
       str.replace(/\r/g, '\\r')
          .replace(/\n/g, '\\n')
          .replace(/\t/g, '\\t')
@@ -640,8 +640,8 @@
          .split("âœ„").join("'")
          .replace(c.interpolate, "',$1,'")
          .split(c.start).join("');")
-         .split(c.end).join("p.push('")
-         + "');}return p.join('');");
+         .split(c.end).join("__p.push('")
+         + "');}return __p.join('');");
     return data ? fn(data) : fn;
   };
 
