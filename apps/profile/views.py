@@ -107,3 +107,10 @@ def paypal_return(request):
 @login_required
 def activate_premium(request):
     return HttpResponseRedirect(reverse('index'))
+    
+@ajax_login_required
+@json.json_view
+def profile_is_premium(request):
+    # Check tries
+    return {'is_premium': request.user.profile.is_premium}
+    

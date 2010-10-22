@@ -125,18 +125,29 @@ COMPRESS_JS = {
             'js/newsblur/faq.js',
         ),
         'output_filename': 'js/all-compressed-?.js'
-    }
+    },
+    'paypal': {
+        'source_filenames': (
+            'js/newsblur/paypal_return.js',
+        ),
+        'output_filename': 'js/paypal-compressed-?.js',
+    },
 }
 
 COMPRESS_CSS = {
     'all': {
         'source_filenames': (
             'css/reader.css',
-            'css/paypal_return.css',
             'css/jquery-ui/jquery.theme.css',
         ),
         'output_filename': 'css/all-compressed-?.css'
-    }
+    },
+    'paypal': {
+        'source_filenames': (
+            'css/paypal_return.css',
+        ),
+        'output_filename': 'css/paypal-compressed-?.css',
+    },
 }
 
 COMPRESS_VERSION = True
