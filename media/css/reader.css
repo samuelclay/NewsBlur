@@ -768,8 +768,8 @@ background: transparent;
   margin-left: 24px;
 }
 
-#story_titles .NB-feedbar .NB-feedbar-manage-feed {
-    background: transparent url("../img/icons/silk/cog.png") no-repeat center center;
+#story_titles .NB-feedbar .NB-feedbar-train-feed {
+    background: transparent url("../img/icons/silk/bricks.png") no-repeat center center;
     width: 16px;
     height: 16px;
 /*    display: none;*/

@@ -670,7 +670,7 @@
                 $.make('img', { className: 'feed_favicon', src: this.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
                   feed.feed_title,
-                  $.make('span', { className: 'NB-feedbar-manage-feed', title: 'Manage Intelligence' }),
+                  $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' }),
                   (type == 'story' && $.make('span', { className: 'NB-feedbar-statistics', title: 'Statistics' }))
                 ]),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
@@ -2312,10 +2312,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-manage' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence manager')
-                    ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -3261,10 +3257,10 @@
             $.targetIs(e, { tagSelector: '.NB-feedbar-statistics' }, function($t, $p){
                 self.open_feed_statistics_modal();
             });
-            $.targetIs(e, { tagSelector: '.NB-feedbar-manage-feed' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-feedbar-train-feed' }, function($t, $p){
                 e.preventDefault();
                 if (!$('.NB-task-manage').hasClass('NB-disabled')) {
-                    self.open_manage_feed_modal();
+                    self.open_feed_intelligence_modal(1, this.active_feed, true);
                 }
             }); 
             
@@ -3332,13 +3328,6 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.show_manage_menu('site', $t);
-                }
-            });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-manage' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                    self.open_manage_feed_modal(feed_id);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-train' }, function($t, $p){
