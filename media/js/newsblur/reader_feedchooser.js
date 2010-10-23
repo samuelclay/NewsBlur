@@ -85,6 +85,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'You are supporting an indie developer.'
+                ]),
+                $.make('li', { className: 'NB-6' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   $.make('span', { className: 'NB-feedchooser-premium-cost-dollars' }, '$12'),
                   '/',
                   $.make('span', { className: 'NB-feedchooser-premium-cost-time' }, 'year'),

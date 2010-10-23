@@ -143,7 +143,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     else return feed;
                 }));
             };
-            var valid_feeds = flat_feeds(subscriptions.folders);
+            var valid_feeds = flat_feeds({'root': subscriptions.folders});
 
             _.each(subscriptions.feeds, function(feed, feed_id) {
                 if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
