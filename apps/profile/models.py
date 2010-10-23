@@ -14,6 +14,20 @@ class Profile(models.Model):
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
     
+    def __unicode__(self):
+        return "%s" % self.user
+        
+    def activate_premium(self):
+        self.is_premium = True
+        self.save()
+        
+        subs = UserSubscription.objects.filter(user=self.user)
+        for sub in subs:
+            sub.active = True
+            sub.save()
+            sub.feed.setup_feed_for_premium_subscribers()
+        
+        
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
@@ -24,14 +38,6 @@ post_save.connect(create_profile, sender=User)
 
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
-    
     user = User.objects.get(username=ipn_obj.custom)
-    user.profile.is_premium = True
-    user.profile.save()
-
-    subs = UserSubscription.objects.filter(user=user)
-    for sub in subs:
-        sub.active = True
-        sub.save()
-        sub.feed.setup_feed_for_premium_subscribers()
+    user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)

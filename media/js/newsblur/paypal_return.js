@@ -6,7 +6,7 @@
 
     NEWSBLUR.PaypalReturn = function() {
         this.retries = 0;
-        this.detect_premium();
+        _.delay(_.bind(function() { this.detect_premium(); }, this), 1500);
     };
 
     NEWSBLUR.PaypalReturn.prototype = {
