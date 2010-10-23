@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -78,6 +79,8 @@ def set_collapsed_folders(request):
 
 @ajax_login_required
 def paypal_form(request):
+    domain = Site.objects.get_current().domain
+    
     paypal_dict = {
         "cmd": "_xclick-subscriptions",
         # "business": "samuel@ofbrooklyn.com",
@@ -89,9 +92,9 @@ def paypal_form(request):
         "sra": "1",                        # reattempt payment on payment error
         "no_note": "1",                    # remove extra notes (optional)
         "item_name": "NewsBlur Premium Account",
-        "notify_url": reverse('paypal-ipn'),
-        "return_url": reverse('paypal-return'),
-        "cancel_return": reverse('index'),
+        "notify_url": "http://%s%s" % (domain, reverse('paypal-ipn')),
+        "return_url": "http://%s%s" % (domain, reverse('paypal-return')),
+        "cancel_return": "http://%s%s" % (domain, reverse('index')),
         "custom": request.user.username,
     }
 
