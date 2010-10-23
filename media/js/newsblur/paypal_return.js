@@ -13,13 +13,13 @@
 
         detect_premium: function() {
             $.get('/profile/is_premium', {'retries': this.retries}, _.bind(function(resp) {
-                if (!resp.is_premium) {
+                if (resp.is_premium || resp.code < 0) {
+                    window.location.href = '/';
+                } else if (!resp.is_premium) {
                     this.retries += 1;
                     _.delay(_.bind(function() {
                         this.detect_premium();
                     }, this), 3000);
-                } else if (resp.is_premium) {
-                    window.location.href = '/';
                 }
             }, this));
         }

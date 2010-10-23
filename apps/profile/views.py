@@ -4,9 +4,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.core.mail import mail_admins
 from utils import json
 from paypal.standard.forms import PayPalPaymentsForm
 from utils.user_functions import ajax_login_required
+from apps.profile.models import Profile
 
 @login_required
 @require_POST
@@ -112,5 +114,18 @@ def activate_premium(request):
 @json.json_view
 def profile_is_premium(request):
     # Check tries
-    return {'is_premium': request.user.profile.is_premium}
+    code = 0
+    retries = int(request.POST['retries'])
+    profile = Profile.objects.get(user=request.user)
+    
+    if retries > 3:
+        subject = "Premium activation failed: %s (%s)" % (request.user, request.user.pk)
+        message = "Check PayPalIPN"
+        mail_admins(subject, message, fail_silently=True)
+        code = -1
+        
+    return {
+        'is_premium': profile.is_premium,
+        'code': code,
+    }
     
