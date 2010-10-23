@@ -613,7 +613,9 @@ def save_feed_chooser(request):
         elif sub.active:
             sub.active = False
             sub.save()
-            
+    logging.info(' ---> [%s] Activated standard account: %s/%s' % (request.user, 
+                                                                   activated, 
+                                                                   usersubs.count()))        
     return {'activated': activated}
 
 @login_required
