@@ -165,6 +165,7 @@ var classifier_prototype = {
                 this.$modal = $('.NB-modal'); // This is bonkers. I shouldn't have to reattach like this
                 $(window).trigger('resize.simplemodal');
                 this.handle_cancel();
+                this.$modal.parent().scrollTop(0);
             }
         }, this), 125);
     },
@@ -185,6 +186,7 @@ var classifier_prototype = {
         } else {
           $begin.text('Begin Training')
                 .addClass('NB-modal-submit-green')
+                .removeClass('NB-modal-submit-close')
                 .removeClass('NB-disabled');
         }
     },
@@ -753,9 +755,9 @@ var classifier_prototype = {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
                 e.preventDefault();
                 NEWSBLUR.reader.force_feeds_refresh();
+                self.end();
                 // NEWSBLUR.reader.open_feed(self.feed_id, true);
                 // TODO: Update counts in active feed.
-                $.modal.close();
             });
         } else {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-save:not(.NB-modal-submit-next)' }, function($t, $p){
