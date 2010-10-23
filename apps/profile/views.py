@@ -115,7 +115,7 @@ def activate_premium(request):
 def profile_is_premium(request):
     # Check tries
     code = 0
-    retries = int(request.POST['retries'])
+    retries = int(request.GET['retries'])
     profile = Profile.objects.get(user=request.user)
     
     if retries > 3:

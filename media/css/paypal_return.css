@@ -20,3 +20,10 @@
   color: #324A15;
   text-shadow: 1px 1px 0 #FFF;
 }
+
+.NB-paypal-return .NB-paypal-return-loading {
+  width: 220px;
+  height: 19px;
+  background: transparent url('../img/reader/spinner_bar.gif') no-repeat 0 0;
+  margin: 18px auto 0;
+}
