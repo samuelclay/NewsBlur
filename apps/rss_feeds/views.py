@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden
 from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from utils.user_functions import ajax_login_required
-from utils import json, feedfinder
+from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 
 @json.json_view

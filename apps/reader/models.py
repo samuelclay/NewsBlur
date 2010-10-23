@@ -1,7 +1,7 @@
 import datetime
 import mongoengine as mongo
 from utils import log as logging
-from utils import json
+from utils import json_functions as json
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User

@@ -1,4 +1,4 @@
-from utils import json
+from utils import json_functions as json
 from django.test.client import Client
 from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed, Story

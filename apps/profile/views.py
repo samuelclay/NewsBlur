@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
-from utils import json
+from utils import json_functions as json
 from paypal.standard.forms import PayPalPaymentsForm
 from utils.user_functions import ajax_login_required
 from apps.profile.models import Profile

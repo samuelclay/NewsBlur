@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.feed_import.models import GoogleReaderImporter
-from utils import json
+from utils import json_functions as json
 
 class ImportTest(TestCase):
     fixtures = ['feed_import.json']

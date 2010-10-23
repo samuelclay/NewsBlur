@@ -22,7 +22,7 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, FeedLoadtime
 except:
     pass
-from utils import json, urlnorm
+from utils import json_functions as json, urlnorm
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page, relative_timesince
 from utils import log as logging

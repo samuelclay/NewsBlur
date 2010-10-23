@@ -15,7 +15,7 @@ from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
 from mongoengine.queryset import OperationError
-from utils import json
+from utils import json_functions as json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit

@@ -1,4 +1,4 @@
-from utils import json
+from utils import json_functions as json
 from django.test.client import Client
 from django.test import TestCase
 from django.core import management

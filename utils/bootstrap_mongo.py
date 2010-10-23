@@ -7,7 +7,7 @@ from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFe
 import mongoengine, pymongo
 import sys
 from mongoengine.queryset import OperationError
-from utils import json
+from utils import json_functions as json
 
 MONGO_DB = settings.MONGO_DB
 db = mongoengine.connect(MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])

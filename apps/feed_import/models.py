@@ -7,7 +7,7 @@ from apps.rss_feeds.tasks import NewFeeds
 from celery.task import Task
 import datetime
 import lxml.etree
-from utils import json, urlnorm
+from utils import json_functions as json, urlnorm
 import utils.opml as opml
 from utils import log as logging
 

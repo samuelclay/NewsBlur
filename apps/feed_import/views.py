@@ -11,7 +11,7 @@ from django.shortcuts import render_to_response
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, OPMLImporter, GoogleReaderImporter
-from utils import json
+from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 
 

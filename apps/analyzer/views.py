@@ -5,7 +5,7 @@ from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import get_classifiers_for_user
-from utils import json
+from utils import json_functions as json
 from utils.user_functions import get_user
 from utils.user_functions import ajax_login_required
 
