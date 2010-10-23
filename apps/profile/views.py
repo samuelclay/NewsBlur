@@ -83,8 +83,8 @@ def paypal_form(request):
     
     paypal_dict = {
         "cmd": "_xclick-subscriptions",
-        # "business": "samuel@ofbrooklyn.com",
-        "business": "samuel_1287279745_biz@conesus.com",
+        "business": "samuel@ofbrooklyn.com",
+        # "business": "samuel_1287279745_biz@conesus.com",
         "a3": "12.00",                     # price 
         "p3": 1,                           # duration of each unit (depends on unit)
         "t3": "Y",                         # duration unit ("M for Month")
@@ -102,7 +102,7 @@ def paypal_form(request):
     form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
 
     # Output the button.
-    return HttpResponse(form.sandbox(), mimetype='text/html')
+    return HttpResponse(form.render(), mimetype='text/html')
 
 def paypal_return(request):
 
