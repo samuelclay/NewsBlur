@@ -184,10 +184,10 @@ NEWSBLUR.ReaderFeedException.prototype = {
         
         var feed_id = this.feed_id;
         
-        this.model.delete_publisher(feed_id, function() {
-            NEWSBLUR.reader.delete_feed(feed_id);
-            $.modal.close();
-        });
+        // this.model.delete_feed(feed_id, function() {
+        NEWSBLUR.reader.manage_menu_delete_feed(feed_id);
+        _.delay(function() { $.modal.close(); }, 500);
+        // });
     },
     
     change_feed_address: function() {

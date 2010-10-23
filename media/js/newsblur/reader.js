@@ -1185,7 +1185,7 @@
         
         delete_feed: function(feed_id, $feed) {
             var self = this;
-            
+            $feed = $feed || this.find_feed_in_feed_list(feed_id);
             $feed.slideUp(500);
             
             if (this.active_feed == $feed.data('feed_id')) {
@@ -2579,6 +2579,8 @@
         manage_menu_delete_feed: function(feed, $feed) {
             var self = this;
             var feed_id = feed || this.active_feed;
+            $feed = $feed || this.find_feed_in_feed_list(feed_id);
+            
             var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
             
             this.model.delete_feed(feed_id, in_folder, function() {
