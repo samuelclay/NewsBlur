@@ -616,6 +616,8 @@ def login_as(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
+    from apps.feed_import.models import queue_new_feeds
+    
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
@@ -627,6 +629,9 @@ def save_feed_chooser(request):
         elif sub.active:
             sub.active = False
             sub.save()
+            
+    queue_new_feeds(request.user)
+    
     logging.info(' ---> [%s] Activated standard account: %s/%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        

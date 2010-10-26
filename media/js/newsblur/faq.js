@@ -112,7 +112,7 @@ NEWSBLUR.Faq.prototype = {
                     $.make('ul', { className: 'NB-about-client' }, [
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! All of the stories are several days old and new stories are not showing up.'),
-                        $.make('div', { className: 'NB-faq-answer' }, 'Sites that only have a signle subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.')
+                        $.make('div', { className: 'NB-faq-answer' }, 'Sites that only have a single subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.')
                       ]),
                       $.make('li', { className: 'last' }, [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! I have an issue and it\'s not mentioned here.'),
