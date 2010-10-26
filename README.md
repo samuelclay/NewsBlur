@@ -38,7 +38,8 @@ Roadmap
 Author
 ------
 
- * Samuel Clay <samuel@ofbrooklyn.com>
+ * [http://www.samuelclay.com](Samuel Clay) <samuel@ofbrooklyn.com>
+ * [http://twitter.com/samuelclay](@samuelclay) on Twitter
  
 License
 -------
