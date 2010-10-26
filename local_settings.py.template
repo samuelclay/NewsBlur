@@ -1,0 +1,40 @@
+import logging
+
+DATABASES = {
+    'default': {
+        'NAME': 'newsblur',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'newsblur',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+    },
+}
+
+MONGO_DB = {
+    'NAME': 'newsblur',
+    'HOST': '127.0.0.1',
+    'PORT': 27017
+}
+
+MEDIA_URL = '/media/'
+DEBUG = True
+# CACHE_BACKEND = 'locmem:///'
+CACHE_BACKEND = 'dummy:///'
+# CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Google Reader OAuth API Keys
+OAUTH_KEY = 'www.example.com'
+OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'
+
+# Celery RabbitMQ Broker
+BROKER_HOST = "127.0.0.1"
+
+# Logging (setup for development)
+LOG_TO_STREAM = True
+if len(logging._handlerList) < 1:
+    LOG_FILE = '/home/conesus/newsblur/logs/development.log'
+    logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)-12s: %(message)s',
+                            datefmt='%b %d %H:%M:%S',
+                            handler=logging.StreamHandler)
