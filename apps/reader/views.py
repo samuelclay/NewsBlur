@@ -311,7 +311,8 @@ def load_single_feed(request):
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
                 classifiers=classifiers,
-                last_update=last_update)
+                last_update=last_update,
+                feed_id=feed.pk)
     return data
 
 def load_feed_page(request):

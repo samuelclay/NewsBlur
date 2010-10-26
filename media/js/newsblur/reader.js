@@ -1145,12 +1145,7 @@
             }
             var stories = data.stories;
             var tags = data.tags;
-            var feed_id = this.active_feed;
-            
-            for (var s in stories) {
-                feed_id = stories[s].story_feed_id;
-                break;
-            }
+            var feed_id = data.feed_id;
             
             if (this.active_feed == feed_id) {
                 // NEWSBLUR.log(['post_open_feed', data.stories, this.flags]);

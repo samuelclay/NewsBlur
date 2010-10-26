@@ -259,7 +259,7 @@ class Feed(models.Model):
             }
         """
         dates = {}
-        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f)
+        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
         for r in res:
             dates[r.key] = r.value
                 

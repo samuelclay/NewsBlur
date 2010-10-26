@@ -13,6 +13,7 @@ def load_feed_statistics(request):
     stats = dict()
     feed_id = request.GET['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
+    feed.save_feed_story_history_statistics()
     
     # Dates of last and next update
     stats['last_update'] = relative_timesince(feed.last_update)
