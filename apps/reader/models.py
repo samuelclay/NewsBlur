@@ -35,6 +35,10 @@ class UserSubscription(models.Model):
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
         
+    def save(self, *args, **kwargs):
+        if self.feed:
+            super(UserSubscription, self).save(*args, **kwargs)
+        
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
         if MStory.objects(story_feed_id=self.feed.pk).first():
@@ -53,7 +57,6 @@ class UserSubscription(models.Model):
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        now = datetime.datetime.utcnow()
 
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:

@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.core.mail import mail_admins
@@ -26,8 +27,11 @@ class Profile(models.Model):
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
             sub.active = True
-            sub.save()
-            sub.feed.setup_feed_for_premium_subscribers()
+            try:
+                sub.save()
+                sub.feed.setup_feed_for_premium_subscribers()
+            except IntegrityError:
+                pass
         
         logging.info(' ---> [%s] NEW PREMIUM ACCOUNT! WOOHOO!!! %s subscriptions!' % (self.user.username, subs.count()))
         message = """Woohoo!

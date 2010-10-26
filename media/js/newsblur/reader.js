@@ -3784,6 +3784,14 @@
                 e.preventDefault();
                 self.switch_taskbar_view_direction(1);
             });
+            $document.bind('keydown', 'h', function(e) {
+                e.preventDefault();
+                self.switch_taskbar_view_direction(-1);
+            });
+            $document.bind('keydown', 'l', function(e) {
+                e.preventDefault();
+                self.switch_taskbar_view_direction(1);
+            });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();
                 self.open_feed_link();

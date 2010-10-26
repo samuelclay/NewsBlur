@@ -115,6 +115,7 @@ def load_feeds(request):
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
             'feed_title': sub.feed.feed_title,
+            'feed_address': sub.feed.feed_address,
             'feed_link': sub.feed.feed_link,
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
@@ -228,8 +229,20 @@ def load_single_feed(request):
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
-    feed_id = int(request.REQUEST['feed_id'])
-    feed = Feed.objects.get(id=feed_id)
+    feed_id = int(request.REQUEST.get('feed_id', 0))
+    if feed_id == 0:
+        raise Http404
+        
+    try:
+        feed = Feed.objects.get(id=feed_id)
+    except Feed.DoesNotExist:
+        feed_address = request.REQUEST.get('feed_address')
+        dupe_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address)
+        if dupe_feed:
+            feed = dupe_feed[0].feed
+        else:
+            raise Http404
+        
     force_update = request.GET.get('force_update', False)
     
     now = datetime.datetime.utcnow()
