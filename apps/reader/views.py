@@ -201,7 +201,7 @@ def load_feeds_iphone(request):
 def refresh_feeds(request):
     user = get_user(request)
     feeds = {}
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
     for sub in user_subs:
         if sub.needs_unread_recalc:
