@@ -158,18 +158,18 @@ def apply_classifier_tags(classifiers, story):
     
 def get_classifiers_for_user(user, feed_id, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
     if classifier_feeds is None:
-        # print "Fetching Feeds"
         classifier_feeds = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
+    else: classifier_feeds.rewind()
     if classifier_authors is None:
-        # print "Fetching Authors"
         classifier_authors = MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id)
+    else: classifier_authors.rewind()
     if classifier_titles is None:
-        # print "Fetching Titles"
         classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
+    else: classifier_titles.rewind()
     if classifier_tags is None:
-        # print "Fetching Tags"
         classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
-    
+    else: classifier_tags.rewind()
+
     payload = {
         'feeds': dict([(f.feed_id, f.score) for f in classifier_feeds]),
         'authors': dict([(a.author, a.score) for a in classifier_authors]),
