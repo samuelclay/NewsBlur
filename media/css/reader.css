@@ -2613,7 +2613,10 @@ background: transparent;
     float: left;
     margin: 4px 0 0 0;
 }
-
+.NB-account .NB-module .NB-module-account-upgrade.NB-modal-submit-green {
+    float: right;
+    margin-right: 12px;
+}
 /* ============ */
 /* = Features = */
 /* ============ */
