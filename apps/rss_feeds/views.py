@@ -45,11 +45,13 @@ def exception_retry(request):
     feed.next_scheduled_update = datetime.datetime.utcnow()
     feed.has_page_exception = False
     feed.has_feed_exception = False
+    feed.active = True
     if reset_fetch:
         logging.info(' ---> [%s] Refreshing exception feed: %s' % (request.user, feed))
         feed.fetched_once = False
     else:
         logging.info(' ---> [%s] Forcing refreshing feed: %s' % (request.user, feed))
+        feed.fetched_once = True
     feed.save()
     
     feed.update(force=True)
