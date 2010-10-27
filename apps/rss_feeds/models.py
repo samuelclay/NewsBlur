@@ -174,6 +174,10 @@ class Feed(models.Model):
             self.active = False
             self.exception_code = status_code
             self.save()
+        elif self.exception_code > 0:
+            self.active = True
+            self.exception_code = 0
+            self.save()
     
     def count_subscribers(self, verbose=False, lock=None):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=30)
