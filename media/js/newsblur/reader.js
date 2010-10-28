@@ -680,7 +680,7 @@
             if (feed.ng) {
                 unread_class += ' unread_negative';
             }
-            if (feed.has_exception) {
+            if (feed.has_exception && feed.exception_type == 'feed') {
                 exception_class += ' NB-feed-exception';
             }
             if (feed.not_yet_fetched && !feed.has_exception) {
@@ -1100,7 +1100,7 @@
                 $story_titles.data('page', 0);
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
-                this.story_view = this.model.view_setting(this.active_feed);
+                this.set_correct_story_view_for_feed(feed_id);
                 $feed_link = $feed_link || $('.feed.selected', this.$s.$feed_list).eq(0);
                 this.mark_feed_as_selected(feed_id, $feed_link);
                 this.show_feed_title_in_stories($story_titles, feed_id);
@@ -1176,6 +1176,22 @@
                     }
                 }
             }
+        },
+        
+        set_correct_story_view_for_feed: function(feed_id) {
+          var feed = this.model.get_feed(feed_id);
+          var view = this.model.view_setting(feed_id);
+          
+          if (feed.has_exception && feed.exception_type == 'page') {
+            if (view == 'page') {
+              view = 'feed';
+            }
+            $('.task_view_page').addClass('NB-exception-page');
+          } else {
+            $('.task_view_page').removeClass('NB-exception-page');
+          }
+          
+          this.story_view = view;
         },
         
         delete_feed: function(feed_id, $feed) {
@@ -2122,7 +2138,12 @@
         switch_taskbar_view: function(view, story_not_found) {
             var self = this;
             var $story_pane = this.$s.$story_pane;
+            var feed = this.model.get_feed(this.active_feed);
             
+            if (view == 'page' && feed.has_exception && feed.exception_type == 'page') {
+              this.open_feed_exception_modal(this.active_feed);
+              return;
+            }
             // NEWSBLUR.log(['$button', $button, this.flags['page_view_showing_feed_view'], $button.hasClass('NB-active'), story_not_found]);
             var $taskbar_buttons = $('.NB-taskbar .task_button_view');
             var $feed_view = this.$s.$feed_view;
@@ -2360,7 +2381,7 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
                     ])),
                     (feed.has_exception && $.make('li', { className: 'NB-menu-separator-inverse' })),
-                    (!feed.has_exception && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
+                    (feed.exception_type != 'feed' && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),

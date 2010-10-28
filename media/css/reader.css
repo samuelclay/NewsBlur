@@ -1440,6 +1440,9 @@ background: transparent;
     cursor: pointer;
     background: transparent url('../img/icons/silk/application_view_tile.png') no-repeat 8px center;
 }
+.NB-taskbar .task_button.task_view_page.NB-exception-page {
+    background-image: url('../img/icons/silk/exclamation.png');
+}
 .NB-taskbar .task_button.task_view_feed {
     cursor: pointer;
     background: transparent url('../img/icons/silk/application_view_columns.png') no-repeat 8px center;
