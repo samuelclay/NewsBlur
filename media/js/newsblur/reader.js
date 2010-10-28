@@ -2305,6 +2305,7 @@
                 self.force_feeds_refresh(function(feeds) {
                     var $new_feed = self.make_feed_title_line(feeds[feed_id]);
                     $feed.replaceWith($new_feed);
+                    self.hover_over_feed_titles($new_feed);
                     if (self.active_feed == feed_id) {
                         self.open_feed(feed_id, true, $new_feed);
                     }
