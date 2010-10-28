@@ -2303,7 +2303,7 @@
             
             this.model.save_exception_retry(feed_id, function() {
                 self.force_feeds_refresh(function(feeds) {
-                    var $new_feed = self.make_feed_title_line(feeds[feed_id]);
+                    var $new_feed = self.make_feed_title_line(feeds[feed_id], true, 'feed');
                     $feed.replaceWith($new_feed);
                     self.hover_over_feed_titles($new_feed);
                     if (self.active_feed == feed_id) {
