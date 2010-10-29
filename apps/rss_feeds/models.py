@@ -595,31 +595,34 @@ class Feed(models.Model):
         if updates_per_day < 1 and self.num_subscribers > 2:
             updates_per_day = 1
         # 0 updates per day = 24 hours
-        # 1 update per day = 6 hours
-        # > 1 update per day:
-        #   2 updates = 3 hours
+        # 1 subscriber:
+        #   1 update per day = 6 hours
+        #   2 updates = 3.5 hours
         #   4 updates = 2 hours
-        #   10 updates = 50 minutes
+        #   10 updates = 80 minutes
+        # 2 subscribers:
+        #   1 update per day = 4.5 hours
+        #   10 updates = 55 minutes
         updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.55) 
-                                                   * (updates_per_day**.85)))
+                                                   * (updates_per_day**.75)))
         
         # Lots of subscribers = lots of updates
         # 144 hours for 0 subscribers.
         # 24 hours for 1 subscriber.
-        # 6 hours for 2 subscribers.
-        # 2.5 hours for 3 subscribers.
-        # 15 min for 10 subscribers.
-        subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**2)
-        subscriber_bonus = subscriber_bonus / max(1, (10 * self.premium_subscribers))
+        # 7 hours for 2 subscribers.
+        # 3 hours for 3 subscribers.
+        # 25 min for 10 subscribers.
+        subscriber_bonus = 24 * 60 / max(.167, self.num_subscribers**1.75)
+        subscriber_bonus = subscriber_bonus / max(1, (5 * self.premium_subscribers))
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
             if 30 <= self.last_load_time < 60:
                 slow_punishment = self.last_load_time
             elif 60 <= self.last_load_time < 200:
-                slow_punishment = 4 * self.last_load_time
+                slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
-                slow_punishment = 12 * self.last_load_time
+                slow_punishment = 6 * self.last_load_time
         total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4

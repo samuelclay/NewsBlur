@@ -10,6 +10,7 @@ from utils import json_functions as json
 from paypal.standard.forms import PayPalPaymentsForm
 from utils.user_functions import ajax_login_required
 from apps.profile.models import Profile
+from apps.reader.models import UserSubscription
 
 @login_required
 @require_POST
@@ -121,14 +122,22 @@ def profile_is_premium(request):
     retries = int(request.GET['retries'])
     profile = Profile.objects.get(user=request.user)
     
-    if retries > 3:
+    subs = UserSubscription.objects.filter(user=request.user)
+    total_subs = subs.count()
+    activated_subs = subs.filter(active=True).count()
+    
+    if retries > 30:
         subject = "Premium activation failed: %s (%s)" % (request.user, request.user.pk)
         message = "Check PayPalIPN"
         mail_admins(subject, message, fail_silently=True)
         code = -1
+        request.user.profile.is_premium = True
+        request.user.profile.save()
         
     return {
         'is_premium': profile.is_premium,
         'code': code,
+        'activated_subs': activated_subs,
+        'total_subs': total_subs,
     }
     

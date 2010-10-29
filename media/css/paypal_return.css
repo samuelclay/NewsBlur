@@ -22,8 +22,7 @@
 }
 
 .NB-paypal-return .NB-paypal-return-loading {
-  width: 220px;
-  height: 19px;
-  background: transparent url('../img/reader/spinner_bar.gif') no-repeat 0 0;
   margin: 18px auto 0;
+  height: 16px;
+  width: 300px;
 }
