@@ -647,14 +647,14 @@ class Feed(models.Model):
     def calculate_collocations_story_content(self,
                                              collocation_measures=TrigramAssocMeasures,
                                              collocation_finder=TrigramCollocationFinder):
-        stories = Story.objects.filter(story_feed=self)
+        stories = MStory.objects.filter(story_feed_id=self.pk)
         story_content = ' '.join([s.story_content for s in stories if s.story_content])
         return self.calculate_collocations(story_content, collocation_measures, collocation_finder)
         
     def calculate_collocations_story_title(self,
                                            collocation_measures=BigramAssocMeasures,
                                            collocation_finder=BigramCollocationFinder):
-        stories = Story.objects.filter(story_feed=self)
+        stories = MStory.objects.filter(story_feed_id=self.pk)
         story_titles = ' '.join([s.story_title for s in stories if s.story_title])
         return self.calculate_collocations(story_titles, collocation_measures, collocation_finder)
     
