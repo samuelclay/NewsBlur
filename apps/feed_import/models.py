@@ -84,7 +84,8 @@ class OPMLImporter(Importer):
                     user=self.user,
                     defaults={
                         'needs_unread_recalc': True,
-                        'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                        'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                        'active': self.user.profile.is_premium,
                     }
                 )
                 folders.append(feed_db.pk)
@@ -150,7 +151,8 @@ class GoogleReaderImporter(Importer):
                 user=self.user,
                 defaults={
                     'needs_unread_recalc': True,
-                    'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                    'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                    'active': self.user.profile.is_premium,
                 }
             )
             if not category: category = "Root"
