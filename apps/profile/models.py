@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.core.mail import mail_admins
 from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed
 from paypal.standard.ipn.signals import subscription_signup
 from utils import log as logging
      
@@ -30,7 +31,7 @@ class Profile(models.Model):
             try:
                 sub.save()
                 sub.feed.setup_feed_for_premium_subscribers()
-            except IntegrityError:
+            except IntegrityError, Feed.DoesNotExist:
                 pass
         
         logging.info(' ---> [%s] NEW PREMIUM ACCOUNT! WOOHOO!!! %s subscriptions!' % (self.user.username, subs.count()))
