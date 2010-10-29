@@ -13,13 +13,16 @@
 
         detect_premium: function() {
             $.get('/profile/is_premium', {'retries': this.retries}, _.bind(function(resp) {
-                if (resp.is_premium || resp.code < 0) {
+                if (resp.activated_subs == resp.total_subs || resp.code < 0) {
                     window.location.href = '/';
-                } else if (!resp.is_premium) {
+                } else if (resp.activated_subs != resp.total_subs) {
                     this.retries += 1;
                     _.delay(_.bind(function() {
                         this.detect_premium();
-                    }, this), 3000);
+                    }, this), 2000);
+                    $('.NB-paypal-return-loading').progressbar({
+                        value: (resp.activated_subs / resp.total_subs) * 100
+                    });
                 }
             }, this));
         }

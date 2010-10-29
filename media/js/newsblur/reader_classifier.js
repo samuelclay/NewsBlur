@@ -63,8 +63,10 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
 
 var classifier_prototype = {
     
-    runner_trainer: function() {
-        this.user_classifiers = {};
+    runner_trainer: function(reload) {
+        if (!reload) {
+            this.user_classifiers = {};
+        }
 
         this.make_trainer_intro();
         this.get_feeds_trainer();
@@ -113,7 +115,7 @@ var classifier_prototype = {
         var trainer_data_length = this.trainer_data.length;
         this.trainer_iterator = this.trainer_iterator - 1;
         var trainer_data = this.trainer_data[this.trainer_iterator];
-        NEWSBLUR.log(['load_previous_feed_in_trainer', this.trainer_iterator, trainer_data]);
+        // NEWSBLUR.log(['load_previous_feed_in_trainer', this.trainer_iterator, trainer_data]);
         if (!trainer_data || this.trainer_iterator < 0) {
             this.make_trainer_intro();
             this.reload_modal();
@@ -123,11 +125,11 @@ var classifier_prototype = {
         }
     },
     
-    load_next_feed_in_trainer: function(backwards) {
+    load_next_feed_in_trainer: function() {
         var trainer_data_length = this.trainer_data.length;
         this.trainer_iterator = this.trainer_iterator + 1;
         var trainer_data = this.trainer_data[this.trainer_iterator];
-        NEWSBLUR.log(['load_next_feed_in_trainer', this.trainer_iterator, trainer_data]);
+        // NEWSBLUR.log(['load_next_feed_in_trainer', this.trainer_iterator, trainer_data]);
         if (!trainer_data || this.trainer_iterator >= trainer_data_length) {
             this.make_trainer_outro();
             this.reload_modal();
@@ -157,7 +159,7 @@ var classifier_prototype = {
         this.reload_modal();
     },
     
-    reload_modal: function() {
+    reload_modal: function(callback) {
         this.flags.modal_loading = setInterval(_.bind(function() {
             if (this.flags.modal_loaded) {
                 clearInterval(this.flags.modal_loading);
@@ -166,6 +168,7 @@ var classifier_prototype = {
                 $(window).trigger('resize.simplemodal');
                 this.handle_cancel();
                 this.$modal.parent().scrollTop(0);
+                callback && callback();
             }
         }, this), 125);
     },
@@ -177,7 +180,6 @@ var classifier_prototype = {
     load_feeds_trainer: function(e, data) {
         var $begin = $('.NB-modal-submit-begin', this.$modal);
         
-        NEWSBLUR.log(['data', data]);
         this.trainer_data = data;
 
         if (!data || !data.length) {
@@ -189,6 +191,15 @@ var classifier_prototype = {
                 .removeClass('NB-modal-submit-close')
                 .removeClass('NB-disabled');
         }
+    },
+    
+    retrain_all_sites: function() {
+        $('.NB-modal-submit-reset', this.$modal).text('Rewinding...').attr('disabled', true).addClass('NB-disabled');
+        
+        this.model.retrain_all_sites(_.bind(function(data) {
+            this.load_feeds_trainer(null, data);
+            this.load_next_feed_in_trainer();
+        }, this));
     },
     
     find_story_and_feed: function() {
@@ -300,6 +311,7 @@ var classifier_prototype = {
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit' }, [
+                $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-reset' }, $.entity('&laquo;') + ' Retrain all sites'),
                 $.make('a', { href: '#', className: 'NB-modal-submit-end NB-modal-submit-button' }, 'Close Training and Start Reading')
             ])
         ]);
@@ -745,6 +757,11 @@ var classifier_prototype = {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-back' }, function($t, $p){
                 e.preventDefault();
                 self.load_previous_feed_in_trainer();
+            });
+            
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-reset' }, function($t, $p){
+                e.preventDefault();
+                self.retrain_all_sites();
             });
 
             $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){

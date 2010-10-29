@@ -1821,7 +1821,8 @@ a.NB-splash-link:hover {
     text-decoration: none;
 }
 
-.NB-modal-submit .NB-modal-submit-back {
+.NB-modal-submit .NB-modal-submit-back,
+.NB-modal-submit .NB-modal-submit-reset {
     background-color: #d5d4dB;
     color: #909090;
     
@@ -1964,7 +1965,8 @@ a.NB-splash-link:hover {
 /* = Classifier Trainer = */
 /* ====================== */
 
-.NB-modal-trainer .NB-modal-submit .NB-modal-submit-back {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-back,
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-reset {
     float: left;
     color: #FFF;
     background-color: #b5b4bB;

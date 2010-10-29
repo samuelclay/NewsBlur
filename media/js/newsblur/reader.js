@@ -3284,7 +3284,6 @@
             this.$s.$feed_link_loader.fadeOut(250);
             this.setup_feed_refresh();
             if (!this.flags['has_unfetched_feeds']) {
-                NEWSBLUR.log(['has_unfetched_feeds']);
                 this.hide_progress_bar();
             }
         },
