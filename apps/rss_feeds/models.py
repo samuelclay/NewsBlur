@@ -169,9 +169,9 @@ class Feed(models.Model):
         if len(non_errors) == 0 and len(errors) >= 1:
             if exception_type == 'feed':
                 self.has_feed_exception = True
+                self.active = False
             elif exception_type == 'page':
                 self.has_page_exception = True
-            self.active = False
             self.exception_code = status_code
             self.save()
         elif self.exception_code > 0:
