@@ -122,7 +122,7 @@ NEWSBLUR.About.prototype = {
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
                     $.make('span', { className: 'NB-exception-option-option' }, 'Why:'),
-                    'What\'s the point?'
+                    'What\'s the point of another RSS feed reader?'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'NB-about-why' }, [

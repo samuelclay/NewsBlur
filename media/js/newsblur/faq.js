@@ -28,7 +28,7 @@ NEWSBLUR.Faq.prototype = {
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('ul', { className: 'NB-about-what' }, [
                       $.make('li', [
-                        $.make('div', { className: 'NB-faq-question' }, 'What is the different between the three views: Original, Feed, and Story?'),
+                        $.make('div', { className: 'NB-faq-question' }, 'What is the difference between the three views: Original, Feed, and Story?'),
                         $.make('div', { className: 'NB-faq-answer' }, 'Original view is the original site. Feed view is the RSS feed from the site. And Story view is the same as Feed view, but only shows one story at a time. It\'s all personal preference, really.')
                       ]),
                       $.make('li', [
@@ -37,7 +37,7 @@ NEWSBLUR.Faq.prototype = {
                       ]),
                       $.make('li', { className: 'last' }, [
                         $.make('div', { className: 'NB-faq-question' }, 'Why doesn\'t NewsBlur follow me when I click on links on the page?'),
-                        $.make('div', { className: 'NB-faq-answer' }, 'When you click on a link, you are technically leaving NewsBlur, although only for a portion of the page. In order to track what you\'re reading, you need to read NewsBlur\'s snapshot of the page, or switch to the Feed view.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'When you click on a link, you are technically leaving NewsBlur, although only for a portion of the page in an iframe. In order to track what you\'re reading, you need to read NewsBlur\'s snapshot of the page, or switch to the Feed view.'),
                         $.make('div', { className: 'NB-faq-answer last' }, 'This may change one day. There is a way to fix this behavior so it works like you would expect. It is not easy to do, however. One day.')
                       ])
                     ])
@@ -84,7 +84,7 @@ NEWSBLUR.Faq.prototype = {
             ]),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('span', { className: 'NB-exception-option-option', style: 'float:right' }, 'September - October 2010'),
+                    $.make('span', { className: 'NB-exception-option-option', style: 'float:right' }, 'November - December 2010'),
                     'What\'s Coming'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -113,6 +113,11 @@ NEWSBLUR.Faq.prototype = {
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! All of the stories are several days old and new stories are not showing up.'),
                         $.make('div', { className: 'NB-faq-answer' }, 'Sites that only have a single subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.')
+                      ]),
+                      $.make('li', [
+                        $.make('div', { className: 'NB-faq-question' }, 'Help! A bunch of my sites are misbehaving and they work in Google Reader.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'This is a known issue that is being addressed in a number of ways. About half of these misbehaving errors are errors that you really do need to address (like 404 Not Found errors). The other half are various edge cases, parser errors, uncaught exceptions, and bad code on NewsBlur\'s part.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'But because this problem is so severe, various measures are taken every few weeks that fix a huge swath of misbheaving sites at once. You might find that this happens and it\'s quite nice when it does.')
                       ]),
                       $.make('li', { className: 'last' }, [
                         $.make('div', { className: 'NB-faq-question' }, 'Help! I have an issue and it\'s not mentioned here.'),
