@@ -611,7 +611,7 @@ def save_feed_chooser(request):
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     for sub in usersubs:
-        if sub.feed.pk in approved_feeds:
+        if sub.feed and sub.feed.pk in approved_feeds:
             sub.active = True
             activated += 1
             sub.save()
