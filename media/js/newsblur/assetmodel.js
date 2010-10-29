@@ -215,7 +215,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         $.isFunction(callback) && callback(data, first_load);
     },
-    
+        
     get_feeds_trainer: function(feed_id, callback) {
         var self = this;
         var params = {};
@@ -226,6 +226,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/get_feeds_trainer', params, callback, null, {'ajax_group': 'feed'});
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },    
+    
+    
+    retrain_all_sites: function(callback) {
+        var self = this;
+        var params = {};
+        
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/retrain_all_sites', params, callback, null);
         } else {
             if ($.isFunction(callback)) callback();
         }

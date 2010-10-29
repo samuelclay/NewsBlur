@@ -601,17 +601,6 @@ def get_feeds_trainer(request):
     logging.info(" ---> [%s] Loading Trainer: %s feeds" % (request.user, len(classifiers)))
     
     return classifiers
-    
-@login_required
-def login_as(request):
-    if not request.user.is_staff:
-        assert False
-        return HttpResponseForbidden()
-    username = request.GET['user']
-    user = get_object_or_404(User, username=username)
-    user.backend = settings.AUTHENTICATION_BACKENDS[0]
-    login_user(request, user)
-    return HttpResponseRedirect(reverse('index'))
 
 @ajax_login_required
 @json.json_view
@@ -637,6 +626,14 @@ def save_feed_chooser(request):
                                                                    usersubs.count()))        
     return {'activated': activated}
 
+@ajax_login_required
+def retrain_all_sites(request):
+    for sub in UserSubscription.objects.filter(user=request.user):
+        sub.is_trained = False
+        sub.save()
+        
+    return get_feeds_trainer(request)
+    
 @login_required
 def activate_premium_account(request):
     try:
@@ -657,6 +654,18 @@ def activate_premium_account(request):
         
     return HttpResponseRedirect(reverse('index'))
 
+@login_required
+def login_as(request):
+    if not request.user.is_staff:
+        logging.info(' ---> NON-STAFF LOGGING IN AS ANOTHER USER: %s' % request.user)
+        assert False
+        return HttpResponseForbidden()
+    username = request.GET['user']
+    user = get_object_or_404(User, username=username)
+    user.backend = settings.AUTHENTICATION_BACKENDS[0]
+    login_user(request, user)
+    return HttpResponseRedirect(reverse('index'))
+    
 def iframe_buster(request):
     logging.info(" ---> [%s] iFrame bust!" % (request.user,))
     return HttpResponse(status=204)
