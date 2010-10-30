@@ -447,10 +447,19 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         NEWSBLUR.Preferences[preference] = value;
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/profile/set_preference', {
-                'preference': preference,
-                'value': value
-            }, callback, null);
+            var preferences = {};
+            preferences[preference] = value;
+            this.make_request('/profile/set_preference', preferences, callback, null);
+        }
+    },
+    
+    save_preferences: function(preferences, callback) {
+        _.each(preferences, function(value, preference) {
+            NEWSBLUR.Preferences[preference] = value;
+        });
+        
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/profile/set_preference', preferences, callback, null);
         }
     },
     
@@ -472,7 +481,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var folders = NEWSBLUR.Preferences.collapsed_folders;
         var changed = false;
         
-        if (is_collapsed && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title)) {
+        if (is_collapsed && !_.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title)) {
             NEWSBLUR.Preferences.collapsed_folders.push(folder_title);
             changed = true;
         } else if (!is_collapsed && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title)) {

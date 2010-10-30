@@ -42,6 +42,7 @@ def index(request):
         login_form = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
     
+    user = get_user(request)
     features = Feature.objects.all()[:3]
     feature_form = None
     if request.user.is_staff:
@@ -50,11 +51,13 @@ def index(request):
     feed_count = 0
     train_count = 0
     if request.user.is_authenticated():
-        feed_count = UserSubscription.objects.filter(user=request.user, active=True).count()
+        feed_count = UserSubscription.objects.filter(user=request.user).count()
+        active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
 
     howitworks_page = random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
+        'user_profile': user.profile,
         'login_form': login_form,
         'signup_form': signup_form,
         'feature_form': feature_form,
@@ -62,7 +65,8 @@ def index(request):
         'start_import_from_google_reader': request.session.get('import_from_google_reader', False),
         'howitworks_page': howitworks_page,
         'feed_count': feed_count,
-        'train_count': feed_count - train_count,
+        'active_count': active_count,
+        'train_count': active_count - train_count,
         'account_images': range(1, 4),
     }, context_instance=RequestContext(request))
 

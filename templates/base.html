@@ -24,8 +24,11 @@
       'lock_mouse_indicator': 0,
       'feed_pane_size': 240,
       'story_titles_pane_size': 168,
+      'new_window': 0,
+      'default_view': 'original',
       'view_settings': {},
-      'collapsed_folders': []
+      'collapsed_folders': [],
+      'timezone': "{{ user_profile.timezone }}"
     };
     NEWSBLUR.URLs = {
       'google-reader-authorize': "{% url google-reader-authorize %}"
@@ -40,11 +43,9 @@
   {% endblock extra_head_js %}
   
   <script type="text/javascript" charset="utf-8">
-    {% if request.user.is_authenticated %}
-      $.extend(NEWSBLUR.Preferences, {{ user.profile.preferences|safe }});
-      $.extend(NEWSBLUR.Preferences['view_settings'], {{ user.profile.view_settings|safe }});
-      $.extend(NEWSBLUR.Preferences['collapsed_folders'], {{ user.profile.collapsed_folders|safe }});
-    {% endif %}
+    $.extend(NEWSBLUR.Preferences, {{ user_profile.preferences|safe }});
+    $.extend(NEWSBLUR.Preferences['view_settings'], {{ user_profile.view_settings|safe }});
+    $.extend(NEWSBLUR.Preferences['collapsed_folders'], {{ user_profile.collapsed_folders|safe }});
   </script>
     
 </head>

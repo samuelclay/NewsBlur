@@ -6,8 +6,10 @@ from django.db.models.signals import post_save
 from django.core.mail import mail_admins
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
+from apps.feed_import.models import queue_new_feeds
 from paypal.standard.ipn.signals import subscription_signup
 from utils import log as logging
+from utils.timezones.fields import TimeZoneField
      
 class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile")
@@ -17,6 +19,7 @@ class Profile(models.Model):
     collapsed_folders = models.TextField(default="[]")
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
+    timezone = TimeZoneField(default="America/New_York")
     
     def __unicode__(self):
         return "%s" % self.user
@@ -33,6 +36,8 @@ class Profile(models.Model):
                 sub.feed.setup_feed_for_premium_subscribers()
             except IntegrityError, Feed.DoesNotExist:
                 pass
+        
+        queue_new_feeds(self.user)
         
         logging.info(' ---> [%s] NEW PREMIUM ACCOUNT! WOOHOO!!! %s subscriptions!' % (self.user.username, subs.count()))
         message = """Woohoo!

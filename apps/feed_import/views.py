@@ -33,6 +33,8 @@ def opml_upload(request):
 
             feeds = UserSubscription.objects.filter(user=request.user).values()
             payload = dict(folders=folders, feeds=feeds)
+            
+            request.session['import_from_google_reader'] = False
         else:
             message = "Attach an .opml file."
             code = -1

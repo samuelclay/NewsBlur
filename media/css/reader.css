@@ -2099,7 +2099,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-add input[type=submit] {
-    font-size: 14px;
+    font-size: 12px;
     margin: 0 0 0 4px;
 }
 
@@ -2618,7 +2618,7 @@ background: transparent;
     float: left;
     margin: 4px 0 0 0;
 }
-.NB-account .NB-module .NB-module-account-upgrade.NB-modal-submit-green {
+.NB-account .NB-module .NB-module-account .NB-module-account-premium {
     float: right;
     margin-right: 12px;
 }
@@ -3458,4 +3458,50 @@ background: transparent;
   margin: 8px 0 0 0;
   border: 1px solid #202020;
   width: 268px;
+}
+
+/* =============== */
+/* = Preferences = */
+/* =============== */
+
+.NB-modal-preferences .NB-preference {
+  overflow: hidden;
+  margin: 12px 0 12px;
+  padding: 12px;
+  background-color: #F6F6F6;
+}
+
+.NB-modal-preferences .NB-preference.NB-last {
+  margin-bottom: 0;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options {
+  float: right;
+  width: 375px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-label {
+  float: left;
+  width: 150px;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options input {
+  clear: both;
+  float: left;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options label {
+  padding-left: 4px;
+  margin: 0 0 4px 0;
+  float: left;
+  cursor: pointer;
+}
+
+.NB-modal-preferences .NB-preference-view {
+  padding-bottom: 4px;
+}
+.NB-modal-preferences .NB-preference-view img {
+  height: 31px;
+  min-width: 50px;
+}
+.NB-modal-preferences .NB-preference-view input {
+  margin-top: 10px;
 }

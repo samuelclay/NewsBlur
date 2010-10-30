@@ -312,7 +312,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 }
             });
         }
-        this.update_counts();
+        _.defer(_.bind(function() { this.update_counts(); }, this));
     },
     
     save: function() {

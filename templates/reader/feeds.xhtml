@@ -192,7 +192,7 @@ $(document).ready(function() {
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
         </h5>
-        <div class="NB-module-account {% if train_count == feed_count %}NB-last{% endif %}">
+        <div class="NB-module-account {% if train_count == active_count %}NB-last{% endif %}">
           <div class="NB-module-account-image">
             {% if user.profile.is_premium %}
               <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
@@ -203,12 +203,12 @@ $(document).ready(function() {
           <h3>
             {% if user.profile.is_premium %}
               <span class="NB-module-account-subtitle">
-                {{ feed_count }} site{{ feed_count|pluralize }}
+                {{ active_count }} site{{ active_count|pluralize }}
               </span>
               Premium Account
             {% else %}
               <span class="NB-module-account-subtitle">
-                <span class="NB-module-account-feedcount">{{ feed_count }}</span> of 64 sites
+                <span class="NB-module-account-feedcount">{{ active_count }}</span> of 64 sites
               </span>
               Standard Account
             {% endif %}
@@ -219,20 +219,24 @@ $(document).ready(function() {
             {% else %}
               
               <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade">Go Premium!</div>
-                <div class="{% if feed_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade NB-module-account-premium">Go Premium!</div>
+                {% if feed_count == 0 %}
+                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add">Add Sites</div>
+                {% else %}
+                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
+                {% endif %}
               </div>
             {% endif %}
           </div>
         </div>
-        {% if train_count != feed_count %}
+        {% if train_count != active_count %}
           <div class="NB-module-account NB-module-account-trainer NB-last">
             <div class="NB-module-account-image">
                 <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
             </div>
             <h3>
                 <span class="NB-module-account-subtitle">
-                  <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ feed_count }} site{{ feed_count|pluralize }}
+                  <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
                 </span>
                 Intelligence Trainer
             </h3>

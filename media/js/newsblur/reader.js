@@ -908,7 +908,7 @@
             };
             
             var combined_folders = combine_folders(this.$s.$feed_list);
-            NEWSBLUR.log(['Save new folder/feed order', {'combined': combined_folders}]);
+            // NEWSBLUR.log(['Save new folder/feed order', {'combined': combined_folders}]);
             this.model.save_feed_order(combined_folders);
         },
         
@@ -2360,11 +2360,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
                     ]),
-                    // $.make('li', { className: 'NB-menu-manage-preferences' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
-                    //     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
-                    // ]),
+                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
+                    ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64'),

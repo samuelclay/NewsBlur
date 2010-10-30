@@ -17,11 +17,12 @@ from apps.reader.models import UserSubscription
 @json.json_view
 def set_preference(request):
     code = 1
-    preference_name = request.POST['preference']
-    preference_value = request.POST['value']
+    new_preferences = request.POST
     
     preferences = json.decode(request.user.profile.preferences)
-    preferences[preference_name] = preference_value
+    for preference_name, preference_value in new_preferences.items():
+        preferences[preference_name] = preference_value
+        
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
