@@ -49,6 +49,7 @@ def index(request):
         feature_form = FeatureForm()
 
     feed_count = 0
+    active_count = 0
     train_count = 0
     if request.user.is_authenticated():
         feed_count = UserSubscription.objects.filter(user=request.user).count()
