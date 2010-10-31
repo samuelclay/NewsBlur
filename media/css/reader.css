@@ -3505,3 +3505,6 @@ background: transparent;
 .NB-modal-preferences .NB-preference-view input {
   margin-top: 10px;
 }
+.NB-modal-preferences .NB-preference-window input {
+  margin-top: 6px;
+}

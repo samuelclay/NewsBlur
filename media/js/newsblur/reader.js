@@ -2026,6 +2026,11 @@
                     ]),
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
                 ]).data('story', story.id);
+                
+                if (NEWSBLUR.Preferences.new_window == 1) {
+                    $('a', $story).attr('target', '_blank');
+                }
+                
                 if (refresh_load) {
                     $stories.prepend($story);
                 } else {
@@ -2360,11 +2365,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
                     ]),
-                    // $.make('li', { className: 'NB-menu-manage-preferences' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
-                    //     $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
-                    // ]),
+                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
+                    ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64'),

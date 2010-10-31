@@ -154,7 +154,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Default view'
                     ])
                 ]),
-                $.make('div', { className: 'NB-preference' }, [
+                $.make('div', { className: 'NB-preference NB-preference-window' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),

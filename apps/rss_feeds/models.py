@@ -19,8 +19,6 @@ from utils import json_functions as json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit
-from utils.story_functions import format_story_link_date__short
-from utils.story_functions import format_story_link_date__long
 from utils.story_functions import pre_process_story
 from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
@@ -486,8 +484,6 @@ class Feed(models.Model):
         for story_db in stories_db:
             story = {}
             story['story_tags'] = story_db.story_tags or []
-            story['short_parsed_date'] = format_story_link_date__short(story_db.story_date)
-            story['long_parsed_date'] = format_story_link_date__long(story_db.story_date)
             story['story_date'] = story_db.story_date
             story['story_authors'] = story_db.story_author_name
             story['story_title'] = story_db.story_title

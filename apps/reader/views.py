@@ -25,7 +25,10 @@ except:
 from utils import json_functions as json, urlnorm
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page, relative_timesince
+from utils.story_functions import format_story_link_date__short
+from utils.story_functions import format_story_link_date__long
 from utils import log as logging
+from utils.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
@@ -284,6 +287,9 @@ def load_single_feed(request):
         classifier_authors.rewind()
         classifier_tags.rewind()
         classifier_titles.rewind()
+        story_date = localtime_for_timezone(story['story_date'], request.user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
+        story['long_parsed_date'] = format_story_link_date__long(story_date)
         if story['id'] in userstories:
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
@@ -308,10 +314,10 @@ def load_single_feed(request):
     
     diff = datetime.datetime.utcnow()-now
     timediff = float("%s.%s" % (diff.seconds, (diff.microseconds / 1000)))
+    last_update = relative_timesince(feed.last_update)
     logging.info(" ---> [%s] Loading feed: %s (%s seconds)" % (request.user, feed, timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
-    last_update = relative_timesince(feed.last_update)
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 

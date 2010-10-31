@@ -22,7 +22,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.read_stories = {};
     this.classifiers = {};
     
-    this.DEFAULT_VIEW = 'page';
+    this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
 
 NEWSBLUR.AssetModel.Reader.prototype = {

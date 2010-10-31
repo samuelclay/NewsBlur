@@ -12,6 +12,8 @@ from utils.user_functions import ajax_login_required
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription
 
+SINGLE_FIELD_PREFS = ('timezone',)
+
 @login_required
 @require_POST
 @json.json_view
@@ -21,7 +23,10 @@ def set_preference(request):
     
     preferences = json.decode(request.user.profile.preferences)
     for preference_name, preference_value in new_preferences.items():
-        preferences[preference_name] = preference_value
+        if preference_name in SINGLE_FIELD_PREFS:
+            setattr(request.user.profile, preference_name, preference_value)
+        else:
+            preferences[preference_name] = preference_value
         
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
