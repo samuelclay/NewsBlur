@@ -153,7 +153,7 @@
 
 	////////////////////////// PUBLIC INTERFACE /////////////////////////
 
-	$.jStorage = {
+	$.storage = {
 		/* Version number */
 		version: "0.1.3",
 

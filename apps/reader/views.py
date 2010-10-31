@@ -287,7 +287,7 @@ def load_single_feed(request):
         classifier_authors.rewind()
         classifier_tags.rewind()
         classifier_titles.rewind()
-        story_date = localtime_for_timezone(story['story_date'], request.user.profile.timezone)
+        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date'] = format_story_link_date__long(story_date)
         if story['id'] in userstories:
