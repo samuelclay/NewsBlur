@@ -110,8 +110,6 @@ var classifier_prototype = {
     },
     
     load_previous_feed_in_trainer: function() {
-        this.trainer_iterator = this.trainer_iterator - 1;
-        
         var trainer_data_length = this.trainer_data.length;
         this.trainer_iterator = this.trainer_iterator - 1;
         var trainer_data = this.trainer_data[this.trainer_iterator];
