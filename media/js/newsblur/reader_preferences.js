@@ -132,7 +132,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 $.make('div', { className: 'NB-preference NB-preference-view' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
-                            $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'original' }),
+                            $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'page' }),
                             $.make('label', { 'for': 'NB-preference-view-1' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_original.png' })
                             ])
