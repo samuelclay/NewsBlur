@@ -593,6 +593,16 @@ a img {
     background-color: #CC2A2E;
 }
 
+.unread_view_positive .unread_count {
+    padding: 0 6px;
+}
+
+.unread_view_neutral .unread_count {
+    padding: 0 3px;
+}
+
+/* Showing unread counts above threshold */
+
 .unread_view_positive .unread_positive .unread_count_positive {
     display: block;
 }
@@ -623,13 +633,19 @@ a img {
     font-weight: bold;
 }
 
-.unread_view_positive .unread_count {
-    padding: 0 6px;
+/* Showing unread counts below threshold */
+
+.unread_threshold_positive .unread_negative .unread_count_negative,
+.unread_threshold_positive .unread_neutral .unread_count_neutral {
+    font-weight: bold;
+    display: block;
 }
 
-.unread_view_neutral .unread_count {
-    padding: 0 3px;
+.unread_threshold_neutral .unread_negative .unread_count_negative {
+    font-weight: bold;
+    display: block;
 }
+
 
 /* ====================== */
 /* = Feeds Progress Bar = */
@@ -920,7 +936,58 @@ background: transparent;
     display: block;
 }
 
+#story_titles .NB-story-title-indicator {
+  clear: both;
+  border-bottom: 1px solid #505050;
+  height: 10px;
+  font-size: 9px;
+  background-color: #606060;
+  overflow: hidden;
+  cursor: pointer;
+}
 
+#story_titles .NB-story-title-indicator:hover {
+  
+}
+
+#story_titles .NB-story-title-indicator .feed_counts_floater {
+  float: left;
+  padding: 0 0 0 4px;
+  text-align: center;
+}
+
+#story_titles .NB-story-title-indicator .unread_count_neutral,
+#story_titles .NB-story-title-indicator .unread_count_negative {
+  opacity: .3;
+}
+
+#story_titles .NB-story-title-indicator.unread_threshold_positive:hover .unread_count_neutral {
+  opacity: 1;
+}
+#story_titles .NB-story-title-indicator.unread_threshold_neutral:hover .unread_count_negative {
+  opacity: 1;
+}
+
+#story_titles .NB-story-title-indicator .NB-story-title-indicator-text {
+  color: #B0B0B0;
+  text-shadow: 1px 1px 0 #202020;
+  opacity: .8;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 9px;
+  padding: 0 0 0 44px;
+  line-height: 10px;
+  display: block;
+}
+
+#story_titles .NB-story-title-indicator:hover .NB-story-title-indicator-text {
+  color: #D0D0D0;
+}
+#story_titles .NB-story-title-indicator .feed_counts_floater .unread_count {
+  padding: 0 3px;
+  margin: 0 2px 0 0;
+  line-height: 10px;
+}
 
 #story_titles .story {
     overflow: hidden;
