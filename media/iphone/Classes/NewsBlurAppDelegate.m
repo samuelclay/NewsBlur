@@ -10,6 +10,7 @@
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
+#import "LoginViewController.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -18,6 +19,7 @@
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize storyDetailViewController;
+@synthesize loginViewController;
 
 @synthesize activeFeed;
 @synthesize activeFeedStories;
@@ -28,14 +30,17 @@
     
     [window addSubview:navigationController.view];
     [window makeKeyAndVisible];
+    LoginViewController *login = [[LoginViewController alloc] init];
+    [navigationController presentModalViewController:login animated:YES];
     
+    [login release];
 	return YES;
 }
-
 - (void)dealloc {
     [feedsViewController release];
     [feedDetailViewController release];
     [storyDetailViewController release];
+    [loginViewController release];
     [navigationController release];
     [window release];
     [activeFeed release];

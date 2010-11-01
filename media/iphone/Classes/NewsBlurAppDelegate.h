@@ -11,6 +11,7 @@
 @class NewsBlurViewController;
 @class FeedDetailViewController;
 @class StoryDetailViewController;
+@class LoginViewController;
 
 @interface NewsBlurAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
@@ -18,6 +19,7 @@
     NewsBlurViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
     StoryDetailViewController *storyDetailViewController;
+    LoginViewController *loginViewController;
     
     NSDictionary * activeFeed;
     NSArray * activeFeedStories;
@@ -29,6 +31,7 @@
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
+@property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
 
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSArray * activeFeedStories;
