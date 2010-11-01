@@ -842,8 +842,8 @@
         load_sortable_feeds: function() {
             var self = this;
             
-            $('ul#feed_list, ul#feed_list ul.folder, li.folder').sortable({
-                connectWith: 'ul.folder, li.folder, ul#feed_list',
+            $('ul.folder').sortable({
+                connectWith: 'ul.folder',
                 items: '.feed, li.folder',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
@@ -862,9 +862,9 @@
                         ui.item.css('height', $('.folder_title', ui.item.parent()).eq(0).outerHeight(true) + 'px');
                     }
                 },
-                sort: function(e, ui) {
-                    $('.feed', ui.placeholder.parents('.folder')).tsort('.feed_title');
-                    $('.folder', ui.placeholder.parents('.folder')).tsort('.folder_title_text');
+                change: function(e, ui) {
+                    $('.feed', ui.placeholder.parents('.folder').eq(0)).tsort('.feed_title');
+                    $('.folder', ui.placeholder.parents('.folder').eq(0)).tsort('.folder_title_text');
                 },
                 stop: function(e, ui) {
                     setTimeout(function() {
@@ -1009,13 +1009,15 @@
             $feeds.unbind('mouseenter').unbind('mouseleave');
             
             $feeds.hover(function() {
-                var $this = $(this);
-                $('.NB-hover', $folder).removeClass('NB-hover');
-                $this.addClass("NB-hover");
-                // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                if ($this.offset().top > $(window).height() - 181) {
-                    $this.addClass('NB-hover-inverse');
-                } 
+                if (!self.$s.$feed_list.hasClass('NB-feed-sorting')) {
+                    var $this = $(this);
+                    $('.NB-hover', $folder).removeClass('NB-hover');
+                    $this.addClass("NB-hover");
+                    // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
+                    if ($this.offset().top > $(window).height() - 181) {
+                        $this.addClass('NB-hover-inverse');
+                    } 
+                }
             }, function() {
                 var $this = $(this);
                 $this.removeClass("NB-hover");

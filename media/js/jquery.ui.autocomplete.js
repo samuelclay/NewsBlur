@@ -1,5 +1,5 @@
 /*
- * jQuery UI Autocomplete 1.8.4
+ * jQuery UI Autocomplete 1.8.5
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -163,6 +163,7 @@ $.widget( "ui.autocomplete", {
 					}
 
 					if ( false !== self._trigger( "select", event, { item: item } ) ) {
+						self.term = item.value;
 						self.element.val( item.value );
 					}
 
@@ -210,7 +211,8 @@ $.widget( "ui.autocomplete", {
 	},
 
 	_initSource: function() {
-		var array,
+		var self = this,
+			array,
 			url;
 		if ( $.isArray(this.options.source) ) {
 			array = this.options.source;
@@ -220,7 +222,15 @@ $.widget( "ui.autocomplete", {
 		} else if ( typeof this.options.source === "string" ) {
 			url = this.options.source;
 			this.source = function( request, response ) {
-				$.getJSON( url, request, response );
+				if (self.xhr) {
+					self.xhr.abort();
+				}
+				self.xhr = $.getJSON( url, request, function( data, status, xhr ) {
+					if ( xhr === self.xhr ) {
+						response( data );
+					}
+					self.xhr = null;
+				});
 			};
 		} else {
 			this.source = this.options.source;
@@ -229,6 +239,10 @@ $.widget( "ui.autocomplete", {
 
 	search: function( value, event ) {
 		value = value != null ? value : this.element.val();
+
+		// always save the actual value, not the one passed as an argument
+		this.term = this.element.val();
+
 		if ( value.length < this.options.minLength ) {
 			return this.close( event );
 		}
@@ -242,10 +256,7 @@ $.widget( "ui.autocomplete", {
 	},
 
 	_search: function( value ) {
-		this.term = this.element
-			.addClass( "ui-autocomplete-loading" )
-			// always save the actual value, not the one passed as an argument
-			.val();
+		this.element.addClass( "ui-autocomplete-loading" );
 
 		this.source( { term: value }, this.response );
 	},
@@ -428,7 +439,7 @@ $.widget("ui.menu", {
 				elementHeight = this.element.height();
 			if (offset < 0) {
 				this.element.attr("scrollTop", scroll + offset);
-			} else if (offset > elementHeight) {
+			} else if (offset >= elementHeight) {
 				this.element.attr("scrollTop", scroll + offset - elementHeight + item.height());
 			}
 		}
