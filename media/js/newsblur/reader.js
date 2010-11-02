@@ -372,7 +372,7 @@
             
             var $feeds = $('.feed', $folder);
             var feeds = _.map($('.feed', $folder), function(o) {
-                return $(o).data('feed_id');
+                return o && $(o).data('feed_id');
             });
             
             return feeds;
@@ -565,6 +565,7 @@
             
             this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
             this.make_feeds_folder($feed_list, folders, 0);
+            this.$s.$feed_list.prepend($.make('li', { className: 'feed NB-empty' }));
             this.$s.$feed_link_loader.fadeOut(250);
 
             if (folders.length) {
@@ -622,7 +623,7 @@
                             this.flags['has_unfetched_feeds'] = true;
                         }
                     }
-                } else if (typeof item == "object") {
+                } else if (typeof item == "object" && item) {
                     for (var o in item) {
                         var folder = item[o];
                         var $folder = $.make('li', { className: 'folder' }, [
@@ -630,7 +631,9 @@
                                 $.make('span', { className: 'folder_title_text' }, o),
                                 $.make('div', { className: 'NB-feedlist-manage-icon' })
                             ]),
-                            $.make('ul', { className: 'folder' })
+                            $.make('ul', { className: 'folder' }, [
+                                $.make('li', { className: 'feed NB-empty' })
+                            ])
                         ]).css({'display': 'none'});
                         var is_collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, o);
 
@@ -843,8 +846,8 @@
             var self = this;
             
             $('ul.folder').sortable({
-                connectWith: 'ul.folder',
-                items: '.feed, li.folder',
+                connectWith: 'ul.folder, #feed_list',
+                items: '.feed',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 3,

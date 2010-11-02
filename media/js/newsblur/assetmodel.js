@@ -139,7 +139,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             var flat_feeds = function(feeds) {
                 var flattened = _.flatten(_.map(feeds, _.values));
                 return _.flatten(_.map(flattened, function(feed) {
-                    if (!_.isNumber(feed)) return flat_feeds(feed);
+                    if (!_.isNumber(feed) && feed) return flat_feeds(feed);
                     else return feed;
                 }));
             };

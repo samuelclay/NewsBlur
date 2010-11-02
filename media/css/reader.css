@@ -359,7 +359,7 @@ a img {
 
 .NB-feedlist li.folder {
     padding: 2px 0 0;
-    margin: 4px 0 0;
+    margin: 0px 0 0;
 }
 
 .NB-feedlist ul.folder {
@@ -448,6 +448,15 @@ a img {
   display: block;
 }
 
+.NB-feedlist .feed.NB-empty {
+  border: none;
+  margin: 0;
+  padding: 0;
+  height: 4px;
+}
+.NB-feedlist.NB-feed-sorting .feed.NB-empty {
+/*  height: 16px;*/
+}
 .feed.NB-feed-sorting,
 .NB-feedlist.NB-feed-sorting {
     cursor: move !important;
