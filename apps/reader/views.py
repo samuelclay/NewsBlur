@@ -116,6 +116,9 @@ def load_feeds(request):
     except UserSubscriptionFolders.DoesNotExist:
         data = dict(feeds=[], folders=[])
         return data
+    except UserSubscriptionFolders.MultipleObjectsReturned:
+        UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
+        folders = UserSubscriptionFolders.objects.get(user=user)
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
