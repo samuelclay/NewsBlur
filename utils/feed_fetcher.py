@@ -308,7 +308,7 @@ class Dispatcher:
                 fetched_feed = None
             except Feed.DoesNotExist, e:
                 logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed)[:30]))
-                return
+                continue
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed.id,))
                 tb = traceback.format_exc()
