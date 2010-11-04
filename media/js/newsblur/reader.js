@@ -2205,8 +2205,8 @@
                     'queue': false
                 });
             } else if (view == 'feed') {
-                var $feed_story = this.find_story_in_feed_view(this.active_story);
                 if (this.active_story) {
+                    var $feed_story = this.find_story_in_feed_view(this.active_story);
                     this.scroll_to_story_in_story_feed(this.active_story, $feed_story, true);
                 }
                 

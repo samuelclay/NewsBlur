@@ -110,7 +110,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                                 $.make('option', { value: 'Australia/Adelaide' }, '(GMT+09:30) Adelaide'),
                                 $.make('option', { value: 'Australia/Darwin' }, '(GMT+09:30) Darwin'),
                                 $.make('option', { value: 'Australia/Brisbane' }, '(GMT+10:00) Brisbane'),
-                                $.make('option', { value: 'Australia/Hobart' }, '(GMT+10:00) Hobart'),
+                                $.make('option', { value: 'Australia/Sydney' }, '(GMT+10:00) Sydney, Hobart'),
                                 $.make('option', { value: 'Asia/Vladivostok' }, '(GMT+10:00) Vladivostok'),
                                 $.make('option', { value: 'Australia/Lord_Howe' }, '(GMT+10:30) Lord Howe Island'),
                                 $.make('option', { value: 'Etc/GMT-11' }, '(GMT+11:00) Solomon Is., New Caledonia'),
