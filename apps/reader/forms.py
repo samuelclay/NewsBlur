@@ -19,7 +19,7 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        username = self.cleaned_data.get('username').lower()
+        username = self.cleaned_data.get('username', '').lower()
         password = self.cleaned_data.get('password', '')
         
         user = User.objects.filter(Q(username__iexact=username) | Q(email=username))

@@ -33,7 +33,6 @@ $(document).ready(function() {
           {% if login_form.errors %}
             {% for field, error in login_form.errors.items %}
               {{ error|safe }}
-              <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password">Forgot password?</a>
             {% endfor %}
           {% endif %}
       
@@ -43,7 +42,15 @@ $(document).ready(function() {
               {{ login_form.username }}
             </div>
             <div>
-              <div class="NB-signup-optional">Optional</div>
+              <div class="NB-signup-optional">
+                {% if login_form.errors %}
+                  {% for field, error in login_form.errors.items %}
+                    <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password" class="NB-splash-link">Forgot password?</a>
+                  {% endfor %}
+                {% else %}
+                  Optional
+                {% endif %}
+              </div>
               {{ login_form.password.label_tag }}
               {{ login_form.password }}
             </div>
