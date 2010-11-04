@@ -846,8 +846,8 @@
             var self = this;
             
             this.$s.$feed_list.sortable({
-                // connectWith: 'ul.folder, #feed_list',
-                items: '.feed, li.folder',
+                connectWith: '#feed_list',
+                items: 'ul.folder > .feed',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 3,
@@ -868,8 +868,8 @@
                         NEWSBLUR.log(['start', ui.item, ui.placeholder]);
                     } else {
                         ui.placeholder.html(ui.item.children().clone());
-                        self.$s.$feed_list.sortable('option', 'items', '.feed:not(ul.folder)');
-                        self.$s.$feed_list.sortable('option', 'cancel', '.folder_title,li.folder');
+                        // self.$s.$feed_list.sortable('option', 'items', '.feed:not(ul.folder)');
+                        // self.$s.$feed_list.sortable('option', 'cancel', '.folder_title,li.folder');
                     }
                 },
                 change: function(e, ui) {
@@ -885,8 +885,8 @@
                     $('.feed', e.target).tsort('.feed_title');
                     $('.folder', e.target).tsort('.folder_title_text');
                     self.save_feed_order();
-                    self.$s.$feed_list.sortable('option', 'items', '.feed,.folder_title');
-                    self.$s.$feed_list.sortable('option', 'cancel', '');
+                    // self.$s.$feed_list.sortable('option', 'items', '.feed,.folder_title');
+                    // self.$s.$feed_list.sortable('option', 'cancel', '');
                     ui.item.css({'backgroundColor': '#D7DDE6'})
                            .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                            .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
