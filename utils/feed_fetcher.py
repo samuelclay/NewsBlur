@@ -9,7 +9,7 @@ from utils import feedparser
 from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit
+from utils.feed_functions import timelimit, TimeoutError
 import time
 import datetime
 import traceback
@@ -257,8 +257,6 @@ class Dispatcher:
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        
         delta = None
         current_process = multiprocessing.current_process()
         identity = "X"
@@ -290,14 +288,10 @@ class Dispatcher:
                             feed.fetched_once = True
                             feed.save()
                         MUserStory.delete_old_stories(feed_id=feed.pk)
-                        user_subs = UserSubscription.objects.filter(feed=feed, active=True)
-                        logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (unicode(feed)[:30], user_subs.count()))
-                        stories_db = MStory.objects(story_feed_id=feed.pk,
-                                                    story_date__gte=UNREAD_CUTOFF)
-                        for sub in user_subs:
-                            cache.delete('usersub:%s' % sub.user_id)
-                            silent = False if self.options['verbose'] >= 2 else True
-                            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+                        try:
+                            self.count_unreads_for_subscribers(feed)
+                        except TimeoutError:
+                            logging.debug('   ---> [%-30s] Unread count took too long...' % (unicode(feed)[:30],))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)
@@ -354,7 +348,20 @@ class Dispatcher:
             seconds_taken=time_taken.seconds
         )
         history.save()
-
+    
+    @timelimit(60)
+    def count_unreads_for_subscribers(self, feed):
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        user_subs = UserSubscription.objects.filter(feed=feed, active=True).order_by('-last_read_date')
+        logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (
+                      unicode(feed)[:30], user_subs.count()))
+        stories_db = MStory.objects(story_feed_id=feed.pk,
+                                    story_date__gte=UNREAD_CUTOFF)
+        for sub in user_subs:
+            cache.delete('usersub:%s' % sub.user_id)
+            silent = False if self.options['verbose'] >= 2 else True
+            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+            
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
         """
