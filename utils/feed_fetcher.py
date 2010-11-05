@@ -349,7 +349,7 @@ class Dispatcher:
         )
         history.save()
     
-    @timelimit(60)
+    @timelimit(30)
     def count_unreads_for_subscribers(self, feed):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         user_subs = UserSubscription.objects.filter(feed=feed, active=True).order_by('-last_read_date')
