@@ -599,7 +599,7 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 4.5 hours
         #   10 updates = 55 minutes
-        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.55) 
+        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.15) 
                                                    * (updates_per_day**.75)))
         
         # Lots of subscribers = lots of updates
@@ -608,8 +608,9 @@ class Feed(models.Model):
         # 7 hours for 2 subscribers.
         # 3 hours for 3 subscribers.
         # 25 min for 10 subscribers.
-        subscriber_bonus = 24 * 60 / max(.167, max(0, self.num_subscribers)**1.75)
-        subscriber_bonus = subscriber_bonus / max(1, (5 * self.premium_subscribers))
+        subscriber_bonus = 24 * 60 / max(.167, max(0, self.num_subscribers)**1.55)
+        if self.premium_subscribers > 0:
+            subscriber_bonus = subscriber_bonus / 5
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -619,7 +620,7 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
+        total = max(6, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
