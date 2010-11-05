@@ -446,11 +446,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         
         NEWSBLUR.Preferences[preference] = value;
-        if (NEWSBLUR.Globals.is_authenticated) {
-            var preferences = {};
-            preferences[preference] = value;
-            this.make_request('/profile/set_preference', preferences, callback, null);
-        }
+        var preferences = {};
+        preferences[preference] = value;
+        this.make_request('/profile/set_preference', preferences, callback, null);
     },
     
     save_preferences: function(preferences, callback) {
@@ -458,9 +456,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             NEWSBLUR.Preferences[preference] = value;
         });
         
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/profile/set_preference', preferences, callback, null);
-        }
+        this.make_request('/profile/set_preference', preferences, callback, null);
     },
     
     view_setting: function(feed_id, feed_view_setting, callback) {
@@ -469,12 +465,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         
         NEWSBLUR.Preferences.view_settings[feed_id+''] = feed_view_setting;
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/profile/set_view_setting', {
-                'feed_id': feed_id+'',
-                'feed_view_setting': feed_view_setting
-            }, callback, null);
-        }
+        this.make_request('/profile/set_view_setting', {
+            'feed_id': feed_id+'',
+            'feed_view_setting': feed_view_setting
+        }, callback, null);
     },
     
     collapsed_folders: function(folder_title, is_collapsed, callback) {
@@ -488,19 +482,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             NEWSBLUR.Preferences.collapsed_folders = _.without(folders, folder_title);
             changed = true;
         }
-        if (NEWSBLUR.Globals.is_authenticated && changed) {
-            this.make_request('/profile/set_collapsed_folders', {
-                'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
-            }, callback, null);
-        }
+        this.make_request('/profile/set_collapsed_folders', {
+            'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
+        }, callback, null);
     },
     
     save_mark_read: function(days, callback) {
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
+        this.make_request('/reader/mark_all_as_read', {'days': days}, callback);
     },
     
     get_features_page: function(page, callback) {
@@ -508,11 +496,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     save_feed_order: function(folders, callback) {
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/save_feed_order', {'folders': $.toJSON(folders)}, callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
+        this.make_request('/reader/save_feed_order', {'folders': $.toJSON(folders)}, callback);
     },
     
     get_feed_statistics: function(feed_id, callback) {

@@ -2,6 +2,7 @@ import urlparse
 from utils import log as logging
 import oauth2 as oauth
 from django.contrib.sites.models import Site
+from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -109,7 +110,11 @@ def reader_callback(request):
     # logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (request.user, token, access_token))
     user_token.access_token = access_token.get('oauth_token')
     user_token.access_token_secret = access_token.get('oauth_token_secret')
-    user_token.save()
+    try:
+        user_token.save()
+    except IntegrityError:
+        logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
+        return HttpResponseRedirect(reverse('google-reader-authorize'))
     
     # Fetch imported feeds on next page load
     request.session['import_from_google_reader'] = True

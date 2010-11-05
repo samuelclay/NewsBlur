@@ -110,7 +110,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                                 $.make('option', { value: 'Australia/Adelaide' }, '(GMT+09:30) Adelaide'),
                                 $.make('option', { value: 'Australia/Darwin' }, '(GMT+09:30) Darwin'),
                                 $.make('option', { value: 'Australia/Brisbane' }, '(GMT+10:00) Brisbane'),
-                                $.make('option', { value: 'Australia/Hobart' }, '(GMT+10:00) Hobart'),
+                                $.make('option', { value: 'Australia/Sydney' }, '(GMT+10:00) Sydney, Hobart'),
                                 $.make('option', { value: 'Asia/Vladivostok' }, '(GMT+10:00) Vladivostok'),
                                 $.make('option', { value: 'Australia/Lord_Howe' }, '(GMT+10:30) Lord Howe Island'),
                                 $.make('option', { value: 'Etc/GMT-11' }, '(GMT+11:00) Solomon Is., New Caledonia'),
@@ -167,6 +167,21 @@ NEWSBLUR.ReaderPreferences.prototype = {
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
                         'Open links'
+                    ])
+                ]),
+                $.make('div', { className: 'NB-preference NB-preference-hidereadfeeds' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidereadfeeds-1', type: 'radio', name: 'hide_read_feeds', value: 0 }),
+                            $.make('label', { 'for': 'NB-preference-hidereadfeeds-1' }, 'Show everything')
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidereadfeeds-2', type: 'radio', name: 'hide_read_feeds', value: 1 }),
+                            $.make('label', { 'for': 'NB-preference-hidereadfeeds-2' }, 'Hide sites with no unread stories')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Site sidebar'
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
@@ -226,8 +241,14 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
-        $('input[name=new_window]', this.$modal).each(function() {
+         $('input[name=new_window]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=hide_read_feeds]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.hide_read_feeds) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -258,6 +279,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
         this.model.save_preferences(form, function() {
+            NEWSBLUR.reader.switch_feed_view_unread_view();
             $.modal.close();
         });
     },

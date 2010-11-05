@@ -116,6 +116,9 @@ def load_feeds(request):
     except UserSubscriptionFolders.DoesNotExist:
         data = dict(feeds=[], folders=[])
         return data
+    except UserSubscriptionFolders.MultipleObjectsReturned:
+        UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
+        folders = UserSubscriptionFolders.objects.get(user=user)
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
@@ -574,6 +577,7 @@ def load_features(request):
     } for f in features]
     return features
 
+@ajax_login_required
 @json.json_view
 def save_feed_order(request):
     folders = request.POST.get('folders')

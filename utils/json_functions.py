@@ -5,7 +5,7 @@ from django.utils.encoding import force_unicode
 from django.utils import simplejson as json
 from decimal import Decimal
 from django.core import serializers
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
 import sys
@@ -96,6 +96,8 @@ def json_view(func):
         except KeyboardInterrupt:
             # Allow keyboard interrupts through for debugging.
             raise
+        except Http404:
+            raise Http404
         except Exception, e:
             # Mail the admins with the error
             exc_info = sys.exc_info()

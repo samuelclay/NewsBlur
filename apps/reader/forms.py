@@ -9,8 +9,10 @@ from utils import log as logging
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username or Email"), max_length=30,
+                               widget=forms.TextInput(attrs={'tabindex': 1}),
                                error_messages={'required': 'Please enter a username.'})
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput,
+    password = forms.CharField(label=_("Password"),
+                               widget=forms.PasswordInput(attrs={'tabindex': 2}),
                                required=False)    
                                # error_messages={'required': 'Please enter a password.'})
 
@@ -19,7 +21,7 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        username = self.cleaned_data.get('username').lower()
+        username = self.cleaned_data.get('username', '').lower()
         password = self.cleaned_data.get('password', '')
         
         user = User.objects.filter(Q(username__iexact=username) | Q(email=username))
