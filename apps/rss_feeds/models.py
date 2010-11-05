@@ -772,7 +772,7 @@ class MStory(mongo.Document):
     
     meta = {
         'collection': 'stories',
-        'indexes': [('story_feed_id', '-story_date')],
+        'indexes': ['story_date', ('story_feed_id', '-story_date')],
         'ordering': ['-story_date'],
         'allow_inheritance': False,
     }
