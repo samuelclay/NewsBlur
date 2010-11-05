@@ -577,6 +577,7 @@ def load_features(request):
     } for f in features]
     return features
 
+@ajax_login_required
 @json.json_view
 def save_feed_order(request):
     folders = request.POST.get('folders')

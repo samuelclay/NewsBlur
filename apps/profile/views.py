@@ -14,7 +14,7 @@ from apps.reader.models import UserSubscription
 
 SINGLE_FIELD_PREFS = ('timezone',)
 
-@login_required
+@ajax_login_required
 @require_POST
 @json.json_view
 def set_preference(request):
@@ -34,7 +34,7 @@ def set_preference(request):
     response = dict(code=code)
     return response
 
-@login_required
+@ajax_login_required
 @json.json_view
 def get_preference(request):
     code = 1
@@ -44,7 +44,7 @@ def get_preference(request):
     response = dict(code=code, payload=preferences.get(preference_name))
     return response
     
-@login_required
+@ajax_login_required
 @require_POST
 @json.json_view
 def set_view_setting(request):
@@ -60,7 +60,7 @@ def set_view_setting(request):
     response = dict(code=code)
     return response
 
-@login_required
+@ajax_login_required
 @json.json_view
 def get_view_setting(request):
     code = 1
@@ -71,7 +71,7 @@ def get_view_setting(request):
     return response
     
 
-@login_required
+@ajax_login_required
 @require_POST
 @json.json_view
 def set_collapsed_folders(request):

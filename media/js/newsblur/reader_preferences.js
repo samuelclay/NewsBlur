@@ -169,6 +169,21 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Open links'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-hidereadfeeds' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidereadfeeds-1', type: 'radio', name: 'hide_read_feeds', value: 0 }),
+                            $.make('label', { 'for': 'NB-preference-hidereadfeeds-1' }, 'Show everything')
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidereadfeeds-2', type: 'radio', name: 'hide_read_feeds', value: 1 }),
+                            $.make('label', { 'for': 'NB-preference-hidereadfeeds-2' }, 'Hide sites with no unread stories')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Site sidebar'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
                     ' or ',
@@ -226,8 +241,14 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
-        $('input[name=new_window]', this.$modal).each(function() {
+         $('input[name=new_window]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=hide_read_feeds]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.hide_read_feeds) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -258,6 +279,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
         this.model.save_preferences(form, function() {
+            NEWSBLUR.reader.switch_feed_view_unread_view();
             $.modal.close();
         });
     },
