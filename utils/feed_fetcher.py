@@ -375,7 +375,6 @@ class Dispatcher:
         if self.options['single_threaded']:
             self.process_feed_wrapper(self.feeds_queue[0])
         else:
-            connection.close()
             for i in range(self.num_threads):
                 feed_queue = self.feeds_queue[i]
                 self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper,
