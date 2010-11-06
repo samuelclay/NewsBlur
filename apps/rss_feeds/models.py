@@ -367,7 +367,7 @@ class Feed(models.Model):
                     elif existing_story.get('story_content_z'):
                         original_content = zlib.decompress(existing_story.get('story_content_z'))
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
-                    if len(story_content) > 10:
+                    if story_content and len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
                         story_content_diff = diff.getDiff()
                     else:
