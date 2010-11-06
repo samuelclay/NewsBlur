@@ -588,8 +588,8 @@ class Feed(models.Model):
     def get_next_scheduled_update(self):
         # Use stories per month to calculate next feed update
         updates_per_day = self.stories_last_month / 30.0
-        if updates_per_day < 1 and self.num_subscribers > 2:
-            updates_per_day = 1
+        # if updates_per_day < 1 and self.num_subscribers > 2:
+        #     updates_per_day = 1
         # 0 updates per day = 24 hours
         # 1 subscriber:
         #   1 update per day = 6 hours
