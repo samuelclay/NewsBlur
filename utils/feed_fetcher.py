@@ -280,7 +280,7 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
-                    # feed = self.refresh_feed(feed_id)
+                    feed = self.refresh_feed(feed_id)
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
@@ -315,7 +315,7 @@ class Dispatcher:
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
             
-            # feed = self.refresh_feed(feed_id)
+            feed = self.refresh_feed(feed_id)
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and
@@ -326,7 +326,7 @@ class Dispatcher:
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
-            # feed = self.refresh_feed(feed_id)
+            feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
             
             feed.last_load_time = max(1, delta.seconds)
