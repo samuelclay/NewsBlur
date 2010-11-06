@@ -658,6 +658,10 @@ a img {
   display: block;
 }
 
+.NB-feedlist-hide-read-feeds .feed.NB-empty {
+  display: block;
+}
+
 /* ====================== */
 /* = Feeds Progress Bar = */
 /* ====================== */

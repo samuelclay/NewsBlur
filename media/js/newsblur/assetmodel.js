@@ -124,10 +124,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     mark_feed_as_read: function(feed_id, callback) {
         var self = this;
+        var feed_ids = _.isArray(feed_id) 
+                       ? _.select(feed_id, function(f) { return f; })
+                       : [feed_id];
         
         this.make_request('/reader/mark_feed_as_read',
             {
-                feed_id: feed_id
+                feed_id: feed_ids
             }, callback
         );
     },
@@ -550,7 +553,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     save_feed_chooser: function(approved_feeds, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/save_feed_chooser', {
-                'approved_feeds': approved_feeds
+                'approved_feeds': _.select(approved_feeds, function(f) { return f; })
             }, callback);
         } else {
             if ($.isFunction(callback)) callback();

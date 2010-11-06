@@ -405,7 +405,10 @@ def mark_feed_as_read(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     code = 0
     for feed_id in feed_ids:
-        feed = Feed.objects.get(id=feed_id)
+        try:
+            feed = Feed.objects.get(id=feed_id)
+        except Feed.DoesNotExist:
+            continue
         code = 0
     
         us = UserSubscription.objects.get(feed=feed, user=request.user)

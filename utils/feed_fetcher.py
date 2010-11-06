@@ -6,7 +6,7 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
-from django.db import IntegrityError
+from django.db import IntegrityError, connection
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
@@ -42,7 +42,7 @@ class FetchFeed:
         self.options = options
         self.fpf = None
     
-    @timelimit(20)
+    @timelimit(30)
     def fetch(self):
         """ 
         Uses feedparser to download the feed. Will be parsed later.
@@ -83,7 +83,6 @@ class ProcessFeed:
         self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
-        self.lock = multiprocessing.Lock()
         self.entry_trans = {
             ENTRY_NEW:'new',
             ENTRY_UPDATED:'updated',
@@ -218,7 +217,7 @@ class ProcessFeed:
                       unicode(self.feed)[:30], 
                       u' '.join(u'%s=%d' % (self.entry_trans[key],
                               ret_values[key]) for key in self.entry_keys),))
-        self.feed.update_all_statistics(lock=self.lock)
+        self.feed.update_all_statistics()
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
@@ -271,9 +270,9 @@ class Dispatcher:
             }
             start_time = datetime.datetime.utcnow()
 
-            feed = self.refresh_feed(feed_id)
-            
             try:
+                feed = self.refresh_feed(feed_id)
+                
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
@@ -281,7 +280,7 @@ class Dispatcher:
                     pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     
-                    feed = self.refresh_feed(feed_id)
+                    # feed = self.refresh_feed(feed_id)
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
                         if not feed.fetched_once:
@@ -301,18 +300,22 @@ class Dispatcher:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
                 fetched_feed = None
             except Feed.DoesNotExist, e:
-                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed)[:30]))
+                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed_id)[:30]))
                 continue
+            except TimeoutError, e:
+                logging.debug('   ---> [%-30s] Feed fetch timed out...' % (unicode(feed)[:30]))
+                feed.save_feed_history(505, e.msg, e.fp.read())
+                fetched_feed = None
             except Exception, e:
-                logging.debug('[%d] ! -------------------------' % (feed.id,))
+                logging.debug('[%d] ! -------------------------' % (feed_id,))
                 tb = traceback.format_exc()
                 logging.debug(tb)
-                logging.debug('[%d] ! -------------------------' % (feed.id,))
+                logging.debug('[%d] ! -------------------------' % (feed_id,))
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
             
-            feed = self.refresh_feed(feed_id)
+            # feed = self.refresh_feed(feed_id)
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and
@@ -323,7 +326,7 @@ class Dispatcher:
                 page_importer = PageImporter(feed.feed_link, feed)
                 page_importer.fetch_page()
 
-            feed = self.refresh_feed(feed_id)
+            # feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
             
             feed.last_load_time = max(1, delta.seconds)
@@ -372,6 +375,7 @@ class Dispatcher:
         if self.options['single_threaded']:
             self.process_feed_wrapper(self.feeds_queue[0])
         else:
+            connection.close()
             for i in range(self.num_threads):
                 feed_queue = self.feeds_queue[i]
                 self.workers.append(multiprocessing.Process(target=self.process_feed_wrapper,

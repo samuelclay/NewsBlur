@@ -61,7 +61,7 @@ class Feed(models.Model):
             self.save()
         return self.feed_title
 
-    def save(self, lock=None, *args, **kwargs):
+    def save(self, *args, **kwargs):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
         if not self.last_update:
@@ -84,11 +84,11 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             pass
     
-    def update_all_statistics(self, lock=None):
-        self.count_subscribers(lock=lock)
-        self.count_stories(lock=lock)
-        self.save_popular_authors(lock=lock)
-        self.save_popular_tags(lock=lock)
+    def update_all_statistics(self):
+        self.count_subscribers()
+        self.count_stories()
+        self.save_popular_authors()
+        self.save_popular_tags()
     
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
@@ -177,7 +177,7 @@ class Feed(models.Model):
             self.exception_code = 0
             self.save()
     
-    def count_subscribers(self, verbose=False, lock=None):
+    def count_subscribers(self, verbose=False):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=30)
         from apps.reader.models import UserSubscription
         
@@ -198,7 +198,7 @@ class Feed(models.Model):
         )
         self.premium_subscribers = premium_subs.count()
         
-        self.save(lock=lock)
+        self.save()
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -211,23 +211,23 @@ class Feed(models.Model):
                     self.feed_title,
                 ),
 
-    def count_stories(self, verbose=False, lock=None):
-        self.save_feed_stories_last_month(verbose, lock)
-        # self.save_feed_story_history_statistics(lock)
+    def count_stories(self, verbose=False):
+        self.save_feed_stories_last_month(verbose)
+        # self.save_feed_story_history_statistics()
         
-    def save_feed_stories_last_month(self, verbose=False, lock=None):
+    def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
                                             story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        self.save(lock=lock)
+        self.save()
             
         if verbose:
             print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
                                                              self.stories_last_month)
     
-    def save_feed_story_history_statistics(self, lock=None, current_counts=None):
+    def save_feed_story_history_statistics(self, current_counts=None):
         """
         Fills in missing months between earlier occurances and now.
         
@@ -294,7 +294,7 @@ class Feed(models.Model):
             self.average_stories_per_month = 0
         else:
             self.average_stories_per_month = total / month_count
-        self.save(lock)
+        self.save()
         
         
     def update(self, force=False, single_threaded=True):
@@ -400,7 +400,7 @@ class Feed(models.Model):
             
         return ret_values
         
-    def save_popular_tags(self, feed_tags=None, lock=None):
+    def save_popular_tags(self, feed_tags=None):
         if not feed_tags:
             try:
                 all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
@@ -418,14 +418,14 @@ class Feed(models.Model):
         #       Tumblr writers.
         if len(popular_tags) < 1024:
             self.popular_tags = popular_tags
-            self.save(lock=lock)
+            self.save()
             return
 
         tags_list = json.decode(feed_tags) if feed_tags else []
         if len(tags_list) > 1:
             self.save_popular_tags(tags_list[:-1])
     
-    def save_popular_authors(self, feed_authors=None, lock=None):
+    def save_popular_authors(self, feed_authors=None):
         if not feed_authors:
             authors = defaultdict(int)
             for story in MStory.objects(story_feed_id=self.pk).only('story_author_name'):
@@ -437,11 +437,11 @@ class Feed(models.Model):
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
             self.popular_authors = popular_authors
-            self.save(lock=lock)
+            self.save()
             return
 
         if len(feed_authors) > 1:
-            self.save_popular_authors(feed_authors=feed_authors[:-1], lock=lock)
+            self.save_popular_authors(feed_authors=feed_authors[:-1])
             
     def trim_feed(self):
         from apps.reader.models import MUserStory
@@ -626,7 +626,7 @@ class Feed(models.Model):
         
         return total, random_factor
         
-    def set_next_scheduled_update(self, lock=None):
+    def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update()
 
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
@@ -634,12 +634,12 @@ class Feed(models.Model):
             
         self.next_scheduled_update = next_scheduled_update
 
-        self.save(lock=lock)
+        self.save()
 
-    def schedule_feed_fetch_immediately(self, lock=None):
+    def schedule_feed_fetch_immediately(self):
         self.next_scheduled_update = datetime.datetime.utcnow()
 
-        self.save(lock=lock)
+        self.save()
         
     def calculate_collocations_story_content(self,
                                              collocation_measures=TrigramAssocMeasures,
