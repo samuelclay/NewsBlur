@@ -32,6 +32,8 @@ def load_feed_statistics(request):
     stats['subscriber_count'] = feed.num_subscribers
     stats['stories_last_month'] = feed.stories_last_month
     stats['last_load_time'] = feed.last_load_time
+    stats['premium_subscribers'] = feed.premium_subscribers
+    stats['active_subscribers'] = feed.active_subscribers
     
     logging.info(" ---> [%s] Statistics: %s" % (request.user, feed))
     
