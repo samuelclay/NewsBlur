@@ -486,6 +486,9 @@ def add_url(request):
         user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
+        
+        if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
+            feed.update()
     
     return dict(code=code, message=message)
 
