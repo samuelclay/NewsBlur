@@ -255,10 +255,11 @@
             return $story;
         },
         
-        find_story_in_story_iframe: function(story, $iframe) {
+        find_story_in_story_iframe: function(story) {
             if (!story) return $([]);
             
-            if (!$iframe) $iframe = this.$s.$story_iframe.contents();
+            this.cache.iframe['iframe'] = this.cache.iframe['iframe'] || this.$s.$story_iframe.contents();
+            var $iframe = this.cache.iframe['iframe'];
             var $stories = $([]);
             
             if (this.flags.iframe_story_locations_fetched || story.id in this.cache.iframe_stories) {
@@ -293,7 +294,9 @@
             
             if (!$stories.length) {
                 // Not found straight, so check all header tags with styling children removed.
-                $('h1,h2,h3,h4,h5,h6', $iframe).filter(':visible').each(function() {
+                this.cache.iframe['headers'] = this.cache.iframe['headers'] 
+                                               || $('h1,h2,h3,h4,h5,h6', $iframe).filter(':visible');
+                this.cache.iframe['headers'].each(function() {
                     pos = $(this).text().replace(/&nbsp;|[^a-z0-9-,]/gi, '')
                                  .indexOf(title);
                     // NEWSBLUR.log(['Search headers', title, pos, $(this), $(this).text()]);
@@ -306,7 +309,10 @@
             
             if (!$stories.length) {
                 // Still not found, so check Tumblr style .post's
-                $('.entry,.post,.postProp,#postContent,.article', $iframe).filter(':visible').each(function() {
+                this.cache.iframe['posts'] = this.cache.iframe['posts'] 
+                                             || $('.entry,.post,.postProp,#postContent,.article',
+                                                  $iframe).filter(':visible');
+                this.cache.iframe['posts'].each(function() {
                     pos = $(this).text().replace(/&nbsp;|[^a-z0-9-,]/gi, '')
                                  .indexOf(title);
                     // NEWSBLUR.log(['Search .post', title, pos, $(this), $(this).text().replace(/&nbsp;|[^a-z0-9-,]/gi, '')]);
@@ -1083,6 +1089,7 @@
             });
             
             $.extend(this.cache, {
+                'iframe': {},
                 'iframe_stories': {},
                 'feed_view_stories': {},
                 'iframe_story_positions': {},
@@ -1090,7 +1097,9 @@
                 'iframe_story_positions_keys': [],
                 'feed_view_story_positions_keys': [],
                 'previous_stories_stack': [],
-                'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10)
+                'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10),
+                'prefetch_last_story': 0,
+                'prefetch_iteration': 0
             });
             
             this.active_feed = null;
@@ -1376,6 +1385,8 @@
             var self = this;
             var stories = this.model.stories;
             var $iframe = this.$s.$story_iframe.contents();
+            this.cache.iframe['iframe'] = $iframe;
+            this.cache['prefetch_iteration'] += 1;
             
             // NEWSBLUR.log(['Prefetching', !this.flags['iframe_fetching_story_locations']]);
             if (!this.flags['iframe_fetching_story_locations'] 
@@ -1385,17 +1396,40 @@
                     .unbind('mousemove.reader')
                     .bind('mousemove.reader', $.rescope(this.handle_mousemove_iframe_view, this));
                     
-                $.extend(this.cache, {
-                    'iframe_stories': {},
-                    'iframe_story_positions': {},
-                    'iframe_story_positions_keys': []
-                });
-            
+                var last_story_index = this.cache.iframe_story_positions_keys.length;
+                var last_story_position = _.last(this.cache.iframe_story_positions_keys);
+                var last_story = this.cache.iframe_story_positions[last_story_position];
+                var $last_story;
+                if (last_story) {
+                    $last_story = this.find_story_in_story_iframe(last_story);
+                }
+                // NEWSBLUR.log(['last_story', last_story_index, last_story_position, last_story, $last_story]);
+                var last_story_same_position;
+                if ($last_story && $last_story.length) {
+                    last_story_same_position = parseInt($last_story.offset().top, 10)==last_story_position;
+                    if (!last_story_same_position) {
+                        $.extend(this.cache, {
+                            'iframe_stories': {},
+                            'iframe_story_positions': {},
+                            'iframe_story_positions_keys': []
+                        });
+                    }
+                }
+                
                 for (var s in stories) {
+                    if (last_story_same_position && parseInt(s, 10) < last_story_index) continue; 
                     var story = stories[s];
-                    var $story = this.find_story_in_story_iframe(story, $iframe);
-                    // NEWSBLUR.log(['Pre-fetching', $story, $iframe, story.story_title]);
-                    if (!$story || !$story.length || this.flags['iframe_fetching_story_locations']) break;
+                    var $story = this.find_story_in_story_iframe(story);
+                    // NEWSBLUR.log(['Pre-fetching', parseInt(s, 10), last_story_index, last_story_same_position, $story, story.story_title]);
+                    if (!$story || 
+                        !$story.length || 
+                        this.flags['iframe_fetching_story_locations'] ||
+                        parseInt($story.offset().top, 10) > this.cache['prefetch_iteration']*3000) {
+                        if ($story && $story.length) {
+                            NEWSBLUR.log(['Prefetch break on position too far', parseInt($story.offset().top, 10), this.cache['prefetch_iteration']*3000]);
+                        }
+                        break;
+                    }
                 }
             }
             
@@ -1427,7 +1461,7 @@
             }
             
             if (story && story['story_feed_id'] == this.active_feed) {
-                var $story = this.find_story_in_story_iframe(story, $iframe);
+                var $story = this.find_story_in_story_iframe(story);
                 // NEWSBLUR.log(['Prefetching story', s, story.story_title, $story]);
                 
                 setTimeout(function() {
