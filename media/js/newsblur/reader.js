@@ -847,7 +847,7 @@
             
             this.$s.$feed_list.sortable({
                 connectWith: '#feed_list',
-                items: 'ul.folder > .feed',
+                items: '.feed',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 3,
