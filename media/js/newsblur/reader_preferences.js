@@ -158,11 +158,17 @@ NEWSBLUR.ReaderPreferences.prototype = {
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
-                            $.make('label', { 'for': 'NB-preference-window-1' }, 'Normally')
+                            $.make('label', { 'for': 'NB-preference-window-1' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_view_gallery.png' }),
+                                'Normally'
+                            ])
                         ]),
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-window-2', type: 'radio', name: 'new_window', value: 1 }),
-                            $.make('label', { 'for': 'NB-preference-window-2' }, 'In a new window')
+                            $.make('label', { 'for': 'NB-preference-window-2' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_side_expand.png' }),
+                                'In a new window'
+                            ])
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [

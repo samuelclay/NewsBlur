@@ -3538,3 +3538,6 @@ background: transparent;
 .NB-modal-preferences .NB-preference-window input {
   margin-top: 4px;
 }
+.NB-modal-preferences .NB-preference-window label img {
+  vertical-align: middle;
+  margin: 0 6px 0 2px;

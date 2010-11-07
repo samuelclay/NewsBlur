@@ -595,7 +595,7 @@ class Feed(models.Model):
         #   1 update per day = 6 hours
         #   2 updates = 3.5 hours
         #   4 updates = 2 hours
-        #   10 updates = 80 minutes
+        #   10 updates = 1 hour
         # 2 subscribers:
         #   1 update per day = 4.5 hours
         #   10 updates = 55 minutes
