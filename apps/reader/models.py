@@ -200,7 +200,7 @@ class MUserStory(mongo.Document):
     
     meta = {
         'collection': 'userstories',
-        'indexes': ['feed_id', ('user_id', 'feed_id')],
+        'indexes': [('user_id', 'feed_id'), ('feed_id', 'read_date')],
         'allow_inheritance': False,
     }
     

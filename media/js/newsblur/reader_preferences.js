@@ -190,6 +190,22 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Site sidebar'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-password' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', { className: 'NB-preference-option' }, [
+                            $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
+                            $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-option' }, [
+                            $.make('label', { 'for': 'NB-preference-password-new' }, 'New password'),
+                            $.make('input', { id: 'NB-preference-password-new', type: 'password', name: 'new_password', value: '' })
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Change Password',
+                        $.make('div', { className: 'NB-preference-error'})
+                    ])
+                ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
                     ' or ',
@@ -273,7 +289,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
     serialize_preferences: function() {
         var preferences = {};
 
-        $('input[type=radio]:checked, select', this.$modal).each(function() {
+        $('input[type=radio]:checked, select, input[type=password]', this.$modal).each(function() {
             preferences[$(this).attr('name')] = $(this).val();
         });
 
@@ -281,10 +297,17 @@ NEWSBLUR.ReaderPreferences.prototype = {
     },
     
     save_preferences: function() {
+        var self = this;
         var form = this.serialize_preferences();
+        $('.NB-preference-error', this.$modal).text('');
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
-        this.model.save_preferences(form, function() {
+        this.model.save_preferences(form, function(data) {
+            NEWSBLUR.log(['data', data]);
+            if (data.code == -1) {
+                $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
+                self.disable_save();
+            }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             $.modal.close();
         });
@@ -305,9 +328,17 @@ NEWSBLUR.ReaderPreferences.prototype = {
     },
     
     handle_change: function() {
-        $('input[type=radio],select', this.$modal).bind('change', _.bind(function() {
-            $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save Preferences');
-        }, this));
+        
+        $('input[type=radio],select,input[type=password]', this.$modal).bind('change', _.bind(this.enable_save, this));
+        $('input[type=password]', this.$modal).bind('keydown', _.bind(this.enable_save, this));
+    },
+    
+    enable_save: function() {
+        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save Preferences');
+    },
+    
+    disable_save: function() {
+        $('input[type=submit]', this.$modal).addAttr('disabled').addClass('NB-disabled').val('Change what you like above...');
     }
     
 };

@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.core.mail import mail_admins
+from django.contrib.auth import authenticate
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
 from apps.feed_import.models import queue_new_feeds
@@ -62,3 +63,12 @@ def paypal_signup(sender, **kwargs):
     user = User.objects.get(username=ipn_obj.custom)
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
+
+def change_password(user, old_password, new_password):
+    user_db = authenticate(username=user.username, password=old_password)
+    if user_db is None:
+        return -1
+    else:
+        user_db.set_password(new_password)
+        user_db.save()
+        return 1

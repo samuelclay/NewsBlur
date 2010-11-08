@@ -3524,6 +3524,12 @@ background: transparent;
   float: left;
   cursor: pointer;
 }
+.NB-modal-preferences .NB-preference .NB-preference-error {
+  color: #83210A;
+  font-size: 11px;
+  margin-top: 4px;
+  font-weight: bold;
+}
 
 .NB-modal-preferences .NB-preference-view {
   padding-bottom: 4px;
@@ -3541,3 +3547,24 @@ background: transparent;
 .NB-modal-preferences .NB-preference-window label img {
   vertical-align: middle;
   margin: 0 6px 0 2px;
+}
+.NB-modal-preferences .NB-preference-password .NB-preference-option {
+  float: left;
+  margin: 0 12px 0 0;
+}
+.NB-modal-preferences .NB-preference-password label {
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #505050;
+  margin: 0;
+}
+.NB-modal-preferences .NB-preference-password input {
+    width: 140px;
+    font-size: 14px;
+    padding: 2px;
+    margin: 0px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}

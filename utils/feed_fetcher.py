@@ -357,11 +357,6 @@ class Dispatcher:
         logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (
                       unicode(feed)[:30], user_subs.count()))
         
-        # Delete old read stories
-        old_readstories = MUserStory.objects(feed_id=feed.pk,
-                                             read_date__lt=UNREAD_CUTOFF)
-        old_readstories.delete()
-        
         stories_db = MStory.objects(story_feed_id=feed.pk,
                                     story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
