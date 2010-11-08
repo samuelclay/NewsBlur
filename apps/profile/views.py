@@ -9,29 +9,37 @@ from django.core.mail import mail_admins
 from utils import json_functions as json
 from paypal.standard.forms import PayPalPaymentsForm
 from utils.user_functions import ajax_login_required
-from apps.profile.models import Profile
+from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 
 SINGLE_FIELD_PREFS = ('timezone',)
+SPECIAL_PREFERENCES = ('old_password', 'new_password',)
 
 @ajax_login_required
 @require_POST
 @json.json_view
 def set_preference(request):
     code = 1
+    message = ''
     new_preferences = request.POST
     
     preferences = json.decode(request.user.profile.preferences)
     for preference_name, preference_value in new_preferences.items():
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
+        elif preference_name in SPECIAL_PREFERENCES:
+            if preference_name == 'old_password':
+                code = change_password(request.user, new_preferences['old_password'],
+                                       new_preferences['new_password'])
+                if code == -1:
+                    message = "Your old password is incorrect."
         else:
             preferences[preference_name] = preference_value
         
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
-    response = dict(code=code)
+    response = dict(code=code, message=message)
     return response
 
 @ajax_login_required
