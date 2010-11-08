@@ -447,13 +447,13 @@ class Feed(models.Model):
         from apps.reader.models import MUserStory
         trim_cutoff = 250
         if self.active_subscribers <= 1:
-            trim_cutoff = 100
+            trim_cutoff = 50
         elif self.active_subscribers <= 3:
-            trim_cutoff = 150
+            trim_cutoff = 100
         elif self.active_subscribers <= 5:
-            trim_cutoff = 200
+            trim_cutoff = 150
         elif self.active_subscribers <= 10:
-            trim_cutoff = 250
+            trim_cutoff = 200
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
