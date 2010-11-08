@@ -6,7 +6,7 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
-from django.db import IntegrityError, connection
+from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
@@ -16,7 +16,6 @@ import traceback
 import multiprocessing
 import urllib2
 import xml.sax
-import socket
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -47,7 +46,6 @@ class FetchFeed:
         """ 
         Uses feedparser to download the feed. Will be parsed later.
         """
-        socket.setdefaulttimeout(30)
         identity = self.get_identity()
         log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
                                                             unicode(self.feed)[:30],
@@ -352,12 +350,18 @@ class Dispatcher:
         )
         history.save()
     
-    @timelimit(30)
+    @timelimit(20)
     def count_unreads_for_subscribers(self, feed):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         user_subs = UserSubscription.objects.filter(feed=feed, active=True).order_by('-last_read_date')
         logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (
                       unicode(feed)[:30], user_subs.count()))
+        
+        # Delete old read stories
+        old_readstories = MUserStory.objects(feed_id=feed.pk,
+                                             read_date__lt=UNREAD_CUTOFF)
+        old_readstories.delete()
+        
         stories_db = MStory.objects(story_feed_id=feed.pk,
                                     story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
