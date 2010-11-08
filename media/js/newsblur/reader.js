@@ -42,7 +42,7 @@
             'feed_view_story_positions_keys': [],
             'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10)
         };
-        this.FEED_REFRESH_INTERVAL = (1000 * 60) / 1; // 1 minutes
+        this.FEED_REFRESH_INTERVAL = (1000 * 60) * 2.5; // 2.5 minutes
         
         // ==================
         // = Event Handlers =
