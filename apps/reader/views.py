@@ -603,7 +603,7 @@ def save_feed_order(request):
 def get_feeds_trainer(request):
     classifiers = []
     feed_id = request.POST.get('feed_id')
-    usersubs = UserSubscription.objects.filter(user=request.user)
+    usersubs = UserSubscription.objects.filter(user=request.user, active=True)
     if feed_id:
         feed = get_object_or_404(Feed, pk=feed_id)
         usersubs = usersubs.filter(feed=feed)
