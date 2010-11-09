@@ -1706,6 +1706,11 @@ a.NB-splash-link:hover {
     color: #A85B40;
 }
 
+#NB-splash .NB-splash-links .NB-splash-link-twitter {
+  width: 121px; 
+  float: left;
+  margin-top: 0;
+}
 .NB-splash-info {
     background-color: white;
     z-index: 1;

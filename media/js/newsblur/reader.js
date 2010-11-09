@@ -480,10 +480,9 @@
             var $current_feed = $current_feed || $('.selected', $feed_list);
             var $next_feed,
                 scroll;
-            var $feeds = $('.feed', $feed_list);
-            
+            var $feeds = $('.feed:visible:not(.NB-empty)', $feed_list);
             if (!$current_feed.length) {
-                $current_feed = $('.feed:first', $feed_list);
+                $current_feed = $('.feed:first:visible:not(.NB-empty)', $feed_list);
                 $next_feed = $current_feed;
             } else {
                 $feeds.each(function(i) {
