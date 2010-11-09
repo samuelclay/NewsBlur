@@ -375,8 +375,18 @@ def mark_all_as_read(request):
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(request.REQUEST['feed_id'])
-    
-    usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+
+    try:
+        usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+    except Feed.DoesNotExist:
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+        if duplicate_feed:
+            try:
+                usersub = UserSubscription.objects.get(user=request.user, 
+                                                       feed=duplicate_feed[0].feed)
+            except Feed.DoesNotExist:
+                return dict(code=-1)
+                
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
         usersub.save()
@@ -632,7 +642,7 @@ def save_feed_chooser(request):
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     for sub in usersubs:
-        if sub.feed and sub.feed.pk in approved_feeds:
+        if sub.feed.pk in approved_feeds:
             sub.active = True
             activated += 1
             sub.save()

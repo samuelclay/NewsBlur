@@ -886,8 +886,8 @@ class FeedLoadtime(models.Model):
     
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)
+    duplicate_feed_id = models.CharField(max_length=255, null=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
-    
 
 def merge_feeds(original_feed_id, duplicate_feed_id):
     from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
@@ -974,11 +974,19 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
     try:
         DuplicateFeed.objects.create(
             duplicate_address=duplicate_feed.feed_address,
+            duplicate_feed_id=duplicate_feed.pk,
             feed=original_feed
         )
     except (IntegrityError, OperationError), e:
         logging.info(" ***> Could not save DuplicateFeed: %s" % e)
     
+    # Switch this dupe feed's dupe feeds over to the new original.
+    duplicate_feeds_duplicate_feeds = DuplicateFeed.objects.filter(feed=duplicate_feed)
+    for dupe_feed in duplicate_feeds_duplicate_feeds:
+        dupe_feed.feed = original_feed
+        dupe_feed.duplicate_feed_id = duplicate_feed.pk
+        dupe_feed.save()
+        
     duplicate_feed.delete()
     
                     

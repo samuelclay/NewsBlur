@@ -2,11 +2,11 @@ import datetime
 import mongoengine as mongo
 from utils import log as logging
 from utils import json_functions as json
-from django.db import models
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from apps.rss_feeds.models import Feed, Story, MStory
+from apps.rss_feeds.models import Feed, Story, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 
@@ -36,8 +36,14 @@ class UserSubscription(models.Model):
         return '[' + self.feed.feed_title + '] '
         
     def save(self, *args, **kwargs):
-        if self.feed:
+        try:
             super(UserSubscription, self).save(*args, **kwargs)
+        except IntegrityError:
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
+            if duplicate_feed:
+                self.feed = duplicate_feed[0].feed
+                super(UserSubscription, self).save(*args, **kwargs)
+                
         
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
@@ -256,7 +262,16 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if not multiples_found and deleted:
-            user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
+            try:
+                user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
+            except Feed.DoesNotExist:
+                duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+                if duplicate_feed:
+                    try:
+                        user_sub = UserSubscription.objects.get(user=self.user, 
+                                                                feed=duplicate_feed[0].feed)
+                    except Feed.DoesNotExist:
+                        return
             user_sub.delete()
             MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
 
