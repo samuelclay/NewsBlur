@@ -941,7 +941,11 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
         
         if original_story:
             user_story.story = original_story[0]
-            user_story.save()
+            try:
+                user_story.save()
+            except OperationError:
+                # User read the story in the original feed, too. Ugh, just ignore it.
+                pass
         else:
             logging.info(" ***> Can't find original story: %s" % duplicate_story.id)
             user_story.delete()
