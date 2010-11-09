@@ -255,11 +255,10 @@
             return $story;
         },
         
-        find_story_in_story_iframe: function(story) {
+        find_story_in_story_iframe: function(story, $iframe) {
             if (!story) return $([]);
             
-            this.cache.iframe['iframe'] = this.cache.iframe['iframe'] || this.$s.$story_iframe.contents();
-            var $iframe = this.cache.iframe['iframe'];
+            $iframe = $iframe || this.$s.$story_iframe.contents();
             var $stories = $([]);
             
             if (this.flags.iframe_story_locations_fetched || story.id in this.cache.iframe_stories) {
@@ -1377,7 +1376,6 @@
             var self = this;
             var stories = this.model.stories;
             var $iframe = this.$s.$story_iframe.contents();
-            this.cache.iframe['iframe'] = $iframe;
             this.cache['prefetch_iteration'] += 1;
             
             // NEWSBLUR.log(['Prefetching', !this.flags['iframe_fetching_story_locations']]);
@@ -1393,7 +1391,7 @@
                 var last_story = this.cache.iframe_story_positions[last_story_position];
                 var $last_story;
                 if (last_story) {
-                    $last_story = this.find_story_in_story_iframe(last_story);
+                    $last_story = this.find_story_in_story_iframe(last_story, $iframe);
                 }
                 // NEWSBLUR.log(['last_story', last_story_index, last_story_position, last_story, $last_story]);
                 var last_story_same_position;
@@ -1411,7 +1409,7 @@
                 for (var s in stories) {
                     if (last_story_same_position && parseInt(s, 10) < last_story_index) continue; 
                     var story = stories[s];
-                    var $story = this.find_story_in_story_iframe(story);
+                    var $story = this.find_story_in_story_iframe(story, $iframe);
                     // NEWSBLUR.log(['Pre-fetching', parseInt(s, 10), last_story_index, last_story_same_position, $story, story.story_title]);
                     if (!$story || 
                         !$story.length || 
@@ -1453,8 +1451,8 @@
             }
             
             if (story && story['story_feed_id'] == this.active_feed) {
-                var $story = this.find_story_in_story_iframe(story);
-                // NEWSBLUR.log(['Prefetching story', s, story.story_title, $story]);
+                var $story = this.find_story_in_story_iframe(story, $iframe);
+                // NEWSBLUR.log(['Fetching story', s, {'title': story.story_title}, $story]);
                 
                 setTimeout(function() {
                     if ((stories.length-1) >= (s+1) 
