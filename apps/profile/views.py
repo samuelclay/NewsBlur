@@ -28,7 +28,9 @@ def set_preference(request):
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
         elif preference_name in SPECIAL_PREFERENCES:
-            if preference_name == 'old_password':
+            if (preference_name == 'old_password' and
+                (new_preferences['old_password'] or
+                 new_preferences['new_password'])):
                 code = change_password(request.user, new_preferences['old_password'],
                                        new_preferences['new_password'])
                 if code == -1:

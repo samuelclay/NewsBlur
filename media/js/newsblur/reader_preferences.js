@@ -303,10 +303,9 @@ NEWSBLUR.ReaderPreferences.prototype = {
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
         this.model.save_preferences(form, function(data) {
-            NEWSBLUR.log(['data', data]);
             if (data.code == -1) {
                 $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
-                self.disable_save();
+                return self.disable_save();
             }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             $.modal.close();
@@ -338,7 +337,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
     },
     
     disable_save: function() {
-        $('input[type=submit]', this.$modal).addAttr('disabled').addClass('NB-disabled').val('Change what you like above...');
+        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
     }
     
 };
