@@ -286,8 +286,7 @@ class Dispatcher:
                             feed.save()
                         MUserStory.delete_old_stories(feed_id=feed.pk)
                         try:
-                            if self.options['compute_scores']:
-                                self.count_unreads_for_subscribers(feed)
+                            self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
                             logging.debug('   ---> [%-30s] Unread count took too long...' % (unicode(feed)[:30],))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
@@ -354,7 +353,10 @@ class Dispatcher:
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        user_subs = UserSubscription.objects.filter(feed=feed, active=True).order_by('-last_read_date')
+        user_subs = UserSubscription.objects.filter(feed=feed, 
+                                                    active=True,
+                                                    user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
+                                            .order_by('-last_read_date')
         logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (
                       unicode(feed)[:30], user_subs.count()))
         
@@ -362,8 +364,13 @@ class Dispatcher:
                                     story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
             cache.delete('usersub:%s' % sub.user_id)
-            silent = False if self.options['verbose'] >= 2 else True
-            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+            sub.needs_unread_recalc = True
+            sub.save()
+            
+        if self.options['compute_scores']:
+            for sub in user_subs:
+                silent = False if self.options['verbose'] >= 2 else True
+                sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
             
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
