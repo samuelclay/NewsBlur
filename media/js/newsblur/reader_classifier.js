@@ -102,8 +102,8 @@ var classifier_prototype = {
         
         this.find_story_and_feed();
         this.make_modal_story();
-        this.make_modal_title();
         this.handle_text_highlight();
+        this.make_modal_title();
         this.handle_cancel();
         this.open_modal();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
@@ -381,7 +381,7 @@ var classifier_prototype = {
         var feed = this.feed;
         var opinion = (this.score == 1 ? 'like_' : 'dislike_');
         
-        NEWSBLUR.log(['Make Story', story, feed]);
+        // NEWSBLUR.log(['Make Story', story, feed]);
         
         // HTML entities decoding.
         story.story_title = $('<div/>').html(story.story_title).text();
@@ -393,7 +393,10 @@ var classifier_prototype = {
                     $.make('h5', 'Story Title'),
                     $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                         $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
-                        this.make_classifier('<span class="NB-classifier-title-text">Highlight phrases to look for in future stories</span>', '', 'title')
+                        this.make_classifier('<span class="NB-classifier-title-placeholder">Highlight phrases to look for in future stories</span>', '', 'title'),
+                        $.make('span',
+                            this.make_user_titles(story.story_title)
+                        )
                     ])
                 ])),
                 (story.story_authors && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -453,13 +456,15 @@ var classifier_prototype = {
         $count.html(count + '/' + total);
     },
     
-    make_user_titles: function() {
+    make_user_titles: function(existing_title) {
         var $titles = [];
         var titles = _.keys(this.user_classifiers.titles);
         
         _.each(titles, _.bind(function(title) {
-            var $title = this.make_classifier(title, title, 'title');
-            $titles.push($title);
+            if (!existing_title || existing_title.indexOf(title) != -1) {
+                var $title = this.make_classifier(title, title, 'title');
+                $titles.push($title);
+            }
         }, this));
         
         return $titles;
@@ -707,18 +712,18 @@ var classifier_prototype = {
     handle_text_highlight: function() {
         var self = this;
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
-        var $title = $('.NB-classifier-title-text', this.$modal);
-        var $title_classifier = $title.parents('.NB-classifier').eq(0);
+        var $title_placeholder = $('.NB-classifier-title-placeholder', this.$modal);
+        var $title_classifier = $title_placeholder.parents('.NB-classifier').eq(0);
         var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
 
         var update = function() {
             var text = $.trim($(this).getSelection().text);
             
-            if (text.length && $title.text() != text) {
-                $title.text(text);
+            if (text.length && $title_placeholder.text() != text) {
+                $title_placeholder.text(text);
                 $title_checkboxs.val(text);
                 if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
-                    self.change_classifier($title.parents('.NB-classifier').eq(0), 'like');
+                    self.change_classifier($title_classifier, 'like');
                 }
             }
         };
@@ -726,6 +731,11 @@ var classifier_prototype = {
         $title_highlight
             .keydown(update).keyup(update)
             .mousedown(update).mouseup(update).mousemove(update);
+        $title_checkboxs.val($title_highlight.val());
+
+        $title_placeholder.parents('.NB-classifier').bind('click', function() {
+            $title_placeholder.text($title_highlight.val());
+        });
     },
     
     handle_cancel: function() {

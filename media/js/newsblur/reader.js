@@ -375,8 +375,8 @@
         get_feed_ids_in_folder: function($folder) {
             $folder = $folder || this.$s.$feed_list;
             
-            var $feeds = $('.feed', $folder);
-            var feeds = _.map($('.feed', $folder), function(o) {
+            var $feeds = $('.feed:not(.NB-empty)', $folder);
+            var feeds = _.map($('.feed:not(.NB-empty)', $folder), function(o) {
                 return o && $(o).data('feed_id');
             });
             

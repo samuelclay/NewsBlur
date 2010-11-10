@@ -1806,6 +1806,13 @@ a.NB-splash-link:hover {
 .NB-modal .NB-modal-field input[type=text] {
     width: 446px;
     font-size: 14px;
+    font-size: 14px;
+    padding: 2px;
+    margin: 0px 4px 6px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
 }
 
 .NB-modal .NB-modal-field input[type=checkbox] {
