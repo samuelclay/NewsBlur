@@ -297,7 +297,7 @@ class Feed(models.Model):
         self.save()
         
         
-    def update(self, force=False, single_threaded=True):
+    def update(self, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -311,6 +311,7 @@ class Feed(models.Model):
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
+            'compute_scores': compute_scores,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])

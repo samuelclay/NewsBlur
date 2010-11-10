@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
 from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
+from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
 from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
@@ -58,7 +59,9 @@ def exception_retry(request):
         feed.fetched_once = True
     feed.save()
     
-    feed.update(force=True)
+    feed.update(force=True, compute_scores=False)
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub.calculate_feed_scores(silent=False)
     
     return {'code': 1}
     

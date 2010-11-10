@@ -51,6 +51,8 @@ class Command(BaseCommand):
         if options['single_threaded']:
             num_workers = 1
         
+        options['compute_scores'] = True
+        
         disp = feed_fetcher.Dispatcher(options, num_workers)        
         
         feeds_queue = []

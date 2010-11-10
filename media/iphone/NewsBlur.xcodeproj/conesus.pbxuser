@@ -134,8 +134,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 310272920;
-			PBXWorkspaceStateSaveDate = 310272920;
+			PBXPerProjectTemplateStateSaveDate = 311094236;
+			PBXWorkspaceStateSaveDate = 311094236;
 		};
 		perUserProjectItems = {
 			7842EB9911CFFC1B0066CF9D /* PBXTextBookmark */ = 7842EB9911CFFC1B0066CF9D /* PBXTextBookmark */;
@@ -154,11 +154,11 @@
 			784B514D127E44C3008F90EA /* PBXTextBookmark */ = 784B514D127E44C3008F90EA /* PBXTextBookmark */;
 			785086B412089C6000CF3B50 /* PBXTextBookmark */ = 785086B412089C6000CF3B50 /* PBXTextBookmark */;
 			787A0E8411CEAF200056422D /* PBXTextBookmark */ = 787A0E8411CEAF200056422D /* PBXTextBookmark */;
+			78BC27C2128AEBEA00D7A26E /* PBXTextBookmark */ = 78BC27C2128AEBEA00D7A26E /* PBXTextBookmark */;
+			78BC27C3128AEBEA00D7A26E /* PBXTextBookmark */ = 78BC27C3128AEBEA00D7A26E /* PBXTextBookmark */;
+			78BC27C8128AEFBC00D7A26E /* PBXTextBookmark */ = 78BC27C8128AEFBC00D7A26E /* PBXTextBookmark */;
 			78E69EEA127E650C00AB2B15 /* PBXTextBookmark */ = 78E69EEA127E650C00AB2B15 /* PBXTextBookmark */;
-			78E69EEB127E650C00AB2B15 /* PBXTextBookmark */ = 78E69EEB127E650C00AB2B15 /* PBXTextBookmark */;
 			78E69EEC127E650C00AB2B15 /* PBXTextBookmark */ = 78E69EEC127E650C00AB2B15 /* PBXTextBookmark */;
-			78E69EED127E650C00AB2B15 /* PBXTextBookmark */ = 78E69EED127E650C00AB2B15 /* PBXTextBookmark */;
-			78E69EEE127E650C00AB2B15 /* PBXTextBookmark */ = 78E69EEE127E650C00AB2B15 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 788997A911C9C3F000041675 /* Source Control */;
 		userBuildSettings = {
@@ -279,7 +279,7 @@
 	};
 	784B50EA127E3F68008F90EA /* LoginViewController.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {686, 528}}";
+			sepNavIntBoundsRect = "{{0, 0}, {686, 547}}";
 			sepNavSelRange = "{489, 17}";
 			sepNavVisRange = "{0, 585}";
 			sepNavWindowFrame = "{{72, 315}, {750, 558}}";
@@ -289,7 +289,7 @@
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {686, 715}}";
 			sepNavSelRange = "{739, 0}";
-			sepNavVisRange = "{200, 977}";
+			sepNavVisRange = "{0, 1059}";
 			sepNavWindowFrame = "{{72, 315}, {750, 558}}";
 		};
 	};
@@ -465,6 +465,36 @@
 		isa = PBXCodeSenseManager;
 		indexTemplatePath = "";
 	};
+	78BC27C2128AEBEA00D7A26E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */;
+		name = "LoginViewController.m: 29";
+		rLen = 0;
+		rLoc = 739;
+		rType = 0;
+		vrLen = 1059;
+		vrLoc = 0;
+	};
+	78BC27C3128AEBEA00D7A26E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 784B50EA127E3F68008F90EA /* LoginViewController.h */;
+		name = "LoginViewController.h: 22";
+		rLen = 17;
+		rLoc = 489;
+		rType = 0;
+		vrLen = 585;
+		vrLoc = 0;
+	};
+	78BC27C8128AEFBC00D7A26E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 784B50EA127E3F68008F90EA /* LoginViewController.h */;
+		name = "LoginViewController.h: 22";
+		rLen = 17;
+		rLoc = 489;
+		rType = 0;
+		vrLen = 585;
+		vrLoc = 0;
+	};
 	78E69EEA127E650C00AB2B15 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */;
@@ -475,16 +505,6 @@
 		vrLen = 1458;
 		vrLoc = 2175;
 	};
-	78E69EEB127E650C00AB2B15 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 784B50EA127E3F68008F90EA /* LoginViewController.h */;
-		name = "LoginViewController.h: 22";
-		rLen = 17;
-		rLoc = 489;
-		rType = 0;
-		vrLen = 585;
-		vrLoc = 0;
-	};
 	78E69EEC127E650C00AB2B15 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */;
@@ -494,26 +514,6 @@
 		rType = 0;
 		vrLen = 1275;
 		vrLoc = 84;
-	};
-	78E69EED127E650C00AB2B15 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */;
-		name = "LoginViewController.m: 29";
-		rLen = 0;
-		rLoc = 739;
-		rType = 0;
-		vrLen = 907;
-		vrLoc = 237;
-	};
-	78E69EEE127E650C00AB2B15 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */;
-		name = "LoginViewController.m: 29";
-		rLen = 0;
-		rLoc = 739;
-		rType = 0;
-		vrLen = 977;
-		vrLoc = 200;
 	};
 	78FC34EA11CA94900055C312 /* JSON.h */ = {
 		uiCtxt = {

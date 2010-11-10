@@ -286,7 +286,8 @@ class Dispatcher:
                             feed.save()
                         MUserStory.delete_old_stories(feed_id=feed.pk)
                         try:
-                            self.count_unreads_for_subscribers(feed)
+                            if self.options['compute_scores']:
+                                self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
                             logging.debug('   ---> [%-30s] Unread count took too long...' % (unicode(feed)[:30],))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
