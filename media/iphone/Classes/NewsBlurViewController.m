@@ -56,7 +56,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [appDelegate showNavigationBar:YES];
+    //[appDelegate showNavigationBar:YES];
     [super viewWillDisappear:animated];
 }
 
@@ -103,6 +103,7 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
 {
+	NSLog(@"didReceiveData");
 	
 	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
@@ -133,7 +134,7 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-	NSLog(@"didReceiveResponse");
+	NSLog(@"didReceiveResponse: %@", response);
 	NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
 	int responseStatusCode = [httpResponse statusCode];
 	if (responseStatusCode == 403) {
@@ -164,21 +165,21 @@
     
     [theRequest release];
 	
-}
-
-- (void)requestDidStartLoad:(TTURLRequest*)request {
-    NSLog(@"Starting");
-}
-
-- (void)requestDidFinishLoad:(TTURLRequest *)request {
-	[appDelegate reloadFeedsView];
-}
-
-- (void)request:(TTURLRequest *)request didFailLoadWithError:(NSError *)error {
-    NSLog(@"Error: %@", error);
-    NSLog(@"%@", error );
-    
-}
+}//
+//
+//- (void)requestDidStartLoad:(TTURLRequest*)request {
+//    NSLog(@"Starting");
+//}
+//
+//- (void)requestDidFinishLoad:(TTURLRequest *)request {
+//	[appDelegate reloadFeedsView];
+//}
+//
+//- (void)request:(TTURLRequest *)request didFailLoadWithError:(NSError *)error {
+//    NSLog(@"Error: %@", error);
+//    NSLog(@"%@", error );
+//    
+//}
 
 #pragma mark -
 #pragma mark Table View - Feed List

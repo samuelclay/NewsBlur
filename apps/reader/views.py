@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
+from django.contrib.auth import logout as logout_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
@@ -76,21 +77,20 @@ def index(request):
 
 @never_cache
 def login(request):
+    code = -1
     if request.method == "POST":
-        print request.POST
         form = LoginForm(request.POST, prefix='login')
-        print form
         if form.is_valid():
             login_user(request, form.get_user())
             if request.POST.get('api'):
                 logging.info(" ---> [%s] iPhone Login" % form.get_user())
-                return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
+                code = 1
             else:
                 logging.info(" ---> [%s] Login" % form.get_user())
                 return HttpResponseRedirect(reverse('index'))
 
     if request.POST.get('api'):
-        return HttpResponse(json.encode(dict(code=-1)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=code)), mimetype='application/json')
     else:
         return index(request)
     
@@ -109,8 +109,7 @@ def signup(request):
 @never_cache
 def logout(request):
     logging.info(" ---> [%s] Logout" % request.user)
-    from django.contrib.auth import logout
-    logout(request)
+    logout_user(request)
     
     if request.GET.get('api'):
         return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
@@ -654,14 +653,18 @@ def save_feed_chooser(request):
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
+    
     for sub in usersubs:
-        if sub.feed.pk in approved_feeds:
-            sub.active = True
-            activated += 1
-            sub.save()
-        elif sub.active:
-            sub.active = False
-            sub.save()
+        try:
+            if sub.feed.pk in approved_feeds:
+                sub.active = True
+                activated += 1
+                sub.save()
+            elif sub.active:
+                sub.active = False
+                sub.save()
+        except Feed.DoesNotExist:
+            pass
             
     queue_new_feeds(request.user)
     

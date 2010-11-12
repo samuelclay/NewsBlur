@@ -83,10 +83,9 @@ def exception_change_feed_address(request):
     feed.feed_address = feed_address
     feed.next_scheduled_update = datetime.datetime.utcnow()
     retry_feed = feed
-    try:
-        feed.save()
-    except IntegrityError:
-        original_feed = Feed.objects.get(feed_address=feed_address)
+    duplicate_feed_id = feed.save()
+    if duplicate_feed_id:
+        original_feed = Feed.objects.get(pk=duplicate_feed_id)
         retry_feed = original_feed
         original_feed.next_scheduled_update = datetime.datetime.utcnow()
         original_feed.has_feed_exception = False
@@ -122,16 +121,14 @@ def exception_change_feed_link(request):
         feed.feed_link = feed_link
         feed.feed_address = feed_address
         feed.next_scheduled_update = datetime.datetime.utcnow()
-        try:
-            feed.save()
-        except IntegrityError:
-            original_feed = Feed.objects.get(feed_address=feed_address)
+        duplicate_feed_id = feed.save()
+        if duplicate_feed_id:
+            original_feed = Feed.objects.get(pk=duplicate_feed_id)
             retry_feed = original_feed
             original_feed.next_scheduled_update = datetime.datetime.utcnow()
             original_feed.has_page_exception = False
             original_feed.active = True
             original_feed.save()
-            merge_feeds(original_feed.pk, feed.pk)
     
     logging.info(" ---> [%s] Fixing feed exception by link: %s" % (request.user, retry_feed.feed_link))
     retry_feed.update()

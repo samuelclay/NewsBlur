@@ -22,7 +22,6 @@
 		782D8338128CCB6D009B6727 /* libThree20UI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 782D831C128CCB55009B6727 /* libThree20UI.a */; };
 		782D833B128CCB6E009B6727 /* libThree20UICommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 782D82F8128CCB55009B6727 /* libThree20UICommon.a */; };
 		782D833E128CCB71009B6727 /* libThree20UINavigator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 782D830A128CCB55009B6727 /* libThree20UINavigator.a */; };
-		782D8379128CCBAE009B6727 /* Three20.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 782D8378128CCBAE009B6727 /* Three20.bundle */; };
 		7842ECF811D44A530066CF9D /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailViewController.m */; };
 		7842ECF911D44A540066CF9D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */; };
 		7843F4E911EEABDC00675F64 /* FeedDetailTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7843F4E811EEABDC00675F64 /* FeedDetailTableCell.xib */; };
@@ -410,7 +409,6 @@
 		782D82B2128CCB55009B6727 /* Three20UICommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20UICommon.xcodeproj; path = ../../../three20/src/Three20UICommon/Three20UICommon.xcodeproj; sourceTree = SOURCE_ROOT; };
 		782D82B5128CCB55009B6727 /* Three20UINavigator.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20UINavigator.xcodeproj; path = ../../../three20/src/Three20UINavigator/Three20UINavigator.xcodeproj; sourceTree = SOURCE_ROOT; };
 		782D82B8128CCB55009B6727 /* Three20UI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20UI.xcodeproj; path = ../../../three20/src/Three20UI/Three20UI.xcodeproj; sourceTree = SOURCE_ROOT; };
-		782D8378128CCBAE009B6727 /* Three20.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Three20.bundle; path = ../../../three20/src/Three20.bundle; sourceTree = SOURCE_ROOT; };
 		7842ECF511D44A530066CF9D /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
 		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryDetailViewController.m; sourceTree = "<group>"; };
 		7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
@@ -523,7 +521,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				782D8378128CCBAE009B6727 /* Three20.bundle */,
 				7843F50B11EEB4EE00675F64 /* bullet_blue.png */,
 				7843F50C11EEB4EE00675F64 /* bullet_orange.png */,
 				7843F50D11EEB4EE00675F64 /* bullet_red.png */,
@@ -1060,7 +1057,6 @@
 				7843F51111EEB4EE00675F64 /* bullet_red.png in Resources */,
 				7843F51211EEB4EE00675F64 /* bullet_yellow.png in Resources */,
 				784B50E5127E3A6A008F90EA /* LoginViewController.xib in Resources */,
-				782D8379128CCBAE009B6727 /* Three20.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1137,7 +1133,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
-				HEADER_SEARCH_PATHS = "~/Projects/three20/Build/Products/three20";
+				HEADER_SEARCH_PATHS = (
+					"~/three20/Build/Products/three20",
+					"~/Projects/three20/Build/Products/three20",
+				);
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
 				OTHER_LDFLAGS = (
 					"-all_load",

@@ -64,7 +64,6 @@
 - (void)showLogin {
     UINavigationController *navController = self.navigationController;
     [navController presentModalViewController:loginViewController animated:YES];
-    [navController release];
 }
 
 - (void)reloadFeedsView {
