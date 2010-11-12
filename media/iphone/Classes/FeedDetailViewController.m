@@ -69,7 +69,7 @@
 
 - (void)fetchFeedDetail {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil) {
-        NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://www.newsblur.com/reader/load_single_feed/?feed_id=%@", 
+        NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://nb.local.host:8000/reader/load_single_feed/?feed_id=%@", 
                                       [appDelegate.activeFeed objectForKey:@"id"]];
         //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];

@@ -40,11 +40,13 @@
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite) BOOL isLoggedIn;
 
+- (void)showLogin;
 - (void)loadFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)reloadFeedsView;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
+- (void)setTitle:(NSString *)title;
 
 @end
 

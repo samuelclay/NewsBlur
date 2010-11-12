@@ -27,14 +27,12 @@
 @synthesize isLoggedIn;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    UINavigationController *navController = self.navigationController;
-    NSLog(@"storyDetailViewController: %@", storyDetailViewController);
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
     
     [window addSubview:navigationController.view];
     [window makeKeyAndVisible];
-    NSLog(@"loginViewController: %@", loginViewController);
-    [navController presentModalViewController:loginViewController animated:YES];
+    
+    [feedsViewController fetchFeedList];
     
 	return YES;
 }
@@ -63,16 +61,23 @@
 #pragma mark -
 #pragma mark Views
 
+- (void)showLogin {
+    UINavigationController *navController = self.navigationController;
+    [navController presentModalViewController:loginViewController animated:YES];
+    [navController release];
+}
+
 - (void)reloadFeedsView {
     NSLog(@"Reloading feeds list");
+    [self setTitle:@"NewsBlur"];
     [loginViewController dismissModalViewControllerAnimated:YES];
     [feedsViewController fetchFeedList];
 }
    
 - (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
-    
     [navController pushViewController:feedDetailViewController animated:YES];
+    [self setTitle:[activeFeed objectForKey:@"feed_title"]];
     NSLog(@"Released feedDetailViewController");
 }
 
@@ -81,6 +86,17 @@
     [navController pushViewController:storyDetailViewController animated:YES];
 }
 
+- (void)setTitle:(NSString *)title {
+    UILabel *label = [[UILabel alloc] init];
+    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
+    [label setBackgroundColor:[UIColor clearColor]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setText:title];
+    [label sizeToFit];
+    [navigationController.navigationBar.topItem setTitleView:label];
+    navigationController.navigationBar.backItem.title = @"All";
+    [label release];
+}
 
 
 @end

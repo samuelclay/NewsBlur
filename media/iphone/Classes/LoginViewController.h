@@ -20,7 +20,7 @@
 
 - (void)checkPassword;
 
-@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITextField *usernameTextField;
 @property (nonatomic, retain) IBOutlet UITextField *passwordTextField;
 @property (nonatomic, retain) NSMutableData * jsonString;

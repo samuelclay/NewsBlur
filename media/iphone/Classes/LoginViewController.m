@@ -50,6 +50,8 @@
 - (void)checkPassword {
     NSLog(@"appdelegate:: %@", [self appDelegate]);
     NSString *url = @"http://nb.local.host:8000/reader/login";
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     TTURLRequest *theRequest = [[TTURLRequest alloc] initWithURL:url delegate:self];
     [theRequest setHttpMethod:@"POST"]; 
     [theRequest.parameters setValue:[usernameTextField text] forKey:@"login-username"]; 
@@ -84,47 +86,6 @@
     NSLog(@"%@", error );
     
 }
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    [jsonString setLength:0];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
-{   
-    [jsonString appendData:data];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    NSString *jsonS = [[NSString alloc] 
-                       initWithData:jsonString 
-                       encoding:NSUTF8StringEncoding];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[jsonS JSONValue]];
-    NSLog(@"Results: %@", results);
-    
-    [self dismissModalViewControllerAnimated:YES];
-    [jsonString release];
-    [jsonS release];
-    [results release];
-}
-
-- (void)connection:(NSURLConnection *)connection
-  didFailWithError:(NSError *)error
-{
-    // release the connection, and the data object
-    [connection release];
-    // receivedData is declared as a method instance elsewhere
-    [jsonString release];
-    
-    [passwordTextField becomeFirstResponder];
-    
-    // inform the user
-    NSLog(@"Connection failed! Error - %@ %@",
-          [error localizedDescription],
-          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
-}
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.

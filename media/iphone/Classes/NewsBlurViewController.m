@@ -9,6 +9,7 @@
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "JSON.h"
+#import "Three20/Three20.h"
 
 @implementation NewsBlurViewController
 
@@ -17,6 +18,7 @@
 @synthesize viewTableFeedTitles;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
+@synthesize logoutButton;
 
 @synthesize feedTitleList;
 @synthesize dictFolders;
@@ -37,6 +39,7 @@
 	self.feedTitleList = [[NSMutableArray alloc] init];
 	self.dictFolders = [[NSDictionary alloc] init];
 	self.dictFoldersArray = [[NSMutableArray alloc] init];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:nil action:nil];
 	[appDelegate hideNavigationBar:NO];
     [super viewDidLoad];
 }
@@ -104,7 +107,7 @@
 	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
 	self.dictFolders = [results objectForKey:@"flat_folders"];
-	
+	NSLog(@"Received Feeds: %@", dictFolders);
 	NSSortDescriptor *sortDescriptor;
 	sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
 												  ascending:YES] autorelease];
@@ -127,6 +130,54 @@
 	[sortedFolders release];
 	[results release];
 	[jsonString release];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+	NSLog(@"didReceiveResponse");
+	NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+	int responseStatusCode = [httpResponse statusCode];
+	if (responseStatusCode == 403) {
+		[appDelegate showLogin];
+	}
+}
+
+- (void)connection:(NSURLConnection *)connection
+  didFailWithError:(NSError *)error
+{
+	
+		// inform the user
+    NSLog(@"Connection failed! Error - %@ %@",
+          [error localizedDescription],
+          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
+}
+
+
+- (IBAction)doLogoutButton {
+	NSLog(@"Logout");
+	NSString *url = @"http://nb.local.host:8000/reader/logout?api=1";
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    TTURLRequest *theRequest = [[TTURLRequest alloc] initWithURL:url delegate:self];
+    [theRequest.parameters setValue:@"1" forKey:@"api"]; 
+    theRequest.response = [[[TTURLDataResponse alloc] init] autorelease];
+    [theRequest send];
+    
+    [theRequest release];
+	
+}
+
+- (void)requestDidStartLoad:(TTURLRequest*)request {
+    NSLog(@"Starting");
+}
+
+- (void)requestDidFinishLoad:(TTURLRequest *)request {
+	[appDelegate reloadFeedsView];
+}
+
+- (void)request:(TTURLRequest *)request didFailLoadWithError:(NSError *)error {
+    NSLog(@"Error: %@", error);
+    NSLog(@"%@", error );
+    
 }
 
 #pragma mark -
@@ -206,15 +257,6 @@
 	}
 	//NSLog(@"App Delegate: %@", self.appDelegate);
 	
-    UILabel *label = [[UILabel alloc] init];
-    [label setFont:[UIFont boldSystemFontOfSize:16.0]];
-    [label setBackgroundColor:[UIColor clearColor]];
-    [label setTextColor:[UIColor whiteColor]];
-    [label setText:[appDelegate.activeFeed objectForKey:@"feed_title"]];
-    [label sizeToFit];
-    [appDelegate.navigationController.navigationBar.topItem setTitleView:label];
-    appDelegate.navigationController.navigationBar.backItem.title = @"All";
-    [label release];
     appDelegate.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
 	
 	[appDelegate loadFeedDetailView];

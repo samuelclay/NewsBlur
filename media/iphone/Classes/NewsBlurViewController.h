@@ -19,18 +19,22 @@
 	NSDictionary * dictFolders;
     NSMutableArray * dictFoldersArray;
     
-	UITableView * viewTableFeedTitles;
-	UIToolbar * feedViewToolbar;
-    UISlider * feedScoreSlider;
+	IBOutlet UITableView * viewTableFeedTitles;
+	IBOutlet UIToolbar * feedViewToolbar;
+    IBOutlet UISlider * feedScoreSlider;
+    IBOutlet UIBarButtonItem * logoutButton;
+    
     
 }
 
--(void)fetchFeedList;
+- (void)fetchFeedList;
+- (IBAction)doLogoutButton;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *viewTableFeedTitles;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
 @property (nonatomic, retain) NSMutableArray *feedTitleList;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSDictionary *dictFolders;

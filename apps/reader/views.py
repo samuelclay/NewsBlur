@@ -112,7 +112,10 @@ def logout(request):
     from django.contrib.auth import logout
     logout(request)
     
-    return HttpResponseRedirect(reverse('index'))
+    if request.GET.get('api'):
+        return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
+    else:
+        return HttpResponseRedirect(reverse('index'))
     
 @json.json_view
 def load_feeds(request):
@@ -165,6 +168,7 @@ def load_feeds(request):
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
     return data
 
+@ajax_login_required
 @json.json_view
 def load_feeds_iphone(request):
     user = get_user(request)
@@ -195,7 +199,7 @@ def load_feeds_iphone(request):
     
     def make_feeds_folder(items, parent_folder="", depth=0):
         for item in items:
-            if isinstance(item, int):
+            if isinstance(item, int) and item in feeds:
                 feed = feeds[item]
                 if not parent_folder:
                     parent_folder = ' '
