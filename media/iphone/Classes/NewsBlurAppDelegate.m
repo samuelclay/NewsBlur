@@ -24,18 +24,21 @@
 @synthesize activeFeed;
 @synthesize activeFeedStories;
 @synthesize activeStory;
+@synthesize isLoggedIn;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
+    UINavigationController *navController = self.navigationController;
+    NSLog(@"storyDetailViewController: %@", storyDetailViewController);
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
     
     [window addSubview:navigationController.view];
     [window makeKeyAndVisible];
-    LoginViewController *login = [[LoginViewController alloc] init];
-    [navigationController presentModalViewController:login animated:YES];
+    NSLog(@"loginViewController: %@", loginViewController);
+    [navController presentModalViewController:loginViewController animated:YES];
     
-    [login release];
 	return YES;
 }
+
 - (void)dealloc {
     [feedsViewController release];
     [feedDetailViewController release];
@@ -60,6 +63,12 @@
 #pragma mark -
 #pragma mark Views
 
+- (void)reloadFeedsView {
+    NSLog(@"Reloading feeds list");
+    [loginViewController dismissModalViewControllerAnimated:YES];
+    [feedsViewController fetchFeedList];
+}
+   
 - (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
     

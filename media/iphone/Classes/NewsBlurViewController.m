@@ -38,7 +38,6 @@
 	self.dictFolders = [[NSDictionary alloc] init];
 	self.dictFoldersArray = [[NSMutableArray alloc] init];
 	[appDelegate hideNavigationBar:NO];
-	[self fetchFeedList];
     [super viewDidLoad];
 }
 
@@ -92,7 +91,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://www.newsblur.com/reader/load_feeds_iphone/"]];
+											   stringWithFormat:@"http://nb.local.host:8000/reader/load_feeds_iphone/"]];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	[connection release];

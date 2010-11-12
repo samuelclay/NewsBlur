@@ -24,6 +24,8 @@
     NSDictionary * activeFeed;
     NSArray * activeFeedStories;
     NSDictionary * activeStory;
+    
+    BOOL isLoggedIn;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -36,9 +38,11 @@
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSDictionary * activeStory;
+@property (readwrite) BOOL isLoggedIn;
 
 - (void)loadFeedDetailView;
 - (void)loadStoryDetailView;
+- (void)reloadFeedsView;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
 

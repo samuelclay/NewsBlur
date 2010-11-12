@@ -5,11 +5,11 @@ from fabric.api import env, run, require, sudo, settings
 # =========
 
 env.user = 'conesus'
-env.hosts = ['www.newsblur.com', 'db01.newsblur.com']
+env.hosts = ['www.newsblur.com', 'db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com']
 env.roledefs ={
-    'web': ['app01.newsblur.com'],
-    'ff': ['app01.newsblur.com', 'db01.newsblur.com'],
+    'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
+    'task': ['db02.newsblur.com', 'db03.newsblur.com'],
 }
 
 """
@@ -20,8 +20,8 @@ env.database_password = '$(db_password)'
 env.site_media_prefix = "site_media"
 env.admin_media_prefix = "admin_media"
 env.newsapps_media_prefix = "na_media"
-env.path = '/home/newsapps/sites/%(project_name)s' % env
-env.log_path = '/home/newsapps/logs/%(project_name)s' % env
+env.path = '/home/conesus/%(project_name)s' % env
+env.log_path = '/home/home/conesus/%(project_name)s/logs' % env
 env.env_path = '%(path)s/env' % env
 env.repo_path = '%(path)s/repository' % env
 env.apache_config_path = '/home/newsapps/sites/apache/%(project_name)s' % env

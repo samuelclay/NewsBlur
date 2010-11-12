@@ -7,7 +7,9 @@
 //
 
 #import "LoginViewController.h"
+#import "NewsBlurAppDelegate.h"
 #import "Three20/Three20.h"
+#import "JSON.h"
 
 @implementation LoginViewController
 
@@ -16,8 +18,20 @@
 @synthesize passwordTextField;
 @synthesize jsonString;
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		[appDelegate hideNavigationBar:NO];
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [usernameTextField becomeFirstResponder];
+    
+	[appDelegate hideNavigationBar:NO];
+    
+    NSLog(@"appdelegate:: %@", [self appDelegate]);
     [super viewDidLoad];
 }
 
@@ -27,12 +41,14 @@
         [passwordTextField becomeFirstResponder];
     } else if (textField == passwordTextField) {
         NSLog(@"Password return");
+        NSLog(@"appdelegate:: %@", [self appDelegate]);
         [self checkPassword];
     }
 	return YES;
 }
 
 - (void)checkPassword {
+    NSLog(@"appdelegate:: %@", [self appDelegate]);
     NSString *url = @"http://nb.local.host:8000/reader/login";
     TTURLRequest *theRequest = [[TTURLRequest alloc] initWithURL:url delegate:self];
     [theRequest setHttpMethod:@"POST"]; 
@@ -51,11 +67,16 @@
 
 - (void)requestDidFinishLoad:(TTURLRequest *)request {
     TTURLDataResponse *response = request.response;
-    NSLog(@"request: %@", response);
-    NSLog(@"response: %@", [response data]);
-    NSLog(@"response: %@", [[NSString alloc] initWithData:response.data encoding:NSUTF8StringEncoding]);
+    NSString *rawCode = [[NSString alloc] initWithData:response.data 
+                                           encoding:NSUTF8StringEncoding];
     
-    [response release];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[rawCode JSONValue]];
+    NSLog(@"response: %@", [results valueForKey:@"code"]);
+    NSLog(@"appdelegate:: %@", [self appDelegate]);
+    [[self appDelegate] reloadFeedsView];    
+    [rawCode release];
+    [results release];
 }
 
 - (void)request:(TTURLRequest *)request didFailLoadWithError:(NSError *)error {

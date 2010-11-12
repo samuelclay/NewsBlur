@@ -22,7 +22,7 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, FeedLoadtime
 except:
     pass
-from utils import json_functions as json, urlnorm, json_encode
+from utils import json_functions as json, urlnorm
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page, relative_timesince
 from utils.story_functions import format_story_link_date__short
@@ -84,13 +84,13 @@ def login(request):
             login_user(request, form.get_user())
             if request.POST.get('api'):
                 logging.info(" ---> [%s] iPhone Login" % form.get_user())
-                return HttpResponse(json_encode(dict(code=1)), mimetype='application/json')
+                return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
             else:
                 logging.info(" ---> [%s] Login" % form.get_user())
                 return HttpResponseRedirect(reverse('index'))
 
     if request.POST.get('api'):
-        return HttpResponse(json_encode(dict(code=-1)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=-1)), mimetype='application/json')
     else:
         return index(request)
     
