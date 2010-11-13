@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
 
@@ -15,6 +16,7 @@
 {
     NewsBlurAppDelegate *appDelegate;
     
+	NSMutableData *responseData;
 	NSMutableArray * feedTitleList;
 	NSDictionary * dictFolders;
     NSMutableArray * dictFoldersArray;
@@ -38,6 +40,19 @@
 @property (nonatomic, retain) NSMutableArray *feedTitleList;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSDictionary *dictFolders;
+@property (nonatomic, retain) NSMutableData *responseData;
 
 @end
 
+
+@interface LogoutDelegate : NSObject {
+    NewsBlurAppDelegate *appDelegate;
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection;
+
+@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+
+@end

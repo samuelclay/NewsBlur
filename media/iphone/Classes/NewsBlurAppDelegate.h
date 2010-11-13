@@ -12,6 +12,7 @@
 @class FeedDetailViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
+@class LogoutDelegate;
 
 @interface NewsBlurAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
@@ -20,12 +21,12 @@
     FeedDetailViewController *feedDetailViewController;
     StoryDetailViewController *storyDetailViewController;
     LoginViewController *loginViewController;
+    LogoutDelegate *logoutDelegate;
     
     NSDictionary * activeFeed;
     NSArray * activeFeedStories;
     NSDictionary * activeStory;
     
-    BOOL isLoggedIn;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -34,11 +35,12 @@
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
+@property (nonatomic, retain) IBOutlet LogoutDelegate *logoutDelegate;
+
 
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSDictionary * activeStory;
-@property (readwrite) BOOL isLoggedIn;
 
 - (void)showLogin;
 - (void)loadFeedDetailView;

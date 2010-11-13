@@ -24,7 +24,6 @@
 @synthesize activeFeed;
 @synthesize activeFeedStories;
 @synthesize activeStory;
-@synthesize isLoggedIn;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
@@ -69,13 +68,14 @@
 - (void)reloadFeedsView {
     NSLog(@"Reloading feeds list");
     [self setTitle:@"NewsBlur"];
-    [loginViewController dismissModalViewControllerAnimated:YES];
     [feedsViewController fetchFeedList];
+    [loginViewController dismissModalViewControllerAnimated:YES];
 }
    
 - (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
     [navController pushViewController:feedDetailViewController animated:YES];
+    [self showNavigationBar:YES];
     [self setTitle:[activeFeed objectForKey:@"feed_title"]];
     NSLog(@"Released feedDetailViewController");
 }

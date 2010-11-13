@@ -95,46 +95,15 @@
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
 											   stringWithFormat:@"http://nb.local.host:8000/reader/load_feeds_iphone/"]];
+	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	[connection release];
 	[request release];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
-{
-	NSLog(@"didReceiveData");
-	
-	NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
-	self.dictFolders = [results objectForKey:@"flat_folders"];
-	NSLog(@"Received Feeds: %@", dictFolders);
-	NSSortDescriptor *sortDescriptor;
-	sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
-												  ascending:YES] autorelease];
-	NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
-	NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
-	NSArray *sortedArray;
-	
-	for (id f in self.dictFolders) {
-		[self.dictFoldersArray addObject:f];
-		
-		sortedArray = [[self.dictFolders objectForKey:f] sortedArrayUsingDescriptors:sortDescriptors];
-		[sortedFolders setValue:sortedArray forKey:f];
-	}
-	
-	self.dictFolders = sortedFolders;
-	[self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-	
-	[[self viewTableFeedTitles] reloadData];
-	
-	[sortedFolders release];
-	[results release];
-	[jsonString release];
-}
-
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-	NSLog(@"didReceiveResponse: %@", response);
+	[responseData setLength:0];
 	NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
 	int responseStatusCode = [httpResponse statusCode];
 	if (responseStatusCode == 403) {
@@ -142,44 +111,61 @@
 	}
 }
 
-- (void)connection:(NSURLConnection *)connection
-  didFailWithError:(NSError *)error
-{
-	
-		// inform the user
-    NSLog(@"Connection failed! Error - %@ %@",
-          [error localizedDescription],
-          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	NSLog(@"didReceiveData: %@", data);
+	[responseData appendData:data];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+	NSLog(@"%@", [NSString stringWithFormat:@"Connection failed: %@", [error description]]);
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	//[connection release];
+	NSLog(@"finish loading: %@", appDelegate);
+	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+	[responseData release];
+	if ([jsonString length] > 0) {
+		NSLog(@"finish loading: %@ -- %@", jsonString, appDelegate);
+		NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
+		self.dictFolders = [results objectForKey:@"flat_folders"];
+		NSLog(@"Received Feeds: %@", dictFolders);
+		NSSortDescriptor *sortDescriptor;
+		sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
+													  ascending:YES] autorelease];
+		NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+		NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
+		NSArray *sortedArray;
+		
+		for (id f in self.dictFolders) {
+			[self.dictFoldersArray addObject:f];
+			
+			sortedArray = [[self.dictFolders objectForKey:f] sortedArrayUsingDescriptors:sortDescriptors];
+			[sortedFolders setValue:sortedArray forKey:f];
+		}
+		
+		self.dictFolders = sortedFolders;
+		[self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
+		
+		[[self viewTableFeedTitles] reloadData];
+		
+		[sortedFolders release];
+		[results release];
+		[jsonString release];
+	}
 }
 
 
 - (IBAction)doLogoutButton {
-	NSLog(@"Logout");
-	NSString *url = @"http://nb.local.host:8000/reader/logout?api=1";
+	NSString *urlS = @"http://nb.local.host:8000/reader/logout?api=1";
+	NSURL *url = [NSURL URLWithString:urlS];
+	NSURLRequest *urlR=[[[NSURLRequest alloc] initWithURL:url] autorelease];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    TTURLRequest *theRequest = [[TTURLRequest alloc] initWithURL:url delegate:self];
-    [theRequest.parameters setValue:@"1" forKey:@"api"]; 
-    theRequest.response = [[[TTURLDataResponse alloc] init] autorelease];
-    [theRequest send];
-    
-    [theRequest release];
-	
-}//
-//
-//- (void)requestDidStartLoad:(TTURLRequest*)request {
-//    NSLog(@"Starting");
-//}
-//
-//- (void)requestDidFinishLoad:(TTURLRequest *)request {
-//	[appDelegate reloadFeedsView];
-//}
-//
-//- (void)request:(TTURLRequest *)request didFailLoadWithError:(NSError *)error {
-//    NSLog(@"Error: %@", error);
-//    NSLog(@"%@", error );
-//    
-//}
+	LogoutDelegate *ld = [LogoutDelegate alloc];
+	NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:urlR delegate:ld];
+	[urlConnection release];
+}
 
 #pragma mark -
 #pragma mark Table View - Feed List
@@ -261,6 +247,26 @@
     appDelegate.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
 	
 	[appDelegate loadFeedDetailView];
+}
+
+@end
+
+
+@implementation LogoutDelegate
+
+@synthesize appDelegate;
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+
+}
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	
+	NSLog(@"Logout: %@", appDelegate);
+	[appDelegate reloadFeedsView];
 }
 
 @end

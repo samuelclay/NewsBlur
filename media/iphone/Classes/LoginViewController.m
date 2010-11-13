@@ -8,7 +8,8 @@
 
 #import "LoginViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "Three20/Three20.h"
+#import "ASIHTTPRequest.h"
+#import "ASIFormDataRequest.h"
 #import "JSON.h"
 
 @implementation LoginViewController
@@ -31,7 +32,6 @@
     
 	[appDelegate hideNavigationBar:NO];
     
-    NSLog(@"appdelegate:: %@", [self appDelegate]);
     [super viewDidLoad];
 }
 
@@ -49,42 +49,38 @@
 
 - (void)checkPassword {
     NSLog(@"appdelegate:: %@", [self appDelegate]);
-    NSString *url = @"http://nb.local.host:8000/reader/login";
+    NSString *urlString = @"http://nb.local.host:8000/reader/login";
+    NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    TTURLRequest *theRequest = [[TTURLRequest alloc] initWithURL:url delegate:self];
-    [theRequest setHttpMethod:@"POST"]; 
-    [theRequest.parameters setValue:[usernameTextField text] forKey:@"login-username"]; 
-    [theRequest.parameters setValue:[passwordTextField text] forKey:@"login-password"]; 
-    [theRequest.parameters setValue:@"login" forKey:@"submit"]; 
-    [theRequest.parameters setValue:@"1" forKey:@"api"]; 
-    theRequest.response = [[[TTURLDataResponse alloc] init] autorelease];
-    [theRequest send];
-    
-    [theRequest release];
-}
-- (void)requestDidStartLoad:(TTURLRequest*)request {
-    NSLog(@"Starting");
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[usernameTextField text] forKey:@"login-username"]; 
+    [request setPostValue:[passwordTextField text] forKey:@"login-password"]; 
+    [request setPostValue:@"login" forKey:@"submit"]; 
+    [request setPostValue:@"1" forKey:@"api"]; 
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
-- (void)requestDidFinishLoad:(TTURLRequest *)request {
-    TTURLDataResponse *response = request.response;
-    NSString *rawCode = [[NSString alloc] initWithData:response.data 
-                                           encoding:NSUTF8StringEncoding];
-    
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[rawCode JSONValue]];
-    NSLog(@"response: %@", [results valueForKey:@"code"]);
-    NSLog(@"appdelegate:: %@", [self appDelegate]);
-    [[self appDelegate] reloadFeedsView];    
-    [rawCode release];
-    [results release];
+
+- (void)requestFinished:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    int statusCode = [request responseStatusCode];
+    if (statusCode == 403) {
+        [appDelegate showLogin];
+    } else {
+        NSDictionary *results = [[NSDictionary alloc] 
+                                 initWithDictionary:[responseString JSONValue]];
+        NSLog(@"response: %@", [results valueForKey:@"code"]);
+        
+        [appDelegate reloadFeedsView];
+        [results release];
+    }
 }
 
-- (void)request:(TTURLRequest *)request didFailLoadWithError:(NSError *)error {
-    NSLog(@"Error: %@", error);
-    NSLog(@"%@", error );
-    
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSError *error = [request error];
 }
 
 - (void)didReceiveMemoryWarning {
