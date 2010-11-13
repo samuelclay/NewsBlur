@@ -1673,6 +1673,11 @@ form.opml_import_form input {
   line-height: 12px;
   margin: 1px 0;
   padding: 0;
+  width: 121px; 
+  float: left;
+}
+#NB-splash .NB-splash-links .NB-splash-link.NB-first {
+  clear: both;
 }
 
 
@@ -1685,6 +1690,14 @@ form.opml_import_form input {
 #NB-splash .NB-splash-links .NB-splash-link a:hover {
   background-color: #E9ECF6;
 }
+#NB-splash .NB-splash-links .NB-splash-link-github a:hover {
+  background: #E9ECF6 url('../img/reader/github_icon.png') no-repeat 0 0;
+}
+
+#NB-splash .NB-splash-links .NB-splash-link-twitter a:hover {
+  background: #E9ECF6 url('../img/reader/twitter_icon.png') no-repeat 0 0;
+}
+
 #NB-splash .NB-splash-links a {
     font-weight: bold;
     text-transform: uppercase;
@@ -1704,12 +1717,6 @@ a.NB-splash-link {
 .NB-modal-about a:hover,
 a.NB-splash-link:hover {
     color: #A85B40;
-}
-
-#NB-splash .NB-splash-links .NB-splash-link-twitter {
-  width: 121px; 
-  float: left;
-  margin-top: 0;
 }
 .NB-splash-info {
     background-color: white;
