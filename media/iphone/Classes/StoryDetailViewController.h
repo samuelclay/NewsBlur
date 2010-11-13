@@ -20,4 +20,6 @@
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 
+- (void)showOriginalSubview:(id)sender;
+
 @end

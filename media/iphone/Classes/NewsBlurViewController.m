@@ -40,14 +40,14 @@
 	self.dictFolders = [[NSDictionary alloc] init];
 	self.dictFoldersArray = [[NSMutableArray alloc] init];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:nil action:nil];
-	[appDelegate hideNavigationBar:NO];
+	[appDelegate showNavigationBar:NO];
     [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[viewTableFeedTitles deselectRowAtIndexPath:[viewTableFeedTitles indexPathForSelectedRow] animated:animated];
 	
-    [appDelegate hideNavigationBar:animated];
+    [appDelegate showNavigationBar:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -112,7 +112,7 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-	NSLog(@"didReceiveData: %@", data);
+	//NSLog(@"didReceiveData: %@", data);
 	[responseData appendData:data];
 }
 
@@ -122,14 +122,14 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	//[connection release];
-	NSLog(@"finish loading: %@", appDelegate);
 	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 	[responseData release];
 	if ([jsonString length] > 0) {
-		NSLog(@"finish loading: %@ -- %@", jsonString, appDelegate);
 		NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
+		appDelegate.activeUsername = [results objectForKey:@"user"];
+		[appDelegate setTitle:[results objectForKey:@"user"]];
 		self.dictFolders = [results objectForKey:@"flat_folders"];
-		NSLog(@"Received Feeds: %@", dictFolders);
+		//NSLog(@"Received Feeds: %@", dictFolders);
 		NSSortDescriptor *sortDescriptor;
 		sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
 													  ascending:YES] autorelease];
@@ -237,14 +237,12 @@
 			NSArray *feeds = [[NSArray alloc] initWithArray:[self.dictFolders objectForKey:f]];
 			[appDelegate setActiveFeed:[feeds objectAtIndex:indexPath.row]];
 			[feeds release];
-			NSLog(@"Active feed: %@", [appDelegate activeFeed]);
+			//NSLog(@"Active feed: %@", [appDelegate activeFeed]);
 			break;
 		}
 		section_index++;
 	}
 	//NSLog(@"App Delegate: %@", self.appDelegate);
-	
-    appDelegate.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
 	
 	[appDelegate loadFeedDetailView];
 }

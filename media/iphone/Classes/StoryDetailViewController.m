@@ -23,7 +23,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
+    NSLog(@"Loaded Story view: %@", [appDelegate.activeStory objectForKey:@"story_title"]);
     NSString *imgCssString = [NSString stringWithFormat:@"<style>"
                               "body {"
                               "  line-height: 18px;"
@@ -52,7 +52,14 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Original" style:UIBarButtonItemStyleBordered target:self action:@selector(showOriginalSubview:)] autorelease];
 	[super viewDidAppear:animated];
+}
+
+- (void)showOriginalSubview:(id)sender {
+    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
+                                       objectForKey:@"story_permalink"]];
+    [appDelegate showOriginalStory:url];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -67,6 +74,19 @@
 	// e.g. self.myOutlet = nil;
     self.webView = nil;
     self.appDelegate = nil;
+}
+
+
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        NSURL *url = [request URL];
+        [appDelegate showOriginalStory:url];
+        //[url release];
+        return NO;
+    }
+    
+    return YES;
 }
 
 

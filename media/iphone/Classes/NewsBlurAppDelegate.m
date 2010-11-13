@@ -11,6 +11,7 @@
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "LoginViewController.h"
+#import "OriginalStoryViewController.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -20,10 +21,14 @@
 @synthesize feedDetailViewController;
 @synthesize storyDetailViewController;
 @synthesize loginViewController;
+@synthesize originalStoryViewController;
 
+@synthesize logoutDelegate;
+@synthesize activeUsername;
 @synthesize activeFeed;
 @synthesize activeFeedStories;
 @synthesize activeStory;
+@synthesize activeOriginalStoryURL;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
@@ -41,11 +46,14 @@
     [feedDetailViewController release];
     [storyDetailViewController release];
     [loginViewController release];
+    [originalStoryViewController release];
     [navigationController release];
     [window release];
+    [activeUsername release];
     [activeFeed release];
     [activeFeedStories release];
     [activeStory release];
+    [activeOriginalStoryURL release];
     [super dealloc];
 }
 
@@ -70,19 +78,23 @@
     [self setTitle:@"NewsBlur"];
     [feedsViewController fetchFeedList];
     [loginViewController dismissModalViewControllerAnimated:YES];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.6];
 }
    
 - (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"All" style:UIBarButtonItemStylePlain target:nil action:nil];
+    navController.navigationItem.backBarButtonItem = backButton;
+    [backButton release];
     [navController pushViewController:feedDetailViewController animated:YES];
     [self showNavigationBar:YES];
-    [self setTitle:[activeFeed objectForKey:@"feed_title"]];
-    NSLog(@"Released feedDetailViewController");
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
 }
 
 - (void)loadStoryDetailView {
     UINavigationController *navController = self.navigationController;   
     [navController pushViewController:storyDetailViewController animated:YES];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -93,9 +105,17 @@
     [label setText:title];
     [label sizeToFit];
     [navigationController.navigationBar.topItem setTitleView:label];
-    navigationController.navigationBar.backItem.title = @"All";
     [label release];
 }
 
+- (void)showOriginalStory:(NSURL *)url {
+    self.activeOriginalStoryURL = url;
+    UINavigationController *navController = self.navigationController;
+    [navController presentModalViewController:originalStoryViewController animated:YES];
+}
+
+- (void)closeOriginalStory {
+    [originalStoryViewController dismissModalViewControllerAnimated:YES];
+}
 
 @end

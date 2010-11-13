@@ -32,6 +32,7 @@
     NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     
     [self fetchFeedDetail];
+    self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
     
 	[super viewWillAppear:animated];
 }
@@ -164,7 +165,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:indexPath.row]];
-    NSLog(@"Active Story: %@", [appDelegate activeStory]);
 	[appDelegate loadStoryDetailView];
 	
 }

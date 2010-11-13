@@ -217,7 +217,7 @@ def load_feeds_iphone(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders)
+    data = dict(flat_folders=flat_folders, user=user.username)
     return data
 
 @json.json_view
