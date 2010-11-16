@@ -121,9 +121,8 @@
     [jsonString release];
     
     // inform the user
-    NSLog(@"Connection failed! Error - %@ %@",
-          [error localizedDescription],
-          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
+    NSLog(@"Connection failed! Error - %@",
+          [error localizedDescription]);
 }
 
 

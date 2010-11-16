@@ -9,12 +9,12 @@
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "JSON.h"
-#import "Three20/Three20.h"
 
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
 
+@synthesize responseData;
 @synthesize viewTableFeedTitles;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -39,7 +39,7 @@
 	self.feedTitleList = [[NSMutableArray alloc] init];
 	self.dictFolders = [[NSDictionary alloc] init];
 	self.dictFoldersArray = [[NSMutableArray alloc] init];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:nil action:nil];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)];
 	[appDelegate showNavigationBar:NO];
     [super viewDidLoad];
 }
@@ -157,6 +157,7 @@
 
 
 - (IBAction)doLogoutButton {
+	NSLog(@"Logging out...");
 	NSString *urlS = @"http://nb.local.host:8000/reader/logout?api=1";
 	NSURL *url = [NSURL URLWithString:urlS];
 	NSURLRequest *urlR=[[[NSURLRequest alloc] initWithURL:url] autorelease];
@@ -171,8 +172,6 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-//	NSInteger count = [self.dictFolders count];
-//	NSLog(@"Folders: %d: %@", count, self.dictFolders);
 	return [self.dictFoldersArray count];
 }
 
@@ -262,7 +261,7 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	
+	appDelegate = [[UIApplication sharedApplication] delegate];
 	NSLog(@"Logout: %@", appDelegate);
 	[appDelegate reloadFeedsView];
 }

@@ -25,21 +25,18 @@
 	IBOutlet UIToolbar * feedViewToolbar;
     IBOutlet UISlider * feedScoreSlider;
     IBOutlet UIBarButtonItem * logoutButton;
-    IBOutlet UILabel * toolbarTitle;
     
     
 }
 
 - (void)fetchFeedList;
 - (IBAction)doLogoutButton;
-- (void)setTitle:(NSString *)title;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *viewTableFeedTitles;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
-@property (nonatomic, retain) IBOutlet UILabel * toolbarTitle;
 @property (nonatomic, retain) NSMutableArray *feedTitleList;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSDictionary *dictFolders;

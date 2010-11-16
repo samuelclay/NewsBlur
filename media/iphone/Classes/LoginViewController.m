@@ -65,17 +65,19 @@
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    int statusCode = [request responseStatusCode];
-    if (statusCode == 403) {
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    // int statusCode = [request responseStatusCode];
+    int code = [[results valueForKey:@"code"] intValue];
+    if (code == -1) {
+        NSLog(@"Bad login");
         [appDelegate showLogin];
     } else {
-        NSDictionary *results = [[NSDictionary alloc] 
-                                 initWithDictionary:[responseString JSONValue]];
-        NSLog(@"response: %@", [results valueForKey:@"code"]);
-        
+        NSLog(@"Good login");
         [appDelegate reloadFeedsView];
-        [results release];
     }
+    
+    [results release];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
