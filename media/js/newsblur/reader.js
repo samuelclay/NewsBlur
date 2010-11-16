@@ -1487,7 +1487,7 @@
         },
         
         open_story_link: function(story, $st) {
-            window.open(unescape(decodeURIComponent(story['story_permalink'])), '_blank');
+            window.open(story['story_permalink'], '_blank');
             window.focus();
         },
         
@@ -1711,7 +1711,7 @@
                 break;
             }
             var $story_title = $.make('div', { className: 'story ' + read + ' NB-story-' + score_color }, [
-                $.make('a', { href: unescape(decodeURIComponent(story.story_permalink)), className: 'story_title' }, [
+                $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags
@@ -2078,7 +2078,7 @@
                             $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
                         $.make('div', { className: 'NB-feed-story-title-container' }, [
                             $.make('div', { className: 'NB-feed-story-sentiment' }),
-                            $.make('a', { className: 'NB-feed-story-title', href: unescape(decodeURIComponent(story.story_permalink)) }, story.story_title)
+                            $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, story.story_title)
                         ]),
                         ( story.long_parsed_date &&
                             $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date))
@@ -2114,6 +2114,7 @@
                             } else {
                                 image_count--;
                             }
+                            return true;
                         });
                     })($story, story, image_count);
                 }
@@ -2141,7 +2142,8 @@
                 }
             }
             
-            if (_.all(this.flags.feed_view_images_loaded) && _.keys(this.flags.feed_view_images_loaded).length > 0) {
+            if (_.all(this.flags.feed_view_images_loaded) &&
+                _.keys(this.flags.feed_view_images_loaded).length > 0) {
                 this.fetch_story_locations_in_feed_view();
             }
             
