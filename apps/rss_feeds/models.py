@@ -6,6 +6,7 @@ import re
 import mongoengine as mongo
 import pymongo
 import zlib
+import urllib
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -491,7 +492,7 @@ class Feed(models.Model):
             story['story_authors'] = story_db.story_author_name
             story['story_title'] = story_db.story_title
             story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
-            story['story_permalink'] = story_db.story_permalink
+            story['story_permalink'] = urllib.unquote(urllib.unquote(story_db.story_permalink))
             story['story_feed_id'] = self.pk
             story['id'] = story_db.story_guid
             
