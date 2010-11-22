@@ -110,6 +110,7 @@ COMPRESS_JS = {
             'js/jquery.tinysort.js',
             'js/jquery.fieldselection.js',
             'js/jquery.flot.js',
+            'js/jquery.tipsy.js',
             'js/underscore.js',
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
@@ -139,6 +140,7 @@ COMPRESS_CSS = {
         'source_filenames': (
             'css/reader.css',
             'css/jquery-ui/jquery.theme.css',
+            'css/jquery.tipsy.css',
         ),
         'output_filename': 'css/all-compressed-?.css'
     },

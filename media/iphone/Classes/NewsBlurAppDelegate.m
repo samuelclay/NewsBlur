@@ -87,6 +87,7 @@
     navController.navigationItem.backBarButtonItem = backButton;
     [backButton release];
     [navController pushViewController:feedDetailViewController animated:YES];
+    [feedDetailViewController fetchFeedDetail];
     [self showNavigationBar:YES];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
 }
@@ -116,6 +117,24 @@
 
 - (void)closeOriginalStory {
     [originalStoryViewController dismissModalViewControllerAnimated:YES];
+}
+
++ (int)computeStoryScore:(NSDictionary *)intelligence {
+    int score = 0;
+    int score_max = 0;
+//    [intelligence objectForKey:@"title"]
+//    var score_max = Math.max(story.intelligence['title'],
+//                             story.intelligence['author'],
+//                             story.intelligence['tags']);
+//    var score_min = Math.min(story.intelligence['title'],
+//                             story.intelligence['author'],
+//                             story.intelligence['tags']);
+//    if (score_max > 0) score = score_max;
+//    else if (score_min < 0) score = score_min;
+//    
+//    if (score == 0) score = story.intelligence['feed'];
+    
+    return score;
 }
 
 @end

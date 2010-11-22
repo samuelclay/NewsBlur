@@ -40,6 +40,7 @@
 		784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */; };
 		787A0CDB11CE65330056422D /* FeedDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 787A0CD911CE65330056422D /* FeedDetailViewController.m */; };
 		787A0CDC11CE65330056422D /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 787A0CDA11CE65330056422D /* FeedDetailViewController.xib */; };
+		787B782F129356FC0025F214 /* bullet_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 787B782E129356FC0025F214 /* bullet_green.png */; };
 		788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788EF355127E5BC80088EDC5 /* QuartzCore.framework */; };
 		78FC34F711CA94900055C312 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34EC11CA94900055C312 /* NSObject+SBJSON.m */; };
 		78FC34F811CA94900055C312 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34EE11CA94900055C312 /* NSString+SBJSON.m */; };
@@ -103,6 +104,7 @@
 		787A0CD811CE65330056422D /* FeedDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailViewController.h; sourceTree = "<group>"; };
 		787A0CD911CE65330056422D /* FeedDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailViewController.m; sourceTree = "<group>"; };
 		787A0CDA11CE65330056422D /* FeedDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedDetailViewController.xib; sourceTree = "<group>"; };
+		787B782E129356FC0025F214 /* bullet_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullet_green.png; sourceTree = "<group>"; };
 		788EF355127E5BC80088EDC5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		78FC34EA11CA94900055C312 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		78FC34EB11CA94900055C312 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				7843F50B11EEB4EE00675F64 /* bullet_blue.png */,
+				787B782E129356FC0025F214 /* bullet_green.png */,
 				7843F50C11EEB4EE00675F64 /* bullet_orange.png */,
 				7843F50D11EEB4EE00675F64 /* bullet_red.png */,
 				7843F50E11EEB4EE00675F64 /* bullet_yellow.png */,
@@ -342,6 +345,7 @@
 				7843F51211EEB4EE00675F64 /* bullet_yellow.png in Resources */,
 				784B50E5127E3A6A008F90EA /* LoginViewController.xib in Resources */,
 				78095ECA128F30B500230C8E /* OriginalStoryViewController.xib in Resources */,
+				787B782F129356FC0025F214 /* bullet_green.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

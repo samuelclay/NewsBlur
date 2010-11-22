@@ -306,7 +306,7 @@ a img {
     background-color: #D7DDE6;
 }
 
-.left-center {
+.left-center-content {
     display: none;
     overflow-x: hidden !important;
     overflow-y: auto !important;
@@ -349,6 +349,7 @@ a img {
 .NB-feedlist {
     background-color: #D7DDE6;
     overflow-y: auto;
+    overflow-x: hidden;
     font-size: 11px;
     list-style: none;
     margin: 0;
@@ -669,10 +670,6 @@ a img {
 #NB-progress {
   height: 40px;
   width: 100%;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  display: none;
   background-color: #505050;
   border-top: 1px solid #777D86;
   border-bottom: 1px solid #101010;
@@ -1309,6 +1306,69 @@ background: transparent;
     display: none;
 }
 
+/* ================ */
+/* = Feeds Header = */
+/* ================ */
+
+.NB-feeds-header-container {
+  background: #4F5358 url("../img/reader/feeds_header_background.png") repeat-x scroll left top;
+  border-bottom: 1px solid #777D86;
+}
+
+.NB-feeds-header {
+  color: #FFF;
+  height: 15px;
+  font-size: 11px;
+  padding: 2px 6px 2px 0;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #303030;
+  border-bottom: 1px solid #E9E9E9;
+/*  background: transparent url('../img/icons/silk/house.png') no-repeat 2px 2px;*/
+}
+
+.NB-feeds-header:hover {
+  color: #DCDCDC;
+  cursor: pointer;
+}
+
+.NB-feeds-header .NB-feeds-header-right {
+  float: right;
+  color: #808080;
+}
+
+.NB-feeds-header .NB-feeds-header-left {
+  float: left;
+  color: #FFF;
+}
+
+.NB-feeds-header .NB-feeds-header-count {
+  padding: 0 0 0 16px;
+  text-align: left;
+}
+.NB-feeds-header .NB-feeds-header-count.NB-empty {
+    opacity: .45;
+    color: #B0B0B0;
+}
+.NB-feeds-header .NB-feeds-header-negative {
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-neutral {
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-positive {
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-home {
+    display: none;
+    padding: 0 0 0 4px;
+    color: #AFCAEB;
+}
+.NB-feeds-header.NB-active:hover .NB-feeds-header-home {
+    display: block;
+}
+.NB-feeds-header.NB-active:hover .NB-feeds-header-count {
+    display: none;
+}
 /* ============ */
 /* = Task Bar = */
 /* ============ */
@@ -1435,6 +1495,7 @@ background: transparent;
 .NB-taskbar .task_button.task_profile {
     background: transparent url('../img/icons/silk/user.png') no-repeat center 8px;
 }
+
 
 .NB-taskbar .taskbar_nav_story {
   right: 0;
