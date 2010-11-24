@@ -17,7 +17,7 @@
       'MEDIA_URL': "{{ MEDIA_URL }}"
     };
     NEWSBLUR.Flags = {
-      'start_import_from_google_reader': true <!--{{ start_import_from_google_reader|yesno:"true,false" }}-->
+      'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}
     };
     NEWSBLUR.Preferences = {
       'unread_view': 0,
