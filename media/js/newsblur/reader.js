@@ -112,7 +112,7 @@
                 center__paneSelector:   ".left-center-content",
                 center__resizable:      false,
                 south__paneSelector:    ".left-center-footer",
-                south__size:            42,
+                south__size:            'auto',
                 south__resizable:       false,
                 south__slidable:        true,
                 south__spacing_open:    0,
@@ -498,6 +498,7 @@
         },
         
         show_next_feed: function(direction, $current_feed) {
+            var self = this;
             var $feed_list = this.$s.$feed_list;
             var $current_feed = $current_feed || $('.selected', $feed_list);
             var $next_feed,
@@ -528,7 +529,8 @@
                     scroll = 0;
                 }
                 $feed_list.scrollTop(scroll);
-                this.open_feed(feed_id, false, $next_feed);
+                NEWSBLUR.log(['feed_id', feed_id, this.next_feed]);
+                this.open_feed(feed_id, false, $next_feed, 350);
             }
         },
         
@@ -1049,7 +1051,9 @@
         show_progress_bar: function() {
             if (!this.flags['showing_progress_bar']) {
                 this.flags['showing_progress_bar'] = true;
-                this.$s.$feeds_progress.parents('.left-center').layout().open('south');
+                var $layout = this.$s.$feeds_progress.parents('.left-center').layout();
+                $layout.open('south');
+                $layout.sizePane('south');
             }
         },
 
@@ -1134,7 +1138,7 @@
             this.$s.$feed_view.empty();
         },
         
-        open_feed: function(feed_id, force, $feed_link) {
+        open_feed: function(feed_id, force, $feed_link, delay) {
             var self = this;
             var $story_titles = this.$s.$story_titles;
             this.flags['opening_feed'] = true;
@@ -1145,6 +1149,7 @@
                 this.hide_splash_page();
             
                 this.active_feed = feed_id;
+                this.next_feed = feed_id;
                 $story_titles.data('page', 0);
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
@@ -1156,15 +1161,19 @@
                 this.make_content_pane_feed_counter(feed_id);
                 this.switch_taskbar_view(this.story_view);
                 // NEWSBLUR.log(['open_feed', this.flags, this.active_feed, feed_id]);
-                
-                _.defer(_.bind(function() {
-                    this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
-                }, this));
+
+                _.delay(_.bind(function() {
+                    if (!delay || feed_id == self.next_feed) {
+                        this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
+                    }
+                }, this), delay || 0);
                 var feed_view_setting = this.model.view_setting(feed_id);
                 if (!feed_view_setting || feed_view_setting == 'page') {
-                    _.defer(_.bind(function() {
-                        this.load_iframe(feed_id);
-                    }, this));
+                    _.delay(_.bind(function() {
+                        if (!delay || feed_id == self.next_feed) {
+                            this.load_iframe(feed_id);
+                        }
+                    }, this), delay || 0);
                 } else {
                     this.unload_iframe();
                     this.flags['iframe_prevented_from_loading'] = true;
@@ -1253,6 +1262,7 @@
                 this.reset_feed();
                 this.show_splash_page();
             }
+            this.update_header_counts();
         },
         
         delete_folder: function(folder_name, $folder) {
@@ -1272,6 +1282,8 @@
                     return false;
                 }
             }, this));
+            
+            this.update_header_counts();
         },
         
         // ==========================
@@ -1789,6 +1801,10 @@
         
         unload_iframe: function() {
             var $story_iframe = this.$s.$story_iframe;
+            var $taskbar_return = $('.NB-taskbar .task_return');
+            var $taskbar_view_page = $('.NB-taskbar .task_view_page');
+            $taskbar_view_page.removeClass('NB-disabled');
+            $taskbar_return.css({'display': 'none'});
             
             this.flags['iframe_view_loaded'] = false;
             this.flags['iframe_story_locations_fetched'] = false;
@@ -1808,8 +1824,6 @@
             var self = this;
             var $feed_view = this.$s.$story_pane;
             var $story_iframe = this.$s.$story_iframe;
-            var $taskbar_view_page = $('.NB-taskbar .task_view_page');
-            var $taskbar_return = $('.NB-taskbar .task_return');
             
             this.unload_iframe();
             
@@ -1819,8 +1833,6 @@
                 $story_iframe.data('feed_id', feed_id);
             }
             
-            $taskbar_view_page.removeClass('NB-disabled');
-            $taskbar_return.css({'display': 'none'});
             this.flags.iframe_scroll_snap_back_prepared = true;
             this.iframe_link_attacher_num_links = 0;
             
@@ -3290,9 +3302,9 @@
             };
             animate();
             
-            this.show_progress_bar();
             
             this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
+            // this.show_progress_bar();
         },
 
         finish_import_from_google_reader: function(e, data) {

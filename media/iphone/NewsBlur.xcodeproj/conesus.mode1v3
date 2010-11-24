@@ -400,7 +400,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>78B539A2129ACDD200D8AD2C</string>
+										<string>78B539A7129ACE4D00D8AD2C</string>
 										<key>history</key>
 										<array>
 											<string>7842EB9911CFFC1B0066CF9D</string>
@@ -615,7 +615,7 @@
 	<key>StatusbarIsVisible</key>
 	<true/>
 	<key>TimeStamp</key>
-	<real>312135122.28576702</real>
+	<real>312135245.111696</real>
 	<key>ToolbarConfigUserDefaultsMinorVersion</key>
 	<string>2</string>
 	<key>ToolbarDisplayMode</key>
@@ -632,7 +632,9 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>1CD10A99069EF8BA00B06720</string>
 		<string>788997AE11C9C87C00041675</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/conesus/newsblur/media/iphone/NewsBlur.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -757,8 +759,8 @@
 										<string>yes</string>
 										<key>sizes</key>
 										<array>
-											<string>{{0, 0}, {648, 339}}</string>
-											<string>{{0, 339}, {648, 340}}</string>
+											<string>{{0, 0}, {648, 350}}</string>
+											<string>{{648, 0}, {647, 350}}</string>
 										</array>
 									</dict>
 									<key>VerticalSplitView</key>
@@ -773,8 +775,8 @@
 										<string>yes</string>
 										<key>sizes</key>
 										<array>
-											<string>{{0, 0}, {648, 679}}</string>
-											<string>{{648, 0}, {647, 679}}</string>
+											<string>{{0, 0}, {1295, 350}}</string>
+											<string>{{0, 350}, {1295, 329}}</string>
 										</array>
 									</dict>
 								</dict>
@@ -806,15 +808,15 @@
 										<string>Value</string>
 										<real>85</real>
 										<string>Summary</string>
-										<real>331</real>
+										<real>330</real>
 									</array>
 									<key>Frame</key>
-									<string>{{0, 339}, {648, 340}}</string>
+									<string>{{648, 0}, {647, 350}}</string>
 									<key>RubberWindowFrame</key>
-									<string>591 328 1295 720 0 0 1920 1178 </string>
+									<string>137 125 1295 720 0 0 1440 878 </string>
 								</dict>
 								<key>RubberWindowFrame</key>
-								<string>591 328 1295 720 0 0 1920 1178 </string>
+								<string>137 125 1295 720 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugSessionModule</string>
@@ -837,18 +839,18 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>7840C49712920ACF0069B9BC</string>
+				<string>78B539A8129ACE4D00D8AD2C</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>7840C49812920ACF0069B9BC</string>
-				<string>7840C49912920ACF0069B9BC</string>
-				<string>7840C49A12920ACF0069B9BC</string>
-				<string>7840C49B12920ACF0069B9BC</string>
-				<string>7840C49C12920ACF0069B9BC</string>
+				<string>78B539A9129ACE4D00D8AD2C</string>
+				<string>78B539AA129ACE4D00D8AD2C</string>
+				<string>78B539AB129ACE4D00D8AD2C</string>
+				<string>78B539AC129ACE4D00D8AD2C</string>
+				<string>78B539AD129ACE4D00D8AD2C</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
 			<key>WindowString</key>
-			<string>591 328 1295 720 0 0 1920 1178 </string>
+			<string>137 125 1295 720 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1CD10A99069EF8BA00B06720</string>
 			<key>WindowToolIsVisible</key>
@@ -976,7 +978,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {744, 532}}</string>
 								<key>RubberWindowFrame</key>
-								<string>1124 605 744 573 0 0 1920 1178 </string>
+								<string>2564 327 744 573 1440 -180 1920 1080 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
@@ -999,13 +1001,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>7840C49D12920ACF0069B9BC</string>
+				<string>78B539AE129ACE4D00D8AD2C</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>1124 605 744 573 0 0 1920 1178 </string>
+			<string>2564 327 744 573 1440 -180 1920 1080 </string>
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>

@@ -1328,7 +1328,7 @@ background: transparent;
 
 .NB-feeds-header:hover {
   color: #DCDCDC;
-  cursor: pointer;
+  cursor: default;
 }
 
 .NB-feeds-header .NB-feeds-header-right {
@@ -1362,6 +1362,9 @@ background: transparent;
     display: none;
     padding: 0 0 0 4px;
     color: #AFCAEB;
+}
+.NB-feeds-header.NB-active:hover {
+  cursor: pointer;
 }
 .NB-feeds-header.NB-active:hover .NB-feeds-header-home {
     display: block;
