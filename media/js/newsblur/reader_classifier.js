@@ -734,7 +734,9 @@ var classifier_prototype = {
         $title_checkboxs.val($title_highlight.val());
 
         $title_placeholder.parents('.NB-classifier').bind('click', function() {
-            $title_placeholder.text($title_highlight.val());
+            if ($title_highlight.val() == $title_checkboxs.val()) {
+                $title_placeholder.text($title_highlight.val());
+            }
         });
     },
     
@@ -796,7 +798,7 @@ var classifier_prototype = {
         $.targetIs(e, { tagSelector: '.NB-classifier-icon-dislike' }, function($t, $p){
             e.preventDefault();
             stop = true;
-            self.change_classifier($t.parents('.NB-classifier').eq(0), 'dislike');
+            self.change_classifier($t.closest('.NB-classifier'), 'dislike');
         });
         if (stop) return;
         $.targetIs(e, { tagSelector: '.NB-classifier' }, function($t, $p){
