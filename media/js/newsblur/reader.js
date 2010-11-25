@@ -75,6 +75,7 @@
         this.position_mouse_indicator();
         this.handle_login_and_signup_forms();
         this.iframe_buster_buster();
+        this.apply_story_styling();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -2164,6 +2165,22 @@
             }
         },
         
+        apply_story_styling: function(reset_stories) {
+            var $body = this.$s.$body;
+            $body.removeClass('NB-theme-sans-serif');
+            $body.removeClass('NB-theme-serif');
+            
+            if (NEWSBLUR.Preferences['story_styling'] == 'sans-serif') {
+                $body.addClass('NB-theme-sans-serif');
+            } else if (NEWSBLUR.Preferences['story_styling'] == 'serif') {
+                $body.addClass('NB-theme-serif');
+            }
+            
+            if (reset_stories) {
+                this.show_correct_story_titles_in_unread_view({'animate': true, 'follow': true});
+            }
+        },
+        
         prefetch_story_locations_in_feed_view: function() {
             var self = this;
             var stories = this.model.stories;
@@ -2205,6 +2222,7 @@
             var $feed_view = this.$s.$feed_view;
             var $stories = $('.NB-feed-stories', $feed_view);
             var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
+            $story.find('.NB-feed-story-endbar').remove();
             $stories.append($endbar);
         },
         

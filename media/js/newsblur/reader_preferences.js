@@ -190,6 +190,21 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Site sidebar'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-story-styling-1', type: 'radio', name: 'story_styling', value: 'sans-serif' }),
+                            $.make('label', { 'for': 'NB-preference-story-styling-1', className: 'NB-preference-story-styling-sans-serif' }, 'Lucida Grande, sans serif')
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-story-styling-2', type: 'radio', name: 'story_styling', value: 'serif' }),
+                            $.make('label', { 'for': 'NB-preference-story-styling-2', className: 'NB-preference-story-styling-serif' }, 'Georgia, serif')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Feed view styling'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-password' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', { className: 'NB-preference-option' }, [
@@ -275,6 +290,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
+        $('input[name=story_styling]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.story_styling) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
     },
     
     handle_cancel: function() {
@@ -308,6 +329,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return self.disable_save();
             }
             NEWSBLUR.reader.switch_feed_view_unread_view();
+            NEWSBLUR.reader.apply_story_styling(true);
             $.modal.close();
         });
     },
