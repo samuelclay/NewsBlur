@@ -37,6 +37,7 @@ body.NB-theme-sans-serif #story_pane {
 body.NB-theme-serif #story_pane .NB-feed-story-content {
   font-family: “Palatino Linotype”, Georgia, “URW Palladio L”, “Century Schoolbook L”, serif;
   font-size: 14px;
+  line-height: 20px;
 }
 
 /* =================== */

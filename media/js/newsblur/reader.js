@@ -3439,7 +3439,7 @@
             });
             if (stopPropagation) return;
             
-            $.targetIs(e, { tagSelector: '#feed_list .feed' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '#feed_list .feed:not(.NB-empty)' }, function($t, $p){
                 e.preventDefault();
                 if (!self.flags['sorting_feed']) {
                     var feed_id = $t.data('feed_id');
