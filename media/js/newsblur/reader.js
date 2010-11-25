@@ -2942,10 +2942,10 @@
                 
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
-                    var limit = $('.story', this.$s.$story_titles).length;
+                    // var limit = $('.story', this.$s.$story_titles).length;
                     // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
-                    $feed_on_page.replaceWith($feed);
-                    this.mark_feed_as_selected(this.active_feed, $feed);
+                    // $feed_on_page.replaceWith($feed);
+                    // this.mark_feed_as_selected(this.active_feed, $feed);
                 } else {
                     if (!this.flags['has_unfetched_feeds']) {
                         NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
