@@ -1625,6 +1625,7 @@
             this.mark_feed_as_read_update_counts(feed_id);
 
             this.model.mark_feed_as_read([feed_id]);
+            this.update_header_counts(true);
         },
         
         mark_folder_as_read: function(folder_name, $folder) {
@@ -1636,6 +1637,7 @@
             }, this));
             this.mark_feed_as_read_update_counts(null, $folder);
             this.model.mark_feed_as_read(feeds);
+            this.update_header_counts(true);
         },
         
         mark_feed_as_read_update_counts: function(feed_id, $folder) {
