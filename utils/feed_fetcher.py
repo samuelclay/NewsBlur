@@ -9,14 +9,13 @@ from utils import feedparser
 from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit
+from utils.feed_functions import timelimit, TimeoutError
 import time
 import datetime
 import traceback
 import multiprocessing
 import urllib2
 import xml.sax
-import socket
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -42,12 +41,11 @@ class FetchFeed:
         self.options = options
         self.fpf = None
     
-    @timelimit(20)
+    @timelimit(30)
     def fetch(self):
         """ 
         Uses feedparser to download the feed. Will be parsed later.
         """
-        socket.setdefaulttimeout(30)
         identity = self.get_identity()
         log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
                                                             unicode(self.feed)[:30],
@@ -83,7 +81,6 @@ class ProcessFeed:
         self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
-        self.lock = multiprocessing.Lock()
         self.entry_trans = {
             ENTRY_NEW:'new',
             ENTRY_UPDATED:'updated',
@@ -218,7 +215,7 @@ class ProcessFeed:
                       unicode(self.feed)[:30], 
                       u' '.join(u'%s=%d' % (self.entry_trans[key],
                               ret_values[key]) for key in self.entry_keys),))
-        self.feed.update_all_statistics(lock=self.lock)
+        self.feed.update_all_statistics()
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
@@ -257,8 +254,6 @@ class Dispatcher:
     def process_feed_wrapper(self, feed_queue):
         """ wrapper for ProcessFeed
         """
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        
         delta = None
         current_process = multiprocessing.current_process()
         identity = "X"
@@ -273,9 +268,9 @@ class Dispatcher:
             }
             start_time = datetime.datetime.utcnow()
 
-            feed = self.refresh_feed(feed_id)
-            
             try:
+                feed = self.refresh_feed(feed_id)
+                
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
@@ -290,14 +285,10 @@ class Dispatcher:
                             feed.fetched_once = True
                             feed.save()
                         MUserStory.delete_old_stories(feed_id=feed.pk)
-                        user_subs = UserSubscription.objects.filter(feed=feed)
-                        logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (unicode(feed)[:30], user_subs.count()))
-                        stories_db = MStory.objects(story_feed_id=feed.pk,
-                                                    story_date__gte=UNREAD_CUTOFF)
-                        for sub in user_subs:
-                            cache.delete('usersub:%s' % sub.user_id)
-                            silent = False if self.options['verbose'] >= 2 else True
-                            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+                        try:
+                            self.count_unreads_for_subscribers(feed)
+                        except TimeoutError:
+                            logging.debug('   ---> [%-30s] Unread count took too long...' % (unicode(feed)[:30],))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)
@@ -307,13 +298,17 @@ class Dispatcher:
                 feed.save_feed_history(e.code, e.msg, e.fp.read())
                 fetched_feed = None
             except Feed.DoesNotExist, e:
-                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed)[:30]))
-                return
+                logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed_id)[:30]))
+                continue
+            except TimeoutError, e:
+                logging.debug('   ---> [%-30s] Feed fetch timed out...' % (unicode(feed)[:30]))
+                feed.save_feed_history(505, e.msg, e.fp.read())
+                fetched_feed = None
             except Exception, e:
-                logging.debug('[%d] ! -------------------------' % (feed.id,))
+                logging.debug('[%d] ! -------------------------' % (feed_id,))
                 tb = traceback.format_exc()
                 logging.debug(tb)
-                logging.debug('[%d] ! -------------------------' % (feed.id,))
+                logging.debug('[%d] ! -------------------------' % (feed_id,))
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
@@ -354,7 +349,29 @@ class Dispatcher:
             seconds_taken=time_taken.seconds
         )
         history.save()
-
+    
+    @timelimit(20)
+    def count_unreads_for_subscribers(self, feed):
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        user_subs = UserSubscription.objects.filter(feed=feed, 
+                                                    active=True,
+                                                    user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
+                                            .order_by('-last_read_date')
+        logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (
+                      unicode(feed)[:30], user_subs.count()))
+        
+        stories_db = MStory.objects(story_feed_id=feed.pk,
+                                    story_date__gte=UNREAD_CUTOFF)
+        for sub in user_subs:
+            cache.delete('usersub:%s' % sub.user_id)
+            sub.needs_unread_recalc = True
+            sub.save()
+            
+        if self.options['compute_scores']:
+            for sub in user_subs:
+                silent = False if self.options['verbose'] >= 2 else True
+                sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+            
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
         """

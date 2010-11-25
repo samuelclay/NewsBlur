@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
 from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
+from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
 from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
@@ -30,8 +31,12 @@ def load_feed_statistics(request):
     
     # Subscribers
     stats['subscriber_count'] = feed.num_subscribers
+    stats['stories_last_month'] = feed.stories_last_month
+    stats['last_load_time'] = feed.last_load_time
+    stats['premium_subscribers'] = feed.premium_subscribers
+    stats['active_subscribers'] = feed.active_subscribers
     
-    logging.info(" ---> [%s] Statistics: %s" % (request.user, feed))
+    logging.info(" ---> [%s] Statistics: %s (%s/%s/%s subs)" % (request.user, feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
     
     return stats
     
@@ -54,7 +59,9 @@ def exception_retry(request):
         feed.fetched_once = True
     feed.save()
     
-    feed.update(force=True)
+    feed.update(force=True, compute_scores=False)
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub.calculate_feed_scores(silent=False)
     
     return {'code': 1}
     
@@ -76,10 +83,9 @@ def exception_change_feed_address(request):
     feed.feed_address = feed_address
     feed.next_scheduled_update = datetime.datetime.utcnow()
     retry_feed = feed
-    try:
-        feed.save()
-    except IntegrityError:
-        original_feed = Feed.objects.get(feed_address=feed_address)
+    duplicate_feed_id = feed.save()
+    if duplicate_feed_id:
+        original_feed = Feed.objects.get(pk=duplicate_feed_id)
         retry_feed = original_feed
         original_feed.next_scheduled_update = datetime.datetime.utcnow()
         original_feed.has_feed_exception = False
@@ -115,16 +121,14 @@ def exception_change_feed_link(request):
         feed.feed_link = feed_link
         feed.feed_address = feed_address
         feed.next_scheduled_update = datetime.datetime.utcnow()
-        try:
-            feed.save()
-        except IntegrityError:
-            original_feed = Feed.objects.get(feed_address=feed_address)
+        duplicate_feed_id = feed.save()
+        if duplicate_feed_id:
+            original_feed = Feed.objects.get(pk=duplicate_feed_id)
             retry_feed = original_feed
             original_feed.next_scheduled_update = datetime.datetime.utcnow()
             original_feed.has_page_exception = False
             original_feed.active = True
             original_feed.save()
-            merge_feeds(original_feed.pk, feed.pk)
     
     logging.info(" ---> [%s] Fixing feed exception by link: %s" % (request.user, retry_feed.feed_link))
     retry_feed.update()

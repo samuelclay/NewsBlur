@@ -2,7 +2,6 @@
 from utils.munin.base import MuninGraph
 from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription
-from django.db.models import Q
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -11,6 +10,7 @@ graph_config = {
     'feeds.label': 'feeds',
     'subscriptions.label': 'subscriptions',
     'exception_feeds.label': 'exception_feeds',
+    'exception_pages.label': 'exception_pages',
     'inactive_feeds.label': 'inactive_feeds',
     'duplicate_feeds.label': 'duplicate_feeds',
     'active_feeds.label': 'active_feeds',
@@ -19,7 +19,8 @@ graph_config = {
 metrics = {
     'feeds': Feed.objects.count(),
     'subscriptions': UserSubscription.objects.count(),
-    'exception_feeds': Feed.objects.filter(Q(has_feed_exception=True) | Q(has_page_exception=True)).count(),
+    'exception_feeds': Feed.objects.filter(has_feed_exception=True).count(),
+    'exception_pages': Feed.objects.filter(has_page_exception=True).count(),
     'inactive_feeds': Feed.objects.filter(active=False).count(),
     'duplicate_feeds': DuplicateFeed.objects.count(),
     'active_feeds': Feed.objects.filter(active_subscribers__gt=0).count(),

@@ -18,6 +18,10 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
-@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+
+- (void)markStoryAsRead;
+- (void)showStory;
+- (void)showOriginalSubview:(id)sender;
 
 @end

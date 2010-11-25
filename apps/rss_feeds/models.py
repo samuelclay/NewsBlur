@@ -6,6 +6,7 @@ import re
 import mongoengine as mongo
 import pymongo
 import zlib
+import urllib
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -61,7 +62,7 @@ class Feed(models.Model):
             self.save()
         return self.feed_title
 
-    def save(self, lock=None, *args, **kwargs):
+    def save(self, *args, **kwargs):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
         if not self.last_update:
@@ -84,11 +85,11 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             pass
     
-    def update_all_statistics(self, lock=None):
-        self.count_subscribers(lock=lock)
-        self.count_stories(lock=lock)
-        self.save_popular_authors(lock=lock)
-        self.save_popular_tags(lock=lock)
+    def update_all_statistics(self):
+        self.count_subscribers()
+        self.count_stories()
+        self.save_popular_authors()
+        self.save_popular_tags()
     
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
@@ -177,8 +178,8 @@ class Feed(models.Model):
             self.exception_code = 0
             self.save()
     
-    def count_subscribers(self, verbose=False, lock=None):
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=30)
+    def count_subscribers(self, verbose=False):
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         from apps.reader.models import UserSubscription
         
         subs = UserSubscription.objects.filter(feed=self)
@@ -198,7 +199,7 @@ class Feed(models.Model):
         )
         self.premium_subscribers = premium_subs.count()
         
-        self.save(lock=lock)
+        self.save()
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -211,23 +212,23 @@ class Feed(models.Model):
                     self.feed_title,
                 ),
 
-    def count_stories(self, verbose=False, lock=None):
-        self.save_feed_stories_last_month(verbose, lock)
-        # self.save_feed_story_history_statistics(lock)
+    def count_stories(self, verbose=False):
+        self.save_feed_stories_last_month(verbose)
+        # self.save_feed_story_history_statistics()
         
-    def save_feed_stories_last_month(self, verbose=False, lock=None):
+    def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
                                             story_date__gte=month_ago).count()
         self.stories_last_month = stories_last_month
         
-        self.save(lock=lock)
+        self.save()
             
         if verbose:
             print "  ---> %s [%s]: %s stories last month" % (self.feed_title, self.pk,
                                                              self.stories_last_month)
     
-    def save_feed_story_history_statistics(self, lock=None, current_counts=None):
+    def save_feed_story_history_statistics(self, current_counts=None):
         """
         Fills in missing months between earlier occurances and now.
         
@@ -294,10 +295,10 @@ class Feed(models.Model):
             self.average_stories_per_month = 0
         else:
             self.average_stories_per_month = total / month_count
-        self.save(lock)
+        self.save()
         
         
-    def update(self, force=False, single_threaded=True):
+    def update(self, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -311,6 +312,7 @@ class Feed(models.Model):
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
+            'compute_scores': compute_scores,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -367,7 +369,7 @@ class Feed(models.Model):
                     elif existing_story.get('story_content_z'):
                         original_content = zlib.decompress(existing_story.get('story_content_z'))
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
-                    if len(story_content) > 10:
+                    if story_content and len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
                         story_content_diff = diff.getDiff()
                     else:
@@ -400,7 +402,7 @@ class Feed(models.Model):
             
         return ret_values
         
-    def save_popular_tags(self, feed_tags=None, lock=None):
+    def save_popular_tags(self, feed_tags=None):
         if not feed_tags:
             try:
                 all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
@@ -418,14 +420,14 @@ class Feed(models.Model):
         #       Tumblr writers.
         if len(popular_tags) < 1024:
             self.popular_tags = popular_tags
-            self.save(lock=lock)
+            self.save()
             return
 
         tags_list = json.decode(feed_tags) if feed_tags else []
         if len(tags_list) > 1:
             self.save_popular_tags(tags_list[:-1])
     
-    def save_popular_authors(self, feed_authors=None, lock=None):
+    def save_popular_authors(self, feed_authors=None):
         if not feed_authors:
             authors = defaultdict(int)
             for story in MStory.objects(story_feed_id=self.pk).only('story_author_name'):
@@ -437,23 +439,25 @@ class Feed(models.Model):
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
             self.popular_authors = popular_authors
-            self.save(lock=lock)
+            self.save()
             return
 
         if len(feed_authors) > 1:
-            self.save_popular_authors(feed_authors=feed_authors[:-1], lock=lock)
+            self.save_popular_authors(feed_authors=feed_authors[:-1])
             
     def trim_feed(self):
         from apps.reader.models import MUserStory
-        trim_cutoff = 250
+        trim_cutoff = 500
         if self.active_subscribers <= 1:
-            trim_cutoff = 100
+            trim_cutoff = 50
         elif self.active_subscribers <= 3:
-            trim_cutoff = 150
+            trim_cutoff = 100
         elif self.active_subscribers <= 5:
-            trim_cutoff = 200
+            trim_cutoff = 150
         elif self.active_subscribers <= 10:
             trim_cutoff = 250
+        elif self.active_subscribers <= 25:
+            trim_cutoff = 350
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
@@ -488,7 +492,7 @@ class Feed(models.Model):
             story['story_authors'] = story_db.story_author_name
             story['story_title'] = story_db.story_title
             story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
-            story['story_permalink'] = story_db.story_permalink
+            story['story_permalink'] = urllib.unquote(urllib.unquote(story_db.story_permalink))
             story['story_feed_id'] = self.pk
             story['id'] = story_db.story_guid
             
@@ -588,28 +592,30 @@ class Feed(models.Model):
     def get_next_scheduled_update(self):
         # Use stories per month to calculate next feed update
         updates_per_day = self.stories_last_month / 30.0
-        if updates_per_day < 1 and self.num_subscribers > 2:
-            updates_per_day = 1
+        # if updates_per_day < 1 and self.num_subscribers > 2:
+        #     updates_per_day = 1
         # 0 updates per day = 24 hours
         # 1 subscriber:
         #   1 update per day = 6 hours
         #   2 updates = 3.5 hours
         #   4 updates = 2 hours
-        #   10 updates = 80 minutes
+        #   10 updates = 1 hour
         # 2 subscribers:
         #   1 update per day = 4.5 hours
         #   10 updates = 55 minutes
-        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.55) 
-                                                   * (updates_per_day**.75)))
-        
+        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.20) 
+                                                   * (updates_per_day**.70)))
+        if self.premium_subscribers > 0:
+            updates_per_day_delay = updates_per_day_delay / 4
         # Lots of subscribers = lots of updates
         # 144 hours for 0 subscribers.
         # 24 hours for 1 subscriber.
         # 7 hours for 2 subscribers.
         # 3 hours for 3 subscribers.
         # 25 min for 10 subscribers.
-        subscriber_bonus = 24 * 60 / max(.167, max(0, self.num_subscribers)**1.75)
-        subscriber_bonus = subscriber_bonus / max(1, (5 * self.premium_subscribers))
+        subscriber_bonus = 24 * 60 / max(.167, max(0, self.num_subscribers)**1.35)
+        if self.premium_subscribers > 0:
+            subscriber_bonus = subscriber_bonus / 4
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -619,13 +625,13 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = int(updates_per_day_delay + subscriber_bonus + slow_punishment)
+        total = max(6, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
         return total, random_factor
         
-    def set_next_scheduled_update(self, lock=None):
+    def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update()
 
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
@@ -633,12 +639,12 @@ class Feed(models.Model):
             
         self.next_scheduled_update = next_scheduled_update
 
-        self.save(lock=lock)
+        self.save()
 
-    def schedule_feed_fetch_immediately(self, lock=None):
+    def schedule_feed_fetch_immediately(self):
         self.next_scheduled_update = datetime.datetime.utcnow()
 
-        self.save(lock=lock)
+        self.save()
         
     def calculate_collocations_story_content(self,
                                              collocation_measures=TrigramAssocMeasures,
@@ -772,7 +778,7 @@ class MStory(mongo.Document):
     
     meta = {
         'collection': 'stories',
-        'indexes': ['story_feed_id', 'story_date', ('story_feed_id', '-story_date')],
+        'indexes': ['story_date', ('story_feed_id', '-story_date')],
         'ordering': ['-story_date'],
         'allow_inheritance': False,
     }
@@ -884,8 +890,8 @@ class FeedLoadtime(models.Model):
     
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, unique=True)
+    duplicate_feed_id = models.CharField(max_length=255, null=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
-    
 
 def merge_feeds(original_feed_id, duplicate_feed_id):
     from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
@@ -939,7 +945,11 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
         
         if original_story:
             user_story.story = original_story[0]
-            user_story.save()
+            try:
+                user_story.save()
+            except OperationError:
+                # User read the story in the original feed, too. Ugh, just ignore it.
+                pass
         else:
             logging.info(" ***> Can't find original story: %s" % duplicate_story.id)
             user_story.delete()
@@ -972,11 +982,19 @@ def merge_feeds(original_feed_id, duplicate_feed_id):
     try:
         DuplicateFeed.objects.create(
             duplicate_address=duplicate_feed.feed_address,
+            duplicate_feed_id=duplicate_feed.pk,
             feed=original_feed
         )
     except (IntegrityError, OperationError), e:
         logging.info(" ***> Could not save DuplicateFeed: %s" % e)
     
+    # Switch this dupe feed's dupe feeds over to the new original.
+    duplicate_feeds_duplicate_feeds = DuplicateFeed.objects.filter(feed=duplicate_feed)
+    for dupe_feed in duplicate_feeds_duplicate_feeds:
+        dupe_feed.feed = original_feed
+        dupe_feed.duplicate_feed_id = duplicate_feed.pk
+        dupe_feed.save()
+        
     duplicate_feed.delete()
     
                     

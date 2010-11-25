@@ -1,5 +1,5 @@
 /*
- * jQuery UI Dialog 1.8.4
+ * jQuery UI Dialog 1.8.5
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -67,10 +67,11 @@ $.widget("ui.dialog", {
 			this.originalTitle = "";
 		}
 
+		this.options.title = this.options.title || this.originalTitle;
 		var self = this,
 			options = self.options,
 
-			title = options.title || self.originalTitle || '&#160;',
+			title = options.title || '&#160;',
 			titleId = $.ui.dialog.getTitleId(self.element),
 
 			uiDialog = (self.uiDialog = $('<div></div>'))
@@ -328,8 +329,8 @@ $.widget("ui.dialog", {
 			uiDialog.find('.ui-dialog-buttonpane :tabbable').get().concat(
 				uiDialog.get()))).eq(0).focus();
 
-		self._trigger('open');
 		self._isOpen = true;
+		self._trigger('open');
 
 		return self;
 	},
@@ -356,10 +357,15 @@ $.widget("ui.dialog", {
 			});
 		}
 		if (hasButtons) {
-			$.each(buttons, function(name, fn) {
-				var button = $('<button type="button"></button>')
-					.text(name)
-					.click(function() { fn.apply(self.element[0], arguments); })
+			$.each(buttons, function(name, props) {
+				props = $.isFunction( props ) ?
+					{ click: props, text: name } :
+					props;
+				var button = $('<button></button>', props)
+					.unbind('click')
+					.click(function() {
+						props.click.apply(self.element[0], arguments);
+					})
 					.appendTo(uiButtonSet);
 				if ($.fn.button) {
 					button.button();
@@ -643,7 +649,8 @@ $.widget("ui.dialog", {
 		this.element
 			.css(options.height === 'auto' ? {
 					minHeight: Math.max(options.minHeight - nonContentHeight, 0),
-					height: 'auto'
+					height: $.support.minHeight ? 'auto' :
+						Math.max(options.minHeight - nonContentHeight, 0)
 				} : {
 					minHeight: 0,
 					height: Math.max(options.height - nonContentHeight, 0)				
@@ -657,7 +664,7 @@ $.widget("ui.dialog", {
 });
 
 $.extend($.ui.dialog, {
-	version: "1.8.4",
+	version: "1.8.5",
 
 	uuid: 0,
 	maxZ: 0,
@@ -693,7 +700,10 @@ $.extend($.ui.dialog.overlay, {
 				if ($.ui.dialog.overlay.instances.length) {
 					$(document).bind($.ui.dialog.overlay.events, function(event) {
 						// stop events if the z-index of the target is < the z-index of the overlay
-						return ($(event.target).zIndex() >= $.ui.dialog.overlay.maxZ);
+						// we cannot return true when we don't want to cancel the event (#3523)
+						if ($(event.target).zIndex() < $.ui.dialog.overlay.maxZ) {
+							return false;
+						}
 					});
 				}
 			}, 1);

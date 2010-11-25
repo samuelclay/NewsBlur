@@ -110,7 +110,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                                 $.make('option', { value: 'Australia/Adelaide' }, '(GMT+09:30) Adelaide'),
                                 $.make('option', { value: 'Australia/Darwin' }, '(GMT+09:30) Darwin'),
                                 $.make('option', { value: 'Australia/Brisbane' }, '(GMT+10:00) Brisbane'),
-                                $.make('option', { value: 'Australia/Hobart' }, '(GMT+10:00) Hobart'),
+                                $.make('option', { value: 'Australia/Sydney' }, '(GMT+10:00) Sydney, Hobart'),
                                 $.make('option', { value: 'Asia/Vladivostok' }, '(GMT+10:00) Vladivostok'),
                                 $.make('option', { value: 'Australia/Lord_Howe' }, '(GMT+10:30) Lord Howe Island'),
                                 $.make('option', { value: 'Etc/GMT-11' }, '(GMT+11:00) Solomon Is., New Caledonia'),
@@ -158,15 +158,52 @@ NEWSBLUR.ReaderPreferences.prototype = {
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
-                            $.make('label', { 'for': 'NB-preference-window-1' }, 'Normally')
+                            $.make('label', { 'for': 'NB-preference-window-1' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_view_gallery.png' }),
+                                'Normally'
+                            ])
                         ]),
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-window-2', type: 'radio', name: 'new_window', value: 1 }),
-                            $.make('label', { 'for': 'NB-preference-window-2' }, 'In a new window')
+                            $.make('label', { 'for': 'NB-preference-window-2' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_side_expand.png' }),
+                                'In a new window'
+                            ])
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
                         'Open links'
+                    ])
+                ]),
+                $.make('div', { className: 'NB-preference NB-preference-hidereadfeeds' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidereadfeeds-1', type: 'radio', name: 'hide_read_feeds', value: 0 }),
+                            $.make('label', { 'for': 'NB-preference-hidereadfeeds-1' }, 'Show everything')
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidereadfeeds-2', type: 'radio', name: 'hide_read_feeds', value: 1 }),
+                            $.make('label', { 'for': 'NB-preference-hidereadfeeds-2' }, 'Hide sites with no unread stories')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Site sidebar'
+                    ])
+                ]),
+                $.make('div', { className: 'NB-preference NB-preference-password' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', { className: 'NB-preference-option' }, [
+                            $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
+                            $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-option' }, [
+                            $.make('label', { 'for': 'NB-preference-password-new' }, 'New password'),
+                            $.make('input', { id: 'NB-preference-password-new', type: 'password', name: 'new_password', value: '' })
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Change Password',
+                        $.make('div', { className: 'NB-preference-error'})
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
@@ -226,8 +263,14 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
-        $('input[name=new_window]', this.$modal).each(function() {
+         $('input[name=new_window]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=hide_read_feeds]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.hide_read_feeds) {
                 $(this).attr('checked', true);
                 return false;
             }
@@ -246,7 +289,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
     serialize_preferences: function() {
         var preferences = {};
 
-        $('input[type=radio]:checked, select', this.$modal).each(function() {
+        $('input[type=radio]:checked, select, input[type=password]', this.$modal).each(function() {
             preferences[$(this).attr('name')] = $(this).val();
         });
 
@@ -254,10 +297,17 @@ NEWSBLUR.ReaderPreferences.prototype = {
     },
     
     save_preferences: function() {
+        var self = this;
         var form = this.serialize_preferences();
+        $('.NB-preference-error', this.$modal).text('');
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
-        this.model.save_preferences(form, function() {
+        this.model.save_preferences(form, function(data) {
+            if (data.code == -1) {
+                $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
+                return self.disable_save();
+            }
+            NEWSBLUR.reader.switch_feed_view_unread_view();
             $.modal.close();
         });
     },
@@ -277,9 +327,17 @@ NEWSBLUR.ReaderPreferences.prototype = {
     },
     
     handle_change: function() {
-        $('input[type=radio],select', this.$modal).bind('change', _.bind(function() {
-            $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save Preferences');
-        }, this));
+        
+        $('input[type=radio],select,input[type=password]', this.$modal).bind('change', _.bind(this.enable_save, this));
+        $('input[type=password]', this.$modal).bind('keydown', _.bind(this.enable_save, this));
+    },
+    
+    enable_save: function() {
+        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save Preferences');
+    },
+    
+    disable_save: function() {
+        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
     }
     
 };

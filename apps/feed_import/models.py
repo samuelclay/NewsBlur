@@ -109,8 +109,9 @@ class GoogleReaderImporter(Importer):
         # print dict(folders)
         self.rearrange_folders(folders)
         logging.info(" ---> [%s] Google Reader import: %s" % (self.user, self.subscription_folders))
-        UserSubscriptionFolders.objects.create(user=self.user,
-                                               folders=json.encode(self.subscription_folders))
+        UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
+                                                      folders=json.encode(self.subscription_folders)))
+
 
     def parse(self):
         self.feeds = lxml.etree.fromstring(self.feeds_xml).xpath('/object/list/object')

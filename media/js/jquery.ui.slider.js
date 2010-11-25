@@ -1,5 +1,5 @@
 /*
- * jQuery UI Slider 1.8.4
+ * jQuery UI Slider 1.8.5
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -674,7 +674,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 });
 
 $.extend( $.ui.slider, {
-	version: "1.8.4"
+	version: "1.8.5"
 });
 
 }(jQuery));

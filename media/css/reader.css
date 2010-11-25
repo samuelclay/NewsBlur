@@ -306,7 +306,7 @@ a img {
     background-color: #D7DDE6;
 }
 
-.left-center {
+.left-center-content {
     display: none;
     overflow-x: hidden !important;
     overflow-y: auto !important;
@@ -349,6 +349,7 @@ a img {
 .NB-feedlist {
     background-color: #D7DDE6;
     overflow-y: auto;
+    overflow-x: hidden;
     font-size: 11px;
     list-style: none;
     margin: 0;
@@ -359,7 +360,7 @@ a img {
 
 .NB-feedlist li.folder {
     padding: 2px 0 0;
-    margin: 4px 0 0;
+    margin: 0px 0 0;
 }
 
 .NB-feedlist ul.folder {
@@ -448,6 +449,15 @@ a img {
   display: block;
 }
 
+.NB-feedlist .feed.NB-empty {
+  border: none;
+  margin: 0;
+  padding: 0;
+  height: 4px;
+}
+.NB-feedlist.NB-feed-sorting .feed.NB-empty {
+/*  height: 16px;*/
+}
 .feed.NB-feed-sorting,
 .NB-feedlist.NB-feed-sorting {
     cursor: move !important;
@@ -544,6 +554,7 @@ a img {
 }
 
 .NB-feedlist .NB-feeds-list-highlight {
+    position: relative;
     background: #f6a828 url('../theme/images/ui-bg_highlight-soft_75_ffe45c_1x100.png') 0 50% repeat-x;
     border-top: 1px solid #A8A8A8;
     border-bottom: 1px solid #A8A8A8;
@@ -563,6 +574,27 @@ a img {
 
 .NB-feedlist .folder_title .unread_count {
   text-shadow: none;
+}
+
+.NB-feedlist-hide-read-feeds .feed {
+  display: none;
+}
+.NB-feedlist-hide-read-feeds.unread_view_positive .unread_positive {
+  display: block;
+}
+.NB-feedlist-hide-read-feeds.unread_view_neutral .unread_positive,
+.NB-feedlist-hide-read-feeds.unread_view_neutral .unread_neutral {
+  display: block;
+}
+
+.NB-feedlist-hide-read-feeds.unread_view_negative .unread_positive,
+.NB-feedlist-hide-read-feeds.unread_view_negative .unread_neutral,
+.NB-feedlist-hide-read-feeds.unread_view_negative .unread_negative {
+  display: block;
+}
+
+.NB-feedlist-hide-read-feeds .feed.NB-empty {
+  display: block;
 }
 
 /* ================= */
@@ -646,7 +678,6 @@ a img {
     display: block;
 }
 
-
 /* ====================== */
 /* = Feeds Progress Bar = */
 /* ====================== */
@@ -654,10 +685,6 @@ a img {
 #NB-progress {
   height: 40px;
   width: 100%;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  display: none;
   background-color: #505050;
   border-top: 1px solid #777D86;
   border-bottom: 1px solid #101010;
@@ -1345,6 +1372,72 @@ background: transparent;
     display: none;
 }
 
+/* ================ */
+/* = Feeds Header = */
+/* ================ */
+
+.NB-feeds-header-container {
+  background: #4F5358 url("../img/reader/feeds_header_background.png") repeat-x scroll left top;
+  border-bottom: 1px solid #777D86;
+}
+
+.NB-feeds-header {
+  color: #FFF;
+  height: 15px;
+  font-size: 11px;
+  padding: 2px 6px 2px 0;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #303030;
+  border-bottom: 1px solid #E9E9E9;
+/*  background: transparent url('../img/icons/silk/house.png') no-repeat 2px 2px;*/
+}
+
+.NB-feeds-header:hover {
+  color: #DCDCDC;
+  cursor: default;
+}
+
+.NB-feeds-header .NB-feeds-header-right {
+  float: right;
+  color: #808080;
+}
+
+.NB-feeds-header .NB-feeds-header-left {
+  float: left;
+  color: #FFF;
+}
+
+.NB-feeds-header .NB-feeds-header-count {
+  padding: 0 0 0 16px;
+  text-align: left;
+}
+.NB-feeds-header .NB-feeds-header-count.NB-empty {
+    opacity: .45;
+    color: #B0B0B0;
+}
+.NB-feeds-header .NB-feeds-header-negative {
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-neutral {
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-positive {
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-home {
+    display: none;
+    padding: 0 0 0 4px;
+    color: #AFCAEB;
+}
+.NB-feeds-header.NB-active:hover {
+  cursor: pointer;
+}
+.NB-feeds-header.NB-active:hover .NB-feeds-header-home {
+    display: block;
+}
+.NB-feeds-header.NB-active:hover .NB-feeds-header-count {
+    display: none;
+}
 /* ============ */
 /* = Task Bar = */
 /* ============ */
@@ -1471,6 +1564,7 @@ background: transparent;
 .NB-taskbar .task_button.task_profile {
     background: transparent url('../img/icons/silk/user.png') no-repeat center 8px;
 }
+
 
 .NB-taskbar .taskbar_nav_story {
   right: 0;
@@ -1709,6 +1803,11 @@ form.opml_import_form input {
   line-height: 12px;
   margin: 1px 0;
   padding: 0;
+  width: 121px; 
+  float: left;
+}
+#NB-splash .NB-splash-links .NB-splash-link.NB-first {
+  clear: both;
 }
 
 
@@ -1721,6 +1820,14 @@ form.opml_import_form input {
 #NB-splash .NB-splash-links .NB-splash-link a:hover {
   background-color: #E9ECF6;
 }
+#NB-splash .NB-splash-links .NB-splash-link-github a:hover {
+  background: #E9ECF6 url('../img/reader/github_icon.png') no-repeat 0 0;
+}
+
+#NB-splash .NB-splash-links .NB-splash-link-twitter a:hover {
+  background: #E9ECF6 url('../img/reader/twitter_icon.png') no-repeat 0 0;
+}
+
 #NB-splash .NB-splash-links a {
     font-weight: bold;
     text-transform: uppercase;
@@ -1741,7 +1848,6 @@ a.NB-splash-link {
 a.NB-splash-link:hover {
     color: #A85B40;
 }
-
 .NB-splash-info {
     background-color: white;
     z-index: 1;
@@ -1837,6 +1943,13 @@ a.NB-splash-link:hover {
 .NB-modal .NB-modal-field input[type=text] {
     width: 446px;
     font-size: 14px;
+    font-size: 14px;
+    padding: 2px;
+    margin: 0px 4px 6px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
 }
 
 .NB-modal .NB-modal-field input[type=checkbox] {
@@ -3560,6 +3673,12 @@ background: transparent;
   float: left;
   cursor: pointer;
 }
+.NB-modal-preferences .NB-preference .NB-preference-error {
+  color: #83210A;
+  font-size: 11px;
+  margin-top: 4px;
+  font-weight: bold;
+}
 
 .NB-modal-preferences .NB-preference-view {
   padding-bottom: 4px;
@@ -3573,4 +3692,28 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-window input {
   margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference-window label img {
+  vertical-align: middle;
+  margin: 0 6px 0 2px;
+}
+.NB-modal-preferences .NB-preference-password .NB-preference-option {
+  float: left;
+  margin: 0 12px 0 0;
+}
+.NB-modal-preferences .NB-preference-password label {
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #505050;
+  margin: 0;
+}
+.NB-modal-preferences .NB-preference-password input {
+    width: 140px;
+    font-size: 14px;
+    padding: 2px;
+    margin: 0px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
 }

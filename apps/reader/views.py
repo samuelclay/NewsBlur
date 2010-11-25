@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login as login_user
+from django.contrib.auth import logout as logout_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
@@ -76,14 +77,22 @@ def index(request):
 
 @never_cache
 def login(request):
+    code = -1
     if request.method == "POST":
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.info(" ---> [%s] Login" % form.get_user())
-            return HttpResponseRedirect(reverse('index'))
+            if request.POST.get('api'):
+                logging.info(" ---> [%s] iPhone Login" % form.get_user())
+                code = 1
+            else:
+                logging.info(" ---> [%s] Login" % form.get_user())
+                return HttpResponseRedirect(reverse('index'))
 
-    return index(request)
+    if request.POST.get('api'):
+        return HttpResponse(json.encode(dict(code=code)), mimetype='application/json')
+    else:
+        return index(request)
     
 @never_cache
 def signup(request):
@@ -100,10 +109,12 @@ def signup(request):
 @never_cache
 def logout(request):
     logging.info(" ---> [%s] Logout" % request.user)
-    from django.contrib.auth import logout
-    logout(request)
+    logout_user(request)
     
-    return HttpResponseRedirect(reverse('index'))
+    if request.GET.get('api'):
+        return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
+    else:
+        return HttpResponseRedirect(reverse('index'))
     
 @json.json_view
 def load_feeds(request):
@@ -116,6 +127,9 @@ def load_feeds(request):
     except UserSubscriptionFolders.DoesNotExist:
         data = dict(feeds=[], folders=[])
         return data
+    except UserSubscriptionFolders.MultipleObjectsReturned:
+        UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
+        folders = UserSubscriptionFolders.objects.get(user=user)
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
@@ -153,6 +167,7 @@ def load_feeds(request):
     data = dict(feeds=feeds, folders=json.decode(folders.folders))
     return data
 
+@ajax_login_required
 @json.json_view
 def load_feeds_iphone(request):
     user = get_user(request)
@@ -183,7 +198,7 @@ def load_feeds_iphone(request):
     
     def make_feeds_folder(items, parent_folder="", depth=0):
         for item in items:
-            if isinstance(item, int):
+            if isinstance(item, int) and item in feeds:
                 feed = feeds[item]
                 if not parent_folder:
                     parent_folder = ' '
@@ -202,7 +217,7 @@ def load_feeds_iphone(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders)
+    data = dict(flat_folders=flat_folders, user=user.username)
     return data
 
 @json.json_view
@@ -372,8 +387,18 @@ def mark_all_as_read(request):
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(request.REQUEST['feed_id'])
-    
-    usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+
+    try:
+        usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+    except Feed.DoesNotExist:
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+        if duplicate_feed:
+            try:
+                usersub = UserSubscription.objects.get(user=request.user, 
+                                                       feed=duplicate_feed[0].feed)
+            except Feed.DoesNotExist:
+                return dict(code=-1)
+                
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
         usersub.save()
@@ -402,7 +427,10 @@ def mark_feed_as_read(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     code = 0
     for feed_id in feed_ids:
-        feed = Feed.objects.get(id=feed_id)
+        try:
+            feed = Feed.objects.get(id=feed_id)
+        except Feed.DoesNotExist:
+            continue
         code = 0
     
         us = UserSubscription.objects.get(feed=feed, user=request.user)
@@ -480,6 +508,9 @@ def add_url(request):
         user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
+        
+        if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
+            feed.update()
     
     return dict(code=code, message=message)
 
@@ -539,7 +570,7 @@ def delete_folder(request):
     folder_to_delete = request.POST['folder_name']
     in_folder = request.POST.get('in_folder', '')
     feed_ids_in_folder = request.REQUEST.getlist('feed_id')
-    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder]
+    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
@@ -574,6 +605,7 @@ def load_features(request):
     } for f in features]
     return features
 
+@ajax_login_required
 @json.json_view
 def save_feed_order(request):
     folders = request.POST.get('folders')
@@ -593,7 +625,7 @@ def save_feed_order(request):
 def get_feeds_trainer(request):
     classifiers = []
     feed_id = request.POST.get('feed_id')
-    usersubs = UserSubscription.objects.filter(user=request.user)
+    usersubs = UserSubscription.objects.filter(user=request.user, active=True)
     if feed_id:
         feed = get_object_or_404(Feed, pk=feed_id)
         usersubs = usersubs.filter(feed=feed)
@@ -621,14 +653,18 @@ def save_feed_chooser(request):
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
+    
     for sub in usersubs:
-        if sub.feed and sub.feed.pk in approved_feeds:
-            sub.active = True
-            activated += 1
-            sub.save()
-        elif sub.active:
-            sub.active = False
-            sub.save()
+        try:
+            if sub.feed.pk in approved_feeds:
+                sub.active = True
+                activated += 1
+                sub.save()
+            elif sub.active:
+                sub.active = False
+                sub.save()
+        except Feed.DoesNotExist:
+            pass
             
     queue_new_feeds(request.user)
     

@@ -43,6 +43,7 @@ def save_classifier(request):
             if opinion in post:
                 post_contents = post.getlist(opinion)
                 for post_content in post_contents:
+                    if not post_content: continue
                     classifier_dict = {
                         'user_id': request.user.pk,
                         'feed_id': feed_id,

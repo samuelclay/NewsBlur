@@ -20,8 +20,7 @@
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
-    
-
+    UIBarButtonItem * feedMarkReadButton;
 }
 
 - (void)fetchFeedDetail;
@@ -30,6 +29,7 @@
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
 
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, retain) NSMutableData * jsonString;

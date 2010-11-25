@@ -15,7 +15,7 @@
 
 @implementation FeedDetailViewController
 
-@synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider;
+@synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
 @synthesize stories;
 @synthesize appDelegate;
 @synthesize jsonString;
@@ -23,7 +23,6 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        
     }
     return self;
 }
@@ -31,14 +30,14 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     
-    [self fetchFeedDetail];
+    self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
     
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     //[appDelegate showNavigationBar:animated];
-    
+    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL 
 	[super viewDidAppear:animated];
 }
 
@@ -69,7 +68,8 @@
 
 - (void)fetchFeedDetail {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil) {
-        NSString *theFeedDetailURL = [[NSString alloc] initWithFormat:@"http://www.newsblur.com/reader/load_single_feed/?feed_id=%@", 
+        NSString *theFeedDetailURL = [[NSString alloc] 
+                                      initWithFormat:@"http://nb.local.host:8000/reader/load_single_feed/?feed_id=%@", 
                                       [appDelegate.activeFeed objectForKey:@"id"]];
         //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
@@ -120,9 +120,8 @@
     [jsonString release];
     
     // inform the user
-    NSLog(@"Connection failed! Error - %@ %@",
-          [error localizedDescription],
-          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
+    NSLog(@"Connection failed! Error - %@",
+          [error localizedDescription]);
 }
 
 
@@ -157,14 +156,34 @@
     }
     cell.storyTitle.text = [story objectForKey:@"story_title"];
     cell.storyDate.text = [story objectForKey:@"long_parsed_date"];
-    cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_orange.png"];
+    
+    if ([[story objectForKey:@"read_status"] intValue] != 1) {
+        // Unread story
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.05f green:0.05f blue:0.05f alpha:0.9];
+        cell.storyAuthor.textColor = [UIColor colorWithRed:0.86f green:0.66f blue:0.36 alpha:0.9];
+        cell.storyDate.textColor = [UIColor colorWithRed:0.26f green:0.36f blue:0.36 alpha:0.9];
+        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+        if (score > 0) {
+            cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
+        } else if (score == 0) {
+            cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_orange.png"];
+        } else if (score < 0) {
+            cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
+        }
+    } else {
+        // Read story
+        //cell.storyTitle.font = 
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.26f green:0.36f blue:0.36 alpha:0.4];
+        cell.storyAuthor.textColor = [UIColor colorWithRed:0.76f green:0.56f blue:0.36 alpha:0.4];
+        cell.storyDate.textColor = [UIColor colorWithRed:0.26f green:0.36f blue:0.36 alpha:0.4];
+        cell.storyUnreadIndicator.image = nil;
+    }
 
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:indexPath.row]];
-    NSLog(@"Active Story: %@", [appDelegate activeStory]);
 	[appDelegate loadStoryDetailView];
 	
 }

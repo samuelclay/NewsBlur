@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = (
 COMPRESS_JS = {
     'all': {
         'source_filenames': (
-            'js/jquery-1.4.2.js',
+            'js/jquery-1.4.3.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
@@ -110,6 +110,7 @@ COMPRESS_JS = {
             'js/jquery.tinysort.js',
             'js/jquery.fieldselection.js',
             'js/jquery.flot.js',
+            'js/jquery.tipsy.js',
             'js/underscore.js',
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
@@ -139,6 +140,7 @@ COMPRESS_CSS = {
         'source_filenames': (
             'css/reader.css',
             'css/jquery-ui/jquery.theme.css',
+            'css/jquery.tipsy.css',
         ),
         'output_filename': 'css/all-compressed-?.css'
     },
@@ -190,6 +192,7 @@ SOUTH_TESTS_MIGRATE = False
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 TEST_RUNNER = "utils.testrunner.TestRunner"
 DAYS_OF_UNREAD = 14
+SUBSCRIBER_EXPIRE = 12
 
 # ===========
 # = Logging =
@@ -281,7 +284,8 @@ CELERYD_LOG_LEVEL = 'ERROR'
 CELERY_IMPORTS = ("apps.rss_feeds.tasks", )
 CELERYD_CONCURRENCY = 4
 CELERY_IGNORE_RESULT = True
-CELERYD_MAX_TASKS_PER_CHILD = 100
+CELERYD_MAX_TASKS_PER_CHILD = 10
+#CELERYD_TASK_TIME_LIMIT = 12 * 30
 CELERY_DISABLE_RATE_LIMITS = True
 
 # ==================

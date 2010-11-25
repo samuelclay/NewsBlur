@@ -15,14 +15,11 @@ $(document).ready(function() {
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- A feed reader with intelligence.</h2>
 
-
-
 <div id="NB-splash">
 
   <div class="NB-account">
     
     {% if not user.is_authenticated %}
-      
       <div class="NB-module">
         <h5>
           <div class="NB-module-header-login">Login</div>
@@ -33,7 +30,6 @@ $(document).ready(function() {
           {% if login_form.errors %}
             {% for field, error in login_form.errors.items %}
               {{ error|safe }}
-              <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password">Forgot password?</a>
             {% endfor %}
           {% endif %}
       
@@ -43,7 +39,15 @@ $(document).ready(function() {
               {{ login_form.username }}
             </div>
             <div>
-              <div class="NB-signup-optional">Optional</div>
+              <div class="NB-signup-optional">
+                {% if login_form.errors %}
+                  {% for field, error in login_form.errors.items %}
+                    <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password" class="NB-splash-link">Forgot password?</a>
+                  {% endfor %}
+                {% else %}
+                  Optional
+                {% endif %}
+              </div>
               {{ login_form.password.label_tag }}
               {{ login_form.password }}
             </div>
@@ -184,7 +188,9 @@ $(document).ready(function() {
         </div>
         
       </div>
+      
     {% else %}
+    
       <div class="NB-module NB-module-stats">
         <h5 class="NB-module-header">
           Welcome, {{ user.username }}
@@ -242,7 +248,7 @@ $(document).ready(function() {
             </h3>
             <div class="NB-module-account-title">
                 <div class="NB-modal-submit">
-                  <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Train Your Filters</div>
+                  <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Launch Intelligence Trainer</div>
                 </div>
             </div>
           </div>
@@ -292,12 +298,14 @@ $(document).ready(function() {
     
   </div>
 
-    
   <div class="NB-splash-info">
     <ul class="NB-splash-links">
-      <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">FAQ</a></li>
+      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
       <li class="NB-splash-link NB-splash-meta-about"><a href="#about">About</a></li>
-      <li class="NB-splash-link"><a href="http://twitter.com/samuelclay">Twitter</a></li>
+      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
+      <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">Questions</a></li>
+      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
+      <li class="NB-splash-link"><a href="mailto:samuel@ofbrooklyn.com">Email Samuel</a></li>
     </ul>
     <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/reader/newsblur_logo.png" />
   </div>
@@ -307,24 +315,42 @@ $(document).ready(function() {
 
 
 <div class="left-pane">
-  
-    <div id="NB-feeds-list-loader">Everything is on its way...</div>
     
-    <ul class="left-center folder NB-feedlist" id="feed_list"></ul>
-    
-    <div id="NB-progress">
-      <div class="NB-progress-container">
-        <div class="NB-progress-close"></div>
-        <div class="NB-progress-title">Fetching your feeds</div>
-        <div class="NB-progress-percentage"></div>
-        <div class="NB-progress-link"></div>
-        <div class="NB-progress-counts">
-          <span class="NB-progress-counts-fetched"></span>
-          /
-          <span class="NB-progress-counts-total"></span>
+    <div class="left-center">
+
+      <div class="left-center-content">
+        <div id="NB-feeds-list-loader">Everything is on its way...</div>
+        <div class="NB-feeds-header-container">
+          <div class="NB-feeds-header">
+            <div class="NB-feeds-header-right">&nbsp;</div>
+            <div class="NB-feeds-header-left">
+              <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
+              <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
+              <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
+            </div>
+            <div class="NB-feeds-header-home">Dashboard</div>
+          </div>
         </div>
-        <div class="NB-progress-bar"></div>
+        <ul class="folder NB-feedlist" id="feed_list"></ul>
       </div>
+    
+      <div class="left-center-footer">
+        <div id="NB-progress">
+          <div class="NB-progress-container">
+            <div class="NB-progress-close"></div>
+            <div class="NB-progress-title">Fetching your feeds</div>
+            <div class="NB-progress-percentage"></div>
+            <div class="NB-progress-link"></div>
+            <div class="NB-progress-counts">
+              <span class="NB-progress-counts-fetched"></span>
+              /
+              <span class="NB-progress-counts-total"></span>
+            </div>
+            <div class="NB-progress-bar"></div>
+          </div>
+        </div>
+      </div>
+      
     </div>
     
     <div class="NB-taskbar-container left-south">
@@ -350,21 +376,14 @@ $(document).ready(function() {
 
 </div>
 
-
-
 <div class="NB-menu-manage-container"></div>
-
-
-
 
 <div class="right-pane">
     
     <div id="story_titles" class="right-north"></div>
-
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar-container content-north">
           <div class="NB-taskbar">
-          
             <ul class="taskbar_nav taskbar_nav_view">
               <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
                 <div class="NB-task-view-page-to-feed-arrow"></div>
@@ -372,7 +391,6 @@ $(document).ready(function() {
               <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
               <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
             </ul>
-
             <ul class="taskbar_nav taskbar_nav_return">
               <li class="task_button task_return">
                 <span class="NB-task-title">
@@ -381,7 +399,6 @@ $(document).ready(function() {
                 </span>
               </li>
             </ul>
-
             <ul class="taskbar_nav taskbar_nav_story first">
               <li class="task_button task_button_story task_story_previous"></li>
               <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
@@ -392,7 +409,6 @@ $(document).ready(function() {
                 <li class="task_button task_button_signup"></li>
               {% endif %}
             </ul>
-            
           </div>
         </div>
           
@@ -420,7 +436,6 @@ $(document).ready(function() {
             </div>
           </div>
         </div>
-        
     </div>    
     
 </div>
