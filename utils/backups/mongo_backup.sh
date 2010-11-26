@@ -5,7 +5,7 @@ DUMP_UTILITY='/usr/bin/mongodump'
 DB_NAME='newsblur'
 COLLECTIONS="classifier_tag classifier_author classifier_feed classifier_title"
 
-date_now= `date +%Y_%m_%d_%H_%M`
+date_now=`date +%Y_%m_%d_%H_%M`
 dir_name='mongo_backup_'${date_now}
 file_name='mongo_backup_'${date_now}'.bz2'
 
@@ -20,13 +20,13 @@ do_cleanup(){
 
 do_backup(){
     log 'snapshotting the db and creating archive'
-    ${MONGODB_SHELL} admin fsync_lock.js
+    # ${MONGODB_SHELL} admin fsync_lock.js
     for collection in $COLLECTIONS
     do
         ${DUMP_UTILITY} -d ${DB_NAME} -o ${dir_name} -c $collection
     done
     tar -jcf $file_name ${dir_name}
-    ${MONGODB_SHELL} admin fsync_unlock.js
+    # ${MONGODB_SHELL} admin fsync_unlock.js
     log 'data backd up and created snapshot'
 }
 
