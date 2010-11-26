@@ -19,14 +19,14 @@ do_cleanup(){
 }
 
 do_backup(){
-    log 'snapshotting the db and creating archive' && \
-    ${MONGODB_SHELL} admin fsync_lock.js && \
-    for collection in $COLLECTIONS ; \
-    do \
-        ${DUMP_UTILITY} -d ${DB_NAME} -o ${dir_name} -c $collection \
-    done && \
+    log 'snapshotting the db and creating archive'
+    ${MONGODB_SHELL} admin fsync_lock.js
+    for collection in $COLLECTIONS
+    do
+        ${DUMP_UTILITY} -d ${DB_NAME} -o ${dir_name} -c $collection
+    done
     tar -jcf $file_name ${dir_name}
-    ${MONGODB_SHELL} admin fsync_unlock.js && \
+    ${MONGODB_SHELL} admin fsync_unlock.js
     log 'data backd up and created snapshot'
 }
 
