@@ -23,9 +23,7 @@ do_backup(){
     # ${MONGODB_SHELL} admin fsync_lock.js
     for collection in $COLLECTIONS
     do
-        cmd="${DUMP_UTILITY} --db ${DB_NAME} --collection $collection -o ${dir_name} "
-        echo $cmd
-        `$cmd`
+        ${DUMP_UTILITY} --db ${DB_NAME} --collection $collection -o ${dir_name}
     done
     tar -jcf $file_name ${dir_name}
     # ${MONGODB_SHELL} admin fsync_unlock.js
