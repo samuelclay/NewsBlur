@@ -769,6 +769,11 @@
                 (type == 'feed' && $.make('div', { className: 'NB-feedlist-manage-icon' }))
             ]).data('feed_id', feed.id);  
             
+            $('.NB-feedbar-train-feed, .NB-feedbar-statistics', $feed).tipsy({
+                gravity: 's',
+                delayIn: 375
+            });
+            
             return $feed;  
         },
         
@@ -1734,7 +1739,7 @@
                 if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
                     $story_titles.append($end_stories_line);
                 }
-            }
+            } 
         },
         
         make_story_title: function(story) {
@@ -1763,12 +1768,17 @@
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
                 $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
-                $.make('div', { className: 'NB-story-sentiment NB-story-dislike', title: 'What I dislike about this story...' })
+                $.make('div', { className: 'NB-story-sentiment NB-story-star', title: 'Save this story for later' })
             ]).data('story_id', story.id);
             
             if (unread_view > score) {
                 $story_title.css({'display': 'none'});
             }
+          
+            $('.NB-story-sentiment', $story_title).tipsy({
+                delayIn: 375,
+                gravity: 's'
+            });
             
             return $story_title;
         },
@@ -2031,10 +2041,10 @@
 
             var $feedbar = $.make('div', { className: 'NB-feedbar' }, [
                 this.make_feed_title_line(feed, false, 'story'),
-                $.make('div', { className: 'NB-feedbar-intelligence' }, [
-                    $.make('div', { className: 'NB-feed-sentiment NB-feed-like', title: 'What I like about this site...' }),
-                    $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike', title: 'What I dislike about this site...' })
-                ]),
+                // $.make('div', { className: 'NB-feedbar-intelligence' }, [
+                //     $.make('div', { className: 'NB-feed-sentiment NB-feed-like', title: 'What I like about this site...' }),
+                //     $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike', title: 'What I dislike about this site...' })
+                // ]),
                 $.make('span', { className: 'feed_id' }, ''+feed.id)
             ]).hover(function() {
                 $(this).addClass('NB-feedbar-hover');

@@ -847,13 +847,13 @@ background: transparent;
     padding: 0 0 0 38px;
 }
 #story_titles .NB-feedbar .NB-feedbar-statistics {
-    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat left center;    
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat center center;    
     width: 16px;
     height: 16px;
 /*    display: none;*/
     cursor: pointer;
-    padding: 0 4px 0 24px;
-    margin: 3px 0 0 0;
+    margin:3px 0 0 -6px;
+    padding:0 24px 0 6px;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
@@ -1044,12 +1044,20 @@ background: transparent;
 
 #story_titles .NB-story-like {
     left: 22px;
-    background: transparent url('../img/reader/thumbs_up.png') no-repeat 2px 0;
+    background: transparent url('../img/reader/thumbs_up.png') no-repeat 2px 1px;
+    opacity: .25;
 }
+#story_titles .NB-story-like:hover {
+  opacity: 1;
+}  
 
-#story_titles .NB-story-dislike {
+#story_titles .NB-story-star {
     left: 0px;
-    background: transparent url('../img/reader/thumbs_down.png') no-repeat 4px -4px;
+    background: transparent url('../img/reader/star_blue.png') no-repeat 4px 0px;
+    opacity: .25;
+}
+#story_titles .NB-story-star:hover {
+    opacity: 1;
 }
 
 #story_titles .story.read {
