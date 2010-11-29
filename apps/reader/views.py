@@ -467,11 +467,11 @@ def add_url(request):
     if url:
         url = urlnorm.normalize(url)
         # See if it exists as a duplicate first
-        duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=url)
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=url).order_by('pk')
         if duplicate_feed:
             feed = [duplicate_feed[0].feed]
         else:
-            feed = Feed.objects.filter(feed_address=url)
+            feed = Feed.objects.filter(feed_address=url).order_by('pk')
     
     if feed:
         feed = feed[0]
