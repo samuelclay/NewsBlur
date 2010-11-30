@@ -1697,6 +1697,16 @@
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {'score': -1});
         },
         
+        mark_story_as_starred: function(story_id, $button) {
+            // $button.attr({'title': 'Saving...'});
+            $button.tipsy({'title': 'Saving...'});
+            $button.closest('.story').addClass('NB-story-starred');
+            this.model.mark_story_as_starred(story_id, this.active_feed, function() {
+              // $button.attr({'title': 'Saved!'});
+              $button.tipsy({'title': 'Saved!'});
+            });
+        },
+        
         // =====================
         // = Story Titles Pane =
         // =====================
@@ -1745,10 +1755,11 @@
         make_story_title: function(story) {
             var unread_view = this.model.preference('unread_view');
             var read = story.read_status
-                ? 'read'
+                ? ' read '
                 : '';
             var score = this.compute_story_score(story);
             var score_color = 'neutral';
+            var starred = story.starred ? ' NB-story-starred ' : '';
             if (score > 0) score_color = 'positive';
             if (score < 0) score_color = 'negative';
             var $story_tags = $.make('span', { className: 'NB-storytitles-tags'});
@@ -1759,7 +1770,7 @@
                 $story_tags.append($tag);
                 break;
             }
-            var $story_title = $.make('div', { className: 'story ' + read + ' NB-story-' + score_color }, [
+            var $story_title = $.make('div', { className: 'story' + read + starred + 'NB-story-' + score_color }, [
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
@@ -3498,10 +3509,10 @@
                 self.mark_story_as_like(story_id, $t);
                 story_prevent_bubbling = true;
             });
-            $.targetIs(e, { tagSelector: '.NB-story-dislike' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-story-star' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.parents('.story').data('story_id');
-                self.mark_story_as_dislike(story_id, $t);
+                self.mark_story_as_starred(story_id, $t);
                 story_prevent_bubbling = true;
             });
             $.targetIs(e, { tagSelector: 'a.button.like' }, function($t, $p){

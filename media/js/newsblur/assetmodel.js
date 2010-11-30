@@ -21,6 +21,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.stories = {};
     this.read_stories = {};
     this.classifiers = {};
+    this.starred_stories = [];
     
     this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
@@ -122,17 +123,23 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         $.isFunction(callback) && callback(read);
     },
     
+    mark_story_as_starred: function(story_id, feed_id, callback) {
+        var self = this;
+        this.make_request('/reader/mark_story_as_starred', {
+            story_id: story_id,
+            feed_id:  feed_id
+        }, callback);
+    },
+    
     mark_feed_as_read: function(feed_id, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 
                        ? _.select(feed_id, function(f) { return f; })
                        : [feed_id];
         
-        this.make_request('/reader/mark_feed_as_read',
-            {
-                feed_id: feed_ids
-            }, callback
-        );
+        this.make_request('/reader/mark_feed_as_read', {
+            feed_id: feed_ids
+        }, callback);
     },
     
     load_feeds: function(callback, error_callback) {
@@ -191,6 +198,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.feed_authors = data.feed_authors;
             this.feed_id = feed_id;
             this.classifiers = data.classifiers;
+            this.starred_stories = data.starred_stories;
             this.story_keys = [];
             for (var s in data.stories) {
                 this.story_keys.push(data.stories[s].id);

@@ -20,7 +20,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 try:
-    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, FeedLoadtime
+    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
 from utils import json_functions as json, urlnorm
@@ -291,6 +291,9 @@ def load_single_feed(request):
     userstories_db = MUserStory.objects(user_id=user.pk, 
                                         feed_id=feed.pk,
                                         read_date__gte=usersub.mark_read_date)
+    starred_stories = MStarredStory.objects(user_id=request.user.pk, story_feed_id=feed_id).only('story_guid')
+    starred_stories = [story.story_guid for story in starred_stories]
+    
     for us in userstories_db:
         if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
             userstories.append(us.story.story_guid)
@@ -311,6 +314,8 @@ def load_single_feed(request):
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] > usersub.last_read_date:
             story['read_status'] = 0
+        if story['id'] in starred_stories:
+            story['starred'] = True
         story['intelligence'] = {
             'feed': apply_classifier_feeds(classifier_feeds, feed),
             'author': apply_classifier_authors(classifier_authors, story),
@@ -716,3 +721,36 @@ def login_as(request):
 def iframe_buster(request):
     logging.info(" ---> [%s] iFrame bust!" % (request.user,))
     return HttpResponse(status=204)
+    
+@ajax_login_required
+@json.json_view
+def mark_story_as_starred(request):
+    code     = 1
+    feed_id  = int(request.POST['feed_id'])
+    story_id = request.POST['story_id']
+    
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1)
+    if story:
+        story_db = dict([(k, v) for k, v in story[0]._data.items() 
+                                if k is not None and v is not None])
+        story_values = dict(user_id=request.user.pk, **story_db)
+        MStarredStory.objects.create(**story_values)
+    else:
+        code = -1
+    
+    return {'code': code}
+    
+@ajax_login_required
+@json.json_view
+def mark_story_as_unstarred(request):
+    code     = 1
+    feed_id  = int(request.POST['feed_id'])
+    story_id = request.POST['story_id']
+    
+    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id, story_feed_id=feed_id)
+    if starred_story:
+        starred_story.delete()
+    else:
+        code = -1
+    
+    return {'code': code}

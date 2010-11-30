@@ -1056,8 +1056,10 @@ background: transparent;
     background: transparent url('../img/reader/star_blue.png') no-repeat 4px 0px;
     opacity: .25;
 }
-#story_titles .NB-story-star:hover {
+#story_titles .NB-story-star:hover,
+#story_titles .NB-story-starred .NB-story-star {
     opacity: 1;
+    display: block;
 }
 
 #story_titles .story.read {

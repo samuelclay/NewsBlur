@@ -761,20 +761,22 @@ class Story(models.Model):
             self.story_title = self.story_title[:255]
         super(Story, self).save(*args, **kwargs)
         
+        
 class MStory(mongo.Document):
     '''A feed item'''
-    story_feed_id = mongo.IntField()
-    story_date = mongo.DateTimeField()
-    story_title = mongo.StringField(max_length=1024)
-    story_content = mongo.StringField()
-    story_content_z = mongo.BinaryField()
-    story_original_content = mongo.StringField()
+    story_feed_id            = mongo.IntField()
+    story_date               = mongo.DateTimeField()
+    story_title              = mongo.StringField(max_length=1024)
+    story_content            = mongo.StringField()
+    story_content_z          = mongo.BinaryField()
+    story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
-    story_content_type = mongo.StringField(max_length=255)
-    story_author_name = mongo.StringField()
-    story_permalink = mongo.StringField()
-    story_guid = mongo.StringField()
-    story_tags = mongo.ListField(mongo.StringField(max_length=250))
+    story_content_type       = mongo.StringField(max_length=255)
+    story_author_name        = mongo.StringField()
+    story_permalink          = mongo.StringField()
+    story_guid               = mongo.StringField()
+    story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+
     
     meta = {
         'collection': 'stories',
@@ -791,7 +793,42 @@ class MStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         super(MStory, self).save(*args, **kwargs)
-        
+
+
+class MStarredStory(mongo.Document):
+    """Like MStory, but not inherited due to large overhead of _cls and _type in
+       mongoengine's inheritance model on every single row."""
+    user_id                  = mongo.IntField()
+    story_feed_id            = mongo.IntField()
+    story_date               = mongo.DateTimeField()
+    story_title              = mongo.StringField(max_length=1024)
+    story_content            = mongo.StringField()
+    story_content_z          = mongo.BinaryField()
+    story_original_content   = mongo.StringField()
+    story_original_content_z = mongo.BinaryField()
+    story_content_type       = mongo.StringField(max_length=255)
+    story_author_name        = mongo.StringField()
+    story_permalink          = mongo.StringField()
+    story_guid               = mongo.StringField(unique_with=('user_id',))
+    story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+
+    meta = {
+        'collection': 'starred_stories',
+        'indexes': [('user_id', '-story_date'), 'story_feed_id'],
+        'ordering': ['-story_date'],
+        'allow_inheritance': False,
+    }
+    
+    def save(self, *args, **kwargs):
+        if self.story_content:
+            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content = None
+        if self.story_original_content:
+            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content = None
+        super(MStarredStory, self).save(*args, **kwargs)
+    
+    
 class FeedUpdateHistory(models.Model):
     fetch_date = models.DateTimeField(auto_now=True)
     number_of_feeds = models.IntegerField()
@@ -809,6 +846,7 @@ class FeedUpdateHistory(models.Model):
         self.average_per_feed = str(self.seconds_taken / float(max(1.0,self.number_of_feeds)))
         super(FeedUpdateHistory, self).save(*args, **kwargs)
 
+
 class FeedFetchHistory(models.Model):
     feed = models.ForeignKey(Feed, related_name='feed_fetch_history')
     status_code = models.CharField(max_length=10, null=True, blank=True)
@@ -825,6 +863,7 @@ class FeedFetchHistory(models.Model):
             self.message,
             self.exception and self.exception[:50]
         )
+        
         
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
@@ -844,6 +883,7 @@ class MFeedFetchHistory(mongo.Document):
             self.exception = unicode(self.exception)
         super(MFeedFetchHistory, self).save(*args, **kwargs)
         
+        
 class PageFetchHistory(models.Model):
     feed = models.ForeignKey(Feed, related_name='page_fetch_history')
     status_code = models.CharField(max_length=10, null=True, blank=True)
@@ -860,6 +900,7 @@ class PageFetchHistory(models.Model):
             self.message,
             self.exception and self.exception[:50]
         )
+        
         
 class MPageFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
