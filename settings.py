@@ -194,6 +194,7 @@ TEST_RUNNER = "utils.testrunner.TestRunner"
 DAYS_OF_UNREAD = 14
 SUBSCRIBER_EXPIRE = 12
 SESSION_COOKIE_NAME = 'newsblur_sessionid'
+SESSION_COOKIE_AGE = 60*60*24*365*2 # 2 years
 
 # ===========
 # = Logging =
