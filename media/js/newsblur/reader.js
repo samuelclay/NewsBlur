@@ -1700,10 +1700,22 @@
         mark_story_as_starred: function(story_id, $button) {
             // $button.attr({'title': 'Saving...'});
             $button.tipsy({'title': 'Saving...'});
+            $button.removeClass('NB-unstarred');
             $button.closest('.story').addClass('NB-story-starred');
             this.model.mark_story_as_starred(story_id, this.active_feed, function() {
               // $button.attr({'title': 'Saved!'});
               $button.tipsy({'title': 'Saved!'});
+            });
+        },
+        
+        mark_story_as_unstarred: function(story_id, $button) {
+            $button.addClass('NB-unstarred');
+            $button.one('mouseout', function() {
+                $button.removeClass('NB-unstarred');
+            });
+            $button.closest('.story').removeClass('NB-story-starred');
+            this.model.mark_story_as_unstarred(story_id, this.active_feed, function() {
+
             });
         },
         
@@ -3512,7 +3524,11 @@
             $.targetIs(e, { tagSelector: '.NB-story-star' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.parents('.story').data('story_id');
-                self.mark_story_as_starred(story_id, $t);
+                if ($t.closest('.story').hasClass('NB-story-starred')) {
+                  self.mark_story_as_unstarred(story_id, $t);
+                } else {
+                  self.mark_story_as_starred(story_id, $t);
+                }
                 story_prevent_bubbling = true;
             });
             $.targetIs(e, { tagSelector: 'a.button.like' }, function($t, $p){

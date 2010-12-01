@@ -131,6 +131,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback);
     },
     
+    mark_story_as_unstarred: function(story_id, feed_id, callback) {
+        var self = this;
+        this.make_request('/reader/mark_story_as_unstarred', {
+            story_id: story_id,
+            feed_id:  feed_id
+        }, callback);
+    },
+    
     mark_feed_as_read: function(feed_id, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id) 

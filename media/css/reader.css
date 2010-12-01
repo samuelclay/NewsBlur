@@ -1061,7 +1061,9 @@ background: transparent;
     opacity: 1;
     display: block;
 }
-
+#story_titles .NB-story-star.NB-unstarred {
+    opacity: .25;
+}
 #story_titles .story.read {
     font-weight: normal;
     background: none;
@@ -1087,6 +1089,7 @@ background: transparent;
     border-top: 1px solid #404040;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
 }
+
 /* =================== */
 /* = Story Navigator = */
 /* =================== */
@@ -1399,6 +1402,60 @@ background: transparent;
 .NB-feeds-header.NB-active:hover .NB-feeds-header-count {
     display: none;
 }
+
+/* ============================ */
+/* = Header - Starred Stories = */
+/* ============================ */
+
+.NB-feeds-header-container .NB-feeds-header-starred {
+    border-top: 1px solid #303030;
+    border-bottom: 1px solid #E9E9E9;
+    padding-right: 2px;
+    position: relative;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.NB-feeds-header-container .NB-feeds-header-starred.NB-selected {
+    background: #f6a828 url('../theme/images/ui-bg_highlight-hard_35_f6a828_1x100.png') 0 50% repeat-x;
+}
+
+.NB-feeds-header-container .NB-feeds-header-starred .NB-feeds-header-starred-icon {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    background: transparent url('../img/reader/star_blue.png') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-feeds-header-container .NB-feeds-header-starred .NB-feeds-header-starred-title {
+    display: block;
+    padding: 4px 40px 2px 23px;
+    text-decoration: none;
+    color: #F0F0F0;
+    line-height: 1.3em;
+    height: 14px;
+    overflow: hidden;
+    text-shadow: 0 1px 0 #060607;
+    text-transform: uppercase;
+}
+
+.NB-feeds-header-container .NB-feeds-header-starred:hover .NB-feeds-header-starred-title {
+  color: #DCDCDC;
+}
+
+.NB-feeds-header-container .NB-feeds-header-starred.NB-selected .NB-feeds-header-starred-title {
+    text-shadow: 0 1px 0 #FFC97D;
+    color: #000000;
+}
+
+.NB-feeds-header-container .NB-feeds-header-starred-count {
+  background-color: #11448B;
+  display: block;
+  padding: 0 4px;
+}
+
 /* ============ */
 /* = Task Bar = */
 /* ============ */

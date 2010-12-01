@@ -183,7 +183,7 @@ def load_feeds_iphone(request):
 
     for sub in user_subs:
         if sub.needs_unread_recalc:
-            sub.calculate_feed_scores()
+            sub.calculate_feed_scores(silent=True)
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
             'feed_title': sub.feed.feed_title,
@@ -228,7 +228,7 @@ def refresh_feeds(request):
 
     for sub in user_subs:
         if sub.needs_unread_recalc:
-            sub.calculate_feed_scores()
+            sub.calculate_feed_scores(silent=True)
         feeds[sub.feed.pk] = {
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
