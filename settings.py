@@ -193,6 +193,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 TEST_RUNNER = "utils.testrunner.TestRunner"
 DAYS_OF_UNREAD = 14
 SUBSCRIBER_EXPIRE = 12
+SESSION_COOKIE_NAME = 'newsblur_sessionid'
 
 # ===========
 # = Logging =
