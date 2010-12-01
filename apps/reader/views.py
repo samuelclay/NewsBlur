@@ -163,8 +163,14 @@ def load_feeds(request):
         for f in feeds:
             if 'not_yet_fetched' not in feeds[f]:
                 feeds[f]['not_yet_fetched'] = False
-                
-    data = dict(feeds=feeds, folders=json.decode(folders.folders))
+
+    starred_count = MStarredStory.objects(user_id=request.user.pk).count()
+
+    data = {
+        'feeds': feeds,
+        'folders': json.decode(folders.folders),
+        'starred_count': starred_count,
+    }
     return data
 
 @ajax_login_required

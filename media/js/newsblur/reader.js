@@ -21,7 +21,8 @@
             $mouse_indicator: $('#mouse-indicator'),
             $feed_link_loader: $('#NB-feeds-list-loader'),
             $feeds_progress: $('#NB-progress'),
-            $header: $(".NB-feeds-header")
+            $header: $('.NB-feeds-header'),
+            $starred_header: $('.NB-feeds-header-starred')
         };
         this.flags = {
             'feed_view_images_loaded': {},
@@ -618,6 +619,7 @@
                 $('.feed', $feed_list).tsort('.feed_title');
                 $('.folder', $feed_list).tsort('.folder_title_text');
                 this.update_header_counts();
+                _.delay(_.bind(this.update_starred_count, this), 250);
             }
         },
         
@@ -644,6 +646,22 @@
                 $count.text(unread_counts[level]);
                 $count.toggleClass('NB-empty', unread_counts[level] == 0);
             });
+        },
+        
+        update_starred_count: function() {
+            var starred_count = this.model.starred_count;
+            var $starred_count = $('.NB-feeds-header-starred-count', this.$s.$starred_header);
+            var $starred_container = this.$s.$starred_header.closest('.NB-feeds-header-starred-container');
+            
+            if (starred_count <= 0) {
+                this.$s.$starred_header.addClass('NB-empty');
+                $starred_count.text('');
+                $starred_container.slideUp(350);
+            } else if (starred_count > 0) {
+                $starred_count.text(starred_count);
+                this.$s.$starred_header.removeClass('NB-empty');
+                $starred_container.slideDown(350);
+            }
         },
         
         detect_all_inactive_feeds: function() {

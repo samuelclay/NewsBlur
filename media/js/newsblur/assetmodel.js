@@ -22,6 +22,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.read_stories = {};
     this.classifiers = {};
     this.starred_stories = [];
+    this.starred_count = 0;
     
     this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
@@ -169,6 +170,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 }
             });
             self.folders = subscriptions.folders;
+            self.starred_count = subscriptions.starred_count;
             callback();
         };
         
