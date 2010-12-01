@@ -263,7 +263,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             // Get feed subscribers
             var min_subscribers = _.last(
               _.first(
-                _.pluck(this.model.get_feeds(), 'subs').sort(function(a,b) { 
+                _.pluck(_.select(this.model.get_feeds(), function(f) { return !f.has_exception; }), 'subs').sort(function(a,b) { 
                   return b-a; 
                 }), 
                 this.MAX_FEEDS
@@ -283,7 +283,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             // Approve feeds in subs
             _.each(approve_feeds, function(feed_id) {
                 if (self.model.get_feed(feed_id)['subs'] > min_subscribers &&
-                    self.approve_list.length < self.MAX_FEEDS) {
+                    self.approve_list.length < self.MAX_FEEDS &&
+                    !self.model.get_feed(feed_id)['has_exception']) {
                     self.add_feed_to_approve(feed_id);
                 }
             });
