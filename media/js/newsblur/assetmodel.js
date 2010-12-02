@@ -126,6 +126,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     mark_story_as_starred: function(story_id, feed_id, callback) {
         var self = this;
+        this.starred_count += 1;
         this.make_request('/reader/mark_story_as_starred', {
             story_id: story_id,
             feed_id:  feed_id
@@ -134,6 +135,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     mark_story_as_unstarred: function(story_id, feed_id, callback) {
         var self = this;
+        this.starred_count -= 1;
         this.make_request('/reader/mark_story_as_unstarred', {
             story_id: story_id,
             feed_id:  feed_id
@@ -236,7 +238,15 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         $.isFunction(callback) && callback(data, first_load);
     },
-        
+    
+    fetch_starred_stories: function(page, callback) {
+        this.make_request('/reader/load_starred_stories', {
+            page: page
+        }, callback, null, {
+            'ajax_group': (page ? 'feed_page' : 'feed')
+        });
+    },
+    
     get_feeds_trainer: function(feed_id, callback) {
         var self = this;
         var params = {};

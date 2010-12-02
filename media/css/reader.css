@@ -1034,7 +1034,8 @@ background: transparent;
     position: absolute;
     width: 22px;
     height: 16px;
-    top: 2px;
+    top: 0;
+    padding: 2px 0;
     display: none;
 }
 
@@ -1044,7 +1045,7 @@ background: transparent;
 
 #story_titles .NB-story-like {
     left: 22px;
-    background: transparent url('../img/reader/thumbs_up.png') no-repeat 2px 1px;
+    background: transparent url('../img/reader/thumbs_up.png') no-repeat 2px 3px;
     opacity: .25;
 }
 #story_titles .NB-story-like:hover {
@@ -1053,7 +1054,7 @@ background: transparent;
 
 #story_titles .NB-story-star {
     left: 0px;
-    background: transparent url('../img/reader/star_blue.png') no-repeat 4px 0px;
+    background: transparent url('../img/reader/star_blue.png') no-repeat 4px 2px;
     opacity: .25;
 }
 #story_titles .NB-story-star:hover,
@@ -1341,11 +1342,11 @@ background: transparent;
 /* ================ */
 
 .NB-feeds-header-container {
-  background: #4F5358 url("../img/reader/feeds_header_background.png") repeat-x scroll left top;
   border-bottom: 1px solid #777D86;
 }
 
 .NB-feeds-header {
+  background: #4F5358 url("../img/reader/feeds_header_background.png") repeat-x 0 -22px;
   color: #FFF;
   height: 15px;
   font-size: 11px;
@@ -1353,7 +1354,6 @@ background: transparent;
   text-transform: uppercase;
   text-shadow: 0 1px 0 #303030;
   border-bottom: 1px solid #E9E9E9;
-/*  background: transparent url('../img/icons/silk/house.png') no-repeat 2px 2px;*/
 }
 
 .NB-feeds-header:hover {
@@ -1415,6 +1415,7 @@ background: transparent;
 }
 
 .NB-feeds-header-starred {
+  background: #4F5358 url("../img/reader/feeds_header_background.png") repeat-x scroll left top;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1423,7 +1424,6 @@ background: transparent;
     border-top: 1px solid #303030;
     border-bottom: 1px solid #E9E9E9;
     padding-right: 2px;
-    position: relative;
     font-size: 10px;
     cursor: pointer;
 }
@@ -1466,7 +1466,7 @@ background: transparent;
   background-color: #11448B;
   display: block;
   padding: 0 4px;
-  margin-top: 2px;
+  margin: 2px 3px 0 0;
 }
 
 .NB-feeds-header-starred.NB-empty .NB-feeds-header-starred-count {

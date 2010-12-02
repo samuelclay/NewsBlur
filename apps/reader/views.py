@@ -372,6 +372,22 @@ def load_feed_page(request):
     
     return HttpResponse(data, mimetype='text/html')
     
+@json.json_view
+def load_starred_stories(request):
+    user = get_user(request)
+    offset = int(request.REQUEST.get('offset', 0))
+    limit = int(request.REQUEST.get('limit', 30))
+    page = int(request.REQUEST.get('page', 0))
+    if page: offset = limit * page
+        
+    mstories = MStarredStory.objects(user_id=user.pk).order_by('-story_date')[offset:offset+limit]
+    stories = []
+    for story in mstories:
+        story_db = dict([(k, v) for k, v in story._data.items() 
+                        if k is not None and v is not None])
+        stories.append(dict(**story_db))
+    print stories
+    return stories
     
 @ajax_login_required
 @json.json_view
