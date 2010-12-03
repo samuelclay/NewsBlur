@@ -133,12 +133,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback);
     },
     
-    mark_story_as_unstarred: function(story_id, feed_id, callback) {
+    mark_story_as_unstarred: function(story_id, callback) {
         var self = this;
         this.starred_count -= 1;
         this.make_request('/reader/mark_story_as_unstarred', {
-            story_id: story_id,
-            feed_id:  feed_id
+            story_id: story_id
         }, callback);
     },
     
@@ -239,10 +238,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         $.isFunction(callback) && callback(data, first_load);
     },
     
-    fetch_starred_stories: function(page, callback) {
+    fetch_starred_stories: function(page, callback, first_load) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            return self.load_feed_precallback(data, null, callback, true);
+        };
+        
         this.make_request('/reader/load_starred_stories', {
             page: page
-        }, callback, null, {
+        }, pre_callback, null, {
             'ajax_group': (page ? 'feed_page' : 'feed')
         });
     },

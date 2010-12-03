@@ -110,7 +110,7 @@ class UserSubscription(models.Model):
                 unread_stories_db.append(story)
             elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
                 unread_stories_db.append(story)
-        stories = self.feed.format_stories(unread_stories_db)
+        stories = Feed.format_stories(unread_stories_db, self.feed.pk)
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         

@@ -477,12 +477,13 @@ class Feed(models.Model):
         
         if not stories or force:
             stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
-            stories = self.format_stories(stories_db)
+            stories = Feed.format_stories(stories_db, self.pk)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
         return stories
     
-    def format_stories(self, stories_db):
+    @classmethod
+    def format_stories(cls, stories_db, feed_id=None):
         stories = []
 
         for story_db in stories_db:
@@ -493,8 +494,10 @@ class Feed(models.Model):
             story['story_title'] = story_db.story_title
             story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
             story['story_permalink'] = urllib.unquote(urllib.unquote(story_db.story_permalink))
-            story['story_feed_id'] = self.pk
+            story['story_feed_id'] = feed_id or story_db.story_feed_id
             story['id'] = story_db.story_guid
+            if hasattr(story_db, 'starred_date'):
+                story['starred_date'] = story_db.starred_date
             
             stories.append(story)
             
@@ -799,6 +802,7 @@ class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
        mongoengine's inheritance model on every single row."""
     user_id                  = mongo.IntField()
+    starred_date             = mongo.DateTimeField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -814,8 +818,8 @@ class MStarredStory(mongo.Document):
 
     meta = {
         'collection': 'starred_stories',
-        'indexes': [('user_id', '-story_date'), 'story_feed_id'],
-        'ordering': ['-story_date'],
+        'indexes': [('user_id', '-starred_date'), 'story_feed_id'],
+        'ordering': ['-starred_date'],
         'allow_inheritance': False,
     }
     

@@ -164,7 +164,7 @@ def load_feeds(request):
             if 'not_yet_fetched' not in feeds[f]:
                 feeds[f]['not_yet_fetched'] = False
 
-    starred_count = MStarredStory.objects(user_id=request.user.pk).count()
+    starred_count = MStarredStory.objects(user_id=user.pk).count()
 
     data = {
         'feeds': feeds,
@@ -286,18 +286,12 @@ def load_single_feed(request):
     classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
     classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
-    try:
-        usersub = UserSubscription.objects.get(user=user, feed=feed)
-    except UserSubscription.DoesNotExist:
-        # FIXME: Why is this happening for `conesus` when logged into another account?!
-        logging.info(" ***> [%s] UserSub DNE, creating: %s" % (user, feed))
-        usersub = UserSubscription.objects.create(user=user, feed=feed)
-            
+    usersub = UserSubscription.objects.get(user=user, feed=feed)        
     userstories = []
     userstories_db = MUserStory.objects(user_id=user.pk, 
                                         feed_id=feed.pk,
                                         read_date__gte=usersub.mark_read_date)
-    starred_stories = MStarredStory.objects(user_id=request.user.pk, story_feed_id=feed_id).only('story_guid')
+    starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid')
     starred_stories = [story.story_guid for story in starred_stories]
     
     for us in userstories_db:
@@ -380,14 +374,23 @@ def load_starred_stories(request):
     page = int(request.REQUEST.get('page', 0))
     if page: offset = limit * page
         
-    mstories = MStarredStory.objects(user_id=user.pk).order_by('-story_date')[offset:offset+limit]
-    stories = []
-    for story in mstories:
-        story_db = dict([(k, v) for k, v in story._data.items() 
-                        if k is not None and v is not None])
-        stories.append(dict(**story_db))
-    print stories
-    return stories
+    mstories = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
+    stories = Feed.format_stories(mstories)
+    
+    for story in stories:
+        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
+        story['long_parsed_date'] = format_story_link_date__long(story_date)
+        story['read_status'] = 1
+        story['starred'] = True
+        story['intelligence'] = {
+            'feed': 0,
+            'author': 0,
+            'tags': 0,
+            'title': 0,
+        }
+    
+    return dict(stories=stories)
     
 @ajax_login_required
 @json.json_view
@@ -755,7 +758,8 @@ def mark_story_as_starred(request):
     if story:
         story_db = dict([(k, v) for k, v in story[0]._data.items() 
                                 if k is not None and v is not None])
-        story_values = dict(user_id=request.user.pk, **story_db)
+        now = datetime.datetime.now()
+        story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
         MStarredStory.objects.create(**story_values)
     else:
         code = -1
@@ -766,10 +770,9 @@ def mark_story_as_starred(request):
 @json.json_view
 def mark_story_as_unstarred(request):
     code     = 1
-    feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
     
-    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id, story_feed_id=feed_id)
+    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
         starred_story.delete()
     else:
