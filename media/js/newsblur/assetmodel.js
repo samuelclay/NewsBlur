@@ -19,6 +19,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.feeds = {};
     this.folders = [];
     this.stories = {};
+    this.story_keys = [];
     this.read_stories = {};
     this.classifiers = {};
     this.starred_stories = [];
@@ -242,7 +243,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            return self.load_feed_precallback(data, null, callback, true);
+            return self.load_feed_precallback(data, null, callback, first_load);
         };
         
         this.make_request('/reader/load_starred_stories', {

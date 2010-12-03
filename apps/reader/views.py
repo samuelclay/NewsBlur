@@ -370,7 +370,7 @@ def load_feed_page(request):
 def load_starred_stories(request):
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 30))
+    limit = int(request.REQUEST.get('limit', 10))
     page = int(request.REQUEST.get('page', 0))
     if page: offset = limit * page
         
