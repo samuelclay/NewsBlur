@@ -68,8 +68,21 @@
 </head>
 
 <body>
+
   {% block header %}{% endblock %}
   {% block content %}{% endblock %}
+
+  <!-- Start Quantcast tag -->
+  <script type="text/javascript">
+  _qoptions={
+  qacct:"p-0dE65XaLY51Og"
+  };
+  </script>
+  <script type="text/javascript" src="http://edge.quantserve.com/quant.js"></script>
+  <noscript>
+  <img src="http://pixel.quantserve.com/pixel/p-0dE65XaLY51Og.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+  </noscript>
+  <!-- End Quantcast tag -->
 
 </body>
 </html>
