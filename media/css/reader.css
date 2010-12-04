@@ -979,7 +979,7 @@ background: transparent;
     line-height: 1em;
     background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 14px 50%;
 }
-#story_titles .story.NB-story-starred {
+.NB-view-starred #story_titles .story {
     padding-right: 326px;
 }
 
@@ -1031,22 +1031,34 @@ background: transparent;
     color: #808080;
     background-color: #E9E9E9;
 }
-
 #story_titles .story .NB-story-feed {
+    display: none;
     position: absolute;
     right: 208px;
     width: 120px;
-    opacity: .65;
-    height: 18px;
+    opacity: .75;
+    height: 17px;
     color: #505050;
     overflow: hidden;
+}
+.NB-view-starred #story_titles .story .NB-story-feed {
+    display: block;
 }
 #story_titles .story .NB-story-feed .feed_favicon {
     margin:2px 4px 0 0;
     vertical-align: text-bottom;
 }
 #story_titles .story .NB-story-feed .feed_title {
+    display: block;
+    font-size: 10px;
+    left: 20px;
+    position: absolute;
     text-shadow: 1px 1px 0 #FFFFFF;
+    top: 4px;
+    height: 12px;
+    overflow: hidden;
+    width: 100px;
+    line-height: 1.3em;
 }
 
 #story_titles .story .story_id {

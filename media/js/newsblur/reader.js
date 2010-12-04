@@ -1121,6 +1121,7 @@
             this.$s.$story_titles.data('feed_id', null);
             this.$s.$feed_view.empty();
             this.$s.$starred_header.removeClass('NB-selected');
+            this.$s.$body.removeClass('NB-view-starred');
         },
         
         open_feed: function(feed_id, force, $feed_link, delay) {
@@ -1333,6 +1334,7 @@
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
             this.$s.$starred_header.addClass('NB-selected');
+            this.$s.$body.addClass('NB-view-starred');
             var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
