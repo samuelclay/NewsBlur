@@ -1326,13 +1326,18 @@
             $story_titles.empty().scrollTop('0px');
             this.reset_feed();
             this.hide_splash_page();
-        
+            this.active_feed = 'starred';
+            
             $story_titles.data('page', 0);
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
             this.$s.$starred_header.addClass('NB-selected');
-            this.set_correct_story_view_for_feed(null, 'feed');
+            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            if (!explicit_view_setting) {
+              explicit_view_setting = 'feed';
+            }
+            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             // this.show_feed_title_in_stories(feed_id);
             this.show_feedbar_loading();
             // this.make_content_pane_feed_counter(feed_id);
@@ -1343,13 +1348,13 @@
         },
         
         post_open_starred_stories: function(data, first_load) {
-            if (this.active_feed == null) {
+            if (this.active_feed == 'starred') {
                 // NEWSBLUR.log(['post_open_starred_stories', data.stories, first_load]);
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(data.stories);
                 this.hover_over_story_titles();
-                this.make_story_feed_entries(data.stories, first_load);
+                this.make_story_feed_entries(data.stories, first_load, {'starred_stories': true});
                 this.show_correct_stories_in_page_and_feed_view();
                 // $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
                 this.flags['story_titles_loaded'] = true;
@@ -1762,9 +1767,10 @@
         mark_story_as_starred: function(story_id, $button) {
             // $button.attr({'title': 'Saving...'});
             // $button.tipsy({'title': 'Saving...'});
+            var story = this.model.get_story(story_id);
             $button.removeClass('NB-unstarred');
             $button.closest('.story').addClass('NB-story-starred');
-            this.model.mark_story_as_starred(story_id, this.active_feed, function() {
+            this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {
               // $button.attr({'title': 'Saved!'});
               // $button.tipsy({'title': 'Saved!'});
             });
@@ -2082,7 +2088,7 @@
             if (!this.flags['opening_feed']) {
                 this.show_feedbar_loading();
                 $story_titles.data('page', page+1);
-                if (this.active_feed == null) {
+                if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, 
                         _.bind(this.post_open_starred_stories, this), false);
                 } else {
@@ -2190,11 +2196,13 @@
         // = Story Pane - Feed View =
         // ==========================
         
-        make_story_feed_entries: function(stories, first_load, refresh_load) {
+        make_story_feed_entries: function(stories, first_load, options) {
             var $feed_view = this.$s.$feed_view;
             var self = this;
             var unread_view = this.model.preference('unread_view');
             var $stories;
+            
+            options = options || {};
             
             if (first_load) {
                 $stories = $.make('ul', { className: 'NB-feed-stories' });
@@ -2203,7 +2211,7 @@
                 $feed_view.append($stories);
             } else {
                 $stories = $('.NB-feed-stories', $feed_view);
-                if (!refresh_load) {
+                if (!options.refresh_load) {
                     $('.NB-feed-story-endbar', $feed_view).remove();
                 }
             }
@@ -2211,14 +2219,17 @@
             for (var s in stories) {
                 var story = stories[s];
                 var read = story.read_status
-                    ? 'read'
+                    ? ' read '
                     : '';
                 var score = this.compute_story_score(story);
                 var score_color = 'neutral';
+                var starred_stories = options.starred_stories
+                    ? ' NB-starred-story '
+                    : '';
                 if (score > 0) score_color = 'positive';
                 if (score < 0) score_color = 'negative';
 
-                var $story = $.make('li', { className: 'NB-feed-story ' + read + ' NB-story-' + score_color }, [
+                var $story = $.make('li', { className: 'NB-feed-story ' + read + starred_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-sentiment' }),
                         ( story.story_authors &&
@@ -2228,7 +2239,9 @@
                             $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, story.story_title)
                         ]),
                         ( story.long_parsed_date &&
-                            $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date))
+                            $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date)),
+                        ( story.starred_date &&
+                            $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date))
                     ]),
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
                 ]).data('story', story.id);
@@ -2237,7 +2250,7 @@
                     $('a', $story).attr('target', '_blank');
                 }
                 
-                if (refresh_load) {
+                if (options.refresh_load) {
                     $stories.prepend($story);
                 } else {
                     $stories.append($story);
@@ -3129,7 +3142,7 @@
                     }
                 }
                 if (new_stories.length) {
-                    this.make_story_feed_entries(new_stories, false, true);
+                    this.make_story_feed_entries(new_stories, false, {'refresh_load': true});
                     this.hover_over_story_titles();
                     this.flags['feed_view_positions_calculated'] = false;
                 }

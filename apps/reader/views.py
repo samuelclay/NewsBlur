@@ -379,8 +379,10 @@ def load_starred_stories(request):
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        starred_date = localtime_for_timezone(story['starred_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date'] = format_story_link_date__long(story_date)
+        story['starred_date'] = format_story_link_date__long(starred_date)
         story['read_status'] = 1
         story['starred'] = True
         story['intelligence'] = {
@@ -761,6 +763,7 @@ def mark_story_as_starred(request):
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
         MStarredStory.objects.create(**story_values)
+        logging.info(' ---> [%s] Starring: %s' % (request.user, story.story_title[:50]))
     else:
         code = -1
     
@@ -775,7 +778,9 @@ def mark_story_as_unstarred(request):
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
         starred_story.delete()
+        logging.info(' ---> [%s] Unstarring: %s' % (request.user, starred_story.story_title[:50]))
     else:
         code = -1
     
     return {'code': code}
+    

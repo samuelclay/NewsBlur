@@ -992,6 +992,9 @@ background: transparent;
     background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 14px 50%;
 }
 
+#story_titles .story.NB-story-starred {
+  background-position: 24px 50%;
+}
 #story_titles .story.NB-hover {
     background: #f0f0f0;
 }
@@ -1218,7 +1221,10 @@ background: transparent;
     width: 16px;
     height: 16px;
 }
-
+#story_pane .NB-feed-story.NB-starred-story .NB-feed-story-sentiment {
+    display: none;
+}
+  
 #story_pane .NB-feed-story.NB-story-positive .NB-feed-story-sentiment {
     background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
 }
@@ -1262,6 +1268,15 @@ background: transparent;
     right: 28px;
     top: 6px;
     font-size: 11px;
+}
+
+#story_pane .NB-feed-story-header .NB-feed-story-starred-date {
+    position: absolute;
+    right: 28px;
+    top: 26px;
+    font-size: 11px;
+    background: transparent url('../img/reader/star_blue.png') no-repeat 0 0;
+    padding-left: 20px;
 }
 
 #story_pane .NB-feed-story-content {
