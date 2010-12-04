@@ -1780,10 +1780,10 @@
             var story = this.model.get_story(story_id);
             $button.removeClass('NB-unstarred');
             $button.closest('.story').addClass('NB-story-starred');
+            $button.attr({'title': 'Saved!'});
+            $button.tipsy('hide'); $button.tipsy('show');
+            $button.attr({'title': 'Remove bookmark'});
             this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {
-                $button.attr({'title': 'Saved!'});
-                $button.tipsy('hide'); $button.tipsy('show');
-                $button.attr({'title': 'Remove bookmark'});
             });
             this.update_starred_count();
         },
@@ -1794,10 +1794,10 @@
                 $button.removeClass('NB-unstarred');
             });
             $button.closest('.story').removeClass('NB-story-starred');
+            $button.attr({'title': 'Removed'});
+            $button.tipsy('hide'); $button.tipsy('show');
+            $button.attr({'title': 'Save this story for later'});
             this.model.mark_story_as_unstarred(story_id, function() {
-                $button.attr({'title': 'Removed'});
-                $button.tipsy('hide'); $button.tipsy('show');
-                $button.attr({'title': 'Save this story for later'});
             });
             this.update_starred_count();
         },
