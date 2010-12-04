@@ -979,6 +979,9 @@ background: transparent;
     line-height: 1em;
     background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 14px 50%;
 }
+#story_titles .story.NB-story-starred {
+    padding-right: 326px;
+}
 
 #story_titles .story.NB-story-positive {
     background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 14px 50%;
@@ -1027,6 +1030,23 @@ background: transparent;
     margin: 0 2px;
     color: #808080;
     background-color: #E9E9E9;
+}
+
+#story_titles .story .NB-story-feed {
+    position: absolute;
+    right: 208px;
+    width: 120px;
+    opacity: .65;
+    height: 18px;
+    color: #505050;
+    overflow: hidden;
+}
+#story_titles .story .NB-story-feed .feed_favicon {
+    margin:2px 4px 0 0;
+    vertical-align: text-bottom;
+}
+#story_titles .story .NB-story-feed .feed_title {
+    text-shadow: 1px 1px 0 #FFFFFF;
 }
 
 #story_titles .story .story_id {

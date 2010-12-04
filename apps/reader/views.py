@@ -779,8 +779,8 @@ def mark_story_as_unstarred(request):
     
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
-        starred_story.delete()
         logging.info(' ---> [%s] Unstarring: %s' % (request.user, starred_story[0].story_title[:50]))
+        starred_story.delete()
     else:
         code = -1
     

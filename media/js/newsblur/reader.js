@@ -1352,7 +1352,7 @@
                 // NEWSBLUR.log(['post_open_starred_stories', data.stories, first_load]);
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
-                this.create_story_titles(data.stories);
+                this.create_story_titles(data.stories, {'starred_stories': true});
                 this.hover_over_story_titles();
                 this.make_story_feed_entries(data.stories, first_load, {'starred_stories': true});
                 this.show_correct_stories_in_page_and_feed_view();
@@ -1752,16 +1752,26 @@
             }
         },
         
-        mark_story_as_like: function(story_id, $button) {
-            var feed_id = this.active_feed;
+        mark_story_as_like: function(story_id, feed_id) {
+            feed_id = feed_id || this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {'score': 1});
+            var is_starred_view = this.active_feed == 'starred';
+            
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
+                'score': 1,
+                'feed_loaded': !is_starred_view
+            });
         },
         
-        mark_story_as_dislike: function(story_id, $button) {
-            var feed_id = this.active_feed;
+        mark_story_as_dislike: function(story_id, feed_id) {
+            feed_id = feed_id || this.active_feed;
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {'score': -1});
+            var is_starred_view = this.active_feed == 'starred';
+            
+            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
+                'score': -1,
+                'feed_loaded': !is_starred_view
+            });
         },
         
         mark_story_as_starred: function(story_id, $button) {
@@ -1810,12 +1820,13 @@
             $('.feed', $content_pane).css({'left': left});
         },
         
-        create_story_titles: function(stories) {
+        create_story_titles: function(stories, options) {
             var $story_titles = this.$s.$story_titles;
+            options = options || {};
             
             for (s in stories) {
                 var story = stories[s];
-                var $story_title = this.make_story_title(story);
+                var $story_title = this.make_story_title(story, options);
                 if (!stories[s].read_status) {
                     var $mark_read = $.make('a', { className: 'mark_story_as_read', href: '#'+stories[s].id }, '[Mark Read]');
                     $story_title.find('.title').append($mark_read);
@@ -1834,7 +1845,7 @@
             } 
         },
         
-        make_story_title: function(story) {
+        make_story_title: function(story, options) {
             var unread_view = this.model.preference('unread_view');
             var read = story.read_status
                 ? ' read '
@@ -1842,6 +1853,9 @@
             var score = this.compute_story_score(story);
             var score_color = 'neutral';
             var starred = story.starred ? ' NB-story-starred ' : '';
+            if (story.starred) {
+                var feed = this.model.get_feed(story.story_feed_id);
+            }
             if (score > 0) score_color = 'positive';
             if (score < 0) score_color = 'negative';
             var $story_tags = $.make('span', { className: 'NB-storytitles-tags'});
@@ -1858,11 +1872,16 @@
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags
                 ]),
+                (story.starred && options['starred_stories'] &&
+                    $.make('div', { className: 'NB-story-feed' }, [
+                        $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
+                        $.make('span', { className: 'feed_title' }, feed.feed_title)
+                    ])),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
                 $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
                 $.make('div', { className: 'NB-story-sentiment NB-story-star', title: 'Save this story for later' })
-            ]).data('story_id', story.id);
+            ]).data('story_id', story.id).data('feed_id', story.story_feed_id);
             
             if (unread_view > score) {
                 $story_title.css({'display': 'none'});
@@ -3605,8 +3624,9 @@
             var story_prevent_bubbling = false;
             $.targetIs(e, { tagSelector: '.NB-story-like' }, function($t, $p){
                 e.preventDefault();
-                var story_id = $t.parents('.story').data('story_id');
-                self.mark_story_as_like(story_id, $t);
+                var story_id = $t.closest('.story').data('story_id');
+                var feed_id = $t.closest('.story').data('feed_id');
+                self.mark_story_as_like(story_id, feed_id);
                 story_prevent_bubbling = true;
             });
             $.targetIs(e, { tagSelector: '.NB-story-star' }, function($t, $p){
@@ -3622,13 +3642,15 @@
             $.targetIs(e, { tagSelector: 'a.button.like' }, function($t, $p){
                 e.preventDefault();
                 var story_id = self.$s.$story_pane.data('story_id');
-                self.mark_story_as_like(story_id, $t);
+                var feed_id = $t.closest('.story').data('feed_id');
+                self.mark_story_as_like(story_id, feed_id);
                 story_prevent_bubbling = true;
             });
             $.targetIs(e, { tagSelector: 'a.button.dislike' }, function($t, $p){
                 e.preventDefault();
                 var story_id = self.$s.$story_pane.data('story_id');
-                self.mark_story_as_dislike(story_id, $t);
+                var feed_id = $t.closest('.story').data('feed_id');
+                self.mark_story_as_dislike(story_id, feed_id);
                 story_prevent_bubbling = true;
             });
             
