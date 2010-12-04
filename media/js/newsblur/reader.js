@@ -1777,14 +1777,13 @@
         },
         
         mark_story_as_starred: function(story_id, $button) {
-            // $button.attr({'title': 'Saving...'});
-            // $button.tipsy({'title': 'Saving...'});
             var story = this.model.get_story(story_id);
             $button.removeClass('NB-unstarred');
             $button.closest('.story').addClass('NB-story-starred');
             this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {
-              // $button.attr({'title': 'Saved!'});
-              // $button.tipsy({'title': 'Saved!'});
+                $button.attr({'title': 'Saved!'});
+                $button.tipsy('hide'); $button.tipsy('show');
+                $button.attr({'title': 'Remove bookmark'});
             });
             this.update_starred_count();
         },
@@ -1796,7 +1795,9 @@
             });
             $button.closest('.story').removeClass('NB-story-starred');
             this.model.mark_story_as_unstarred(story_id, function() {
-
+                $button.attr({'title': 'Removed'});
+                $button.tipsy('hide'); $button.tipsy('show');
+                $button.attr({'title': 'Save this story for later'});
             });
             this.update_starred_count();
         },
@@ -1882,7 +1883,12 @@
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
                 $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
-                $.make('div', { className: 'NB-story-sentiment NB-story-star', title: 'Save this story for later' })
+                $.make('div', { 
+                    className: 'NB-story-sentiment NB-story-star', 
+                    title: (story.starred
+                            ? 'Remove bookmark'
+                            : 'Save this story for later')
+                })
             ]).data('story_id', story.id).data('feed_id', story.story_feed_id);
             
             if (unread_view > score) {
