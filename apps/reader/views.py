@@ -83,10 +83,10 @@ def login(request):
         if form.is_valid():
             login_user(request, form.get_user())
             if request.POST.get('api'):
-                logging.info(" ---> [%s] iPhone Login" % form.get_user())
+                logging.info(" ---> [%s] ~FGiPhone Login~FW" % form.get_user())
                 code = 1
             else:
-                logging.info(" ---> [%s] Login" % form.get_user())
+                logging.info(" ---> [%s] ~FGLogin~FW" % form.get_user())
                 return HttpResponseRedirect(reverse('index'))
 
     if request.POST.get('api'):
@@ -101,14 +101,14 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.info(" ---> [%s] NEW SIGNUP" % new_user)
+            logging.info(" ---> [%s] ~FG~SB~BMNEW SIGNUP~FW" % new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
         
 @never_cache
 def logout(request):
-    logging.info(" ---> [%s] Logout" % request.user)
+    logging.info(" ---> [%s] ~FGLogout~FW" % request.user)
     logout_user(request)
     
     if request.GET.get('api'):
@@ -337,7 +337,7 @@ def load_single_feed(request):
     diff = datetime.datetime.utcnow()-now
     timediff = float("%s.%s" % (diff.seconds, (diff.microseconds / 1000)))
     last_update = relative_timesince(feed.last_update)
-    logging.info(" ---> [%s] Loading feed: %s (%s seconds)" % (request.user, feed, timediff))
+    logging.info(" ---> [%s] ~FGLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 
@@ -394,7 +394,7 @@ def load_starred_stories(request):
             'title': 0,
         }
     
-    logging.info(" ---> [%s] Loading starred stories: %s stories" % (request.user, len(stories)))
+    logging.info(" ---> [%s] ~FCLoading starred stories: ~SB%s stories" % (request.user, len(stories)))
     
     return dict(stories=stories)
     
@@ -415,7 +415,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
-    logging.info(" ---> [%s] Marking all as read: %s days" % (request.user, days,))
+    logging.info(" ---> [%s] ~FR~BMMarking all as read: ~SB%s days" % (request.user, days,))
     return dict(code=code)
     
 @ajax_login_required
@@ -442,9 +442,9 @@ def mark_story_as_read(request):
     data = dict(code=0, payload=story_ids)
     
     if len(story_ids) > 1:
-        logging.debug(" ---> [%s] Read %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
+        logging.debug(" ---> [%s] ~FK~SBRead %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
     else:
-        logging.debug(" ---> [%s] Read story in feed: %s" % (request.user, usersub.feed))
+        logging.debug(" ---> [%s] ~FK~SBRead story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
@@ -453,7 +453,7 @@ def mark_story_as_read(request):
         try:
             m.save()
         except OperationError:
-            logging.info(' ---> [%s] *** Marked story as read: Duplicate Story -> %s' % (request.user, story_id))
+            logging.info(' ---> [%s] ~BW*** Marked story as read: Duplicate Story -> %s' % (request.user, story_id))
     
     return data
     
@@ -477,7 +477,7 @@ def mark_feed_as_read(request):
         else:
             code = 1
         
-        logging.info(" ---> [%s] Marking feed as read: %s" % (request.user, feed,))
+        logging.info(" ---> [%s] ~FMMarking feed as read: ~SB%s" % (request.user, feed,))
         MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
     return dict(code=code)
 
@@ -498,7 +498,7 @@ def add_url(request):
     folder = request.POST['folder']
     feed = None
     
-    logging.info(" ---> [%s] Adding URL: %s (in %s)" % (request.user, url, folder))
+    logging.info(" ---> [%s] ~FRAdding URL: ~SB%s (in %s)" % (request.user, url, folder))
     
     if url:
         url = urlnorm.normalize(url)
@@ -556,7 +556,7 @@ def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST['parent_folder']
     
-    logging.info(" ---> [%s] Adding Folder: %s (in %s)" % (request.user, folder, parent_folder))
+    logging.info(" ---> [%s] ~FRAdding Folder: ~SB%s (in %s)" % (request.user, folder, parent_folder))
     
     if folder:
         code = 1
@@ -633,7 +633,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     page = int(request.POST.get('page', 0))
-    logging.info(" ---> [%s] Browse features: Page #%s" % (request.user, page+1))
+    logging.info(" ---> [%s] ~FBBrowse features: Page #%s" % (request.user, page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
         'description': f['description'], 
@@ -649,7 +649,7 @@ def save_feed_order(request):
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
         assert folders_list is not None
-        logging.info(" ---> [%s] Feed re-ordering: %s folders/feeds" % (request.user, 
+        logging.info(" ---> [%s] ~FBFeed re-ordering: ~SB%s folders/feeds" % (request.user, 
                                                                         len(folders_list)))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
@@ -678,7 +678,7 @@ def get_feeds_trainer(request):
             classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
             classifiers.append(classifier)
     
-    logging.info(" ---> [%s] Loading Trainer: %s feeds" % (user, len(classifiers)))
+    logging.info(" ---> [%s] ~FYLoading Trainer: ~SB%s feeds" % (user, len(classifiers)))
     
     return classifiers
 
@@ -705,7 +705,7 @@ def save_feed_chooser(request):
             
     queue_new_feeds(request.user)
     
-    logging.info(' ---> [%s] Activated standard account: %s/%s' % (request.user, 
+    logging.info(' ---> [%s] ~FRActivated standard account: ~SB%s~ST/~SB%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        
     return {'activated': activated}
@@ -741,7 +741,7 @@ def activate_premium_account(request):
 @login_required
 def login_as(request):
     if not request.user.is_staff:
-        logging.info(' ---> NON-STAFF LOGGING IN AS ANOTHER USER: %s' % request.user)
+        logging.info(' ---> [%s] ~SKNON-STAFF LOGGING IN AS ANOTHER USER!' % request.user)
         assert False
         return HttpResponseForbidden()
     username = request.GET['user']
@@ -751,7 +751,7 @@ def login_as(request):
     return HttpResponseRedirect(reverse('index'))
     
 def iframe_buster(request):
-    logging.info(" ---> [%s] iFrame bust!" % (request.user,))
+    logging.info(" ---> [%s] ~FB~SBiFrame bust!" % (request.user,))
     return HttpResponse(status=204)
     
 @ajax_login_required
@@ -768,7 +768,7 @@ def mark_story_as_starred(request):
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
         MStarredStory.objects.create(**story_values)
-        logging.info(' ---> [%s] Starring: %s' % (request.user, story[0].story_title[:50]))
+        logging.info(' ---> [%s] ~FCStarring: ~SB%s' % (request.user, story[0].story_title[:50]))
     else:
         code = -1
     
@@ -782,7 +782,7 @@ def mark_story_as_unstarred(request):
     
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
-        logging.info(' ---> [%s] Unstarring: %s' % (request.user, starred_story[0].story_title[:50]))
+        logging.info(' ---> [%s] ~FCUnstarring: ~SB%s' % (request.user, starred_story[0].story_title[:50]))
         starred_story.delete()
     else:
         code = -1

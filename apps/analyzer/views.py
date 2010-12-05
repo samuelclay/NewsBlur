@@ -17,7 +17,7 @@ def index(requst):
 @json.json_view
 def save_classifier(request):
     post = request.POST
-    logging.info(" ---> [%s] Saving classifier: %s" % (request.user, post))
+    logging.info(" ---> [%s] ~FYSaving classifier: ~FW%s" % (request.user, post))
     feed_id = int(post['feed_id'])
     feed = get_object_or_404(Feed, pk=feed_id)
     code = 0
@@ -71,7 +71,7 @@ def save_classifier(request):
     _save_classifier(MClassifierTitle, 'title')
     _save_classifier(MClassifierFeed, 'feed')
     
-    logging.info(" ---> [%s] Feed training: %s" % (request.user, feed))
+    logging.info(" ---> [%s] ~FYFeed training: ~SB%s" % (request.user, feed))
 
     response = dict(code=code, message=message, payload=payload)
     return response

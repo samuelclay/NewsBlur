@@ -36,7 +36,7 @@ def load_feed_statistics(request):
     stats['premium_subscribers'] = feed.premium_subscribers
     stats['active_subscribers'] = feed.active_subscribers
     
-    logging.info(" ---> [%s] Statistics: %s (%s/%s/%s subs)" % (request.user, feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
+    logging.info(" ---> [%s] ~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (request.user, feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
     
     return stats
     
