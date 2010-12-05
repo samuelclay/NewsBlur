@@ -78,7 +78,6 @@
         this.handle_login_and_signup_forms();
         this.iframe_buster_buster();
         this.apply_story_styling();
-        this.apply_tooltips();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -191,16 +190,13 @@
             setInterval(function() {
                 if (prevent_bust > 0) {
                     prevent_bust -= 2;
-                    if (!self.flags['iframe_view_loaded'] && self.story_view == 'page' && self.active_feed) {
+                    if (!self.flags['iframe_view_loaded'] && !self.flags['iframe_view_not_busting'] && self.story_view == 'page' && self.active_feed) {
                       $('.task_view_feed').click();
                       $('.NB-feed-frame').attr('src', '');
                       window.top.location = '/reader/buster';
                     }
                 }
             }, 1);
-        },
-        
-        apply_tooltips: function() {
         },
         
         // =======================
@@ -390,12 +386,22 @@
             }
             
             if ($story && $story.length) {
+                var self = this;
                 this.cache.iframe_stories[story.id] = $story;
                 var position_original = parseInt($story.offset().top, 10);
                 // var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
                 var position = position_original; // + position_offset;
                 this.cache.iframe_story_positions[position] = story;
                 this.cache.iframe_story_positions_keys.push(position);
+            
+                if (!this.flags['iframe_view_not_busting']) {
+                    var feed_id = this.active_feed;
+                    _.delay(function() {
+                        if (feed_id == self.active_feed) {
+                            self.flags['iframe_view_not_busting'] = true;
+                        }
+                    }, 1000);
+                }
             }
             
             // NEWSBLUR.log(['Found story', $story]);
@@ -1112,6 +1118,7 @@
             $.extend(this.flags, {
                 'iframe_story_locations_fetched': false,
                 'iframe_view_loaded': false,
+                'iframe_view_not_busting': false,
                 'feed_view_images_loaded': {},
                 'feed_view_positions_calculated': false,
                 'scrolling_by_selecting_story_title': false,
