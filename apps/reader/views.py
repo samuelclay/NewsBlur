@@ -394,6 +394,8 @@ def load_starred_stories(request):
             'title': 0,
         }
     
+    logging.info(" ---> [%s] Loading starred stories: %s stories" % (request.user, len(stories)))
+    
     return dict(stories=stories)
     
 @ajax_login_required
