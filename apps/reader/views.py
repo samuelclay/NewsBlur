@@ -83,10 +83,10 @@ def login(request):
         if form.is_valid():
             login_user(request, form.get_user())
             if request.POST.get('api'):
-                logging.info(" ---> [%s] ~FGiPhone Login~FW" % form.get_user())
+                logging.info(" ---> [%s] ~FG~BGiPhone Login~FW" % form.get_user())
                 code = 1
             else:
-                logging.info(" ---> [%s] ~FGLogin~FW" % form.get_user())
+                logging.info(" ---> [%s] ~FG~BGLogin~FW" % form.get_user())
                 return HttpResponseRedirect(reverse('index'))
 
     if request.POST.get('api'):
@@ -101,7 +101,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.info(" ---> [%s] ~FG~SB~BMNEW SIGNUP~FW" % new_user)
+            logging.info(" ---> [%s] ~FG~SB~BGNEW SIGNUP~FW" % new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
@@ -705,7 +705,7 @@ def save_feed_chooser(request):
             
     queue_new_feeds(request.user)
     
-    logging.info(' ---> [%s] ~FRActivated standard account: ~SB%s~ST/~SB%s' % (request.user, 
+    logging.info(' ---> [%s] ~FRActivated standard account: ~SB%s~SN/~SB%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        
     return {'activated': activated}

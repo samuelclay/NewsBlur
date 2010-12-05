@@ -40,7 +40,7 @@ class Profile(models.Model):
         
         queue_new_feeds(self.user)
         
-        logging.info(' ---> [%s] NEW PREMIUM ACCOUNT! WOOHOO!!! %s subscriptions!' % (self.user.username, subs.count()))
+        logging.info(' ---> [%s] ~SK~BGNEW PREMIUM ACCOUNT! WOOHOO!!! ~SB%s subscriptions~SN!' % (self.user.username, subs.count()))
         message = """Woohoo!
         
 User: %(user)s

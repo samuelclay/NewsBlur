@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.encoding import smart_str
-
+import datetime
 import pytz
 
 
@@ -10,6 +10,8 @@ def localtime_for_timezone(value, timezone):
     Given a ``datetime.datetime`` object in UTC and a timezone represented as
     a string, return the localized time for the timezone.
     """
+    if not value:
+        value = datetime.datetime.now()
     return adjust_datetime_to_timezone(value, settings.TIME_ZONE, timezone)
 
 
