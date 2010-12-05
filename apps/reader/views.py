@@ -659,7 +659,8 @@ def save_feed_order(request):
 def get_feeds_trainer(request):
     classifiers = []
     feed_id = request.POST.get('feed_id')
-    usersubs = UserSubscription.objects.filter(user=request.user, active=True)
+    user = get_user(request)
+    usersubs = UserSubscription.objects.filter(user=user, active=True)
     if feed_id:
         feed = get_object_or_404(Feed, pk=feed_id)
         usersubs = usersubs.filter(feed=feed)
@@ -668,14 +669,14 @@ def get_feeds_trainer(request):
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier['classifiers'] = get_classifiers_for_user(request.user, us.feed.pk)
+            classifier['classifiers'] = get_classifiers_for_user(user, us.feed.pk)
             classifier['feed_id'] = us.feed.pk
             classifier['stories_last_month'] = us.feed.stories_last_month
             classifier['feed_tags'] = json.decode(us.feed.popular_tags) if us.feed.popular_tags else []
             classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
             classifiers.append(classifier)
     
-    logging.info(" ---> [%s] Loading Trainer: %s feeds" % (request.user, len(classifiers)))
+    logging.info(" ---> [%s] Loading Trainer: %s feeds" % (user, len(classifiers)))
     
     return classifiers
 

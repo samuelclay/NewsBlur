@@ -261,11 +261,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
           params['feed_id'] = feed_id;
         }
         
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/reader/get_feeds_trainer', params, callback, null, {'ajax_group': 'feed'});
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
+        this.make_request('/reader/get_feeds_trainer', params, callback, null, {'ajax_group': 'feed'});
     },    
     
     
