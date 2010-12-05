@@ -662,17 +662,17 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-feedlist-hide-read-feeds .feed {
   display: none;
 }
-.NB-feedlist-hide-read-feeds.unread_view_positive .unread_positive {
+.NB-feedlist-hide-read-feeds .unread_view_positive .unread_positive {
   display: block;
 }
-.NB-feedlist-hide-read-feeds.unread_view_neutral .unread_positive,
-.NB-feedlist-hide-read-feeds.unread_view_neutral .unread_neutral {
+.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_positive,
+.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_neutral {
   display: block;
 }
 
-.NB-feedlist-hide-read-feeds.unread_view_negative .unread_positive,
-.NB-feedlist-hide-read-feeds.unread_view_negative .unread_neutral,
-.NB-feedlist-hide-read-feeds.unread_view_negative .unread_negative {
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_positive,
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_neutral,
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_negative {
   display: block;
 }
 
@@ -1446,6 +1446,36 @@ background: transparent;
 }
 .NB-feeds-header .NB-feeds-header-positive {
     background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 2px -1px;
+}
+.NB-feeds-header .NB-feeds-header-right {
+    position: relative;
+}
+.NB-feeds-header .NB-feeds-header-sites {
+    float: right;
+}
+.NB-feeds-header .NB-feeds-header-hidereadfeeds {
+    display: none;
+    position: absolute;
+    left: -24px;
+    padding: 0 4px;
+    top: -1px;
+    opacity: .5;
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/layers.png') no-repeat 4px 0;
+}
+.NB-feeds-header:hover .NB-feeds-header-hidereadfeeds {
+    display: block;
+}
+.NB-feedlist-hide-read-feeds .NB-feeds-header .NB-feeds-header-hidereadfeeds {
+    background: transparent url('../img/icons/silk/layers.png') no-repeat 4px 0;
+}
+.NB-feeds-header .NB-feeds-header-hidereadfeeds:hover {
+    opacity: 1;
+}
+.NB-feeds-header.NB-active:hover {
+  cursor: pointer;
 }
 .NB-feeds-header .NB-feeds-header-home {
     display: none;

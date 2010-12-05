@@ -78,6 +78,7 @@
         this.handle_login_and_signup_forms();
         this.iframe_buster_buster();
         this.apply_story_styling();
+        this.apply_tooltips();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -197,6 +198,9 @@
                     }
                 }
             }, 1);
+        },
+        
+        apply_tooltips: function() {
         },
         
         // =======================
@@ -1082,6 +1086,24 @@
             this.hide_progress_bar();
         },
         
+        switch_preferences_hide_read_feeds: function() {
+            var hide_read_feeds = parseInt(this.model.preference('hide_read_feeds'), 10);
+            var $button = $('.NB-feeds-header-hidereadfeeds');
+            
+            if (hide_read_feeds) {
+                $button.tipsy('hide');
+                $button.attr('title', 'Show only unread stories');
+                $button.tipsy('show');
+            } else {
+                $button.tipsy('hide');
+                $button.attr('title', 'Show all sites');
+                $button.tipsy('show');
+            }
+            
+            this.model.preference('hide_read_feeds', hide_read_feeds ? 0 : 1);
+            this.switch_feed_view_unread_view();
+        },
+        
         // ===============================
         // = Feed bar - Individual Feeds =
         // ===============================
@@ -1288,7 +1310,7 @@
                   return f.active;
                 }).length;
                 if (feeds_count) {
-                  $('.NB-feeds-header-right').text(feeds_count + Inflector.pluralize(' site', feeds_count));
+                  $('.NB-feeds-header-right .NB-feeds-header-sites').text(feeds_count + Inflector.pluralize(' site', feeds_count));
                 }
             }
               
@@ -2911,6 +2933,7 @@
             var $feed_list = this.$s.$feed_list;
             var unread_view_name = this.get_unread_view_name(unread_view);
             var $next_story_button = $('.task_story_next_unread');
+            var $hidereadfeeds_button = $('.NB-feeds-header-hidereadfeeds');
                         
             $feed_list.removeClass('unread_view_positive')
                       .removeClass('unread_view_neutral')
@@ -2918,10 +2941,17 @@
                       .addClass('unread_view_'+unread_view_name);
             
             if (NEWSBLUR.Preferences['hide_read_feeds'] == 1) {
-                $feed_list.addClass('NB-feedlist-hide-read-feeds');
+                $hidereadfeeds_button.attr('title', 'Show all sites');
+                $feed_list.parent().addClass('NB-feedlist-hide-read-feeds');
             } else {
-                $feed_list.removeClass('NB-feedlist-hide-read-feeds');
+                $hidereadfeeds_button.attr('title', 'Show only unread stories');
+                $feed_list.parent().removeClass('NB-feedlist-hide-read-feeds');
             }
+            $hidereadfeeds_button.tipsy({
+                gravity: 'n',
+                delayIn: 375
+            });
+
                       
             $next_story_button.removeClass('task_story_next_positive')
                               .removeClass('task_story_next_neutral')
@@ -3831,6 +3861,13 @@
                 e.preventDefault();
                 self.show_splash_page();
             }); 
+            $.targetIs(e, { tagSelector: '.NB-feeds-header-hidereadfeeds' }, function($t, $p){
+                e.preventDefault();
+
+                stopPropagation = true;
+                self.switch_preferences_hide_read_feeds();
+            }); 
+            if (stopPropagation) return;
             $.targetIs(e, { tagSelector: '.NB-feeds-header' }, function($t, $p){
                 e.preventDefault();
                 self.show_splash_page();
