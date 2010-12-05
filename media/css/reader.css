@@ -1019,6 +1019,10 @@ background: transparent;
     font-size: 9px;
 }
 
+#story_titles .story.selected .story_title .NB-storytitles-author {
+    text-shadow: 1px 1px 0 #E9E9E9;
+}
+
 #story_titles .story .story_title .NB-storytitles-tags {
     padding-left: 12px;
     font-weight: normal;
@@ -1036,9 +1040,8 @@ background: transparent;
     position: absolute;
     right: 208px;
     width: 120px;
-    opacity: .75;
-    height: 17px;
-    color: #505050;
+    height: 18px;
+    color: #707070;
     overflow: hidden;
 }
 .NB-view-starred #story_titles .story .NB-story-feed {
@@ -1047,20 +1050,22 @@ background: transparent;
 #story_titles .story .NB-story-feed .feed_favicon {
     margin:2px 4px 0 0;
     vertical-align: text-bottom;
+    opacity: .6;
 }
 #story_titles .story .NB-story-feed .feed_title {
     display: block;
     font-size: 10px;
     left: 20px;
     position: absolute;
-    text-shadow: 1px 1px 0 #FFFFFF;
     top: 4px;
     height: 12px;
     overflow: hidden;
     width: 100px;
     line-height: 1.3em;
 }
-
+#story_titles .story.selected .NB-story-feed .feed_title {
+    text-shadow: 1px 1px 0 #F0F0F0;
+}
 #story_titles .story .story_id {
     display: none;
 }
@@ -1110,6 +1115,9 @@ background: transparent;
     right: 4px;
     width: 200px;
     top: 4px;
+}
+#story_titles .story.selected .story_date {
+    text-shadow: 1px 1px 0 #E6E6E6;
 }
 #story_titles .story.selected {
     color: #304080;
@@ -1293,6 +1301,7 @@ background: transparent;
     font-size: 9px;
     text-transform: uppercase;
     margin: 4px 0 -6px;
+    text-shadow: 1px 1px 0 #F0F0F0;
 }
 
 #story_pane .NB-feed-story-header .NB-feed-story-date {
@@ -1300,15 +1309,18 @@ background: transparent;
     right: 28px;
     top: 6px;
     font-size: 11px;
+    text-shadow: 1px 1px 0 #E6E6E6;
 }
 
 #story_pane .NB-feed-story-header .NB-feed-story-starred-date {
     position: absolute;
     right: 28px;
     top: 26px;
-    font-size: 11px;
+    font-size: 10px;
     background: transparent url('../img/reader/star_blue.png') no-repeat 0 0;
     padding-left: 20px;
+    text-shadow: 1px 1px 0 #E6E6E6;
+    color: #808080;
 }
 
 #story_pane .NB-feed-story-content {

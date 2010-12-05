@@ -22,7 +22,8 @@
             $feed_link_loader: $('#NB-feeds-list-loader'),
             $feeds_progress: $('#NB-progress'),
             $header: $('.NB-feeds-header'),
-            $starred_header: $('.NB-feeds-header-starred')
+            $starred_header: $('.NB-feeds-header-starred'),
+            $taskbar: $('.taskbar_nav')
         };
         this.flags = {
             'feed_view_images_loaded': {},
@@ -1122,6 +1123,7 @@
             this.$s.$feed_view.empty();
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$body.removeClass('NB-view-starred');
+            $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
         },
         
         open_feed: function(feed_id, force, $feed_link, delay) {
@@ -1335,6 +1337,7 @@
             this.mark_feed_as_selected(null, null);
             this.$s.$starred_header.addClass('NB-selected');
             this.$s.$body.addClass('NB-view-starred');
+            $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
@@ -1371,10 +1374,10 @@
             var self = this;
             var feed_position;
             var iframe_position;
+            // NEWSBLUR.log(['Story', story, this.flags.iframe_view_loaded, skip_scrolls]);
             
             if (this.active_story != story) {
                 this.active_story = story;
-                // NEWSBLUR.log(['Story', story, this.flags.iframe_view_loaded, skip_scrolls, $feed_story, $iframe_story]);
             
                 this.mark_story_title_as_selected($st);
                 this.mark_story_as_read(story.id, $st);
@@ -2390,9 +2393,12 @@
             var $story_pane = this.$s.$story_pane;
             var feed = this.model.get_feed(this.active_feed);
             
-            if (view == 'page' && feed.has_exception && feed.exception_type == 'page') {
+            if (view == 'page' && feed && feed.has_exception && feed.exception_type == 'page') {
               this.open_feed_exception_modal(this.active_feed);
               return;
+            }
+            if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
+                return;
             }
             // NEWSBLUR.log(['$button', $button, this.flags['page_view_showing_feed_view'], $button.hasClass('NB-active'), story_not_found]);
             var $taskbar_buttons = $('.NB-taskbar .task_button_view');
@@ -3802,6 +3808,7 @@
                 } else if ($t.hasClass('task_view_story')) {
                     view = 'story';
                 } 
+
                 self.switch_taskbar_view(view);
             });
             $.targetIs(e, { tagSelector: '.task_return', childOf: '.taskbar_nav_return' }, function($t, $p){
