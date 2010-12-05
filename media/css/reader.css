@@ -1452,27 +1452,10 @@ background: transparent;
 }
 .NB-feeds-header .NB-feeds-header-sites {
     float: right;
-}
-.NB-feeds-header .NB-feeds-header-hidereadfeeds {
-    display: none;
-    position: absolute;
-    left: -24px;
-    padding: 0 4px;
-    top: -1px;
-    opacity: .5;
-    height: 16px;
-    width: 16px;
     cursor: pointer;
-    background: transparent url('../img/icons/silk/layers.png') no-repeat 4px 0;
 }
-.NB-feeds-header:hover .NB-feeds-header-hidereadfeeds {
-    display: block;
-}
-.NB-feedlist-hide-read-feeds .NB-feeds-header .NB-feeds-header-hidereadfeeds {
-    background: transparent url('../img/icons/silk/layers.png') no-repeat 4px 0;
-}
-.NB-feeds-header .NB-feeds-header-hidereadfeeds:hover {
-    opacity: 1;
+.NB-feeds-header .NB-feeds-header-sites:hover {
+    color: #5E7B88;
 }
 .NB-feeds-header.NB-active:hover {
   cursor: pointer;
@@ -1480,7 +1463,7 @@ background: transparent;
 .NB-feeds-header .NB-feeds-header-home {
     display: none;
     padding: 0 0 0 4px;
-    color: #AFCAEB;
+    color: #7493C7;
 }
 .NB-feeds-header.NB-active:hover {
   cursor: pointer;
@@ -1543,7 +1526,7 @@ background: transparent;
 }
 
 .NB-feeds-header-starred:hover .NB-feeds-header-starred-title {
-  color: #DCDCDC;
+  color: #C1C1C1;
 }
 
 .NB-feeds-header-starred.NB-selected .NB-feeds-header-starred-title {
