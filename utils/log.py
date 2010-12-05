@@ -35,10 +35,11 @@ def error(msg):
     
 def colorize(msg):
     params = {
-        r'\-\-\->' : '~FB~SB--->~FW',
-        r'\*\*\*>' : '~FB~SB~BB--->~BT~FW',
-        r'\['    : '~SB~FB[~SN~FM',
-        r'\]'    : '~FB~SB]~FW~SN',
+        r'\-\-\->'        : '~FB~SB--->~FW',
+        r'\*\*\*>'        : '~FB~SB~BB--->~BT~FW',
+        r'\['             : '~SB~FB[~SN~FM',
+        r'AnonymousUser'  : '~FB',
+        r'\]'             : '~FB~SB]~FW~SN',
     }
     colors = {
         '~SB' : Style.BRIGHT,
