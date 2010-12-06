@@ -52,10 +52,10 @@ def exception_retry(request):
     feed.has_feed_exception = False
     feed.active = True
     if reset_fetch:
-        logging.info(' ---> [%s] Refreshing exception feed: %s' % (request.user, feed))
+        logging.info(' ---> [%s] ~FRRefreshing exception feed: ~SB%s' % (request.user, feed))
         feed.fetched_once = False
     else:
-        logging.info(' ---> [%s] Forcing refreshing feed: %s' % (request.user, feed))
+        logging.info(' ---> [%s] ~FRForcing refreshing feed: ~SB%s' % (request.user, feed))
         feed.fetched_once = True
     feed.save()
     
@@ -74,7 +74,7 @@ def exception_change_feed_address(request):
     feed_address = request.POST['feed_address']
     
     if not feed.has_feed_exception and not feed.has_page_exception:
-        logging.info(" ***********> [%s] Incorrect feed address change: %s" % (request.user, feed))
+        logging.info(" ***> [%s] ~BRIncorrect feed address change: ~SB%s" % (request.user, feed))
         return HttpResponseForbidden()
         
     feed.has_feed_exception = False
@@ -93,7 +93,7 @@ def exception_change_feed_address(request):
         original_feed.save()
         merge_feeds(original_feed.pk, feed.pk)
     
-    logging.info(" ---> [%s] Fixing feed exception by address: %s" % (request.user, retry_feed.feed_address))
+    logging.info(" ---> [%s] ~FRFixing feed exception by address: ~SB%s" % (request.user, retry_feed.feed_address))
     retry_feed.update()
     
     return {'code': 1}
@@ -107,7 +107,7 @@ def exception_change_feed_link(request):
     code = -1
     
     if not feed.has_page_exception and not feed.has_feed_exception:
-        logging.info(" ***********> [%s] Incorrect feed link change: %s" % (request.user, feed))
+        logging.info(" ***> [%s] ~BRIncorrect feed link change: ~SB%s" % (request.user, feed))
         # This Forbidden-403 throws an error, which sounds pretty good to me right now
         return HttpResponseForbidden()
     
@@ -130,7 +130,7 @@ def exception_change_feed_link(request):
             original_feed.active = True
             original_feed.save()
     
-    logging.info(" ---> [%s] Fixing feed exception by link: %s" % (request.user, retry_feed.feed_link))
+    logging.info(" ---> [%s] ~FRFixing feed exception by link: ~SB%s" % (request.user, retry_feed.feed_link))
     retry_feed.update()
     
     return {'code': code}

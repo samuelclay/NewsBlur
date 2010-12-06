@@ -83,10 +83,10 @@ def login(request):
         if form.is_valid():
             login_user(request, form.get_user())
             if request.POST.get('api'):
-                logging.info(" ---> [%s] ~FG~BGiPhone Login~FW" % form.get_user())
+                logging.info(" ---> [%s] ~FG~BB~SKiPhone Login~FW" % form.get_user())
                 code = 1
             else:
-                logging.info(" ---> [%s] ~FG~BGLogin~FW" % form.get_user())
+                logging.info(" ---> [%s] ~FG~BBLogin~FW" % form.get_user())
                 return HttpResponseRedirect(reverse('index'))
 
     if request.POST.get('api'):
@@ -101,14 +101,14 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.info(" ---> [%s] ~FG~SB~BGNEW SIGNUP~FW" % new_user)
+            logging.info(" ---> [%s] ~FG~SB~BBNEW SIGNUP~FW" % new_user)
             return HttpResponseRedirect(reverse('index'))
 
     return index(request)
         
 @never_cache
 def logout(request):
-    logging.info(" ---> [%s] ~FGLogout~FW" % request.user)
+    logging.info(" ---> [%s] ~FG~BBLogout~FW" % request.user)
     logout_user(request)
     
     if request.GET.get('api'):
@@ -444,7 +444,7 @@ def mark_story_as_read(request):
     if len(story_ids) > 1:
         logging.debug(" ---> [%s] ~FK~SBRead %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
     else:
-        logging.debug(" ---> [%s] ~FK~SBRead story in feed: %s" % (request.user, usersub.feed))
+        logging.debug(" ---> [%s] ~FGRead story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
