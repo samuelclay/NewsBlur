@@ -337,7 +337,7 @@ def load_single_feed(request):
     diff = datetime.datetime.utcnow()-now
     timediff = float("%s.%s" % (diff.seconds, (diff.microseconds / 1000)))
     last_update = relative_timesince(feed.last_update)
-    logging.info(" ---> [%s] ~FGLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
+    logging.info(" ---> [%s] ~FYLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 
@@ -442,9 +442,9 @@ def mark_story_as_read(request):
     data = dict(code=0, payload=story_ids)
     
     if len(story_ids) > 1:
-        logging.debug(" ---> [%s] ~FK~SBRead %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
+        logging.debug(" ---> [%s] ~FYRead %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
     else:
-        logging.debug(" ---> [%s] ~FGRead story in feed: %s" % (request.user, usersub.feed))
+        logging.debug(" ---> [%s] ~FYRead story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
@@ -678,7 +678,7 @@ def get_feeds_trainer(request):
             classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
             classifiers.append(classifier)
     
-    logging.info(" ---> [%s] ~FYLoading Trainer: ~SB%s feeds" % (user, len(classifiers)))
+    logging.info(" ---> [%s] ~FGLoading Trainer: ~SB%s feeds" % (user, len(classifiers)))
     
     return classifiers
 
