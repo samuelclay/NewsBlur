@@ -442,9 +442,9 @@ def mark_story_as_read(request):
     data = dict(code=0, payload=story_ids)
     
     if len(story_ids) > 1:
-        logging.debug(" ---> [%s] ~FYRead %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
+        logging.info(" ---> [%s] ~FYRead %s stories in feed: %s" % (request.user, len(story_ids), usersub.feed))
     else:
-        logging.debug(" ---> [%s] ~FYRead story in feed: %s" % (request.user, usersub.feed))
+        logging.info(" ---> [%s] ~FYRead story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
         story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
