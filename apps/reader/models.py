@@ -241,9 +241,9 @@ class UserSubscriptionFolders(models.Model):
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
                         multiples_found = True
-                        logging.info(" ---> [%s] ~FR~SBDeleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
+                        logging.info(" ---> [%s] ~FM~SBDeleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
                     if folder == feed_id and folder_name == in_folder and not deleted:
-                        logging.info(" ---> [%s] ~FRDelete feed: %s'th item: %s folders/feeds" % (
+                        logging.info(" ---> [%s] ~FMDelete feed: %s'th item: %s folders/feeds" % (
                             self.user, k, len(old_folders)
                         ))
                         deleted = True
