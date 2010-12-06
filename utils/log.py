@@ -23,7 +23,6 @@ def getlogger():
 
 def debug(msg):
     logger = getlogger()
-    msg = colorize(msg)
     logger.debug(colorize(msg))
 
 def info(msg):
