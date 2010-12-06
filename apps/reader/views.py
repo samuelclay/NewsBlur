@@ -415,7 +415,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
-    logging.info(" ---> [%s] ~FR~BMMarking all as read: ~SB%s days" % (request.user, days,))
+    logging.info(" ---> [%s] ~FMMarking all as read: ~SB%s days" % (request.user, days,))
     return dict(code=code)
     
 @ajax_login_required
@@ -453,7 +453,7 @@ def mark_story_as_read(request):
         try:
             m.save()
         except OperationError:
-            logging.info(' ---> [%s] ~BW*** Marked story as read: Duplicate Story -> %s' % (request.user, story_id))
+            logging.info(' ---> [%s] ~BRMarked story as read: Duplicate Story -> %s' % (request.user, story_id))
     
     return data
     
@@ -705,7 +705,7 @@ def save_feed_chooser(request):
             
     queue_new_feeds(request.user)
     
-    logging.info(' ---> [%s] ~FRActivated standard account: ~SB%s~SN/~SB%s' % (request.user, 
+    logging.info(' ---> [%s] ~BC~FW~SBActivated standard account: ~FC%s~SN/~SB%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        
     return {'activated': activated}
