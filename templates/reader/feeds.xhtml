@@ -396,11 +396,17 @@ $(document).ready(function() {
         <div id="story_taskbar" class="NB-taskbar-container content-north">
           <div class="NB-taskbar">
             <ul class="taskbar_nav taskbar_nav_view">
-              <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
-                <div class="NB-task-view-page-to-feed-arrow"></div>
+              <li class="task_button task_button_view task_view_page NB-active">
+                <span class="NB-task-title">Original</span>
+                <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
               </li>
-              <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
-              <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
+              <li class="task_button task_button_view task_view_feed">
+                <span class="NB-task-title">Feed</span>
+                <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+              </li>
+              <li class="task_button task_button_view task_view_story">
+                <span class="NB-task-title">Story</span>
+              </li>
             </ul>
             <ul class="taskbar_nav taskbar_nav_return">
               <li class="task_button task_return">
@@ -434,8 +440,9 @@ $(document).ready(function() {
     
         <div id="story_pane" class="content-center">
             <div class="NB-story-pane-container">
-        		<iframe id="story_iframe" class="NB-feed-frame"></iframe>
+        		<iframe id="feed_iframe" class="NB-feed-iframe"></iframe>
         		<div class="NB-feed-story-view NB-view-hidden"></div>
+        		<iframe id="story_iframe" class="NB-story-iframe"></iframe>
             </div>
         </div>
         
