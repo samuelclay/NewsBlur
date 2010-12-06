@@ -49,7 +49,7 @@ class OPMLImporter(Importer):
             if not hasattr(item, 'xmlUrl'):
                 folder = item
                 if hasattr(folder, 'text'):
-                    logging.info(' ---> [%s] New Folder: %s' % (self.user, folder.text))
+                    logging.info(' ---> [%s] ~FRNew Folder: %s' % (self.user, folder.text))
                 folders.append({folder.text: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
@@ -65,7 +65,7 @@ class OPMLImporter(Importer):
                     continue
                 if feed.title and len(feed.title) > Feed._meta.get_field('feed_title').max_length:
                     feed.title = feed.title[:255]
-                logging.info(' ---> \t%s - %s - %s' % (feed.title, feed_link, feed_address,))
+                logging.info(' ---> \t~FR%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
                 # feeds.append(feed_data)
 
@@ -108,7 +108,7 @@ class GoogleReaderImporter(Importer):
             folders = self.process_item(item, folders)
         # print dict(folders)
         self.rearrange_folders(folders)
-        logging.info(" ---> [%s] Google Reader import: %s" % (self.user, self.subscription_folders))
+        logging.info(" ---> [%s] ~BC~FW~SBGoogle Reader import: ~FC%s" % (self.user, self.subscription_folders))
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
 
@@ -176,7 +176,7 @@ def queue_new_feeds(user):
                                                 feed__fetched_once=False, 
                                                 active=True).values('feed_id')
     new_feeds = list(set([f['feed_id'] for f in new_feeds]))
-    logging.info(" ---> [%s] Queueing NewFeeds: (%s) %s" % (user, len(new_feeds), new_feeds))
+    logging.info(" ---> [%s] ~BC~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (user, len(new_feeds), new_feeds))
     size = 4
     publisher = Task.get_publisher(exchange="new_feeds")
     for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
