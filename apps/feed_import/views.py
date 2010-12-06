@@ -47,7 +47,6 @@ def opml_upload(request):
 def reader_authorize(request):
     logging.info(" ---> [%s] ~BC~FW~SBAuthorize Google Reader import - %s" % (
         request.user,
-        request.session.session_key,
         request.META['REMOTE_ADDR'],
     ))
     oauth_key = settings.OAUTH_KEY
