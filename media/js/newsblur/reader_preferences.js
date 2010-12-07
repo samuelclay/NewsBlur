@@ -190,6 +190,21 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Site sidebar'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-singlestory-1', type: 'radio', name: 'feed_view_single_story', value: 0 }),
+                            $.make('label', { 'for': 'NB-preference-singlestory-1' }, 'Show everything')
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-singlestory-2', type: 'radio', name: 'feed_view_single_story', value: 1 }),
+                            $.make('label', { 'for': 'NB-preference-singlestory-2' }, 'Hide sites with no unread stories')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Site sidebar'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
@@ -286,6 +301,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
         });
         $('input[name=hide_read_feeds]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_read_feeds) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=feed_view_single_story]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.feed_view_single_story) {
                 $(this).attr('checked', true);
                 return false;
             }

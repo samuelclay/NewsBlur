@@ -1220,6 +1220,10 @@ background: transparent;
     position: absolute;
 }
 
+#story_pane .NB-story-iframe {
+    left: 200%;
+}
+
 /* ================= */
 /* = Story Content = */
 /* ================= */
@@ -2282,12 +2286,13 @@ a.NB-splash-link:hover {
 .NB-modal-trainer .NB-trainer-points li {
     line-height: 23px;
     margin: 0 0 18px 0;
+    clear: both;
 }
 .NB-modal-trainer .NB-trainer-points li b {
     display: block;
 }
 .NB-modal-trainer .NB-trainer-points li img {
-    padding: 0 0 50px 28px;
+    padding: 0 0 0 8px;
 }
 
 .NB-modal-trainer .NB-trainer-points li img.NB-trainer-bullet {

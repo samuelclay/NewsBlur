@@ -64,10 +64,10 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                             'Import from Google Reader',
                             $.make('img', { className: 'NB-add-google-reader-arrow', src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/arrow_right.png' })
                         ]),
-                        $.make('div', { className: 'NB-add-danger' }, [
+                        (this.model.feeds.length && $.make('div', { className: 'NB-add-danger' }, [
                             $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/server_go.png' }),
                             'This will erase all existing feeds and folders.'
-                        ])
+                        ]))
                     ])
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-add-opml NB-modal-submit' }, [
@@ -82,10 +82,10 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                                 return false;
                             })
                         ]),
-                        $.make('div', { className: 'NB-add-danger' }, [
+                        (this.model.feeds.length && $.make('div', { className: 'NB-add-danger' }, [
                             $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/server_go.png' }),
                             'This will erase all existing feeds and folders.'
-                        ]),
+                        ])),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])

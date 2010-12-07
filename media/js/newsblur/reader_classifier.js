@@ -254,33 +254,32 @@ var classifier_prototype = {
             $.make('h3', { className: 'NB-modal-subtitle' }, 'Here\'s what to do:'),
             $.make('ol', { className: 'NB-trainer-points' }, [
                 $.make('li', [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135, height: 20 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right;margin-top: 4px;', width: 155, height: 17 }),
                     $.make('b', 'You will see a bunch of tags and authors.'),
-                    ' Check the features you want to see in stories. If you check too many options, you won\'t find the good among the neutral.'
+                    ' Click on what you like and don\'t like.'
                 ]),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
-                    $.make('b', 'What you select now will show when you use the intelligence slider.'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
-                    ' are stories you don\'t like',
+                    $.make('b', 'The intelligence slider filters stories.'),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
+                    ' are stories you like',
                     $.make('br'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
                     ' are stories you have not yet rated',
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
-                    ' are stories you like'
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
+                    ' are stories you don\'t like'
                 ]),
                 $.make('li', [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),
+                    // $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),
                     $.make('b', 'Stop at any time you like.'),
                     ' You can always come back to this.'
                 ]),
                 $.make('li', [
                     $.make('b', 'Don\'t worry if you don\'t know what you like right now.'),
                     ' Just skip the site. You can click the ',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_down.png', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
-                    ' buttons as you read stories.'
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_up.png', style: 'vertical-align: middle;padding: 0 2px', width: 14, height: 20 }),
+                    ' button as you read stories.'
                 ])
             ]),
             (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
