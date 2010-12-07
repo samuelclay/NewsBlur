@@ -1459,6 +1459,7 @@
                 // Story not found, show in feed view with link to page view
                 if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
                     this.flags['page_view_showing_feed_view'] = true;
+                    this.flags['feed_view_showing_story_view'] = false;
                     this.switch_taskbar_view('feed', 'page');
                     this.show_correct_stories_in_page_and_feed_view();
                 } else if (this.flags['feed_view_showing_story_view']) {
@@ -1469,6 +1470,7 @@
             } else {
               if (this.story_view == 'page' && this.flags['page_view_showing_feed_view']) {
                   this.flags['page_view_showing_feed_view'] = false;
+                  this.flags['feed_view_showing_story_view'] = false;
                   this.switch_taskbar_view('page');
               } else if (this.flags['feed_view_showing_story_view']) {
                   this.flags['page_view_showing_feed_view'] = false;
