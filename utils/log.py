@@ -31,7 +31,7 @@ def info(msg):
 
 def error(msg):
     logger = getlogger()
-    logger.error(colorize(msg))
+    logger.error(msg)
     
 def colorize(msg):
     params = {

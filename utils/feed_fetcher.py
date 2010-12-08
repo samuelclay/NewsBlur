@@ -307,7 +307,7 @@ class Dispatcher:
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 tb = traceback.format_exc()
-                logging.debug(unicode(tb))
+                logging.error(tb)
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
