@@ -607,6 +607,7 @@
             
             this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
             this.make_feeds_folder($feed_list, folders, 0);
+            this.hover_over_feed_titles();
             this.$s.$feed_list.prepend($.make('li', { className: 'feed NB-empty' }));
             this.$s.$feed_link_loader.fadeOut(250);
 
@@ -654,7 +655,6 @@
                     var $feed = this.make_feed_title_line(feed, true, 'feed');
                     $feeds.append($feed);
                     if (depth == 0) {
-                        this.hover_over_feed_titles();
                         $feed.addClass('NB-toplevel');
                         if (feed.active) {
                             $feed.css({'display': 'none'}).fadeIn(500);
