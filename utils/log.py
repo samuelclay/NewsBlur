@@ -31,7 +31,7 @@ def info(msg):
 
 def error(msg):
     logger = getlogger()
-    logger.error(colorize(msg))
+    logger.error(msg)
     
 def colorize(msg):
     params = {
@@ -70,5 +70,8 @@ def colorize(msg):
         msg = re.sub(k, v, msg)
     msg = msg + '~ST~FW~BT'
     msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
-    msg = msg % colors
+    try:
+        msg = msg % colors
+    except TypeError:
+        pass
     return msg
