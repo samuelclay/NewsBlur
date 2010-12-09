@@ -1718,11 +1718,11 @@ background: transparent;
 }
 .NB-taskbar .task_button.task_view_feed {
     cursor: pointer;
-    background: transparent url('../img/icons/silk/application_view_columns.png') no-repeat 8px center;
+    background: transparent url('../img/icons/silk/application_view_list.png') no-repeat 8px center;
 }
 .NB-taskbar .task_button.task_view_story {
     cursor: pointer;
-    background: transparent url('../img/icons/silk/application_cascade.png') no-repeat 8px center;
+    background: transparent url('../img/icons/silk/application_view_gallery.png') no-repeat 8px center;
 }
 .NB-taskbar .task_button.task_story_next_positive {
     cursor: pointer;
@@ -3814,7 +3814,15 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-window label img {
   vertical-align: middle;
-  margin: 0 6px 0 2px;
+  margin: -1px 6px 0 2px;
+}
+.NB-modal-preferences .NB-preference-hidereadfeeds label img {
+  vertical-align: middle;
+  margin: -4px 6px 0 2px;
+}
+.NB-modal-preferences .NB-preference-singlestory label img {
+  vertical-align: middle;
+  margin: -1px 6px 0 2px;
 }
 .NB-modal-preferences .NB-preference-password .NB-preference-option {
   float: left;

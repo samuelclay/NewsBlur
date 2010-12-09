@@ -471,7 +471,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     preference: function(preference, value, callback) {
         if (typeof value == 'undefined') {
-            return NEWSBLUR.Preferences[preference];
+            var pref = NEWSBLUR.Preferences[preference];
+            if ((/\d+/).test(pref)) return parseInt(pref, 10);
+            return pref;
         }
         
         if (NEWSBLUR.Preferences[preference] == value) {

@@ -2518,7 +2518,6 @@ $.fn.layout = function (opts) {
 		s.isClosed	= false;
 		// update isHidden BEFORE sizing panes - WHY??? Old?
 		if (isShowing) s.isHidden = false;
-        NEWSBLUR.log(['open', doFX, o, s]);
 		if (doFX) { // ANIMATE
 			lockPaneForFX(pane, true); // need to set left/top so animation will work
 			$P.show( o.fxName_open, o.fxSettings_open, o.fxSpeed_open, function() {
