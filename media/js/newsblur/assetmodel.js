@@ -36,7 +36,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear'}); 
         this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domCompleteTrigger: true}); 
         this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domCompleteTrigger: true}); 
-        this.ajax['statistics'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true}); 
+        this.ajax['statistics'] = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
         return;
     },
@@ -243,10 +243,25 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            return self.load_feed_precallback(data, null, callback, first_load);
+            return self.load_feed_precallback(data, 'starred', callback, first_load);
         };
         
         this.make_request('/reader/load_starred_stories', {
+            page: page
+        }, pre_callback, null, {
+            'ajax_group': (page ? 'feed_page' : 'feed')
+        });
+    },
+    
+    fetch_river_stories: function(feeds, page, callback, first_load) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            return self.load_feed_precallback(data, 'river', callback, first_load);
+        };
+
+        this.make_request('/reader/load_river_stories', {
+            feeds: feeds,
             page: page
         }, pre_callback, null, {
             'ajax_group': (page ? 'feed_page' : 'feed')
