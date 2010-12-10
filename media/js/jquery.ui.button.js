@@ -1,5 +1,5 @@
 /*
- * jQuery UI Button 1.8.5
+ * jQuery UI Button 1.8.6
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -317,7 +317,6 @@ $.widget( "ui.button", {
 $.widget( "ui.buttonset", {
 	_create: function() {
 		this.element.addClass( "ui-buttonset" );
-		this._init();
 	},
 	
 	_init: function() {

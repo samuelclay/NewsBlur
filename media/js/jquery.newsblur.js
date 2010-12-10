@@ -180,8 +180,8 @@ NEWSBLUR.log = function(msg) {
             var $p = null;
             var fails = false;
             if(opts.childOf){
-                $p = $t.parents(opts.childOf).eq(0);
-                if(!$p[0]){
+                $p = $t.closest(opts.childOf);
+                if(!$p.length){
                     fails = true;
                 }
             }
@@ -191,8 +191,8 @@ NEWSBLUR.log = function(msg) {
                     if(opts.cancelBubbling){
                         fails = true;
                     }else{
-                        $tp = $t.parents(ts).eq(0);
-                        if(!$tp[0]){
+                        $tp = $t.closest(ts);
+                        if(!$tp.length){
                             fails = true;
                         }else{
                             // we are going to assume dev
@@ -206,6 +206,7 @@ NEWSBLUR.log = function(msg) {
                 return false;
             }else{
                 if(callback && typeof callback == 'function'){
+                    NEWSBLUR.log(['Target', e, opts.tagSelector, opts]);
                     callback($t, $p);
                 }
                 return true;

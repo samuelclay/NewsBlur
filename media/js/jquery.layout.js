@@ -1,7 +1,7 @@
 /**
- * @preserve jquery.layout 1.3.0 - Release Candidate 29.9
- * $Date: 2010-10-20 08:00:00 (Wed, 20 Oct 2010) $
- * $Rev: 30299 $
+ * @preserve jquery.layout 1.3.0 - Release Candidate 29.12
+ * $Date: 2010-11-12 08:00:00 (Thu, 18 Nov 2010) $
+ * $Rev: 302912 $
  *
  * Copyright (c) 2010 
  *   Fabrizio Balliano (http://www.fabrizioballiano.net)
@@ -1363,10 +1363,8 @@ $.fn.layout = function (opts) {
 		sC.selector = $C.selector.split(".slice")[0];
 		sC.ref		= tag +"/"+ sC.selector; // used in messages
 
-		// the layoutContainer key is used to store the unique layoutID
-		$C
-			.data("layoutContainer", sID)		// unique identifier for internal use
-			.data("layoutName", options.name)	// add user's layout-name - even if blank!
+		$C	.data("layout", Instance)
+			.data("layoutContainer", sID)	// unique identifier for internal use
 		;
 
 		// SAVE original container CSS for use in destroy()
@@ -1657,7 +1655,7 @@ $.fn.layout = function (opts) {
 
 			// add basic classes & attributes
 			$P
-				.data("layoutName", options.name)	// add user's layout-name - even if blank!
+				.data("parentLayout", Instance)
 				.data("layoutRole", "pane")
 				.data("layoutEdge", pane)
 				.css(c.cssReq).css("zIndex", _c.zIndex.pane_normal)
@@ -1677,19 +1675,18 @@ $.fn.layout = function (opts) {
 				minSize	= _parseSize(pane,o.minSize) || 1;
 				maxSize	= _parseSize(pane,o.maxSize) || 100000;
 				if (size > 0) size = max(min(size, maxSize), minSize);
-			}
 
-			// init pane-logic vars
-				s.tagName	= $P.attr("tagName");
-				s.edge		= pane   // useful if pane is (or about to be) 'swapped' - easy find out where it is (or is going)
-				s.noRoom	= false; // true = pane 'automatically' hidden due to insufficient room - will unhide automatically
-				s.isVisible	= true;  // false = pane is invisible - closed OR hidden - simplify logic
-			if (!isCenter) {
+				// state for border-panes
 				s.isClosed  = false; // true = pane is closed
 				s.isSliding = false; // true = pane is currently open by 'sliding' over adjacent panes
 				s.isResizing= false; // true = pane is in process of being resized
 				s.isHidden	= false; // true = pane is hidden - no spacing, resizer or toggler is visible!
 			}
+				// state for all panes
+				s.tagName	= $P.attr("tagName");
+				s.edge		= pane   // useful if pane is (or about to be) 'swapped' - easy find out where it is (or is going)
+				s.noRoom	= false; // true = pane 'automatically' hidden due to insufficient room - will unhide automatically
+				s.isVisible	= true;  // false = pane is invisible - closed OR hidden - simplify logic
 
 			// set css-position to account for container borders & padding
 			switch (pane) {
@@ -1798,6 +1795,7 @@ $.fn.layout = function (opts) {
 			$R
 				// if paneSelector is an ID, then create a matching ID for the resizer, eg: "#paneLeft" => "paneLeft-resizer"
 				.attr("id", (o.paneSelector.substr(0,1)=="#" ? o.paneSelector.substr(1) + "-resizer" : ""))
+				.data("parentLayout", Instance)
 				.data("layoutRole", "resizer")
 				.data("layoutEdge", pane)
 				.css(_c.resizers.cssReq).css("zIndex", _c.zIndex.resizer_normal)
@@ -1810,14 +1808,13 @@ $.fn.layout = function (opts) {
 				$T
 					// if paneSelector is an ID, then create a matching ID for the resizer, eg: "#paneLeft" => "#paneLeft-toggler"
 					.attr("id", (o.paneSelector.substr(0,1)=="#" ? o.paneSelector.substr(1) + "-toggler" : ""))
+					.data("parentLayout", Instance)
 					.data("layoutRole", "toggler")
 					.data("layoutEdge", pane)
 					.css(_c.togglers.cssReq) // add base/required styles
 					.css(o.applyDemoStyles ? _c.togglers.cssDemo : {}) // add demo styles
 					.addClass(tClass +" "+ tClass+_pane)
 					.appendTo($R) // append SPAN to resizer DIV
-					.click(function(evt){ toggle(pane); evt.stopPropagation(); })
-					.hover( addHover, removeHover )
 				;
 				// ADD INNER-SPANS TO TOGGLER
 				if (o.togglerContent_open) // ui-layout-open
@@ -1838,6 +1835,8 @@ $.fn.layout = function (opts) {
 						.appendTo( $T )
 						.hover( addHover, removeHover )
 					;
+				// ADD TOGGLER.click/.hover
+				enableClosable(pane);
 			}
 
 			// add Draggable events
@@ -1957,7 +1956,8 @@ $.fn.layout = function (opts) {
 					.css("cursor", o.resizerCursor) // n-resize, s-resize, etc
 				;
 
-			$R.hover( onResizerEnter, onResizerLeave );
+			$R.bind("mouseenter."+ sID, onResizerEnter)
+			  .bind("mouseleave."+ sID, onResizerLeave);
 
 			$R.draggable({
 				containment:	$Container[0] // limit resizing to layout container
@@ -2122,7 +2122,6 @@ $.fn.layout = function (opts) {
 		// UNBIND layout events and remove global object
 		$(window).unbind("."+ sID);
 		$(document).unbind("."+ sID);
-		window[ sID ] = null;
 
 		var
 			fullPage= (sC.tagName == "BODY")
@@ -2178,9 +2177,6 @@ $.fn.layout = function (opts) {
 
 		// trigger state-management and onunload callback
 		unload();
-
-		var n = options.name; // layout-name
-		if (n && window[n]) window[n] = null; // clear window object, if exists
 	};
 
 
@@ -2328,7 +2324,7 @@ $.fn.layout = function (opts) {
 		delete s.isShowing;
 		delete s.isHiding;
 
-		if (!$P || !o.closable) return; // invalid request // (!o.resizable && !o.closable) ???
+		if (!$P || (!o.closable && !isShowing && !isHiding)) return; // invalid request // (!o.resizable && !o.closable) ???
 		else if (!force && s.isClosed && !isShowing) return; // already closed
 
 		if (_c.isLayoutBusy) { // layout is 'busy' - probably with an animation
@@ -2475,7 +2471,7 @@ $.fn.layout = function (opts) {
 		// now clear the logic var
 		delete s.isShowing;
 
-		if (!$P || (!o.resizable && !o.closable)) return; // invalid request
+		if (!$P || (!o.resizable && !o.closable && !isShowing)) return; // invalid request
 		else if (s.isVisible && !s.isSliding) return; // already open
 
 		// pane can ALSO be unhidden by just calling show(), so handle this scenario
@@ -2518,6 +2514,7 @@ $.fn.layout = function (opts) {
 		s.isClosed	= false;
 		// update isHidden BEFORE sizing panes - WHY??? Old?
 		if (isShowing) s.isHidden = false;
+
 		if (doFX) { // ANIMATE
 			lockPaneForFX(pane, true); // need to set left/top so animation will work
 			$P.show( o.fxName_open, o.fxSettings_open, o.fxSpeed_open, function() {
@@ -2735,7 +2732,7 @@ $.fn.layout = function (opts) {
 		,	$R		= $Rs[pane]
 		,	trigger	= o.slideTrigger_open
 		;
-		if (!$R || !o.slidable) return;
+		if (!$R || (enable && !o.slidable)) return;
 
 		// make sure we have a valid event
 		if (trigger.match(/mouseover/))
@@ -3062,13 +3059,14 @@ $.fn.layout = function (opts) {
 			}
 			else { // for east and west, set only the height, which is same as center height
 				// set state.min/maxWidth/Height for makePaneFit() logic
-				$.extend(s, getElemDims($P), cssMinDims(pane))
+				if (s.isVisible && !s.noVerticalRoom)
+					$.extend(s, getElemDims($P), cssMinDims(pane))
 				if (!force && !s.noVerticalRoom && d.height == s.outerHeight)
 					return true; // SKIP - pane already the correct size
 				CSS.top			= d.top;
 				CSS.bottom		= d.bottom;
 				CSS.height		= cssH(pane, d.height);
-				s.maxHeight	= max(0, CSS.height);
+				s.maxHeight		= max(0, CSS.height);
 				hasRoom			= (s.maxHeight > 0);
 				if (!hasRoom) s.noVerticalRoom = true; // makePaneFit() logic
 			}
@@ -3079,9 +3077,11 @@ $.fn.layout = function (opts) {
 					_execCallback(pane, o.onresize_start);
 
 				$P.css(CSS); // apply the CSS to pane
-				$.extend(s, getElemDims($P)); // update pane dimensions
-				if (s.noRoom) makePaneFit(pane); // will re-open/show auto-closed/hidden pane
-				if (state.initialized) sizeContent(pane); // also resize the contents, if exists
+				if (s.isVisible) {
+					$.extend(s, getElemDims($P)); // update pane dimensions
+					if (s.noRoom) makePaneFit(pane); // will re-open/show auto-closed/hidden pane
+					if (state.initialized) sizeContent(pane); // also resize the contents, if exists
+				}
 			}
 			else if (!s.noRoom && s.isVisible) // no room for pane
 				makePaneFit(pane); // will hide or close pane
@@ -3392,6 +3392,85 @@ $.fn.layout = function (opts) {
 				if ($T) $T.hide();
 			}
 		});
+	};
+
+
+	var enableClosable = function (pane) {
+		var $T = $Ts[pane], o = options[pane];
+		if (!$T) return;
+		o.closable = true;
+		$T	.bind("click."+ sID, function(evt){ toggle(pane); evt.stopPropagation(); })
+			.bind("mouseenter."+ sID, addHover)
+			.bind("mouseleave."+ sID, removeHover)
+			.css("visibility", "visible")
+			.css("cursor", "pointer")
+			.attr("title", state[pane].isClosed ? o.togglerTip_closed : o.togglerTip_open) // may be blank
+			.show()
+		;
+	};
+
+	var disableClosable = function (pane, hide) {
+		var $T = $Ts[pane];
+		if (!$T) return;
+		options[pane].closable = false;
+		// is closable is disable, then pane MUST be open!
+		if (state[pane].isClosed) open(pane, false, true);
+		$T	.unbind("."+ sID)
+			.css("visibility", hide ? "hidden" : "visible") // instead of hide(), which creates logic issues
+			.css("cursor", "default")
+			.attr("title", "")
+		;
+	};
+
+
+	var enableSlidable = function (pane) {
+		var $R = $Rs[pane], o = options[pane];
+		if (!$R || !$R.data('draggable')) return;
+		options[pane].slidable = true; 
+		if (s.isClosed)
+			bindStartSlidingEvent(pane, true);
+	};
+
+	var disableSlidable = function (pane) {
+		var $R = $Rs[pane];
+		if (!$R) return;
+		options[pane].slidable = false; 
+		if (state[pane].isSliding)
+			close(pane, false, true);
+		else {
+			bindStartSlidingEvent(pane, false);
+			$R	.css("cursor", "default")
+				.attr("title", "")
+			;
+			removeHover(null, $R[0]); // in case currently hovered
+		}
+	};
+
+
+	var enableResizable = function (pane) {
+		var $R = $Rs[pane], o = options[pane];
+		if (!$R || !$R.data('draggable')) return;
+		o.resizable = true; 
+		$R	.draggable("enable")
+			.bind("mouseenter."+ sID, onResizerEnter)
+			.bind("mouseleave."+ sID, onResizerLeave)
+		;
+		if (!state[pane].isClosed)
+			$R	.css("cursor", o.resizerCursor)
+			 	.attr("title", o.resizerTip)
+			;
+	};
+
+	var disableResizable = function (pane) {
+		var $R = $Rs[pane];
+		if (!$R || !$R.data('draggable')) return;
+		options[pane].resizable = false; 
+		$R	.draggable("disable")
+			.unbind("."+ sID)
+			.css("cursor", "default")
+			.attr("title", "")
+		;
+		removeHover(null, $R[0]); // in case currently hovered
 	};
 
 
@@ -3983,8 +4062,24 @@ $.fn.layout = function (opts) {
 	*
 	* @param {Object=}	opts
 	*/
-	function loadState (opts) {
+	function loadState (opts, animate) {
 		$.extend( true, options, opts ); // update layout options
+		// if layout has already been initialized, then UPDATE layout state
+		if (state.initialized) {
+			var pane, o, v, a = !animate;
+			$.each(_c.allPanes.split(","), function (idx, pane) {
+				o = opts[ pane ]; 
+				if (typeof o != 'object') return; // no key, continue
+				v = o.initHidden;
+				if (v === true)  hide(pane, a); 
+				if (v === false) show(pane, 0, a); 
+				v = o.size; 
+				if (v > 0) sizePane(pane, v); 
+				v = o.initClosed; 
+				if (v === true) close(pane, 0, a); 
+				if (v === false) open(pane, 0, a ); 
+			});
+		}
 	};
 
 	/**
@@ -4058,9 +4153,10 @@ $.fn.layout = function (opts) {
 		//alert( lang.errContainerMissing );
 		return null;
 	};
-	// return Instance (saved in window[state.id]) if layout has already been initialized
-	if ($Container.data("layoutContainer"))
-		return $.extend( {}, window[ $Container.data("layoutContainer") ] );
+	// Users retreive Instance of a layout with: $Container.layout() OR $Container.data("layout")
+	// return the Instance-pointer if layout has already been initialized
+	if ($Container.data("layoutContainer") && $Container.data("layout"))
+		return $Container.data("layout"); // cached pointer
 
 	// init global vars
 	var 
@@ -4072,9 +4168,6 @@ $.fn.layout = function (opts) {
 	,	sC	= state.container // alias for easy access to 'container dimensions'
 	,	sID	= state.id // alias for unique layout ID/namespace - eg: "layout435"
 	;
-
-	// create the border layout NOW
-	_create();
 
 	// create Instance object to expose data & option Properties, and primary action Methods
 	var Instance = {
@@ -4117,10 +4210,15 @@ $.fn.layout = function (opts) {
 	,	loadState:		loadState		// method - pass a hash of state to use to update options
 	,	cssWidth:		cssW			// utility - pass element and target outerWidth
 	,	cssHeight:		cssH			// utility - ditto
+	,	enableClosable: enableClosable
+	,	disableClosable: disableClosable
+	,	enableSlidable: enableSlidable
+	,	disableSlidable: disableSlidable
+	,	enableResizable: enableResizable
+	,	disableResizable: disableResizable
 	};
-
-	// create a global instance pointer
-	window[ sID ] = Instance;
+	// create the border layout NOW
+	_create();
 
 	// return the Instance object
 	return Instance;

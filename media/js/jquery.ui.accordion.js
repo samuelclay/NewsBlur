@@ -1,5 +1,5 @@
 /*
- * jQuery UI Accordion 1.8.5
+ * jQuery UI Accordion 1.8.6
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -92,7 +92,8 @@ $.widget( "ui.accordion", {
 
 		self.active = self._findActive( self.active || options.active )
 			.addClass( "ui-state-default ui-state-active" )
-			.toggleClass( "ui-corner-all ui-corner-top" );
+			.toggleClass( "ui-corner-all" )
+			.toggleClass( "ui-corner-top" );
 		self.active.next().addClass( "ui-accordion-content-active" );
 
 		self._createIcons();
@@ -505,7 +506,7 @@ $.widget( "ui.accordion", {
 });
 
 $.extend( $.ui.accordion, {
-	version: "1.8.5",
+	version: "1.8.6",
 	animations: {
 		slide: function( options, additions ) {
 			options = $.extend({

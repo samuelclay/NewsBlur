@@ -1,5 +1,5 @@
 /*!
- * jQuery UI 1.8.5
+ * jQuery UI 1.8.6
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -18,7 +18,7 @@ if ( $.ui.version ) {
 }
 
 $.extend( $.ui, {
-	version: "1.8.5",
+	version: "1.8.6",
 
 	keyCode: {
 		ALT: 18,
@@ -105,8 +105,8 @@ $.fn.extend({
 					// other browsers return a string
 					// we ignore the case of nested elements with an explicit value of 0
 					// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
-					value = parseInt( elem.css( "zIndex" ) );
-					if ( !isNaN( value ) && value != 0 ) {
+					value = parseInt( elem.css( "zIndex" ), 10 );
+					if ( !isNaN( value ) && value !== 0 ) {
 						return value;
 					}
 				}
@@ -116,11 +116,10 @@ $.fn.extend({
 
 		return 0;
 	},
-	
+
 	disableSelection: function() {
-		return this.bind(
-			"mousedown.ui-disableSelection selectstart.ui-disableSelection",
-			function( event ) {
+		return this.bind( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
+			".ui-disableSelection", function( event ) {
 				event.preventDefault();
 			});
 	},
@@ -159,7 +158,7 @@ $.each( [ "Width", "Height" ], function( i, name ) {
 		}
 
 		return this.each(function() {
-			$.style( this, type, reduce( this, size ) + "px" );
+			$( this ).css( type, reduce( this, size ) + "px" );
 		});
 	};
 
@@ -169,7 +168,7 @@ $.each( [ "Width", "Height" ], function( i, name ) {
 		}
 
 		return this.each(function() {
-			$.style( this, type, reduce( this, size, true, margin ) + "px" );
+			$( this).css( type, reduce( this, size, true, margin ) + "px" );
 		});
 	};
 });
@@ -217,8 +216,8 @@ $.extend( $.expr[ ":" ], {
 
 // support
 $(function() {
-	var div = document.createElement( "div" ),
-		body = document.body;
+	var body = document.body,
+		div = body.appendChild( div = document.createElement( "div" ) );
 
 	$.extend( div.style, {
 		minHeight: "100px",
@@ -227,7 +226,9 @@ $(function() {
 		borderWidth: 0
 	});
 
-	$.support.minHeight = body.appendChild( div ).offsetHeight === 100;
+	$.support.minHeight = div.offsetHeight === 100;
+	$.support.selectstart = "onselectstart" in div;
+
 	// set display to none to avoid a layout bug in IE
 	// http://dev.jquery.com/ticket/4014
 	body.removeChild( div ).style.display = "none";

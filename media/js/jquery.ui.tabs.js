@@ -1,5 +1,5 @@
 /*
- * jQuery UI Tabs 1.8.5
+ * jQuery UI Tabs 1.8.6
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -210,13 +210,13 @@ $.widget( "ui.tabs", {
 			this.lis.removeClass( "ui-tabs-selected ui-state-active" );
 			// check for length avoids error when initializing empty list
 			if ( o.selected >= 0 && this.anchors.length ) {
-				this.panels.eq( o.selected ).removeClass( "ui-tabs-hide" );
+				$( self._sanitizeSelector( self.anchors[ o.selected ].hash ) ).removeClass( "ui-tabs-hide" );
 				this.lis.eq( o.selected ).addClass( "ui-tabs-selected ui-state-active" );
 
 				// seems to be expected behavior that the show callback is fired
 				self.element.queue( "tabs", function() {
 					self._trigger( "show", null,
-						self._ui( self.anchors[ o.selected ], self.panels[ o.selected ] ) );
+						self._ui( self.anchors[ o.selected ], $( self._sanitizeSelector( self.anchors[ o.selected ].hash ) ) ) );
 				});
 
 				this.load( o.selected );
@@ -698,7 +698,7 @@ $.widget( "ui.tabs", {
 });
 
 $.extend( $.ui.tabs, {
-	version: "1.8.5"
+	version: "1.8.6"
 });
 
 /*

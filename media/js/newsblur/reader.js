@@ -1921,7 +1921,7 @@
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags
                 ]),
-                (story.starred && options['starred_stories'] &&
+                (story.starred && feed && options['starred_stories'] &&
                     $.make('div', { className: 'NB-story-feed' }, [
                         $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                         $.make('span', { className: 'feed_title' }, feed.feed_title)

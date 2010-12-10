@@ -1,5 +1,5 @@
 /*
- * jQuery UI Position 1.8.5
+ * jQuery UI Position 1.8.6
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -37,7 +37,8 @@ $.fn.position = function( options ) {
 		targetWidth = target.width();
 		targetHeight = target.height();
 		basePosition = { top: 0, left: 0 };
-	} else if ( targetElem.scrollTo && targetElem.document ) {
+	// TODO: use $.isWindow() in 1.9
+	} else if ( targetElem.setTimeout ) {
 		targetWidth = target.width();
 		targetHeight = target.height();
 		basePosition = { top: target.scrollTop(), left: target.scrollLeft() };
