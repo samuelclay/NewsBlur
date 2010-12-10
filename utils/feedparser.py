@@ -41,7 +41,8 @@ __contributors__ = ["Jason Diamond <http://injektilo.org/>",
                     "Aaron Swartz <http://aaronsw.com/>",
                     "Kevin Marks <http://epeus.blogspot.com/>",
                     "Sam Ruby <http://intertwingly.net/>",
-                    "Ade Oshineye <http://blog.oshineye.com/>"]
+                    "Ade Oshineye <http://blog.oshineye.com/>",
+                    "Martin Pool <http://sourcefrog.net/>"]
 _debug = 0
 
 # HTTP "User-Agent" header to send to servers when downloading feeds.
@@ -76,7 +77,7 @@ RESOLVE_RELATIVE_URIS = 1
 SANITIZE_HTML = 1
 
 # ---------- required modules (should come with any Python distribution) ----------
-import sgmllib, re, sys, copy, urlparse, time, rfc822, types, cgi, urllib, urllib2
+import sgmllib, re, sys, copy, urlparse, time, rfc822, types, cgi, urllib, urllib2, datetime
 try:
     from cStringIO import StringIO as _StringIO
 except:
@@ -158,7 +159,7 @@ except:
 # older 2.x series.  If it doesn't, and you can figure out why, I'll accept a
 # patch and modify the compatibility statement accordingly.
 try:
-    raise Exception # import BeautifulSoup
+    import BeautifulSoup
 except:
     BeautifulSoup = None
 
@@ -928,9 +929,12 @@ class _FeedParserMixin:
             attrsD['href'] = href
         return attrsD
     
-    def _save(self, key, value):
+    def _save(self, key, value, overwrite=False):
         context = self._getContext()
-        context.setdefault(key, value)
+        if overwrite:
+            context[key] = value
+        else:
+            context.setdefault(key, value)
 
     def _start_rss(self, attrsD):
         versionmap = {'0.91': 'rss091u',
@@ -1012,6 +1016,10 @@ class _FeedParserMixin:
     def _start_author(self, attrsD):
         self.inauthor = 1
         self.push('author', 1)
+        # Append a new FeedParserDict when expecting an author
+        context = self._getContext()
+        context.setdefault('authors', [])
+        context['authors'].append(FeedParserDict())
     _start_managingeditor = _start_author
     _start_dc_author = _start_author
     _start_dc_creator = _start_author
@@ -1146,6 +1154,8 @@ class _FeedParserMixin:
         context.setdefault(prefix + '_detail', FeedParserDict())
         context[prefix + '_detail'][key] = value
         self._sync_author_detail()
+        context.setdefault('authors', [FeedParserDict()])
+        context['authors'][-1][key] = value
 
     def _save_contributor(self, key, value):
         context = self._getContext()
@@ -1251,7 +1261,7 @@ class _FeedParserMixin:
 
     def _end_published(self):
         value = self.pop('published')
-        self._save('published_parsed', _parse_date(value))
+        self._save('published_parsed', _parse_date(value), overwrite=True)
     _end_dcterms_issued = _end_published
     _end_issued = _end_published
 
@@ -1265,7 +1275,7 @@ class _FeedParserMixin:
     def _end_updated(self):
         value = self.pop('updated')
         parsed_value = _parse_date(value)
-        self._save('updated_parsed', parsed_value)
+        self._save('updated_parsed', parsed_value, overwrite=True)
     _end_modified = _end_updated
     _end_dcterms_modified = _end_updated
     _end_pubdate = _end_updated
@@ -1277,14 +1287,14 @@ class _FeedParserMixin:
 
     def _end_created(self):
         value = self.pop('created')
-        self._save('created_parsed', _parse_date(value))
+        self._save('created_parsed', _parse_date(value), overwrite=True)
     _end_dcterms_created = _end_created
 
     def _start_expirationdate(self, attrsD):
         self.push('expired', 1)
 
     def _end_expirationdate(self):
-        self._save('expired_parsed', _parse_date(self.pop('expired')))
+        self._save('expired_parsed', _parse_date(self.pop('expired')), overwrite=True)
 
     def _start_cc_license(self, attrsD):
         context = self._getContext()
@@ -1558,7 +1568,10 @@ class _FeedParserMixin:
 
     def _end_itunes_explicit(self):
         value = self.pop('itunes_explicit', 0)
-        self._getContext()['itunes_explicit'] = (value == 'yes') and 1 or 0
+        # Convert 'yes' -> True, 'clean' to False, and any other value to None
+        # False and None both evaluate as False, so the difference can be ignored
+        # by applications that only need to know if the content is explicit.
+        self._getContext()['itunes_explicit'] = (None, False, True)[(value == 'yes' and 2) or value == 'clean' or 0]
 
     def _start_media_content(self, attrsD):
         context = self._getContext()
@@ -2070,8 +2083,8 @@ class _MicroformatsParser:
                     sAgentValue = sAgentValue.replace(';', '\\;')
                     if sAgentValue:
                         arLines.append(self.vcardFold('AGENT:' + sAgentValue))
-                    elmAgent['class'] = ''
-                    elmAgent.contents = []
+                    # Completely remove the agent element from the parse tree
+                    elmAgent.extract()
                 else:
                     sAgentValue = self.getPropertyValue(elmAgent, 'value', self.URI, bAutoEscape=1);
                     if sAgentValue:
@@ -2662,7 +2675,7 @@ class _FeedURLHandler(urllib2.HTTPDigestAuthHandler, urllib2.HTTPRedirectHandler
         except:
             return self.http_error_default(req, fp, code, msg, headers)
 
-def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, handlers):
+def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, handlers, extra_headers):
     """URL, filename, or string --> stream
 
     This function lets you define parsers that take any input source
@@ -2689,6 +2702,9 @@ def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, h
 
     If handlers is supplied, it is a list of handlers used to build a
     urllib2 opener.
+
+    if extra_headers is supplied it is a dictionary of HTTP request headers
+    that will override the values generated by FeedParser.
     """
 
     if hasattr(url_file_stream_or_string, 'read'):
@@ -2721,36 +2737,8 @@ def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, h
             pass
 
         # try to open with urllib2 (to use optional headers)
-        request = urllib2.Request(url_file_stream_or_string)
-        request.add_header('User-Agent', agent)
-        if etag:
-            request.add_header('If-None-Match', etag)
-        if type(modified) == type(''):
-            modified = _parse_date(modified)
-        if modified:
-            # format into an RFC 1123-compliant timestamp. We can't use
-            # time.strftime() since the %a and %b directives can be affected
-            # by the current locale, but RFC 2616 states that dates must be
-            # in English.
-            short_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-            months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            request.add_header('If-Modified-Since', '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5]))
-        if referrer:
-            request.add_header('Referer', referrer)
-        if gzip and zlib:
-            request.add_header('Accept-encoding', 'gzip, deflate')
-        elif gzip:
-            request.add_header('Accept-encoding', 'gzip')
-        elif zlib:
-            request.add_header('Accept-encoding', 'deflate')
-        else:
-            request.add_header('Accept-encoding', '')
-        if auth:
-            request.add_header('Authorization', 'Basic %s' % auth)
-        if ACCEPT_HEADER:
-            request.add_header('Accept', ACCEPT_HEADER)
-        request.add_header('A-IM', 'feed') # RFC 3229 support
-        opener = apply(urllib2.build_opener, tuple([_FeedURLHandler()] + handlers))
+        request = _build_urllib2_request(url_file_stream_or_string, agent, etag, modified, referrer, auth, extra_headers)
+        opener = apply(urllib2.build_opener, tuple(handlers + [_FeedURLHandler()]))
         opener.addheaders = [] # RMK - must clear so we only send our custom User-Agent
         try:
             return opener.open(request)
@@ -2765,6 +2753,44 @@ def _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, h
 
     # treat url_file_stream_or_string as string
     return _StringIO(str(url_file_stream_or_string))
+
+def _build_urllib2_request(url, agent, etag, modified, referrer, auth, extra_headers):
+    request = urllib2.Request(url)
+    request.add_header('User-Agent', agent)
+    if etag:
+        request.add_header('If-None-Match', etag)
+    if type(modified) == type(''):
+        modified = _parse_date(modified)
+    elif isinstance(modified, datetime.datetime):
+        modified = modified.utctimetuple()
+    if modified:
+        # format into an RFC 1123-compliant timestamp. We can't use
+        # time.strftime() since the %a and %b directives can be affected
+        # by the current locale, but RFC 2616 states that dates must be
+        # in English.
+        short_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        request.add_header('If-Modified-Since', '%s, %02d %s %04d %02d:%02d:%02d GMT' % (short_weekdays[modified[6]], modified[2], months[modified[1] - 1], modified[0], modified[3], modified[4], modified[5]))
+    if referrer:
+        request.add_header('Referer', referrer)
+    if gzip and zlib:
+        request.add_header('Accept-encoding', 'gzip, deflate')
+    elif gzip:
+        request.add_header('Accept-encoding', 'gzip')
+    elif zlib:
+        request.add_header('Accept-encoding', 'deflate')
+    else:
+        request.add_header('Accept-encoding', '')
+    if auth:
+        request.add_header('Authorization', 'Basic %s' % auth)
+    if ACCEPT_HEADER:
+        request.add_header('Accept', ACCEPT_HEADER)
+    # use this for whatever -- cookies, special headers, etc
+    # [('Cookie','Something'),('x-special-header','Another Value')]
+    for header_name, header_value in extra_headers.items():
+        request.add_header(header_name, header_value)
+    request.add_header('A-IM', 'feed') # RFC 3229 support
+    return request
 
 _date_handlers = []
 def registerDateHandler(func):
@@ -3121,7 +3147,7 @@ def _parse_date_w3dtf(dateString):
     __tzd_re = '(?P<tzd>[-+](?P<tzdhours>\d\d)(?::?(?P<tzdminutes>\d\d))|Z)'
     __tzd_rx = re.compile(__tzd_re)
     __time_re = ('(?P<hours>\d\d)(?P<tsep>:|)(?P<minutes>\d\d)'
-                 '(?:(?P=tsep)(?P<seconds>\d\d(?:[.,]\d+)?))?'
+                 '(?:(?P=tsep)(?P<seconds>\d\d)(?:[.,]\d+)?)?'
                  + __tzd_re)
     __datetime_re = '%s(?:T%s)?' % (__date_re, __time_re)
     __datetime_rx = re.compile(__datetime_re)
@@ -3412,8 +3438,12 @@ def _stripDoctype(data):
 
     return version, data, dict(replacement and safe_pattern.findall(replacement))
     
-def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, referrer=None, handlers=[]):
-    '''Parse a feed from a URL, file, stream, or string'''
+def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, referrer=None, handlers=[], extra_headers={}):
+    '''Parse a feed from a URL, file, stream, or string.
+    
+    extra_headers, if given, is a dict from http header name to value to add
+    to the request; this overrides internally generated values.
+    '''
     result = FeedParserDict()
     result['feed'] = FeedParserDict()
     result['entries'] = []
@@ -3422,7 +3452,7 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
     if type(handlers) == types.InstanceType:
         handlers = [handlers]
     try:
-        f = _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, handlers)
+        f = _open_resource(url_file_stream_or_string, etag, modified, agent, referrer, handlers, extra_headers)
         data = f.read()
     except Exception, e:
         result['bozo'] = 1
@@ -3566,7 +3596,7 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
     elif proposed_encoding != result['encoding']:
         result['bozo'] = 1
         result['bozo_exception'] = CharacterEncodingOverride( \
-            'documented declared as %s, but parsed as %s' % \
+            'document declared as %s, but parsed as %s' % \
             (result['encoding'], proposed_encoding))
         result['encoding'] = proposed_encoding
 
