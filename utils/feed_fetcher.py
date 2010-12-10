@@ -133,8 +133,13 @@ class ProcessFeed:
                     return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
+                logging.debug("   ---> [%-30s] HTTP Status code: %s. Checking address..." % (unicode(self.feed)[:30], self.fpf.status))
+                fixed_feed = self.feed.check_feed_address_for_feed_link()
+                if not fixed_feed:
+                    self.feed.save_feed_history(self.fpf.status, "HTTP Error")
+                else:
+                    self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
-                self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):

@@ -103,6 +103,8 @@
             
             leftLayout = $('.left-pane').layout({
                 closable:               false,
+                fxName:                 "scale",
+                fxSettings:             { duration: 500, easing: "easeInOutQuint" },
                 center__paneSelector:   ".left-center",
                 center__resizable:      false,
                 south__paneSelector:    ".left-south",
@@ -124,8 +126,9 @@
                 south__spacing_closed:  0,
                 south__closable:        true,
                 south__initClosed:      true,
-                south__fxName:          "slide",
-                south__fxSettings:      { duration: 500, easing: "easeInOutQuint" }
+                fxName:                 "slide",
+                fxSpeed:                 1000,
+                fxSettings:             { duration: 1000, easing: "easeInOutQuint" }
             });
 
             rightLayout = $('.right-pane').layout({ 
@@ -806,13 +809,15 @@
             var self = this;
             
             this.$s.$feed_list.sortable({
-                connectWith: '#feed_list',
-                items: '.feed',
+                items: '.feed:not(.NB-empty),li.folder',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
-                distance: 3,
+                distance: 4,
                 cursor: 'move',
+                tolerance: 'pointer',
                 start: function(e, ui) {
+            // this.$s.$feed_list.sortable('option', 'items', '.feed');
+                    NEWSBLUR.log(['start', ui.item, ui.placeholder, self.$s.$feed_list.sortable('option', 'items')]);
                     self.flags['sorting_feed'] = true;
                     ui.placeholder.attr('class', ui.item.attr('class') + ' NB-feeds-list-highlight');
                     ui.item.addClass('NB-feed-sorting');
@@ -825,7 +830,6 @@
                         self.collapse_folder(ui.item, true);
                         self.collapse_folder($('.folder_title', ui.placeholder).eq(0), true);
                         ui.item.parent().css('height', ui.item.eq(0).outerHeight(true) + 'px');
-                        NEWSBLUR.log(['start', ui.item, ui.placeholder]);
                     } else {
                         ui.placeholder.html(ui.item.children().clone());
                         // self.$s.$feed_list.sortable('option', 'items', '.feed:not(ul.folder)');
@@ -837,6 +841,7 @@
                     $('.folder', ui.placeholder.parents('.folder').eq(0)).tsort('.folder_title_text');
                 },
                 stop: function(e, ui) {
+                    NEWSBLUR.log(['stop', ui]);
                     setTimeout(function() {
                         self.flags['sorting_feed'] = false;
                     }, 100);
@@ -867,7 +872,10 @@
                     var $item = $items.eq(i);
 
                     if ($item.hasClass('feed')) {
-                        folders.push($item.data('feed_id'));
+                        var feed_id = $item.data('feed_id');
+                        if (feed_id) {
+                            folders.push(feed_id);
+                        }
                     } else if ($item.hasClass('folder')) {
                         var folder_title = $item.find('.folder_title_text').eq(0).text();
                         var child_folders = {};
@@ -2311,9 +2319,9 @@
                             $.make('div', { className: 'NB-feed-story-sentiment' }),
                             $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, story.story_title)
                         ]),
-                        ( story.long_parsed_date &&
+                        (story.long_parsed_date &&
                             $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date)),
-                        ( story.starred_date &&
+                        (story.starred_date &&
                             $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date))
                     ]),
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                

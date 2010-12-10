@@ -206,7 +206,7 @@ NEWSBLUR.log = function(msg) {
                 return false;
             }else{
                 if(callback && typeof callback == 'function'){
-                    NEWSBLUR.log(['Target', e, opts.tagSelector, opts]);
+                    // NEWSBLUR.log(['Target', e, opts.tagSelector, opts]);
                     callback($t, $p);
                 }
                 return true;
