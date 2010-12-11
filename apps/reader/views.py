@@ -622,6 +622,9 @@ def rename_feed(request):
     user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
     feed_title = request.POST['feed_title']
     
+    logging.info(" ---> [%s] ~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (
+                 request.user, feed.feed_title, feed_title))
+                 
     user_sub.user_title = feed_title
     user_sub.save()
     
