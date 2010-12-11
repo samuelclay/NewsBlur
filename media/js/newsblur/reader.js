@@ -750,7 +750,7 @@
                 $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
                   feed.feed_title,
-                  $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' }),
+                  (type == 'story' && $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' })),
                   (type == 'story' && $.make('span', { className: 'NB-feedbar-statistics', title: 'Statistics' }))
                 ]),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
@@ -1289,72 +1289,6 @@
           }
           
           this.story_view = view;
-        },
-        
-        delete_feed: function(feed_id, $feed) {
-            var self = this;
-            $feed = $feed || this.find_feed_in_feed_list(feed_id);
-            $feed.slideUp(500);
-            
-            if (this.active_feed == $feed.data('feed_id')) {
-                this.reset_feed();
-                this.show_splash_page();
-            }
-            this.update_header_counts();
-        },
-        
-        delete_folder: function(folder_name, $folder) {
-            var self = this;
-            var feeds = this.get_feed_ids_in_folder($folder);
-
-            if ($folder.length) {
-                $folder.slideUp(500);
-            }
-            
-            // If the active feed is under this folder, deselect it.
-            var feed_active = false;
-            _.each(feeds, _.bind(function(feed_id) {
-                if (self.active_feed == feed_id) {
-                    this.reset_feed();
-                    this.show_splash_page();
-                    return false;
-                }
-            }, this));
-            
-            this.update_header_counts();
-        },
-        
-        rename_feed: function(feed_id, $feed) {
-            var self = this;
-            $feed = $feed || this.find_feed_in_feed_list(feed_id);
-            $feed.slideUp(500);
-            
-            if (this.active_feed == $feed.data('feed_id')) {
-                this.reset_feed();
-                this.show_splash_page();
-            }
-            this.update_header_counts();
-        },
-        
-        rename_folder: function(folder_name, $folder) {
-            var self = this;
-            var feeds = this.get_feed_ids_in_folder($folder);
-
-            if ($folder.length) {
-                $folder.slideUp(500);
-            }
-            
-            // If the active feed is under this folder, deselect it.
-            var feed_active = false;
-            _.each(feeds, _.bind(function(feed_id) {
-                if (self.active_feed == feed_id) {
-                    this.reset_feed();
-                    this.show_splash_page();
-                    return false;
-                }
-            }, this));
-            
-            this.update_header_counts();
         },
         
         // ===============
@@ -3022,11 +2956,45 @@
             });
         },
         
+        delete_feed: function(feed_id, $feed) {
+            var self = this;
+            $feed = $feed || this.find_feed_in_feed_list(feed_id);
+            $feed.slideUp(500);
+            
+            if (this.active_feed == $feed.data('feed_id')) {
+                this.reset_feed();
+                this.show_splash_page();
+            }
+            this.update_header_counts();
+        },
+        
+        delete_folder: function(folder_name, $folder) {
+            var self = this;
+            var feeds = this.get_feed_ids_in_folder($folder);
+
+            if ($folder.length) {
+                $folder.slideUp(500);
+            }
+            
+            // If the active feed is under this folder, deselect it.
+            var feed_active = false;
+            _.each(feeds, _.bind(function(feed_id) {
+                if (self.active_feed == feed_id) {
+                    this.reset_feed();
+                    this.show_splash_page();
+                    return false;
+                }
+            }, this));
+            
+            this.update_header_counts();
+        },
+        
         // ==========
         // = Rename =
         // ==========
         
         show_confirm_rename_menu_item: function() {
+            var self = this;
             var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
             var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
             
@@ -3036,9 +3004,21 @@
             $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {'duration': 500});
             $('input', $confirm).focus().select();
             this.flags['showing_rename_input_on_manage_menu'] = true;
+            $('.NB-menu-manage-feed-rename-confirm input.NB-menu-manage-title').bind('keyup', 'return', function(e) {
+                var $t = $(e.target);
+                var feed_id = $t.closest('.NB-menu-manage').data('feed_id');
+                var $feed = $t.closest('.NB-menu-manage').data('$feed');
+                self.manage_menu_rename_feed(feed_id, $feed);
+            });
+            $('.NB-menu-manage-folder-rename-confirm input.NB-menu-manage-title').bind('keyup', 'return', function(e) {
+                var $t = $(e.target);
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.manage_menu_rename_folder(folder_name, $folder);
+            });
         },
         
-        hide_confirm_rename_menu_item: function() {
+        hide_confirm_rename_menu_item: function(renamed) {
             var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
             var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
             
@@ -3046,35 +3026,49 @@
             var text = $rename.hasClass('NB-menu-manage-folder-rename') ?
                        'Rename this folder' :
                        'Rename this site';
+            if (renamed) {
+                text = 'Renamed';
+                $rename.addClass('NB-active');
+            } else {
+                $rename.removeClass('NB-active');
+            }
             $('.NB-menu-manage-title', $rename).text(text);
             $confirm.slideUp(500);
             this.flags['showing_rename_input_on_manage_menu'] = false;
         },
         
         manage_menu_rename_feed: function(feed, $feed) {
-            var self = this;
-            var feed_id = feed || this.active_feed;
-            $feed = $feed || this.find_feed_in_feed_list(feed_id);
-            
+            var self      = this;
+            var feed_id   = feed || this.active_feed;
+            $feed         = $feed || this.find_feed_in_feed_list(feed_id);
             var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
+            var new_title = $('.NB-menu-manage-feed-rename-confirm .NB-menu-manage-title').val();
             
-            this.model.rename_feed(feed_id, in_folder, function() {
-                self.rename_feed(feed_id, $feed);
+            this.model.rename_feed(feed_id, new_title, in_folder, function() {
             });
+            NEWSBLUR.log(['rename feed', new_title, $feed]);
+            $('.feed_title', $feed).text(new_title);
+            if (feed_id == this.active_feed) {
+                $('.feed_title', this.$s.$story_titles).text(new_title);
+            }
+            this.hide_confirm_rename_menu_item(true);
         },
         
         manage_menu_rename_folder: function(folder, $folder) {
-            var self = this;
+            var self      = this;
             var in_folder = '';
-            var $parent = $folder.parents('li.folder');
-            var feeds = this.get_feed_ids_in_folder($folder);
+            var $parent   = $folder.parents('li.folder');
+            var new_folder_name = $('.NB-menu-manage-folder-rename-confirm .NB-menu-manage-title').val();
+    
             if ($parent.length) {
                 in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
             }
         
-            this.model.rename_folder(folder, in_folder, feeds, function() {
-                self.rename_folder(folder, $folder);
+            this.model.rename_folder(folder, new_folder_name, in_folder, function() {
             });
+            NEWSBLUR.log(['rename', $folder, new_folder_name]);
+            $('.folder_title_text', $folder).text(new_folder_name);
+            this.hide_confirm_rename_menu_item(true);
         },
         
         // ==========================
