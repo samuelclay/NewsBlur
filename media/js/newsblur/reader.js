@@ -1324,6 +1324,39 @@
             this.update_header_counts();
         },
         
+        rename_feed: function(feed_id, $feed) {
+            var self = this;
+            $feed = $feed || this.find_feed_in_feed_list(feed_id);
+            $feed.slideUp(500);
+            
+            if (this.active_feed == $feed.data('feed_id')) {
+                this.reset_feed();
+                this.show_splash_page();
+            }
+            this.update_header_counts();
+        },
+        
+        rename_folder: function(folder_name, $folder) {
+            var self = this;
+            var feeds = this.get_feed_ids_in_folder($folder);
+
+            if ($folder.length) {
+                $folder.slideUp(500);
+            }
+            
+            // If the active feed is under this folder, deselect it.
+            var feed_active = false;
+            _.each(feeds, _.bind(function(feed_id) {
+                if (self.active_feed == feed_id) {
+                    this.reset_feed();
+                    this.show_splash_page();
+                    return false;
+                }
+            }, this));
+            
+            this.update_header_counts();
+        },
+        
         // ===============
         // = Feed Header =
         // ===============
@@ -2751,6 +2784,15 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.feed_title })
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
@@ -2899,7 +2941,7 @@
         hide_manage_menu: function(type, $item, animate) {
             var $manage_menu_container = $('.NB-menu-manage-container');
             var height = $manage_menu_container.outerHeight();
-            
+            if (this.flags['showing_rename_input_on_manage_menu'] && animate) return;
             // NEWSBLUR.log(['hide_manage_menu', type, $item, animate, $manage_menu_container.css('opacity')]);
             
             clearTimeout(this.flags.closed_manage_menu);
@@ -2937,10 +2979,10 @@
             var $confirm = $('.NB-menu-manage-feed-delete-confirm,.NB-menu-manage-folder-delete-confirm');
             
             $delete.removeClass('NB-menu-manage-feed-delete-cancel');
-            var text = 'Delete this site';
-            if ($delete.hasClass('NB-menu-manage-folder-delete')) {
-                text = "Delete this folder";
-            }
+
+            var text = $delete.hasClass('NB-menu-manage-folder-delete') ?
+                       'Delete this folder' :
+                       'Delete this site';
             $('.NB-menu-manage-title', $delete).text(text);
             $confirm.slideUp(500);
         },
@@ -2968,6 +3010,61 @@
         
             this.model.delete_folder(folder, in_folder, feeds, function() {
                 self.delete_folder(folder, $folder);
+            });
+        },
+        
+        // ==========
+        // = Rename =
+        // ==========
+        
+        show_confirm_rename_menu_item: function() {
+            var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
+            var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
+            
+            $rename.addClass('NB-menu-manage-feed-rename-cancel');
+            $('.NB-menu-manage-title', $rename).text('Cancel rename');
+            var height = $confirm.height();
+            $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {'duration': 500});
+            $('input', $confirm).focus();
+            this.flags['showing_rename_input_on_manage_menu'] = true;
+        },
+        
+        hide_confirm_rename_menu_item: function() {
+            var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
+            var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
+            
+            $rename.removeClass('NB-menu-manage-feed-rename-cancel');
+            var text = $rename.hasClass('NB-menu-manage-folder-rename') ?
+                       'Rename this folder' :
+                       'Rename this site';
+            $('.NB-menu-manage-title', $rename).text(text);
+            $confirm.slideUp(500);
+            this.flags['showing_rename_input_on_manage_menu'] = false;
+        },
+        
+        manage_menu_rename_feed: function(feed, $feed) {
+            var self = this;
+            var feed_id = feed || this.active_feed;
+            $feed = $feed || this.find_feed_in_feed_list(feed_id);
+            
+            var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
+            
+            this.model.rename_feed(feed_id, in_folder, function() {
+                self.rename_feed(feed_id, $feed);
+            });
+        },
+        
+        manage_menu_rename_folder: function(folder, $folder) {
+            var self = this;
+            var in_folder = '';
+            var $parent = $folder.parents('li.folder');
+            var feeds = this.get_feed_ids_in_folder($folder);
+            if ($parent.length) {
+                in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
+            }
+        
+            this.model.rename_folder(folder, in_folder, feeds, function() {
+                self.rename_folder(folder, $folder);
             });
         },
         
@@ -3844,6 +3941,34 @@
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.manage_menu_delete_folder(folder_name, $folder);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-rename' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if ($t.hasClass('NB-menu-manage-feed-rename-cancel') ||
+                    $t.hasClass('NB-menu-manage-folder-rename-cancel')) {
+                    self.hide_confirm_rename_menu_item();
+                } else {
+                    self.show_confirm_rename_menu_item();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                self.manage_menu_rename_feed(feed_id, $feed);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.manage_menu_rename_folder(folder_name, $folder);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-mark-read' }, function($t, $p){
                 e.preventDefault();
