@@ -2789,7 +2789,7 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
-                        $.make('div', { className: 'NB-menu-manage-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                        $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-feed-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.feed_title })
                     ]),
@@ -2815,6 +2815,15 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-folder-rename' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this folder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed_id })
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
@@ -3025,7 +3034,7 @@
             $('.NB-menu-manage-title', $rename).text('Cancel rename');
             var height = $confirm.height();
             $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {'duration': 500});
-            $('input', $confirm).focus();
+            $('input', $confirm).focus().select();
             this.flags['showing_rename_input_on_manage_menu'] = true;
         },
         
@@ -3952,23 +3961,27 @@
                     self.show_confirm_rename_menu_item();
                 }
             });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-rename-confirm' }, function($t, $p){
-                e.preventDefault();
-                e.stopPropagation();
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                var $feed = $t.parents('.NB-menu-manage').data('$feed');
-                self.manage_menu_rename_feed(feed_id, $feed);
-            });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-confirm' }, function($t, $p){
-                e.preventDefault();
-                e.stopPropagation();
-            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-save' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.manage_menu_rename_folder(folder_name, $folder);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-rename-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                self.manage_menu_rename_feed(feed_id, $feed);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-mark-read' }, function($t, $p){
                 e.preventDefault();

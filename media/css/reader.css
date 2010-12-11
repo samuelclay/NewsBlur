@@ -3294,6 +3294,7 @@ background: transparent;
     background-color: #BAE3A8;
     cursor: default;
 }
+.NB-menu-manage .NB-menu-manage-rename-confirm input.NB-menu-manage-title,
 .NB-menu-manage .NB-menu-manage-rename-confirm:hover input.NB-menu-manage-title {
     text-shadow: none;
 }
