@@ -994,7 +994,7 @@
                     $('.NB-hover', $folder).removeClass('NB-hover');
                     $this.addClass("NB-hover");
                     // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                    if ($this.offset().top > $(window).height() - 181) {
+                    if ($this.offset().top > $(window).height() - 204) {
                         $this.addClass('NB-hover-inverse');
                     } 
                 }
@@ -2652,6 +2652,10 @@
                 }, true);
             });
         },
+        
+        // =======================
+        // = Sidebar Manage Menu =
+        // =======================
 
         make_manage_menu: function(type, feed_id, inverse, $item) {
             var $manage_menu;
@@ -2872,7 +2876,7 @@
             
             // Hide menu on scroll.
             this.flags['feed_list_showing_manage_menu'] = true;
-            this.$s.$feed_list.unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
+            this.$s.$feed_list.parent().unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
                 if (self.flags['feed_list_showing_manage_menu']) {
                     self.hide_manage_menu(type, $item, true);
                 } else {
@@ -2907,6 +2911,10 @@
             }
             $('.NB-task-manage').removeClass('NB-hover');
         },
+        
+        // ========================
+        // = Manage menu - Delete =
+        // ========================
         
         show_confirm_delete_menu_item: function() {
             var $delete = $('.NB-menu-manage-feed-delete,.NB-menu-manage-folder-delete');
@@ -2989,9 +2997,9 @@
             this.update_header_counts();
         },
         
-        // ==========
-        // = Rename =
-        // ==========
+        // ========================
+        // = Manage menu - Rename =
+        // ========================
         
         show_confirm_rename_menu_item: function() {
             var self = this;
@@ -3043,6 +3051,8 @@
             $feed         = $feed || this.find_feed_in_feed_list(feed_id);
             var new_title = $('.NB-menu-manage-feed-rename-confirm .NB-menu-manage-title').val();
             
+            if (new_title.length <= 0) return this.hide_confirm_rename_menu_item();
+            
             this.model.rename_feed(feed_id, new_title, function() {
             });
 
@@ -3058,7 +3068,9 @@
             var in_folder = '';
             var $parent   = $folder.parents('li.folder');
             var new_folder_name = $('.NB-menu-manage-folder-rename-confirm .NB-menu-manage-title').val();
-    
+
+            if (new_folder_name.length <= 0) return this.hide_confirm_rename_menu_item();
+            
             if ($parent.length) {
                 in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
             }
@@ -3068,6 +3080,8 @@
             NEWSBLUR.log(['rename', $folder, new_folder_name]);
             $('.folder_title_text', $folder).text(new_folder_name);
             this.hide_confirm_rename_menu_item(true);
+            
+            $('.NB-menu-manage-folder-rename').parents('.NB-menu-manage').data('folder_name', new_folder_name);
         },
         
         // ==========================

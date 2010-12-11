@@ -631,14 +631,14 @@ def rename_feed(request):
 @json.json_view
 def rename_folder(request):
     folder_to_rename = request.POST['folder_name']
+    new_folder_name = request.POST['new_folder_name']
     in_folder = request.POST.get('in_folder', '')
-    feed_ids_in_folder = request.REQUEST.getlist('feed_id')
-    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # renames all, but only in the same folder parent. But nobody should be doing that, right?
-    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
-    user_sub_folders.rename_folder(folder_to_rename, in_folder, feed_ids_in_folder)
+    if new_folder_name:
+        user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+        user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
 
     return dict(code=1)
     

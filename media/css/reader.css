@@ -3264,7 +3264,7 @@ background: transparent;
 }
 
 .NB-menu-manage .NB-menu-manage-rename .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/font.png') no-repeat  0px -1px;  
+    background: transparent url('../img/icons/silk/font.png') no-repeat  0px 0px;  
 }
 .NB-menu-manage .NB-menu-manage-rename.NB-active .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/accept.png') no-repeat  0 0;
