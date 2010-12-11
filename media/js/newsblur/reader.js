@@ -3041,12 +3041,11 @@
             var self      = this;
             var feed_id   = feed || this.active_feed;
             $feed         = $feed || this.find_feed_in_feed_list(feed_id);
-            var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
             var new_title = $('.NB-menu-manage-feed-rename-confirm .NB-menu-manage-title').val();
             
-            this.model.rename_feed(feed_id, new_title, in_folder, function() {
+            this.model.rename_feed(feed_id, new_title, function() {
             });
-            NEWSBLUR.log(['rename feed', new_title, $feed]);
+
             $('.feed_title', $feed).text(new_title);
             if (feed_id == this.active_feed) {
                 $('.feed_title', this.$s.$story_titles).text(new_title);

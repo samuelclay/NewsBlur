@@ -21,6 +21,7 @@ class UserSubscription(models.Model):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
+    user_title = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=False)
     last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)

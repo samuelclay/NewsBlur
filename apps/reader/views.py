@@ -136,7 +136,7 @@ def load_feeds(request):
     for sub in user_subs:
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
-            'feed_title': sub.feed.feed_title,
+            'feed_title': sub.user_title or sub.feed.feed_title,
             'feed_address': sub.feed.feed_address,
             'feed_link': sub.feed.feed_link,
             'ps': sub.unread_count_positive,
@@ -192,7 +192,7 @@ def load_feeds_iphone(request):
             sub.calculate_feed_scores(silent=True)
         feeds[sub.feed.pk] = {
             'id': sub.feed.pk,
-            'feed_title': sub.feed.feed_title,
+            'feed_title': sub.user_title or sub.feed.feed_title,
             'feed_link': sub.feed.feed_link,
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
@@ -612,6 +612,33 @@ def delete_folder(request):
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
+
+    return dict(code=1)
+    
+@ajax_login_required
+@json.json_view
+def rename_feed(request):
+    feed = get_object_or_404(Feed, pk=int(request.POST['feed_id']))
+    user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    feed_title = request.POST['feed_title']
+    
+    user_sub.user_title = feed_title
+    user_sub.save()
+    
+    return dict(code=1)
+    
+@ajax_login_required
+@json.json_view
+def rename_folder(request):
+    folder_to_rename = request.POST['folder_name']
+    in_folder = request.POST.get('in_folder', '')
+    feed_ids_in_folder = request.REQUEST.getlist('feed_id')
+    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
+    
+    # Works piss poor with duplicate folder titles, if they are both in the same folder.
+    # renames all, but only in the same folder parent. But nobody should be doing that, right?
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders.rename_folder(folder_to_rename, in_folder, feed_ids_in_folder)
 
     return dict(code=1)
     

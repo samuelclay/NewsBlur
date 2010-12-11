@@ -455,13 +455,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    rename_feed: function(feed_id, feed_title, in_folder, callback) {
+    rename_feed: function(feed_id, feed_title, callback) {
         this.feeds[feed_id].feed_title = feed_title;
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/rename_feed', {
                 'feed_id'    : feed_id, 
-                'feed_title' : feed_title,
-                'in_folder'  : in_folder
+                'feed_title' : feed_title
             }, callback, null);
         } else {
             if ($.isFunction(callback)) callback();
