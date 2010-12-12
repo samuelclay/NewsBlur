@@ -752,7 +752,7 @@
                 $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                 $.make('span', { className: 'feed_title' }, [
                   feed.feed_title,
-                  $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' }),
+                  (type == 'story' && $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' })),
                   (type == 'story' && $.make('span', { className: 'NB-feedbar-statistics', title: 'Statistics' }))
                 ]),
                 (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
@@ -996,7 +996,7 @@
                     $('.NB-hover', $folder).removeClass('NB-hover');
                     $this.addClass("NB-hover");
                     // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                    if ($this.offset().top > $(window).height() - 181) {
+                    if ($this.offset().top > $(window).height() - 204) {
                         $this.addClass('NB-hover-inverse');
                     } 
                 }
@@ -1292,39 +1292,6 @@
           }
           
           this.story_view = view;
-        },
-        
-        delete_feed: function(feed_id, $feed) {
-            var self = this;
-            $feed = $feed || this.find_feed_in_feed_list(feed_id);
-            $feed.slideUp(500);
-            
-            if (this.active_feed == $feed.data('feed_id')) {
-                this.reset_feed();
-                this.show_splash_page();
-            }
-            this.update_header_counts();
-        },
-        
-        delete_folder: function(folder_name, $folder) {
-            var self = this;
-            var feeds = this.get_feed_ids_in_folder($folder);
-
-            if ($folder.length) {
-                $folder.slideUp(500);
-            }
-            
-            // If the active feed is under this folder, deselect it.
-            var feed_active = false;
-            _.each(feeds, _.bind(function(feed_id) {
-                if (self.active_feed == feed_id) {
-                    this.reset_feed();
-                    this.show_splash_page();
-                    return false;
-                }
-            }, this));
-            
-            this.update_header_counts();
         },
         
         // ===============
@@ -2742,6 +2709,10 @@
                 }, true);
             });
         },
+        
+        // =======================
+        // = Sidebar Manage Menu =
+        // =======================
 
         make_manage_menu: function(type, feed_id, inverse, $item) {
             var $manage_menu;
@@ -2808,6 +2779,15 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-feed-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.feed_title })
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
@@ -2830,6 +2810,15 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-folder-rename' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this folder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed_id })
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
@@ -2944,7 +2933,7 @@
             
             // Hide menu on scroll.
             this.flags['feed_list_showing_manage_menu'] = true;
-            this.$s.$feed_list.unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
+            this.$s.$feed_list.parent().unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
                 if (self.flags['feed_list_showing_manage_menu']) {
                     self.hide_manage_menu(type, $item, true);
                 } else {
@@ -2956,7 +2945,7 @@
         hide_manage_menu: function(type, $item, animate) {
             var $manage_menu_container = $('.NB-menu-manage-container');
             var height = $manage_menu_container.outerHeight();
-            
+            if (this.flags['showing_rename_input_on_manage_menu'] && animate) return;
             // NEWSBLUR.log(['hide_manage_menu', type, $item, animate, $manage_menu_container.css('opacity')]);
             
             clearTimeout(this.flags.closed_manage_menu);
@@ -2980,6 +2969,10 @@
             $('.NB-task-manage').removeClass('NB-hover');
         },
         
+        // ========================
+        // = Manage menu - Delete =
+        // ========================
+        
         show_confirm_delete_menu_item: function() {
             var $delete = $('.NB-menu-manage-feed-delete,.NB-menu-manage-folder-delete');
             var $confirm = $('.NB-menu-manage-feed-delete-confirm,.NB-menu-manage-folder-delete-confirm');
@@ -2994,10 +2987,10 @@
             var $confirm = $('.NB-menu-manage-feed-delete-confirm,.NB-menu-manage-folder-delete-confirm');
             
             $delete.removeClass('NB-menu-manage-feed-delete-cancel');
-            var text = 'Delete this site';
-            if ($delete.hasClass('NB-menu-manage-folder-delete')) {
-                text = "Delete this folder";
-            }
+
+            var text = $delete.hasClass('NB-menu-manage-folder-delete') ?
+                       'Delete this folder' :
+                       'Delete this site';
             $('.NB-menu-manage-title', $delete).text(text);
             $confirm.slideUp(500);
         },
@@ -3026,6 +3019,126 @@
             this.model.delete_folder(folder, in_folder, feeds, function() {
                 self.delete_folder(folder, $folder);
             });
+        },
+        
+        delete_feed: function(feed_id, $feed) {
+            var self = this;
+            $feed = $feed || this.find_feed_in_feed_list(feed_id);
+            $feed.slideUp(500);
+            
+            if (this.active_feed == $feed.data('feed_id')) {
+                this.reset_feed();
+                this.show_splash_page();
+            }
+            this.update_header_counts();
+        },
+        
+        delete_folder: function(folder_name, $folder) {
+            var self = this;
+            var feeds = this.get_feed_ids_in_folder($folder);
+
+            if ($folder.length) {
+                $folder.slideUp(500);
+            }
+            
+            // If the active feed is under this folder, deselect it.
+            var feed_active = false;
+            _.each(feeds, _.bind(function(feed_id) {
+                if (self.active_feed == feed_id) {
+                    this.reset_feed();
+                    this.show_splash_page();
+                    return false;
+                }
+            }, this));
+            
+            this.update_header_counts();
+        },
+        
+        // ========================
+        // = Manage menu - Rename =
+        // ========================
+        
+        show_confirm_rename_menu_item: function() {
+            var self = this;
+            var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
+            var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
+            
+            $rename.addClass('NB-menu-manage-feed-rename-cancel');
+            $('.NB-menu-manage-title', $rename).text('Cancel rename');
+            var height = $confirm.height();
+            $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {'duration': 500});
+            $('input', $confirm).focus().select();
+            this.flags['showing_rename_input_on_manage_menu'] = true;
+            $('.NB-menu-manage-feed-rename-confirm input.NB-menu-manage-title').bind('keyup', 'return', function(e) {
+                var $t = $(e.target);
+                var feed_id = $t.closest('.NB-menu-manage').data('feed_id');
+                var $feed = $t.closest('.NB-menu-manage').data('$feed');
+                self.manage_menu_rename_feed(feed_id, $feed);
+            });
+            $('.NB-menu-manage-folder-rename-confirm input.NB-menu-manage-title').bind('keyup', 'return', function(e) {
+                var $t = $(e.target);
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.manage_menu_rename_folder(folder_name, $folder);
+            });
+        },
+        
+        hide_confirm_rename_menu_item: function(renamed) {
+            var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
+            var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
+            
+            $rename.removeClass('NB-menu-manage-feed-rename-cancel');
+            var text = $rename.hasClass('NB-menu-manage-folder-rename') ?
+                       'Rename this folder' :
+                       'Rename this site';
+            if (renamed) {
+                text = 'Renamed';
+                $rename.addClass('NB-active');
+            } else {
+                $rename.removeClass('NB-active');
+            }
+            $('.NB-menu-manage-title', $rename).text(text);
+            $confirm.slideUp(500);
+            this.flags['showing_rename_input_on_manage_menu'] = false;
+        },
+        
+        manage_menu_rename_feed: function(feed, $feed) {
+            var self      = this;
+            var feed_id   = feed || this.active_feed;
+            $feed         = $feed || this.find_feed_in_feed_list(feed_id);
+            var new_title = $('.NB-menu-manage-feed-rename-confirm .NB-menu-manage-title').val();
+            
+            if (new_title.length <= 0) return this.hide_confirm_rename_menu_item();
+            
+            this.model.rename_feed(feed_id, new_title, function() {
+            });
+
+            $('.feed_title', $feed).text(new_title);
+            if (feed_id == this.active_feed) {
+                $('.feed_title', this.$s.$story_titles).text(new_title);
+            }
+            this.hide_confirm_rename_menu_item(true);
+        },
+        
+        manage_menu_rename_folder: function(folder, $folder) {
+            var self      = this;
+            var in_folder = '';
+            var $parent   = $folder.parents('li.folder');
+            var new_folder_name = $('.NB-menu-manage-folder-rename-confirm .NB-menu-manage-title').val();
+
+            if (new_folder_name.length <= 0) return this.hide_confirm_rename_menu_item();
+            
+            if ($parent.length) {
+                in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
+            }
+        
+            this.model.rename_folder(folder, new_folder_name, in_folder, function() {
+            });
+            NEWSBLUR.log(['rename', $folder, new_folder_name]);
+            $('.folder_title_text', $folder).text(new_folder_name);
+            this.hide_confirm_rename_menu_item(true);
+            
+            $('.NB-menu-manage-folder-rename').parents('.NB-menu-manage').data('folder_name', new_folder_name);
         },
         
         // ==========================
@@ -3906,6 +4019,38 @@
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.manage_menu_delete_folder(folder_name, $folder);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-rename' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if ($t.hasClass('NB-menu-manage-feed-rename-cancel') ||
+                    $t.hasClass('NB-menu-manage-folder-rename-cancel')) {
+                    self.hide_confirm_rename_menu_item();
+                } else {
+                    self.show_confirm_rename_menu_item();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.manage_menu_rename_folder(folder_name, $folder);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-rename-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                self.manage_menu_rename_feed(feed_id, $feed);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-mark-read' }, function($t, $p){
                 e.preventDefault();

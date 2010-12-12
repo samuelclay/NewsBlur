@@ -42,4 +42,6 @@ def pre_process_story(entry):
                         + urlquote(entry_link[protocol_index+3:]))
     else:
         entry['link'] = urlquote(entry_link)
+    if isinstance(entry.get('guid'), dict):
+        entry['guid'] = unicode(entry['guid'])
     return entry

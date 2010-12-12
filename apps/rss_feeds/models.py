@@ -340,9 +340,6 @@ class Feed(models.Model):
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
                 if existing_story is None:
-                    # pub_date = datetime.datetime.timetuple(story.get('published'))
-                    # logging.debug('- New story: %s %s' % (pub_date, story.get('title')))
-                    
                     s = MStory(story_feed_id = self.pk,
                            story_date = story.get('published'),
                            story_title = story.get('title'),
