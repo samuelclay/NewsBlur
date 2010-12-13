@@ -397,7 +397,42 @@ def load_starred_stories(request):
     logging.info(" ---> [%s] ~FCLoading starred stories: ~SB%s stories" % (request.user, len(stories)))
     
     return dict(stories=stories)
+
+@json.json_view
+def load_river_stories(request):
+    user = get_user(request)
+    feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds')]
+    offset = int(request.REQUEST.get('offset', 0))
+    limit = int(request.REQUEST.get('limit', 25))
+    page = int(request.REQUEST.get('page', 0))
+    if page: offset = limit * page
+    print feed_ids
+    mstories = MStory.objects(story_feed_id__in=feed_ids)[offset:offset+limit]
+    stories = Feed.format_stories(mstories)
     
+    starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).only('story_guid', 'starred_date')
+    starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
+    
+    for story in stories:
+        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date)
+        story['long_parsed_date'] = format_story_link_date__long(story_date)
+        story['read_status'] = 1
+        if story['id'] in starred_stories:
+            story['starred'] = True
+            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
+            story['starred_date'] = format_story_link_date__long(starred_date)
+        story['intelligence'] = {
+            'feed': 0,
+            'author': 0,
+            'tags': 0,
+            'title': 0,
+        }
+    
+    logging.info(" ---> [%s] ~FCLoading river stories: ~SB%s stories ~SN(%s feeds)" % (
+                 request.user, len(stories), len(feed_ids)))
+    
+    return dict(stories=stories)
 @ajax_login_required
 @json.json_view
 def mark_all_as_read(request):

@@ -203,7 +203,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     load_feed_precallback: function(data, feed_id, callback, first_load) {
-        // NEWSBLUR.log(['pre_callback', data]);
+        // NEWSBLUR.log(['load_feed_precallback', feed_id, first_load]);
         if ((feed_id != this.feed_id && data) || first_load) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;
