@@ -406,12 +406,19 @@ def load_river_stories(request):
     limit = int(request.REQUEST.get('limit', 25))
     page = int(request.REQUEST.get('page', 0))
     if page: offset = limit * page
-    print feed_ids
-    mstories = MStory.objects(story_feed_id__in=feed_ids)[offset:offset+limit]
+
+    read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
+    read_stories = [rs.story.id for rs in read_stories]
+    mstories = MStory.objects(story_feed_id__in=feed_ids, id__nin=read_stories)[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
-    starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).only('story_guid', 'starred_date')
-    starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
+    starred_stories = MStarredStory.objects(
+        user_id=user.pk, 
+        story_feed_id__in=feed_ids
+    ).only('story_guid', 'starred_date')
+    starred_stories = dict([(story.story_guid, story.starred_date) 
+                            for story in starred_stories])
+                            
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)

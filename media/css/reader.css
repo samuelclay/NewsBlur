@@ -1643,7 +1643,7 @@ background: transparent;
     position: absolute;
     top: 1px;
     left: 2px;
-    background: transparent url('../img/icons/silk/images.png') no-repeat 1px 0;
+    background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
     width: 16px;
     height: 16px;
 }

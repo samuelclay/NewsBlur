@@ -777,7 +777,6 @@ class MStory(mongo.Document):
     story_guid               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
 
-    
     meta = {
         'collection': 'stories',
         'indexes': ['story_date', ('story_feed_id', '-story_date')],
