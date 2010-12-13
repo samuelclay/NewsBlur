@@ -679,9 +679,10 @@
                         var folder = item[o];
                         var $folder = $.make('li', { className: 'folder' }, [
                             $.make('div', { className: 'folder_title ' + (depth==0 ? 'NB-toplevel':'') }, [
-                                $.make('span', { className: 'folder_title_text' }, o),
+                                $.make('div', { className: 'NB-folder-icon' }),
+                                $.make('div', { className: 'NB-feedlist-river-icon' }),
                                 $.make('div', { className: 'NB-feedlist-manage-icon' }),
-                                $.make('div', { className: 'NB-feedlist-river-icon' })
+                                $.make('span', { className: 'folder_title_text' }, o)
                             ]),
                             $.make('ul', { className: 'folder' }, [
                                 $.make('li', { className: 'feed NB-empty' })
@@ -939,6 +940,7 @@
             var $counts = $('.feed_counts_floater', $folder_title);
             $counts.remove();
             $children = $('li.feed', $children).not('.NB-feed-inactive');
+            var $river = $('.NB-feedlist-river-icon', $folder_title);
             
             var positive_count = 0;
             var neutral_count = 0;
@@ -952,6 +954,16 @@
             $('.unread_count_negative.unread_count_full', $children).each(function() {
                 negative_count += parseInt($(this).text(), 10);
             });
+            
+            if ($folder_title.hasClass('NB-hover')) {
+                $river.animate({'opacity': 0}, {'duration': 100});
+                $folder_title.addClass('NB-feedlist-folder-title-recently-collapsed');
+                $folder_title.one('mouseover', function() {
+                    $river.css({'opacity': ''});
+                    $folder_title.removeClass('NB-feedlist-folder-title-recently-collapsed');
+                });
+            }
+            
             var $counts = this.make_feed_counts_floater(positive_count, neutral_count, negative_count);
             $folder_title.prepend($counts.css({
                 'opacity': 0
@@ -961,8 +973,17 @@
         
         hide_collapsed_folder_count: function($folder_title) {
             var $counts = $('.feed_counts_floater', $folder_title);
+            var $river = $('.NB-feedlist-river-icon', $folder_title);
+            
             $counts.animate({'opacity': 0}, {
                 'duration': 300 
+            });
+            
+            $river.animate({'opacity': .6}, {'duration': 400});
+            $folder_title.removeClass('NB-feedlist-folder-title-recently-collapsed');
+            $folder_title.one('mouseover', function() {
+                $river.css({'opacity': ''});
+                // $folder_title.removeClass('NB-feedlist-folder-title-recently-collapsed');
             });
         },
         
@@ -1167,6 +1188,7 @@
             this.$s.$feed_view.empty();
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$river_header.removeClass('NB-selected');
+            $('.NB-selected', this.$s.$feed_list).removeClass('NB-selected');
             this.$s.$body.removeClass('NB-view-starred');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
         },
@@ -1386,19 +1408,23 @@
         // = River of News =
         // =================
         
-        open_river_stories: function(feeds) {
+        open_river_stories: function(feeds, folder_title) {
             var $story_titles = this.$s.$story_titles;
             
             $story_titles.empty().scrollTop('0px');
             this.reset_feed();
             this.hide_splash_page();
-            this.active_feed = 'river';
+            if (!folder_title) {
+                this.active_feed = 'river';
+                this.$s.$river_header.addClass('NB-selected');
+            } else {
+                this.active_feed = 'river:' + folder_title;
+            }
             
             $story_titles.data('page', 0);
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
-            this.$s.$river_header.addClass('NB-selected');
             this.$s.$body.addClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
@@ -1427,6 +1453,13 @@
                 // $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
                 this.flags['story_titles_loaded'] = true;
             }
+        },
+        
+        open_river_stories_for_folder: function($folder, folder_title) {
+            var feeds = this.list_feeds_with_unreads_in_folder($folder);
+            
+            this.open_river_stories(feeds, folder_title);
+            $folder.addClass('NB-selected');
         },
         
         list_feeds_with_unreads_in_folder: function($folder) {
@@ -2857,7 +2890,8 @@
             var inverse = type == 'folder' ?
                           $('.folder_title', $item).hasClass("NB-hover-inverse") :
                           $item.hasClass("NB-hover-inverse");
-            var toplevel = $item.hasClass("NB-toplevel");
+            var toplevel = $item.hasClass("NB-toplevel") ||
+                           $item.children('.folder_title').hasClass("NB-toplevel");
             if (type == 'folder') {
                 feed_id = $('.folder_title_text', $item).eq(0).text();
             }
@@ -2873,9 +2907,16 @@
                 $('.NB-task-manage').addClass('NB-hover');
                 $manage_menu_container.corner('tl tr 8px');
             } else if (type == 'feed' || type == 'folder') {
+                var left, top;
+                // NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
                 if (inverse) {
-                    var left = toplevel ? 0 : -20;
-                    var top = toplevel ? 24 : 21;
+                    if (type == 'feed') {
+                        left = toplevel ? 0 : -20;
+                        top = toplevel ? 21 : 22;
+                    } else if (type == 'folder') {
+                        left = toplevel ? 0 : -20;
+                        top = toplevel ? 23 : 24;
+                    }
                     var $align;
                     if (type == 'feed') $align = $item;
                     else $align = $('.folder_title', $item);
@@ -2888,8 +2929,13 @@
                         $(this).prependTo($(this).parent());
                     });
                 } else {
-                    var left = toplevel ? 2 : -20;
-                    var top = 21;
+                    if (type == 'feed') {
+                        left = toplevel ? 2 : -20;
+                        top = toplevel ? 21 : 21;
+                    } else if (type == 'folder') {
+                        left = toplevel ? 2 : -20;
+                        top = toplevel ? 22 : 21;
+                    }
                     $manage_menu_container.align($item, '-top -left', {
                         'top': top, 
                         'left': left
@@ -3863,6 +3909,14 @@
                     self.open_feed(feed_id, false, $t);
                 }
             });
+            $.targetIs(e, { tagSelector: '#feed_list .folder_title .NB-feedlist-river-icon' }, function($t, $p){
+                e.preventDefault();
+                stopPropagation = true;
+                var $folder = $t.closest('li.folder');
+                var folder_title = $t.siblings('.folder_title_text').text();
+                self.open_river_stories_for_folder($folder, folder_title);
+            });
+            if (stopPropagation) return;
             $.targetIs(e, { tagSelector: '#feed_list .folder_title' }, function($folder, $p){
                 e.preventDefault();
                 if (!self.flags['sorting_feed']) {
