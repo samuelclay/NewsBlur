@@ -44,28 +44,27 @@ class OPMLImporter(Importer):
         
     def process_outline(self, outline):
         folders = []
-    
         for item in outline:
             if not hasattr(item, 'xmlUrl'):
                 folder = item
-                if hasattr(folder, 'text'):
-                    logging.info(' ---> [%s] ~FRNew Folder: %s' % (self.user, folder.text))
+                # if hasattr(folder, 'text'):
+                #     logging.info(' ---> [%s] ~FRNew Folder: %s' % (self.user, folder.text))
                 folders.append({folder.text: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
                 if not hasattr(feed, 'htmlUrl'):
                     setattr(feed, 'htmlUrl', None)
-                if not hasattr(feed, 'title'):
-                    setattr(feed, 'title', feed.htmlUrl)
+                if not hasattr(feed, 'title') or not feed.title:
+                    setattr(feed, 'title', feed.htmlUrl or feed.xmlUrl)
                 feed_address = urlnorm.normalize(feed.xmlUrl)
                 feed_link = urlnorm.normalize(feed.htmlUrl)
                 if len(feed_address) > Feed._meta.get_field('feed_address').max_length:
                     continue
                 if feed_link and len(feed_link) > Feed._meta.get_field('feed_link').max_length:
                     continue
-                if feed.title and len(feed.title) > Feed._meta.get_field('feed_title').max_length:
+                if len(feed.title) > Feed._meta.get_field('feed_title').max_length:
                     feed.title = feed.title[:255]
-                logging.info(' ---> \t~FR%s - %s - %s' % (feed.title, feed_link, feed_address,))
+                # logging.info(' ---> \t~FR%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
                 # feeds.append(feed_data)
 
