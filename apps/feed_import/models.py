@@ -78,7 +78,7 @@ class OPMLImporter(Importer):
                     feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
                                                             defaults=dict(**feed_data))
                     
-                us, created = UserSubscription.objects.get_or_create(
+                us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
                     user=self.user,
                     defaults={
@@ -87,7 +87,7 @@ class OPMLImporter(Importer):
                         'active': self.user.profile.is_premium,
                     }
                 )
-                if created and self.user.profile.is_premium and not us.active:
+                if self.user.profile.is_premium and not us.active:
                     us.active = True
                     us.save()
                 folders.append(feed_db.pk)
