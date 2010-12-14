@@ -555,13 +555,21 @@
         },
         
         navigate_story_titles_to_story: function(story) {
-            var $next_story = this.find_story_in_story_titles(story);
-            if ($next_story && $next_story.length && $next_story.is(':visible') && !$next_story.hasClass('selected')) {
-                // NEWSBLUR.log(['navigate_story_titles_to_story', story, $next_story]);
+            var $next_story_title = this.find_story_in_story_titles(story);
+            if ($next_story_title && 
+                $next_story_title.length && 
+                $next_story_title.is(':visible') && 
+                !$next_story_title.hasClass('selected')) {
+                // NEWSBLUR.log(['navigate_story_titles_to_story', story, $next_story_title]);
                 
-                this.push_current_story_on_history();
-                this.scroll_story_titles_to_show_selected_story_title($next_story);
-                this.open_story(story, $next_story, true);
+                this.scroll_story_titles_to_show_selected_story_title($next_story_title);
+                if (this.active_story != story) {
+                    this.push_current_story_on_history();
+                    this.active_story = story;
+            
+                    this.mark_story_title_as_selected($next_story_title);
+                    this.mark_story_as_read(story.id, $next_story_title);
+                }
             }
         },
         
@@ -1386,7 +1394,7 @@
         // = Story Pane - All Views =
         // ==========================
         
-        open_story: function(story, $st, skip_scrolls) {
+        open_story: function(story, $story_title) {
             var self = this;
             var feed_position;
             var iframe_position;
@@ -1395,35 +1403,35 @@
             if (this.active_story != story) {
                 this.active_story = story;
             
-                this.mark_story_title_as_selected($st);
-                this.mark_story_as_read(story.id, $st);
+                this.mark_story_title_as_selected($story_title);
+                this.mark_story_as_read(story.id, $story_title);
             
                 // Used when auto-tracking the user as they move over the feed/page.
                 // No need to find the story, since they have already found it.
-                this.flags.scrolling_by_selecting_story_title = skip_scrolls ? false : true;
-                if (!skip_scrolls) {
-                    // User clicks on story, scroll them to it.
-                    var $feed_story = this.find_story_in_feed_view(story);
-                    
-                    if (this.story_view == 'page') {
-                        var $iframe_story = this.find_story_in_feed_iframe(story);
-                        if (!$iframe_story || !$iframe_story.length || !this.flags['story_titles_loaded']) {
-                            // If the iframe has not yet loaded, we can't touch it.
-                            // So just assume story not found.
-                            this.switch_to_correct_view(false);
-                            feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
-                        } else {
-                            iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
-                            this.switch_to_correct_view(iframe_position);
-                        }
-                    } else if (this.story_view == 'feed') {
-                        this.switch_to_correct_view();
+                clearTimeout(this.locks.scrolling);
+                this.flags['scrolling_by_selecting_story_title'] = true;
+                
+                // User clicks on story, scroll them to it.
+                var $feed_story = this.find_story_in_feed_view(story);
+                
+                if (this.story_view == 'page') {
+                    var $iframe_story = this.find_story_in_feed_iframe(story);
+                    if (!$iframe_story || !$iframe_story.length || !this.flags['story_titles_loaded']) {
+                        // If the iframe has not yet loaded, we can't touch it.
+                        // So just assume story not found.
+                        this.switch_to_correct_view(false);
                         feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
-                        this.show_stories_preference_in_feed_view(true);
-                    } else if (this.story_view == 'story') {
-                        this.open_story_in_story_view(story);
+                    } else {
+                        iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
+                        this.switch_to_correct_view(iframe_position);
                     }
-                } 
+                } else if (this.story_view == 'feed') {
+                    this.switch_to_correct_view();
+                    feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
+                    this.show_stories_preference_in_feed_view(true);
+                } else if (this.story_view == 'story') {
+                    this.open_story_in_story_view(story);
+                }
             }
         },
         
@@ -1478,7 +1486,9 @@
                 } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                     $feed_view.scrollable().stop();
                     $feed_view.scrollTo($story, 420, { axis: 'y', easing: 'easeInOutQuint', offset: 0, queue: false, onAfter: function() {
-                        self.flags.scrolling_by_selecting_story_title = false;
+                        self.locks.scrolling = setTimeout(function() {
+                            self.flags.scrolling_by_selecting_story_title = false;
+                        }, 100);
                     } });
                 } 
             }
@@ -1501,7 +1511,9 @@
                 } else if (this.story_view == 'page') {
                     $iframe.scrollable().stop();
                     $iframe.scrollTo($story, 580, { axis: 'y', easing: 'easeInOutQuint', offset: -24, queue: false, onAfter: function() {
-                        self.flags.scrolling_by_selecting_story_title = false;
+                        self.locks.scrolling = setTimeout(function() {
+                            self.flags.scrolling_by_selecting_story_title = false;
+                        }, 100);
                     } });
                 }
                 var parent_scroll = $story.parents('.NB-feed-story-view').scrollTop();
@@ -2476,11 +2488,11 @@
                 this.story_view = view;
             }
             
-            this.flags.scrolling_by_selecting_story_title = true;
-            clearInterval(this.locks.scrolling);
-            this.locks.scrolling = setTimeout(function() {
-                self.flags.scrolling_by_selecting_story_title = false;
-            }, 1000);
+            // this.flags.scrolling_by_selecting_story_title = true;
+            // clearInterval(this.locks.scrolling);
+            // this.locks.scrolling = setTimeout(function() {
+            //     self.flags.scrolling_by_selecting_story_title = false;
+            // }, 1000);
             
             if (view == 'page') {
                 if (this.flags['iframe_prevented_from_loading']) {
