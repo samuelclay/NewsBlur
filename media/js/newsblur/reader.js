@@ -1255,6 +1255,9 @@
                         this.prefetch_story_locations_in_feed_view();
                     }
                 }
+                if (this.flags['open_unread_stories_in_tabs']) {
+                    _.defer(_.bind(this.open_unread_stories_in_tabs, this));
+                }
             }
         },
         
@@ -2211,6 +2214,31 @@
             window.focus();
         },
         
+        open_story_in_new_tab: function(story, $t) {
+            window.open(story['story_permalink'], '_blank');
+            window.focus();
+        },
+        
+        open_unread_stories_in_tabs: function(feed_id) {
+            feed_id = feed_id || this.active_feed;
+            if (this.active_feed == feed_id) {
+                this.flags['open_unread_stories_in_tabs'] = false;
+                _.each(this.model.stories, function(story) {
+                    if (!story.read_status) {
+                        _.defer(function() {
+                            window.open(story['story_permalink'], '_blank');
+                            window.focus();
+                        });
+                    }
+                });
+                this.mark_feed_as_read(feed_id);
+            } else {
+                this.flags['open_unread_stories_in_tabs'] = true;
+                var $feed = this.find_feed_in_feed_list(feed_id);
+                this.open_feed(feed_id, false, $feed);
+            }
+        },
+        
         mark_feed_as_selected: function(feed_id, $feed_link) {
             if ($feed_link === undefined) {
               $feed_link = $('.feed.selected', this.$feed_list).eq(0);
@@ -2708,6 +2736,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-unreadtabs' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open unread stories in tabs')
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-reload' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
@@ -2744,6 +2776,7 @@
                 $manage_menu.data('$feed', $item);
                 if (feed_id && this.get_unread_count(true, feed_id) == 0) {
                     $('.NB-menu-manage-feed-mark-read', $manage_menu).addClass('NB-disabled');
+                    $('.NB-menu-manage-feed-unreadtabs', $manage_menu).addClass('NB-disabled');
                 }
             } else if (type == 'folder') {
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
@@ -3888,7 +3921,11 @@
                 var story_id = $('.story_id', $t).text();
                 var story = self.model.get_story(story_id);
                 self.push_current_story_on_history();
-                self.open_story(story, $t);
+                if (NEWSBLUR.hotkeys.command) {
+                    self.open_story_in_new_tab(story, $t);
+                } else {
+                    self.open_story(story, $t);
+                }
             });
             $.targetIs(e, { tagSelector: 'a.mark_story_as_read' }, function($t, $p){
                 e.preventDefault();
@@ -3994,6 +4031,11 @@
                 e.preventDefault();
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 self.mark_feed_as_read(feed_id);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-unreadtabs' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                self.open_unread_stories_in_tabs(feed_id);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-mark-read' }, function($t, $p){
                 e.preventDefault();
@@ -4293,6 +4335,8 @@
         handle_keystrokes: function() {      
             var self = this;
             var $document = $(document);
+            
+            NEWSBLUR.hotkeys.initialize();
             
             $document.bind('keydown', '?', function(e) {
                 e.preventDefault();
