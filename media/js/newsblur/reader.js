@@ -2554,9 +2554,9 @@
             
             this.flags.scrolling_by_selecting_story_title = true;
             clearInterval(this.locks.scrolling);
-            this.locks.scrolling = setTimeout(function() {
-                self.flags.scrolling_by_selecting_story_title = false;
-            }, 1000);
+            // this.locks.scrolling = setTimeout(function() {
+            //   self.flags.scrolling_by_selecting_story_title = false;
+            // }, 2000);
             
             if (view == 'page') {
                 if (this.flags['iframe_prevented_from_loading']) {

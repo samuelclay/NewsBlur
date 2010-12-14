@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.core.mail import mail_admins
-from mongoengine.queryset import OperationError
+from mongoengine.queryset import OperationError, Q
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -407,13 +407,22 @@ def load_river_stories(request):
     page = int(request.REQUEST.get('page', 0))
     if page: offset = limit * page
 
+    def feed_qvalues(feed_id):
+        feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
+        return Q(story_feed_id=feed_id) & Q(story_date__gte=feed.mark_read_date)
+    feed_last_reads = map(feed_qvalues, feed_ids)
+    qs = reduce(lambda q1, q2: q1 | q2, feed_last_reads)
+    
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
     read_stories = [rs.story.id for rs in read_stories]
-    mstories = MStory.objects(story_feed_id__in=feed_ids, id__nin=read_stories)[offset:offset+limit]
+    mstories = MStory.objects(
+        Q(id__nin=read_stories) & 
+        qs
+    )[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
     starred_stories = MStarredStory.objects(
-        user_id=user.pk, 
+        user_id=user.pk,
         story_feed_id__in=feed_ids
     ).only('story_guid', 'starred_date')
     starred_stories = dict([(story.story_guid, story.starred_date) 
