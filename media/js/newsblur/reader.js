@@ -2236,11 +2236,10 @@
             if (this.active_feed == feed_id) {
                 this.flags['open_unread_stories_in_tabs'] = false;
                 _.each(this.model.stories, function(story) {
+                    NEWSBLUR.log(['story', story, !story.read_status]);
                     if (!story.read_status) {
-                        _.defer(function() {
-                            window.open(story['story_permalink'], '_blank');
-                            window.focus();
-                        });
+                        window.open(story['story_permalink'], '_blank');
+                        window.focus();
                     }
                 });
                 this.mark_feed_as_read(feed_id);
