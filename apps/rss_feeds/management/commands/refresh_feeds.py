@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed
 from optparse import make_option
 from utils import feed_fetcher
@@ -16,6 +17,7 @@ class Command(BaseCommand):
         make_option("-s", "--single_threaded", dest="single_threaded", action="store_true"),
         make_option('-t', '--timeout', type='int', default=10,
             help='Wait timeout in seconds when connecting to feeds.'),
+        make_option('-u', '--username', type='str', dest='username'),
         make_option('-V', '--verbose', action='store_true',
             dest='verbose', default=False, help='Verbose output.'),
         make_option('-S', '--skip', type='int',
@@ -42,10 +44,15 @@ class Command(BaseCommand):
             return
             
         socket.setdefaulttimeout(options['timeout'])
-        feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True).order_by('?')
-        
         if options['force']:
             feeds = Feed.objects.all()
+        elif options['username']:
+            feeds = Feed.objects.filter(subscribers__user=User.objects.get(username=options['username']))
+        else:
+            feeds = Feed.objects.filter(next_scheduled_update__lte=now, active=True)
+        
+        feeds = feeds.order_by('?')
+        
         
         num_workers = min(len(feeds), options['workerthreads'])
         if options['single_threaded']:
