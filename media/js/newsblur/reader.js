@@ -2737,6 +2737,7 @@
                 $manage_menu.addClass('NB-menu-manage-notop');
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
+                var tab_unread_count = Math.min(25, this.get_unread_count(true, feed_id));
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
                     (feed.has_exception && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-exception' }, [
@@ -2750,7 +2751,7 @@
                     ])),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-unreadtabs' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open unread stories in tabs')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open unreads in '+tab_unread_count+Inflector.pluralize(' tab', tab_unread_count))
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-reload' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
