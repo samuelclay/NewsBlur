@@ -1908,9 +1908,10 @@ background: transparent;
 #simplemodal-container {
     background-color: white;
     padding: 8px;
-    -moz-box-shadow: 3px 3px 5px #505050;
-    -webkit-box-shadow: 3px 3px 5px #505050;
-    box-shadow: 3px 3px 5px #505050;
+    -moz-box-shadow: 8px 8px 15px #505050;
+    -webkit-box-shadow: 8px 8px 15px #505050;
+    box-shadow: 8px 8px 15px #505050;
+    border: 1px solid #303030;
 }
 
 /* ==================== */
@@ -3370,6 +3371,12 @@ background: transparent;
 
 .NB-menu-manage .NB-menu-manage-feed-stats .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/chart_curve.png') no-repeat  0 0;    
+}
+
+.NB-menu-manage .NB-menu-manage-feed-unreadtabs .NB-menu-manage-image {
+    left: 9px;
+    top: 6px;
+    background: transparent url('../img/icons/silk/application_cascade_go.png') no-repeat 0 0;    
 }
 
 .NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
