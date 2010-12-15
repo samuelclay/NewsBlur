@@ -1751,7 +1751,7 @@
         
         mark_story_as_read: function(story_id, $story_title) {
             var self = this;
-            var feed_id = this.active_feed;
+            var feed_id = parseInt($story_title.data('feed_id'), 10) || this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var $feed_list = this.$s.$feed_list;
             var $feed = $('.feed.selected', $feed_list);
