@@ -404,8 +404,10 @@ def load_river_stories(request):
     feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds')]
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 25))
-    page = int(request.REQUEST.get('page', 0))
-    if page: offset = limit * page
+    page = int(request.REQUEST.get('page', 0))+1
+    read_stories = int(request.REQUEST.get('read_stories', 0))
+    # if page: offset = limit * page
+    if page: limit = limit * page - read_stories
 
     def feed_qvalues(feed_id):
         feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)

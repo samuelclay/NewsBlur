@@ -1754,7 +1754,7 @@
             var feed_id = parseInt($story_title.data('feed_id'), 10) || this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var $feed_list = this.$s.$feed_list;
-            var $feed = $('.feed.selected', $feed_list);
+            var $feed = this.find_feed_in_feed_list(feed_id);
             var $feed_counts = $('.feed_counts_floater', $feed);
             var $content_pane = this.$s.$content_pane;
             
@@ -2407,6 +2407,7 @@
 
             for (var s in stories) {
                 var story = stories[s];
+                if (options.river_stories) var feed = this.model.get_feed(story.story_feed_id);
                 var read = story.read_status
                     ? ' read '
                     : '';
@@ -2419,9 +2420,17 @@
                 if (score < 0) score_color = 'negative';
 
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
+                    $.make('div', { className: 'NB-feed-story-header-feed' }, [
+                        (options.river_stories && 
+                            $.make('div', { className: 'NB-feed-story-feed' }, [
+                               $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
+                               $.make('span', { className: 'feed_title' }, feed.feed_title)
+                            ])
+                        )
+                    ]),
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-sentiment' }),
-                        ( story.story_authors &&
+                        (story.story_authors &&
                             $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
                         $.make('div', { className: 'NB-feed-story-title-container' }, [
                             $.make('div', { className: 'NB-feed-story-sentiment' }),
@@ -2467,6 +2476,10 @@
                         });
                     })($story, story, image_count);
                 }
+            }
+            
+            if (!stories.length) {
+                this.fetch_story_locations_in_feed_view();
             }
             
             this.show_stories_preference_in_feed_view(true);

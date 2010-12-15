@@ -19,11 +19,12 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.feeds = {};
     this.folders = [];
     this.stories = {};
-    this.story_keys = [];
-    this.read_stories = {};
+    this.story_keys = {};
+    this.queued_read_stories = {};
     this.classifiers = {};
     this.starred_stories = [];
     this.starred_count = 0;
+    this.read_stories_river_count = 0;
     
     this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
@@ -104,24 +105,25 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 break;
             }
         }
-        
+
         if (!read && NEWSBLUR.Globals.is_authenticated) {
-            if (!(feed_id in this.read_stories)) { this.read_stories[feed_id] = []; }
-            this.read_stories[feed_id].push(story_id);
-            NEWSBLUR.log(['Marking Read', this.read_stories, story_id]);
+            if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
+            this.queued_read_stories[feed_id].push(story_id);
+            // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story_id]);
             
             this.make_request('/reader/mark_story_as_read', {
-                story_id: this.read_stories[feed_id],
+                story_id: this.queued_read_stories[feed_id],
                 feed_id: feed_id
-            }, function() {}, function() {}, {
+            }, null, null, {
                 'ajax_group': 'queue_clear',
                 'traditional': true,
                 'beforeSend': function() {
-                    self.read_stories[feed_id] = [];
+                    self.queued_read_stories[feed_id] = [];
                 }
             });
         }
         
+        this.read_stories_river_count += 1;
         $.isFunction(callback) && callback(read);
     },
     
@@ -203,6 +205,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     load_feed_precallback: function(data, feed_id, callback, first_load) {
+        var self = this;
+        
         // NEWSBLUR.log(['load_feed_precallback', feed_id, first_load]);
         if ((feed_id != this.feed_id && data) || first_load) {
             this.stories = data.stories;
@@ -211,31 +215,20 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.feed_id = feed_id;
             this.classifiers = data.classifiers;
             this.starred_stories = data.starred_stories;
-            this.story_keys = [];
+            this.story_keys = {};
             for (var s in data.stories) {
-                this.story_keys.push(data.stories[s].id);
+                this.story_keys[data.stories[s].id] = true;
             }
         } else if (data) {
-            $.merge(this.stories, data.stories);
-            
-            // Assemble key cache for later, removing dupes
-            var data_stories = $.merge([], data.stories);
-            for (var s in data_stories) {
-                var story_id = data_stories[s].id;
-                if (!(story_id in this.story_keys)) {
-                    this.story_keys.push(story_id);
-                } else {
-                    // There's a dupe story. Remove it!
-                    for (var s2 in this.stories) {
-                        if (story_id == this.stories[s2].id) {
-                            delete this.stories[s2];
-                            delete data.stories[s];
-                            break;
-                        }
-                    }
+            data.stories = _.select(data.stories, function(story) {
+                if (!self.story_keys[story.id]) {
+                    self.stories.push(story);
+                    self.story_keys[story.id] = true;
+                    return true;
                 }
-            }
+            });
         }
+
         $.isFunction(callback) && callback(data, first_load);
     },
     
@@ -256,13 +249,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     fetch_river_stories: function(feeds, page, callback, first_load) {
         var self = this;
         
+        if (first_load || !page) this.read_stories_river_count = 0;
+
         var pre_callback = function(data) {
             return self.load_feed_precallback(data, 'river', callback, first_load);
         };
-
+        
         this.make_request('/reader/load_river_stories', {
             feeds: feeds,
-            page: page
+            page: page,
+            read_stories: this.read_stories_river_count
         }, pre_callback, null, {
             'ajax_group': (page ? 'feed_page' : 'feed')
         });

@@ -1313,10 +1313,31 @@ background: transparent;
     font-size: 16px;
     padding: 0 200px 0 28px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
-    border-top: 4px solid #404040;
     border-bottom: 1px solid #ADADAD;
     position: relative;
     overflow: hidden;
+}
+
+#story_pane .NB-feed-story-header-feed {
+    background: #404040 url('../img/reader/feed_view_feed_background.png') repeat-x 0 0;
+    padding: 2px 200px 2px 28px;
+    position: relative;
+    border-bottom: 1px solid #000;
+}
+
+#story_pane .NB-feed-story-feed {
+    padding: 2px 0;
+    color: white;
+    font-size: 13px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#story_pane .NB-feed-story-feed .feed_favicon {
+    position: absolute;
+    left: 6px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
 }
 
 #story_pane .NB-feed-story .NB-feed-story-sentiment {
