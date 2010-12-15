@@ -2253,7 +2253,7 @@
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, 
                         _.bind(this.post_open_starred_stories, this), false);
-                } else if (this.active_feed.indexOf('river:') != -1) {
+                } else if (typeof this.active_feed == "string" && this.active_feed.indexOf('river:') != -1) {
                     this.model.fetch_river_stories(this.cache['river_feeds_with_unreads'], page+1,
                         _.bind(this.post_open_river_stories, this), false);
                 } else {
