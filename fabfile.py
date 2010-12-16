@@ -41,17 +41,23 @@ def task():
 
 @roles('app')
 def deploy():
-    run('cd ~/newsblur && git pull && kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
+    with cd('~/newsblur'):
+        run('git pull')
+        run('kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
 
 @roles('task')
 def celery():
-    run('cd ~/newsblur && git pull && sudo supervisorctl restart celery && tail logs/newsblur.log')
+    with cd('~/newsblur'):
+        run('git pull')
+        run('sudo supervisorctl restart celery')
+        run('tail logs/newsblur.log')
 
 @roles('task')
 def force_celery():
-    run('cd ~/newsblur && git pull')
-    run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
-    # run('sudo supervisorctl start celery && tail logs/newsblur.log')
+    with cd('~/newsblur'):
+        run('git pull')
+        run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
+        # run('sudo supervisorctl start celery && tail logs/newsblur.log')
 
 # ===========
 # = Backups =
@@ -59,13 +65,14 @@ def force_celery():
 
 @roles('app')
 def backup_mongo():
-    run('cd ~/newsblur/utils/backups')
-    run('./mongo_backup.sh')
+    with cd('~/newsblur/utils/backups'):
+        run('./mongo_backup.sh')
 
 @roles('db')
 def backup_postgresql():
-    run('cd ~/newsblur/utils/backups')
-    run('./postgresql_backup.sh')
+    with cd('~/newsblur/utils/backups'):
+        run('./mongo_backup.sh')
+        run('./postgresql_backup.sh')
 
 # ======
 # = S3 =
