@@ -361,10 +361,10 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
-                    if existing_story.get('story_original_content_z'):
-                        original_content = zlib.decompress(existing_story.get('story_original_content_z'))
-                    elif existing_story.get('story_content_z'):
-                        original_content = zlib.decompress(existing_story.get('story_content_z'))
+                    if existing_story.story_original_content_z:
+                        original_content = zlib.decompress(existing_story.story_original_content_z)
+                    elif existing_story.story_content_z:
+                        original_content = zlib.decompress(existing_story.story_content_z)
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
                     if story_content and len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
@@ -373,26 +373,26 @@ class Feed(models.Model):
                         story_content_diff = original_content
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    if existing_story.get('story_title') != story.get('title'):
+                    if existing_story.story_title != story.get('title'):
                         # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                         pass
 
-                    existing_story['story_feed'] = self.pk
-                    existing_story['story_date'] = story.get('published')
-                    existing_story['story_title'] = story.get('title')
-                    existing_story['story_content'] = story_content_diff
-                    existing_story['story_original_content'] = original_content
-                    existing_story['story_author_name'] = story.get('author')
-                    existing_story['story_permalink'] = story.get('link')
-                    existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
-                    existing_story['story_tags'] = story_tags
+                    existing_story.story_feed = self.pk
+                    existing_story.story_date = story.get('published')
+                    existing_story.story_title = story.get('title')
+                    existing_story.story_content = story_content_diff
+                    existing_story.story_original_content = original_content
+                    existing_story.story_author_name = story.get('author')
+                    existing_story.story_permalink = story.get('link')
+                    existing_story.story_guid = story.get('guid') or story.get('id') or story.get('link')
+                    existing_story.story_tags = story_tags
                     try:
-                        settings.MONGODB.stories.update({'_id': existing_story['_id']}, existing_story)
+                        existing_story.save()
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
-                        # print('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
@@ -536,24 +536,24 @@ class Feed(models.Model):
         
         for existing_story in existing_stories:
             content_ratio = 0
-            existing_story_pub_date = existing_story['story_date']
+            existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
                 (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
-                if isinstance(existing_story['_id'], unicode):
-                    existing_story['story_guid'] = existing_story['_id']
-                if story.get('guid') and story.get('guid') == existing_story['story_guid']:
+                if isinstance(existing_story.id, unicode):
+                    existing_story.story_guid = existing_story.id
+                if story.get('guid') and story.get('guid') == existing_story.story_guid:
                     story_in_system = existing_story
-                elif story.get('link') and story.get('link') == existing_story['story_permalink']:
+                elif story.get('link') and story.get('link') == existing_story.story_permalink:
                     story_in_system = existing_story
                 
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story['story_title'])
+                                                              existing_story.story_title)
                 if 'story_content_z' in existing_story:
-                    existing_story_content = unicode(zlib.decompress(existing_story['story_content_z']))
+                    existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
                 elif 'story_content' in existing_story:
-                    existing_story_content = existing_story['story_content']
+                    existing_story_content = existing_story.story_content
                 else:
                     existing_story_content = u''
                 

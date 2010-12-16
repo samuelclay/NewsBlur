@@ -2,11 +2,12 @@ from apps.rss_feeds.models import FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from django.conf import settings
+from django.db import IntegrityError
+from mongoengine.queryset import Q
 from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.importer import PageImporter
 from utils import feedparser
-from django.db import IntegrityError
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
@@ -194,21 +195,21 @@ class ProcessFeed:
         self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
-        # start_date = datetime.datetime.utcnow()
+        start_date = datetime.datetime.utcnow()
         # end_date = datetime.datetime.utcnow()
         story_guids = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
-            # if story.get('published') < start_date:
-            #     start_date = story.get('published')
+            if story.get('published') < start_date:
+                start_date = story.get('published')
             # if story.get('published') > end_date:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        existing_stories = settings.MONGODB.stories.find({
-            'story_feed_id': self.feed.pk, 
-            # 'story_date': {'$gte': start_date},
-            'story_guid': {'$in': story_guids}
-        }).limit(len(story_guids))
+        existing_stories = MStory.objects(
+            Q(story_guid__in=story_guids) | 
+            Q(story_date__gte=start_date),
+            story_feed_id=self.feed.pk
+        ).limit(len(story_guids))
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
         #     | (Q(story_guid__in=story_guids)),
