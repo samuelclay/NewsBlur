@@ -22,7 +22,7 @@ do_backup(){
 save_in_s3(){
     log 'saving the psql backup archive in amazon S3' && \
     cd /tmp &&
-    python s3.py set ${file_name} && \
+    python ~/newsblur/utils/backups/s3.py set ${file_name} && \
     log 'data backup saved in amazon s3'
 }
 

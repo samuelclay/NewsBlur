@@ -1,6 +1,12 @@
-from fabric.api import env, run, require, sudo, settings
+from fabric.api import abort, cd, env, get, hide, hosts, local, prompt
+from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
+from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
+from fabric.contrib import django
+import os, sys
+
+django.settings_module('settings')
 from django.conf import settings as django_settings
 
 # =========
@@ -8,9 +14,9 @@ from django.conf import settings as django_settings
 # =========
 
 env.user = 'conesus'
-env.hosts = ['www.newsblur.com', 'db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com']
+# env.hosts = ['www.newsblur.com', 'db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com']
 env.roledefs ={
-    'web': ['www.newsblur.com'],
+    'app': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
     'task': ['db02.newsblur.com', 'db03.newsblur.com'],
 }
@@ -18,57 +24,49 @@ env.roledefs ={
 """
 Base configuration
 """
-env.project_name = '$(project)'
-env.database_password = '$(db_password)'
-env.site_media_prefix = "site_media"
-env.admin_media_prefix = "admin_media"
-env.newsapps_media_prefix = "na_media"
-env.path = '/home/conesus/%(project_name)s' % env
-env.python = 'python2.6'
 
 """
 Environments
 """
-def production():
-    """
-    Work on production environment
-    """
-    env.settings = 'production'
-    env.hosts = ['$(production_domain)']
-    env.user = '$(production_user)'
-    env.s3_bucket = '$(production_s3)'
+def app():
+    env.roles = ['app']
+def db():
+    env.roles = ['db']
+def task():
+    env.roles = ['task']
 
-def staging():
-    """
-    Work on staging environment
-    """
-    env.settings = 'staging'
-    env.hosts = ['$(staging_domain)'] 
-    env.user = '$(staging_user)'
-    env.s3_bucket = '$(staging_s3)'
-    
-"""
-Branches
-"""
-def stable():
-    """
-    Work on stable branch.
-    """
-    env.branch = 'stable'
+# ==========
+# = Deploy =
+# ==========
 
-def master():
-    """
-    Work on development branch.
-    """
-    env.branch = 'master'
+@roles('app')
+def deploy():
+    run('cd ~/newsblur && git pull && kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
 
-def branch(branch_name):
-    """
-    Work on any specified branch.
-    """
-    env.branch = branch_name
-    
-    
+@roles('task')
+def celery():
+    run('cd ~/newsblur && git pull && sudo supervisorctl restart celery && tail logs/newsblur.log')
+
+@roles('task')
+def force_celery():
+    run('cd ~/newsblur && git pull')
+    run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
+    # run('sudo supervisorctl start celery && tail logs/newsblur.log')
+
+# ===========
+# = Backups =
+# ===========
+
+@roles('app')
+def backup_mongo():
+    run('cd ~/newsblur/utils/backups')
+    run('./mongo_backup.sh')
+
+@roles('db')
+def backup_postgresql():
+    run('cd ~/newsblur/utils/backups')
+    run('./postgresql_backup.sh')
+
 # ======
 # = S3 =
 # ======
