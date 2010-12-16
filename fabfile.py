@@ -71,7 +71,6 @@ def backup_mongo():
 @roles('db')
 def backup_postgresql():
     with cd('~/newsblur/utils/backups'):
-        run('./mongo_backup.sh')
         run('./postgresql_backup.sh')
 
 # ======
