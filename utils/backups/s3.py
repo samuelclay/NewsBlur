@@ -1,6 +1,11 @@
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from django.conf import settings
+import os
+import sys
+sys.path.append("/home/conesus/newsblur")
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 ACCESS_KEY  = settings.S3_ACCESS_KEY
 SECRET      = settings.S3_SECRET
