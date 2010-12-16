@@ -45,7 +45,7 @@ def opml_upload(request):
 
         
 def reader_authorize(request):
-    logging.info(" ---> [%s] ~BC~FW~SBAuthorize Google Reader import - %s" % (
+    logging.info(" ---> [%s] ~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.user,
         request.META['REMOTE_ADDR'],
     ))
@@ -118,7 +118,7 @@ def reader_callback(request):
     # Fetch imported feeds on next page load
     request.session['import_from_google_reader'] = True
     
-    logging.info(" ---> [%s] ~BC~FW~SBFinishing Google Reader import - %s" % (request.user, request.META['REMOTE_ADDR'],))
+    logging.info(" ---> [%s] ~BB~FW~SBFinishing Google Reader import - %s" % (request.user, request.META['REMOTE_ADDR'],))
     
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))

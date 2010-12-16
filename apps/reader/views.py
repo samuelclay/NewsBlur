@@ -794,7 +794,7 @@ def save_feed_chooser(request):
             
     queue_new_feeds(request.user)
     
-    logging.info(' ---> [%s] ~BC~FW~SBActivated standard account: ~FC%s~SN/~SB%s' % (request.user, 
+    logging.info(' ---> [%s] ~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        
     return {'activated': activated}
