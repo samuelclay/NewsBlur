@@ -301,10 +301,7 @@ def load_single_feed(request):
             userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
             
     for story in stories:
-        classifier_feeds.rewind()
-        classifier_authors.rewind()
-        classifier_tags.rewind()
-        classifier_titles.rewind()
+        [x.rewind() for x in [classifier_feeds, classifier_authors, classifier_tags, classifier_titles]]
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date)
         story['long_parsed_date'] = format_story_link_date__long(story_date)
@@ -405,18 +402,27 @@ def load_river_stories(request):
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 25))
     page = int(request.REQUEST.get('page', 0))+1
-    read_stories = int(request.REQUEST.get('read_stories', 0))
+    read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
+    
+    # Fetch all stories at and before the page number.
+    # Not a single page, because reading stories can move them up in the unread order.
+    # `read_stories_count` is an optimization, works best when all 25 stories before have been read.
     # if page: offset = limit * page
-    if page: limit = limit * page - read_stories
+    if page: limit = limit * page - read_stories_count
 
+    # Subquery used to find all `MStory`s within the user_sub's Mark as Read date.
     def feed_qvalues(feed_id):
         feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
         return Q(story_feed_id=feed_id) & Q(story_date__gte=feed.mark_read_date)
     feed_last_reads = map(feed_qvalues, feed_ids)
     qs = reduce(lambda q1, q2: q1 | q2, feed_last_reads)
     
+    # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
     read_stories = [rs.story.id for rs in read_stories]
+    
+    # Between excluding what's been read, and what's outside the mark_read date,
+    # every single returned story is unread.
     mstories = MStory.objects(
         Q(id__nin=read_stories) & 
         qs

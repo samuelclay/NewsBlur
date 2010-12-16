@@ -258,7 +258,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/load_river_stories', {
             feeds: feeds,
             page: page,
-            read_stories: this.read_stories_river_count
+            read_stories_count: this.read_stories_river_count
         }, pre_callback, null, {
             'ajax_group': (page ? 'feed_page' : 'feed')
         });
