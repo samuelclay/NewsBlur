@@ -353,9 +353,9 @@ class Feed(models.Model):
                         s.save()
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except (IntegrityError, OperationError):
+                    except (IntegrityError, OperationError), e:
                         ret_values[ENTRY_ERR] += 1
-                        # print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        # logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
