@@ -413,9 +413,8 @@ def load_river_stories(request):
     # Subquery used to find all `MStory`s within the user_sub's Mark as Read date.
     def feed_qvalues(feed_id):
         feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        return Q(story_feed_id=feed_id) & Q(story_date__gte=feed.mark_read_date)
-    feed_last_reads = map(feed_qvalues, feed_ids)
-    qs = reduce(lambda q1, q2: q1 | q2, feed_last_reads)
+        return (feed_id, feed.mark_read_date)
+    feed_last_reads = dict(map(feed_qvalues, feed_ids))
     
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
@@ -424,8 +423,8 @@ def load_river_stories(request):
     # Between excluding what's been read, and what's outside the mark_read date,
     # every single returned story is unread.
     mstories = MStory.objects(
-        Q(id__nin=read_stories) & 
-        qs
+        id__nin=read_stories,
+        story_feed_id__in=feed_ids
     )[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
