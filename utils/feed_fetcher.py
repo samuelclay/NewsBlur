@@ -206,8 +206,8 @@ class ProcessFeed:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
         existing_stories = MStory.objects(
-            story_guid__in=story_guids,
-            # story_date__gte=start_date,
+            # story_guid__in=story_guids,
+            story_date__gte=start_date,
             story_feed_id=self.feed.pk
         ).limit(len(story_guids))
         
