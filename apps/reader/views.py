@@ -337,7 +337,7 @@ def load_single_feed(request):
     diff = datetime.datetime.utcnow()-now
     timediff = float("%s.%s" % (diff.seconds, (diff.microseconds / 1000)))
     last_update = relative_timesince(feed.last_update)
-    logging.info(" ---> [%s] ~BY~SK~FW~SBLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
+    logging.info(" ---> [%s] ~FYLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 
