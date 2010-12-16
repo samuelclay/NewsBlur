@@ -45,6 +45,12 @@ def deploy():
         run('git pull')
         run('kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
 
+@roles('app')
+def staging():
+    with cd('~/staging'):
+        run('git pull')
+        run('gunicorn_django -c gunicorn_conf.py')
+
 @roles('task')
 def celery():
     with cd('~/newsblur'):
