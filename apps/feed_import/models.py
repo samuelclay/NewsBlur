@@ -110,7 +110,7 @@ class GoogleReaderImporter(Importer):
             folders = self.process_item(item, folders)
         # print dict(folders)
         self.rearrange_folders(folders)
-        logging.info(" ---> [%s] ~BC~FW~SBGoogle Reader import: ~BT~FW%s" % (self.user, self.subscription_folders))
+        logging.info(" ---> [%s] ~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.user, self.subscription_folders))
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
 
@@ -178,7 +178,7 @@ def queue_new_feeds(user):
                                                 feed__fetched_once=False, 
                                                 active=True).values('feed_id')
     new_feeds = list(set([f['feed_id'] for f in new_feeds]))
-    logging.info(" ---> [%s] ~BC~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (user, len(new_feeds), new_feeds))
+    logging.info(" ---> [%s] ~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (user, len(new_feeds), new_feeds))
     size = 4
     publisher = Task.get_publisher(exchange="new_feeds")
     for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
