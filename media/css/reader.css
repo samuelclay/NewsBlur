@@ -2594,6 +2594,59 @@ a.NB-splash-link:hover {
     display: block;
 }
 
+.ui-autocomplete {
+  width: 344px;
+  padding: 0;
+  margin: 0;
+}
+.ui-autocomplete li {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  border-bottom: 1px solid #B0B0B0;
+}
+.ui-autocomplete li:last-child {
+  border-bottom: none;
+}
+.ui-autocomplete li a {
+  padding: 2px;
+  display: block;
+  cursor: pointer;
+}
+.ui-autocomplete li a.ui-state-hover {
+  border: none;
+  font-weight: normal;
+}
+
+.ui-autocomplete li a .NB-add-autocomplete-subscribers {
+  float: right;
+  font-size: 10px;
+  color: #909090;
+  font-weight: bold;
+  text-transform: uppercase;
+  line-height: 16px;
+  padding: 2px 4px 0 0;
+}
+.ui-autocomplete li a .NB-add-autocomplete-title {
+  line-height: 16px;
+  color: #202020;
+  font-weight: bold;
+  font-size: 13px;
+  height: 16px;
+  overflow: hidden;
+  padding: 2px 0 0 4px;
+}
+.ui-autocomplete li a .NB-add-autocomplete-address {
+  display: block;
+  clear: both;
+  color: #3F3D6E;
+  font-size: 10px;
+  font-weight: normal;
+  height: 12px;
+  padding: 4px 0 4px 4px;
+  overflow: hidden;
+}
+
 /* ================ */
 /* = Manage Feeds = */
 /* ================ */

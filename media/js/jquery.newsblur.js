@@ -229,7 +229,7 @@ NEWSBLUR.log = function(msg) {
             // Second argument can be TextNode or Attributes
             // $.make('div', 'inner text') || $.make('div', { className: 'etc' })
             if (args[1]) {
-                if (typeof args[1] == 'string') {
+                if (typeof args[1] == 'string' || typeof args[1] == 'number') {
                     text = args[1];
                 } else if (typeof args[1] == 'object' && args[1].push) {
                     children = args[1];
@@ -240,40 +240,36 @@ NEWSBLUR.log = function(msg) {
             
             // Third argument can be TextNode or an array of additional $.make
             if (args[2]) {
-                if (typeof args[2] == 'string') {
+                if (typeof args[2] == 'string' || typeof args[2] == 'number') {
                     text = args[2];
                 } else if (typeof args[1] == 'object' && args[2].push) {
                     children = args[2];
                 }
             }
             
-            if (tagname == 'text' && text) {
-                return document.createTextNode(text);
-            } else {
-                $elem = $(document.createElement(tagname));
-                if (props) {
-                    for (var propname in props) {
-                        if (props.hasOwnProperty(propname)) {
-                            if ($elem.is(':input') && propname == 'value') {
-                                $elem.val(props[propname]);
-                            } else {
-                                $elem.attr(propname, props[propname]);
-                            }
+            $elem = $(document.createElement(tagname));
+            if (props) {
+                for (var propname in props) {
+                    if (props.hasOwnProperty(propname)) {
+                        if ($elem.is(':input') && propname == 'value') {
+                            $elem.val(props[propname]);
+                        } else {
+                            $elem.attr(propname, props[propname]);
                         }
                     }
                 }
-                if (children) {
-                    for (var i = 0; i < children.length; i++) {
-                        if (children[i]) {
-                            $elem.append(children[i]);
-                        }
-                    }
-                }
-                if (text) {
-                    $elem.html(text);
-                }
-                return $elem;
             }
+            if (children) {
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i]) {
+                        $elem.append(children[i]);
+                    }
+                }
+            }
+            if (text) {
+                $elem.html(text);
+            }
+            return $elem;
         },
         
         rescope: function(func, thisArg){

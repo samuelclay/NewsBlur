@@ -13,14 +13,15 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.handle_cancel();
         this.open_modal();
         this.handle_keystrokes();
+        this.setup_autocomplete();
         
-        this.$add.bind('click', $.rescope(this.handle_click, this));
+        this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
     
     make_modal: function() {
         var self = this;
         
-        this.$add = $.make('div', { className: 'NB-add NB-modal' }, [
+        this.$modal = $.make('div', { className: 'NB-add NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, 'Add feeds and folders'),
             $.make('div', { className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-fieldset NB-add-add-url NB-modal-submit' }, [
@@ -93,7 +94,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         ]);
         
         if (NEWSBLUR.Globals.is_anonymous) {
-            this.$add.addClass('NB-signed-out');
+            this.$modal.addClass('NB-signed-out');
         }
     },
     
@@ -128,7 +129,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     open_modal: function() {
         var self = this;
         
-        this.$add.modal({
+        this.$modal.modal({
             'minWidth': 600,
             'maxWidth': 600,
             'overlayClose': true,
@@ -155,7 +156,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     },
     
     handle_cancel: function() {
-        var $cancel = $('.NB-modal-cancel', this.$add);
+        var $cancel = $('.NB-modal-cancel', this.$modal);
         
         $cancel.click(function(e) {
             e.preventDefault();
@@ -163,15 +164,43 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         });
     },
     
+    setup_autocomplete: function() {
+        var self = this;
+        var $add = $('.NB-add-url', this.$modal);
+        
+        $add.autocomplete({
+            minLength: 0,
+            source: '/rss_feeds/feed_autocomplete',
+            focus: function(e, ui) {
+                $add.val(ui.item.value);
+                return false;
+            },
+            select: function(e, ui) {
+                $add.val(ui.item.value);
+                NEWSBLUR.log(['select', e, ui, ui.item, ui.item.value]);
+                self.save_add_url();
+                return false;
+            }
+        }).data("autocomplete")._renderItem = function(ul, item) {
+            return $.make('li', [
+                $.make('a', [
+                    $.make('div', { className: 'NB-add-autocomplete-subscribers'}, item.num_subscribers + Inflector.pluralize(' subscriber', item.num_subscribers)),
+                    $.make('div', { className: 'NB-add-autocomplete-title'}, item.label),
+                    $.make('div', { className: 'NB-add-autocomplete-address'}, item.value)
+                ])
+            ]).data("item.autocomplete", item).appendTo(ul);
+        };
+    },
+    
     handle_keystrokes: function() {
         var self = this;
         
-        $('.NB-add-url', this.$add).bind('keyup', 'return', function(e) {
+        $('.NB-add-url', this.$modal).bind('keyup', 'return', function(e) {
             e.preventDefault();
             self.save_add_url();
         });  
         
-        $('.NB-add-folder', this.$add).bind('keyup', 'return', function(e) {
+        $('.NB-add-folder', this.$modal).bind('keyup', 'return', function(e) {
             e.preventDefault();
             self.save_add_folder();
         });  
