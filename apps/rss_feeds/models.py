@@ -16,6 +16,8 @@ from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
 from mongoengine.queryset import OperationError
+from apps.rss_feeds.tasks import UpdateFeeds
+from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
@@ -85,6 +87,23 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             pass
     
+    @classmethod
+    def task_feeds(cls, feeds, queue_size=12):
+        print " ---> Tasking %s feeds..." % feeds.count()
+        
+        publisher = Task.get_publisher()
+
+        feed_queue = []
+        for f in feeds:
+            f.queued_date = datetime.datetime.utcnow()
+            f.set_next_scheduled_update()
+
+        for feed_queue in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
+            feed_ids = [feed.pk for feed in feed_queue]
+            UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds', publisher=publisher)
+
+        publisher.connection.close()
+
     def update_all_statistics(self):
         self.count_subscribers()
         self.count_stories()
@@ -353,7 +372,7 @@ class Feed(models.Model):
                         s.save()
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except (IntegrityError, OperationError), e:
+                    except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
                         # logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
