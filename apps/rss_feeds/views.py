@@ -18,7 +18,7 @@ def feed_autocomplete(request):
     if not feeds:
         feeds = Feed.objects.filter(feed_title__icontains=query)
     
-    feeds = feeds.order_by('-num_subscribers').only('feed_address', 'feed_title', 'num_subscribers')[:5]
+    feeds = feeds.order_by('-num_subscribers')[:5]
     feeds = [{
         'value': feed.feed_address,
         'label': feed.feed_title,
