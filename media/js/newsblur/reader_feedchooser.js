@@ -51,7 +51,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('form', { className: 'NB-feedchooser-form' }, [
                   $.make('div', { className: 'NB-modal-submit' }, [
                       // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
-                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' })
+                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
+                      $.make('input', { type: 'submit', className: 'NB-modal-submit-add NB-modal-submit-green', value: 'First, add sites' })
                   ])
               ]).bind('submit', function(e) {
                   e.preventDefault();
@@ -168,7 +169,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
             },
-            'onClose': function(dialog) {
+            'onClose': function(dialog, callback) {
                 if (!self.flags['has_saved'] && !NEWSBLUR.reader.flags['has_chosen_feeds']) {
                     NEWSBLUR.reader.show_feed_chooser_button();
                 }
@@ -176,7 +177,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
                     dialog.overlay.empty().remove();
-                    $.modal.close();
+                    $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
             }
@@ -258,6 +259,18 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
         
+        if (!_.keys(feeds).length) {
+            _.defer(_.bind(function() {
+                var $info = $('.NB-feedchooser-info', this.$modal);
+                $('.NB-feedchooser-info-counts', $info).hide();
+                $('.NB-feedchooser-info-sort', $info).hide();
+                $('#NB-feedchooser-feeds').hide();
+                $('.NB-modal-submit-save').hide();
+                $('.NB-modal-submit-add').show();
+            }, this));
+            return;
+        }
+        
         var active_feeds = _.any(_.pluck(feeds, 'active'));
         if (!active_feeds) {
             // Get feed subscribers
@@ -331,6 +344,12 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         });
     },
     
+    close_and_add: function() {
+        $.modal.close(function() {
+            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
+        });
+    },
+    
     update_homepage_count: function() {
       var $count = $('.NB-module-account-feedcount');
       var $button = $('.NB-module-account-upgrade');
@@ -361,6 +380,11 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $.targetIs(e, { tagSelector: '.NB-modal-submit-save' }, _.bind(function($t, $p) {
             e.preventDefault();
             this.save();
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-add' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            this.close_and_add();
         }, this));
     },
 

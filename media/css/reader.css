@@ -3856,7 +3856,9 @@ background: transparent;
     padding: 12px;
     background-color: #FFF;
 }
-
+.NB-modal-feedchooser .NB-modal-submit-add {
+    display: none;
+}
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets {
     list-style: none;
     margin: 24px 0 0;
