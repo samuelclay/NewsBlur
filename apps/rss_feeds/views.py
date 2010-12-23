@@ -2,6 +2,7 @@ import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
+from django.db import connection
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.reader.models import UserSubscription
@@ -11,14 +12,17 @@ from utils.feed_functions import relative_timeuntil, relative_timesince
 
 @json.json_view
 def feed_autocomplete(request):
+    connection.queries = []
     query = request.GET['term']
-    feeds = Feed.objects.filter(feed_address__icontains=query)
-    if not feeds:
-        feeds = Feed.objects.filter(feed_link__icontains=query)
-    if not feeds:
-        feeds = Feed.objects.filter(feed_title__icontains=query)
+    feeds = []
+    for field in ['feed_address', 'feed_link', 'feed_title']:
+        if not feeds:
+            feeds = Feed.objects.filter(**{'%s__icontains' % field: query}).only(
+                'feed_title', 
+                'feed_address', 
+                'num_subscribers'
+            ).order_by('-num_subscribers')[:5]
     
-    feeds = feeds.order_by('-num_subscribers')[:5]
     feeds = [{
         'value': feed.feed_address,
         'label': feed.feed_title,
