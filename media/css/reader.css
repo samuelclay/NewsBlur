@@ -1342,6 +1342,10 @@ background: transparent;
     height: 16px;
 }
 
+#story_pane .NB-feed-stories .NB-feed-story img {
+  max-width: 120%;
+}
+
 #story_pane .NB-feed-story .NB-feed-story-sentiment {
     position: absolute;
     top: 1px;
