@@ -53,6 +53,9 @@ class Command(BaseCommand):
         
         feeds = feeds.order_by('?')
         
+        for f in feeds:
+            f.queued_date = datetime.datetime.utcnow()
+            f.set_next_scheduled_update()
         
         num_workers = min(len(feeds), options['workerthreads'])
         if options['single_threaded']:

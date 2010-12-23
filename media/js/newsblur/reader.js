@@ -826,7 +826,10 @@
                 axis: 'y',
                 distance: 4,
                 cursor: 'move',
+                containment: '.NB-feedlist',
                 tolerance: 'pointer',
+                refreshPositions: true,
+                scrollSensitivity: 100,
                 start: function(e, ui) {
             // this.$s.$feed_list.sortable('option', 'items', '.feed');
                     NEWSBLUR.log(['start', ui.item, ui.placeholder, self.$s.$feed_list.sortable('option', 'items')]);
@@ -834,14 +837,14 @@
                     ui.placeholder.attr('class', ui.item.attr('class') + ' NB-feeds-list-highlight');
                     ui.item.addClass('NB-feed-sorting');
                     self.$s.$feed_list.addClass('NB-feed-sorting');
-                    if (ui.item.is('.folder_title')) {
-                        ui.placeholder.html(ui.item.parent().clone());
-                        self.$s.$feed_list.sortable('option', 'items', '.folder_title:not(.feed)');
-                        self.$s.$feed_list.sortable('option', 'cancel', '.feed');
-                        ui.item.parent().data('previously_collapsed', ui.item.parent().data('collapsed'));
-                        self.collapse_folder(ui.item, true);
-                        self.collapse_folder($('.folder_title', ui.placeholder).eq(0), true);
-                        ui.item.parent().css('height', ui.item.eq(0).outerHeight(true) + 'px');
+                    if (ui.item.is('.folder')) {
+                        ui.placeholder.html(ui.item.children().clone());
+                        // self.$s.$feed_list.sortable('option', 'items', '.folder_title:not(.feed)');
+                        // self.$s.$feed_list.sortable('option', 'cancel', '.feed');
+                        ui.item.data('previously_collapsed', ui.item.data('collapsed'));
+                        self.collapse_folder(ui.item.children('.folder_title'), true);
+                        self.collapse_folder(ui.placeholder.children('.folder_title'), true);
+                        ui.item.css('height', ui.item.children('.folder_title').outerHeight(true) + 'px');
                     } else {
                         ui.placeholder.html(ui.item.children().clone());
                         // self.$s.$feed_list.sortable('option', 'items', '.feed:not(ul.folder)');
@@ -867,9 +870,9 @@
                     ui.item.css({'backgroundColor': '#D7DDE6'})
                            .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                            .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
-                    if (ui.item.is('.folder_title') && !ui.item.data('previously_collapsed')) {
-                        self.collapse_folder(ui.item);
-                        self.collapse_folder($('.folder_title', ui.placeholder).eq(0));
+                    if (ui.item.is('.folder') && !ui.item.data('previously_collapsed')) {
+                        self.collapse_folder(ui.item.children('.folder_title'));
+                        self.collapse_folder(ui.placeholder.children('.folder_title'));
                     }
                 }
             });

@@ -1,5 +1,4 @@
 from celery.task import Task
-from apps.rss_feeds.models import Feed
 # from utils import log as logging
 
 class UpdateFeeds(Task):
@@ -8,6 +7,7 @@ class UpdateFeeds(Task):
     ignore_result = True
 
     def run(self, feed_pks, **kwargs):
+        from apps.rss_feeds.models import Feed
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
             
@@ -22,6 +22,7 @@ class NewFeeds(Task):
     ignore_result = True
 
     def run(self, feed_pks, **kwargs):
+        from apps.rss_feeds.models import Feed
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
             

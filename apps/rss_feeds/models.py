@@ -16,6 +16,8 @@ from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
 from mongoengine.queryset import OperationError
+from apps.rss_feeds.tasks import UpdateFeeds
+from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
@@ -41,7 +43,7 @@ class Feed(models.Model):
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     exception_code = models.IntegerField(default=0)
-    min_to_decay = models.IntegerField(default=15)
+    min_to_decay = models.IntegerField(default=0)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
     etag = models.CharField(max_length=255, blank=True, null=True)
@@ -85,6 +87,23 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             pass
     
+    @classmethod
+    def task_feeds(cls, feeds, queue_size=12):
+        print " ---> Tasking %s feeds..." % feeds.count()
+        
+        publisher = Task.get_publisher()
+
+        feed_queue = []
+        for f in feeds:
+            f.queued_date = datetime.datetime.utcnow()
+            f.set_next_scheduled_update()
+
+        for feed_queue in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
+            feed_ids = [feed.pk for feed in feed_queue]
+            UpdateFeeds.apply_async(args=(feed_ids,), queue='update_feeds', publisher=publisher)
+
+        publisher.connection.close()
+
     def update_all_statistics(self):
         self.count_subscribers()
         self.count_stories()
@@ -355,16 +374,16 @@ class Feed(models.Model):
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
-                        # print('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        # logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                 
                     original_content = None
-                    if existing_story.get('story_original_content_z'):
-                        original_content = zlib.decompress(existing_story.get('story_original_content_z'))
-                    elif existing_story.get('story_content_z'):
-                        original_content = zlib.decompress(existing_story.get('story_content_z'))
+                    if existing_story.story_original_content_z:
+                        original_content = zlib.decompress(existing_story.story_original_content_z)
+                    elif existing_story.story_content_z:
+                        original_content = zlib.decompress(existing_story.story_content_z)
                     # print 'Type: %s %s' % (type(original_content), type(story_content))
                     if story_content and len(story_content) > 10:
                         diff = HTMLDiff(unicode(original_content), story_content)
@@ -373,26 +392,26 @@ class Feed(models.Model):
                         story_content_diff = original_content
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    if existing_story.get('story_title') != story.get('title'):
+                    if existing_story.story_title != story.get('title'):
                         # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                         pass
 
-                    existing_story['story_feed'] = self.pk
-                    existing_story['story_date'] = story.get('published')
-                    existing_story['story_title'] = story.get('title')
-                    existing_story['story_content'] = story_content_diff
-                    existing_story['story_original_content'] = original_content
-                    existing_story['story_author_name'] = story.get('author')
-                    existing_story['story_permalink'] = story.get('link')
-                    existing_story['story_guid'] = story.get('guid') or story.get('id') or story.get('link')
-                    existing_story['story_tags'] = story_tags
+                    existing_story.story_feed = self.pk
+                    existing_story.story_date = story.get('published')
+                    existing_story.story_title = story.get('title')
+                    existing_story.story_content = story_content_diff
+                    existing_story.story_original_content = original_content
+                    existing_story.story_author_name = story.get('author')
+                    existing_story.story_permalink = story.get('link')
+                    existing_story.story_guid = story.get('guid') or story.get('id') or story.get('link')
+                    existing_story.story_tags = story_tags
                     try:
-                        settings.MONGODB.stories.update({'_id': existing_story['_id']}, existing_story)
+                        existing_story.save()
                         ret_values[ENTRY_UPDATED] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
-                        # print('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
@@ -536,24 +555,24 @@ class Feed(models.Model):
         
         for existing_story in existing_stories:
             content_ratio = 0
-            existing_story_pub_date = existing_story['story_date']
+            existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
                 (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
-                if isinstance(existing_story['_id'], unicode):
-                    existing_story['story_guid'] = existing_story['_id']
-                if story.get('guid') and story.get('guid') == existing_story['story_guid']:
+                if isinstance(existing_story.id, unicode):
+                    existing_story.story_guid = existing_story.id
+                if story.get('guid') and story.get('guid') == existing_story.story_guid:
                     story_in_system = existing_story
-                elif story.get('link') and story.get('link') == existing_story['story_permalink']:
+                elif story.get('link') and story.get('link') == existing_story.story_permalink:
                     story_in_system = existing_story
                 
                 # Title distance + content distance, checking if story changed
                 story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story['story_title'])
+                                                              existing_story.story_title)
                 if 'story_content_z' in existing_story:
-                    existing_story_content = unicode(zlib.decompress(existing_story['story_content_z']))
+                    existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
                 elif 'story_content' in existing_story:
-                    existing_story_content = existing_story['story_content']
+                    existing_story_content = existing_story.story_content
                 else:
                     existing_story_content = u''
                 
@@ -589,7 +608,11 @@ class Feed(models.Model):
             # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
         
-    def get_next_scheduled_update(self):
+    def get_next_scheduled_update(self, force=False):
+        if self.min_to_decay and not force:
+            random_factor = random.randint(0, self.min_to_decay) / 4
+            return self.min_to_decay, random_factor
+            
         # Use stories per month to calculate next feed update
         updates_per_day = self.stories_last_month / 30.0
         # if updates_per_day < 1 and self.num_subscribers > 2:
@@ -632,11 +655,12 @@ class Feed(models.Model):
         return total, random_factor
         
     def set_next_scheduled_update(self):
-        total, random_factor = self.get_next_scheduled_update()
-
+        total, random_factor = self.get_next_scheduled_update(force=True)
+        
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
             
+        self.min_to_decay = total
         self.next_scheduled_update = next_scheduled_update
 
         self.save()
