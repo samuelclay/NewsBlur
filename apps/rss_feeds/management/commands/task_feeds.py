@@ -26,8 +26,8 @@ class Command(BaseCommand):
         Feed.task_feeds(feeds)
         
         # Mistakenly inactive feeds
-        week = datetime.datetime.now() - datetime.timedelta(days=7)
-        day = datetime.datetime.now() - datetime.timedelta(days=1)
+        week = now - datetime.timedelta(days=7)
+        day = now - datetime.timedelta(days=1)
         feeds = Feed.objects.filter(
             last_update__lte=week, 
             queued_date__lte=day,

@@ -37,8 +37,7 @@ def mtime(ttime):
     
 class FetchFeed:
     def __init__(self, feed_id, options):
-        feed = Feed.objects.get(pk=feed_id) 
-        self.feed = feed
+        self.feed = Feed.objects.get(pk=feed_id)
         self.options = options
         self.fpf = None
     
@@ -258,17 +257,16 @@ class Dispatcher:
         self.workers = []
 
     def refresh_feed(self, feed_id):
-        feed = Feed.objects.get(pk=feed_id) # Update feed, since it may have changed
-        return feed
+        """Update feed, since it may have changed"""
+        return Feed.objects.get(pk=feed_id)
         
     def process_feed_wrapper(self, feed_queue):
-        """ wrapper for ProcessFeed
-        """
         delta = None
         current_process = multiprocessing.current_process()
         identity = "X"
         if current_process._identity:
             identity = current_process._identity[0]
+            
         for feed_id in feed_queue:
             ret_entries = {
                 ENTRY_NEW: 0,

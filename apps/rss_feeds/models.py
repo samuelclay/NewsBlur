@@ -43,7 +43,7 @@ class Feed(models.Model):
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     exception_code = models.IntegerField(default=0)
-    min_to_decay = models.IntegerField(default=15)
+    min_to_decay = models.IntegerField(default=0)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
     etag = models.CharField(max_length=255, blank=True, null=True)
@@ -608,7 +608,11 @@ class Feed(models.Model):
             # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
         
-    def get_next_scheduled_update(self):
+    def get_next_scheduled_update(self, force=False):
+        if self.min_to_decay and not force:
+            random_factor = random.randint(0, self.min_to_decay) / 4
+            return self.min_to_decay, random_factor
+            
         # Use stories per month to calculate next feed update
         updates_per_day = self.stories_last_month / 30.0
         # if updates_per_day < 1 and self.num_subscribers > 2:
@@ -651,11 +655,12 @@ class Feed(models.Model):
         return total, random_factor
         
     def set_next_scheduled_update(self):
-        total, random_factor = self.get_next_scheduled_update()
-
+        total, random_factor = self.get_next_scheduled_update(force=True)
+        
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
             
+        self.min_to_decay = total
         self.next_scheduled_update = next_scheduled_update
 
         self.save()
