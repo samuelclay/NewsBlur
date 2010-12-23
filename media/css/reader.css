@@ -2646,7 +2646,8 @@ a.NB-splash-link:hover {
   color: #3F3D6E;
   font-size: 10px;
   font-weight: normal;
-  height: 11px;
+  height: 12px;
+  line-height: 16px;
   padding: 4px 0 4px 4px;
   overflow: hidden;
 }
