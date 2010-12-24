@@ -28,6 +28,8 @@ def feed_autocomplete(request):
                 'num_subscribers'
             ).order_by('-num_subscribers')[:5]
     
+    logging.info(" ---> [%s] ~FRAdd Search: ~SB%s ~FG(%s matches)" % (request.user, query, len(feeds),))
+    
     feeds = [{
         'value': feed.feed_address,
         'label': feed.feed_title,
