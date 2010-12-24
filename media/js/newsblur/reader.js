@@ -2796,23 +2796,6 @@
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
         
-        force_feed_refresh: function(feed_id) {
-            var self = this;
-            var $feed = this.find_feed_in_feed_list(feed_id);
-            $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
-            
-            this.model.save_exception_retry(feed_id, function() {
-                self.force_feeds_refresh(function(feeds) {
-                    var $new_feed = self.make_feed_title_line(feeds[feed_id], true, 'feed');
-                    $feed.replaceWith($new_feed);
-                    self.hover_over_feed_titles($new_feed);
-                    if (self.active_feed == feed_id) {
-                        self.open_feed(feed_id, true, $new_feed);
-                    }
-                }, true);
-            });
-        },
-        
         // =======================
         // = Sidebar Manage Menu =
         // =======================
@@ -3459,6 +3442,30 @@
         // ===================
         // = Feed Refreshing =
         // ===================
+        
+        force_instafetch_stories: function(feed_id) {
+            var self = this;
+            feed_id = feed_id || this.active_feed;
+            var $feed = this.find_feed_in_feed_list(feed_id);
+            $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
+            
+            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed));
+        },
+        
+        force_feed_refresh: function(feed_id, $feed) {
+            var self = this;
+            feed_id  = feed_id || this.active_feed;
+            $feed    = $feed || this.find_feed_in_feed_list(feed_id);
+            
+            this.force_feeds_refresh(function(feeds) {
+                var $new_feed = self.make_feed_title_line(feeds[feed_id], true, 'feed');
+                $feed.replaceWith($new_feed);
+                self.hover_over_feed_titles($new_feed);
+                if (self.active_feed == feed_id) {
+                    self.open_feed(feed_id, true, $new_feed);
+                }
+            }, true);
+        },
         
         setup_feed_refresh: function() {
             var self = this;
@@ -4128,7 +4135,7 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                    self.force_feed_refresh(feed_id);
+                    self.force_instafetch_stories(feed_id);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-delete' }, function($t, $p){
