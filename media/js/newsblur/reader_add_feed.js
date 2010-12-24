@@ -286,6 +286,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');

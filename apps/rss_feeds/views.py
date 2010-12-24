@@ -17,7 +17,12 @@ def feed_autocomplete(request):
     feeds = []
     for field in ['feed_address', 'feed_link', 'feed_title']:
         if not feeds:
-            feeds = Feed.objects.filter(**{'%s__icontains' % field: query}).only(
+            feeds = Feed.objects.filter(**{
+                '%s__icontains' % field: query,
+                'num_subscribers__gt': 1,
+            }).exclude(**{
+                '%s__icontains' % field: 'token',
+            }).only(
                 'feed_title', 
                 'feed_address', 
                 'num_subscribers'

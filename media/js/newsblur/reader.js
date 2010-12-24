@@ -822,6 +822,7 @@
             
             this.$s.$feed_list.sortable({
                 items: '.feed:not(.NB-empty),li.folder',
+                // connectWith: 'li.folder',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 4,
