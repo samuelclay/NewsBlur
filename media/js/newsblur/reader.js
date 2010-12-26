@@ -1263,13 +1263,16 @@
                 if (this.flags['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_unread_story(true);
                 }
+                this.flags['story_titles_loaded'] = true;
                 if (!first_load) {
                     var stories_count = this.cache['iframe_story_positions_keys'].length;
                     this.flags.iframe_story_locations_fetched = false;
                     var $iframe = this.$s.$feed_iframe.contents();
                     this.fetch_story_locations_in_story_frame(stories_count, false, $iframe);
+                    if (this.story_view == 'feed') {
+                        this.prefetch_story_locations_in_feed_view();
+                    }
                 } else {
-                    this.flags['story_titles_loaded'] = true;
                     if (this.story_view == 'page') {
                       if (this.flags['iframe_view_loaded']) {
                           // NEWSBLUR.log(['Titles loaded, iframe loaded']);
