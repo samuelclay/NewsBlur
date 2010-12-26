@@ -822,52 +822,43 @@
             
             this.$s.$feed_list.sortable({
                 items: '.feed:not(.NB-empty),li.folder',
-                // connectWith: 'li.folder',
+                connectWith: 'ul.folder',
                 placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 4,
                 cursor: 'move',
                 containment: '.NB-feedlist',
                 tolerance: 'pointer',
-                refreshPositions: true,
-                scrollSensitivity: 100,
+                scrollSensitivity: 35,
                 start: function(e, ui) {
-            // this.$s.$feed_list.sortable('option', 'items', '.feed');
-                    NEWSBLUR.log(['start', ui.item, ui.placeholder, self.$s.$feed_list.sortable('option', 'items')]);
                     self.flags['sorting_feed'] = true;
                     ui.placeholder.attr('class', ui.item.attr('class') + ' NB-feeds-list-highlight');
                     ui.item.addClass('NB-feed-sorting');
                     self.$s.$feed_list.addClass('NB-feed-sorting');
                     if (ui.item.is('.folder')) {
                         ui.placeholder.html(ui.item.children().clone());
-                        // self.$s.$feed_list.sortable('option', 'items', '.folder_title:not(.feed)');
-                        // self.$s.$feed_list.sortable('option', 'cancel', '.feed');
                         ui.item.data('previously_collapsed', ui.item.data('collapsed'));
                         self.collapse_folder(ui.item.children('.folder_title'), true);
                         self.collapse_folder(ui.placeholder.children('.folder_title'), true);
                         ui.item.css('height', ui.item.children('.folder_title').outerHeight(true) + 'px');
+                        ui.helper.css('height', ui.helper.children('.folder_title').outerHeight(true) + 'px');
                     } else {
                         ui.placeholder.html(ui.item.children().clone());
-                        // self.$s.$feed_list.sortable('option', 'items', '.feed:not(ul.folder)');
-                        // self.$s.$feed_list.sortable('option', 'cancel', '.folder_title,li.folder');
                     }
                 },
                 change: function(e, ui) {
-                    $('.feed', ui.placeholder.parents('.folder').eq(0)).tsort('.feed_title');
-                    $('.folder', ui.placeholder.parents('.folder').eq(0)).tsort('.folder_title_text');
+                    $('.feed', ui.placeholder.closest('ul.folder')).tsort('.feed_title');
+                    $('li.folder', ui.placeholder.closest('ul.folder')).tsort('.folder_title_text');
                 },
                 stop: function(e, ui) {
-                    NEWSBLUR.log(['stop', ui]);
                     setTimeout(function() {
                         self.flags['sorting_feed'] = false;
                     }, 100);
                     ui.item.removeClass('NB-feed-sorting');
                     self.$s.$feed_list.removeClass('NB-feed-sorting');
                     $('.feed', e.target).tsort('.feed_title');
-                    $('.folder', e.target).tsort('.folder_title_text');
+                    $('li.folder', e.target).tsort('.folder_title_text');
                     self.save_feed_order();
-                    // self.$s.$feed_list.sortable('option', 'items', '.feed,.folder_title');
-                    // self.$s.$feed_list.sortable('option', 'cancel', '');
                     ui.item.css({'backgroundColor': '#D7DDE6'})
                            .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                            .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
@@ -911,8 +902,8 @@
         collapse_folder: function($folder_title, force_collapse) {
             var self = this;
             var $feed_list = this.$s.$feed_list;
-            var $folder = $folder_title.parent('.folder');
-            var $children = $folder.children('.folder, .feed');
+            var $folder = $folder_title.parent('li.folder');
+            var $children = $folder.children('ul.folder');
             
             // Hiding / Collapsing
             if (force_collapse || 
@@ -927,8 +918,8 @@
                     'complete': function() {
                         self.show_collapsed_folder_count($folder_title, $children);
                         $children.slideUp({
-                            'duration': 240,
-                            'easing': 'easeOutQuint'
+                            'duration': 270,
+                            'easing': 'easeOutQuart'
                         });
                     }
                 });
@@ -941,7 +932,7 @@
                 this.hide_collapsed_folder_count($folder_title);
                 $children.css({'opacity': 0}).slideDown({
                     'duration': 240,
-                    'easing': 'easeOutQuint',
+                    'easing': 'easeInOutCubic',
                     'complete': function() {
                         $children.animate({'opacity': 1}, {'queue': false, 'duration': 200});
                     }

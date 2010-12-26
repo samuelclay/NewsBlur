@@ -374,7 +374,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     width: auto !important;
     height: auto !important;
 }
-
+#feed_list {
+    padding: 0;
+}
 .NB-feedlist li.folder {
     padding: 0px 0 0;
     margin: 0px 0 0;
