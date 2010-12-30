@@ -254,7 +254,8 @@
             return $folders;
         },
         
-        find_story_in_story_titles: function(story) {
+        find_story_in_story_titles: function(story_id) {
+            var story = this.model.get_story(story_id);
             var $stories = $('.story', this.$s.$story_titles);
             var $story_title;
             
@@ -557,7 +558,7 @@
         },
         
         navigate_story_titles_to_story: function(story) {
-            var $next_story_title = this.find_story_in_story_titles(story);
+            var $next_story_title = this.find_story_in_story_titles(story.id);
             if ($next_story_title && 
                 $next_story_title.length && 
                 $next_story_title.is(':visible') && 
@@ -1007,7 +1008,7 @@
                 if ($this.is('.feed')) {
                     self.show_manage_menu('feed', $this);
                 } else if ($this.is('.folder_title')) {
-                    self.show_manage_menu('folder', $this.parents('li.folder').eq(0));
+                    self.show_manage_menu('folder', $this.closest('li.folder'));
                 }
             });
             
@@ -1909,29 +1910,47 @@
             });
         },
         
-        mark_story_as_starred: function(story_id, $button) {
+        mark_story_as_starred: function(story_id, $story) {
             var story = this.model.get_story(story_id);
-            $button.removeClass('NB-unstarred');
-            $button.closest('.story').addClass('NB-story-starred');
-            $button.attr({'title': 'Saved!'});
-            $button.tipsy('hide'); $button.tipsy('show');
-            $button.attr({'title': 'Remove bookmark'});
-            this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {
+            var $star = $('.NB-storytitles-sentiment', $story);
+            $story.addClass('NB-story-starred');
+            $star.attr({'title': 'Saved!'});
+            $star.tipsy({
+                gravity: 'sw',
+                fade: true,
+                trigger: 'manual',
+                offsetOpposite: -3
             });
+            $star.tipsy('enable');
+            $star.tipsy('show');
+            _.delay(function() {
+                $star.tipsy('hide');
+                $star.tipsy('disable');
+            }, 850);
+            this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {});
             this.update_starred_count();
         },
         
-        mark_story_as_unstarred: function(story_id, $button) {
-            $button.addClass('NB-unstarred');
-            $button.one('mouseout', function() {
-                $button.removeClass('NB-unstarred');
+        mark_story_as_unstarred: function(story_id, $story) {
+            var $star = $('.NB-storytitles-sentiment', $story);
+            $story.one('mouseout', function() {
+                $story.removeClass('NB-unstarred');
             });
-            $button.closest('.story').removeClass('NB-story-starred');
-            $button.attr({'title': 'Removed'});
-            $button.tipsy('hide'); $button.tipsy('show');
-            $button.attr({'title': 'Save this story for later'});
-            this.model.mark_story_as_unstarred(story_id, function() {
+            $story.removeClass('NB-story-starred');
+            $star.attr({'title': 'Removed'});
+            $star.tipsy({
+                gravity: 'sw',
+                fade: true,
+                trigger: 'manual',
+                offsetOpposite: -3
             });
+            $star.tipsy('enable');
+            $star.tipsy('show');
+            _.delay(function() {
+                $star.tipsy('hide');
+                $star.tipsy('disable');
+            }, 850);
+            this.model.mark_story_as_unstarred(story_id, function() {});
             this.update_starred_count();
         },
         
@@ -2003,6 +2022,7 @@
                 break;
             }
             var $story_title = $.make('div', { className: 'story ' + read + starred + 'NB-story-' + score_color }, [
+                $.make('div', { className: 'NB-storytitles-sentiment'}),
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
@@ -2015,13 +2035,14 @@
                     ])),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
-                $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
-                $.make('div', { 
-                    className: 'NB-story-sentiment NB-story-star', 
-                    title: (story.starred
-                            ? 'Remove bookmark'
-                            : 'Save this story for later')
-                })
+                $.make('div', { className: 'NB-story-manage-icon' })
+                // $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
+                // $.make('div', { 
+                //     className: 'NB-story-sentiment NB-story-star', 
+                //     title: (story.starred
+                //             ? 'Remove bookmark'
+                //             : 'Save this story for later')
+                // })
             ]).data('story_id', story.id).data('feed_id', story.story_feed_id);
             
             if (unread_view > score) {
@@ -2794,7 +2815,7 @@
         // = Sidebar Manage Menu =
         // =======================
 
-        make_manage_menu: function(type, feed_id, inverse, $item) {
+        make_manage_menu: function(type, feed_id, story_id, inverse, $item) {
             var $manage_menu;
             
             if (type == 'site') {
@@ -2861,7 +2882,8 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
@@ -2916,6 +2938,38 @@
                 ]);
                 $manage_menu.data('folder_name', feed_id);
                 $manage_menu.data('$folder', $item);
+            } else if (type == 'story') {
+                var feed          = this.model.get_feed(feed_id);
+                var story         = this.model.get_story(story_id);
+                var starred_class = story.starred ? 'NB-story-starred' : '';
+                var starred_title = story.starred ? 'Remove bookmark' : 'Save This Story';
+                inverse = true;
+
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class }, [
+                    $.make('li', { className: 'NB-menu-separator-inverse' }),
+                    $.make('li', { className: 'NB-menu-manage-story-star' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-story-instapaper' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
+                    ]),
+                    (story.read_status && $.make('li', { className: 'NB-menu-separator' })),
+                    (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
+                    ])),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-story-train' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                    ])
+                ]);
+                $manage_menu.data('feed_id', feed_id);
+                $manage_menu.data('story_id', story_id);
+                $manage_menu.data('$story', $item);
             }
             
             if (inverse) $manage_menu.addClass('NB-inverse');
@@ -2939,16 +2993,22 @@
             }
             
             // Create menu, size and position it, then attach to the right place.
-            var feed_id = $item && $item.data('feed_id');
-            var inverse = type == 'folder' ?
-                          $('.folder_title', $item).hasClass("NB-hover-inverse") :
-                          $item.hasClass("NB-hover-inverse");
-            var toplevel = $item.hasClass("NB-toplevel") ||
-                           $item.children('.folder_title').hasClass("NB-toplevel");
+            var feed_id, inverse, story_id;
             if (type == 'folder') {
                 feed_id = $('.folder_title_text', $item).eq(0).text();
+                inverse = $('.folder_title', $item).hasClass("NB-hover-inverse");
+            } else if (type == 'feed') {
+                feed_id = $item && $item.data('feed_id');
+                inverse = $item.hasClass("NB-hover-inverse");
+            } else if (type == 'story') {
+                story_id = $item.data('story_id');  
+                inverse = true; 
+            } else if (type == 'site') {
+                
             }
-            var $manage_menu = this.make_manage_menu(type, feed_id, inverse, $item);
+            var toplevel = $item.hasClass("NB-toplevel") ||
+                           $item.children('.folder_title').hasClass("NB-toplevel");
+            var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
@@ -2959,7 +3019,7 @@
                 });
                 $('.NB-task-manage').addClass('NB-hover');
                 $manage_menu_container.corner('tl tr 8px');
-            } else if (type == 'feed' || type == 'folder') {
+            } else if (type == 'feed' || type == 'folder' || type == 'story') {
                 var left, top;
                 // NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
                 if (inverse) {
@@ -2969,9 +3029,12 @@
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -20;
                         top = toplevel ? 23 : 24;
+                    } else if (type == 'story') {
+                        left = 4;
+                        top = 21;
                     }
                     var $align;
-                    if (type == 'feed') $align = $item;
+                    if (type == 'feed' || type == 'story') $align = $item;
                     else $align = $('.folder_title', $item);
                     $manage_menu_container.align($align, '-bottom -left', {
                         'top': -1 * top, 
@@ -2999,7 +3062,7 @@
             $manage_menu_container.stop().css({'display': 'block', 'opacity': 1});
             
             // Create and position the arrow tab
-            if (type == 'feed' || type == 'folder') {
+            if (type == 'feed' || type == 'folder' || type == 'story') {
                 var $arrow = $.make('div', { className: 'NB-menu-manage-arrow' });
                 if (inverse) {
                     $arrow.corner('bl br 5px');
@@ -3031,8 +3094,14 @@
             });
             
             // Hide menu on scroll.
+            var $scroll;
             this.flags['feed_list_showing_manage_menu'] = true;
-            this.$s.$feed_list.parent().unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
+            if (type == 'feed') {
+                $scroll = this.$s.$feed_list.parent();
+            } else if (type == 'story') {
+                $scroll = this.$s.$story_titles;
+            }
+            $scroll && $scroll.unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
                 if (self.flags['feed_list_showing_manage_menu']) {
                     self.hide_manage_menu(type, $item, true);
                 } else {
@@ -3384,7 +3453,7 @@
                 $stories_hide.slideUp(500);
                 $stories_show.slideDown(500);
                 setTimeout(function() {
-                    var $story = self.find_story_in_story_titles(self.active_story);
+                    var $story = self.find_story_in_story_titles(self.active_story.id);
                     // NEWSBLUR.log(['$story', $story]);
                     if ($story && $story.length && $story.is(':visible')) {
                         var story = self.active_story;
@@ -3540,7 +3609,7 @@
             if (this.active_feed == feed_id) {
                 for (var s in this.model.stories) {
                     var story = this.model.stories[s];
-                    var $story = this.find_story_in_story_titles(story);
+                    var $story = this.find_story_in_story_titles(story.id);
                     var $feed_story = this.find_story_in_feed_view(story);
                     
                     if ($story && $story.length) {
@@ -4041,6 +4110,11 @@
             // = Stories ======================================================
             
             var story_prevent_bubbling = false;
+            $.targetIs(e, { tagSelector: '.NB-story-manage-icon' }, function($t, $p) {
+                e.preventDefault();
+                story_prevent_bubbling = true;
+                self.show_manage_menu('story', $t.closest('.story'));
+            });
             $.targetIs(e, { tagSelector: '.NB-story-like' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.story').data('story_id');
@@ -4048,13 +4122,14 @@
                 self.mark_story_as_like(story_id, feed_id);
                 story_prevent_bubbling = true;
             });
-            $.targetIs(e, { tagSelector: '.NB-story-star' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-star' }, function($t, $p){
                 e.preventDefault();
-                var story_id = $t.parents('.story').data('story_id');
-                if ($t.closest('.story').hasClass('NB-story-starred')) {
-                  self.mark_story_as_unstarred(story_id, $t);
+                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
+                var $story = self.find_story_in_story_titles(story_id);
+                if ($story.hasClass('NB-story-starred')) {
+                  self.mark_story_as_unstarred(story_id, $story);
                 } else {
-                  self.mark_story_as_starred(story_id, $t);
+                  self.mark_story_as_starred(story_id, $story);
                 }
                 story_prevent_bubbling = true;
             });

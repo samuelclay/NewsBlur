@@ -130,6 +130,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     mark_story_as_starred: function(story_id, feed_id, callback) {
         var self = this;
         this.starred_count += 1;
+        var story = this.get_story(story_id);
+        story.starred = true;
         this.make_request('/reader/mark_story_as_starred', {
             story_id: story_id,
             feed_id:  feed_id
@@ -139,6 +141,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     mark_story_as_unstarred: function(story_id, callback) {
         var self = this;
         this.starred_count -= 1;
+        var story = this.get_story(story_id);
+        story.starred = false;
         this.make_request('/reader/mark_story_as_unstarred', {
             story_id: story_id
         }, callback);
