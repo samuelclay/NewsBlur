@@ -35,7 +35,7 @@ class UserSubscription(models.Model):
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
-        
+    
     def save(self, *args, **kwargs):
         try:
             super(UserSubscription, self).save(*args, **kwargs)

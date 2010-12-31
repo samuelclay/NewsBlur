@@ -1022,7 +1022,7 @@
                     $('.NB-hover', $folder).removeClass('NB-hover');
                     $this.addClass("NB-hover");
                     // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                    if ($this.offset().top > $(window).height() - 204) {
+                    if ($this.offset().top > $(window).height() - 270) {
                         $this.addClass('NB-hover-inverse');
                     } 
                 }
@@ -1922,14 +1922,14 @@
         
         mark_story_as_starred: function(story_id, $story) {
             var story = this.model.get_story(story_id);
-            var $star = $('.NB-storytitles-sentiment', $story);
+            var $star = $('.NB-storytitles-star', $story);
             $story.addClass('NB-story-starred');
             $star.attr({'title': 'Saved!'});
             $star.tipsy({
                 gravity: 'sw',
                 fade: true,
                 trigger: 'manual',
-                offsetOpposite: -3
+                offsetOpposite: -1
             });
             $star.tipsy('enable');
             $star.tipsy('show');
@@ -1942,17 +1942,16 @@
         },
         
         mark_story_as_unstarred: function(story_id, $story) {
-            var $star = $('.NB-storytitles-sentiment', $story);
+            var $star = $('.NB-storytitles-star', $story);
             $story.one('mouseout', function() {
                 $story.removeClass('NB-unstarred');
             });
-            $story.removeClass('NB-story-starred');
             $star.attr({'title': 'Removed'});
             $star.tipsy({
                 gravity: 'sw',
                 fade: true,
                 trigger: 'manual',
-                offsetOpposite: -3
+                offsetOpposite: -1
             });
             $star.tipsy('enable');
             $star.tipsy('show');
@@ -1960,8 +1959,15 @@
                 $star.tipsy('hide');
                 $star.tipsy('disable');
             }, 850);
+            $story.removeClass('NB-story-starred');
             this.model.mark_story_as_unstarred(story_id, function() {});
             this.update_starred_count();
+        },
+        
+        send_story_to_instapaper: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://www.instapaper.com/api/add';
+            window.open(url + '?url=' + story.story_permalink + '&title=' + story.story_title, '_blank');
         },
         
         // =====================
@@ -2033,6 +2039,7 @@
             }
             var $story_title = $.make('div', { className: 'story ' + read + starred + 'NB-story-' + score_color }, [
                 $.make('div', { className: 'NB-storytitles-sentiment'}),
+                $.make('div', { className: 'NB-storytitles-star'}),
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
@@ -2877,10 +2884,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-unreadtabs' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open unreads in '+tab_unread_count+Inflector.pluralize(' tab', tab_unread_count))
-                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-reload' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
@@ -2894,6 +2897,11 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-unreadtabs' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open unreads in '+tab_unread_count+Inflector.pluralize(' tab', tab_unread_count))
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
@@ -2956,26 +2964,26 @@
                 inverse = true;
 
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class }, [
-                    $.make('li', { className: 'NB-menu-separator-inverse' }),
+                    $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-star' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-story-instapaper' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
-                    ]),
-                    (story.read_status && $.make('li', { className: 'NB-menu-separator' })),
-                    (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
-                    ])),
+                    // $.make('li', { className: 'NB-menu-manage-story-instapaper' }, [
+                    //     $.make('div', { className: 'NB-menu-manage-image' }),
+                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
+                    // ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
-                    ])
+                    ]),
+                    (story.read_status && $.make('li', { className: 'NB-menu-separator' })),
+                    (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
+                    ]))
                 ]);
                 $manage_menu.data('feed_id', feed_id);
                 $manage_menu.data('story_id', story_id);
@@ -3035,10 +3043,10 @@
                 if (inverse) {
                     if (type == 'feed') {
                         left = toplevel ? 0 : -20;
-                        top = toplevel ? 21 : 22;
+                        top = toplevel ? 21 : 21;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -20;
-                        top = toplevel ? 23 : 24;
+                        top = toplevel ? 24 : 24;
                     } else if (type == 'story') {
                         left = 4;
                         top = 21;
@@ -4342,6 +4350,12 @@
                 var feed_id = $t.closest('.NB-menu-manage').data('feed_id'); 
                 var story_id = $t.closest('.NB-menu-manage').data('story_id'); 
                 self.mark_story_as_unread(story_id, feed_id);
+            });  
+            
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-instapaper' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage').data('story_id'); 
+                self.send_story_to_instapaper(story_id);
             });  
             
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
