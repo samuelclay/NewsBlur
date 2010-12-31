@@ -2318,21 +2318,23 @@
         },
         
         hover_over_story_titles: function() {
+            var self = this;
             var $story_titles = this.$s.$story_titles;
+            var $stories = $('.story', $story_titles);
             
-            $('.story', $story_titles).each(function() {
-                $(this)
-                    .unbind('mouseenter')
-                    .unbind('mouseleave');
+            $stories.unbind('mouseenter').unbind('mouseleave');
+            $stories.hover(function() {
+                $(this).siblings('.story.NB-hover').removeClass('NB-hover');
+                $(this).addClass("NB-hover");
+            }, function() {
+                $(this).siblings('.story.NB-hover').removeClass('NB-hover');
+                $(this).removeClass("NB-hover");                
             });
-            $('.story', $story_titles)
-                .hover(function() {
-                    $(this).siblings('.story.NB-hover').removeClass('NB-hover');
-                    $(this).addClass("NB-hover");
-                }, function() {
-                    $(this).siblings('.story.NB-hover').removeClass('NB-hover');
-                    $(this).removeClass("NB-hover");                
-                });
+
+            $stories.unbind('contextmenu').bind('contextmenu', function(e) {
+                e.preventDefault();
+                self.show_manage_menu('story', $(this));
+            });
         },
         
         show_feed_title_in_stories: function(feed_id) {
