@@ -127,6 +127,27 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         $.isFunction(callback) && callback(read);
     },
     
+    mark_story_as_unread: function(story_id, feed_id, callback) {
+        var self = this;
+        var read = true;
+        
+        for (s in this.stories) {
+            if (this.stories[s].id == story_id) {
+                this.stories[s].read_status = false;
+                break;
+            }
+        }
+
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/mark_story_as_unread', {
+                story_id: story_id,
+                feed_id: feed_id
+            }, null, null, {});
+        }
+        
+        $.isFunction(callback) && callback();
+    },
+    
     mark_story_as_starred: function(story_id, feed_id, callback) {
         var self = this;
         this.starred_count += 1;

@@ -512,6 +512,11 @@ def mark_story_as_read(request):
     
 @ajax_login_required
 @json.json_view
+def mark_story_as_unread(request):
+    return {}
+    
+@ajax_login_required
+@json.json_view
 def mark_feed_as_read(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     code = 0
