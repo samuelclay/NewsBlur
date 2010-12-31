@@ -1082,7 +1082,7 @@ background: transparent;
 #story_titles .story.read.NB-story-starred .NB-storytitles-star {
     display: block;
 }
-#story_titles .story.NB-hover.NB-story-starred a.story_title {
+#story_titles .story.NB-story-starred:hover a.story_title {
     
 }
 #story_titles .story.read {
@@ -1092,14 +1092,14 @@ background: transparent;
     background: none;
 }
 
-#story_titles .story.NB-hover {
+#story_titles .story:hover {
     background-color: #f0f0f0;
 }
-#story_titles .story.read.NB-hover {
+#story_titles .story.read:hover {
     background-color: white;
 }
 
-#story_titles .story.NB-hover  .NB-storytitles-sentiment {
+#story_titles .story:hover  .NB-storytitles-sentiment {
     background: none;
 }
   
@@ -1181,11 +1181,11 @@ background: transparent;
     background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 7px 2px;
 }
 
-#story_titles .story.NB-hover .NB-story-manage-icon {
+#story_titles .story:hover .NB-story-manage-icon {
     display: block;
 }
 
-#story_titles .story.NB-hover .NB-story-manage-icon:hover {
+#story_titles .story:hover .NB-story-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 7px 1px;
     cursor: pointer;
 }
@@ -1200,7 +1200,7 @@ background: transparent;
     display: none;
 }
 
-#story_titles .NB-hover .NB-story-sentiment {
+#story_titles .story:hover .NB-story-sentiment {
     display: block;
 }
 

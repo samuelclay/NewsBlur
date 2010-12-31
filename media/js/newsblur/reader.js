@@ -1259,7 +1259,6 @@
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(stories);
-                this.hover_over_story_titles();
                 this.make_story_feed_entries(stories, first_load);
                 this.show_story_titles_above_intelligence_level({'animate': false});
                 $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
@@ -1410,7 +1409,6 @@
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(data.stories, {'river_stories': true});
-                this.hover_over_story_titles();
                 this.make_story_feed_entries(data.stories, first_load, {'river_stories': true});
                 this.show_story_titles_above_intelligence_level({'animate': false});
                 // $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
@@ -1465,7 +1463,6 @@
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(data.stories, {'river_stories': true});
-                this.hover_over_story_titles();
                 this.make_story_feed_entries(data.stories, first_load, {'river_stories': true});
                 this.show_story_titles_above_intelligence_level({'animate': false});
                 // $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
@@ -2317,21 +2314,6 @@
                 $feedbar.animate({'backgroundColor': '#5C89C9'}, {'duration': 750})
                         .animate({'backgroundColor': '#E1EBFF'}, 750);
             }, 1500);
-        },
-        
-        hover_over_story_titles: function() {
-            var self = this;
-            var $story_titles = this.$s.$story_titles;
-            var $stories = $('.story', $story_titles);
-            
-            $stories.unbind('mouseenter').unbind('mouseleave');
-            $stories.hover(function() {
-                $(this).siblings('.story.NB-hover').removeClass('NB-hover');
-                $(this).addClass("NB-hover");
-            }, function() {
-                $(this).siblings('.story.NB-hover').removeClass('NB-hover');
-                $(this).removeClass("NB-hover");                
-            });
         },
         
         show_feed_title_in_stories: function(feed_id) {
@@ -3661,7 +3643,6 @@
                 }
                 if (new_stories.length) {
                     this.make_story_feed_entries(new_stories, false, {'refresh_load': true});
-                    this.hover_over_story_titles();
                     this.flags['feed_view_positions_calculated'] = false;
                 }
                 this.show_story_titles_above_intelligence_level({'animate': true, 'follow': false});
