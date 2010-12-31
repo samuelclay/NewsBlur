@@ -3168,6 +3168,10 @@ background: transparent;
     float: right;
     margin-right: 12px;
 }
+
+.NB-account .NB-module .NB-module-account-trainer.NB-hidden {
+    display: none;
+}
 /* ============ */
 /* = Features = */
 /* ============ */

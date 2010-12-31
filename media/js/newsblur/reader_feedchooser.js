@@ -360,6 +360,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
       
       $count.text(approve_list.length);
       $button.removeClass('NB-modal-submit-green').addClass('NB-modal-submit-close');
+      $('.NB-module-account-trainer').removeClass('NB-hidden').hide().slideDown(500);
     },
     
     // ===========
