@@ -2992,6 +2992,7 @@
                 $manage_menu.data('$story', $item);
             }
             
+            $manage_menu.bind('contextmenu', function(e) { e.preventDefault(); });
             if (inverse) $manage_menu.addClass('NB-inverse');
             return $manage_menu;
         },
@@ -3093,6 +3094,7 @@
                     $manage_menu_container.prepend($arrow);
                 }
             }
+            $arrow.bind('contextmenu', function(e) { e.preventDefault(); });
             
             // Hide menu on click outside menu.
             _.defer(function() {
