@@ -235,7 +235,7 @@ $(document).ready(function() {
             {% endif %}
           </div>
         </div>
-        <div class="NB-module-account NB-module-account-trainer NB-last {% if train_count != active_count %}NB-hidden{% endif %}">
+        <div class="NB-module-account NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
           <div class="NB-module-account-image">
               <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
           </div>
