@@ -411,7 +411,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     top: 3px;
 }
 
-.NB-feedlist li.folder .folder_title.NB-toplevel.NB-hover .NB-folder-icon {
+.NB-feedlist li.folder .folder_title.NB-toplevel:hover .NB-folder-icon {
     display: none;
 }
 
@@ -560,8 +560,8 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-feedlist .folder_title.NB-toplevel .NB-feedlist-manage-icon {
     background-position: 5px 5px;
 }
-.NB-feedlist .feed.NB-hover .NB-feedlist-manage-icon,
-.NB-feedlist .folder_title.NB-hover .NB-feedlist-manage-icon {
+.NB-feedlist .feed:hover .NB-feedlist-manage-icon,
+.NB-feedlist .folder_title:hover .NB-feedlist-manage-icon {
     opacity: 1;
     display: block;
 }
@@ -581,21 +581,21 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: none;
     display: none !important; /* TODO: Remove for river of news */
 }
-.NB-feedlist .folder .folder_title.NB-hover .NB-feedlist-river-icon:hover {
+.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon:hover {
   opacity: 1;
 }
 
 
-.NB-feedlist .folder .folder_title.NB-hover .NB-feedlist-river-icon {
+.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon {
     display: block;
     opacity: .6;
 }
 
-.NB-feedlist .folder .folder_title.NB-hover .feed_counts_floater {
+.NB-feedlist .folder .folder_title:hover .feed_counts_floater {
     display: none;
     display: block; /* TODO: Remove for river of news */
 }
-.NB-feedlist .folder .folder_title.NB-hover.NB-feedlist-folder-title-recently-collapsed .feed_counts_floater {
+.NB-feedlist .folder .folder_title.NB-feedlist-folder-title-recently-collapsed:hover .feed_counts_floater {
     display: block;
 }
 
@@ -607,10 +607,10 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: none;
 }
     
-.NB-feedlist .feed.NB-hover.NB-toplevel .feed_favicon {
+.NB-feedlist .feed.NB-toplevel:hover .feed_favicon {
   display: none;
 }
-.NB-feedlist .folder_title.NB-hover.NB-toplevel {
+.NB-feedlist .folder_title.NB-toplevel:hover {
   background: none;
 }
 
@@ -3957,7 +3957,7 @@ background: transparent;
 .NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon {
     background: none;
 }
-.NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover {
+.NB-modal-feedchooser .NB-feedlist .folder_title:hover {
     background: transparent url('../img/icons/silk/folder.png') no-repeat 2px 3px;
 }
 
