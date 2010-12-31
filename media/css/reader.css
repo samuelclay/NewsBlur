@@ -1348,6 +1348,7 @@ background: transparent;
     padding: 0;
     margin: 0;
     list-style: none;
+    background-color: white;
 }
 
 #story_pane .NB-feed-story-header {
