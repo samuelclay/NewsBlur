@@ -1041,6 +1041,7 @@ background: transparent;
     text-decoration: none;
     color: #272727;
     line-height: 1em;
+    background-color: white;
 }
 .NB-view-river #story_titles .story {
     padding-right: 326px;
@@ -1091,7 +1092,10 @@ background: transparent;
 }
 
 #story_titles .story.NB-hover {
-    background: #f0f0f0;
+    background-color: #f0f0f0;
+}
+#story_titles .story.read.NB-hover {
+    background-color: white;
 }
 
 #story_titles .story.NB-hover  .NB-storytitles-sentiment {
