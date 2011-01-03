@@ -1424,6 +1424,7 @@ background: transparent;
     text-decoration: none;
     color: #101050;
     margin: 6px 0 6px;
+    text-shadow: 1px 1px 0 #e8e8e8;
 }
 
 #story_pane a.NB-feed-story-title:hover {
