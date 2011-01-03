@@ -517,6 +517,37 @@ def mark_story_as_read(request):
     
 @ajax_login_required
 @json.json_view
+def mark_story_as_unread(request):
+    story_id = request.POST['story_id']
+    feed_id = int(request.POST['feed_id'])
+
+    try:
+        usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+    except Feed.DoesNotExist:
+        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+        if duplicate_feed:
+            try:
+                usersub = UserSubscription.objects.get(user=request.user, 
+                                                       feed=duplicate_feed[0].feed)
+            except Feed.DoesNotExist:
+                return dict(code=-1)
+                
+    if not usersub.needs_unread_recalc:
+        usersub.needs_unread_recalc = True
+        usersub.save()
+        
+    data = dict(code=0, payload=dict(story_id=story_id))
+    logging.info(" ---> [%s] ~FY~SBUnread~SN story in feed: %s" % (request.user, usersub.feed))
+        
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
+    now = datetime.datetime.utcnow()
+    m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
+    m.delete()
+    
+    return data
+    
+@ajax_login_required
+@json.json_view
 def mark_feed_as_read(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     code = 0

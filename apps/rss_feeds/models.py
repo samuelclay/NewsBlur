@@ -958,10 +958,10 @@ class DuplicateFeed(models.Model):
     duplicate_feed_id = models.CharField(max_length=255, null=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
 
-def merge_feeds(original_feed_id, duplicate_feed_id):
+def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
     from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-    if original_feed_id > duplicate_feed_id:
+    if original_feed_id > duplicate_feed_id and not force:
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
     try:
         original_feed = Feed.objects.get(pk=original_feed_id)

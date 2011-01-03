@@ -35,24 +35,24 @@
                 var tp;
                 switch (gravity.charAt(0)) {
                     case 'n':
-                        tp = {top: pos.top + pos.height + this.options.offset, left: pos.left + pos.width / 2 - actualWidth / 2};
+                        tp = {top: pos.top + pos.height + this.options.offset, left: pos.left + pos.width / 2 - actualWidth / 2 - this.options.offsetOpposite};
                         break;
                     case 's':
-                        tp = {top: pos.top - actualHeight - this.options.offset, left: pos.left + pos.width / 2 - actualWidth / 2};
+                        tp = {top: pos.top - actualHeight - this.options.offset, left: pos.left + pos.width / 2 - actualWidth / 2 - this.options.offsetOpposite};
                         break;
                     case 'e':
-                        tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth - this.options.offset};
+                        tp = {top: pos.top + pos.height / 2 - actualHeight / 2 - this.options.offsetOpposite, left: pos.left - actualWidth - this.options.offset};
                         break;
                     case 'w':
-                        tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width + this.options.offset};
+                        tp = {top: pos.top + pos.height / 2 - actualHeight / 2 - this.options.offsetOpposite, left: pos.left + pos.width + this.options.offset};
                         break;
                 }
                 
                 if (gravity.length == 2) {
                     if (gravity.charAt(1) == 'w') {
-                        tp.left = pos.left + pos.width / 2 - 15;
+                        tp.left = pos.left + pos.width / 2 - 15 - this.options.offsetOpposite;
                     } else {
-                        tp.left = pos.left + pos.width / 2 - actualWidth + 15;
+                        tp.left = pos.left + pos.width / 2 - actualWidth + 15 - this.options.offsetOpposite;
                     }
                 }
                 
@@ -178,6 +178,7 @@
         html: false,
         live: false,
         offset: 0,
+        offsetOpposite: 0,
         opacity: 0.8,
         title: 'title',
         trigger: 'hover'
