@@ -2355,6 +2355,7 @@
                 if ($indicator.length) {
                     var $counts = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng);
                     $('.feed_counts_floater', $indicator).replaceWith($counts);
+                    $indicator.css({'opacity': 1});
                 } else {
                     $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
                         this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng),
@@ -2362,7 +2363,7 @@
                     ]).css({
                         'opacity': 0
                     });
-                    $('.NB-feedbar .feed', this.$story_titles).append($indicator);
+                    $('.NB-feedbar .feed .feed_title', this.$story_titles).prepend($indicator);
                     _.delay(function() {
                         $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
                     }, 500);
@@ -3423,7 +3424,7 @@
         },
         
         switch_feed_view_unread_view: function(unread_view) {
-            unread_view = unread_view || this.model.preference('unread_view');
+            if (!_.isNumber(unread_view)) unread_view = this.model.preference('unread_view');
             var $feed_list = this.$s.$feed_list;
             var unread_view_name = this.get_unread_view_name(unread_view);
             var $next_story_button = $('.task_story_next_unread');
