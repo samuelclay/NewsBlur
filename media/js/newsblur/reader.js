@@ -2343,6 +2343,7 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var unread_view_name = this.get_unread_view_name();
+            var $indicator = $('.NB-story-title-indicator', $story_titles);
             var hidden_stories = _.any(this.model.stories, _.bind(function(story) {
                 var score = this.compute_story_score(story);
 
@@ -2351,24 +2352,26 @@
             }, this));
             
             if (hidden_stories) {
-                var $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
-                    this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng),
-                    $.make('span', { className: 'NB-story-title-indicator-text' }, 'show hidden stories')
-                ]);
+                if ($indicator.length) {
+                    var $counts = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng);
+                    $('.feed_counts_floater', $indicator).replaceWith($counts);
+                } else {
+                    $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
+                        this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng),
+                        $.make('span', { className: 'NB-story-title-indicator-text' }, 'show hidden stories')
+                    ]).css({
+                        'opacity': 0
+                    });
+                    $('.NB-feedbar .feed', this.$story_titles).append($indicator);
+                    _.delay(function() {
+                        $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
+                    }, 500);
+                }
             
                 $indicator.removeClass('unread_threshold_positive')
                           .removeClass('unread_threshold_neutral')
                           .removeClass('unread_threshold_negative')
-                          .addClass('unread_threshold_'+unread_view_name)
-                          .css({
-                    'opacity': 0
-                });
-                          
-                $('.NB-story-title-indicator', $story_titles).remove();
-                $('.NB-feedbar .feed', this.$story_titles).append($indicator);
-                _.delay(function() {
-                    $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
-                }, 500);
+                          .addClass('unread_threshold_'+unread_view_name);
             }
         },
         
@@ -3414,6 +3417,7 @@
                     self.flags['feed_view_positions_calculated'] = false;
                     self.switch_feed_view_unread_view(ui.value);
                     self.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+                    self.show_feed_hidden_story_title_indicator();
                 }
             });
         },

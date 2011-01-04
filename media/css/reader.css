@@ -927,10 +927,9 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .feed .feed_favicon {
-    margin-right: 8px;
+    margin: 2px 4px 0 2px;
     vertical-align: top;
     float: left;
-    margin-top: 2px;
 }
 
 #story_titles .NB-feedbar .feed .feed_title {
@@ -958,7 +957,7 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
-    background-color: #3090cf;
+    background-color: #909090;
     color: #F0F0F0;
     cursor: pointer;
     position: absolute;
@@ -971,6 +970,8 @@ background: transparent;
     padding: 0px 4px 0;
     text-transform: uppercase;
     display: none;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
     color: #808080;
@@ -1071,7 +1072,7 @@ background: transparent;
 /* ============================= */
 
 #story_titles .NB-story-title-indicator {
-    background-color: #3090cf;
+    background-color: #909090;
     color: #F0F0F0;
     cursor: pointer;
     position: absolute;
@@ -1084,6 +1085,8 @@ background: transparent;
     padding: 0 4px;
     text-transform: uppercase;
     overflow: hidden;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 
 #story_titles .NB-story-title-indicator:hover {
@@ -1127,7 +1130,7 @@ background: transparent;
 }
 
 #story_titles .NB-story-title-indicator:hover .NB-story-title-indicator-text {
-  color: #D0F0D0;
+/*  color: #D0F0D0;*/
 }
 #story_titles .NB-story-title-indicator .feed_counts_floater .unread_count {
   padding: 0 3px 1px;
