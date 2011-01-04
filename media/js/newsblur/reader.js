@@ -2343,13 +2343,17 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var unread_view_name = this.get_unread_view_name();
+            var hidden_stories = _.any(this.model.stories, _.bind(function(story) {
+                var score = this.compute_story_score(story);
+
+                if (unread_view_name == 'positive') return score <= 0;
+                else if (unread_view_name == 'neutral') return score < 0;
+            }, this));
             
-            if ((feed.nt > 0 && unread_view_name == 'positive') ||
-                (feed.ng > 0 && unread_view_name == 'neutral') ||
-                (feed.ng > 0 && unread_view_name == 'postiive')) {
+            if (hidden_stories) {
                 var $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
                     this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng),
-                    $.make('span', { className: 'NB-story-title-indicator-text' }, 'hidden stories')
+                    $.make('span', { className: 'NB-story-title-indicator-text' }, 'show hidden stories')
                 ]);
             
                 $indicator.removeClass('unread_threshold_positive')
@@ -2357,14 +2361,13 @@
                           .removeClass('unread_threshold_negative')
                           .addClass('unread_threshold_'+unread_view_name)
                           .css({
-                    'height': 0,
                     'opacity': 0
                 });
                           
                 $('.NB-story-title-indicator', $story_titles).remove();
-                $('.NB-feedbar', this.$story_titles).after($indicator);
+                $('.NB-feedbar .feed', this.$story_titles).append($indicator);
                 _.delay(function() {
-                    $indicator.animate({'height': 10, 'opacity': 1}, {'duration': 400, 'easing': 'easeOutQuint'});
+                    $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
                 }, 500);
             }
         },
@@ -2373,25 +2376,40 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var $indicator = $('.NB-story-title-indicator', this.$s.$story_titles);
+            var unread_view_name = $indicator.hasClass('unread_threshold_positive') ?
+                                   'positive' :
+                                   'neutral';
+            var hidden_stories_at_threshold = _.any(this.model.stories, _.bind(function(story) {
+                var score = this.compute_story_score(story);
+
+                if (unread_view_name == 'positive') return score == 0;
+                else if (unread_view_name == 'neutral') return score < 0;
+            }, this));
+            var hidden_stories_below_threshold = unread_view_name == 'positive' && 
+                                                 _.any(this.model.stories, _.bind(function(story) {
+                var score = this.compute_story_score(story);
+                return score < 0;
+            }, this));
             
+            // NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
             // First click, open neutral. Second click, open negative.
-            if ($indicator.hasClass('unread_threshold_positive') && feed.nt > 0 && feed.ng > 0) {
+            if (unread_view_name == 'positive' && hidden_stories_at_threshold && hidden_stories_below_threshold) {
                 this.show_story_titles_above_intelligence_level({
                     'unread_view_name': 'neutral',
                     'animate': true,
                     'follow': true
                 });
                 $indicator.removeClass('unread_threshold_positive').addClass('unread_threshold_neutral');
-            } else if ($indicator.hasClass('unread_threshold_neutral') || feed.ng == 0) {
+            } else {
                 this.show_story_titles_above_intelligence_level({
-                    'unread_view_name': (feed.ng > 0 ? 'negative' : 'neutral'),
+                    'unread_view_name': 'negative',
                     'animate': true,
                     'follow': true
                 });
                 $indicator.removeClass('unread_threshold_positive')
                           .removeClass('unread_threshold_neutral')
                           .addClass('unread_threshold_negative');
-                $indicator.slideUp(500);
+                $indicator.animate({'opacity': 0}, {'duration': 500});
             }
         },
         
@@ -3407,7 +3425,7 @@
             var $next_story_button = $('.task_story_next_unread');
             var $story_title_indicator = $('.NB-story-title-indicator', this.$story_titles);
             var $hidereadfeeds_button = $('.NB-feeds-header-sites');
-                        
+
             $feed_list.removeClass('unread_view_positive')
                       .removeClass('unread_view_neutral')
                       .removeClass('unread_view_negative')
