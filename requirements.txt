@@ -13,3 +13,4 @@ nltk
 lxml
 oauth2
 pytz
+boto

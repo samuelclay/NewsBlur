@@ -105,6 +105,7 @@ COMPRESS_JS = {
             'js/jquery.ui.draggable.js',
             'js/jquery.ui.sortable.js',
             'js/jquery.ui.slider.js',
+            'js/jquery.ui.autocomplete.js',
             'js/jquery.ui.progressbar.js',
             'js/jquery.layout.js',
             'js/jquery.tinysort.js',
@@ -193,6 +194,8 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 TEST_RUNNER = "utils.testrunner.TestRunner"
 DAYS_OF_UNREAD = 14
 SUBSCRIBER_EXPIRE = 12
+SESSION_COOKIE_NAME = 'newsblur_sessionid'
+SESSION_COOKIE_AGE = 60*60*24*365*2 # 2 years
 
 # ===========
 # = Logging =

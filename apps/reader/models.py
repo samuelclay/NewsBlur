@@ -21,6 +21,7 @@ class UserSubscription(models.Model):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
+    user_title = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=False)
     last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
     mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
@@ -34,7 +35,7 @@ class UserSubscription(models.Model):
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
-        
+    
     def save(self, *args, **kwargs):
         try:
             super(UserSubscription, self).save(*args, **kwargs)
@@ -110,7 +111,7 @@ class UserSubscription(models.Model):
                 unread_stories_db.append(story)
             elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
                 unread_stories_db.append(story)
-        stories = self.feed.format_stories(unread_stories_db)
+        stories = Feed.format_stories(unread_stories_db, self.feed.pk)
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
@@ -241,9 +242,9 @@ class UserSubscriptionFolders(models.Model):
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
                         multiples_found = True
-                        logging.info(" ---> [%s] Deleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
+                        logging.info(" ---> [%s] ~FB~SBDeleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
                     if folder == feed_id and folder_name == in_folder and not deleted:
-                        logging.info(" ---> [%s] Delete feed: %s'th item: %s folders/feeds" % (
+                        logging.info(" ---> [%s] ~FBDelete feed: %s'th item: %s folders/feeds" % (
                             self.user, k, len(old_folders)
                         ))
                         deleted = True
@@ -286,7 +287,7 @@ class UserSubscriptionFolders(models.Model):
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
                         if f_k == folder_to_delete and folder_name == in_folder:
-                            logging.info(" ---> [%s] Deleting folder '%s' in '%s': %s" % (self.user, f_k, folder_name, folder))
+                            logging.info(" ---> [%s] ~FBDeleting folder '~SB%s~SN' in '%s': %s" % (self.user, f_k, folder_name, folder))
                         else:
                             nf, feeds_to_delete = _find_folder_in_folders(f_v, f_k, feeds_to_delete)
                             new_folders.append({f_k: nf})
@@ -299,6 +300,28 @@ class UserSubscriptionFolders(models.Model):
         self.save()
         
         UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
+        
+    def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
+        def _find_folder_in_folders(old_folders, folder_name):
+            new_folders = []
+            for k, folder in enumerate(old_folders):
+                if isinstance(folder, int):
+                    new_folders.append(folder)
+                elif isinstance(folder, dict):
+                    for f_k, f_v in folder.items():
+                        nf = _find_folder_in_folders(f_v, f_k)
+                        if f_k == folder_to_rename and folder_name == in_folder:
+                            logging.info(" ---> [%s] ~FBRenaming folder '~SB%s~SN' in '%s' to: ~SB%s" % (
+                                         self.user, f_k, folder_name, new_folder_name))
+                            f_k = new_folder_name
+                        new_folders.append({f_k: nf})
+    
+            return new_folders
+            
+        user_sub_folders = json.decode(self.folders)
+        user_sub_folders = _find_folder_in_folders(user_sub_folders, '')
+        self.folders = json.encode(user_sub_folders)
+        self.save()
 
 class Feature(models.Model):
     """

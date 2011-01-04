@@ -1,5 +1,5 @@
 /*
- * jQuery UI Progressbar 1.8.5
+ * jQuery UI Progressbar 1.8.6
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -64,6 +64,9 @@ $.widget( "ui.progressbar", {
 			this.options.value = value;
 			this._refreshValue();
 			this._trigger( "change" );
+			if ( this._value() === this.max ) {
+				this._trigger( "complete" );
+			}
 		}
 
 		$.Widget.prototype._setOption.apply( this, arguments );
@@ -88,7 +91,7 @@ $.widget( "ui.progressbar", {
 });
 
 $.extend( $.ui.progressbar, {
-	version: "1.8.5"
+	version: "1.8.6"
 });
 
 })( jQuery );

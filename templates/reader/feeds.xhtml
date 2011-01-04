@@ -235,24 +235,22 @@ $(document).ready(function() {
             {% endif %}
           </div>
         </div>
-        {% if train_count != active_count %}
-          <div class="NB-module-account NB-module-account-trainer NB-last">
-            <div class="NB-module-account-image">
-                <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
-            </div>
-            <h3>
-                <span class="NB-module-account-subtitle">
-                  <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
-                </span>
-                Intelligence Trainer
-            </h3>
-            <div class="NB-module-account-title">
-                <div class="NB-modal-submit">
-                  <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Launch Intelligence Trainer</div>
-                </div>
-            </div>
+        <div class="NB-module-account NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
+          <div class="NB-module-account-image">
+              <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
           </div>
-        {% endif %}
+          <h3>
+              <span class="NB-module-account-subtitle">
+                <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
+              </span>
+              Intelligence Trainer
+          </h3>
+          <div class="NB-module-account-title">
+              <div class="NB-modal-submit">
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Launch Intelligence Trainer</div>
+              </div>
+          </div>
+        </div>
       </div>
       
     {% endif %}
@@ -318,17 +316,37 @@ $(document).ready(function() {
     
     <div class="left-center">
 
-      <div class="left-center-content">
+      <div class="left-center-content NB-feedlist">
         <div id="NB-feeds-list-loader">Everything is on its way...</div>
         <div class="NB-feeds-header-container">
           <div class="NB-feeds-header">
-            <div class="NB-feeds-header-right">&nbsp;</div>
+            <div class="NB-feeds-header-right">
+              <div class="NB-feeds-header-sites">&nbsp;</div>
+            </div>
             <div class="NB-feeds-header-left">
               <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
               <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
               <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
             </div>
             <div class="NB-feeds-header-home">Dashboard</div>
+          </div>
+          <!--<div class="NB-feeds-header-river-container">
+            <div class="NB-feeds-header-river NB-empty">
+              <div class="NB-feeds-header-river-count unread_count"></div>
+              <div class="NB-feeds-header-river-icon"></div>
+              <div class="NB-feeds-header-river-title">
+                Everything
+              </div>
+            </div>
+          </div>-->
+          <div class="NB-feeds-header-starred-container">
+            <div class="NB-feeds-header-starred NB-empty">
+              <div class="NB-feeds-header-starred-count unread_count"></div>
+              <div class="NB-feeds-header-starred-icon"></div>
+              <div class="NB-feeds-header-starred-title">
+                Saved Stories
+              </div>
+            </div>
           </div>
         </div>
         <ul class="folder NB-feedlist" id="feed_list"></ul>
@@ -385,11 +403,17 @@ $(document).ready(function() {
         <div id="story_taskbar" class="NB-taskbar-container content-north">
           <div class="NB-taskbar">
             <ul class="taskbar_nav taskbar_nav_view">
-              <li class="task_button task_button_view task_view_page NB-active"><span class="NB-task-title">Original</span>
-                <div class="NB-task-view-page-to-feed-arrow"></div>
+              <li class="task_button task_button_view task_view_page NB-active">
+                <span class="NB-task-title">Original</span>
+                <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
               </li>
-              <li class="task_button task_button_view task_view_feed"><span class="NB-task-title">Feed</span></li>
-              <li class="task_button task_button_view task_view_story"><span class="NB-task-title">Story</span></li>
+              <li class="task_button task_button_view task_view_feed">
+                <span class="NB-task-title">Feed</span>
+                <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
+              </li>
+              <li class="task_button task_button_view task_view_story">
+                <span class="NB-task-title">Story</span>
+              </li>
             </ul>
             <ul class="taskbar_nav taskbar_nav_return">
               <li class="task_button task_return">
@@ -423,8 +447,9 @@ $(document).ready(function() {
     
         <div id="story_pane" class="content-center">
             <div class="NB-story-pane-container">
-        		<iframe id="story_iframe" class="NB-feed-frame"></iframe>
+        		<iframe id="feed_iframe" class="NB-feed-iframe"></iframe>
         		<div class="NB-feed-story-view NB-view-hidden"></div>
+        		<iframe id="story_iframe" class="NB-story-iframe"></iframe>
             </div>
         </div>
         

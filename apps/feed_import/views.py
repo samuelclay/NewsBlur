@@ -25,15 +25,15 @@ def opml_upload(request):
     
     if request.method == 'POST':
         if 'file' in request.FILES:
-            logging.info(" ---> [%s] OPML Upload" % request.user)
+            logging.info(" ---> [%s] ~FR~SBOPML upload starting..." % request.user)
             file = request.FILES['file']
             xml_opml = file.read()
-            
             opml_importer = OPMLImporter(xml_opml, request.user)
             folders = opml_importer.process()
 
             feeds = UserSubscription.objects.filter(user=request.user).values()
             payload = dict(folders=folders, feeds=feeds)
+            logging.info(" ---> [%s] ~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (request.user, len(feeds)))
             
             request.session['import_from_google_reader'] = False
         else:
@@ -45,9 +45,8 @@ def opml_upload(request):
 
         
 def reader_authorize(request):
-    logging.info(" ---> [%s] Authorize Google Reader import (%s) - %s" % (
+    logging.info(" ---> [%s] ~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.user,
-        request.session.session_key,
         request.META['REMOTE_ADDR'],
     ))
     oauth_key = settings.OAUTH_KEY
@@ -119,7 +118,7 @@ def reader_callback(request):
     # Fetch imported feeds on next page load
     request.session['import_from_google_reader'] = True
     
-    logging.info(" ---> [%s] Finishing Google Reader import" % request.user)
+    logging.info(" ---> [%s] ~BB~FW~SBFinishing Google Reader import - %s" % (request.user, request.META['REMOTE_ADDR'],))
     
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))
