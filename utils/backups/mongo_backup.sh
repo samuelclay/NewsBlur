@@ -3,7 +3,7 @@
 MONGODB_SHELL='mongo'
 DUMP_UTILITY='mongodump'
 DB_NAME='newsblur'
-COLLECTIONS="classifier_tag classifier_author classifier_feed classifier_title userstories"
+COLLECTIONS="classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories"
 
 date_now=`date +%Y_%m_%d_%H_%M`
 dir_name='backup_mongo_'${date_now}
