@@ -4159,7 +4159,11 @@
                 e.preventDefault();
                 if (!self.flags['sorting_feed']) {
                     var feed_id = $t.data('feed_id');
-                    self.open_feed(feed_id, false, $t);
+                    if (NEWSBLUR.hotkeys.command) {
+                        self.open_unread_stories_in_tabs(feed_id);
+                    } else {
+                        self.open_feed(feed_id, false, $t);
+                    }
                 }
             });
             $.targetIs(e, { tagSelector: '#feed_list .folder_title .NB-feedlist-river-icon' }, function($t, $p){
