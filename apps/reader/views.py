@@ -332,7 +332,7 @@ def load_single_feed(request):
     usersub.save()
     
     diff = datetime.datetime.utcnow()-now
-    timediff = float("%s.%s" % (diff.seconds, (diff.microseconds / 1000)))
+    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
     last_update = relative_timesince(feed.last_update)
     logging.info(" ---> [%s] ~FYLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
@@ -397,6 +397,7 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
+    now = datetime.datetime.now()
     user = get_user(request)
     feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds')]
     offset = int(request.REQUEST.get('offset', 0))
@@ -452,8 +453,11 @@ def load_river_stories(request):
             'title': 0,
         }
     
-    logging.info(" ---> [%s] ~FCLoading river stories: ~SB%s stories ~SN(%s feeds)" % (
-                 request.user, len(stories), len(feed_ids)))
+    diff = datetime.datetime.now()-now
+    print diff
+    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+    logging.info(" ---> [%s] ~FCLoading river stories: ~SB%s stories ~SN(%s feeds) ~FB(%s seconds)" % (
+                 request.user, len(stories), len(feed_ids), timediff))
     
     return dict(stories=stories)
 @ajax_login_required
@@ -540,7 +544,6 @@ def mark_story_as_unread(request):
     logging.info(" ---> [%s] ~FY~SBUnread~SN story in feed: %s" % (request.user, usersub.feed))
         
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-    now = datetime.datetime.utcnow()
     m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
     m.delete()
     
