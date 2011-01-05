@@ -661,17 +661,17 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-feedlist-hide-read-feeds .feed {
   display: none;
 }
-.NB-feedlist-hide-read-feeds.unread_view_positive .unread_positive {
+.NB-feedlist-hide-read-feeds .unread_view_positive .unread_positive {
   display: block;
 }
-.NB-feedlist-hide-read-feeds.unread_view_neutral .unread_positive,
-.NB-feedlist-hide-read-feeds.unread_view_neutral .unread_neutral {
+.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_positive,
+.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_neutral {
   display: block;
 }
 
-.NB-feedlist-hide-read-feeds.unread_view_negative .unread_positive,
-.NB-feedlist-hide-read-feeds.unread_view_negative .unread_neutral,
-.NB-feedlist-hide-read-feeds.unread_view_negative .unread_negative {
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_positive,
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_neutral,
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_negative {
   display: block;
 }
 
