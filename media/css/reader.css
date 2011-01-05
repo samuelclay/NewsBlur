@@ -658,6 +658,27 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   text-shadow: none;
 }
 
+.NB-feedlist-hide-read-feeds .feed {
+  display: none;
+}
+.NB-feedlist-hide-read-feeds .unread_view_positive .unread_positive {
+  display: block;
+}
+.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_positive,
+.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_neutral {
+  display: block;
+}
+
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_positive,
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_neutral,
+.NB-feedlist-hide-read-feeds .unread_view_negative .unread_negative {
+  display: block;
+}
+
+.NB-feedlist-hide-read-feeds .feed.NB-empty {
+  display: block;
+}
+
 /* ================= */
 /* = Unread Counts = */
 /* ================= */
@@ -685,6 +706,16 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .unread_count_negative {
     background-color: #CC2A2E;
 }
+
+.unread_view_positive .unread_count {
+    padding: 0 6px;
+}
+
+.unread_view_neutral .unread_count {
+    padding: 0 3px;
+}
+
+/* Showing unread counts above threshold */
 
 .unread_view_positive .unread_positive .unread_count_positive {
     display: block;
@@ -716,33 +747,21 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     font-weight: bold;
 }
 
-.unread_view_positive .unread_count {
-    padding: 0 6px;
+/* Showing unread counts below threshold */
+
+.unread_threshold_positive .unread_negative .unread_count_negative,
+.unread_threshold_positive .unread_neutral .unread_count_neutral {
+    font-weight: bold;
+    display: block;
+}
+
+.unread_threshold_neutral .unread_negative .unread_count_negative {
+    font-weight: bold;
+    display: block;
 }
 
 .unread_view_neutral .unread_count {
     padding: 0 3px;
-}
-
-.NB-feedlist-hide-read-feeds .feed {
-  display: none;
-}
-.NB-feedlist-hide-read-feeds .unread_view_positive .unread_positive {
-  display: block;
-}
-.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_positive,
-.NB-feedlist-hide-read-feeds .unread_view_neutral .unread_neutral {
-  display: block;
-}
-
-.NB-feedlist-hide-read-feeds .unread_view_negative .unread_positive,
-.NB-feedlist-hide-read-feeds .unread_view_negative .unread_neutral,
-.NB-feedlist-hide-read-feeds .unread_view_negative .unread_negative {
-  display: block;
-}
-
-.NB-feedlist-hide-read-feeds .feed.NB-empty {
-  display: block;
 }
 
 /* ====================== */
@@ -891,10 +910,9 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .feed .feed_favicon {
-    margin-right: 8px;
+    margin: 2px 4px 0 2px;
     vertical-align: top;
     float: left;
-    margin-top: 2px;
 }
 
 #story_titles .NB-feedbar .feed .feed_title {
@@ -922,7 +940,7 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
-    background-color: #3090cf;
+    background-color: #909090;
     color: #F0F0F0;
     cursor: pointer;
     position: absolute;
@@ -935,6 +953,8 @@ background: transparent;
     padding: 0px 4px 0;
     text-transform: uppercase;
     display: none;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
     color: #808080;
@@ -1030,7 +1050,78 @@ background: transparent;
     display: block;
 }
 
+/* ============================= */
+/* = Story Titles Hidden Count = */
+/* ============================= */
 
+#story_titles .NB-story-title-indicator {
+    background-color: #909090;
+    color: #F0F0F0;
+    cursor: pointer;
+    float: right;
+    margin: 3px 4px 2px 6px;
+    font-size: 9px;
+    line-height: 15px;
+    font-weight: bold;
+    padding: 0 4px;
+    text-transform: uppercase;
+    overflow: hidden;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+#story_titles .NB-story-title-indicator:hover {
+    background-color: #00609f;
+}
+#story_titles .NB-story-title-indicator.unread_threshold_negative {
+  display: none;
+}
+#story_titles .NB-story-title-indicator .feed_counts_floater {
+  float: left;
+  padding: 2px 0 0;
+  text-align: center;
+}
+
+#story_titles .NB-story-title-indicator .unread_count_positive.unread_count_full,
+#story_titles .NB-story-title-indicator .unread_count_neutral.unread_count_full,
+#story_titles .NB-story-title-indicator .unread_count_negative.unread_count_full {
+  display: none;
+  opacity: .3;
+}
+
+#story_titles .NB-story-title-indicator.unread_threshold_positive .unread_count_neutral.unread_count_full,
+#story_titles .NB-story-title-indicator.unread_threshold_positive .unread_count_negative.unread_count_full,
+#story_titles .NB-story-title-indicator.unread_threshold_neutral .unread_count_negative.unread_count_full {
+  display: block;
+}
+
+#story_titles .NB-story-title-indicator.unread_threshold_positive:hover .unread_count_neutral {
+  opacity: 1;
+}
+#story_titles .NB-story-title-indicator.unread_threshold_neutral:hover .unread_count_negative {
+  opacity: 1;
+}
+
+#story_titles .NB-story-title-indicator .NB-story-title-indicator-text {
+  color: #F0F0F0;
+  float: left;
+  text-align: right;
+  display: block;
+  padding: 0 0 0 2px;
+}
+
+#story_titles .NB-story-title-indicator:hover .NB-story-title-indicator-text {
+/*  color: #D0F0D0;*/
+}
+#story_titles .NB-story-title-indicator .feed_counts_floater .unread_count {
+  padding: 0 3px 1px;
+  margin: 0 2px 0 0;
+  line-height: 10px;
+}
+
+/* ======================== */
+/* = Story Titles - Story = */
+/* ======================== */
 
 #story_titles .story {
     overflow: hidden;
@@ -1424,6 +1515,7 @@ background: transparent;
     text-decoration: none;
     color: #101050;
     margin: 6px 0 6px;
+    text-shadow: 1px 1px 0 #e8e8e8;
 }
 
 #story_pane a.NB-feed-story-title:hover {

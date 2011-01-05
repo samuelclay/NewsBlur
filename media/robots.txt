@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /reader
+Disallow: /rss_feeds
+Disallow: /classifier
+Disallow: /analyzer
+Disallow: /profile
+Disallow: /import
+Disallow: /media
