@@ -2399,7 +2399,7 @@
                 return score < 0;
             }, this));
             
-            NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
+            // NEWSBLUR.log(['show_hidden_story_titles', hidden_stories_at_threshold, hidden_stories_below_threshold, unread_view_name]);
             
             // First click, open neutral. Second click, open negative.
             if (unread_view_name == 'positive' && hidden_stories_at_threshold && hidden_stories_below_threshold) {
