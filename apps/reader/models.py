@@ -19,6 +19,7 @@ class UserSubscription(models.Model):
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    
     user = models.ForeignKey(User, related_name='subscriptions')
     feed = models.ForeignKey(Feed, related_name='subscribers')
     user_title = models.CharField(max_length=255, null=True, blank=True)
@@ -48,11 +49,14 @@ class UserSubscription(models.Model):
         
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
+        
+        # Use the latest story to get last read time.
         if MStory.objects(story_feed_id=self.feed.pk).first():
             latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date')[0]['story_date']\
                                 + datetime.timedelta(minutes=1)
         else:
             latest_story_date = now
+
         self.last_read_date = latest_story_date
         self.mark_read_date = latest_story_date
         self.unread_count_negative = 0
@@ -60,6 +64,8 @@ class UserSubscription(models.Model):
         self.unread_count_neutral = 0
         self.unread_count_updated = latest_story_date
         self.needs_unread_recalc = False
+        MUserStory.delete_marked_as_read_stories(self.user.pk, self.feed.pk)
+        
         self.save()
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
@@ -158,6 +164,7 @@ class UserSubscription(models.Model):
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
+        self.unread_count_updated = datetime.datetime.now()
         self.needs_unread_recalc = False
         
         self.save()
@@ -214,7 +221,14 @@ class MUserStory(mongo.Document):
     @classmethod
     def delete_old_stories(cls, feed_id):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        MUserStory.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF).delete()
+        cls.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF).delete()
+        
+    @classmethod
+    def delete_marked_as_read_stories(cls, user_id, feed_id, mark_read_date=None):
+        if not mark_read_date:
+            usersub = UserSubscription.objects.get(user__pk=user_id, feed__pk=feed_id)
+            mark_read_date = usersub.mark_read_date
+        cls.objects(user_id=user_id, feed_id=feed_id, read_date__lte=usersub.mark_read_date).delete()
     
         
 class UserSubscriptionFolders(models.Model):

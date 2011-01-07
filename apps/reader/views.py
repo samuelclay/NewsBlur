@@ -1,4 +1,5 @@
 import datetime
+import time
 import random
 import zlib
 from django.shortcuts import render_to_response, get_object_or_404
@@ -13,7 +14,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.core.mail import mail_admins
-from mongoengine.queryset import OperationError, Q
+from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -28,6 +29,7 @@ from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import fetch_address_from_page, relative_timesince
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
+from utils.story_functions import bunch
 from utils import log as logging
 from utils.timezones.utilities import localtime_for_timezone
 
@@ -411,23 +413,36 @@ def load_river_stories(request):
     # if page: offset = limit * page
     if page: limit = limit * page - read_stories_count
 
-    # Subquery used to find all `MStory`s within the user_sub's Mark as Read date.
     def feed_qvalues(feed_id):
         feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        return (feed_id, feed.mark_read_date)
+        return (feed_id, int(time.mktime(feed.mark_read_date.timetuple())))
     feed_last_reads = dict(map(feed_qvalues, feed_ids))
     
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
     read_stories = [rs.story.id for rs in read_stories]
     
-    # Between excluding what's been read, and what's outside the mark_read date,
-    # every single returned story is unread.
+    # After excluding read stories, all that's left are stories 
+    # past the mark_read_date. Everything returned is guaranteed to be unread.
     mstories = MStory.objects(
         id__nin=read_stories,
         story_feed_id__in=feed_ids
-    )[offset:offset+limit]
-    stories = Feed.format_stories(mstories)
+    ).map_reduce("""function() {
+        var feed_last_reads = %s;
+        var d = feed_last_reads[this.story_feed_id];
+        if (this.story_date.getTime()/1000 > d) {
+            emit(this._id, this);
+        }
+    }""" % (json.encode(feed_last_reads),),
+    """function(key, values) {
+        return values[0];
+    }""")
+    mstories = [story.value for story in mstories]
+    stories = []
+    for i, story in enumerate(mstories):
+        if i >= offset + limit: break
+        stories.append(bunch(story))
+    stories = Feed.format_stories(stories)
     
     starred_stories = MStarredStory.objects(
         user_id=user.pk,
@@ -435,7 +450,6 @@ def load_river_stories(request):
     ).only('story_guid', 'starred_date')
     starred_stories = dict([(story.story_guid, story.starred_date) 
                             for story in starred_stories])
-                            
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
