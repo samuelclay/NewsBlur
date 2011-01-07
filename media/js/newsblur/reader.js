@@ -1967,8 +1967,16 @@
         
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://www.instapaper.com/api/add';
-            window.open(url + '?url=' + story.story_permalink + '&title=' + story.story_title, '_blank');
+            var url = 'http://www.instapaper.com/edit';
+            var instapaper_url = [
+              url,
+              '?url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(instapaper_url, '_blank');
+            this.mark_story_as_read(story_id);
         },
         
         // =====================
@@ -2972,7 +2980,9 @@
                     (tab_unread_count && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-unreadtabs' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Open unreads in '+tab_unread_count+Inflector.pluralize(' tab', tab_unread_count))
-                    ])),
+                    ]).bind('click', _.bind(function(e) {
+                        this.open_unread_stories_in_tabs(feed_id);
+                    }, this))),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -3039,10 +3049,14 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
-                    // $.make('li', { className: 'NB-menu-manage-story-instapaper' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
-                    // ]),
+                    $.make('li', { className: 'NB-menu-manage-story-instapaper' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
+                    ]).bind('click', _.bind(function(e) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      this.send_story_to_instapaper(story.id);
+                    }, this)),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4389,11 +4403,6 @@
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 self.mark_feed_as_read(feed_id);
             });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-unreadtabs' }, function($t, $p){
-                e.preventDefault();
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                self.open_unread_stories_in_tabs(feed_id);
-            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-mark-read' }, function($t, $p){
                 e.preventDefault();
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
@@ -4447,12 +4456,6 @@
                 var feed_id = $t.closest('.NB-menu-manage').data('feed_id'); 
                 var story_id = $t.closest('.NB-menu-manage').data('story_id'); 
                 self.mark_story_as_unread(story_id, feed_id);
-            });  
-            
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-instapaper' }, function($t, $p){
-                e.preventDefault();
-                var story_id = $t.closest('.NB-menu-manage').data('story_id'); 
-                self.send_story_to_instapaper(story_id);
             });  
             
             $.targetIs(e, { tagSelector: '.task_button_view' }, function($t, $p){
