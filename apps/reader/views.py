@@ -415,7 +415,7 @@ def load_river_stories(request):
 
     def feed_qvalues(feed_id):
         feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        return (feed_id, int(time.mktime(feed.mark_read_date.timetuple())))
+        return (str(feed_id), int(time.mktime(feed.mark_read_date.timetuple())))
     feed_last_reads = dict(map(feed_qvalues, feed_ids))
     
     # Read stories to exclude
@@ -428,18 +428,22 @@ def load_river_stories(request):
         id__nin=read_stories,
         story_feed_id__in=feed_ids
     ).map_reduce("""function() {
-        var feed_last_reads = %s;
-        var d = feed_last_reads[this.story_feed_id];
-        if (this.story_date.getTime()/1000 > d) {
-            emit(this._id, this);
-        }
-    }""" % (json.encode(feed_last_reads),),
-    """function(key, values) {
-        return values[0];
-    }""")
+            var d = feed_last_reads[this.story_feed_id];
+            if (this.story_date.getTime()/1000 > d) {
+                emit(this._id, this);
+            }
+        }""",
+        """function(key, values) {
+            return values[0];
+        }""",
+        scope=dict(
+            feed_last_reads=feed_last_reads
+        ))
     mstories = [story.value for story in mstories]
+    mstories = sorted(mstories, cmp=lambda x, y: cmp(y['story_date'], x['story_date']))
     stories = []
     for i, story in enumerate(mstories):
+        if i < offset: continue
         if i >= offset + limit: break
         stories.append(bunch(story))
     stories = Feed.format_stories(stories)
