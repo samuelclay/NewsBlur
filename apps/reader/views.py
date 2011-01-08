@@ -413,15 +413,16 @@ def load_river_stories(request):
     # `read_stories_count` is an optimization, works best when all 25 stories before have been read.
     # if page: offset = limit * page
     if page: limit = limit * page - read_stories_count
-
-    def feed_qvalues(feed_id):
-        feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        return (str(feed_id), int(time.mktime(feed.mark_read_date.timetuple())))
-    feed_last_reads = dict(map(feed_qvalues, feed_ids))
     
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
     read_stories = [rs.story.id for rs in read_stories]
+    
+    # Determine mark_as_read dates for all feeds to ignore all stories before this date.
+    def feed_qvalues(feed_id):
+        feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
+        return (str(feed_id), int(time.mktime(feed.mark_read_date.timetuple())))
+    feed_last_reads = dict(map(feed_qvalues, feed_ids))
     
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.
@@ -468,24 +469,24 @@ def load_river_stories(request):
     classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=feed_ids))
     classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=feed_ids))
     
+    # Just need to format stories
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date'] = format_story_link_date__long(story_date)
+        story['long_parsed_date']  = format_story_link_date__long(story_date)
         story['read_status'] = 0
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date)
         story['intelligence'] = {
-            'feed': apply_classifier_feeds(classifier_feeds[story['story_feed_id']], story['story_feed_id']),
+            'feed':   apply_classifier_feeds(classifier_feeds[story['story_feed_id']], story['story_feed_id']),
             'author': apply_classifier_authors(classifier_authors[story['story_feed_id']], story),
-            'tags': apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
-            'title': apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
+            'tags':   apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
+            'title':  apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
         }
     
-    diff = datetime.datetime.now()-now
-    print diff
+    diff = datetime.datetime.now() - now
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
     logging.info(" ---> [%s] ~FCLoading river stories: ~SB%s stories ~SN(%s feeds) ~FB(%s seconds)" % (
                  request.user, len(stories), len(feed_ids), timediff))

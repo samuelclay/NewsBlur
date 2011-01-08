@@ -1902,22 +1902,22 @@
         mark_story_as_like: function(story_id, feed_id) {
             feed_id = feed_id || this.model.get_story(story_id).story_feed_id;
             
-            var is_starred_view = this.active_feed == 'starred';
-            
+            var is_river = this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1;
+            NEWSBLUR.log(['mark_story_as_like', story_id, feed_id, is_river]);
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
                 'score': 1,
-                'feed_loaded': !is_starred_view
+                'feed_loaded': !is_river
             });
         },
         
         mark_story_as_dislike: function(story_id, feed_id) {
             feed_id = feed_id || this.active_feed;
             
-            var is_starred_view = this.active_feed == 'starred';
+            var is_river = this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1;
             
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
                 'score': -1,
-                'feed_loaded': !is_starred_view
+                'feed_loaded': !is_river
             });
         },
         
@@ -2360,7 +2360,7 @@
                     var $counts = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng);
                     $('.feed_counts_floater', $indicator).replaceWith($counts);
                     $indicator.css({'opacity': 1});
-                } else {
+                } else if (feed) {
                     $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
                         this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng),
                         $.make('span', { className: 'NB-story-title-indicator-text' }, 'show hidden stories')
