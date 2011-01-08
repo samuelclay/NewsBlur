@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.core.mail import mail_admins
+from collections import defaultdict
 from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -448,12 +449,24 @@ def load_river_stories(request):
         stories.append(bunch(story))
     stories = Feed.format_stories(stories)
     
+    # Find starred stories
     starred_stories = MStarredStory.objects(
         user_id=user.pk,
         story_feed_id__in=feed_ids
     ).only('story_guid', 'starred_date')
     starred_stories = dict([(story.story_guid, story.starred_date) 
                             for story in starred_stories])
+    
+    # Intelligence classifiers for all feeds involved
+    def sort_by_feed(classifiers):
+        feed_classifiers = defaultdict(list)
+        for classifier in classifiers:
+            feed_classifiers[classifier.feed_id].append(classifier)
+        return feed_classifiers
+    classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=feed_ids))
+    classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=feed_ids))
+    classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=feed_ids))
+    classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=feed_ids))
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -465,10 +478,10 @@ def load_river_stories(request):
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date)
         story['intelligence'] = {
-            'feed': 0,
-            'author': 0,
-            'tags': 0,
-            'title': 0,
+            'feed': apply_classifier_feeds(classifier_feeds[story['story_feed_id']], story['story_feed_id']),
+            'author': apply_classifier_authors(classifier_authors[story['story_feed_id']], story),
+            'tags': apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
+            'title': apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
         }
     
     diff = datetime.datetime.now()-now

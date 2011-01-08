@@ -136,8 +136,9 @@ def apply_classifier_titles(classifiers, story):
     return 0
     
 def apply_classifier_feeds(classifiers, feed):
+    feed_id = feed if isinstance(feed, int) else feed.pk
     for classifier in classifiers:
-        if classifier.feed_id == feed.pk:
+        if classifier.feed_id == feed_id:
             # print 'Feeds: %s -- %s' % (classifier.feed_id, feed.pk)
             return classifier.score
     return 0
