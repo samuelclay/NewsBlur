@@ -1454,6 +1454,18 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-header-feed {
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.36, rgba(248,221,105, 250)),
+        color-stop(0.84, rgba(268, 241, 125, 250))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(76,76,76) 36%,
+        rgb(55,55,55) 84%
+    );
     background: #404040 url('../img/reader/feed_view_feed_background.png') repeat-x 0 0;
     padding: 2px 200px 2px 28px;
     position: relative;

@@ -402,11 +402,16 @@ def load_starred_stories(request):
 def load_river_stories(request):
     now = datetime.datetime.now()
     user = get_user(request)
-    feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds')]
+    feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 25))
     page = int(request.REQUEST.get('page', 0))+1
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
+    
+    if not feed_ids: 
+        logging.info(" ---> [%s] ~FCLoading empty river stories: page %s" % (
+                 request.user, page))
+        return dict(stories=[])
     
     # Fetch all stories at and before the page number.
     # Not a single page, because reading stories can move them up in the unread order.
@@ -488,10 +493,12 @@ def load_river_stories(request):
     
     diff = datetime.datetime.now() - now
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.info(" ---> [%s] ~FCLoading river stories: ~SB%s stories ~SN(%s feeds) ~FB(%s seconds)" % (
-                 request.user, len(stories), len(feed_ids), timediff))
+    logging.info(" ---> [%s] ~FCLoading river stories: page %s - ~SB%s stories ~SN(%s feeds) ~FB(%s seconds)" % (
+                 request.user, page, len(stories), len(feed_ids), timediff))
     
     return dict(stories=stories)
+    
+    
 @ajax_login_required
 @json.json_view
 def mark_all_as_read(request):
