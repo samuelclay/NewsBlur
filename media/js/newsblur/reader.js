@@ -3494,7 +3494,7 @@
             var $folder;
             feed_id = feed_id || this.active_feed;
             
-            if (feed_id.indexOf('river:') != -1) {
+            if (_.isString(feed_id) && feed_id.indexOf('river:') != -1) {
                 if (feed_id == 'river:') {
                     $folder = this.$s.$feed_list;
                 } else {
