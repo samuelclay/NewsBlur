@@ -22,6 +22,7 @@ from utils import json_functions as json
 from utils import feedfinder
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit
+from utils.feed_functions import fetch_site_favicon, determine_dominant_color_in_image
 from utils.story_functions import pre_process_story
 from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
@@ -703,6 +704,12 @@ class Feed(models.Model):
         phrases = [' '.join(phrase) for phrase in best]
         
         return phrases
+        
+    def download_favicon(self):
+        icon = fetch_site_favicon(self.feed_link)
+        
+        if icon:
+            determine_dominant_color_in_image(icon)
         
     class Meta:
         db_table="feeds"
