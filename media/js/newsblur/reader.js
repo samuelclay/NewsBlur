@@ -463,6 +463,7 @@
             var $next_story;
             var unread_count = this.get_unread_count(true);
             
+            this.flags['find_next_unread_on_page_of_feed_stories_load'] = false;
             // NEWSBLUR.log(['show_next_unread_story', unread_count, $current_story]);
             
             if (unread_count) {
