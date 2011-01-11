@@ -725,6 +725,16 @@
                                     }
                                 } else {
                                     $feeds.append($folder);
+
+                                    // Parent folder collapsed? Update unread count for parent folder.
+                                    if (_.any($folder.parents('li.folder'), function(f) {
+                                        return _.contains(NEWSBLUR.Preferences.collapsed_folders,
+                                                          $('.folder_title_text', f).eq(0).text());
+                                    })) {
+                                        var $folder_title = $folder.parents('li.folder').children('.folder_title');
+                                        var $children = $folder.parents('li.folder').children('.folder, .feed');
+                                        self.show_collapsed_folder_count($folder_title, $children);
+                                    }
                                 }
                                 // if (self.flags['has_chosen_feeds']) {
                                 //     $folder.css({
@@ -1849,8 +1859,8 @@
             if (!$feed.is(':visible')) {
                 // NEWSBLUR.log(['Under collapsed folder', $feed, $feed.parents(':visible'),
                 //               $feed.parents(':visible').eq(0).children('.folder_title')]);
-                var $folder_title = $feed.parents(':visible').eq(0).children('.folder_title');
-                var $children = $folder_title.parent('.folder').children('.folder, .feed');
+                var $folder_title = $feed.closest(':visible').children('.folder_title');
+                var $children = $folder_title.closest('.folder').children('.folder, .feed');
                 this.show_collapsed_folder_count($folder_title, $children);
             }
             
