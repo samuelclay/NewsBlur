@@ -1499,7 +1499,7 @@ background: transparent;
     height: 16px;
 }
 #story_pane .NB-feed-story.NB-river-story .NB-feed-story-sentiment {
-    display: none;
+/*    display: none;*/
 }
   
 #story_pane .NB-feed-story.NB-story-positive .NB-feed-story-sentiment {
@@ -1516,6 +1516,7 @@ background: transparent;
 
 #story_pane .NB-feed-story.read .NB-feed-story-sentiment {
 /*     background: none; */
+    opacity: .2;
 }
     
 #story_pane .NB-feed-story-title-container {

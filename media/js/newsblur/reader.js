@@ -435,7 +435,7 @@
         
         show_next_story: function(direction) {
             var $story_titles = this.$s.$story_titles;
-            var $current_story = $('.selected', $story_titles);
+            var $current_story = $('.selected:first', $story_titles);
             var $next_story;
             
             if (!$current_story.length) {
@@ -454,7 +454,6 @@
                 this.open_story(story, $next_story);
                 this.scroll_story_titles_to_show_selected_story_title($next_story);
             }
-            
         },
         
         show_next_unread_story: function(second_pass) {
@@ -579,6 +578,13 @@
                     this.mark_story_as_read(story.id);
                 }
             }
+        },
+        
+        mark_story_as_read_in_feed_view: function(story, $story) {
+            if (!story) return;
+            $story = $story || this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story);
+            
+            $story.addClass('read');
         },
         
         page_in_story: function(amount, direction) {
@@ -1512,10 +1518,9 @@
             
             if (this.active_story != story) {
                 this.active_story = story;
-            
                 this.mark_story_title_as_selected($story_title);
-                this.mark_story_as_read(story.id);
-            
+                this.mark_story_as_read_in_feed_view(story);
+                
                 // Used when auto-tracking the user as they move over the feed/page.
                 // No need to find the story, since they have already found it.
                 clearTimeout(this.locks.scrolling);
@@ -1542,6 +1547,7 @@
                 } else if (this.story_view == 'story') {
                     this.open_story_in_story_view(story);
                 }
+                _.defer(_.bind(this.mark_story_as_read, this, story.id));
             }
         },
         
@@ -1755,9 +1761,9 @@
         mark_story_title_as_selected: function($story_title) {
             var $story_titles = this.$s.$story_titles;
             $('.selected', $story_titles).removeClass('selected');
-            $('.after_selected', $story_titles).removeClass('after_selected');
+            // $('.after_selected', $story_titles).removeClass('after_selected');
             $story_title.addClass('selected');
-            $story_title.parent('.story').next('.story').children('a').addClass('after_selected');
+            // $story_title.parent('.story').next('.story').children('a').addClass('after_selected');
         },
         
         mark_story_as_read: function(story_id) {
@@ -4653,6 +4659,7 @@
                 var story = this.cache.iframe_story_positions[positions[closest]];
                 // NEWSBLUR.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
                 this.navigate_story_titles_to_story(story);
+                this.mark_story_as_read_in_feed_view(story);
                 if (!this.flags.iframe_scroll_snap_back_prepared) {
                     this.iframe_scroll = from_top - this.cache.mouse_position_y;
                 }
@@ -4685,6 +4692,7 @@
                 var story = this.cache.iframe_story_positions[positions[closest]];
                 this.flags['mousemove_timeout'] = true;
                 this.navigate_story_titles_to_story(story);
+                this.mark_story_as_read_in_feed_view(story);
                 // NEWSBLUR.log(['Setting snap back', this.iframe_scroll]);
             }
         },
@@ -4724,6 +4732,7 @@
                 this.flags['mousemove_timeout'] = true;
                 // NEWSBLUR.log(['Mousemove feed view', from_top, closest, positions[closest]]);
                 this.navigate_story_titles_to_story(story);
+                this.mark_story_as_read_in_feed_view(story);
             }
         },
         
@@ -4741,6 +4750,7 @@
                 var story = this.cache.feed_view_story_positions[positions[closest]];
                 // NEWSBLUR.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
                 this.navigate_story_titles_to_story(story);
+                this.mark_story_as_read_in_feed_view(story);
             }
         },
         
