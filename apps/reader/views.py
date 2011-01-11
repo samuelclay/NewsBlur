@@ -676,6 +676,8 @@ def add_url(request):
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
         
+        feed.setup_feed_for_premium_subscribers()
+        
         if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
             feed.update()
     
