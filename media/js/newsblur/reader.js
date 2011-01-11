@@ -702,7 +702,7 @@
                         var $folder = $.make('li', { className: 'folder' }, [
                             $.make('div', { className: 'folder_title ' + (depth==0 ? 'NB-toplevel':'') }, [
                                 $.make('div', { className: 'NB-folder-icon' }),
-                                $.make('div', { className: 'NB-feedlist-river-icon' }),
+                                $.make('div', { className: 'NB-feedlist-river-icon', title: 'River of News' }),
                                 $.make('div', { className: 'NB-feedlist-manage-icon' }),
                                 $.make('span', { className: 'folder_title_text' }, o)
                             ]),
