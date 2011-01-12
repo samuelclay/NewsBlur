@@ -3559,7 +3559,7 @@
             if (typeof unread_view == 'undefined') {
                 unread_view = this.model.preference('unread_view');
             }
-            
+
             return (unread_view > 0
                     ? 'positive'
                     : unread_view < 0
@@ -3580,6 +3580,8 @@
                 }
                 var counts = this.list_feeds_with_unreads_in_folder($folder, true);
                 return _.reduce(counts, function(m, c) { return m + c; }, 0);
+            } else if (feed_id == 'starred') {
+                // Umm, no.
             } else {
                 var feed = this.model.get_feed(feed_id);
                 if (!visible_only) {
