@@ -1137,7 +1137,7 @@ background: transparent;
     background-color: white;
 }
 .NB-view-river #story_titles .story {
-    padding-right: 326px;
+/*    padding-right: 326px;*/
 }
 
 #story_titles .story .NB-storytitles-sentiment {
@@ -1201,9 +1201,13 @@ background: transparent;
     display: block;
     padding: 4px 0px;
     float: left;
+    position: relative;
 }
 #story_titles .story.read a.story_title {
     color: #575757;
+}
+.NB-view-river #story_titles .story a.story_title {
+    margin-left: 118px;
 }
 
 #story_titles .story .story_title .NB-storytitles-author {
@@ -1230,11 +1234,11 @@ background: transparent;
 }
 #story_titles .story .NB-story-feed {
     display: none;
-    float: left;
+    left: -118px;
     width: 120px;
     height: 12px;
     color: #707070;
-    position: relative;
+    position: absolute;
 }
 .NB-view-river #story_titles .story .NB-story-feed {
     display: block;
