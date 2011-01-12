@@ -390,7 +390,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 .NB-feedlist .folder_title {
-    padding: 5px 0 4px 22px;
+    padding: 4px 0 4px 22px;
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     font-weight: bold;
@@ -408,7 +408,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     height: 16px;
     position: absolute;
     left: 2px;
-    top: 3px;
+    top: 2px;
 }
 
 .NB-feedlist li.folder .folder_title.NB-toplevel:hover .NB-folder-icon {
@@ -592,7 +592,8 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 .NB-feedlist .folder .folder_title:hover .feed_counts_floater {
-    display: none;
+    margin-right: 24px;
+/*    display: none;*/
 /*    display: block; /* TODO: Remove for river of news */
 }
 .NB-feedlist .folder .folder_title.NB-feedlist-folder-title-recently-collapsed:hover .feed_counts_floater {
@@ -604,14 +605,14 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     opacity: 1;
 }
 .NB-feedlist .folder.NB-selected > .folder_title .feed_counts_floater {
-    display: none;
+    margin-right: 24px;
 }
     
 .NB-feedlist .feed.NB-toplevel:hover .feed_favicon {
-  display: none;
+    display: none;
 }
 .NB-feedlist .folder_title.NB-toplevel:hover {
-  background: none;
+    background: none;
 }
 
 .NB-feedlist .feed_counts {
@@ -1229,27 +1230,29 @@ background: transparent;
 }
 #story_titles .story .NB-story-feed {
     display: none;
-    position: absolute;
-    right: 208px;
+    float: left;
     width: 120px;
-    height: 18px;
+    height: 12px;
     color: #707070;
-    overflow: hidden;
+    position: relative;
 }
 .NB-view-river #story_titles .story .NB-story-feed {
     display: block;
 }
 #story_titles .story .NB-story-feed .feed_favicon {
-    margin:2px 4px 0 0;
+    position: absolute;
+    top: -2px;
+    left: 0;
     vertical-align: text-bottom;
     opacity: .6;
 }
 #story_titles .story .NB-story-feed .feed_title {
     display: block;
+
     font-size: 10px;
-    left: 20px;
     position: absolute;
-    top: 4px;
+    left: 20px;
+    top: 0;
     height: 12px;
     overflow: hidden;
     width: 100px;
@@ -1514,7 +1517,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 #story_pane .NB-feed-story.read .NB-feed-story-sentiment {
-    opacity: .2;
+    opacity: .15;
 }
 #story_pane .NB-feed-story .NB-feed-story-sentiment-animation {
   display: none;

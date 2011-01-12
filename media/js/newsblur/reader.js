@@ -603,7 +603,7 @@
                             'top': top
                         }, {
                             'duration': 550, 
-                            'easing': 'easeInQuint', 
+                            'easing': 'easeInOutQuint', 
                             'complete': function() {
                                 $(this).remove();
                             }
@@ -2109,15 +2109,15 @@
                 $.make('div', { className: 'NB-storytitles-sentiment'}),
                 $.make('div', { className: 'NB-storytitles-star'}),
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
+                    (options['river_stories'] && feed &&
+                        $.make('div', { className: 'NB-story-feed' }, [
+                            $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
+                            $.make('span', { className: 'feed_title' }, feed.feed_title)
+                        ])),
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags
                 ]),
-                (options['river_stories'] && feed &&
-                    $.make('div', { className: 'NB-story-feed' }, [
-                        $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
-                        $.make('span', { className: 'feed_title' }, feed.feed_title)
-                    ])),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
                 $.make('div', { className: 'NB-story-manage-icon' })
