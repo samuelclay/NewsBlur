@@ -1513,10 +1513,16 @@ background: transparent;
 #story_pane .NB-feed-story.NB-story-negative .NB-feed-story-sentiment {
     background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
-
 #story_pane .NB-feed-story.read .NB-feed-story-sentiment {
-/*     background: none; */
     opacity: .2;
+}
+#story_pane .NB-feed-story .NB-feed-story-sentiment-animation {
+  display: none;
+}
+#story_pane .NB-feed-story.read .NB-feed-story-sentiment.NB-feed-story-sentiment-animate.NB-animating {
+  opacity: 1;
+  z-index: 10;
+  display: block;
 }
     
 #story_pane .NB-feed-story-title-container {
