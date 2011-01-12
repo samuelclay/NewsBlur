@@ -577,7 +577,7 @@
             
                     this.mark_story_title_as_selected($next_story_title);
                     this.mark_story_as_read(story.id);
-                    this.mark_story_as_read_in_feed_view(story, {'animate': true});
+                    this.mark_story_as_read_in_feed_view(story, {'animate': this.story_view == 'feed'});
                 }
             }
         },
@@ -594,7 +594,6 @@
                     _.delay(function() {
                         $story.addClass('read');
                         var end = $feed_view.scrollTop();
-                        // NEWSBLUR.log(['mark_story_as_read_in_feed_view', start, end, end-start, end-start>25]);
                         if (end - start > 25) {
                             $('.NB-feed-story-sentiment-animate', $story).remove();
                             return;
