@@ -151,7 +151,8 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
-                        'Default view'
+                        'Default view',
+                        $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.')
                     ])
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-window' }, [
@@ -160,7 +161,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                             $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
                             $.make('label', { 'for': 'NB-preference-window-1' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_view_gallery.png' }),
-                                'Normally'
+                                'In this window'
                             ])
                         ]),
                         $.make('div', [
