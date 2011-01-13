@@ -278,7 +278,7 @@ def load_single_feed(request):
         
     force_update = request.GET.get('force_update', False)
     
-    now = datetime.datetime.utcnow()
+    start = datetime.datetime.utcnow()
     stories = feed.get_stories(offset, limit) 
         
     if force_update:
@@ -336,7 +336,7 @@ def load_single_feed(request):
     usersub.feed_opens += 1
     usersub.save()
     
-    diff = datetime.datetime.utcnow()-now
+    diff = datetime.datetime.utcnow()-start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
     last_update = relative_timesince(feed.last_update)
     logging.info(" ---> [%s] ~FYLoading feed: ~SB%s ~SN(%s seconds)" % (request.user, feed, timediff))
@@ -403,7 +403,7 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    now = datetime.datetime.now()
+    start = datetime.datetime.utcnow()
     user = get_user(request)
     feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
     original_feed_ids = list(feed_ids)
@@ -504,7 +504,7 @@ def load_river_stories(request):
             'title':  apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
         }
     
-    diff = datetime.datetime.now() - now
+    diff = datetime.datetime.utcnow() - start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
     logging.info(" ---> [%s] ~FCLoading river stories: page %s - ~SB%s stories ~SN(%s/%s feeds) ~FB(%s seconds)" % (
                  request.user, page, len(stories), len(feed_ids), len(original_feed_ids), timediff))
