@@ -307,8 +307,9 @@ def load_single_feed(request):
     for story in stories:
         [x.rewind() for x in [classifier_feeds, classifier_authors, classifier_tags, classifier_titles]]
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date'] = format_story_link_date__long(story_date)
+        now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         if story['id'] in userstories:
             story['read_status'] = 1
         elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
@@ -318,7 +319,7 @@ def load_single_feed(request):
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
-            story['starred_date'] = format_story_link_date__long(starred_date)
+            story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
             'feed': apply_classifier_feeds(classifier_feeds, feed),
             'author': apply_classifier_authors(classifier_authors, story),
@@ -382,10 +383,11 @@ def load_starred_stories(request):
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date'] = format_story_link_date__long(story_date)
+        now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         starred_date = localtime_for_timezone(story['starred_date'], user.profile.timezone)
-        story['starred_date'] = format_story_link_date__long(starred_date)
+        story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['read_status'] = 1
         story['starred'] = True
         story['intelligence'] = {
@@ -487,13 +489,14 @@ def load_river_stories(request):
     # Just need to format stories
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date)
-        story['long_parsed_date']  = format_story_link_date__long(story_date)
+        now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         story['read_status'] = 0
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
-            story['starred_date'] = format_story_link_date__long(starred_date)
+            story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
             'feed':   apply_classifier_feeds(classifier_feeds[story['story_feed_id']], story['story_feed_id']),
             'author': apply_classifier_authors(classifier_authors[story['story_feed_id']], story),
