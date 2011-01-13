@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.conf import settings
 from django.core.mail import mail_admins
 from collections import defaultdict
+from operator import itemgetter
 from mongoengine.queryset import OperationError
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -402,11 +403,17 @@ def load_starred_stories(request):
 def load_river_stories(request):
     now = datetime.datetime.now()
     user = get_user(request)
-    feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds')]
+    feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
+    original_feed_ids = list(feed_ids)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 25))
     page = int(request.REQUEST.get('page', 0))+1
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
+    
+    if not feed_ids: 
+        logging.info(" ---> [%s] ~FCLoading empty river stories: page %s" % (
+                 request.user, page))
+        return dict(stories=[])
     
     # Fetch all stories at and before the page number.
     # Not a single page, because reading stories can move them up in the unread order.
@@ -419,10 +426,18 @@ def load_river_stories(request):
     read_stories = [rs.story.id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
-    def feed_qvalues(feed_id):
+    feed_counts = {}
+    feed_last_reads = {}
+    for feed_id in feed_ids:
         feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        return (str(feed_id), int(time.mktime(feed.mark_read_date.timetuple())))
-    feed_last_reads = dict(map(feed_qvalues, feed_ids))
+        feed_counts[feed_id] = (feed.unread_count_negative + 
+                                feed.unread_count_neutral +
+                                feed.unread_count_positive)
+        feed_last_reads[feed_id] = int(time.mktime(feed.mark_read_date.timetuple()))
+    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))
+    feed_counts = feed_counts[:25] if len(feed_counts) > 25 else feed_counts
+    feed_ids = [f[0] for f in feed_counts]
+    feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids])
     
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.
@@ -488,10 +503,12 @@ def load_river_stories(request):
     
     diff = datetime.datetime.now() - now
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.info(" ---> [%s] ~FCLoading river stories: ~SB%s stories ~SN(%s feeds) ~FB(%s seconds)" % (
-                 request.user, len(stories), len(feed_ids), timediff))
+    logging.info(" ---> [%s] ~FCLoading river stories: page %s - ~SB%s stories ~SN(%s/%s feeds) ~FB(%s seconds)" % (
+                 request.user, page, len(stories), len(feed_ids), len(original_feed_ids), timediff))
     
     return dict(stories=stories)
+    
+    
 @ajax_login_required
 @json.json_view
 def mark_all_as_read(request):
@@ -668,6 +685,8 @@ def add_url(request):
         user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
+        
+        feed.setup_feed_for_premium_subscribers()
         
         if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
             feed.update()
