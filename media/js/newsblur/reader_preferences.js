@@ -194,7 +194,8 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
-                        'Site sidebar'
+                        'Site sidebar',
+                        $.make('div', { className: 'NB-preference-sublabel' }, this.make_site_sidebar_count())
                     ])
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
@@ -367,6 +368,23 @@ NEWSBLUR.ReaderPreferences.prototype = {
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
             $.modal.close();
         });
+    },
+    
+    make_site_sidebar_count: function() {
+        var sites = _.keys(this.model.feeds).length;
+        var unreads = _.select(this.model.feeds, function(f) {
+          return f.ng || f.nt || f.ps;
+        }).length;
+        var message = [
+            "Currently ",
+            unreads,
+            " out of ",
+            sites,
+            Inflector.pluralize(' site', sites),
+            " would be shown."
+        ].join('');
+        
+        return message;
     },
     
     // ===========
