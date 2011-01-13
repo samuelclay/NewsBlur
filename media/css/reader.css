@@ -1523,6 +1523,9 @@ background: transparent;
 #story_pane .NB-feed-story.read .NB-feed-story-sentiment {
     opacity: .15;
 }
+#story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-sentiment {
+  display: none;
+}
 #story_pane .NB-feed-story .NB-feed-story-sentiment-animation {
   display: none;
 }
@@ -1531,7 +1534,25 @@ background: transparent;
   z-index: 10;
   display: block;
 }
-    
+
+#story_pane .NB-feed-story .NB-feed-story-manage-icon {
+    background: url("../img/icons/silk/bullet_arrow_right.png") no-repeat scroll 7px 2px transparent;
+    display: none;
+    height: 22px;
+    left: -28px;
+    position: absolute;
+    top: 0;
+    width: 28px;
+}
+#story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon {
+    display: block;
+}
+
+#story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 7px 1px;
+    cursor: pointer;
+}
+
 #story_pane .NB-feed-story-title-container {
     position: relative;
 }

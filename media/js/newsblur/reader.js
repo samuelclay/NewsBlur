@@ -56,7 +56,7 @@
         
         this.$s.$body.bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
         this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
-        this.$s.$body.bind('contextmenu.reader', $.rescope(this.handle_rightclicks, this));
+        this.$s.$body.live('contextmenu.reader', $.rescope(this.handle_rightclicks, this));
         this.$s.$story_titles.scroll($.rescope(this.handle_scroll_story_titles, this));
         this.$s.$feed_view.scroll($.rescope(this.handle_scroll_feed_view, this));
         this.$s.$feed_view.bind('mousemove', $.rescope(this.handle_mousemove_feed_view, this));
@@ -587,7 +587,7 @@
             options = options || {};
             $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story);
 
-            if (options.animate) {
+            if (options.animate && !$story.hasClass('read')) {
                 var $feed_view = this.$s.$feed_view;
                 var start = $feed_view.scrollTop();
                 (function(start) {
@@ -1961,8 +1961,9 @@
         mark_story_as_like: function(story_id, feed_id) {
             feed_id = feed_id || this.model.get_story(story_id).story_feed_id;
             
-            var is_river = this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1;
-            NEWSBLUR.log(['mark_story_as_like', story_id, feed_id, is_river]);
+            var is_river = _.isString(this.active_feed) && 
+                           (this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1);
+
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
                 'score': 1,
                 'feed_loaded': !is_river
@@ -1972,7 +1973,8 @@
         mark_story_as_dislike: function(story_id, feed_id) {
             feed_id = feed_id || this.active_feed;
             
-            var is_river = this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1;
+            var is_river = _.isString(this.active_feed) && 
+                           (this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1);
             
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
                 'score': -1,
@@ -2618,6 +2620,7 @@
                             $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
                         $.make('div', { className: 'NB-feed-story-title-container' }, [
                             $.make('div', { className: 'NB-feed-story-sentiment' }),
+                            $.make('div', { className: 'NB-feed-story-manage-icon' }),
                             $.make('div', { className: 'NB-feed-story-sentiment NB-feed-story-sentiment-animate' }),
                             $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, story.story_title)
                         ]),
@@ -2625,7 +2628,7 @@
                             $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date)),
                         (story.starred_date &&
                             $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date))
-                    ]),
+                    ]).data('story_id', story.id).data('feed_id', story.story_feed_id),
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
                 ]).data('story', story.id);
                 
@@ -3115,7 +3118,6 @@
                 var story         = this.model.get_story(story_id);
                 var starred_class = story.starred ? 'NB-story-starred' : '';
                 var starred_title = story.starred ? 'Remove bookmark' : 'Save This Story';
-                inverse = true;
 
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class }, [
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -3178,7 +3180,7 @@
                 inverse = $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
                 story_id = $item.data('story_id');  
-                inverse = true; 
+                if ($item.hasClass('story')) inverse = true; 
             } else if (type == 'site') {
                 
             }
@@ -3227,6 +3229,9 @@
                     } else if (type == 'folder') {
                         left = toplevel ? 2 : -20;
                         top = toplevel ? 22 : 21;
+                    } else if (type == 'story') {
+                        left = 4;
+                        top = $('.NB-feed-story-manage-icon', $item).parent().position().top + 18;
                     }
                     $manage_menu_container.align($item, '-top -left', {
                         'top': top, 
@@ -3276,13 +3281,13 @@
             if (type == 'feed') {
                 $scroll = this.$s.$feed_list.parent();
             } else if (type == 'story') {
-                $scroll = this.$s.$story_titles;
+                $scroll = this.$s.$story_titles.add(this.$s.$feed_view);
             }
             $scroll && $scroll.unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
                 if (self.flags['feed_list_showing_manage_menu']) {
                     self.hide_manage_menu(type, $item, true);
                 } else {
-                    self.$s.$feed_list.unbind('scroll.manage_menu');
+                    $scroll.unbind('scroll.manage_menu');
                 }
             });
         },
@@ -4232,6 +4237,7 @@
             var stopPropagation = false;
             // var start = (new Date().getMilliseconds());
             
+            // NEWSBLUR.log(['click', e, e.button]);
             // Feeds ==========================================================
             
             $.targetIs(e, { tagSelector: '#feed_list .NB-feedlist-manage-icon' }, function($t, $p) {
@@ -4330,6 +4336,11 @@
                 e.preventDefault();
                 story_prevent_bubbling = true;
                 self.show_manage_menu('story', $t.closest('.story'));
+            });
+            $.targetIs(e, { tagSelector: '.NB-feed-story-manage-icon' }, function($t, $p) {
+                e.preventDefault();
+                story_prevent_bubbling = true;
+                self.show_manage_menu('story', $t.closest('.NB-feed-story-header'));
             });
             $.targetIs(e, { tagSelector: '.NB-story-like' }, function($t, $p){
                 e.preventDefault();
@@ -4676,11 +4687,15 @@
         handle_rightclicks: function(elem, e) {
             var self = this;
             
-            // NEWSBLUR.log(['right click', elem, e]);
+            // NEWSBLUR.log(['right click', e.button]);
             
             $.targetIs(e, { tagSelector: '.story', childOf: '#story_titles' }, function($t, $p) {
                 e.preventDefault();
                 self.show_manage_menu('story', $t);
+            });
+            $.targetIs(e, { tagSelector: '.NB-feed-story-header', childOf: '#story_pane' }, function($t, $p) {
+                e.preventDefault();
+                self.show_manage_menu('story', $t.closest('.NB-feed-story'));
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage' }, function($t, $p) {
                 e.preventDefault();
