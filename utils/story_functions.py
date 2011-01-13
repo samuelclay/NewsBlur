@@ -16,7 +16,6 @@ def format_story_link_date__long(date, now=None):
     if not now: now = datetime.datetime.utcnow()
     diff = now.date() - date.date()
     parsed_date = DateFormat(date)
-    print diff
     if diff.days == 0:
         return 'Today, ' + parsed_date.format('F jS ') + date.strftime('%I:%M%p').lstrip('0').lower()
     elif diff.days == 1:
