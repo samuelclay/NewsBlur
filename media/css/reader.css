@@ -1165,7 +1165,7 @@ background: transparent;
 #story_titles .story.read.NB-story-starred .NB-storytitles-star {
     width: 16px;
     height: 16px;
-    margin: 1px 6px 0 0;
+    margin: -3px 6px -2px 0;
     background: transparent url('../img/reader/star_blue.png') no-repeat 0 0;
     float: left;
     display: none;
@@ -1207,7 +1207,7 @@ background: transparent;
     color: #575757;
 }
 .NB-view-river #story_titles .story a.story_title {
-    margin-left: 118px;
+    margin-left: 120px;
 }
 
 #story_titles .story .story_title .NB-storytitles-author {
@@ -1234,8 +1234,8 @@ background: transparent;
 }
 #story_titles .story .NB-story-feed {
     display: none;
-    left: -118px;
-    width: 120px;
+    left: -120px;
+    width: 118px;
     height: 12px;
     color: #707070;
     position: absolute;

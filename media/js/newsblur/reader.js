@@ -2114,13 +2114,13 @@
             }
             var $story_title = $.make('div', { className: 'story ' + read + starred + 'NB-story-' + score_color }, [
                 $.make('div', { className: 'NB-storytitles-sentiment'}),
-                $.make('div', { className: 'NB-storytitles-star'}),
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     (options['river_stories'] && feed &&
                         $.make('div', { className: 'NB-story-feed' }, [
                             $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                             $.make('span', { className: 'feed_title' }, feed.feed_title)
                         ])),
+                    $.make('div', { className: 'NB-storytitles-star'}),
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags
