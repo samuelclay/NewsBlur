@@ -1039,6 +1039,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
                 duplicate.delete()
         
     delete_story_feed(MStory, 'story_feed_id')
+    delete_story_feed(MFeedPage, 'feed_id')
     switch_feed(MClassifierTitle)
     switch_feed(MClassifierAuthor)
     switch_feed(MClassifierFeed)

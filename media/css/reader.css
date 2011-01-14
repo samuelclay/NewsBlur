@@ -1451,6 +1451,10 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-header {
+    padding: 3px 0 0 0;
+}
+
+#story_pane .NB-feed-story-header-info {
     font-weight: bold;
     font-size: 16px;
     padding: 0 200px 0 28px;
@@ -1521,7 +1525,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 #story_pane .NB-feed-story.read .NB-feed-story-sentiment {
-    opacity: .15;
+    opacity: .2;
 }
 #story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-sentiment {
   display: none;
@@ -1608,7 +1612,6 @@ background: transparent;
 }
 
 #story_pane .NB-feed-stories .NB-feed-story {
-    padding: 3px 0 0 0;
     margin: 0;
     clear: both;
 }

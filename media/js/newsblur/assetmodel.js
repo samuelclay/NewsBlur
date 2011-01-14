@@ -233,6 +233,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         // NEWSBLUR.log(['load_feed_precallback', feed_id, first_load]);
+        if (data.dupe_feed_id && this.feed_id == data.dupe_feed_id) {
+            feed_id = data.dupe_feed_id;
+        }
         if ((feed_id != this.feed_id && data) || first_load) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;

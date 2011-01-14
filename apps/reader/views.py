@@ -263,6 +263,7 @@ def load_single_feed(request):
     if page:
         offset = limit * page
     feed_id = int(request.REQUEST.get('feed_id', 0))
+    dupe_feed_id = None
     if feed_id == 0:
         raise Http404
         
@@ -273,6 +274,7 @@ def load_single_feed(request):
         dupe_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address)
         if dupe_feed:
             feed = dupe_feed[0].feed
+            dupe_feed_id = feed_id
         else:
             raise Http404
         
@@ -348,6 +350,9 @@ def load_single_feed(request):
                 classifiers=classifiers,
                 last_update=last_update,
                 feed_id=feed.pk)
+    
+    if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
+    
     return data
 
 def load_feed_page(request):
@@ -355,18 +360,21 @@ def load_feed_page(request):
     if feed_id == 0:
         raise Http404
         
-    feed_page, created = MFeedPage.objects.get_or_create(feed_id=feed_id)
+    feed_page = MFeedPage.objects.filter(feed_id=feed_id)
     data = None
-    
-    if not created:
-        data = feed_page.page_data and zlib.decompress(feed_page.page_data)
-        
-    if created:
-        data = "Fetching feed..."
-        
+            
+    if feed_page:
+        data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+    else:
+        dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+        if dupe_feed:
+            feed = dupe_feed[0].feed
+            feed_page = MFeedPage.objects.filter(feed_id=feed.pk)
+            if feed_page:
+                data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+
     if not data:
-        data = ("There is something wrong with this feed. You shouldn't be seeing this "
-                "(as you are not allowed to open feeds that are throwing exceptions).")
+        data = "Fetching feed..."
     
     return HttpResponse(data, mimetype='text/html')
     
