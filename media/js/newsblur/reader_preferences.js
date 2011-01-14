@@ -151,7 +151,8 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
-                        'Default view'
+                        'Default view',
+                        $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.')
                     ])
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-window' }, [
@@ -160,7 +161,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                             $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
                             $.make('label', { 'for': 'NB-preference-window-1' }, [
                                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/application_view_gallery.png' }),
-                                'Normally'
+                                'In this window'
                             ])
                         ]),
                         $.make('div', [
@@ -193,7 +194,8 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
-                        'Site sidebar'
+                        'Site sidebar',
+                        $.make('div', { className: 'NB-preference-sublabel' }, this.make_site_sidebar_count())
                     ])
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
@@ -366,6 +368,23 @@ NEWSBLUR.ReaderPreferences.prototype = {
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
             $.modal.close();
         });
+    },
+    
+    make_site_sidebar_count: function() {
+        var sites = _.keys(this.model.feeds).length;
+        var unreads = _.select(this.model.feeds, function(f) {
+          return f.ng || f.nt || f.ps;
+        }).length;
+        var message = [
+            "Currently ",
+            unreads,
+            " out of ",
+            sites,
+            Inflector.pluralize(' site', sites),
+            " would be shown."
+        ].join('');
+        
+        return message;
     },
     
     // ===========

@@ -21,7 +21,7 @@ import xml.sax
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.9'
+VERSION = '1.0'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10

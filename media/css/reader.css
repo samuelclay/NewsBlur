@@ -4267,6 +4267,11 @@ background: transparent;
   float: left;
   width: 150px;
 }
+.NB-modal-preferences .NB-preference .NB-preference-sublabel {
+  font-size: 11px;
+  color: #808080;
+  margin: 4px 30px 0px 0px;
+}
 
 .NB-modal-preferences .NB-preference .NB-preference-options input {
   clear: both;
