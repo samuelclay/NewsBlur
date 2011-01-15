@@ -32,6 +32,7 @@ from utils.feed_functions import fetch_address_from_page, relative_timesince
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
+from utils.story_functions import story_score
 from utils import log as logging
 from utils.timezones.utilities import localtime_for_timezone
 
@@ -235,9 +236,12 @@ def refresh_feeds(request):
     user = get_user(request)
     feeds = {}
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
     for sub in user_subs:
-        if sub.needs_unread_recalc:
+        if (sub.needs_unread_recalc or 
+            sub.unread_count_updated < UNREAD_CUTOFF or 
+            sub.oldest_unread_story_date < UNREAD_CUTOFF):
             sub.calculate_feed_scores(silent=True)
         feeds[sub.feed.pk] = {
             'ps': sub.unread_count_positive,
@@ -411,14 +415,15 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    start = datetime.datetime.utcnow()
-    user = get_user(request)
-    feed_ids = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
-    original_feed_ids = list(feed_ids)
-    offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 25))
-    page = int(request.REQUEST.get('page', 0))+1
+    start              = datetime.datetime.utcnow()
+    user               = get_user(request)
+    feed_ids           = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
+    original_feed_ids  = list(feed_ids)
+    offset             = int(request.REQUEST.get('offset', 0))
+    limit              = int(request.REQUEST.get('limit', 25))
+    page               = int(request.REQUEST.get('page', 0))+1
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
+    bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
         logging.info(" ---> [%s] ~FCLoading empty river stories: page %s" % (
@@ -439,13 +444,12 @@ def load_river_stories(request):
     feed_counts = {}
     feed_last_reads = {}
     for feed_id in feed_ids:
-        feed = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        feed_counts[feed_id] = (feed.unread_count_negative + 
-                                feed.unread_count_neutral +
-                                feed.unread_count_positive)
-        feed_last_reads[feed_id] = int(time.mktime(feed.mark_read_date.timetuple()))
-    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))
-    feed_counts = feed_counts[:25] if len(feed_counts) > 25 else feed_counts
+        usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)
+        feed_counts[feed_id] = (usersub.unread_count_negative + 
+                                usersub.unread_count_neutral +
+                                usersub.unread_count_positive)
+        feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
+    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:25]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids])
     
@@ -453,7 +457,8 @@ def load_river_stories(request):
     # past the mark_read_date. Everything returned is guaranteed to be unread.
     mstories = MStory.objects(
         id__nin=read_stories,
-        story_feed_id__in=feed_ids
+        story_feed_id__in=feed_ids,
+        story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
             var d = feed_last_reads[this.story_feed_id];
             if (this.story_date.getTime()/1000 > d) {
@@ -463,22 +468,33 @@ def load_river_stories(request):
         """function(key, values) {
             return values[0];
         }""",
-        scope=dict(
-            feed_last_reads=feed_last_reads
-        ))
+        scope={
+            'feed_last_reads': feed_last_reads
+        }
+    )
     mstories = [story.value for story in mstories]
-    mstories = sorted(mstories, cmp=lambda x, y: cmp(y['story_date'], x['story_date']))
+
+    mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
+
+    # story_feed_counts = defaultdict(int)
+    # mstories_pruned = []
+    # for story in mstories:
+    #     print story['story_title'], story_feed_counts[story['story_feed_id']]
+    #     if story_feed_counts[story['story_feed_id']] >= 3: continue
+    #     mstories_pruned.append(story)
+    #     story_feed_counts[story['story_feed_id']] += 1
     stories = []
     for i, story in enumerate(mstories):
         if i < offset: continue
         if i >= offset + limit: break
         stories.append(bunch(story))
     stories = Feed.format_stories(stories)
+    found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     
     # Find starred stories
     starred_stories = MStarredStory.objects(
         user_id=user.pk,
-        story_feed_id__in=feed_ids
+        story_feed_id__in=found_feed_ids
     ).only('story_guid', 'starred_date')
     starred_stories = dict([(story.story_guid, story.starred_date) 
                             for story in starred_stories])
@@ -489,10 +505,10 @@ def load_river_stories(request):
         for classifier in classifiers:
             feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
-    classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=feed_ids))
-    classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=feed_ids))
-    classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=feed_ids))
-    classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=feed_ids))
+    classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+    classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+    classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+    classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
     
     # Just need to format stories
     for story in stories:
@@ -514,8 +530,8 @@ def load_river_stories(request):
     
     diff = datetime.datetime.utcnow() - start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.info(" ---> [%s] ~FCLoading river stories: page %s - ~SB%s stories ~SN(%s/%s feeds) ~FB(%s seconds)" % (
-                 request.user, page, len(stories), len(feed_ids), len(original_feed_ids), timediff))
+    logging.info(" ---> [%s] ~FCLoading river stories: page %s - ~SB%s/%s stories ~SN(%s/%s/%s feeds) ~FB(%s seconds)" % (
+                 request.user, page, len(stories), len(mstories), len(found_feed_ids), len(feed_ids), len(original_feed_ids), timediff))
     
     return dict(stories=stories)
     

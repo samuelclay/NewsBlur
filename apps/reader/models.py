@@ -30,6 +30,7 @@ class UserSubscription(models.Model):
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
     unread_count_updated = models.DateTimeField(default=datetime.datetime.now)
+    oldest_unread_story_date = models.DateTimeField(default=datetime.datetime.now)
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
     is_trained = models.BooleanField(default=False)
@@ -69,7 +70,8 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        now = datetime.datetime.utcnow()
+        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
@@ -109,14 +111,15 @@ class UserSubscription(models.Model):
                                                   story_date__gte=date_delta)
         # if not silent:
         #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+        oldest_unread_story_date = now
         unread_stories_db = []
         for story in stories_db:
             if story.story_date < date_delta:
                 continue
             if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
                 unread_stories_db.append(story)
-            elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
-                unread_stories_db.append(story)
+                if story.story_date < oldest_unread_story_date:
+                    oldest_unread_story_date = story.story_date
         stories = Feed.format_stories(unread_stories_db, self.feed.pk)
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
@@ -165,6 +168,7 @@ class UserSubscription(models.Model):
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
         self.unread_count_updated = datetime.datetime.now()
+        self.oldest_unread_story_date = oldest_unread_story_date
         self.needs_unread_recalc = False
         
         self.save()

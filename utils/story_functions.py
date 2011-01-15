@@ -1,6 +1,25 @@
 from django.utils.dateformat import DateFormat
 import datetime
 from django.utils.http import urlquote
+from django.conf import settings
+
+def story_score(story, bottom_delta=None):
+    # A) Date - Assumes story is unread and within unread range
+    if not bottom_delta: 
+        bottom_delta = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    now        = datetime.datetime.utcnow()
+    date_delta = now - story['story_date']
+    seconds    = lambda td: td.seconds + (td.days * 86400)
+    date_score = 1 - (seconds(date_delta) / float(seconds(bottom_delta)))
+    
+    # B) Statistics
+    statistics_score = 0
+    
+    # C) Intelligence
+    intelligence_score = .5
+    
+    # print "%s - %s" % (story['story_date'], date_score)
+    return 1/3. * (date_score + statistics_score + intelligence_score)
 
 def format_story_link_date__short(date, now=None):
     if not now: now = datetime.datetime.now()

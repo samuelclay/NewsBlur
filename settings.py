@@ -182,20 +182,22 @@ DEBUG_TOOLBAR_PANELS = (
 # = Miscellaneous Settings =
 # ==========================
 
-AUTH_PROFILE_MODULE = 'newsblur.UserProfile'
+DAYS_OF_UNREAD          = 14
+SUBSCRIBER_EXPIRE       = 12
+
+AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
-TEST_DATABASE_NAME = 'newsblur_test'
-ROOT_URLCONF = 'urls'
-INTERNAL_IPS = ('127.0.0.1',)
-LOGGING_LOG_SQL = True
-APPEND_SLASH = True
-SOUTH_TESTS_MIGRATE = False 
-SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
-TEST_RUNNER = "utils.testrunner.TestRunner"
-DAYS_OF_UNREAD = 14
-SUBSCRIBER_EXPIRE = 12
-SESSION_COOKIE_NAME = 'newsblur_sessionid'
-SESSION_COOKIE_AGE = 60*60*24*365*2 # 2 years
+TEST_DATABASE_NAME      = 'newsblur_test'
+ROOT_URLCONF            = 'urls'
+INTERNAL_IPS            = ('127.0.0.1',)
+LOGGING_LOG_SQL         = True
+APPEND_SLASH            = True
+SOUTH_TESTS_MIGRATE     = False 
+SESSION_ENGINE          = "django.contrib.sessions.backends.cached_db"
+TEST_RUNNER             = "utils.testrunner.TestRunner"
+SESSION_COOKIE_NAME     = 'newsblur_sessionid'
+SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
+
 
 # ===========
 # = Logging =
