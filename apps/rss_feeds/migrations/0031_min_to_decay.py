@@ -9,7 +9,7 @@ class Migration(DataMigration):
     def forwards(self, orm):    
         from django.db import connection, transaction
         cursor = connection.cursor()
-        cursor.execute("UPDATE feeds SET min_to_decay = 0")
+        cursor.execute("UPDATE feeds SET min_to_decay = 0 WHERE min_to_decay = 15")
         transaction.commit_unless_managed()
 
 
