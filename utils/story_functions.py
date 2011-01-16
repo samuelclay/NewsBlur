@@ -10,7 +10,7 @@ def story_score(story, bottom_delta=None):
     now        = datetime.datetime.utcnow()
     date_delta = now - story['story_date']
     seconds    = lambda td: td.seconds + (td.days * 86400)
-    date_score = 1 - (seconds(date_delta) / float(seconds(bottom_delta)))
+    date_score = max(0, 1 - (seconds(date_delta) / float(seconds(bottom_delta))))
     
     # B) Statistics
     statistics_score = 0
