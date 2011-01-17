@@ -1456,7 +1456,7 @@ background: transparent;
 #story_pane .NB-feed-story-header-info {
     font-weight: bold;
     font-size: 16px;
-    padding: 0 200px 0 28px;
+    padding: 0 250px 0 28px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-bottom: 1px solid #ADADAD;
     position: relative;

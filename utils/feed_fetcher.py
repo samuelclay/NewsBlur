@@ -330,8 +330,17 @@ class Dispatcher:
                   
                 logging.debug(u'   ---> [%-30s] Fetching page' % (unicode(feed)[:30]))
                 page_importer = PageImporter(feed.feed_link, feed)
-                page_importer.fetch_page()
-
+                try:
+                    page_importer.fetch_page()
+                except Exception, e:
+                    logging.debug('[%d] ! -------------------------' % (feed_id,))
+                    tb = traceback.format_exc()
+                    logging.error(tb)
+                    logging.debug('[%d] ! -------------------------' % (feed_id,))
+                    ret_feed = FEED_ERREXC 
+                    feed.save_feed_history(550, "Page Error", tb)
+                    fetched_feed = None
+                
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
             

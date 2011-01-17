@@ -50,6 +50,21 @@ Sincerely,
 NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         mail_admins('New premium account', message, fail_silently=True)
         
+    def refresh_stale_feeds(self):
+        stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
+        stale_feeds  = UserSubscription.objects.filter(user=self.user, active=True, feed__last_update__lte=stale_cutoff)
+        all_feeds    = UserSubscription.objects.filter(user=self.user, active=True)
+        
+        logging.info(" ---> [%s] ~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
+            self.user, stale_feeds.count(), all_feeds.count()))
+
+        for sub in stale_feeds:
+            sub.feed.fetched_once = False
+            sub.feed.save()
+        
+        queue_new_feeds(self.user)
+        
+        
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
