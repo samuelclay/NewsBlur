@@ -579,7 +579,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
     opacity: .6;
     display: none;
-    display: none !important; /* TODO: Remove for river of news */
+/*    display: none !important; /* TODO: Remove for river of news */
 }
 .NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon:hover {
   opacity: 1;
@@ -593,7 +593,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-feedlist .folder .folder_title:hover .feed_counts_floater {
 /*    margin-right: 24px;*/
-    display: block; /* TODO: Remove for river of news */
+/*    display: block; /* TODO: Remove for river of news */
 }
 .NB-feedlist .folder .folder_title.NB-feedlist-folder-title-recently-collapsed:hover .feed_counts_floater {
     display: block;
@@ -1828,7 +1828,7 @@ background: transparent;
   position: relative;
   height: 20px;
   display: block;
-  display: none; /* TODO: Remove for River of News */
+/*  display: none; /* TODO: Remove for River of News */
   overflow: hidden;
 }
 
