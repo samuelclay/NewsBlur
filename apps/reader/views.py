@@ -235,7 +235,7 @@ def load_feeds_iphone(request):
 def refresh_feeds(request):
     user = get_user(request)
     feeds = {}
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    user_subs = UserSubscription.objects.select_related('feed', 'feed__data').filter(user=user, active=True)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
     for sub in user_subs:
@@ -334,8 +334,8 @@ def load_single_feed(request):
         }
     
     # Intelligence
-    feed_tags = json.decode(feed.popular_tags) if feed.popular_tags else []
-    feed_authors = json.decode(feed.popular_authors) if feed.popular_authors else []
+    feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
+    feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
     classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
                                            classifier_authors, classifier_titles, classifier_tags)
     
@@ -874,8 +874,8 @@ def get_feeds_trainer(request):
             classifier['classifiers'] = get_classifiers_for_user(user, us.feed.pk)
             classifier['feed_id'] = us.feed.pk
             classifier['stories_last_month'] = us.feed.stories_last_month
-            classifier['feed_tags'] = json.decode(us.feed.popular_tags) if us.feed.popular_tags else []
-            classifier['feed_authors'] = json.decode(us.feed.popular_authors) if us.feed.popular_authors else []
+            classifier['feed_tags'] = json.decode(us.feed.data.popular_tags) if us.feed.data.popular_tags else []
+            classifier['feed_authors'] = json.decode(us.feed.data.popular_authors) if us.feed.data.popular_authors else []
             classifiers.append(classifier)
     
     logging.info(" ---> [%s] ~FGLoading Trainer: ~SB%s feeds" % (user, len(classifiers)))
