@@ -1,6 +1,5 @@
 import difflib
 import datetime
-import hashlib
 import random
 import re
 import mongoengine as mongo
@@ -20,10 +19,10 @@ from apps.rss_feeds.tasks import UpdateFeeds
 from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder
+from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit
 from utils.story_functions import pre_process_story
-from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
 from utils import log as logging
 
@@ -33,7 +32,6 @@ class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
-    feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
@@ -50,13 +48,9 @@ class Feed(models.Model):
     last_modified = models.DateTimeField(null=True, blank=True)
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
-    story_count_history = models.TextField(blank=True, null=True)
     next_scheduled_update = models.DateTimeField(db_index=True)
     queued_date = models.DateTimeField(db_index=True)
     last_load_time = models.IntegerField(default=0)
-    popular_tags = models.CharField(max_length=1024, blank=True, null=True)
-    popular_authors = models.CharField(max_length=2048, blank=True, null=True)
-    
     
     def __unicode__(self):
         if not self.feed_title:
@@ -65,8 +59,6 @@ class Feed(models.Model):
         return self.feed_title
 
     def save(self, *args, **kwargs):
-        if self.feed_tagline and len(self.feed_tagline) > 1024:
-            self.feed_tagline = self.feed_tagline[:1024]
         if not self.last_update:
             self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
@@ -259,7 +251,7 @@ class Feed(models.Model):
         total = 0
         month_count = 0
         if not current_counts:
-            current_counts = self.story_count_history and json.decode(self.story_count_history)
+            current_counts = self.data.story_count_history and json.decode(self.data.story_count_history)
         
         if not current_counts:
             current_counts = []
@@ -284,17 +276,20 @@ class Feed(models.Model):
         res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
         for r in res:
             dates[r.key] = r.value
+            year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
+            if year < min_year:
+                min_year = year
                 
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
         # a month. Hacker News can have 1,000+ and still be counted.)
         for current_month, current_count in current_counts:
+            year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
             if current_month not in dates or dates[current_month] < current_count:
                 dates[current_month] = current_count
-                year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
-                if year < min_year:
-                    min_year = year
-
+            if year < min_year:
+                min_year = year
+        
         # Assemble a list with 0's filled in for missing months, 
         # trimming left and right 0's.
         months = []
@@ -308,8 +303,8 @@ class Feed(models.Model):
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
                         month_count += 1
-        
-        self.story_count_history = json.encode(months)
+        self.data.story_count_history = json.encode(months)
+        self.data.save()
         if not total:
             self.average_stories_per_month = 0
         else:
@@ -435,8 +430,8 @@ class Feed(models.Model):
         #       popular tags the size of a small planet. I'm looking at you
         #       Tumblr writers.
         if len(popular_tags) < 1024:
-            self.popular_tags = popular_tags
-            self.save()
+            self.data.popular_tags = popular_tags
+            self.data.save()
             return
 
         tags_list = json.decode(feed_tags) if feed_tags else []
@@ -454,8 +449,8 @@ class Feed(models.Model):
 
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
-            self.popular_authors = popular_authors
-            self.save()
+            self.data.popular_authors = popular_authors
+            self.data.save()
             return
 
         if len(feed_authors) > 1:
@@ -712,27 +707,19 @@ class Feed(models.Model):
 #     feed = models.ForeignKey(Feed)
 #     phrase = models.CharField(max_length=500)
         
-class Tag(models.Model):
-    feed = models.ForeignKey(Feed)
-    name = models.CharField(max_length=255)
-
-    def __unicode__(self):
-        return '%s - %s' % (self.feed, self.name)
+class FeedData(models.Model):
+    feed = AutoOneToOneField(Feed, related_name='data')
+    feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
+    story_count_history = models.TextField(blank=True, null=True)
+    popular_tags = models.CharField(max_length=1024, blank=True, null=True)
+    popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
-    def save(self):
-        super(Tag, self).save()
-        
-class StoryAuthor(models.Model):
-    feed = models.ForeignKey(Feed)
-    author_name = models.CharField(max_length=255, null=True, blank=True)
-        
-    def __unicode__(self):
-        return '%s - %s' % (self.feed, self.author_name)
+    def save(self, *args, **kwargs):
+        if self.feed_tagline and len(self.feed_tagline) > 1024:
+            self.feed_tagline = self.feed_tagline[:1024]
+            
+        super(FeedData, self).save(*args, **kwargs)
 
-class FeedPage(models.Model):
-    feed = models.OneToOneField(Feed, related_name="feed_page")
-    page_data = StoryField(null=True, blank=True)
-    
 class MFeedPage(mongo.Document):
     feed_id = mongo.IntField(primary_key=True)
     page_data = mongo.BinaryField()
@@ -747,44 +734,6 @@ class MFeedPage(mongo.Document):
             self.page_data = zlib.compress(self.page_data)
         super(MFeedPage, self).save(*args, **kwargs)
 
-class FeedXML(models.Model):
-    feed = models.OneToOneField(Feed, related_name="feed_xml")
-    rss_xml = StoryField(null=True, blank=True)
-    
-class Story(models.Model):
-    '''A feed item'''
-    story_feed = models.ForeignKey(Feed, related_name="stories")
-    story_date = models.DateTimeField()
-    story_title = models.CharField(max_length=255)
-    story_content = StoryField(null=True, blank=True)
-    story_original_content = StoryField(null=True, blank=True)
-    story_content_type = models.CharField(max_length=255, null=True,
-                                          blank=True)
-    story_author = models.ForeignKey(StoryAuthor)
-    story_author_name = models.CharField(max_length=500, null=True, blank=True)
-    story_permalink = models.CharField(max_length=1000)
-    story_guid = models.CharField(max_length=1000)
-    story_guid_hash = models.CharField(max_length=40)
-    story_past_trim_date = models.BooleanField(default=False)
-    story_tags = models.CharField(max_length=2000, null=True, blank=True)
-
-    def __unicode__(self):
-        return self.story_title
-
-    class Meta:
-        verbose_name_plural = "stories"
-        verbose_name = "story"
-        db_table="stories"
-        ordering=["-story_date"]
-        unique_together = (("story_feed", "story_guid_hash"),)
-
-    def save(self, *args, **kwargs):
-        if not self.story_guid_hash and self.story_guid:
-            self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
-        if len(self.story_title) > self._meta.get_field('story_title').max_length:
-            self.story_title = self.story_title[:255]
-        super(Story, self).save(*args, **kwargs)
-        
         
 class MStory(mongo.Document):
     '''A feed item'''
@@ -871,24 +820,6 @@ class FeedUpdateHistory(models.Model):
         super(FeedUpdateHistory, self).save(*args, **kwargs)
 
 
-class FeedFetchHistory(models.Model):
-    feed = models.ForeignKey(Feed, related_name='feed_fetch_history')
-    status_code = models.CharField(max_length=10, null=True, blank=True)
-    message = models.CharField(max_length=255, null=True, blank=True)
-    exception = models.TextField(null=True, blank=True)
-    fetch_date = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return "[%s] %s (%s): %s %s: %s" % (
-            self.feed.id,
-            self.feed,
-            self.fetch_date,
-            self.status_code,
-            self.message,
-            self.exception and self.exception[:50]
-        )
-        
-        
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
     status_code = mongo.IntField()
@@ -906,24 +837,6 @@ class MFeedFetchHistory(mongo.Document):
         if not isinstance(self.exception, basestring):
             self.exception = unicode(self.exception)
         super(MFeedFetchHistory, self).save(*args, **kwargs)
-        
-        
-class PageFetchHistory(models.Model):
-    feed = models.ForeignKey(Feed, related_name='page_fetch_history')
-    status_code = models.CharField(max_length=10, null=True, blank=True)
-    message = models.CharField(max_length=255, null=True, blank=True)
-    exception = models.TextField(null=True, blank=True)
-    fetch_date = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return "[%s] %s (%s): %s %s: %s" % (
-            self.feed.id,
-            self.feed,
-            self.fetch_date,
-            self.status_code,
-            self.message,
-            self.exception and self.exception[:50]
-        )
         
         
 class MPageFetchHistory(mongo.Document):

@@ -6,7 +6,7 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from apps.rss_feeds.models import Feed, Story, MStory, DuplicateFeed
+from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 
@@ -183,27 +183,6 @@ class UserSubscription(models.Model):
         
     class Meta:
         unique_together = ("user", "feed")
-        
-        
-class UserStory(models.Model):
-    """
-    Stories read by the user. These are deleted as the mark_read_date for the
-    UserSubscription passes the UserStory date.
-    """
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
-    story = models.ForeignKey(Story)
-    read_date = models.DateTimeField(auto_now=True)
-    opinion = models.IntegerField(default=0)
-    
-    def __unicode__(self):
-        return ('[' + self.feed.feed_title + '] '
-                + self.story.story_title)
-        
-    class Meta:
-        verbose_name_plural = "user stories"
-        verbose_name = "user story"
-        unique_together = ("user", "feed", "story")
         
         
 class MUserStory(mongo.Document):

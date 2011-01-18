@@ -178,7 +178,7 @@ class ProcessFeed:
             pass
         
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
-        self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)
+        self.feed.data.feed_tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
         self.feed.last_update = datetime.datetime.utcnow()
         
@@ -190,7 +190,6 @@ class ProcessFeed:
                 guids.append(entry.title)
             elif entry.link:
                 guids.append(entry.link)
-        
         self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
