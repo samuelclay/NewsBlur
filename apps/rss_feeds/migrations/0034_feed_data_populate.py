@@ -12,27 +12,31 @@ class Migration(DataMigration):
     def forwards(self, orm):
         print "FeedData: %s" % FeedData.objects.count()
 
-        feeds = Feed.objects.all().order_by('-average_stories_per_month')
-        feed_count = feeds.count()
-        i = 0
-        for feed in feeds:
-            i += 1
-            print "%s/%s: %s" % (i, feed_count, feed,)
-            sys.stdout.flush()
-            data = {
-                'feed_tagline': feed.feed_tagline and feed.feed_tagline[:1023],
-                'story_count_history': feed.story_count_history,
-                'popular_tags': feed.popular_tags and feed.popular_tags[:1023],
-                'popular_authors': feed.popular_authors and feed.popular_authors[:2047],
-            }
-            try:
-                sid = transaction.savepoint()
-                FeedData.objects.create(feed=feed, **data)
-                transaction.savepoint_commit(sid)
-            except Exception, e:
-                print "!!!!!!!!!!!!!!! Exception: %s" % e
-                transaction.savepoint_rollback(sid)
-                pass
+        f = 0
+        while True:
+            feeds = Feed.objects.all().order_by('-average_stories_per_month')[f:f+10000]
+            f += 10000
+            feed_count = feeds.count()
+            i = int(f)
+            if not feed_count: break
+            for feed in feeds:
+                i += 1
+                print "%s/%s: %s" % (i, feed_count, feed,)
+                sys.stdout.flush()
+                data = {
+                    'feed_tagline': feed.feed_tagline and feed.feed_tagline[:1023],
+                    'story_count_history': feed.story_count_history,
+                    'popular_tags': feed.popular_tags and feed.popular_tags[:1023],
+                    'popular_authors': feed.popular_authors and feed.popular_authors[:2047],
+                }
+                try:
+                    sid = transaction.savepoint()
+                    FeedData.objects.create(feed=feed, **data)
+                    transaction.savepoint_commit(sid)
+                except Exception, e:
+                    print "!!!!!!!!!!!!!!! Exception: %s" % e
+                    transaction.savepoint_rollback(sid)
+                    pass
 
     def backwards(self, orm):
         print "Start FeedData: %s" % (FeedData.objects.count())
