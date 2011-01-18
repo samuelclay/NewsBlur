@@ -20,6 +20,7 @@ from apps.rss_feeds.tasks import UpdateFeeds
 from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder
+from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit
 from utils.story_functions import pre_process_story
@@ -33,7 +34,6 @@ class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
-    feed_tagline = models.CharField(max_length=1024, default="", blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
@@ -50,12 +50,9 @@ class Feed(models.Model):
     last_modified = models.DateTimeField(null=True, blank=True)
     stories_last_month = models.IntegerField(default=0)
     average_stories_per_month = models.IntegerField(default=0)
-    story_count_history = models.TextField(blank=True, null=True)
     next_scheduled_update = models.DateTimeField(db_index=True)
     queued_date = models.DateTimeField(db_index=True)
     last_load_time = models.IntegerField(default=0)
-    popular_tags = models.CharField(max_length=1024, blank=True, null=True)
-    popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
     def __unicode__(self):
         if not self.feed_title:
@@ -64,8 +61,6 @@ class Feed(models.Model):
         return self.feed_title
 
     def save(self, *args, **kwargs):
-        if self.feed_tagline and len(self.feed_tagline) > 1024:
-            self.feed_tagline = self.feed_tagline[:1024]
         if not self.last_update:
             self.last_update = datetime.datetime.utcnow()
         if not self.next_scheduled_update:
@@ -258,7 +253,7 @@ class Feed(models.Model):
         total = 0
         month_count = 0
         if not current_counts:
-            current_counts = self.story_count_history and json.decode(self.story_count_history)
+            current_counts = self.data.story_count_history and json.decode(self.data.story_count_history)
         
         if not current_counts:
             current_counts = []
@@ -283,17 +278,20 @@ class Feed(models.Model):
         res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
         for r in res:
             dates[r.key] = r.value
+            year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
+            if year < min_year:
+                min_year = year
                 
         # Add on to existing months, always amending up, never down. (Current month
         # is guaranteed to be accurate, since trim_feeds won't delete it until after
         # a month. Hacker News can have 1,000+ and still be counted.)
         for current_month, current_count in current_counts:
+            year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
             if current_month not in dates or dates[current_month] < current_count:
                 dates[current_month] = current_count
-                year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
-                if year < min_year:
-                    min_year = year
-
+            if year < min_year:
+                min_year = year
+        
         # Assemble a list with 0's filled in for missing months, 
         # trimming left and right 0's.
         months = []
@@ -307,8 +305,8 @@ class Feed(models.Model):
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
                         month_count += 1
-        
-        self.story_count_history = json.encode(months)
+        self.data.story_count_history = json.encode(months)
+        self.data.save()
         if not total:
             self.average_stories_per_month = 0
         else:
@@ -434,8 +432,8 @@ class Feed(models.Model):
         #       popular tags the size of a small planet. I'm looking at you
         #       Tumblr writers.
         if len(popular_tags) < 1024:
-            self.popular_tags = popular_tags
-            self.save()
+            self.data.popular_tags = popular_tags
+            self.data.save()
             return
 
         tags_list = json.decode(feed_tags) if feed_tags else []
@@ -453,8 +451,8 @@ class Feed(models.Model):
 
         popular_authors = json.encode(feed_authors)
         if len(popular_authors) < 1024:
-            self.popular_authors = popular_authors
-            self.save()
+            self.data.popular_authors = popular_authors
+            self.data.save()
             return
 
         if len(feed_authors) > 1:
@@ -712,13 +710,18 @@ class Feed(models.Model):
 #     phrase = models.CharField(max_length=500)
         
 class FeedData(models.Model):
-    feed = models.OneToOneField(Feed, related_name='data')
+    feed = AutoOneToOneField(Feed, related_name='data')
     feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
     story_count_history = models.TextField(blank=True, null=True)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
-    
+    def save(self, *args, **kwargs):
+        if self.feed_tagline and len(self.feed_tagline) > 1024:
+            self.feed_tagline = self.feed_tagline[:1024]
+            
+        super(FeedData, self).save(*args, **kwargs)
+
 class Tag(models.Model):
     feed = models.ForeignKey(Feed)
     name = models.CharField(max_length=255)

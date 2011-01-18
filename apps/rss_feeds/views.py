@@ -54,7 +54,7 @@ def load_feed_statistics(request):
     stats['update_interval_minutes'] = update_interval_minutes
     
     # Stories per month - average and month-by-month breakout
-    average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.story_count_history
+    average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history
     stats['average_stories_per_month'] = average_stories_per_month
     stats['story_count_history'] = story_count_history and json.decode(story_count_history)
     

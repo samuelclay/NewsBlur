@@ -91,6 +91,7 @@ def fetch_address_from_page(url, existing_feed=None):
                 feed = Feed(feed_address=feed_finder_url)
                 feed.save()
                 feed.update()
+                feed = Feed.objects.get(pk=feed.pk)
             else:
                 feed = feed[0]
         return feed
