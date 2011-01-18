@@ -760,41 +760,7 @@ class MFeedPage(mongo.Document):
 class FeedXML(models.Model):
     feed = models.OneToOneField(Feed, related_name="feed_xml")
     rss_xml = StoryField(null=True, blank=True)
-    
-class Story(models.Model):
-    '''A feed item'''
-    story_feed = models.ForeignKey(Feed, related_name="stories")
-    story_date = models.DateTimeField()
-    story_title = models.CharField(max_length=255)
-    story_content = StoryField(null=True, blank=True)
-    story_original_content = StoryField(null=True, blank=True)
-    story_content_type = models.CharField(max_length=255, null=True,
-                                          blank=True)
-    story_author = models.ForeignKey(StoryAuthor)
-    story_author_name = models.CharField(max_length=500, null=True, blank=True)
-    story_permalink = models.CharField(max_length=1000)
-    story_guid = models.CharField(max_length=1000)
-    story_guid_hash = models.CharField(max_length=40)
-    story_past_trim_date = models.BooleanField(default=False)
-    story_tags = models.CharField(max_length=2000, null=True, blank=True)
 
-    def __unicode__(self):
-        return self.story_title
-
-    class Meta:
-        verbose_name_plural = "stories"
-        verbose_name = "story"
-        db_table="stories"
-        ordering=["-story_date"]
-        unique_together = (("story_feed", "story_guid_hash"),)
-
-    def save(self, *args, **kwargs):
-        if not self.story_guid_hash and self.story_guid:
-            self.story_guid_hash = hashlib.md5(self.story_guid).hexdigest()
-        if len(self.story_title) > self._meta.get_field('story_title').max_length:
-            self.story_title = self.story_title[:255]
-        super(Story, self).save(*args, **kwargs)
-        
         
 class MStory(mongo.Document):
     '''A feed item'''
@@ -881,24 +847,6 @@ class FeedUpdateHistory(models.Model):
         super(FeedUpdateHistory, self).save(*args, **kwargs)
 
 
-class FeedFetchHistory(models.Model):
-    feed = models.ForeignKey(Feed, related_name='feed_fetch_history')
-    status_code = models.CharField(max_length=10, null=True, blank=True)
-    message = models.CharField(max_length=255, null=True, blank=True)
-    exception = models.TextField(null=True, blank=True)
-    fetch_date = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return "[%s] %s (%s): %s %s: %s" % (
-            self.feed.id,
-            self.feed,
-            self.fetch_date,
-            self.status_code,
-            self.message,
-            self.exception and self.exception[:50]
-        )
-        
-        
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
     status_code = mongo.IntField()
@@ -916,24 +864,6 @@ class MFeedFetchHistory(mongo.Document):
         if not isinstance(self.exception, basestring):
             self.exception = unicode(self.exception)
         super(MFeedFetchHistory, self).save(*args, **kwargs)
-        
-        
-class PageFetchHistory(models.Model):
-    feed = models.ForeignKey(Feed, related_name='page_fetch_history')
-    status_code = models.CharField(max_length=10, null=True, blank=True)
-    message = models.CharField(max_length=255, null=True, blank=True)
-    exception = models.TextField(null=True, blank=True)
-    fetch_date = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return "[%s] %s (%s): %s %s: %s" % (
-            self.feed.id,
-            self.feed,
-            self.fetch_date,
-            self.status_code,
-            self.message,
-            self.exception and self.exception[:50]
-        )
         
         
 class MPageFetchHistory(mongo.Document):
