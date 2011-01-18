@@ -12,7 +12,7 @@ class Migration(DataMigration):
     def forwards(self, orm):
         print "FeedData: %s" % FeedData.objects.count()
 
-        f = 0
+        f = 215000
         while True:
             feeds = Feed.objects.all().order_by('-average_stories_per_month')[f:f+10000]
             f += 10000
