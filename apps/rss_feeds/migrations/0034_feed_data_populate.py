@@ -26,9 +26,12 @@ class Migration(DataMigration):
                 'popular_authors': feed.popular_authors and feed.popular_authors[:2047],
             }
             try:
+                sid = transaction.savepoint()
                 FeedData.objects.create(feed=feed, **data)
+                transaction.savepoint_commit(sid)
             except Exception, e:
                 print "!!!!!!!!!!!!!!! Exception: %s" % e
+                transaction.savepoint_rollback(sid)
                 pass
 
     def backwards(self, orm):
