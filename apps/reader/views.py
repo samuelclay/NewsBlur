@@ -235,7 +235,7 @@ def load_feeds_iphone(request):
 def refresh_feeds(request):
     user = get_user(request)
     feeds = {}
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    user_subs = UserSubscription.objects.select_related('feed', 'feed__data').filter(user=user, active=True)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
     for sub in user_subs:
