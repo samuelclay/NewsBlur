@@ -18,10 +18,10 @@ class Migration(DataMigration):
             print "%s/%s: %s" % (i, feed_count, feed,)
             sys.stdout.flush()
             data = {
-                'feed_tagline': feed.feed_tagline and feed.feed_tagline[:1024],
+                'feed_tagline': feed.feed_tagline and feed.feed_tagline[:1023],
                 'story_count_history': feed.story_count_history,
-                'popular_tags': feed.popular_tags and feed.popular_tags[:1024],
-                'popular_authors': feed.popular_authors and feed.popular_authors[:2048],
+                'popular_tags': feed.popular_tags and feed.popular_tags[:1023],
+                'popular_authors': feed.popular_authors and feed.popular_authors[:2047],
             }
             try:
                 FeedData.objects.create(feed=feed, **data)
