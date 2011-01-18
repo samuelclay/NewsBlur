@@ -62,7 +62,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             sub.feed.fetched_once = False
             sub.feed.save()
         
-        queue_new_feeds(self.user)
+        if stale_feeds:
+            queue_new_feeds(self.user)
         
         
 def create_profile(sender, instance, created, **kwargs):
