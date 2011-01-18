@@ -4,9 +4,11 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 from apps.rss_feeds.models import Feed, FeedData
+from django.db import transaction
 
 class Migration(DataMigration):
 
+    @transaction.autocommit
     def forwards(self, orm):
         print "FeedData: %s" % FeedData.objects.count()
 
