@@ -1,6 +1,5 @@
 import difflib
 import datetime
-import hashlib
 import random
 import re
 import mongoengine as mongo
@@ -24,7 +23,6 @@ from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit
 from utils.story_functions import pre_process_story
-from utils.compressed_textfield import StoryField
 from utils.diff import HTMLDiff
 from utils import log as logging
 
@@ -722,27 +720,6 @@ class FeedData(models.Model):
             
         super(FeedData, self).save(*args, **kwargs)
 
-class Tag(models.Model):
-    feed = models.ForeignKey(Feed)
-    name = models.CharField(max_length=255)
-
-    def __unicode__(self):
-        return '%s - %s' % (self.feed, self.name)
-    
-    def save(self):
-        super(Tag, self).save()
-        
-class StoryAuthor(models.Model):
-    feed = models.ForeignKey(Feed)
-    author_name = models.CharField(max_length=255, null=True, blank=True)
-        
-    def __unicode__(self):
-        return '%s - %s' % (self.feed, self.author_name)
-
-class FeedPage(models.Model):
-    feed = models.OneToOneField(Feed, related_name="feed_page")
-    page_data = StoryField(null=True, blank=True)
-    
 class MFeedPage(mongo.Document):
     feed_id = mongo.IntField(primary_key=True)
     page_data = mongo.BinaryField()
@@ -756,10 +733,6 @@ class MFeedPage(mongo.Document):
         if self.page_data:
             self.page_data = zlib.compress(self.page_data)
         super(MFeedPage, self).save(*args, **kwargs)
-
-class FeedXML(models.Model):
-    feed = models.OneToOneField(Feed, related_name="feed_xml")
-    rss_xml = StoryField(null=True, blank=True)
 
         
 class MStory(mongo.Document):
