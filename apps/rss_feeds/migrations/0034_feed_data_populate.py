@@ -18,13 +18,16 @@ class Migration(DataMigration):
             print "%s/%s: %s" % (i, feed_count, feed,)
             sys.stdout.flush()
             data = {
-                'feed_tagline': feed.feed_tagline,
+                'feed_tagline': feed.feed_tagline and feed.feed_tagline[:1024],
                 'story_count_history': feed.story_count_history,
-                'popular_tags': feed.popular_tags,
-                'popular_authors': feed.popular_authors,
+                'popular_tags': feed.popular_tags and feed.popular_tags[:1024],
+                'popular_authors': feed.popular_authors and feed.popular_authors[:2048],
             }
-            
-            FeedData.objects.create(feed=feed, **data)
+            try:
+                FeedData.objects.create(feed=feed, **data)
+            except Exception, e:
+                print "!!!!!!!!!!!!!!! Exception: %s" % e
+                pass
 
     def backwards(self, orm):
         print "Start FeedData: %s" % (FeedData.objects.count())
