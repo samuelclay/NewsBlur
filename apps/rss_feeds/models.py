@@ -57,7 +57,6 @@ class Feed(models.Model):
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
-    
     def __unicode__(self):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
@@ -712,6 +711,14 @@ class Feed(models.Model):
 #     feed = models.ForeignKey(Feed)
 #     phrase = models.CharField(max_length=500)
         
+class FeedData(models.Model):
+    feed = models.OneToOneField(Feed, related_name='data')
+    feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
+    story_count_history = models.TextField(blank=True, null=True)
+    popular_tags = models.CharField(max_length=1024, blank=True, null=True)
+    popular_authors = models.CharField(max_length=2048, blank=True, null=True)
+    
+    
 class Tag(models.Model):
     feed = models.ForeignKey(Feed)
     name = models.CharField(max_length=255)
