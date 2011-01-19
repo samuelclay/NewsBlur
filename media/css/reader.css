@@ -1424,6 +1424,17 @@ background: transparent;
     left: 200%;
 }
 
+/* ================================ */
+/* = Feed View Feed Title Floater = */
+/* ================================ */
+
+.NB-feed-story-view-floater {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 /* ================= */
 /* = Story Content = */
 /* ================= */
