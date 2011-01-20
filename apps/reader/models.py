@@ -54,7 +54,7 @@ class UserSubscription(models.Model):
         # Use the latest story to get last read time.
         if MStory.objects(story_feed_id=self.feed.pk).first():
             latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date')[0]['story_date']\
-                                + datetime.timedelta(minutes=1)
+                                + datetime.timedelta(seconds=1)
         else:
             latest_story_date = now
 
