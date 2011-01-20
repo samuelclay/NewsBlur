@@ -2971,6 +2971,10 @@
             NEWSBLUR.keyboard = new NEWSBLUR.ReaderKeyboard();
         },
                 
+        open_goodies_modal: function() {
+            NEWSBLUR.goodies = new NEWSBLUR.ReaderGoodies();
+        },
+                        
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },
@@ -3018,6 +3022,11 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-goodies' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Extensions and extras.')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4530,6 +4539,12 @@
                 e.preventDefault();
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');                    
                 self.open_feed_exception_modal(feed_id, $t);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-goodies' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_goodies_modal();
+                }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-preferences' }, function($t, $p){
                 e.preventDefault();

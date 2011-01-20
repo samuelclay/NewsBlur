@@ -11,6 +11,7 @@ from apps.feed_import.models import queue_new_feeds
 from paypal.standard.ipn.signals import subscription_signup
 from utils import log as logging
 from utils.timezones.fields import TimeZoneField
+from utils.user_functions import generate_secret_token
      
 class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile")
@@ -21,10 +22,16 @@ class Profile(models.Model):
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
     timezone = TimeZoneField(default="America/New_York")
+    secret_token = models.CharField(max_length=12, blank=True, null=True)
     
     def __unicode__(self):
         return "%s" % self.user
-        
+    
+    def save(self, *args, **kwargs):
+        if not self.secret_token:
+            self.secret_token = generate_secret_token(self.user.username, 12)
+        super(Profile, self).save(*args, **kwargs)
+    
     def activate_premium(self):
         self.is_premium = True
         self.save()

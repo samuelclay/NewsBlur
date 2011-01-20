@@ -790,7 +790,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   float: right;
   margin: 6px 4px 0 0;
   cursor: pointer;
-  background: transparent url('../img/icons/close.png') no-repeat 0 0;
+  background: transparent url('../img/reader/close.png') no-repeat 0 0;
 }
 
 #NB-progress .NB-progress-title {
@@ -3742,6 +3742,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 1px;
 }
+.NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/package_green.png') no-repeat  0 2px;
+}
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 2px;
 }
@@ -4184,6 +4187,27 @@ background: transparent;
     border: 1px solid #303030;
     width: 128px;
     height: 96px;
+}
+
+/* ================= */
+/* = Goodies Modal = */
+/* ================= */
+
+.NB-modal-goodies .NB-goodies-group {
+  clear: both;
+  margin: 16px 0 0 0;
+  overflow: hidden;
+  background-color: #F0F0F0;
+  padding: 8px;
+}
+
+.NB-modal-goodies .NB-goodies-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 6px 0 0 0;
+  color: #404030;
+  text-shadow: 1px 1px 0 #E0E0E0;
 }
 
 /* ============================ */
