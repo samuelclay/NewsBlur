@@ -115,6 +115,7 @@ COMPRESS_JS = {
             'js/underscore.js',
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
+            'js/newsblur/bookmarklet.js',
             'js/newsblur/reader_classifier.js',
             'js/newsblur/reader_add_feed.js',
             'js/newsblur/reader_mark_read.js',

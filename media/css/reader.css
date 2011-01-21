@@ -4210,6 +4210,27 @@ background: transparent;
   text-shadow: 1px 1px 0 #E0E0E0;
 }
 
+.NB-modal-goodies .NB-goodies-bookmarklet-button {
+    display: inline-block;
+    font-family: 'Lucida Grande', Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    color: #fff;
+    background-color: #626262;
+    border: 1px solid #626262;
+    padding: 0px 7px 1px 7px;
+    text-shadow: #3b3b3b 1px 1px 0px;
+    min-width: 62px;
+    text-align: center;
+    vertical-align: 2px;
+    color: #fff; 
+    text-decoration: none; 
+    outline: none;
+}
+
 /* ============================ */
 /* = Keyboard Shortcuts Modal = */
 /* ============================ */
