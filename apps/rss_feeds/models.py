@@ -474,7 +474,7 @@ class Feed(models.Model):
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
             if verbose:
-                print 'Found %s stories in %s. Trimming to %s...' % (stories.count(), self, trim_cutoff),
+                print 'Found %s stories in %s. Trimming to %s...' % (stories.count(), self, trim_cutoff)
             story_trim_date = stories[trim_cutoff].story_date
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories.delete()
