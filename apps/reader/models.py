@@ -52,6 +52,7 @@ class UserSubscription(models.Model):
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None):
         feed = None
+        us = None
     
         logging.info(" ---> [%s] ~FRAdding URL: ~SB%s (in %s)" % (user, feed_address, folder))
     
@@ -63,7 +64,7 @@ class UserSubscription(models.Model):
                 feed = [duplicate_feed[0].feed]
             else:
                 feed = Feed.objects.filter(feed_address=feed_address).order_by('pk')
-    
+
         if feed:
             feed = feed[0]
         else:
@@ -73,12 +74,12 @@ class UserSubscription(models.Model):
                 code    = -2
                 message = "This feed has been added, but something went wrong"\
                           " when downloading it. Maybe the server's busy."
-                
+
         if not feed:    
             code = -1
             message = "That URL does not point to an RSS feed or a website that has an RSS feed."
         else:
-            us, _ = UserSubscription.objects.get_or_create(
+            us, _ = cls.objects.get_or_create(
                 feed=feed, 
                 user=user,
                 defaults={
@@ -105,8 +106,9 @@ class UserSubscription(models.Model):
         
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed.update()
-        
-            return code, message, us
+
+        print code, message, us
+        return code, message, us
 
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()

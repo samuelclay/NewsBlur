@@ -1,11 +1,13 @@
 {% load bookmarklet_includes %}
+
 (function() {
   
     {% include_bookmarklet_js %}
     
     NEWSBLUR.BookmarkletModal = function(options) {
         var defaults = {};
-
+        
+        this.token = "{{ token }}";
         this.active = true;
         this.username = '{{ user.username }}';
         this.folders = {{ folders|safe }};
@@ -38,7 +40,7 @@
             this.make_modal();
             this.open_modal();
         
-            this.$modal.bind('click', $.rescope(this.handle_click, this));
+            this.$modal.bind('click', $.rescope(this.handle_clicks, this));
         },
         
         attach_css: function() {
@@ -149,18 +151,30 @@
                 }
             });
         },
-    
+        
+        save: function() {
+            var folder = $('.NB-folders').val();
+            var add_site_url = "http://nb.local.host:8000{% url api-add-site token %}?callback=?";
+            
+            $.getJSON(add_site_url, {
+                url: window.location.href,
+                folder: folder
+            }, function(resp) {
+                console.log(['resp', resp]);
+            });
+        },
+        
         // ===========
         // = Actions =
         // ===========
 
-        handle_click: function(elem, e) {
+        handle_clicks: function(elem, e) {
             var self = this;
         
-            $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
                 e.preventDefault();
             
-                self.save_preferences();
+                self.save();
             });
         }
     
