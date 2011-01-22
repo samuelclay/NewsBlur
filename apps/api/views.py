@@ -52,7 +52,12 @@ def add_site(request, token):
         except Profile.DoesNotExist:
             code = -1
     
-    print code, message, us
+    if code > 0:
+        folder_image_path = os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/accept.png')
+        folder_image = open(folder_image_path)
+        folder_image = base64.b64encode(folder_image.read())
+        message = folder_image
+        
     return HttpResponse(callback + '(' + json.encode({
         'code':    code,
         'message': message,

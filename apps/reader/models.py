@@ -79,7 +79,7 @@ class UserSubscription(models.Model):
             code = -1
             message = "That URL does not point to an RSS feed or a website that has an RSS feed."
         else:
-            us, _ = cls.objects.get_or_create(
+            us, subscription_created = cls.objects.get_or_create(
                 feed=feed, 
                 user=user,
                 defaults={
@@ -90,6 +90,10 @@ class UserSubscription(models.Model):
             code = 1
             message = ""
     
+        if us and not subscription_created:
+            code = -3
+            message = "You are already subscribed to this site."
+        elif us:
             user_sub_folders_object, created = UserSubscriptionFolders.objects.get_or_create(
                 user=user,
                 defaults={'folders': '[]'}

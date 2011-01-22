@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.core.mail import mail_admins
+from django.contrib.sites.models import Site
 from collections import defaultdict
 from operator import itemgetter
 from mongoengine.queryset import OperationError

@@ -1,4 +1,4 @@
-{% load bookmarklet_includes %}
+{% load bookmarklet_includes utils_tags %}
 
 (function() {
   
@@ -7,12 +7,13 @@
     NEWSBLUR.BookmarkletModal = function(options) {
         var defaults = {};
         
-        this.token = "{{ token }}";
-        this.active = true;
+        this.token    = "{{ token }}";
+        this.active   = true;
         this.username = '{{ user.username }}';
-        this.folders = {{ folders|safe }};
+        this.folders  = {{ folders|safe }};
+        this.domain   = "{% current_domain %}";
         
-        this.options = $.extend({}, defaults, options);
+        this.options  = $.extend({}, defaults, options);
         this.runner();
     };
 
@@ -55,8 +56,7 @@
         },
     
         check_if_on_newsblur: function() {
-          if (window.location.href.indexOf('newsblur.com/') != -1 ||
-              window.location.href.indexOf('nb.local.host:8000/') != -1) {
+          if (window.location.href.indexOf(this.domain) != -1) {
             return true;
           }
         },
@@ -153,15 +153,37 @@
         },
         
         save: function() {
+            var self = this;
+            var $submit = $('.NB-modal-submit-button');
             var folder = $('.NB-folders').val();
-            var add_site_url = "http://nb.local.host:8000{% url api-add-site token %}?callback=?";
+            var add_site_url = "http://"+this.domain+"{% url api-add-site token %}?callback=?";
+            
+            $submit.addClass('NB-disabled').text('Fetching and parsing...');
             
             $.getJSON(add_site_url, {
                 url: window.location.href,
                 folder: folder
             }, function(resp) {
-                console.log(['resp', resp]);
+                self.post_save(resp);
             });
+        },
+        
+        post_save: function(resp) {
+            var $submit = $('.NB-modal-submit-button');
+            
+            $submit.addClass('NB-close');
+            
+            if (resp.code == 1) {
+                $submit.html($.make('div', [
+                    $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + resp.message }),
+                    'Added!'
+                ]));
+                setTimeout(function() {
+                    // $.modal.close();
+                }, 1600);
+            } else {
+                $submit.text('Not working');
+            }
         },
         
         // ===========
@@ -173,8 +195,15 @@
         
             $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
                 e.preventDefault();
-            
-                self.save();
+                
+                if (!$t.hasClass('NB-disabled')) {
+                    self.save();
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-close' }, function($t, $p) {
+                e.preventDefault();
+                
+                $.modal.close();
             });
         }
     

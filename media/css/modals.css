@@ -212,6 +212,7 @@
 .NB-bookmarklet {
   font-family: 'Lucida Sans', 'Lucida Grande', Verdana, Arial, Helvetica, sans-serif;
   font-size: 12px;
+  text-align: left;
 }
 
 .NB-bookmarklet .NB-modal-information {
@@ -222,7 +223,8 @@
   font-size: 10px;
 }
 .NB-bookmarklet .NB-bookmarklet-folder-container {
-  margin: 24px 0;
+  margin: 20px 0;
+  float: right;
 }
 .NB-bookmarklet .NB-bookmarklet-folder-container .NB-bookmarklet-folder-label {
   float: left;
@@ -231,10 +233,19 @@
 .NB-bookmarklet .NB-bookmarklet-folder-container .NB-folders {
   font-size: 14px;
 }
+.NB-bookmarklet .NB-folders {
+  width: 200px;
+}
 .NB-bookmarklet .NB-modal-submit-button {
-  float: left;
   clear: both;
-  padding: 6px 16px;
-  width: 100px;
+  padding: 0 16px;
+  line-height: 24px;
+  width: 200px;
   text-align: center;
+}
+.NB-bookmarklet .NB-modal-submit-button img {
+  margin: 5px 6px 0 0;
+  width: 16px;
+  height: 16px;
+  vertical-align: top;
 }
