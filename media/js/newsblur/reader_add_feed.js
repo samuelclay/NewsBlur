@@ -177,7 +177,6 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             },
             select: function(e, ui) {
                 $add.val(ui.item.value);
-                NEWSBLUR.log(['select', e, ui, ui.item, ui.item.value]);
                 self.save_add_url();
                 return false;
             }

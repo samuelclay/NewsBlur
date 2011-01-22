@@ -664,59 +664,8 @@ def add_url(request):
     code = 0
     url = request.POST['url']
     folder = request.POST['folder']
-    feed = None
-    
-    logging.info(" ---> [%s] ~FRAdding URL: ~SB%s (in %s)" % (request.user, url, folder))
-    
-    if url:
-        url = urlnorm.normalize(url)
-        # See if it exists as a duplicate first
-        duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=url).order_by('pk')
-        if duplicate_feed:
-            feed = [duplicate_feed[0].feed]
-        else:
-            feed = Feed.objects.filter(feed_address=url).order_by('pk')
-    
-    if feed:
-        feed = feed[0]
-    else:
-        try:
-            feed = fetch_address_from_page(url)
-        except:
-            code = -2
-            message = "This feed has been added, but something went wrong"\
-                      " when downloading it. Maybe the server's busy."
-                
-    if not feed:    
-        code = -1
-        message = "That URL does not point to an RSS feed or a website that has an RSS feed."
-    else:
-        us, _ = UserSubscription.objects.get_or_create(
-            feed=feed, 
-            user=request.user,
-            defaults={
-                'needs_unread_recalc': True,
-                'active': True,
-            }
-        )
-        code = 1
-        message = ""
-        
-        user_sub_folders_object, created = UserSubscriptionFolders.objects.get_or_create(user=request.user,
-            defaults={'folders': '[]'}
-        )
-        if created:
-            user_sub_folders = []
-        else:
-            user_sub_folders = json.decode(user_sub_folders_object.folders)
-        user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
-        user_sub_folders_object.folders = json.encode(user_sub_folders)
-        user_sub_folders_object.save()
-        
-        feed.setup_feed_for_premium_subscribers()
-        
-        if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
-            feed.update()
+
+    code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, folder=folder)
     
     return dict(code=code, message=message)
 
@@ -746,19 +695,6 @@ def add_folder(request):
         
     return dict(code=code, message=message)
 
-def _add_object_to_folder(obj, folder, folders):
-    if not folder:
-        folders.append(obj)
-        return folders
-        
-    for k, v in enumerate(folders):
-        if isinstance(v, dict):
-            for f_k, f_v in v.items():
-                if f_k == folder:
-                    f_v.append(obj)
-                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
-    return folders
-    
 @ajax_login_required
 @json.json_view
 def delete_feed(request):

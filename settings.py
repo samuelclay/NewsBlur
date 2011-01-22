@@ -115,7 +115,7 @@ COMPRESS_JS = {
             'js/underscore.js',
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
-            'js/newsblur/bookmarklet.js',
+            'js/newsblur/generate_bookmarklet.js',
             'js/newsblur/reader_classifier.js',
             'js/newsblur/reader_add_feed.js',
             'js/newsblur/reader_mark_read.js',
@@ -136,12 +136,22 @@ COMPRESS_JS = {
         ),
         'output_filename': 'js/paypal-compressed-?.js',
     },
+    'bookmarklet': {
+        'source_filenames': (
+            'js/jquery-1.4.3.js',
+            'js/jquery.newsblur.js',
+            'js/jquery.simplemodal-1.3.js',
+            'js/jquery.corners.js',
+        ),
+        'output_filename': 'js/bookmarklet-compressed-?.js',
+    },
 }
 
 COMPRESS_CSS = {
     'all': {
         'source_filenames': (
             'css/reader.css',
+            'css/modals.css',
             'css/jquery-ui/jquery.theme.css',
             'css/jquery.tipsy.css',
         ),
@@ -150,6 +160,13 @@ COMPRESS_CSS = {
     'paypal': {
         'source_filenames': (
             'css/paypal_return.css',
+        ),
+        'output_filename': 'css/paypal-compressed-?.css',
+    },
+    'bookmarklet': {
+        'source_filenames': (
+            'css/reset.css',
+            'css/modals.css',
         ),
         'output_filename': 'css/paypal-compressed-?.css',
     },

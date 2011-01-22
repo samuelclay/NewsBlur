@@ -717,8 +717,11 @@ class FeedData(models.Model):
     def save(self, *args, **kwargs):
         if self.feed_tagline and len(self.feed_tagline) > 1024:
             self.feed_tagline = self.feed_tagline[:1024]
-            
-        super(FeedData, self).save(*args, **kwargs)
+        
+        try:    
+            super(FeedData, self).save(*args, **kwargs)
+        except (IntegrityError, OperationError):
+            self.delete()
 
 class MFeedPage(mongo.Document):
     feed_id = mongo.IntField(primary_key=True)
