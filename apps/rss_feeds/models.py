@@ -456,7 +456,7 @@ class Feed(models.Model):
         if len(feed_authors) > 1:
             self.save_popular_authors(feed_authors=feed_authors[:-1])
             
-    def trim_feed(self):
+    def trim_feed(self, verbose=False):
         from apps.reader.models import MUserStory
         trim_cutoff = 500
         if self.active_subscribers <= 1:
@@ -473,7 +473,8 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
-            # print 'Found %s stories in %s. Trimming...' % (stories.count(), self),
+            if verbose:
+                print 'Found %s stories in %s. Trimming to %s...' % (stories.count(), self, trim_cutoff)
             story_trim_date = stories[trim_cutoff].story_date
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories.delete()
