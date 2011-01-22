@@ -221,8 +221,20 @@
   color: #909090;
   font-size: 10px;
 }
-
+.NB-bookmarklet .NB-bookmarklet-folder-container {
+  margin: 24px 0;
+}
+.NB-bookmarklet .NB-bookmarklet-folder-container .NB-bookmarklet-folder-label {
+  float: left;
+  margin: 2px 4px 0 0;
+}
+.NB-bookmarklet .NB-bookmarklet-folder-container .NB-folders {
+  font-size: 14px;
+}
 .NB-bookmarklet .NB-modal-submit-button {
   float: left;
   clear: both;
+  padding: 6px 16px;
+  width: 100px;
+  text-align: center;
 }

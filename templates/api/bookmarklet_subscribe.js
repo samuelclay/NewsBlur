@@ -3,9 +3,6 @@
   
     {% include_bookmarklet_js %}
     
-    NEWSBLUR.BookmarkletCSS = "{% include_bookmarklet_css %}";
-    $('head').append('<style>' + NEWSBLUR.BookmarkletCSS + '</style>');
-    
     NEWSBLUR.BookmarkletModal = function(options) {
         var defaults = {};
 
@@ -37,10 +34,18 @@
                 return this.close();
             }
             
+            this.attach_css();
             this.make_modal();
             this.open_modal();
         
             this.$modal.bind('click', $.rescope(this.handle_click, this));
+        },
+        
+        attach_css: function() {
+            var css = "{% include_bookmarklet_css %}";
+            var style = '<style>' + css + '</style>';
+            if ($('head').length) $('head').append(style);
+            else $('body').append(style);
         },
         
         alert: function(message) {
@@ -63,9 +68,11 @@
                     $.make('b', { style: 'color: #505050' }, this.username)
                 ]),
                 $.make('div', { className: 'NB-modal-title' }, 'Adding \"'+this.get_page_title()+'\"'),
-                $.make('div', { className: 'NB-bookmarklet-folder-container NB-modal-submit' }, [
-                    $.make('label', { className: 'NB-bookmarklet-folder-label'}, 'Choose which folder to add this site to:'),
+                $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
+                    $.make('img', { className: 'NB-bookmarklet-folder-label', src: 'data:image/png;charset=utf-8;base64,{{ folder_image }}' }),
                     this.make_folders(),
+                ]),
+                $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Add this site')
                 ])
             ]);
@@ -85,11 +92,13 @@
             var folders = this.folders;
             var $options = $.make('select', { className: 'NB-folders'});
         
-            var $option = $.make('option', { value: '' }, "Top Level");
-            $options.append($option);
-
             $options = this.make_folder_options($options, folders, '-');
+            
+            $('option', $options).tsort();
         
+            var $option = $.make('option', { value: '', selected: true }, "Top Level");
+            $options.prepend($option);
+    
             return $options;
         },
 
@@ -120,6 +129,9 @@
                     dialog.overlay.fadeIn(200, function () {
                         dialog.container.fadeIn(200);
                         dialog.data.fadeIn(200);
+                        setTimeout(function() {
+                            $(window).resize();
+                        }, 10);
                     });
                 },
                 'onShow': function(dialog) {

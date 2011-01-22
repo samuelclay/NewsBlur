@@ -1,3 +1,6 @@
+import os
+import base64
+from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from apps.profile.models import Profile
@@ -6,6 +9,9 @@ from utils import json_functions as json
 
 def add_site_load_script(request, token):
     code = 0
+    folder_image_path = os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/folder.png')
+    folder_image = open(folder_image_path)
+    folder_image = base64.b64encode(folder_image.read())
     try:
         profile = Profile.objects.get(secret_token=token)
         usf = UserSubscriptionFolders.objects.get(
@@ -20,6 +26,7 @@ def add_site_load_script(request, token):
         'code': code,
         'token': token,
         'folders': usf.folders,
+        'folder_image': folder_image,
     }, context_instance=RequestContext(request))
 
 @json.json_view
