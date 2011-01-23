@@ -1,7 +1,9 @@
 {% load bookmarklet_includes utils_tags %}
 
-(function() {
-  
+(function($) {
+    
+    var $ = window.NBjQuery;
+    
     {% include_bookmarklet_js %}
     
     NEWSBLUR.BookmarkletModal = function(options) {
@@ -220,4 +222,4 @@
     }
     NEWSBLUR.bookmarklet_modal = new NEWSBLUR.BookmarkletModal();
   
-})();
+})(window.NBjQuery);

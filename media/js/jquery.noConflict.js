@@ -1,0 +1,1 @@
+window.NBjQuery = jQuery.noConflict();

@@ -139,6 +139,7 @@ COMPRESS_JS = {
     'bookmarklet': {
         'source_filenames': (
             'js/jquery-1.4.4.min.js',
+            'js/jquery.noConflict.js',
             'js/jquery.newsblur.js',
             'js/jquery.tinysort.js',
             'js/jquery.simplemodal-1.3.js',
