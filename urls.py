@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     (r'^classifier/', include('apps.analyzer.urls')),
     (r'^profile/', include('apps.profile.urls')),
     (r'^import/', include('apps.feed_import.urls')),
+    (r'^api/', include('apps.api.urls')),
 )
 
 if settings.DEVELOPMENT:
