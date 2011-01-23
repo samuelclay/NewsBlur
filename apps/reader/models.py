@@ -50,7 +50,7 @@ class UserSubscription(models.Model):
                 super(UserSubscription, self).save(*args, **kwargs)
                 
     @classmethod
-    def add_subscription(cls, user, feed_address, folder=None):
+    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):
         feed = None
         us = None
     
@@ -77,7 +77,10 @@ class UserSubscription(models.Model):
 
         if not feed:    
             code = -1
-            message = "That URL does not point to an RSS feed or a website that has an RSS feed."
+            if bookmarklet:
+                message = "This site does not have an RSS feed. Nothing is linked to from this page."
+            else:
+                message = "This site does not point to an RSS feed or a website with an RSS feed."
         else:
             us, subscription_created = cls.objects.get_or_create(
                 feed=feed, 

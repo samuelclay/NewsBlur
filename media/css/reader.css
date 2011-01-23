@@ -4001,13 +4001,14 @@ background: transparent;
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
-  margin: 6px 0 0 0;
+  margin: 8px;
   color: #404030;
   text-shadow: 1px 1px 0 #E0E0E0;
 }
 
 .NB-modal-goodies .NB-goodies-bookmarklet-button {
     display: inline-block;
+    float: right;
     font-family: 'Lucida Grande', Verdana, sans-serif;
     font-weight: bold;
     font-size: 11px;
@@ -4025,6 +4026,7 @@ background: transparent;
     color: #fff; 
     text-decoration: none; 
     outline: none;
+    margin: 8px 8px;
 }
 
 /* ============================ */

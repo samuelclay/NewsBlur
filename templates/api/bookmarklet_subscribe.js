@@ -174,15 +174,20 @@
             $submit.addClass('NB-close');
             
             if (resp.code == 1) {
-                $submit.html($.make('div', [
-                    $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + resp.message }),
+                $submit.html($.make('div', { className: 'NB-bookmarklet-accept' }, [
+                    $.make('img', { src: 'data:image/png;charset=utf-8;base64,{{ accept_image }}' }),
                     'Added!'
                 ]));
                 setTimeout(function() {
-                    // $.modal.close();
-                }, 1600);
+                    $.modal.close();
+                }, 2000);
             } else {
-                $submit.text('Not working');
+                var $error = $.make('div', { className: 'NB-bookmarklet-error' }, [
+                    $.make('img', { className: 'NB-bookmarklet-folder-label', src: 'data:image/png;charset=utf-8;base64,{{ error_image }}' }),
+                    $.make('div', resp.message)
+                ]);
+                $('.NB-bookmarklet-folder-container').hide();
+                $submit.replaceWith($error);
             }
         },
         

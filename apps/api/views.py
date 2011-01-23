@@ -10,9 +10,12 @@ from utils import json_functions as json
 
 def add_site_load_script(request, token):
     code = 0
-    folder_image_path = os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/folder.png')
-    folder_image = open(folder_image_path)
+    folder_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/folder.png'))
     folder_image = base64.b64encode(folder_image.read())
+    accept_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/accept.png'))
+    accept_image = base64.b64encode(accept_image.read())
+    error_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/error.png'))
+    error_image = base64.b64encode(error_image.read())
     try:
         profile = Profile.objects.get(secret_token=token)
         usf = UserSubscriptionFolders.objects.get(
@@ -29,6 +32,8 @@ def add_site_load_script(request, token):
             'token': token,
             'folders': usf.folders,
             'folder_image': folder_image,
+            'accept_image': accept_image,
+            'error_image': error_image,
         }, 
         context_instance=RequestContext(request),
         mimetype='application/javascript')
@@ -47,16 +52,14 @@ def add_site(request, token):
             code, message, us = UserSubscription.add_subscription(
                 user=profile.user, 
                 feed_address=url,
-                folder=folder
+                folder=folder,
+                bookmarklet=True
             )
         except Profile.DoesNotExist:
             code = -1
     
     if code > 0:
-        folder_image_path = os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/accept.png')
-        folder_image = open(folder_image_path)
-        folder_image = base64.b64encode(folder_image.read())
-        message = folder_image
+        message = 'OK'
         
     return HttpResponse(callback + '(' + json.encode({
         'code':    code,
