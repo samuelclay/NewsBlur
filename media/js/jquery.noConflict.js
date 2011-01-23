@@ -1,1 +1,1 @@
-window.NBjQuery = jQuery.noConflict();
+var $ = jQuery = jQuery.noConflict(true);
