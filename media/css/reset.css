@@ -1,0 +1,29 @@
+/*------------------------------ RESET + DEFAULT STYLES ---------------------------------*/
+
+/* 
+Eric Meyer's final reset.css
+Source: http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/ 
+*/
+.NB-modal div, .NB-modal span,
+.NB-modal a, .NB-modal img,
+.NB-modal ul, .NB-modal li,
+.NB-modal fieldset, .NB-modal form, .NB-modal label {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+.NB-modal :focus {
+  outline: 0;
+}
+.NB-modal {
+  line-height: 1;
+  color: black;
+  background: white;
+}
