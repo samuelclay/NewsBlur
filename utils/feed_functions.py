@@ -180,5 +180,5 @@ def add_object_to_folder(obj, folder, folders):
             for f_k, f_v in v.items():
                 if f_k == folder:
                     f_v.append(obj)
-                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
+                folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
     return folders  
