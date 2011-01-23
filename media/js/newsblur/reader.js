@@ -3381,10 +3381,11 @@
             $feed = $feed || this.find_feed_in_feed_list(feed_id);
             
             var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
-            
+            var duplicate_feed = this.find_feed_in_feed_list(feed_id).length > 1;
+
             this.model.delete_feed(feed_id, in_folder, function() {
                 self.delete_feed(feed_id, $feed);
-            });
+            }, duplicate_feed);
         },
         
         manage_menu_delete_folder: function(folder, $folder) {

@@ -470,8 +470,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
-    delete_feed: function(feed_id, in_folder, callback) {
-        delete this.feeds[feed_id];
+    delete_feed: function(feed_id, in_folder, callback, duplicate_feed) {
+        if (!duplicate_feed) delete this.feeds[feed_id];
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_feed', {
                 'feed_id': feed_id, 
