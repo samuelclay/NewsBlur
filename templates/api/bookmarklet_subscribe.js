@@ -2,10 +2,7 @@
 
 (function() {
     
-    
     {% include_bookmarklet_js %}
-    
-    var $ = window.NBjQuery;
 
     NEWSBLUR.BookmarkletModal = function(options) {
         var defaults = {};
