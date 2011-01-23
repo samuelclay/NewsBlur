@@ -14,7 +14,6 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.contrib.sites.models import Site
 from collections import defaultdict
 from operator import itemgetter
 from mongoengine.queryset import OperationError
@@ -27,9 +26,10 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
-from utils import json_functions as json, urlnorm
+from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
-from utils.feed_functions import fetch_address_from_page, relative_timesince
+from utils.feed_functions import relative_timesince
+from utils.feed_functions import add_object_to_folder
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
@@ -687,7 +687,7 @@ def add_folder(request):
         else:
             user_sub_folders = []
         obj = {folder: []}
-        user_sub_folders = _add_object_to_folder(obj, parent_folder, user_sub_folders)
+        user_sub_folders = add_object_to_folder(obj, parent_folder, user_sub_folders)
         user_sub_folders_object.folders = json.encode(user_sub_folders)
         user_sub_folders_object.save()
     else:

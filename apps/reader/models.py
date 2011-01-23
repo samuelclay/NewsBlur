@@ -11,6 +11,7 @@ from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifier
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from utils import urlnorm
 from utils.feed_functions import fetch_address_from_page
+from utils.feed_functions import add_object_to_folder
 
 class UserSubscription(models.Model):
     """
@@ -105,7 +106,7 @@ class UserSubscription(models.Model):
                 user_sub_folders = []
             else:
                 user_sub_folders = json.decode(user_sub_folders_object.folders)
-            user_sub_folders = _add_object_to_folder(feed.pk, folder, user_sub_folders)
+            user_sub_folders = add_object_to_folder(feed.pk, folder, user_sub_folders)
             user_sub_folders_object.folders = json.encode(user_sub_folders)
             user_sub_folders_object.save()
         
@@ -401,17 +402,3 @@ class Feature(models.Model):
     
     class Meta:
         ordering = ["-date"]
-        
-            
-def _add_object_to_folder(obj, folder, folders):
-    if not folder:
-        folders.append(obj)
-        return folders
-
-    for k, v in enumerate(folders):
-        if isinstance(v, dict):
-            for f_k, f_v in v.items():
-                if f_k == folder:
-                    f_v.append(obj)
-                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
-    return folders  

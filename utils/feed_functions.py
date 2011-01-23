@@ -169,3 +169,16 @@ def format_relative_date(date, future=False):
         else:
             return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), 
                                     '' if future else 'ago')
+                                    
+def add_object_to_folder(obj, folder, folders):
+    if not folder:
+        folders.append(obj)
+        return folders
+
+    for k, v in enumerate(folders):
+        if isinstance(v, dict):
+            for f_k, f_v in v.items():
+                if f_k == folder:
+                    f_v.append(obj)
+                folders[k][f_k] = _add_object_to_folder(obj, folder, f_v)
+    return folders  
