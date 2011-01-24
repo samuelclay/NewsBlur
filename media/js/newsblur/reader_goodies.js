@@ -62,10 +62,10 @@ NEWSBLUR.ReaderGoodies.prototype = {
     handle_click: function(elem, e) {
         var self = this;
         
-        $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-goodies-bookmarklet-button' }, function($t, $p) {
             e.preventDefault();
             
-            self.save_preferences();
+            alert('Drag this button to your bookmark toolbar.');
         });
     }
     
