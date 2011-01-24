@@ -32,7 +32,7 @@
             this.fix_title();
         
             if (this.check_if_on_newsblur()) {
-                var message = "Drag this button to your bookmark toolbar.";
+                var message = "This bookmarklet is successfully installed.\nClick it while on a site you want to read in NewsBlur.";
                 this.alert(message);
                 return this.close();
             }
