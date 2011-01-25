@@ -72,6 +72,7 @@
         this.unload_feed_iframe();
         this.unload_story_iframe();
         this.apply_resizable_layout();
+        this.add_body_classes();
         if (NEWSBLUR.Flags['start_import_from_google_reader']) {
           this.start_import_from_google_reader();
         } else {
@@ -166,6 +167,12 @@
         
         cornerize_buttons: function() {
             $('.button').corner();
+        },
+        
+        add_body_classes: function() {
+            this.$s.$body.toggleClass('NB-is-premium', NEWSBLUR.Globals.is_premium);
+            this.$s.$body.toggleClass('NB-is-anonymous', NEWSBLUR.Globals.is_anonymous);
+            this.$s.$body.toggleClass('NB-is-authenticated', NEWSBLUR.Globals.is_authenticated);
         },
         
         hide_splash_page: function() {
