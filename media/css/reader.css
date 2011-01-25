@@ -1399,9 +1399,8 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-view {
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: absolute;
+    overflow: hidden;
+    position: relative;
     top: 0;
     left: 100% !important;
     width: 100%;
@@ -1429,10 +1428,16 @@ background: transparent;
 /* ================================ */
 
 .NB-feed-story-view-floater {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
+  z-index: 1;
   width: 100%;
+  display: none;
+}
+
+.NB-view-river .NB-feed-story-view-floater {
+  display: block;
 }
 
 /* ================= */
@@ -1458,6 +1463,10 @@ background: transparent;
     margin: 0;
     list-style: none;
     background-color: white;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
 }
 
 #story_pane .NB-feed-story-header {
@@ -1491,6 +1500,10 @@ background: transparent;
     padding: 2px 200px 2px 28px;
     position: relative;
     border-bottom: 1px solid #000;
+    z-index: 2;
+}
+#story_pane .NB-feed-story-header-feed.NB-floater {
+  z-index: 0;
 }
 
 #story_pane .NB-feed-story-feed {
