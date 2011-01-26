@@ -1244,14 +1244,17 @@
                 'river_feeds_with_unreads': [],
                 'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10),
                 'prefetch_last_story': 0,
-                'prefetch_iteration': 0
+                'prefetch_iteration': 0,
+                'feed_title_floater_feed_id': null,
+                'feed_title_floater_story_id': null,
+                'last_feed_view_story_feed_id': null
             });
             
             this.active_feed = null;
             this.active_story = null;
             this.$s.$story_titles.data('page', 0);
             this.$s.$story_titles.data('feed_id', null);
-            this.$s.$feed_stories.empty();
+            this.$s.$feed_stories.empty().scrollTop(0);
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$river_header.removeClass('NB-selected');
             $('.NB-selected', this.$s.$feed_list).removeClass('NB-selected');
@@ -2596,6 +2599,7 @@
             var self = this;
             var unread_view = this.model.preference('unread_view');
             var $stories;
+            var river_same_feed;
             
             options = options || {};
             
@@ -2623,11 +2627,16 @@
                     : '';
                 if (score > 0) score_color = 'positive';
                 if (score < 0) score_color = 'negative';
+                
+                river_same_feed = null;
+                if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
+                  river_same_feed = 'NB-feed-story-river-same-feed';
+                }
 
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
-                        $.make('div', { className: 'NB-feed-story-header-feed' }, [
-                            (options.river_stories && 
+                        $.make('div', { className: 'NB-feed-story-header-feed ' + river_same_feed }, [
+                            (options.river_stories && !river_same_feed && feed && 
                                 $.make('div', { className: 'NB-feed-story-feed' }, [
                                    $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                                    $.make('span', { className: 'feed_title' }, feed.feed_title)
@@ -2661,7 +2670,8 @@
                 } else {
                     $stories.append($story);
                 }
-                
+
+                this.cache.last_feed_view_story_feed_id = story.story_feed_id;
                 this.cache.feed_view_stories[story.id] = $story;
                 
                 var image_count = $('img', $story).length;
@@ -2694,13 +2704,32 @@
         },
         
         show_correct_feed_in_feed_title_floater: function(story) {
-          var $feed_floater = this.$s.$feed_floater;
-          var $story = this.find_story_in_feed_view(story);
-          var $header = $('.NB-feed-story-header-feed', $story);
-          
-          $('.NB-floater').removeClass('NB-floater');
-          $header.addClass('NB-floater');
-          $feed_floater.empty().append($header.clone());
+            var $story, $header;
+            if (this.cache.feed_title_floater_feed_id != story.story_feed_id) {
+                var $feed_floater = this.$s.$feed_floater;
+                $story = this.find_story_in_feed_view(story);
+                $header = $('.NB-feed-story-header-feed', $story);
+                var $new_header = $header.clone();
+                
+                if (!$new_header.find('.NB-feed-story-feed').length) {
+                  var feed = this.model.get_feed(story.story_feed_id);
+                  feed && $new_header.append($.make('div', { className: 'NB-feed-story-feed' }, [
+                    $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
+                    $.make('span', { className: 'feed_title' }, feed.feed_title)
+                  ]));
+                }
+                
+                $feed_floater.empty().append($new_header);
+                this.cache.feed_title_floater_feed_id = story.story_feed_id;
+            }
+              
+            if (this.cache.feed_title_floater_story_id != story.id) {
+                $story = $story || this.find_story_in_feed_view(story);
+                $header = $header || $('.NB-feed-story-header-feed', $story);
+                $('.NB-floater').removeClass('NB-floater');
+                $header.addClass('NB-floater');
+                this.cache.feed_title_floater_story_id = story.id;
+            }
         },
         
         apply_story_styling: function(reset_stories) {
@@ -4874,11 +4903,11 @@
             
             if (this.flags.river_view &&
                 !this.model.preference('feed_view_single_story')) {
-                var from_top = -3 + this.$s.$feed_stories.scrollTop();
+                var from_top = Math.max(1, -3 + this.$s.$feed_stories.scrollTop());
                 var positions = this.cache.feed_view_story_positions_keys;
                 var closest = $.closest(from_top, positions);
                 var story = this.cache.feed_view_story_positions[positions[closest]];
-                
+
                 this.show_correct_feed_in_feed_title_floater(story);
             }
         },

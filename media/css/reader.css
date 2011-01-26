@@ -1471,6 +1471,9 @@ background: transparent;
 #story_pane .NB-feed-story-header {
     padding: 3px 0 0 0;
 }
+#story_pane .NB-feed-story:first-child .NB-feed-story-header {
+    padding-top: 0;
+  }
 
 #story_pane .NB-feed-story-header-info {
     font-weight: bold;
@@ -1501,8 +1504,11 @@ background: transparent;
     border-bottom: 1px solid #000;
     z-index: 2;
 }
+#story_pane .NB-feed-story-header-feed.NB-feed-story-river-same-feed {
+    z-index: 0;
+}
 #story_pane .NB-feed-story-header-feed.NB-floater {
-  z-index: 0;
+    z-index: 0;
 }
 
 #story_pane .NB-feed-story-feed {
