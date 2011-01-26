@@ -722,7 +722,7 @@ class FeedData(models.Model):
         try:    
             super(FeedData, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
-            self.delete()
+            if self.id: self.delete()
 
 class MFeedPage(mongo.Document):
     feed_id = mongo.IntField(primary_key=True)
