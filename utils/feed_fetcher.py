@@ -309,7 +309,7 @@ class Dispatcher:
                 continue
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] Feed fetch timed out...' % (unicode(feed)[:30]))
-                feed.save_feed_history(505, e.msg, e.fp.read())
+                feed.save_feed_history(505, 'Timeout', e.fp.read())
                 fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
