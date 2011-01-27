@@ -2630,13 +2630,13 @@
                 
                 river_same_feed = null;
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
-                  river_same_feed = 'NB-feed-story-river-same-feed';
+                  // river_same_feed = 'NB-feed-story-river-same-feed';
                 }
 
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-header-feed ' + river_same_feed }, [
-                            (options.river_stories && !river_same_feed && feed && 
+                            (options.river_stories && feed && // !river_same_feed
                                 $.make('div', { className: 'NB-feed-story-feed' }, [
                                    $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
                                    $.make('span', { className: 'feed_title' }, feed.feed_title)
@@ -4903,10 +4903,15 @@
             
             if (this.flags.river_view &&
                 !this.model.preference('feed_view_single_story')) {
-                var from_top = Math.max(1, -3 + this.$s.$feed_stories.scrollTop());
-                var positions = this.cache.feed_view_story_positions_keys;
-                var closest = $.closest(from_top, positions);
-                var story = this.cache.feed_view_story_positions[positions[closest]];
+                var story;
+                if (this.flags.scrolling_by_selecting_story_title) {
+                    story = this.active_story;
+                } else {
+                    var from_top = Math.max(1, this.$s.$feed_stories.scrollTop());
+                    var positions = this.cache.feed_view_story_positions_keys;
+                    var closest = $.closest(from_top, positions);
+                    story = this.cache.feed_view_story_positions[positions[closest]];
+                }
 
                 this.show_correct_feed_in_feed_title_floater(story);
             }

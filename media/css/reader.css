@@ -1471,9 +1471,10 @@ background: transparent;
 #story_pane .NB-feed-story-header {
     padding: 3px 0 0 0;
 }
+#story_pane .NB-river-story .NB-feed-story-header,
 #story_pane .NB-feed-story:first-child .NB-feed-story-header {
     padding-top: 0;
-  }
+}
 
 #story_pane .NB-feed-story-header-info {
     font-weight: bold;
