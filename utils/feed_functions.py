@@ -186,9 +186,8 @@ def fetch_site_favicon(url, path='favicon.ico'):
     
     if not url.endswith('/'):
         url += '/'
-
-    request = urllib2.Request(url + 'favicon.ico', headers=HEADERS)
-    try:
+    
+    def request_image(request):
         icon = urllib2.urlopen(request)
         parser = ImageFile.Parser()
         while True:
@@ -197,6 +196,11 @@ def fetch_site_favicon(url, path='favicon.ico'):
                 break
             parser.feed(s)
         image = parser.close()
+        return image
+        
+    request = urllib2.Request(url + 'favicon.ico', headers=HEADERS)
+    try:
+        image = request_image(request)
     except(urllib2.HTTPError, urllib2.URLError):
         request = urllib2.Request(url, headers=HEADERS)
         try:
@@ -207,17 +211,9 @@ def fetch_site_favicon(url, path='favicon.ico'):
             '//link[@rel="icon" or @rel="shortcut icon"]/@href'
         )
         if icon_path:
-            print icon_path
             request = urllib2.Request(url + icon_path[0], headers=HEADERS)
             try:
-                icon = urllib2.urlopen(request)
-                parser = ImageFile.Parser()
-                while True:
-                    s = icon.read(1024)
-                    if not s:
-                        break
-                    parser.feed(s, **s.info)
-                image = parser.close()
+                image = request_image(request)
             except(urllib2.HTTPError, urllib2.URLError):
                 return
     
