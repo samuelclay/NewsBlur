@@ -1420,6 +1420,7 @@ background: transparent;
 
 #story_pane .NB-story-iframe {
     left: 200%;
+    top: 0;
 }
 
 /* ================================ */
