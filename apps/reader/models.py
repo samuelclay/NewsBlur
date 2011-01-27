@@ -6,9 +6,12 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from apps.rss_feeds.models import Feed, Story, MStory, DuplicateFeed
+from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from utils import urlnorm
+from utils.feed_functions import fetch_address_from_page
+from utils.feed_functions import add_object_to_folder
 
 class UserSubscription(models.Model):
     """
@@ -30,6 +33,7 @@ class UserSubscription(models.Model):
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
     unread_count_updated = models.DateTimeField(default=datetime.datetime.now)
+    oldest_unread_story_date = models.DateTimeField(default=datetime.datetime.now)
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
     is_trained = models.BooleanField(default=False)
@@ -46,14 +50,81 @@ class UserSubscription(models.Model):
                 self.feed = duplicate_feed[0].feed
                 super(UserSubscription, self).save(*args, **kwargs)
                 
+    @classmethod
+    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):
+        feed = None
+        us = None
+    
+        logging.info(" ---> [%s] ~FRAdding URL: ~SB%s (in %s)" % (user, feed_address, folder))
+    
+        if feed_address:
+            feed_address = urlnorm.normalize(feed_address)
+            # See if it exists as a duplicate first
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address).order_by('pk')
+            if duplicate_feed:
+                feed = [duplicate_feed[0].feed]
+            else:
+                feed = Feed.objects.filter(feed_address=feed_address).order_by('pk')
+
+        if feed:
+            feed = feed[0]
+        else:
+            try:
+                feed = fetch_address_from_page(feed_address)
+            except:
+                code    = -2
+                message = "This feed has been added, but something went wrong"\
+                          " when downloading it. Maybe the server's busy."
+
+        if not feed:    
+            code = -1
+            if bookmarklet:
+                message = "This site does not have an RSS feed. Nothing is linked to from this page."
+            else:
+                message = "This site does not point to an RSS feed or a website with an RSS feed."
+        else:
+            us, subscription_created = cls.objects.get_or_create(
+                feed=feed, 
+                user=user,
+                defaults={
+                    'needs_unread_recalc': True,
+                    'active': True,
+                }
+            )
+            code = 1
+            message = ""
+    
+        if us and not subscription_created:
+            code = -3
+            message = "You are already subscribed to this site."
+        elif us:
+            user_sub_folders_object, created = UserSubscriptionFolders.objects.get_or_create(
+                user=user,
+                defaults={'folders': '[]'}
+            )
+            if created:
+                user_sub_folders = []
+            else:
+                user_sub_folders = json.decode(user_sub_folders_object.folders)
+            user_sub_folders = add_object_to_folder(feed.pk, folder, user_sub_folders)
+            user_sub_folders_object.folders = json.encode(user_sub_folders)
+            user_sub_folders_object.save()
         
+            feed.setup_feed_for_premium_subscribers()
+        
+            if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
+                feed.update()
+
+        print code, message, us
+        return code, message, us
+
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
         
         # Use the latest story to get last read time.
         if MStory.objects(story_feed_id=self.feed.pk).first():
             latest_story_date = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date')[0]['story_date']\
-                                + datetime.timedelta(minutes=1)
+                                + datetime.timedelta(seconds=1)
         else:
             latest_story_date = now
 
@@ -69,7 +140,8 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        now = datetime.datetime.utcnow()
+        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
@@ -109,14 +181,15 @@ class UserSubscription(models.Model):
                                                   story_date__gte=date_delta)
         # if not silent:
         #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+        oldest_unread_story_date = now
         unread_stories_db = []
         for story in stories_db:
             if story.story_date < date_delta:
                 continue
             if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
                 unread_stories_db.append(story)
-            elif isinstance(story.id, unicode) and story.id not in read_stories_ids:
-                unread_stories_db.append(story)
+                if story.story_date < oldest_unread_story_date:
+                    oldest_unread_story_date = story.story_date
         stories = Feed.format_stories(unread_stories_db, self.feed.pk)
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
@@ -165,6 +238,7 @@ class UserSubscription(models.Model):
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
         self.unread_count_updated = datetime.datetime.now()
+        self.oldest_unread_story_date = oldest_unread_story_date
         self.needs_unread_recalc = False
         
         self.save()
@@ -179,27 +253,6 @@ class UserSubscription(models.Model):
         
     class Meta:
         unique_together = ("user", "feed")
-        
-        
-class UserStory(models.Model):
-    """
-    Stories read by the user. These are deleted as the mark_read_date for the
-    UserSubscription passes the UserStory date.
-    """
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
-    story = models.ForeignKey(Story)
-    read_date = models.DateTimeField(auto_now=True)
-    opinion = models.IntegerField(default=0)
-    
-    def __unicode__(self):
-        return ('[' + self.feed.feed_title + '] '
-                + self.story.story_title)
-        
-    class Meta:
-        verbose_name_plural = "user stories"
-        verbose_name = "user story"
-        unique_together = ("user", "feed", "story")
         
         
 class MUserStory(mongo.Document):
@@ -349,4 +402,3 @@ class Feature(models.Model):
     
     class Meta:
         ordering = ["-date"]
-        

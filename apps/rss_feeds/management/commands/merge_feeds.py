@@ -18,11 +18,13 @@ class Command(BaseCommand):
                               f2.feed_title AS duplicate_feed_title, 
                               f.feed_link AS original_feed_link,
                               f2.feed_link AS duplicate_feed_link, 
-                              f2.feed_tagline AS original_feed_tagline,
-                              f.feed_tagline AS duplicate_feed_tagline 
+                              fd2.feed_tagline AS original_feed_tagline,
+                              fd.feed_tagline AS duplicate_feed_tagline 
                           FROM feeds f, feeds f2
+                          INNER JOIN rss_feeds_feeddata fd ON fd.feed_id = f.feed_id
+                          INNER JOIN rss_feeds_feeddata fd2 ON fd2.feed_id = f2.feed_id
                           WHERE f2.id > f.id
-                              AND f.feed_tagline = f2.feed_tagline 
+                              AND fd.feed_tagline = fd2.feed_tagline 
                               AND f.feed_link = f2.feed_link 
                               AND f.feed_title = f2.feed_title
                           ORDER BY original_id ASC;""")

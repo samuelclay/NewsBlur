@@ -11,6 +11,7 @@ from apps.feed_import.models import queue_new_feeds
 from paypal.standard.ipn.signals import subscription_signup
 from utils import log as logging
 from utils.timezones.fields import TimeZoneField
+from utils.user_functions import generate_secret_token
      
 class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile")
@@ -21,10 +22,16 @@ class Profile(models.Model):
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
     timezone = TimeZoneField(default="America/New_York")
+    secret_token = models.CharField(max_length=12, blank=True, null=True)
     
     def __unicode__(self):
         return "%s" % self.user
-        
+    
+    def save(self, *args, **kwargs):
+        if not self.secret_token:
+            self.secret_token = generate_secret_token(self.user.username, 12)
+        super(Profile, self).save(*args, **kwargs)
+    
     def activate_premium(self):
         self.is_premium = True
         self.save()
@@ -49,6 +56,22 @@ Feeds: %(feeds)s
 Sincerely,
 NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         mail_admins('New premium account', message, fail_silently=True)
+        
+    def refresh_stale_feeds(self):
+        stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
+        stale_feeds  = UserSubscription.objects.filter(user=self.user, active=True, feed__last_update__lte=stale_cutoff)
+        all_feeds    = UserSubscription.objects.filter(user=self.user, active=True)
+        
+        logging.info(" ---> [%s] ~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
+            self.user, stale_feeds.count(), all_feeds.count()))
+
+        for sub in stale_feeds:
+            sub.feed.fetched_once = False
+            sub.feed.save()
+        
+        if stale_feeds:
+            queue_new_feeds(self.user)
+        
         
 def create_profile(sender, instance, created, **kwargs):
     if created:

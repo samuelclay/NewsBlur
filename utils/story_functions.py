@@ -1,23 +1,45 @@
 from django.utils.dateformat import DateFormat
 import datetime
 from django.utils.http import urlquote
+from django.conf import settings
 
-def format_story_link_date__short(date):
-    parsed_date, date_tuple, today_tuple, yesterday_tuple = _extract_date_tuples(date)
-    if date_tuple == today_tuple:
-        return parsed_date.format('g:ia').replace('.','')
-    elif date_tuple == yesterday_tuple:
-        return 'Yesterday, ' + parsed_date.format('g:ia').replace('.','')
+def story_score(story, bottom_delta=None):
+    # A) Date - Assumes story is unread and within unread range
+    if not bottom_delta: 
+        bottom_delta = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    now        = datetime.datetime.utcnow()
+    date_delta = now - story['story_date']
+    seconds    = lambda td: td.seconds + (td.days * 86400)
+    date_score = max(0, 1 - (seconds(date_delta) / float(seconds(bottom_delta))))
+    
+    # B) Statistics
+    statistics_score = 0
+    
+    # C) Intelligence
+    intelligence_score = .5
+    
+    # print "%s - %s" % (story['story_date'], date_score)
+    return 1/3. * (date_score + statistics_score + intelligence_score)
+
+def format_story_link_date__short(date, now=None):
+    if not now: now = datetime.datetime.now()
+    diff = date.date() - now.date()
+    if diff.days == 0:
+        return date.strftime('%I:%M%p').lstrip('0').lower()
+    elif diff.days == 1:
+        return 'Yesterday, ' + date.strftime('%I:%M%p').lstrip('0').lower()
     else:
-        return parsed_date.format('d M Y, g:ia').replace('.','')
+        return date.strftime('%d %b %Y, ') + date.strftime('%I:%M%p').lstrip('0').lower()
 
-def format_story_link_date__long(date):
-    parsed_date, date_tuple, today_tuple, yesterday_tuple = _extract_date_tuples(date)
-    if date_tuple == today_tuple:
-        return 'Today, ' + parsed_date.format('F jS g:ia').replace('.','')
-    if date_tuple == yesterday_tuple:
+def format_story_link_date__long(date, now=None):
+    if not now: now = datetime.datetime.utcnow()
+    diff = now.date() - date.date()
+    parsed_date = DateFormat(date)
+    if diff.days == 0:
+        return 'Today, ' + parsed_date.format('F jS ') + date.strftime('%I:%M%p').lstrip('0').lower()
+    elif diff.days == 1:
         return 'Yesterday, ' + parsed_date.format('F jS g:ia').replace('.','')
-    elif date_tuple[0] == today_tuple[0]:
+    elif date.date().timetuple()[7] == now.date().timetuple()[7]:
         return parsed_date.format('l, F jS g:ia').replace('.','')
     else:
         return parsed_date.format('l, F jS, Y g:ia').replace('.','')

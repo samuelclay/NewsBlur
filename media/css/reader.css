@@ -579,22 +579,20 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
     opacity: .6;
     display: none;
-/*    display: none !important; /* TODO: Remove for river of news */
 }
-.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon:hover {
-  opacity: 1;
+
+.NB-is-premium .NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon:hover {
+    opacity: 1;
 }
 
 
-.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon {
+.NB-is-premium .NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon {
     display: block;
     opacity: .6;
 }
 
-.NB-feedlist .folder .folder_title:hover .feed_counts_floater {
+.NB-is-premium .NB-feedlist .folder .folder_title:hover .feed_counts_floater {
     margin-right: 24px;
-/*    display: none;*/
-/*    display: block; /* TODO: Remove for river of news */
 }
 .NB-feedlist .folder .folder_title.NB-feedlist-folder-title-recently-collapsed:hover .feed_counts_floater {
     display: block;
@@ -791,7 +789,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   float: right;
   margin: 6px 4px 0 0;
   cursor: pointer;
-  background: transparent url('../img/icons/close.png') no-repeat 0 0;
+  background: transparent url('../img/reader/close.png') no-repeat 0 0;
 }
 
 #NB-progress .NB-progress-title {
@@ -1165,7 +1163,7 @@ background: transparent;
 #story_titles .story.read.NB-story-starred .NB-storytitles-star {
     width: 16px;
     height: 16px;
-    margin: 1px 6px 0 0;
+    margin: -3px 6px -2px 0;
     background: transparent url('../img/reader/star_blue.png') no-repeat 0 0;
     float: left;
     display: none;
@@ -1207,7 +1205,7 @@ background: transparent;
     color: #575757;
 }
 .NB-view-river #story_titles .story a.story_title {
-    margin-left: 118px;
+    margin-left: 120px;
 }
 
 #story_titles .story .story_title .NB-storytitles-author {
@@ -1234,8 +1232,8 @@ background: transparent;
 }
 #story_titles .story .NB-story-feed {
     display: none;
-    left: -118px;
-    width: 120px;
+    left: -120px;
+    width: 118px;
     height: 12px;
     color: #707070;
     position: absolute;
@@ -1400,9 +1398,8 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-view {
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: absolute;
+    overflow: hidden;
+    position: relative;
     top: 0;
     left: 100% !important;
     width: 100%;
@@ -1423,6 +1420,24 @@ background: transparent;
 
 #story_pane .NB-story-iframe {
     left: 200%;
+    top: 0;
+}
+
+/* ================================ */
+/* = Feed View Feed Title Floater = */
+/* ================================ */
+
+.NB-feed-story-view-floater {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  display: none;
+}
+
+.NB-view-river .NB-feed-story-view-floater {
+  display: block;
 }
 
 /* ================= */
@@ -1448,12 +1463,24 @@ background: transparent;
     margin: 0;
     list-style: none;
     background-color: white;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
 }
 
 #story_pane .NB-feed-story-header {
+    padding: 3px 0 0 0;
+}
+#story_pane .NB-river-story .NB-feed-story-header,
+#story_pane .NB-feed-story:first-child .NB-feed-story-header {
+    padding-top: 0;
+}
+
+#story_pane .NB-feed-story-header-info {
     font-weight: bold;
     font-size: 16px;
-    padding: 0 200px 0 28px;
+    padding: 0 250px 0 28px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-bottom: 1px solid #ADADAD;
     position: relative;
@@ -1477,6 +1504,13 @@ background: transparent;
     padding: 2px 200px 2px 28px;
     position: relative;
     border-bottom: 1px solid #000;
+    z-index: 2;
+}
+#story_pane .NB-feed-story-header-feed.NB-feed-story-river-same-feed {
+    z-index: 0;
+}
+#story_pane .NB-feed-story-header-feed.NB-floater {
+    z-index: 0;
 }
 
 #story_pane .NB-feed-story-feed {
@@ -1521,7 +1555,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 #story_pane .NB-feed-story.read .NB-feed-story-sentiment {
-    opacity: .15;
+    opacity: .2;
 }
 #story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-sentiment {
   display: none;
@@ -1608,7 +1642,6 @@ background: transparent;
 }
 
 #story_pane .NB-feed-stories .NB-feed-story {
-    padding: 3px 0 0 0;
     margin: 0;
     clear: both;
 }
@@ -1825,8 +1858,11 @@ background: transparent;
 .NB-feeds-header-river-container {
   position: relative;
   height: 20px;
-  display: block;
+  display: none;
   overflow: hidden;
+}
+.NB-is-premium .NB-feeds-header-river-container {
+  display: block;
 }
 
 .NB-feeds-header-river {
@@ -2105,22 +2141,6 @@ background: transparent;
 }
 
 
-/* ================ */
-/* = Modal Dialog = */
-/* ================ */
-
-#simplemodal-overlay {
-    background-color: #101030;
-}
-
-#simplemodal-container {
-    background-color: white;
-    padding: 8px;
-    -moz-box-shadow: 8px 8px 15px #505050;
-    -webkit-box-shadow: 8px 8px 15px #505050;
-    box-shadow: 8px 8px 15px #505050;
-    border: 1px solid #303030;
-}
 
 /* ==================== */
 /* = OPML Import Form = */
@@ -2325,194 +2345,6 @@ a.NB-splash-link:hover {
   cursor: pointer;
   float: right;
   margin: 0 0 0 4px;
-}
-
-/* ========== */
-/* = Modals = */
-/* ========== */
-
-.NB-modal {
-    padding: 12px;
-    position: relative;
-}
-
-.NB-modal.NB-signed-out .NB-fieldset {
-    opacity: .3;
-}
-
-.NB-modal.NB-signed-out .NB-fieldset.NB-anonymous-ok {
-    opacity: 1;
-}
-
-.NB-modal .NB-modal-loading,
-.NB-modal .NB-loading {
-    width: 16px;
-    height: 16px;
-    float: right;
-    background: none;
-}
-
-.NB-modal .NB-modal-loading.NB-active {
-    background: transparent url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
-}
-
-.NB-modal .NB-loading.NB-active {
-    background: transparent url('../img/reader/spinner_ball.gif') no-repeat 0 0;
-}
-
-.NB-modal h2 {
-    margin: 0;
-    padding: 0;
-    font-size: 130%;
-}
-
-.NB-modal h5,
-.NB-module h5 {
-    margin: 0;
-    padding: 8px 8px 6px;
-    background-color: #D9DDF9;
-    text-shadow: 0 1px 0 #F6F6F6;
-    border-bottom: 1px solid #A0A0A0;
-    color:#505050;
-    font-size: 14px;
-    font-family: "Gill Sans", inherit;
-    text-transform: uppercase;
-    font-weight: normal;
-    overflow: hidden;
-    position: relative;
-}
-
-.NB-modal .NB-modal-field {
-    margin: 0;
-    position: relative;
-    clear: both;
-}
-
-.NB-modal .NB-modal-field h5 {
-}
-
-.NB-modal .NB-modal-field input[type=text] {
-    width: 446px;
-    font-size: 14px;
-    font-size: 14px;
-    padding: 2px;
-    margin: 0px 4px 6px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
-}
-
-.NB-modal .NB-modal-field input[type=checkbox] {
-    margin: 4px 0 0 0px;
-    float: left;
-}
-
-.NB-modal .NB-modal-title {
-    font-weight: bold;
-    color: #303030;
-    text-shadow: 1px 1px 0px #e0e0e0;
-}
-
-.NB-modal .NB-modal-subtitle {
-    margin:12px 0 0;
-    padding:8px 12px;
-    font-size: 14px;
-    position: relative;
-    background-color: #F6F6F6;
-}
-.NB-modal .NB-modal-feed-title {
-    display: block;
-    margin: 0 40px 0 23px;
-    text-decoration: none;
-    color: #272727;
-    overflow: hidden;
-    text-shadow: 0 1px 0 #EBF3FA;
-}
-
-.NB-modal .NB-modal-feed-image {
-    float: left;
-}
-
-.NB-modal-submit input[type=submit],
-.NB-modal-submit .NB-modal-submit-button {
-    border: 1px solid #606060;
-    font-size: 12px;
-    padding: 4px 12px;
-    text-transform: uppercase;
-    margin: 2px 4px 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.NB-modal-submit .NB-modal-submit-back,
-.NB-modal-submit .NB-modal-submit-reset {
-    background-color: #d5d4dB;
-    color: #909090;
-    
-}
-.NB-modal-submit .NB-modal-submit-close {
-    background-color: #d5d4dB;
-    color: #909090;
-    font-weight: bold;
-}
-.NB-modal-submit .NB-modal-submit-green {
-    background-color: #217412;
-    font-weight: bold;
-    color: #FCFCFC;
-}
-
-.NB-modal-submit .NB-modal-submit-delete {
-    background-color: #7E020D;
-    font-weight: bold;
-    color: #FCFCFC;
-}
-.NB-modal-submit .NB-disabled {
-    background-color: #d5d4dB;
-    color: #909090;
-    border: 1px solid #A0A0A0;
-    -moz-box-shadow:2px 2px 0 #E6E6E6;
-    -webkit-box-shadow:2px 2px 0 #E6E6E6;
-    box-shadow:2px 2px 0 #E6E6E6;
-}
-
-.NB-modal .NB-modal-submit {
-    margin: 16px 0 0 0;
-    font-size: 13px;
-    overflow: hidden;
-}
-
-.NB-modal img.feed_favicon {
-    margin: 0 6px 0 0;
-    vertical-align: middle;
-}
-
-.NB-modal .NB-fieldset {
-    background-color: #F0F0FF;
-    border-bottom: 1px solid #D0D0D9;
-    margin: 16px 0 0;
-    overflow: hidden;
-}
-
-.NB-modal .NB-fieldset-fields {
-    margin: 8px 0 4px 16px;
-    font-size: 14px;
-    overflow: hidden;
-}
-
-.NB-modal .NB-modal-feed-chooser-container {
-    float: right;
-    margin: 16px 0 0;
-}
-
-.NB-modal .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-    width: 250px;
 }
 
 /* ============== */
@@ -3739,6 +3571,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 1px;
 }
+.NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/package_green.png') no-repeat  0 2px;
+}
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 2px;
 }
@@ -4183,6 +4018,50 @@ background: transparent;
     height: 96px;
 }
 
+/* ================= */
+/* = Goodies Modal = */
+/* ================= */
+
+.NB-modal-goodies .NB-goodies-group {
+  clear: both;
+  margin: 16px 0 0 0;
+  overflow: hidden;
+  background-color: #F0F0F0;
+  padding: 8px;
+}
+
+.NB-modal-goodies .NB-goodies-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 8px;
+  color: #404030;
+  text-shadow: 1px 1px 0 #E0E0E0;
+}
+
+.NB-modal-goodies .NB-goodies-bookmarklet-button {
+    display: inline-block;
+    float: right;
+    font-family: 'Lucida Grande', Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    color: #fff;
+    background-color: #626262;
+    border: 1px solid #626262;
+    padding: 0px 7px 1px 7px;
+    text-shadow: #3b3b3b 1px 1px 0px;
+    min-width: 62px;
+    text-align: center;
+    vertical-align: 2px;
+    color: #fff; 
+    text-decoration: none; 
+    outline: none;
+    margin: 8px 8px;
+}
+
 /* ============================ */
 /* = Keyboard Shortcuts Modal = */
 /* ============================ */
@@ -4266,6 +4145,11 @@ background: transparent;
 .NB-modal-preferences .NB-preference .NB-preference-label {
   float: left;
   width: 150px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-sublabel {
+  font-size: 11px;
+  color: #808080;
+  margin: 4px 30px 0px 0px;
 }
 
 .NB-modal-preferences .NB-preference .NB-preference-options input {

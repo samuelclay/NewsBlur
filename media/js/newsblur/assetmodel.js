@@ -233,6 +233,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         // NEWSBLUR.log(['load_feed_precallback', feed_id, first_load]);
+        if (data.dupe_feed_id && this.feed_id == data.dupe_feed_id) {
+            feed_id = data.dupe_feed_id;
+        }
         if ((feed_id != this.feed_id && data) || first_load) {
             this.stories = data.stories;
             this.feed_tags = data.feed_tags;
@@ -467,8 +470,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
-    delete_feed: function(feed_id, in_folder, callback) {
-        delete this.feeds[feed_id];
+    delete_feed: function(feed_id, in_folder, callback, duplicate_feed) {
+        if (!duplicate_feed) delete this.feeds[feed_id];
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_feed', {
                 'feed_id': feed_id, 

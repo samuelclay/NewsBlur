@@ -21,7 +21,7 @@ import xml.sax
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '0.9'
+VERSION = '1.0'
 URL = 'http://www.newsblur.com/'
 USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
@@ -178,7 +178,7 @@ class ProcessFeed:
             pass
         
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
-        self.feed.feed_tagline = self.fpf.feed.get('tagline', self.feed.feed_tagline)
+        self.feed.data.feed_tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
         self.feed.last_update = datetime.datetime.utcnow()
         
@@ -190,7 +190,6 @@ class ProcessFeed:
                 guids.append(entry.title)
             elif entry.link:
                 guids.append(entry.link)
-        
         self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
@@ -310,7 +309,7 @@ class Dispatcher:
                 continue
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] Feed fetch timed out...' % (unicode(feed)[:30]))
-                feed.save_feed_history(505, e.msg, e.fp.read())
+                feed.save_feed_history(505, 'Timeout', '')
                 fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -330,8 +329,17 @@ class Dispatcher:
                   
                 logging.debug(u'   ---> [%-30s] Fetching page' % (unicode(feed)[:30]))
                 page_importer = PageImporter(feed.feed_link, feed)
-                page_importer.fetch_page()
-
+                try:
+                    page_importer.fetch_page()
+                except Exception, e:
+                    logging.debug('[%d] ! -------------------------' % (feed_id,))
+                    tb = traceback.format_exc()
+                    logging.error(tb)
+                    logging.debug('[%d] ! -------------------------' % (feed_id,))
+                    ret_feed = FEED_ERREXC 
+                    feed.save_feed_history(550, "Page Error", tb)
+                    fetched_feed = None
+                
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
             

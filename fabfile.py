@@ -46,9 +46,23 @@ def deploy():
         run('kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
 
 @roles('app')
+def deploy_full():
+    with cd('~/newsblur'):
+        run('git pull')
+        run('./manage.py migrate')
+        run('kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
+
+@roles('app')
 def staging():
     with cd('~/staging'):
         run('git pull')
+        run('kill -HUP `cat /var/run/gunicorn/gunicorn_staging.pid`')
+
+@roles('app')
+def staging_full():
+    with cd('~/staging'):
+        run('git pull')
+        run('./manage.py migrate')
         run('kill -HUP `cat /var/run/gunicorn/gunicorn_staging.pid`')
 
 @roles('task')

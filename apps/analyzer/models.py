@@ -1,7 +1,7 @@
 import mongoengine as mongo
 from django.db import models
 from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed, StoryAuthor, Tag
+from apps.rss_feeds.models import Feed
 
 class FeatureCategory(models.Model):
     user = models.ForeignKey(User)
@@ -22,20 +22,7 @@ class Category(models.Model):
     def __unicode__(self):
         return '%s (%s)' % (self.category, self.count)
         
-        
-class ClassifierTitle(models.Model):
-    user = models.ForeignKey(User)
-    score = models.SmallIntegerField()
-    title = models.CharField(max_length=255)
-    feed = models.ForeignKey(Feed)
-    # original_story = models.ForeignKey(Story, null=True)
-    creation_date = models.DateTimeField(auto_now=True)
-    
-    unique_together = (('user', 'feed', 'title'),)
-    
-    def __unicode__(self):
-        return '%s: %s (%s)' % (self.user, self.title, self.feed)
-        
+
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
@@ -49,19 +36,6 @@ class MClassifierTitle(mongo.Document):
         'allow_inheritance': False,
     }
             
-class ClassifierAuthor(models.Model):
-    user = models.ForeignKey(User)
-    score = models.SmallIntegerField()
-    author = models.ForeignKey(StoryAuthor)
-    feed = models.ForeignKey(Feed)
-    # original_story = models.ForeignKey(Story, null=True)
-    creation_date = models.DateTimeField(auto_now=True)
-    
-    unique_together = (('user', 'feed', 'author'),)
-    
-    def __unicode__(self):
-        return '%s: %s (%s)' % (self.user, self.author.author_name, self.feed)
-        
 class MClassifierAuthor(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
@@ -76,18 +50,6 @@ class MClassifierAuthor(mongo.Document):
     }
     
 
-class ClassifierFeed(models.Model):
-    user = models.ForeignKey(User)
-    score = models.SmallIntegerField()
-    feed = models.ForeignKey(Feed)
-    # original_story = models.ForeignKey(Story, null=True)
-    creation_date = models.DateTimeField(auto_now=True)
-    
-    unique_together = (('user', 'feed'),)
-    
-    def __unicode__(self):
-        return '%s: %s' % (self.user, self.feed)
-        
 class MClassifierFeed(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField(unique_with='user_id')
@@ -100,19 +62,6 @@ class MClassifierFeed(mongo.Document):
         'allow_inheritance': False,
     }
     
-        
-class ClassifierTag(models.Model):
-    user = models.ForeignKey(User)
-    score = models.SmallIntegerField()
-    tag = models.ForeignKey(Tag)
-    feed = models.ForeignKey(Feed)
-    # original_story = models.ForeignKey(Story, null=True)
-    creation_date = models.DateTimeField(auto_now=True)
-    
-    unique_together = (('user', 'feed', 'tag'),)
-    
-    def __unicode__(self):
-        return '%s: %s (%s)' % (self.user, self.tag.name, self.feed)
         
 class MClassifierTag(mongo.Document):
     user_id = mongo.IntField()

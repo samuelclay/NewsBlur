@@ -94,6 +94,7 @@ def fetch_address_from_page(url, existing_feed=None):
                 feed = Feed(feed_address=feed_finder_url)
                 feed.save()
                 feed.update()
+                feed = Feed.objects.get(pk=feed.pk)
             else:
                 feed = feed[0]
         return feed
@@ -172,7 +173,6 @@ def format_relative_date(date, future=False):
             return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), 
                                     '' if future else 'ago')
                                     
-
 def fetch_site_favicon(url, path='favicon.ico'):
     HEADERS = {
         'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
@@ -245,3 +245,16 @@ def determine_dominant_color_in_image(image):
     peak = codes[index_max]
     colour = ''.join(chr(c) for c in peak).encode('hex')
     print 'most frequent is %s (#%s)' % (peak, colour)
+
+def add_object_to_folder(obj, folder, folders):
+    if not folder:
+        folders.append(obj)
+        return folders
+
+    for k, v in enumerate(folders):
+        if isinstance(v, dict):
+            for f_k, f_v in v.items():
+                if f_k == folder:
+                    f_v.append(obj)
+                folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
+    return folders  

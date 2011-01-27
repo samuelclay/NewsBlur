@@ -1,20 +1,27 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
-    def forwards(self, orm):    
-        from django.db import connection, transaction
-        cursor = connection.cursor()
-        cursor.execute("UPDATE feeds SET min_to_decay = 0 WHERE min_to_decay = 15")
-        transaction.commit_unless_managed()
+    def forwards(self, orm):
+        
+        # Adding index on 'Feed', fields ['active_subscribers']
+        db.create_index('feeds', ['active_subscribers'])
+
+        # Adding index on 'Feed', fields ['active']
+        db.create_index('feeds', ['active'])
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        
+        # Removing index on 'Feed', fields ['active_subscribers']
+        db.delete_index('feeds', ['active_subscribers'])
+
+        # Removing index on 'Feed', fields ['active']
+        db.delete_index('feeds', ['active'])
 
 
     models = {
@@ -26,9 +33,9 @@ class Migration(DataMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'rss_feeds.feed': {
-            'Meta': {'ordering': "['feed_title']", 'object_name': 'Feed', 'db_table': "'feeds'"},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
+            'Meta': {'object_name': 'Feed', 'db_table': "'feeds'"},
+            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True', 'blank': 'True'}),
+            'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'db_index': 'True'}),
             'average_stories_per_month': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'creation': ('django.db.models.fields.DateField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'days_to_trim': ('django.db.models.fields.IntegerField', [], {'default': '90'}),
@@ -38,9 +45,9 @@ class Migration(DataMigration):
             'feed_link': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '1000', 'null': 'True', 'blank': 'True'}),
             'feed_tagline': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'feed_title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'fetched_once': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'has_feed_exception': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'has_page_exception': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'fetched_once': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'has_feed_exception': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True', 'blank': 'True'}),
+            'has_page_exception': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_load_time': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'last_modified': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
@@ -101,7 +108,7 @@ class Migration(DataMigration):
             'status_code': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'})
         },
         'rss_feeds.story': {
-            'Meta': {'ordering': "['-story_date']", 'unique_together': "(('story_feed', 'story_guid_hash'),)", 'object_name': 'Story', 'db_table': "'stories'"},
+            'Meta': {'unique_together': "(('story_feed', 'story_guid_hash'),)", 'object_name': 'Story', 'db_table': "'stories'"},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'story_author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['rss_feeds.StoryAuthor']"}),
             'story_author_name': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
@@ -112,7 +119,7 @@ class Migration(DataMigration):
             'story_guid': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
             'story_guid_hash': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'story_original_content': ('utils.compressed_textfield.StoryField', [], {'null': 'True', 'blank': 'True'}),
-            'story_past_trim_date': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'story_past_trim_date': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'story_permalink': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
             'story_tags': ('django.db.models.fields.CharField', [], {'max_length': '2000', 'null': 'True', 'blank': 'True'}),
             'story_title': ('django.db.models.fields.CharField', [], {'max_length': '255'})

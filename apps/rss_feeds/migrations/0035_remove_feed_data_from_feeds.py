@@ -1,20 +1,39 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
-    def forwards(self, orm):    
-        from django.db import connection, transaction
-        cursor = connection.cursor()
-        cursor.execute("UPDATE feeds SET min_to_decay = 0 WHERE min_to_decay = 15")
-        transaction.commit_unless_managed()
+    def forwards(self, orm):
+        
+        # Deleting field 'Feed.feed_tagline'
+        db.delete_column('feeds', 'feed_tagline')
+
+        # Deleting field 'Feed.popular_tags'
+        db.delete_column('feeds', 'popular_tags')
+
+        # Deleting field 'Feed.popular_authors'
+        db.delete_column('feeds', 'popular_authors')
+
+        # Deleting field 'Feed.story_count_history'
+        db.delete_column('feeds', 'story_count_history')
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        
+        # Adding field 'Feed.feed_tagline'
+        db.add_column('feeds', 'feed_tagline', self.gf('django.db.models.fields.CharField')(default='', max_length=1024, null=True, blank=True), keep_default=False)
+
+        # Adding field 'Feed.popular_tags'
+        db.add_column('feeds', 'popular_tags', self.gf('django.db.models.fields.CharField')(max_length=1024, null=True, blank=True), keep_default=False)
+
+        # Adding field 'Feed.popular_authors'
+        db.add_column('feeds', 'popular_authors', self.gf('django.db.models.fields.CharField')(max_length=2048, null=True, blank=True), keep_default=False)
+
+        # Adding field 'Feed.story_count_history'
+        db.add_column('feeds', 'story_count_history', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
 
 
     models = {
@@ -27,8 +46,8 @@ class Migration(DataMigration):
         },
         'rss_feeds.feed': {
             'Meta': {'ordering': "['feed_title']", 'object_name': 'Feed', 'db_table': "'feeds'"},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
+            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
+            'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'db_index': 'True'}),
             'average_stories_per_month': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'creation': ('django.db.models.fields.DateField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'days_to_trim': ('django.db.models.fields.IntegerField', [], {'default': '90'}),
@@ -36,7 +55,6 @@ class Migration(DataMigration):
             'exception_code': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'feed_address': ('django.db.models.fields.URLField', [], {'unique': 'True', 'max_length': '255'}),
             'feed_link': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '1000', 'null': 'True', 'blank': 'True'}),
-            'feed_tagline': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'feed_title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'fetched_once': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'has_feed_exception': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
@@ -48,11 +66,17 @@ class Migration(DataMigration):
             'min_to_decay': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'next_scheduled_update': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True'}),
             'num_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
-            'popular_authors': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'null': 'True', 'blank': 'True'}),
-            'popular_tags': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'queued_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True'}),
-            'stories_last_month': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'stories_last_month': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+        },
+        'rss_feeds.feeddata': {
+            'Meta': {'object_name': 'FeedData'},
+            'feed': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'data'", 'unique': 'True', 'to': "orm['rss_feeds.Feed']"}),
+            'feed_tagline': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'popular_authors': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'null': 'True', 'blank': 'True'}),
+            'popular_tags': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'story_count_history': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         'rss_feeds.feedfetchhistory': {
