@@ -1,9 +1,6 @@
-import socket
-socket.setdefaulttimeout(15)
 import urllib2
 import re
 import urlparse
-import multiprocessing
 import traceback
 import feedparser
 from utils import log as logging
@@ -14,7 +11,6 @@ class PageImporter(object):
     def __init__(self, url, feed):
         self.url = url
         self.feed = feed
-        self.lock = multiprocessing.Lock()
     
     def fetch_page(self):
         if not self.url:

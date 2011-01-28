@@ -6,7 +6,8 @@ from django.db import IntegrityError
 # from mongoengine.queryset import Q
 from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
-from apps.rss_feeds.importer import PageImporter
+from apps.rss_feeds.page_importer import PageImporter
+from apps.rss_feeds.icon_importer import IconImporter
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
@@ -339,6 +340,16 @@ class Dispatcher:
                     ret_feed = FEED_ERREXC 
                     feed.save_feed_history(550, "Page Error", tb)
                     fetched_feed = None
+                    
+                icon_importer = IconImporter(feed)
+                try:
+                    icon_importer.save()
+                except Exception, e:
+                    logging.debug('[%d] ! -------------------------' % (feed_id,))
+                    tb = traceback.format_exc()
+                    logging.error(tb)
+                    logging.debug('[%d] ! -------------------------' % (feed_id,))
+                    # feed.save_feed_history(560, "Icon Error", tb)
                 
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time

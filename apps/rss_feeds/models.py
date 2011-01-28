@@ -22,7 +22,6 @@ from utils import feedfinder
 from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit
-from utils.feed_functions import fetch_site_favicon, determine_dominant_color_in_image
 from utils.story_functions import pre_process_story
 from utils.diff import HTMLDiff
 from utils import log as logging
@@ -701,12 +700,6 @@ class Feed(models.Model):
         
         return phrases
         
-    def download_favicon(self):
-        icon = fetch_site_favicon(self.feed_link)
-        
-        if icon:
-            determine_dominant_color_in_image(icon)
-        
     class Meta:
         db_table="feeds"
         ordering=["feed_title"]
@@ -730,6 +723,20 @@ class FeedData(models.Model):
             super(FeedData, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
             if self.id: self.delete()
+
+
+class FeedIcon(models.Model):
+    feed = AutoOneToOneField(Feed, related_name='icon')
+    color = models.CharField(max_length=6, default="000000")
+    data = models.TextField()
+    icon_url = models.CharField(max_length=2000, blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+        try:    
+            super(FeedIcon, self).save(*args, **kwargs)
+        except (IntegrityError, OperationError):
+            if self.id: self.delete()
+
 
 class MFeedPage(mongo.Document):
     feed_id = mongo.IntField(primary_key=True)
