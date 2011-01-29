@@ -821,7 +821,8 @@
                 $.make('div', { className: 'feed_counts' }, [
                     this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng)
                 ]),
-                $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
+                // $.make('img', { className: 'feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + feed.feed_link }),
+                $.make('img', { className: 'feed_favicon', src: 'data:image/png;base64,' + feed.favicon }),
                 $.make('span', { className: 'feed_title' }, [
                   feed.feed_title,
                   (type == 'story' && $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' })),

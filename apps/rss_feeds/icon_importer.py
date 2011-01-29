@@ -3,32 +3,50 @@ import lxml.html
 import scipy
 import scipy.misc
 import scipy.cluster
-import StringIO
+from StringIO import StringIO
 from PIL import ImageFile
+import ImageChops, Image
+from django.conf import settings
+
+class BadImage(Exception): pass
 
 class IconImporter(object):
     
-    def __init__(self, feed):
+    def __init__(self, feed, force=False):
         self.feed = feed
+        self.force = force
     
     def save(self):
-        image, icon_url = self.fetch()
-        if not image: return
-        color = self.determine_dominant_color_in_image(image)
-        image_str = self.string_from_image(image)
-        self.feed.icon.data = image_str
-        self.feed.icon.icon_url = icon_url
-        self.feed.icon.color = color
+        if not self.force and self.feed.icon.not_found:
+            print 'Not found, skipping...'
+            return
+        image, icon_url = self.fetch(force=self.force)
+
+        if image:
+            image     = self.normalize_image(image)
+            color     = self.determine_dominant_color_in_image(image)
+            image_str = self.string_from_image(image)
+
+            self.feed.icon.data      = image_str
+            self.feed.icon.icon_url  = icon_url
+            self.feed.icon.color     = color
+            self.feed.icon.not_found = False
+        else:
+            self.feed.icon.not_found = True
+            
         self.feed.icon.save()
+        return not self.feed.icon.not_found
        
-    def fetch(self, path='favicon.ico'):
+    def fetch(self, path='favicon.ico', force=False):
         HEADERS = {
             'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
             'Connection': 'close',
         }
         image = None
-        url = self.feed.icon.icon_url
-        
+        url = None
+
+        if not force:
+            url = self.feed.icon.icon_url
         if not url:
             url = self.feed.feed_link
 
@@ -37,47 +55,64 @@ class IconImporter(object):
         if url.endswith('/'):
             url += 'favicon.ico'
 
-        def request_image(request):
+        def request_image(url):
+            print 'Requesting: %s' % url
+            request = urllib2.Request(url, headers=HEADERS)
             icon = urllib2.urlopen(request)
             parser = ImageFile.Parser()
-            while True:
-                s = icon.read(1024)
-                if not s:
-                    break
+            s = icon.read()
+            if s:
                 parser.feed(s)
-            image = parser.close()
-            return image
+            try:
+                image = parser.close()
+                return image
+            except IOError:
+                raise BadImage
         
-        request = urllib2.Request(url, headers=HEADERS)
         try:
-            image = request_image(request)
-        except(urllib2.HTTPError, urllib2.URLError):
+            image = request_image(url)
+        except (urllib2.HTTPError, urllib2.URLError, BadImage):
             request = urllib2.Request(self.feed.feed_link, headers=HEADERS)
             try:
                 # 2048 bytes should be enough for most of websites
                 content = urllib2.urlopen(request).read(2048) 
             except(urllib2.HTTPError, urllib2.URLError):
-                return
+                return None, None
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )
             if icon_path:
-                url = self.feed.feed_link + icon_path[0]
-                request = urllib2.Request(url, headers=HEADERS)
+                if str(icon_path[0]).startswith('http'):
+                    url = icon_path[0]
+                else:
+                    url = self.feed.feed_link + icon_path[0]
                 try:
-                    image = request_image(request)
-                except(urllib2.HTTPError, urllib2.URLError):
-                    return
-    
-        image = image.resize((16, 16))
-    
+                    image = request_image(url)
+                except(urllib2.HTTPError, urllib2.URLError, BadImage):
+                    return None, None
+        print 'Found: %s - %s' % (url, image)
         return image, url
+    
+    def normalize_image(self, image):
+        image = image.resize((16, 16), Image.ANTIALIAS)
+        if image.mode != 'RGBA':
+            image = image.convert('RGBA')
+        # mask = Image.open(settings.IMAGE_MASK)
+        print image
+        print image.mode
+        print image.size
+        # mask = mask.convert('L')
+        # print mask
+        # image.paste(Image.new('RGBA', image.size, '#FFFFFF'), (0, 0), ImageChops.invert(mask))
+        # image.putalpha(mask)
+        
+        return image
 
     def determine_dominant_color_in_image(self, image):
         NUM_CLUSTERS = 5
 
-        if image.mode == 'P':
-            image.putalpha(0)
+        # if image.mode == 'P':
+        #     image.putalpha(0)
             
         ar = scipy.misc.fromimage(image)
         shape = ar.shape
@@ -96,11 +131,11 @@ class IconImporter(object):
         color = ''.join(chr(c) for c in peak).encode('hex')
         print 'most frequent is %s (#%s)' % (peak, color)
         
-        return color
+        return color[:6]
 
     def string_from_image(self, image):
-        output = StringIO.StringIO()
-        image.save(output, format="PNG")
+        output = StringIO()
+        image.save(output, 'png', quality=95)
         contents = output.getvalue()
         output.close()
         print contents.encode('base64')

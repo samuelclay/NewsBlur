@@ -150,7 +150,9 @@ def load_feeds(request):
             'ng': sub.unread_count_negative, 
             'updated': relative_timesince(sub.feed.last_update),
             'subs': sub.feed.num_subscribers,
-            'active': sub.active
+            'active': sub.active,
+            'favicon': sub.feed.icon.data,
+            'favicon_color': sub.feed.icon.color,
         }
         
         if not sub.feed.fetched_once:

@@ -13,6 +13,7 @@ TEMPLATE_DIRS = (''.join([CURRENT_DIR, '/templates']),)
 MEDIA_ROOT = ''.join([CURRENT_DIR, '/media'])
 UTILS_ROOT = ''.join([CURRENT_DIR, '/utils'])
 LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
+IMAGE_MASK = ''.join([CURRENT_DIR, '/media/img/mask.png'])
 
 # ==============
 # = PYTHONPATH =

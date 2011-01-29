@@ -730,6 +730,7 @@ class FeedIcon(models.Model):
     color = models.CharField(max_length=6, default="000000")
     data = models.TextField()
     icon_url = models.CharField(max_length=2000, blank=True, null=True)
+    not_found = models.BooleanField(default=False)
     
     def save(self, *args, **kwargs):
         try:    
