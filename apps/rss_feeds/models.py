@@ -726,7 +726,7 @@ class FeedData(models.Model):
 
 
 class FeedIcon(models.Model):
-    feed = AutoOneToOneField(Feed, related_name='icon')
+    feed = AutoOneToOneField(Feed, primary_key=True, related_name='icon')
     color = models.CharField(max_length=6, default="000000")
     data = models.TextField()
     icon_url = models.CharField(max_length=2000, blank=True, null=True)
@@ -735,7 +735,8 @@ class FeedIcon(models.Model):
     def save(self, *args, **kwargs):
         try:    
             super(FeedIcon, self).save(*args, **kwargs)
-        except (IntegrityError, OperationError):
+        except (IntegrityError, OperationError), e:
+            print "Error on Icon: %s" % e
             if self.id: self.delete()
 
 
@@ -752,8 +753,25 @@ class MFeedPage(mongo.Document):
         if self.page_data:
             self.page_data = zlib.compress(self.page_data)
         super(MFeedPage, self).save(*args, **kwargs)
-
+    
+    @classmethod
+    def get_data(cls, feed_id):
+        data = None
+        feed_page = cls.objects(feed_id=feed_id)
         
+        if feed_page:
+            data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+        
+        if not data:
+            dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+            if dupe_feed:
+                feed = dupe_feed[0].feed
+                feed_page = MFeedPage.objects.filter(feed_id=feed.pk)
+                if feed_page:
+                    data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+                    
+        return data
+
 class MStory(mongo.Document):
     '''A feed item'''
     story_feed_id            = mongo.IntField()

@@ -180,7 +180,7 @@ class ProcessFeed:
         
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
         self.feed.data.feed_tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
-        self.feed.feed_link = self.fpf.feed.get('link', self.feed.feed_link)
+        self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         self.feed.last_update = datetime.datetime.utcnow()
         
         guids = []
@@ -341,7 +341,7 @@ class Dispatcher:
                     feed.save_feed_history(550, "Page Error", tb)
                     fetched_feed = None
                     
-                icon_importer = IconImporter(feed)
+                icon_importer = IconImporter(feed, force=self.options['force'])
                 try:
                     icon_importer.save()
                 except Exception, e:

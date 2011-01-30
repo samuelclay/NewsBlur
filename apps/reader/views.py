@@ -367,18 +367,7 @@ def load_feed_page(request):
     if feed_id == 0:
         raise Http404
         
-    feed_page = MFeedPage.objects.filter(feed_id=feed_id)
-    data = None
-            
-    if feed_page:
-        data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
-    else:
-        dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
-        if dupe_feed:
-            feed = dupe_feed[0].feed
-            feed_page = MFeedPage.objects.filter(feed_id=feed.pk)
-            if feed_page:
-                data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+    data = MFeedPage.get_data(feed_id=feed_id)
 
     if not data:
         data = "Fetching feed..."
