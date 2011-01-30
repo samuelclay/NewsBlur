@@ -733,7 +733,8 @@ class FeedIcon(models.Model):
     not_found = models.BooleanField(default=False)
     
     def save(self, *args, **kwargs):
-        self.icon_url = unicode(self.icon_url)
+        if self.icon_url:
+            self.icon_url = unicode(self.icon_url)
         try:    
             super(FeedIcon, self).save(*args, **kwargs)
         except (IntegrityError, OperationError), e:
