@@ -138,8 +138,9 @@ class IconImporter(object):
 
         if not force:
             url = self.feed.icon.icon_url
-        if not url:
+        if not url and self.feed.feed_link:
             url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
+        if not url: return None, None, None
 
         image, image_file = self.get_image_from_url(url)
         if not image:
