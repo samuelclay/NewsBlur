@@ -3,13 +3,12 @@ import lxml.html
 import scipy
 import scipy.misc
 import scipy.cluster
-import Image
 import urlparse
-import operator
 import struct
+import operator
 from StringIO import StringIO
 from apps.rss_feeds.models import MFeedPage
-from PIL import BmpImagePlugin, PngImagePlugin, ImageFile
+from PIL import BmpImagePlugin, PngImagePlugin, Image
 
 HEADERS = {
     'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
@@ -26,11 +25,13 @@ class IconImporter(object):
         if not self.force and self.feed.icon.not_found:
             print 'Not found, skipping...'
             return
-        image, icon_url = self.fetch_image_from_page_data()
+        image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
-            image, icon_url = self.fetch(force=self.force)
+            image, image_file, icon_url = self.fetch(force=self.force)
 
         if image:
+            ico_image = self.load_icon(image_file)
+            if ico_image: image = ico_image
             image     = self.normalize_image(image)
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
@@ -47,13 +48,88 @@ class IconImporter(object):
         self.feed.icon.save()
         return not self.feed.icon.not_found
      
+    def load_icon(self, image_file, index=None):
+        '''
+        Load Windows ICO image.
+
+        See http://en.wikipedia.org/w/index.php?oldid=264332061 for file format
+        description.
+        '''
+        try:
+            image_file.seek(0)
+            header = struct.unpack('<3H', image_file.read(6))
+        except Exception, e:
+            print 'No on struct: %s'% e
+            return
+
+        # Check magic
+        if header[:2] != (0, 1):
+            print 'No on header', header
+            return
+
+        # Collect icon directories
+        directories = []
+        for i in xrange(header[2]):
+            directory = list(struct.unpack('<4B2H2I', image_file.read(16)))
+            for j in xrange(3):
+                if not directory[j]:
+                    directory[j] = 256
+
+            directories.append(directory)
+
+        if index is None:
+            # Select best icon
+            directory = max(directories, key=operator.itemgetter(slice(0, 3)))
+        else:
+            directory = directories[index]
+
+        # Seek to the bitmap data
+        image_file.seek(directory[7])
+
+        prefix = image_file.read(16)
+        image_file.seek(-16, 1)
+
+        if PngImagePlugin._accept(prefix):
+            # Windows Vista icon with PNG inside
+            image = PngImagePlugin.PngImageFile(image_file)
+        else:
+            # Load XOR bitmap
+            image = BmpImagePlugin.DibImageFile(image_file)
+            if image.mode == 'RGBA':
+                # Windows XP 32-bit color depth icon without AND bitmap
+                pass
+            else:
+                # Patch up the bitmap height
+                image.size = image.size[0], image.size[1] >> 1
+                d, e, o, a = image.tile[0]
+                image.tile[0] = d, (0, 0) + image.size, o, a
+
+                # Calculate AND bitmap dimensions. See
+                # http://en.wikipedia.org/w/index.php?oldid=264236948#Pixel_storage
+                # for description
+                offset = o + a[1] * image.size[1]
+                stride = ((image.size[0] + 31) >> 5) << 2
+                size = stride * image.size[1]
+
+                # Load AND bitmap
+                image_file.seek(offset)
+                string = image_file.read(size)
+                mask = Image.fromstring('1', image.size, string, 'raw',
+                                        ('1;I', stride, -1))
+
+                image = image.convert('RGBA')
+                image.putalpha(mask)
+
+        return image
+        
     def fetch_image_from_page_data(self):
         image = None
+        image_file = None
         content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
         if url:
-            image = self.get_image_from_url(url)
-        return image, url
+            image, image_file = self.get_image_from_url(url)
+        return image, image_file, url
 
     def fetch(self, path='favicon.ico', force=False):
         image = None
@@ -64,42 +140,36 @@ class IconImporter(object):
         if not url:
             url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
 
-        image = self.get_image_from_url(url)
+        image, image_file = self.get_image_from_url(url)
         if not image:
             url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
-            image = self.get_image_from_url(url)
+            image, image_file = self.get_image_from_url(url)
             if not image:
                 request = urllib2.Request(self.feed.feed_link, headers=HEADERS)
                 try:
                     # 2048 bytes should be enough for most of websites
                     content = urllib2.urlopen(request).read(2048) 
                 except(urllib2.HTTPError, urllib2.URLError):
-                    return None, None
+                    return None, None, None
                 url = self._url_from_html(content)
                 if url:
                     try:
-                        image = self.get_image_from_url(url)
+                        image, image_file = self.get_image_from_url(url)
                     except(urllib2.HTTPError, urllib2.URLError):
-                        return None, None
+                        return None, None, None
         print 'Found: %s - %s' % (url, image)
-        return image, url
+        return image, image_file, url
     
     def get_image_from_url(self, url):
         print 'Requesting: %s' % url
         try:
             request = urllib2.Request(url, headers=HEADERS)
-            icon = urllib2.urlopen(request)
-        except (urllib2.HTTPError, urllib2.URLError), e:
-            return None
-        parser = ImageFile.Parser()
-        s = icon.read()
-        if s:
-            parser.feed(s)
-        try:
-            image = parser.close()
-            return image
-        except IOError, e:
-            return None
+            icon = urllib2.urlopen(request).read()
+            icon_file = StringIO(icon)
+            image = Image.open(icon_file)
+        except (urllib2.HTTPError, urllib2.URLError, IOError):
+            return None, None
+        return image, icon_file
     
     def _url_from_html(self, content):
         url = None
@@ -114,7 +184,6 @@ class IconImporter(object):
         return url
         
     def normalize_image(self, image):
-        print image.size
         # if image.size != (16, 16):
         #     image = image.resize((16, 16), Image.BICUBIC)
         print image
