@@ -840,6 +840,9 @@ def save_feed_chooser(request):
     logging.info(' ---> [%s] ~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        
+
+    request.user.profile.refresh_stale_feeds()
+
     return {'activated': activated}
 
 @ajax_login_required
