@@ -6,9 +6,9 @@ import scipy.cluster
 import urlparse
 import struct
 import operator
+import BmpImagePlugin, PngImagePlugin, Image
 from StringIO import StringIO
 from apps.rss_feeds.models import MFeedPage
-from PIL import BmpImagePlugin, PngImagePlugin, Image
 
 HEADERS = {
     'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
