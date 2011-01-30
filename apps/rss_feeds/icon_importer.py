@@ -9,7 +9,7 @@ import operator
 import BmpImagePlugin, PngImagePlugin, Image
 from StringIO import StringIO
 from apps.rss_feeds.models import MFeedPage
-from utils.feed_functions import timelimit, TimeoutError
+from utils.feed_functions import timelimit
 
 HEADERS = {
     'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
@@ -178,7 +178,8 @@ class IconImporter(object):
             return image, icon_file
         try:
             image, icon_file = _1(url)
-        except (urllib2.HTTPError, urllib2.URLError, IOError, TimeoutError, ValueError):
+        # except (urllib2.HTTPError, urllib2.URLError, IOError, TimeoutError, ValueError):
+        except (Exception):
             return None, None
         return image, icon_file
     
