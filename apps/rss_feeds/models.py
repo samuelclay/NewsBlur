@@ -727,7 +727,7 @@ class FeedData(models.Model):
 
 class FeedIcon(models.Model):
     feed = AutoOneToOneField(Feed, primary_key=True, related_name='icon')
-    color = models.CharField(max_length=6, default="000000")
+    color = models.CharField(max_length=6, blank=True, null=True)
     data = models.TextField()
     icon_url = models.CharField(max_length=2000, blank=True, null=True)
     not_found = models.BooleanField(default=False)

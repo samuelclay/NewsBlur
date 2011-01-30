@@ -1497,8 +1497,8 @@ background: transparent;
         linear,
         left bottom,
         left top,
-        color-stop(0.36, rgba(248, 221,105, 250)),
-        color-stop(0.84, rgba(268, 241, 125, 250))
+        color-stop(0.36, rgba(76, 76, 76, 250)),
+        color-stop(0.84, rgba(55, 55, 55, 250))
     );
     background-image: -moz-linear-gradient(
         center bottom,

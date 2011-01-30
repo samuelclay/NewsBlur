@@ -22,13 +22,10 @@ import xml.sax
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-VERSION = '1.0'
 URL = 'http://www.newsblur.com/'
-USER_AGENT = 'NewsBlur Fetcher %s - %s' % (VERSION, URL)
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
-
 
 def mtime(ttime):
     """ datetime auxiliar function.
@@ -61,6 +58,12 @@ class FetchFeed:
             modified = None
             etag = None
             
+        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s' % (
+            self.feed.num_subscribers,
+            's' if self.feed.num_subscribers != 1 else '',
+            URL
+        )
+        print USER_AGENT
         self.fpf = feedparser.parse(self.feed.feed_address,
                                     agent=USER_AGENT,
                                     etag=etag,
@@ -210,9 +213,6 @@ class ProcessFeed:
             story_feed_id=self.feed.pk
         ).limit(len(story_guids))
         
-        logging.info(u'   ---> [%-30s] Parsing: %s existing stories' % (
-                      unicode(self.feed)[:30],
-                      len(existing_stories))) 
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
         #     | (Q(story_guid__in=story_guids)),
@@ -328,19 +328,23 @@ class Dispatcher:
                  (ret_feed == FEED_OK or
                   (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                   
-                logging.debug(u'   ---> [%-30s] Fetching page' % (unicode(feed)[:30]))
+                logging.debug(u'   ---> [%-30s] Fetching page: %s' % (unicode(feed)[:30], feed.feed_link))
                 page_importer = PageImporter(feed.feed_link, feed)
                 try:
                     page_importer.fetch_page()
+                except TimeoutError, e:
+                    logging.debug('   ---> [%-30s] Page fetch timed out...' % (unicode(feed)[:30]))
+                    feed.save_page_history(555, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     tb = traceback.format_exc()
                     logging.error(tb)
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     ret_feed = FEED_ERREXC 
-                    feed.save_feed_history(550, "Page Error", tb)
+                    feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     
+                logging.debug(u'   ---> [%-30s] Fetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:
                     icon_importer.save()
@@ -361,9 +365,9 @@ class Dispatcher:
             except IntegrityError:
                 logging.debug("   ---> [%-30s] IntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
             
-            done_msg = (u'%2s ---> [%-30s] Processed in %s [%s]' % (
+            done_msg = (u'%2s ---> [%-30s] Processed in %s (%s) [%s]' % (
                 identity, feed.feed_title[:30], unicode(delta),
-                self.feed_trans[ret_feed],))
+                feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
             
             self.feed_stats[ret_feed] += 1
@@ -384,8 +388,9 @@ class Dispatcher:
                                                     active=True,
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
-        logging.debug(u'   ---> [%-30s] Computing scores for all feed subscribers: %s subscribers' % (
-                      unicode(feed)[:30], user_subs.count()))
+        logging.debug(u'   ---> [%-30s] Computing scores: %s (%s/%s/%s) subscribers' % (
+                      unicode(feed)[:30], user_subs.count(),
+                      feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
         
         stories_db = MStory.objects(story_feed_id=feed.pk,
                                     story_date__gte=UNREAD_CUTOFF)

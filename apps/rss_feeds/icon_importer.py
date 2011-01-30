@@ -25,6 +25,9 @@ class IconImporter(object):
         if not self.force and self.feed.icon.not_found:
             print 'Not found, skipping...'
             return
+        if not self.force and not self.feed.icon.not_found and self.feed.icon.icon_url:
+            print 'Found, but skipping...'
+            return
         image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch(force=self.force)
@@ -59,12 +62,10 @@ class IconImporter(object):
             image_file.seek(0)
             header = struct.unpack('<3H', image_file.read(6))
         except Exception, e:
-            print 'No on struct: %s'% e
             return
 
         # Check magic
         if header[:2] != (0, 1):
-            print 'No on header', header
             return
 
         # Collect icon directories
@@ -157,11 +158,11 @@ class IconImporter(object):
                         image, image_file = self.get_image_from_url(url)
                     except(urllib2.HTTPError, urllib2.URLError):
                         return None, None, None
-        print 'Found: %s - %s' % (url, image)
+        # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
     
     def get_image_from_url(self, url):
-        print 'Requesting: %s' % url
+        # print 'Requesting: %s' % url
         try:
             request = urllib2.Request(url, headers=HEADERS)
             icon = urllib2.urlopen(request).read()
@@ -186,7 +187,6 @@ class IconImporter(object):
     def normalize_image(self, image):
         # if image.size != (16, 16):
         #     image = image.resize((16, 16), Image.BICUBIC)
-        print image
         if image.mode != 'RGBA':
             image = image.convert('RGBA')
         
@@ -201,7 +201,7 @@ class IconImporter(object):
             ar = ar.reshape(scipy.product(shape[:2]), shape[2])
 
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
-        print "Before: %s" % codes
+        # print "Before: %s" % codes
         original_codes = codes
         for low, hi in [(60, 200), (35, 230), (10, 250)]:
             codes = scipy.array([code for code in codes 
@@ -209,18 +209,17 @@ class IconImporter(object):
                                          (code[0] > hi and code[1] > hi and code[2] > hi))])
             if not len(codes): codes = original_codes
             else: break
-        print "After: %s" % codes
-        colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
+        # print "After: %s" % codes
     
         vecs, _ = scipy.cluster.vq.vq(ar, codes)         # assign codes
         counts, bins = scipy.histogram(vecs, len(codes))    # count occurrences
-        print counts
-        total = scipy.sum(counts)
-        print dict(zip(colors, [count/float(total) for count in counts]))
+        # colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
+        # total = scipy.sum(counts)
+        # print dict(zip(colors, [count/float(total) for count in counts]))
         index_max = scipy.argmax(counts)                    # find most frequent
         peak = codes[index_max]
         color = ''.join(chr(c) for c in peak).encode('hex')
-        print 'most frequent is %s (#%s)' % (peak, color)
+        # print 'most frequent is %s (#%s)' % (peak, color)
         
         return color[:6]
 

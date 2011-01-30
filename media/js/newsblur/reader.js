@@ -2173,6 +2173,9 @@
         
         generate_gradient: function(feed, type) {
             var color = feed.favicon_color;
+            NEWSBLUR.log(['generate_gradient', feed.feed_title, color]);
+            if (!color) return '';
+            
             var r = parseInt(color.substr(0, 2), 16);
             var g = parseInt(color.substr(2, 2), 16);
             var b = parseInt(color.substr(4, 2), 16);

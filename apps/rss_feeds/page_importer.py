@@ -5,6 +5,12 @@ import traceback
 import feedparser
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
+from utils.feed_functions import timelimit
+
+HEADERS = {
+    'User-Agent': 'NewsBlur Page Fetcher - http://www.newsblur.com',
+    'Connection': 'close',
+}
 
 class PageImporter(object):
     
@@ -12,12 +18,13 @@ class PageImporter(object):
         self.url = url
         self.feed = feed
     
+    @timelimit(30)
     def fetch_page(self):
         if not self.url:
             return
         
         try:
-            request = urllib2.Request(self.url)
+            request = urllib2.Request(self.url, headers=HEADERS)
             response = urllib2.urlopen(request)
             data = response.read()
             html = self.rewrite_page(data)
