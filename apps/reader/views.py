@@ -828,6 +828,7 @@ def save_feed_chooser(request):
                 sub.active = True
                 activated += 1
                 sub.save()
+                sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()
