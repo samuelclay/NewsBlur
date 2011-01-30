@@ -189,7 +189,7 @@ class IconImporter(object):
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )
-        except lxml.ParserError:
+        except lxml.etree.ParserError:
             return url
             
         if icon_path:
