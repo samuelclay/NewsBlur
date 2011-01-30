@@ -185,9 +185,13 @@ class IconImporter(object):
     def _url_from_html(self, content):
         url = None
         if not content: return url
-        icon_path = lxml.html.fromstring(content).xpath(
-            '//link[@rel="icon" or @rel="shortcut icon"]/@href'
-        )
+        try:
+            icon_path = lxml.html.fromstring(content).xpath(
+                '//link[@rel="icon" or @rel="shortcut icon"]/@href'
+            )
+        except lxml.etree.ParserError:
+            return url
+            
         if icon_path:
             if str(icon_path[0]).startswith('http'):
                 url = icon_path[0]
