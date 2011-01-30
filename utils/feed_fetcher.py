@@ -63,7 +63,6 @@ class FetchFeed:
             's' if self.feed.num_subscribers != 1 else '',
             URL
         )
-        print USER_AGENT
         self.fpf = feedparser.parse(self.feed.feed_address,
                                     agent=USER_AGENT,
                                     etag=etag,
