@@ -347,6 +347,9 @@ class Dispatcher:
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:
                     icon_importer.save()
+                except TimeoutError, e:
+                    logging.debug('   ---> [%-30s] Icon fetch timed out...' % (unicode(feed)[:30]))
+                    feed.save_page_history(556, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     tb = traceback.format_exc()

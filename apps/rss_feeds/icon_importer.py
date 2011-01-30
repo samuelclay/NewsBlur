@@ -9,6 +9,7 @@ import operator
 import BmpImagePlugin, PngImagePlugin, Image
 from StringIO import StringIO
 from apps.rss_feeds.models import MFeedPage
+from utils.feed_functions import timelimit
 
 HEADERS = {
     'User-Agent': 'NewsBlur Favicon Fetcher - http://www.newsblur.com',
@@ -21,20 +22,25 @@ class IconImporter(object):
         self.feed = feed
         self.force = force
     
+    @timelimit(30)
     def save(self):
         if not self.force and self.feed.icon.not_found:
-            print 'Not found, skipping...'
+            # print 'Not found, skipping...'
             return
         if not self.force and not self.feed.icon.not_found and self.feed.icon.icon_url:
-            print 'Found, but skipping...'
+            # print 'Found, but skipping...'
             return
         image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch(force=self.force)
 
         if image:
-            ico_image = self.load_icon(image_file)
-            if ico_image: image = ico_image
+            try:
+                ico_image = self.load_icon(image_file)
+                if ico_image: image = ico_image
+            except ValueError:
+                # print "Bad .ICO"
+                pass
             image     = self.normalize_image(image)
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
