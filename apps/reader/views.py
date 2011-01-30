@@ -1,7 +1,6 @@
 import datetime
 import time
 import random
-import zlib
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -433,17 +432,21 @@ def load_river_stories(request):
     read_stories = [rs.story.id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
-    feed_counts = {}
-    feed_last_reads = {}
+    # max_feed_count     = 0
+    feed_counts        = {}
+    feed_last_reads    = {}
     for feed_id in feed_ids:
         usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        feed_counts[feed_id] = (usersub.unread_count_negative + 
-                                usersub.unread_count_neutral +
-                                usersub.unread_count_positive)
+        feed_counts[feed_id] = (usersub.unread_count_negative * 1+ 
+                                usersub.unread_count_neutral * 10+
+                                usersub.unread_count_positive * 20)
+        # if feed_counts[feed_id] > max_feed_count:
+        #     max_feed_count = feed_counts[feed_id]
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
     feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:25]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids])
+    feed_counts = dict(feed_counts)
     
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.

@@ -10,9 +10,8 @@ class Migration(SchemaMigration):
         
         # Adding model 'FeedIcon'
         db.create_table('rss_feeds_feedicon', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('utils.fields.AutoOneToOneField')(related_name='icon', unique=True, to=orm['rss_feeds.Feed'])),
-            ('color', self.gf('django.db.models.fields.CharField')(default='000000', max_length=6)),
+            ('feed', self.gf('utils.fields.AutoOneToOneField')(related_name='icon', unique=True, primary_key=True, to=orm['rss_feeds.Feed'])),
+            ('color', self.gf('django.db.models.fields.CharField')(max_length=6, null=True, blank=True)),
             ('data', self.gf('django.db.models.fields.TextField')()),
             ('icon_url', self.gf('django.db.models.fields.CharField')(max_length=2000, null=True, blank=True)),
             ('not_found', self.gf('django.db.models.fields.BooleanField')(default=False)),
@@ -71,11 +70,10 @@ class Migration(SchemaMigration):
         },
         'rss_feeds.feedicon': {
             'Meta': {'object_name': 'FeedIcon'},
-            'color': ('django.db.models.fields.CharField', [], {'default': "'000000'", 'max_length': '6'}),
+            'color': ('django.db.models.fields.CharField', [], {'max_length': '6', 'null': 'True', 'blank': 'True'}),
             'data': ('django.db.models.fields.TextField', [], {}),
-            'feed': ('utils.fields.AutoOneToOneField', [], {'related_name': "'icon'", 'unique': 'True', 'to': "orm['rss_feeds.Feed']"}),
+            'feed': ('utils.fields.AutoOneToOneField', [], {'related_name': "'icon'", 'unique': 'True', 'primary_key': 'True', 'to': "orm['rss_feeds.Feed']"}),
             'icon_url': ('django.db.models.fields.CharField', [], {'max_length': '2000', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'not_found': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'rss_feeds.feedloadtime': {

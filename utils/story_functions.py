@@ -16,10 +16,11 @@ def story_score(story, bottom_delta=None):
     statistics_score = 0
     
     # C) Intelligence
-    intelligence_score = .5
+    intelligence_score = 1
+    # intelligence_score = feed_counts[int(story['story_feed_id'])] / float(max_feed_count)
     
     # print "%s - %s" % (story['story_date'], date_score)
-    return 1/3. * (date_score + statistics_score + intelligence_score)
+    return (30/100. * date_score) + (55/100. * statistics_score) + (15/100. * intelligence_score)
 
 def format_story_link_date__short(date, now=None):
     if not now: now = datetime.datetime.now()
