@@ -3651,10 +3651,10 @@ background: transparent;
   width: 524px;
   height: 180px;
 }
-.NB-modal-statistics .NB-modal-feed-chooser-container {
+.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container {
   margin: 3px 0 12px;
 }
-.NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
+.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
   margin: 0 0 12px;
 }
 

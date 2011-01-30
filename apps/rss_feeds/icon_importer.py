@@ -178,7 +178,7 @@ class IconImporter(object):
             return image, icon_file
         try:
             image, icon_file = _1(url)
-        except (urllib2.HTTPError, urllib2.URLError, IOError, TimeoutError):
+        except (urllib2.HTTPError, urllib2.URLError, IOError, TimeoutError, ValueError):
             return None, None
         return image, icon_file
     

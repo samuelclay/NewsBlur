@@ -166,8 +166,9 @@ NEWSBLUR.ReaderStatistics.prototype = {
             ])
         ]);
         
+        var count = _.isUndefined(data['subscriber_count']) && 'Loading ' || data['subscriber_count'];
         var $subscribers = $.make('div', { className: 'NB-statistics-subscribers' }, [
-            $.make('span', { className: 'NB-statistics-subscribers-count' }, ''+data['subscriber_count']),
+            $.make('span', { className: 'NB-statistics-subscribers-count' }, ''+count),
             $.make('span', { className: 'NB-statistics-subscribers-label' }, 'subscriber' + (data['subscriber_count']==1?'':'s'))
         ]);
         $('.NB-statistics-subscribers', this.$modal).remove();

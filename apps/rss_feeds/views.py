@@ -66,7 +66,7 @@ def load_feed_statistics(request):
     stats['active_subscribers'] = feed.active_subscribers
     
     logging.info(" ---> [%s] ~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (request.user, feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
-    
+
     return stats
     
 @ajax_login_required
