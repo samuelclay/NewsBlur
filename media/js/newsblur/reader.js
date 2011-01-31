@@ -1461,6 +1461,7 @@
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
+            this.show_correct_feed_in_feed_title_floater();
             this.$s.$starred_header.addClass('NB-selected');
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
