@@ -822,8 +822,6 @@ def get_feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
-    from apps.feed_import.models import queue_new_feeds
-    
     approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
@@ -841,13 +839,12 @@ def save_feed_chooser(request):
         except Feed.DoesNotExist:
             pass
             
-    queue_new_feeds(request.user)
     
     logging.info(' ---> [%s] ~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s' % (request.user, 
                                                                    activated, 
                                                                    usersubs.count()))        
-
-    request.user.profile.refresh_stale_feeds()
+    request.user.profile.queue_new_feeds()
+    request.user.profile.refresh_stale_feeds(exclude_new=True)
 
     return {'activated': activated}
 

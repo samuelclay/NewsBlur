@@ -7,8 +7,9 @@ from django.core.mail import mail_admins
 from django.contrib.auth import authenticate
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
-from apps.feed_import.models import queue_new_feeds
 from paypal.standard.ipn.signals import subscription_signup
+from apps.rss_feeds.tasks import NewFeeds
+from celery.task import Task
 from utils import log as logging
 from utils.timezones.fields import TimeZoneField
 from utils.user_functions import generate_secret_token
@@ -45,7 +46,7 @@ class Profile(models.Model):
             except IntegrityError, Feed.DoesNotExist:
                 pass
         
-        queue_new_feeds(self.user)
+        self.queue_new_feeds()
         
         logging.info(' ---> [%s] ~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!' % (self.user.username, subs.count()))
         message = """Woohoo!
@@ -57,9 +58,24 @@ Sincerely,
 NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         mail_admins('New premium account', message, fail_silently=True)
         
-    def refresh_stale_feeds(self):
+    def queue_new_feeds(self, new_feeds=None):
+        if not new_feeds:
+            new_feeds = UserSubscription.objects.filter(user=self.user, 
+                                                        feed__fetched_once=False, 
+                                                        active=True).values('feed_id')
+            new_feeds = list(set([f['feed_id'] for f in new_feeds]))
+        logging.info(" ---> [%s] ~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (self.user, len(new_feeds), new_feeds))
+        size = 4
+        publisher = Task.get_publisher(exchange="new_feeds")
+        for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
+            NewFeeds.apply_async(args=(t,), queue="new_feeds", publisher=publisher)
+        publisher.connection.close()   
+
+    def refresh_stale_feeds(self, exclude_new=False):
         stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
         stale_feeds  = UserSubscription.objects.filter(user=self.user, active=True, feed__last_update__lte=stale_cutoff)
+        if exclude_new:
+            stale_feeds = stale_feeds.filter(feed__fetched_once=True)
         all_feeds    = UserSubscription.objects.filter(user=self.user, active=True)
         
         logging.info(" ---> [%s] ~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
@@ -70,7 +86,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             sub.feed.save()
         
         if stale_feeds:
-            queue_new_feeds(self.user)
+            stale_feeds = list(set([f['feed_id'] for f in stale_feeds]))
+            self.queue_new_feeds(new_feeds=stale_feeds)
         
         
 def create_profile(sender, instance, created, **kwargs):
