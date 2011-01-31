@@ -31,7 +31,7 @@ class IconImporter(object):
             return
         image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
-            image, image_file, icon_url = self.fetch(force=self.force)
+            image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
 
         if image:
             try:
@@ -137,7 +137,7 @@ class IconImporter(object):
             image, image_file = self.get_image_from_url(url)
         return image, image_file, url
 
-    def fetch(self, path='favicon.ico', force=False):
+    def fetch_image_from_path(self, path='favicon.ico', force=False):
         image = None
         url = None
 
@@ -151,19 +151,6 @@ class IconImporter(object):
         if not image:
             url = urlparse.urljoin(self.feed.feed_link, '/favicon.ico')
             image, image_file = self.get_image_from_url(url)
-            if not image:
-                request = urllib2.Request(self.feed.feed_link, headers=HEADERS)
-                try:
-                    # 2048 bytes should be enough for most of websites
-                    content = urllib2.urlopen(request).read(2048) 
-                except(urllib2.HTTPError, urllib2.URLError):
-                    return None, None, None
-                url = self._url_from_html(content)
-                if url:
-                    try:
-                        image, image_file = self.get_image_from_url(url)
-                    except(urllib2.HTTPError, urllib2.URLError):
-                        return None, None, None
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
     

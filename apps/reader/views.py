@@ -136,7 +136,7 @@ def load_feeds(request):
         UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
         folders = UserSubscriptionFolders.objects.get(user=user)
         
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    user_subs = UserSubscription.objects.select_related('feed', 'feed__feed_icon').filter(user=user)
     
     for sub in user_subs:
         feeds[sub.feed.pk] = {
@@ -152,6 +152,7 @@ def load_feeds(request):
             'active': sub.active,
             'favicon': sub.feed.icon.data,
             'favicon_color': sub.feed.icon.color,
+            'favicon_finding': bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
         }
         
         if not sub.feed.fetched_once:
