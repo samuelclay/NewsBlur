@@ -1516,6 +1516,7 @@
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
+            this.show_correct_feed_in_feed_title_floater();
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $folder.addClass('NB-selected');
@@ -2755,12 +2756,14 @@
                 this.fetch_story_locations_in_feed_view();
             }
             
+            this.append_story_endbar();
             this.show_stories_preference_in_feed_view(true);
         },
         
         show_correct_feed_in_feed_title_floater: function(story) {
             var $story, $header;
-            if (this.cache.feed_title_floater_feed_id != story.story_feed_id) {
+            
+            if (story && this.cache.feed_title_floater_feed_id != story.story_feed_id) {
                 var $feed_floater = this.$s.$feed_floater;
                 $story = this.find_story_in_feed_view(story);
                 $header = $('.NB-feed-story-header-feed', $story);
@@ -2777,14 +2780,19 @@
                 $feed_floater.empty().append($new_header);
                 this.cache.feed_title_floater_feed_id = story.story_feed_id;
                 $feed_floater.width($header.outerWidth());
+            } else if (!story) {
+                this.$s.$feed_floater.empty();
+                this.cache.feed_title_floater_feed_id = null;
             }
               
-            if (this.cache.feed_title_floater_story_id != story.id) {
+            if (story && this.cache.feed_title_floater_story_id != story.id) {
                 $story = $story || this.find_story_in_feed_view(story);
                 $header = $header || $('.NB-feed-story-header-feed', $story);
                 $('.NB-floater').removeClass('NB-floater');
                 $header.addClass('NB-floater');
                 this.cache.feed_title_floater_story_id = story.id;
+            } else if (!story) {
+                this.cache.feed_title_floater_story_id = null;
             }
         },
         
@@ -2845,12 +2853,6 @@
         fetch_story_locations_in_feed_view: function() {
             var stories = this.model.stories;
             if (!stories || !stories.length) return;
-            
-            var $feed_view = this.$s.$feed_view;
-            var $stories = this.$s.$feed_stories;
-            var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
-            $stories.find('.NB-feed-story-endbar').remove();
-            $stories.append($endbar);
 
             for (var s in stories) {
                 var story = stories[s];
@@ -2872,6 +2874,14 @@
                 this.cache.feed_view_story_positions_keys.sort(function(a, b) { return a-b; });    
                 // NEWSBLUR.log(['Positioning story', position, $story, story, this.cache.feed_view_story_positions_keys]);
             }
+        },
+        
+        append_story_endbar: function() {
+            var $feed_view = this.$s.$feed_view;
+            var $stories = this.$s.$feed_stories;
+            var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
+            $stories.find('.NB-feed-story-endbar').remove();
+            $stories.append($endbar);
         },
         
         // ===================
@@ -4982,7 +4992,7 @@
                     var closest = $.closest(from_top, positions);
                     story = this.cache.feed_view_story_positions[positions[closest]];
                 }
-
+                
                 this.show_correct_feed_in_feed_title_floater(story);
             }
         },
