@@ -1524,6 +1524,10 @@ background: transparent;
     font-size: 13px;
     text-shadow: 1px 1px 0 #000;
 }
+#story_pane .NB-inverse .NB-feed-story-feed {
+    color: black;
+    text-shadow: 1px 1px 0 #E0E0E0;
+}
 
 #story_pane .NB-feed-story-feed .feed_favicon {
     position: absolute;
@@ -1649,6 +1653,7 @@ background: transparent;
 #story_pane .NB-feed-stories .NB-feed-story {
     margin: 0;
     clear: both;
+    overflow: hidden;
 }
 
 #story_pane .NB-feed-stories.NB-feed-view-story .NB-feed-story {

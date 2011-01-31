@@ -2174,7 +2174,22 @@
             return $story_title;
         },
         
+        is_feed_floater_gradient_light: function(feed) {
+            if (!feed) return false;
+            var color = feed.favicon_color;
+            if (!color) return false;
+            
+            var r = parseInt(color.substr(0, 2), 16);
+            var g = parseInt(color.substr(2, 2), 16);
+            var b = parseInt(color.substr(4, 2), 16);
+            var avg = (r + g + b) / 3;
+            
+            // 200/256 = #C6C6C6
+            return avg > 200;
+        },
+        
         generate_gradient: function(feed, type) {
+            if (!feed) return '';
             var color = feed.favicon_color;
             if (!color) return '';
             
@@ -2698,7 +2713,8 @@
                                 ])
                             )
                         ]).css('background-image', this.generate_gradient(feed, 'webkit'))
-                          .css('background-image', this.generate_gradient(feed, 'moz')),
+                          .css('background-image', this.generate_gradient(feed, 'moz'))
+                          .toggleClass('NB-inverse', this.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
                                 $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
