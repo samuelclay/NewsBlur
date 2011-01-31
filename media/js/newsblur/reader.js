@@ -50,7 +50,7 @@
             'river_feeds_with_unreads': [],
             'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10)
         };
-        this.FEED_REFRESH_INTERVAL = (1000 * 60) * 1/4; // 1/2 minute
+        this.FEED_REFRESH_INTERVAL = (1000 * 60) * 1; // 1 minute
         
         // ==================
         // = Event Handlers =
@@ -1141,6 +1141,7 @@
                 } else {
                     this.flags['has_unfetched_feeds'] = true;
                     this.show_unfetched_feed_progress();
+                    this.setup_feed_refresh(true);
                 }
             }
         },
@@ -1191,6 +1192,7 @@
                 this.model.preference('hide_fetch_progress', true);
             }
             
+            this.setup_feed_refresh();
             this.hide_progress_bar();
         },
         
@@ -3874,8 +3876,13 @@
             }, true);
         },
         
-        setup_feed_refresh: function() {
+        setup_feed_refresh: function(new_feeds) {
             var self = this;
+            var refresh_interval = this.FEED_REFRESH_INTERVAL;
+            
+            if (new_feeds) {
+                refresh_interval = (1000 * 60) * 1/4;
+            }
             
             clearInterval(this.flags.feed_refresh);
             
