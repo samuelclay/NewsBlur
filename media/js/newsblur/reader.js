@@ -50,7 +50,7 @@
             'river_feeds_with_unreads': [],
             'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10)
         };
-        this.FEED_REFRESH_INTERVAL = (1000 * 60) * 1; // 1 minute
+        this.FEED_REFRESH_INTERVAL = (1000 * 60) * 1/4; // 1/2 minute
         
         // ==================
         // = Event Handlers =

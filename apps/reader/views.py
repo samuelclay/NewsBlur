@@ -152,7 +152,7 @@ def load_feeds(request):
             'active': sub.active,
             'favicon': sub.feed.icon.data,
             'favicon_color': sub.feed.icon.color,
-            'favicon_finding': bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
+            'favicon_fetching': bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
         }
         
         if not sub.feed.fetched_once:
@@ -240,6 +240,7 @@ def refresh_feeds(request):
     feeds = {}
     user_subs = UserSubscription.objects.select_related('feed', 'feed__data').filter(user=user, active=True)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    favicons_fetching = [int(f) for f in request.POST.getlist('favicons_fetching')]
 
     for sub in user_subs:
         if (sub.needs_unread_recalc or 
@@ -258,6 +259,10 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
         if request.POST.get('check_fetch_status', False):
             feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
+        if sub.feed.pk in favicons_fetching:
+            feeds[sub.feed.pk]['favicon'] = sub.feed.icon.data
+            feeds[sub.feed.pk]['favicon_color'] = sub.feed.icon.color
+            feeds[sub.feed.pk]['favicon_fetching'] = bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
             
     return {'feeds': feeds}
 

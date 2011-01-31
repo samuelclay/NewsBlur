@@ -25,6 +25,9 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.starred_stories = [];
     this.starred_count = 0;
     this.read_stories_river_count = 0;
+    this.flags = {
+        'favicons_fetching': false
+    };
     
     this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
@@ -196,6 +199,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             _.each(subscriptions.feeds, function(feed, feed_id) {
                 if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
                     self.feeds[feed_id] = feed;
+                    if (feed.favicon_fetching) self.flags['favicons_fetching'] = true;
                 }
             });
             self.folders = subscriptions.folders;
@@ -339,6 +343,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                   updated = true;
                   self.feeds[f]['has_exception'] = !!feed['has_exception'];
                 }
+                if (feed['favicon']) {
+                    self.feeds[f]['favicon'] = feed['favicon'];
+                    self.feeds[f]['favicon_color'] = feed['favicon_color'];
+                    self.feeds[f]['favicon_fetching'] = false;
+                    updated = true;
+                }
                 if (updated && !(f in updated_feeds)) {
                     updated_feeds.push(f);
                 }
@@ -349,6 +359,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var data = {};
         if (has_unfetched_feeds) {
             data['check_fetch_status'] = has_unfetched_feeds;
+        }
+        if (this.flags['favicons_fetching']) {
+            var favicons_fetching = _.compact(_.map(NEWSBLUR.reader.model.feeds, function(feed, k) { 
+                if (feed.favicon_fetching && feed.active) return k;
+            }));
+            if (favicons_fetching.length) {
+                data['favicons_fetching'] = favicons_fetching;
+            }
         }
         
         if (NEWSBLUR.Globals.is_authenticated) {
