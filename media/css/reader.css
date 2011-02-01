@@ -1660,6 +1660,32 @@ background: transparent;
     padding: 0;
 }
 
+/* ====================== */
+/* = River Progress Bar = */
+/* ====================== */
+
+#story_taskbar .NB-river-progress {
+  position: absolute;
+  top: 0;
+  margin: 4px 0 0 0;
+  width: 150px;
+  height: 20px;
+}
+
+#story_taskbar .NB-river-progress .NB-river-progress-text {
+  text-transform: uppercase;
+  font-size: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #304056;
+  text-shadow: 1px 1px 0 #D8D8D8;
+}
+
+#story_taskbar .NB-river-progress .NB-river-progress-bar {
+  width: 150px;
+  height: 8px;
+}
+
 /* ======================= */
 /* = Story Modifications = */
 /* ======================= */

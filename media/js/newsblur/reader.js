@@ -14,6 +14,7 @@
             $feed_list: $('#feed_list'),
             $story_titles: $('#story_titles'),
             $content_pane: $('.content-pane'),
+            $story_taskbar: $('#story_taskbar'),
             $story_pane: $('#story_pane .NB-story-pane-container'),
             $feed_view: $('.NB-feed-story-view'),
             $feed_stories: $('.NB-feed-stories'),
@@ -221,7 +222,7 @@
         animate_progress_bar: function($bar, seconds, percentage) {
             var self = this;
             percentage = percentage || 0;
-            seconds = parseFloat(Math.max(2, parseInt(seconds, 10)), 10);
+            seconds = parseFloat(Math.max(1, parseInt(seconds, 10)), 10);
             
             if (percentage > 90) {
                 time = seconds / 5;
@@ -712,7 +713,7 @@
             
             // NEWSBLUR.log(['Making feeds', {'folders': folders, 'feeds': feeds}]);
             
-            $('#story_taskbar').css({'display': 'block'});
+            this.$s.$story_taskbar.css({'display': 'block'});
             
             this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
             this.make_feeds_folder($feed_list, folders, 0);
@@ -1327,6 +1328,8 @@
             
                 this.active_feed = feed_id;
                 this.next_feed = feed_id;
+                
+                this.show_stories_progress_bar();
                 $story_titles.data('page', 0);
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
@@ -1413,6 +1416,7 @@
                 if (this.flags['open_unread_stories_in_tabs']) {
                     _.defer(_.bind(this.open_unread_stories_in_tabs, this));
                 }
+                this.hide_stories_progress_bar();
             }
         },
         
@@ -1563,9 +1567,11 @@
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
             this.show_correct_feed_in_feed_title_floater();
-            this.show_river_progress_bar();
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
+            
+            this.show_stories_progress_bar();
+            
             $folder.addClass('NB-selected');
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
@@ -1598,6 +1604,7 @@
                 }
                 this.fill_out_story_titles();
                 this.prefetch_story_locations_in_feed_view();
+                this.hide_stories_progress_bar();
             }
         },
         
@@ -1626,24 +1633,31 @@
             return feeds;
         },
         
-        show_river_progress_bar: function() {
-            var $feed_view = this.$s.$feed_view;
-            
+        show_stories_progress_bar: function() {
             var $progress = $.make('div', { className: 'NB-river-progress' }, [
                 $.make('div', { className: 'NB-river-progress-text' }),
                 $.make('div', { className: 'NB-river-progress-bar' })
-            ]);
+            ]).css({'opacity': 0});
             
-            $feed_view.append($progress);
+            this.$s.$story_taskbar.append($progress);
+            
+            $progress.animate({'opacity': 1}, {'duration': 500, 'queue': false});
             
             var $bar = $('.NB-river-progress-bar', $progress);
             var unreads = this.get_unread_count(false);
-            NEWSBLUR.log(['river progress', unreads]);
             this.animate_progress_bar($bar, unreads / 50);
+            
+            $('.NB-river-progress-text', $progress).text('Fetching stories');
+            // Center the progress bar
+            var i_width = $progress.width();
+            var o_width = this.$s.$story_taskbar.width();
+            var left = (o_width / 2.0) - (i_width / 2.0);
+            $progress.css({'left': left});
         },
         
-        hide_river_progress_bar: function() {
-            
+        hide_stories_progress_bar: function() {
+            var $progress = $('.NB-river-progress', this.$s.$story_taskbar);
+            $progress.animate({'opacity': 0}, {'duration': 250, 'queue': false});
         },
         
         // ==========================
@@ -2149,7 +2163,7 @@
             var $counter = this.make_feed_title_line(feed, false, 'counter');
             
             $('.feed', $content_pane).remove();
-            $('#story_taskbar', $content_pane).append($counter);
+            this.$s.$story_taskbar.append($counter);
             
             $('.unread_count', $content_pane).corner('4px');
             
