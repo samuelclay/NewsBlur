@@ -86,6 +86,7 @@
         this.handle_login_and_signup_forms();
         this.iframe_buster_buster();
         this.apply_story_styling();
+        this.add_feed();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -216,6 +217,23 @@
                     }
                 }
             }, 1);
+        },
+
+        get_feed_param: function() {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == 'feed') {
+                    return decodeURIComponent(pair[1]);
+                }
+            }
+        },
+
+        add_feed: function() {
+            if (this.get_feed_param()) {
+                this.open_add_feed_modal({feed: this.get_feed_param()});
+            }
         },
         
         // =======================
@@ -3094,11 +3112,11 @@
         // = Taskbar - Feeds =
         // ===================
         
-        open_add_feed_modal: function() {
+        open_add_feed_modal: function(options) {
             clearInterval(this.flags['bouncing_callout']);
             $.modal.close();
             
-            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
+            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed(options);
         },
         
         open_manage_feed_modal: function(feed_id) {

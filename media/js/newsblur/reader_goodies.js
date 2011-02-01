@@ -23,6 +23,13 @@ NEWSBLUR.ReaderGoodies.prototype = {
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
               $.make('div', { className: 'NB-goodies-title' }, 'Add Site Bookmarklet')
+            ]),
+            $.make('div', { className: 'NB-goodies-group' }, [
+              $.make('a', {
+                  className: 'NB-goodies-contenthandler-button',
+                  href: '#'
+              }, 'Add feed reader'),
+              $.make('div', { className: 'NB-goodies-title' }, 'Register Newsblur feed reader (Firefox only)')
             ])
         ]);
     },
@@ -66,6 +73,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
             e.preventDefault();
             
             alert('Drag this button to your bookmark toolbar.');
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-goodies-contenthandler-button' }, function($t, $p) {
+            e.preventDefault();
+
+            navigator.registerContentHandler("application/vnd.mozilla.maybe.feed",
+                                             document.location +"?feed=%s",
+                                             "NewsBlur");
         });
     }
     
