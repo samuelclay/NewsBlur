@@ -1120,6 +1120,9 @@ background: transparent;
   line-height: 10px;
 }
 
+#story_titles .NB-story-hidden-visible {
+  opacity: .5;
+}
 /* ======================== */
 /* = Story Titles - Story = */
 /* ======================== */

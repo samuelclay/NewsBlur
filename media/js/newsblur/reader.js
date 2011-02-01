@@ -2680,7 +2680,8 @@
                 this.show_story_titles_above_intelligence_level({
                     'unread_view_name': 'neutral',
                     'animate': true,
-                    'follow': true
+                    'follow': true,
+                    'temporary': true
                 });
                 $indicator.removeClass('unread_threshold_positive').addClass('unread_threshold_neutral');
             } else {
@@ -2688,7 +2689,8 @@
                 this.show_story_titles_above_intelligence_level({
                     'unread_view_name': 'negative',
                     'animate': true,
-                    'follow': true
+                    'follow': true,
+                    'temporary': true
                 });
                 $indicator.removeClass('unread_threshold_positive')
                           .removeClass('unread_threshold_neutral')
@@ -3861,7 +3863,8 @@
             var defaults = {
                 'unread_view_name': null,
                 'animate': true,
-                'follow': true
+                'follow': true,
+                'temporary': false
             };
             var options = $.extend({}, defaults, opts);
             var self = this;
@@ -3881,10 +3884,21 @@
                 $stories_show = $('.story,.NB-feed-story')
                                 .filter('.NB-story-positive,.NB-story-neutral');
                 $stories_hide = $('.story,.NB-feed-story').filter('.NB-story-negative');
+                if (options['temporary']) {
+                  $stories_show.filter('.NB-story-neutral').addClass('NB-story-hidden-visible');
+                } else {
+                  $stories_show.filter('.NB-story-hidden-visible').removeClass('NB-story-hidden-visible');
+                }
             } else if (unread_view_name == 'negative') {
                 $stories_show = $('.story,.NB-feed-story')
                                 .filter('.NB-story-positive,.NB-story-neutral,.NB-story-negative');
                 $stories_hide = $();
+                if (options['temporary']) {
+                  $stories_show.filter('.NB-story-negative,.NB-story-neutral:not(:visible)')
+                               .addClass('NB-story-hidden-visible');
+                } else {
+                  $stories_show.filter('.NB-story-hidden-visible').removeClass('NB-story-hidden-visible');
+                }
             }
             
             if (this.story_view == 'feed' && this.model.preference('feed_view_single_story')) {

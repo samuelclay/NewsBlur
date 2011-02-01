@@ -586,7 +586,11 @@ def mark_story_as_read(request):
         logging.info(" ---> [%s] ~FYRead story in feed: %s" % (request.user, usersub.feed))
         
     for story_id in story_ids:
-        story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
+        try:
+            story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
+        except IndexError:
+            # Story has been deleted, probably by feed_fetcher.
+            continue
         now = datetime.datetime.utcnow()
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
         try:
