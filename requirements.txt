@@ -14,3 +14,4 @@ lxml
 oauth2
 pytz
 boto
+gunicorn
