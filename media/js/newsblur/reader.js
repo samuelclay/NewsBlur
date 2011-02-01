@@ -3829,7 +3829,7 @@
             var $folder;
             feed_id = feed_id || this.active_feed;
             
-            if (this.flags['river_view'] && feed_id != 'starred') {
+            if (_.isString(feed_id) && feed_id.indexOf('river:') != -1) {
                 if (feed_id == 'river:') {
                     $folder = this.$s.$feed_list;
                 } else {
@@ -3837,7 +3837,7 @@
                 }
                 var counts = this.list_feeds_with_unreads_in_folder($folder, true, visible_only);
                 return _.reduce(counts, function(m, c) { return m + c; }, 0);
-            } else if (this.flags['river_view'] && feed_id == 'starred') {
+            } else if (feed_id == 'starred') {
                 // Umm, no. Not yet.
             } else {
                 var feed = this.model.get_feed(feed_id);
@@ -4909,7 +4909,7 @@
         handle_rightclicks: function(elem, e) {
             var self = this;
             
-            // NEWSBLUR.log(['right click', e.button]);
+            // NEWSBLUR.log(['right click', e.button, e, e.target, e.currentTarget]);
             
             $.targetIs(e, { tagSelector: '.story', childOf: '#story_titles' }, function($t, $p) {
                 e.preventDefault();

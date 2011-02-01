@@ -2463,6 +2463,9 @@ a.NB-splash-link:hover {
 /* = Classifier Trainer = */
 /* ====================== */
 
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-back {
+    display: none;
+}
 .NB-modal-trainer .NB-modal-submit .NB-modal-submit-back,
 .NB-modal-trainer .NB-modal-submit .NB-modal-submit-reset {
     float: left;
@@ -2470,9 +2473,12 @@ a.NB-splash-link:hover {
     background-color: #b5b4bB;
 }
 .NB-modal-trainer .NB-modal-submit .NB-modal-submit-close {
-    float: right;
+    float: left;
     color: #FFF;
     background-color: #b5b4bB;
+}
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-begin {
+    float: right;
 }
 .NB-modal-trainer .NB-modal-submit .NB-modal-submit-end {
     float: right;
