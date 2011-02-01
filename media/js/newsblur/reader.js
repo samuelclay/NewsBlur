@@ -1570,7 +1570,6 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             
-            this.show_stories_progress_bar();
             
             $folder.addClass('NB-selected');
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
@@ -1586,6 +1585,7 @@
             this.setup_mousemove_on_views();
             
             var feeds = this.list_feeds_with_unreads_in_folder($folder, false, true);
+            this.show_stories_progress_bar(feeds.length);
             this.model.fetch_river_stories(feeds, 0, _.bind(this.post_open_river_stories, this), true);
         },
         
@@ -1633,7 +1633,7 @@
             return feeds;
         },
         
-        show_stories_progress_bar: function() {
+        show_stories_progress_bar: function(feeds_loading) {
             var $progress = $.make('div', { className: 'NB-river-progress' }, [
                 $.make('div', { className: 'NB-river-progress-text' }),
                 $.make('div', { className: 'NB-river-progress-bar' })
@@ -1644,8 +1644,10 @@
             $progress.animate({'opacity': 1}, {'duration': 500, 'queue': false});
             
             var $bar = $('.NB-river-progress-bar', $progress);
-            var unreads = this.get_unread_count(false);
-            this.animate_progress_bar($bar, unreads / 50);
+            var unreads;
+            if (feeds_loading) unreads = feeds_loading;
+            else unreads = this.get_unread_count(false) / 10;
+            this.animate_progress_bar($bar, unreads);
             
             $('.NB-river-progress-text', $progress).text('Fetching stories');
             // Center the progress bar
