@@ -33,7 +33,9 @@
         this.flags = {
             'feed_view_images_loaded': {},
             'bouncing_callout': false,
-            'has_unfetched_feeds': false
+            'has_unfetched_feeds': false,
+            'count_unreads_after_import_working': false,
+            'import_from_google_reader_working': false
         };
         this.locks = {};
         this.counts = {
@@ -231,31 +233,26 @@
             } else if (percentage > 70) {
                 time = seconds / 30;
             } else if (percentage > 60) {
-                time = seconds / 60;
+                time = seconds / 80;
             } else if (percentage > 50) {
-                time = seconds / 125;
+                time = seconds / 120;
             } else if (percentage > 40) {
-                time = seconds / 170;
+                time = seconds / 160;
             } else if (percentage > 30) {
-                time = seconds / 210;
+                time = seconds / 200;
             } else if (percentage > 20) {
-                time = seconds / 220;
+                time = seconds / 300;
             } else if (percentage > 10) {
-                time = seconds / 240;
+                time = seconds / 400;
             } else {
-                time = seconds / 270;
+                time = seconds / 500;
             }
             
             if (percentage <= 100) {
                 this.locks['animate_progress_bar'] = setTimeout(function() {
-                    if (!self.flags['import_from_google_reader_finished'] ||
-                        !self.flags['count_unreads_after_import_finished']) {
-                        percentage += 1;
-                        $bar.progressbar({value: percentage});
-                        self.animate_progress_bar($bar, seconds, percentage);
-                    } else {
-                        clearTimeout(self.locks['animate_progress_bar']);
-                    }
+                    percentage += 1;
+                    $bar.progressbar({value: percentage});
+                    self.animate_progress_bar($bar, seconds, percentage);
                 }, time * 1000);
             }
         },
@@ -1314,6 +1311,7 @@
             $('.NB-selected', this.$s.$feed_list).removeClass('NB-selected');
             this.$s.$body.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
+            this.hide_content_pane_feed_counter();
         },
         
         open_feed: function(feed_id, force, $feed_link, delay) {
@@ -1338,7 +1336,6 @@
                 this.mark_feed_as_selected(feed_id, $feed_link);
                 this.show_feed_title_in_stories(feed_id);
                 this.show_feedbar_loading();
-                this.make_content_pane_feed_counter(feed_id);
                 this.switch_taskbar_view(this.story_view);
                 // NEWSBLUR.log(['open_feed', this.flags, this.active_feed, feed_id]);
 
@@ -1358,7 +1355,6 @@
                     this.unload_feed_iframe();
                     this.flags['iframe_prevented_from_loading'] = true;
                 }
-                this.flags['opening_feed'] = false; // don't trigger scroll, which fetches more stories
                 this.setup_mousemove_on_views();
             }
         },
@@ -1377,6 +1373,7 @@
             
             if (this.active_feed == feed_id) {
                 // NEWSBLUR.log(['post_open_feed', data.stories, this.flags]);
+                this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(stories);
@@ -1417,6 +1414,7 @@
                     _.defer(_.bind(this.open_unread_stories_in_tabs, this));
                 }
                 this.hide_stories_progress_bar();
+                this.make_content_pane_feed_counter(feed_id);
             }
         },
         
@@ -1522,7 +1520,6 @@
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             // this.show_feed_title_in_stories(feed_id);
             this.show_feedbar_loading();
-            // this.make_content_pane_feed_counter(feed_id);
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             
@@ -1565,6 +1562,7 @@
             $story_titles.data('page', 0);
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
+            this.flags['opening_feed'] = true;
             this.mark_feed_as_selected(null, null);
             this.show_correct_feed_in_feed_title_floater();
             this.$s.$body.addClass('NB-view-river');
@@ -1580,7 +1578,6 @@
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             // this.show_feed_title_in_stories(feed_id);
             this.show_feedbar_loading();
-            // this.make_content_pane_feed_counter(feed_id);
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             
@@ -1592,6 +1589,7 @@
         post_open_river_stories: function(data, first_load) {
             if (this.active_feed.indexOf('river:') != -1) {
                 // NEWSBLUR.log(['post_open_river_stories', data.stories.length, first_load, this.flags['feed_view_positions_calculated']]);
+                this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(data.stories, {'river_stories': true});
@@ -1659,7 +1657,7 @@
         
         hide_stories_progress_bar: function() {
             var $progress = $('.NB-river-progress', this.$s.$story_taskbar);
-            $progress.animate({'opacity': 0}, {'duration': 250, 'queue': false});
+            $progress.stop().animate({'opacity': 0}, {'duration': 250, 'queue': false});
         },
         
         // ==========================
@@ -2159,13 +2157,22 @@
         // = Story Titles Pane =
         // =====================
         
+        hide_content_pane_feed_counter: function() {
+            var $content_pane = this.$s.$content_pane;
+            $('.feed', $content_pane).remove();
+        },
+        
         make_content_pane_feed_counter: function(feed_id) {
             var $content_pane = this.$s.$content_pane;
             var feed = this.model.get_feed(feed_id);
             var $counter = this.make_feed_title_line(feed, false, 'counter');
+            $counter.css({'opacity': 0});
             
             $('.feed', $content_pane).remove();
             this.$s.$story_taskbar.append($counter);
+            _.delay(function() {
+                $counter.animate({'opacity': .1}, {'duration': 1000, 'queue': false});
+            }, 500);
             
             $('.unread_count', $content_pane).corner('4px');
             
@@ -2561,7 +2568,7 @@
                 ($last.length == 0 ||
                  ($('#story_titles').scrollTop() == 0 && 
                   $last.position().top + $last.height() < container_height))) {
-                _.delay(_.bind(this.load_page_of_feed_stories, this), 1000);
+                _.delay(_.bind(this.load_page_of_feed_stories, this), 500);
             }
         },
         
@@ -4365,6 +4372,7 @@
             var $progress = this.$s.$feeds_progress;
             var $bar = $('.NB-progress-bar', $progress);
             var percentage = 0;
+            this.flags['import_from_google_reader_working'] = true;
             
             $('.NB-progress-title', $progress).text('Importing from Google Reader');
             $('.NB-progress-counts', $progress).hide();
@@ -4382,7 +4390,8 @@
         finish_import_from_google_reader: function(e, data) {
             var $progress = this.$s.$feeds_progress;
             var $bar = $('.NB-progress-bar', $progress);
-            this.flags['import_from_google_reader_finished'] = true;
+            this.flags['import_from_google_reader_working'] = false;
+            clearTimeout(this.locks['animate_progress_bar']);
             
             if (data.code >= 1) {
                 $bar.progressbar({value: 100});
@@ -4405,7 +4414,7 @@
             
             if (!this.flags['pause_feed_refreshing']) return;
             
-            this.flags['count_unreads_after_import_finished'] = false;
+            this.flags['count_unreads_after_import_working'] = true;
             
             $('.NB-progress-title', $progress).text('Counting is difficult');
             $('.NB-progress-counts', $progress).hide();
@@ -4414,10 +4423,9 @@
                 value: percentage
             });
             
-            this.animate_progress_bar($bar, feeds_count / 10);
-            
             setTimeout(function() {
-                if (!self.flags['count_unreads_after_import_finished']) {
+                if (self.flags['count_unreads_after_import_working']) {
+                    this.animate_progress_bar($bar, feeds_count / 10);
                     self.show_progress_bar();
                 }
             }, 500);
@@ -4427,7 +4435,8 @@
             $('.NB-progress-bar', this.$s.$feeds_progress).progressbar({
                 value: 100
             });
-            this.flags['count_unreads_after_import_finished'] = true;
+            this.flags['count_unreads_after_import_working'] = false;
+            clearTimeout(this.locks['animate_progress_bar']);
             this.$s.$feed_link_loader.fadeOut(250);
             this.setup_feed_refresh();
             if (!this.flags['has_unfetched_feeds']) {
