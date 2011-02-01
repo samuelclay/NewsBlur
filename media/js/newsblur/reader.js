@@ -1563,7 +1563,7 @@
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
             this.show_correct_feed_in_feed_title_floater();
-            // this.show_river_progress_bar();
+            this.show_river_progress_bar();
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $folder.addClass('NB-selected');
@@ -1579,7 +1579,7 @@
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             
-            var feeds = this.list_feeds_with_unreads_in_folder($folder);
+            var feeds = this.list_feeds_with_unreads_in_folder($folder, false, true);
             this.model.fetch_river_stories(feeds, 0, _.bind(this.post_open_river_stories, this), true);
         },
         
@@ -1601,7 +1601,7 @@
             }
         },
         
-        list_feeds_with_unreads_in_folder: function($folder, counts_only) {
+        list_feeds_with_unreads_in_folder: function($folder, counts_only, visible_only) {
             var model = this.model;
             var unread_view = this.get_unread_view_name();
             $folder = $folder || this.$s.$feed_list;
@@ -1610,7 +1610,9 @@
             var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
                 var feed_id = $(o).data('feed_id');
                 var feed = model.get_feed(feed_id);
-                if (counts_only) {
+                if (counts_only && !visible_only) {
+                    return feed.ps + feed.nt + feed.ng;
+                } else if (counts_only && visible_only) {
                     if (unread_view == 'positive') return feed.ps;
                     if (unread_view == 'neutral')  return feed.ps + feed.nt;
                     if (unread_view == 'negative') return feed.ps + feed.nt + feed.ng;
@@ -1634,9 +1636,10 @@
             
             $feed_view.append($progress);
             
-            $('.NB-river-progress-bar', $progress).progressbar({
-                value: 0
-            });
+            var $bar = $('.NB-river-progress-bar', $progress);
+            var unreads = this.get_unread_count(false);
+            NEWSBLUR.log(['river progress', unreads]);
+            this.animate_progress_bar($bar, unreads / 50);
         },
         
         hide_river_progress_bar: function() {
@@ -3252,7 +3255,8 @@
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) return;
-                var tab_unread_count = Math.min(25, this.get_unread_count(true, feed_id));
+                var unread_count = this.get_unread_count(true, feed_id);
+                var tab_unread_count = Math.min(25, unread_count);
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
                     (feed.has_exception && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-exception' }, [
@@ -3306,7 +3310,7 @@
                 ]);
                 $manage_menu.data('feed_id', feed_id);
                 $manage_menu.data('$feed', $item);
-                if (feed_id && this.get_unread_count(true, feed_id) == 0) {
+                if (feed_id && unread_count == 0) {
                     $('.NB-menu-manage-feed-mark-read', $manage_menu).addClass('NB-disabled');
                     $('.NB-menu-manage-feed-unreadtabs', $manage_menu).addClass('NB-disabled');
                 }
@@ -3802,16 +3806,16 @@
             var $folder;
             feed_id = feed_id || this.active_feed;
             
-            if (_.isString(feed_id) && feed_id.indexOf('river:') != -1) {
+            if (this.flags['river_view'] && feed_id != 'starred') {
                 if (feed_id == 'river:') {
                     $folder = this.$s.$feed_list;
                 } else {
                     $folder = $('li.folder.NB-selected');
                 }
-                var counts = this.list_feeds_with_unreads_in_folder($folder, true);
+                var counts = this.list_feeds_with_unreads_in_folder($folder, true, visible_only);
                 return _.reduce(counts, function(m, c) { return m + c; }, 0);
-            } else if (feed_id == 'starred') {
-                // Umm, no.
+            } else if (this.flags['river_view'] && feed_id == 'starred') {
+                // Umm, no. Not yet.
             } else {
                 var feed = this.model.get_feed(feed_id);
                 if (!visible_only) {
