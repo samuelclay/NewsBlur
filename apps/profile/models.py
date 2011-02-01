@@ -86,7 +86,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             sub.feed.save()
         
         if stale_feeds:
-            stale_feeds = list(set([f['feed_id'] for f in stale_feeds]))
+            stale_feeds = list(set([f.feed.pk for f in stale_feeds]))
             self.queue_new_feeds(new_feeds=stale_feeds)
         
         
