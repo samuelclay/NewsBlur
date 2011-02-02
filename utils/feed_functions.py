@@ -1,8 +1,10 @@
 import datetime
 import threading
 import sys
+import traceback
 from django.utils.translation import ungettext
 from utils import feedfinder
+from utils import log as logging
 
 class TimeoutError(Exception): pass
 def timelimit(timeout):
@@ -29,6 +31,8 @@ def timelimit(timeout):
             if c.isAlive():
                 raise TimeoutError, 'took too long'
             if c.error:
+                tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
+                logging.debug(tb)
                 raise c.error[0], c.error[1]
             return c.result
         return _2

@@ -85,8 +85,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     callback(o);
                 }
             },
-            error: function(e) {
-                // NEWSBLUR.log(['AJAX Error', e]);
+            error: function(e, textStatus, errorThrown) {
+                NEWSBLUR.log(['AJAX Error', textStatus, errorThrown]);
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 } else if ($.isFunction(callback)) {
@@ -187,6 +187,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(subscriptions) {
+            NEWSBLUR.log(['subscriptions', subscriptions]);
             var flat_feeds = function(feeds) {
                 var flattened = _.flatten(_.map(feeds, _.values));
                 return _.flatten(_.map(flattened, function(feed) {

@@ -246,18 +246,19 @@ INSTALLED_APPS = (
     'apps.analyzer',
     'apps.feed_import',
     'apps.profile',
-    'devserver',
     'south',
-    # 'test_utils',
     'utils',
     'utils.typogrify',
     'utils.paypal.standard.ipn',
-    # 'debug_toolbar'
 )
 
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
+    )
+elif DEVELOPMENT:
+    INSTALLED_APPS += (
+        'devserver',
     )
 
 DEVSERVER_MODULES = (

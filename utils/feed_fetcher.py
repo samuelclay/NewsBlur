@@ -39,7 +39,7 @@ class FetchFeed:
         self.options = options
         self.fpf = None
     
-    @timelimit(30)
+    @timelimit(20)
     def fetch(self):
         """ 
         Uses feedparser to download the feed. Will be parsed later.

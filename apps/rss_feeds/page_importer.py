@@ -18,7 +18,7 @@ class PageImporter(object):
         self.url = url
         self.feed = feed
     
-    @timelimit(30)
+    @timelimit(15)
     def fetch_page(self):
         if not self.url:
             return

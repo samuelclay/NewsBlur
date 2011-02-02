@@ -21,7 +21,7 @@ from utils import json_functions as json
 from utils import feedfinder
 from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
-from utils.feed_functions import timelimit
+from utils.feed_functions import timelimit, TimeoutError
 from utils.story_functions import pre_process_story
 from utils.diff import HTMLDiff
 from utils import log as logging
@@ -106,32 +106,40 @@ class Feed(models.Model):
         self.count_subscribers()
         self.set_next_scheduled_update()
         
-    @timelimit(20)
     def check_feed_address_for_feed_link(self):
-        feed_address = None
-
-        if not feedfinder.isFeed(self.feed_address):
-            feed_address = feedfinder.feed(self.feed_address)
-            if not feed_address:
-                feed_address = feedfinder.feed(self.feed_link)
-        else:
-            feed_address_from_link = feedfinder.feed(self.feed_link)
-            if feed_address_from_link != self.feed_address:
-                feed_address = feed_address_from_link
+        @timelimit(10)
+        def _1():
+            feed_address = None
+            if not feedfinder.isFeed(self.feed_address):
+                feed_address = feedfinder.feed(self.feed_address)
+                if not feed_address and self.feed_link:
+                    feed_address = feedfinder.feed(self.feed_link)
+            else:
+                feed_address_from_link = feedfinder.feed(self.feed_link)
+                if feed_address_from_link != self.feed_address:
+                    feed_address = feed_address_from_link
         
-        if feed_address:
-            try:
-                self.feed_address = feed_address
-                self.next_scheduled_update = datetime.datetime.utcnow()
-                self.has_feed_exception = False
-                self.active = True
-                self.save()
-            except IntegrityError:
-                original_feed = Feed.objects.get(feed_address=feed_address)
-                original_feed.has_feed_exception = False
-                original_feed.active = True
-                original_feed.save()
-                merge_feeds(original_feed.pk, self.pk)
+            if feed_address:
+                try:
+                    self.feed_address = feed_address
+                    self.next_scheduled_update = datetime.datetime.utcnow()
+                    self.has_feed_exception = False
+                    self.active = True
+                    self.save()
+                except IntegrityError:
+                    original_feed = Feed.objects.get(feed_address=feed_address)
+                    original_feed.has_feed_exception = False
+                    original_feed.active = True
+                    original_feed.save()
+                    merge_feeds(original_feed.pk, self.pk)
+            return feed_address
+        
+        try:
+            feed_address = _1()
+        except TimeoutError:
+            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self.feed_title)[:30]))
+            self.save_feed_history(505, 'Timeout', '')
+            feed_address = None
         
         return not not feed_address
 
