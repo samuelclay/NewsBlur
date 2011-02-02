@@ -3424,7 +3424,7 @@
                 this.hide_manage_menu(type);
             }
             
-            if (!$item.hasClass('NB-empty')) return;
+            if ($item.hasClass('NB-empty')) return;
             
             // Create menu, size and position it, then attach to the right place.
             var feed_id, inverse, story_id;

@@ -488,6 +488,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   margin: 0;
   padding: 0;
   height: 4px;
+  cursor: default;
 }
 .NB-feedlist.NB-feed-sorting .feed.NB-empty {
 /*  height: 16px;*/
