@@ -160,14 +160,18 @@ class IconImporter(object):
         def _1(url):
             request = urllib2.Request(url, headers=HEADERS)
             icon = urllib2.urlopen(request).read()
-            icon_file = StringIO(icon)
-            image = Image.open(icon_file)
-            return image, icon_file
+            return icon
         try:
-            image, icon_file = _1(url)
-        # except (urllib2.HTTPError, urllib2.URLError, IOError, TimeoutError, ValueError):
+            icon = _1(url)
         except (Exception):
             return None, None
+        
+        try:
+            icon_file = StringIO(icon)
+            image = Image.open(icon_file)
+        except (IOError, ValueError):
+            return None, None
+            
         return image, icon_file
     
     def _url_from_html(self, content):
