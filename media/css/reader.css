@@ -2168,19 +2168,22 @@ background: transparent;
     background-color: #A0A7B1;
 }
 
-.NB-taskbar .task_button.task_return {
-    cursor: pointer;
-    display: none;
-    background: transparent url('../img/icons/silk/arrow_undo.png') no-repeat 8px 8px;
-    padding-top: 2px;
-    font-size: 12px;
-}
 
-.NB-taskbar .task_button.task_return .NB-task-title {
-    padding-top: 0;
+.NB-taskbar .task_button.NB-task-return {
+    background: transparent url('../img/icons/silk/arrow_undo.png') no-repeat 8px center;
+}
+.NB-taskbar .task_button.task_view_page .NB-task-title.NB-task-original-return {
+    display: none;
+    font-size: 12px;
+    padding-top: 1px;
     line-height: 13px;
 }
-
+.NB-taskbar .task_button.task_view_page.NB-task-return .NB-task-title {
+  display: none;
+}
+.NB-taskbar .task_button.task_view_page.NB-task-return .NB-task-title.NB-task-original-return {
+  display: block;
+}
 
 
 /* ==================== */
