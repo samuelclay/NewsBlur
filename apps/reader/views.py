@@ -1,6 +1,7 @@
 import datetime
 import time
 import random
+import re
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -274,9 +275,14 @@ def load_single_feed(request):
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
-    feed_id = int(request.REQUEST.get('feed_id', 0))
+    feed_id = None
+    try:
+        feed_id = int(request.GET.get('feed_id', 0))
+    except ValueError:
+        feed_id_matches = re.search(r'(\d+)', request.GET['feed_id'])
+        if feed_id_matches: feed_id = int(feed_id_matches.group(1))
     dupe_feed_id = None
-    if feed_id == 0:
+    if not feed_id:
         raise Http404
         
     try:
@@ -368,8 +374,13 @@ def load_single_feed(request):
     return data
 
 def load_feed_page(request):
-    feed_id = int(request.GET.get('feed_id', 0))
-    if feed_id == 0:
+    feed_id = None
+    try:
+        feed_id = int(request.GET.get('feed_id', 0))
+    except ValueError:
+        feed_id_matches = re.search(r'(\d+)', request.GET['feed_id'])
+        if feed_id_matches: feed_id = int(feed_id_matches.group(1))
+    if not feed_id:
         raise Http404
         
     data = MFeedPage.get_data(feed_id=feed_id)
@@ -442,7 +453,10 @@ def load_river_stories(request):
     feed_counts        = {}
     feed_last_reads    = {}
     for feed_id in feed_ids:
-        usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)
+        try:
+            usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)
+        except UserSubscription.DoesNotExist:
+            continue
         feed_counts[feed_id] = (usersub.unread_count_negative * 1+ 
                                 usersub.unread_count_neutral * 10+
                                 usersub.unread_count_positive * 20)
@@ -826,7 +840,7 @@ def get_feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
-    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds')][:64]
+    approved_feeds = [int(feed_id) for feed_id in request.POST.getlist('approved_feeds') if feed_id][:64]
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
     
