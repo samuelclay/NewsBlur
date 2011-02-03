@@ -282,7 +282,7 @@ def load_single_feed(request):
     #     feed_id_matches = re.search(r'(\d+)', request.GET['feed_id'])
     #     if feed_id_matches: feed_id = int(feed_id_matches.group(1))
     dupe_feed_id = None
-    if not feed_id:
+    if feed_id == 0:
         raise Http404
         
     try:
@@ -380,7 +380,7 @@ def load_feed_page(request):
     # except ValueError:
     #     feed_id_matches = re.search(r'(\d+)', request.GET['feed_id'])
     #     if feed_id_matches: feed_id = int(feed_id_matches.group(1))
-    if not feed_id:
+    if feed_id == 0:
         raise Http404
         
     data = MFeedPage.get_data(feed_id=feed_id)
