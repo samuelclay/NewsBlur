@@ -276,13 +276,13 @@ def load_single_feed(request):
     if page:
         offset = limit * page
     feed_id = None
-    # try:
-    feed_id = int(request.GET.get('feed_id', 0))
-    # except ValueError:
-    #     feed_id_matches = re.search(r'(\d+)', request.GET['feed_id'])
-    #     if feed_id_matches: feed_id = int(feed_id_matches.group(1))
+    try:
+        feed_id = int(request.REQUEST.get('feed_id', 0))
+    except ValueError:
+        feed_id_matches = re.search(r'(\d+)', request.REQUEST['feed_id'])
+        if feed_id_matches: feed_id = int(feed_id_matches.group(1))
     dupe_feed_id = None
-    if feed_id == 0:
+    if not feed_id:
         raise Http404
         
     try:
@@ -375,12 +375,12 @@ def load_single_feed(request):
 
 def load_feed_page(request):
     feed_id = None
-    # try:
-    feed_id = int(request.GET.get('feed_id', 0))
-    # except ValueError:
-    #     feed_id_matches = re.search(r'(\d+)', request.GET['feed_id'])
-    #     if feed_id_matches: feed_id = int(feed_id_matches.group(1))
-    if feed_id == 0:
+    try:
+        feed_id = int(request.REQUEST.get('feed_id', 0))
+    except ValueError:
+        feed_id_matches = re.search(r'(\d+)', request.REQUEST['feed_id'])
+        if feed_id_matches: feed_id = int(feed_id_matches.group(1))
+    if not feed_id:
         raise Http404
         
     data = MFeedPage.get_data(feed_id=feed_id)
