@@ -1582,12 +1582,15 @@
             this.setup_mousemove_on_views();
             
             var feeds = this.list_feeds_with_unreads_in_folder($folder, false, true);
+            this.cache['river_feeds_with_unreads'] = feeds;
             this.show_stories_progress_bar(feeds.length);
-            this.model.fetch_river_stories(feeds, 0, _.bind(this.post_open_river_stories, this), true);
+            this.model.fetch_river_stories(this.active_feed, feeds, 0, 
+                _.bind(this.post_open_river_stories, this), true);
         },
         
         post_open_river_stories: function(data, first_load) {
-            if (this.active_feed.indexOf('river:') != -1) {
+            // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed]);
+            if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
                 // NEWSBLUR.log(['post_open_river_stories', data.stories.length, first_load, this.flags['feed_view_positions_calculated']]);
                 this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
@@ -1625,8 +1628,6 @@
                     return (feed.ps || feed.nt || feed.ng) && feed_id;
                 }
             }));
-            
-            if (!counts_only) this.cache['river_feeds_with_unreads'] = feeds;
             
             return feeds;
         },
@@ -2074,24 +2075,18 @@
         mark_story_as_like: function(story_id, feed_id) {
             feed_id = feed_id || this.model.get_story(story_id).story_feed_id;
             
-            var is_river = _.isString(this.active_feed) && 
-                           (this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1);
-
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
                 'score': 1,
-                'feed_loaded': !is_river
+                'feed_loaded': !this.flags['river_view']
             });
         },
         
         mark_story_as_dislike: function(story_id, feed_id) {
             feed_id = feed_id || this.active_feed;
             
-            var is_river = _.isString(this.active_feed) && 
-                           (this.active_feed == 'starred' || this.active_feed.indexOf('river:') != -1);
-            
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
                 'score': -1,
-                'feed_loaded': !is_river
+                'feed_loaded': !this.flags['river_view']
             });
         },
         
@@ -2574,9 +2569,9 @@
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, 
                         _.bind(this.post_open_starred_stories, this), false);
-                } else if (typeof this.active_feed == "string" && this.active_feed.indexOf('river:') != -1) {
-                    this.model.fetch_river_stories(this.cache['river_feeds_with_unreads'], page+1,
-                        _.bind(this.post_open_river_stories, this), false);
+                } else if (this.flags['river_view']) {
+                    this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
+                        page+1, _.bind(this.post_open_river_stories, this), false);
                 } else {
                     this.model.load_feed(feed_id, page+1, false, 
                                          $.rescope(this.post_open_feed, this));                                 
@@ -3876,7 +3871,9 @@
             var $folder;
             feed_id = feed_id || this.active_feed;
             
-            if (_.isString(feed_id) && feed_id.indexOf('river:') != -1) {
+            if (feed_id == 'starred') {
+                // Umm, no. Not yet.
+            } else if (this.flags['river_view']) {
                 if (feed_id == 'river:') {
                     $folder = this.$s.$feed_list;
                 } else {
@@ -3884,8 +3881,6 @@
                 }
                 var counts = this.list_feeds_with_unreads_in_folder($folder, true, visible_only);
                 return _.reduce(counts, function(m, c) { return m + c; }, 0);
-            } else if (feed_id == 'starred') {
-                // Umm, no. Not yet.
             } else {
                 var feed = this.model.get_feed(feed_id);
                 if (!visible_only) {
