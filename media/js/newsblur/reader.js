@@ -1841,7 +1841,7 @@
                         this.flags['iframe_story_locations_fetched'] ||
                         parseInt($story.offset().top, 10) > this.cache['prefetch_iteration']*4000) {
                         if ($story && $story.length) {
-                            NEWSBLUR.log(['Prefetch break on position too far', parseInt($story.offset().top, 10), this.cache['prefetch_iteration']*4000]);
+                            // NEWSBLUR.log(['Prefetch break on position too far', parseInt($story.offset().top, 10), this.cache['prefetch_iteration']*4000]);
                             break;
                         }
                         if (!prefetch_tries_left) {
@@ -2150,6 +2150,34 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(instapaper_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_twitter: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://twitter.com/';
+            var twitter_url = [
+              url,
+              '?status=',
+              encodeURIComponent(story.story_title),
+              ': ',
+              encodeURIComponent(story.story_permalink)
+            ].join('');
+            window.open(twitter_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_facebook: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://www.facebook.com/sharer.php?src=bm&v=4&i=1296796865';
+            var facebook_url = [
+              url,
+              '&u=',
+              encodeURIComponent(story.story_permalink),
+              '&t=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(facebook_url, '_blank');
             this.mark_story_as_read(story_id);
         },
         
@@ -2996,7 +3024,7 @@
         // ===================
         
         switch_taskbar_view: function(view, skip_save_type) {
-          NEWSBLUR.log(['switch_taskbar_view', view]);
+            // NEWSBLUR.log(['switch_taskbar_view', view]);
             var self = this;
             var $story_pane = this.$s.$story_pane;
             var feed = this.model.get_feed(this.active_feed);
@@ -3377,13 +3405,30 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-story-instapaper' }, [
+                    $.make('li', { className: 'NB-menu-manage-story-thirdparty' }, [
+                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-facebook');
+                        }, this)),
+                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-twitter'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Twitter').parent().addClass('NB-menu-manage-highlight-twitter');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-twitter');
+                        }, this)),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
                     ]).bind('click', _.bind(function(e) {
                       e.preventDefault();
                       e.stopPropagation();
-                      this.send_story_to_instapaper(story.id);
+                      var $target = $(e.target);
+                      if ($target.hasClass('NB-menu-manage-thirdparty-facebook')) {
+                          this.send_story_to_facebook(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-twitter')) {
+                          this.send_story_to_twitter(story.id);
+                      } else {
+                          this.send_story_to_instapaper(story.id);
+                      }
                     }, this)),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-train' }, [
