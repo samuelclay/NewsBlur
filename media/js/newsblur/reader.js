@@ -2169,7 +2169,7 @@
         
         send_story_to_facebook: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'http://www.facebook.com/sharer.php?src=bm&v=4&i=1296796865';
+            var url = 'http://www.facebook.com/sharer.php?src=newsblur&v=3.14159265&i=1.61803399';
             var facebook_url = [
               url,
               '&u=',
