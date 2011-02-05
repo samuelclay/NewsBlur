@@ -475,9 +475,9 @@ def load_river_stories(request):
         story_feed_id__in=feed_ids,
         story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
-            var d = feed_last_reads[this.story_feed_id];
-            if (this.story_date.getTime()/1000 > d) {
-                emit(this._id, this);
+            var d = feed_last_reads[this[~story_feed_id]];
+            if (this[~story_date].getTime()/1000 > d) {
+                emit(this[~id], this);
             }
         }""",
         """function(key, values) {

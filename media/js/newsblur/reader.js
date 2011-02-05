@@ -1228,6 +1228,8 @@
                     self.show_progress_bar();
                 }, 1000);
             }
+            
+            this.setup_feed_refresh(true);
         },
         
         hide_unfetched_feed_progress: function(permanent) {

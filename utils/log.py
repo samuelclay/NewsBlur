@@ -72,6 +72,6 @@ def colorize(msg):
     msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
     try:
         msg = msg % colors
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, KeyError):
         pass
     return msg

@@ -5,7 +5,7 @@ import traceback
 import feedparser
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
-from utils.feed_functions import timelimit
+from utils.feed_functions import timelimit, mail_error_to_admin
 
 HEADERS = {
     'User-Agent': 'NewsBlur Page Fetcher - http://www.newsblur.com',
@@ -43,6 +43,7 @@ class PageImporter(object):
             logging.debug(tb)
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
+            mail_error_to_admin(feed, e)
             return
         
         self.feed.save_page_history(200, "OK")

@@ -6,25 +6,39 @@
 
     NEWSBLUR.PaypalReturn = function() {
         this.retries = 0;
-        _.delay(_.bind(function() { this.detect_premium(); }, this), 1500);
+        this.detect_premium();
+        setInterval(_.bind(function() { this.detect_premium(); }, this), 1500);
     };
 
     NEWSBLUR.PaypalReturn.prototype = {
 
         detect_premium: function() {
-            $.get('/profile/is_premium', {'retries': this.retries}, _.bind(function(resp) {
-                if (resp.activated_subs == resp.total_subs || resp.code < 0) {
-                    window.location.href = '/';
-                } else if (resp.activated_subs != resp.total_subs) {
+            $.ajax({
+                'url'      : '/profile/is_premium', 
+                'data'     : {'retries': this.retries}, 
+                'dataType' : 'json',
+                'success'  : _.bind(function(resp) {
+                    // NEWSBLUR.log(['resp', resp]);
+                    if ((resp.activated_subs >= resp.total_subs || resp.code < 0)) {
+                        this.homepage();
+                    } else if (resp.activated_subs != resp.total_subs) {
+                        this.retries += 1;
+                        $('.NB-paypal-return-loading').progressbar({
+                            value: (resp.activated_subs / resp.total_subs) * 100
+                        });
+                    }
+                }, this),
+                'error'    : _.bind(function() {
                     this.retries += 1;
-                    _.delay(_.bind(function() {
-                        this.detect_premium();
-                    }, this), 2000);
-                    $('.NB-paypal-return-loading').progressbar({
-                        value: (resp.activated_subs / resp.total_subs) * 100
-                    });
-                }
-            }, this));
+                    if (this.retries > 30) {
+                        this.homepage();
+                    }
+                }, this)
+            });
+        },
+        
+        homepage: function() {
+            window.location.href = '/';
         }
 
     };

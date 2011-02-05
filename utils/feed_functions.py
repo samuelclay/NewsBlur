@@ -2,6 +2,8 @@ import datetime
 import threading
 import sys
 import traceback
+from pprint import pprint
+from django.core.mail import mail_admins
 from django.utils.translation import ungettext
 from utils import feedfinder
 from utils import log as logging
@@ -186,3 +188,14 @@ def add_object_to_folder(obj, folder, folders):
                     f_v.append(obj)
                 folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
     return folders  
+
+def mail_error_to_admin(feed, e):
+    # Mail the admins with the error
+    exc_info = sys.exc_info()
+    subject = 'Feed update error: %s' % getattr(e, 'msg')
+    message = 'Traceback:\n%s\n\Feed:\n%s' % (
+        '\n'.join(traceback.format_exception(*exc_info)),
+        pprint(feed.__dict__)
+        )
+    # print message
+    mail_admins(subject, message)

@@ -3,7 +3,6 @@ import datetime
 import random
 import re
 import mongoengine as mongo
-import pymongo
 import zlib
 import urllib
 from collections import defaultdict
@@ -377,7 +376,7 @@ class Feed(models.Model):
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
-                        # logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
@@ -421,16 +420,13 @@ class Feed(models.Model):
             
         return ret_values
         
-    def save_popular_tags(self, feed_tags=None):
+    def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
-            try:
-                all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
-            except pymongo.errors.OperationFailure, err:
-                print "Mongo Error on statistics: %s" % err
-                return
-            feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, float) and int(v) > 1], 
+            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies_mr('story_tags')
+                
+            feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, int) and int(v) > 1], 
                                key=itemgetter(1), 
-                               reverse=True)[:20]
+                               reverse=True)[:25]
         popular_tags = json.encode(feed_tags)
         
         # TODO: This len() bullshit will be gone when feeds move to mongo
@@ -633,7 +629,7 @@ class Feed(models.Model):
         updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.num_subscribers)**.13) 
                                                    * (updates_per_day**.65)))
         if self.premium_subscribers > 0:
-            updates_per_day_delay = updates_per_day_delay / 4
+            updates_per_day_delay /= 5
         # Lots of subscribers = lots of updates
         # 144 hours for 0 subscribers.
         # 24 hours for 1 subscriber.
@@ -642,7 +638,7 @@ class Feed(models.Model):
         # 25 min for 10 subscribers.
         subscriber_bonus = 24 * 60 / max(.167, max(0, self.num_subscribers)**1.05)
         if self.premium_subscribers > 0:
-            subscriber_bonus = subscriber_bonus / 4
+            subscriber_bonus /= 5
         
         slow_punishment = 0
         if self.num_subscribers <= 1:

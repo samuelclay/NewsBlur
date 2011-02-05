@@ -16,7 +16,7 @@ class Command(BaseCommand):
             daemonize()
         
         if options['title']:
-            feed = Feed.objects.get(feed_title__contains=options['title'])
+            feed = Feed.objects.get(feed_title__icontains=options['title'])
         else:
             feed = Feed.objects.get(pk=options['feed'])
         self._refresh_feeds([feed], force=options['force'])
