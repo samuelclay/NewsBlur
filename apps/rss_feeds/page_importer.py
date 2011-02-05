@@ -43,7 +43,7 @@ class PageImporter(object):
             logging.debug(tb)
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
-            mail_error_to_admin(feed, e)
+            mail_error_to_admin(self.feed, e)
             return
         
         self.feed.save_page_history(200, "OK")
