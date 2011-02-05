@@ -192,7 +192,7 @@ def add_object_to_folder(obj, folder, folders):
 def mail_error_to_admin(feed, e):
     # Mail the admins with the error
     exc_info = sys.exc_info()
-    subject = 'Feed update error: %s' % getattr(e, 'msg')
+    subject = 'Feed update error: %s' % repr(e)
     message = 'Traceback:\n%s\n\Feed:\n%s' % (
         '\n'.join(traceback.format_exception(*exc_info)),
         pprint(feed.__dict__)
