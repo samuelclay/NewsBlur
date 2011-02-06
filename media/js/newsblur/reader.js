@@ -4109,6 +4109,9 @@
                     }
                     if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                     $feed_on_page.replaceWith($feed);
+                    $feed.css({'backgroundColor': '#D7DDE6'})
+                         .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
+                         .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
                 }
                 this.hover_over_feed_titles($feed);
             }
