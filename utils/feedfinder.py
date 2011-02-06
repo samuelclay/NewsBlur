@@ -47,6 +47,9 @@ Also Jason Diamond, Brian Lalor for bug reporting and patches"""
 _debug = 0
 
 import sgmllib, urllib, urlparse, re, sys, robotparser
+from StringIO import StringIO
+from lxml import etree
+
 
 # XML-RPC support allows feedfinder to query Syndic8 for possible matches.
 # Python 2.3 now comes with this module by default, otherwise you can download it
@@ -164,6 +167,17 @@ def getLinks(data, baseuri):
     p.feed(data)
     return p.links
 
+def getLinksLXML(data, baseuri):
+    parser = etree.HTMLParser(recover=True)
+    tree = etree.parse(StringIO(data), parser)
+    links = []
+    for link in tree.findall('.//link'):
+        if link.attrib.get('type') in LinkParser.FEED_TYPES:
+            href = link.attrib['href']
+            if href: links.append(href)
+            print links
+    return links
+
 def getALinks(data, baseuri):
     p = ALinkParser(baseuri)
     p.feed(data)
@@ -235,6 +249,12 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
         outfeeds = getLinks(data, fulluri)
     except:
         outfeeds = []
+    if not outfeeds:
+        _debuglog('using lxml to look for LINK tags')
+        try:
+            outfeeds = getLinksLXML(data, fulluri)
+        except:
+            outfeeds = []
     _debuglog('found %s feeds through LINK tags' % len(outfeeds))
     outfeeds = filter(isFeed, outfeeds)
     if all or not outfeeds:
@@ -281,6 +301,9 @@ def feed(uri):
     #todo: give preference to certain feed formats
     feedlist = feeds(uri)
     if feedlist:
+        feeds_no_comments = filter(lambda f: not 'comments' in f, feedlist)
+        if feeds_no_comments:
+            return feeds_no_comments[0]
         return feedlist[0]
     else:
         return None
