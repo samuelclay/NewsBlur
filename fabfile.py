@@ -50,7 +50,7 @@ def deploy_full():
     with cd('~/newsblur'):
         run('git pull')
         run('./manage.py migrate')
-        run('kill -HUP `cat /var/run/gunicorn/gunicorn.pid`')
+        run('sudo supervisorctl restart gunicorn')
 
 @roles('app')
 def staging():
