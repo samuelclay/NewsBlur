@@ -184,7 +184,7 @@ class ProcessFeed:
         self.fpf.entries = self.fpf.entries[:50]
         
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
-        self.feed.data.feed_tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)[:1023]
+        self.feed.data.feed_tagline = unicode(self.fpf.feed.get('tagline', self.feed.data.feed_tagline))[:1023]
         self.feed.data.save()
         self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         

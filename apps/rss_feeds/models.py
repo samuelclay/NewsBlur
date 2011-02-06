@@ -714,14 +714,14 @@ class Feed(models.Model):
         
 class FeedData(models.Model):
     feed = AutoOneToOneField(Feed, related_name='data')
-    feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
+    feed_tagline = models.CharField(max_length=1000, blank=True, null=True)
     story_count_history = models.TextField(blank=True, null=True)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
     def save(self, *args, **kwargs):
-        if self.feed_tagline and len(self.feed_tagline) >= 1023:
-            self.feed_tagline = self.feed_tagline[:1023]
+        if self.feed_tagline and len(self.feed_tagline) >= 1000:
+            self.feed_tagline = self.feed_tagline[:1000]
         
         try:    
             super(FeedData, self).save(*args, **kwargs)
