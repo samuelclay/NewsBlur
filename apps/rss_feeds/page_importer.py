@@ -29,7 +29,7 @@ class PageImporter(object):
             data = response.read()
             html = self.rewrite_page(data)
             self.save_page(html)
-        except ValueError, e:
+        except (ValueError, urllib2.URLError), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
             self.feed.feed_link = fp.feed.get('link', "")

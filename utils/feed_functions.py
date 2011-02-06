@@ -2,7 +2,7 @@ import datetime
 import threading
 import sys
 import traceback
-from pprint import pprint
+import pprint
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
 from utils import feedfinder
@@ -195,7 +195,7 @@ def mail_error_to_admin(feed, e):
     subject = 'Feed update error: %s' % repr(e)
     message = 'Traceback:\n%s\n\Feed:\n%s' % (
         '\n'.join(traceback.format_exception(*exc_info)),
-        pprint(feed.__dict__)
+        pprint.pformat(feed.__dict__)
         )
     # print message
     mail_admins(subject, message)
