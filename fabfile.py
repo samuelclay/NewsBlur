@@ -43,7 +43,7 @@ def task():
 def deploy():
     with cd('~/newsblur'):
         run('git pull')
-        run('./utils/restart')
+        run('kill -HUP `cat logs/gunicorn.pid`')
 
 @roles('app')
 def deploy_full():
