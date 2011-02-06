@@ -715,7 +715,7 @@ class Feed(models.Model):
         
 class FeedData(models.Model):
     feed = AutoOneToOneField(Feed, related_name='data')
-    feed_tagline = models.CharField(max_length=1000, blank=True, null=True)
+    feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
     story_count_history = models.TextField(blank=True, null=True)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)

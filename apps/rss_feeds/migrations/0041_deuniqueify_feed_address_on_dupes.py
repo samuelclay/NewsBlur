@@ -11,17 +11,11 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'DuplicateFeed', fields ['duplicate_address']
         db.delete_unique('rss_feeds_duplicatefeed', ['duplicate_address'])
 
-        # Changing field 'FeedData.feed_tagline'
-        db.alter_column('rss_feeds_feeddata', 'feed_tagline', self.gf('django.db.models.fields.CharField')(max_length=1000, null=True))
-
 
     def backwards(self, orm):
         
         # Adding unique constraint on 'DuplicateFeed', fields ['duplicate_address']
         db.create_unique('rss_feeds_duplicatefeed', ['duplicate_address'])
-
-        # Changing field 'FeedData.feed_tagline'
-        db.alter_column('rss_feeds_feeddata', 'feed_tagline', self.gf('django.db.models.fields.CharField')(max_length=1024, null=True))
 
 
     models = {
@@ -61,7 +55,7 @@ class Migration(SchemaMigration):
         'rss_feeds.feeddata': {
             'Meta': {'object_name': 'FeedData'},
             'feed': ('utils.fields.AutoOneToOneField', [], {'related_name': "'data'", 'unique': 'True', 'to': "orm['rss_feeds.Feed']"}),
-            'feed_tagline': ('django.db.models.fields.CharField', [], {'max_length': '1000', 'null': 'True', 'blank': 'True'}),
+            'feed_tagline': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'popular_authors': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'null': 'True', 'blank': 'True'}),
             'popular_tags': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
