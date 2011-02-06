@@ -40,7 +40,7 @@ def timelimit(timeout):
         return _2
     return _1
     
-def encode(tstr):
+def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """
     if not tstr:
@@ -50,7 +50,10 @@ def encode(tstr):
         return tstr.encode('utf-8', "xmlcharrefreplace")
     except UnicodeDecodeError:
         # it's already UTF8.. sigh
-        return tstr.decode('utf-8').encode('utf-8')
+        try:
+            return tstr.decode('utf-8').encode('utf-8')
+        except UnicodeDecodeError:
+            return ''
 
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):

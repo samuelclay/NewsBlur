@@ -338,6 +338,7 @@ class Feed(models.Model):
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
+        return self
 
     def add_update_stories(self, stories, existing_stories):
         ret_values = {
@@ -910,7 +911,7 @@ class FeedLoadtime(models.Model):
         return "%s: %s sec" % (self.feed, self.loadtime)
     
 class DuplicateFeed(models.Model):
-    duplicate_address = models.CharField(max_length=255, unique=True)
+    duplicate_address = models.CharField(max_length=255)
     duplicate_feed_id = models.CharField(max_length=255, null=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
 

@@ -140,30 +140,9 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related('feed', 'feed__feed_icon').filter(user=user)
     
     for sub in user_subs:
-        feeds[sub.feed.pk] = {
-            'id': sub.feed.pk,
-            'feed_title': sub.user_title or sub.feed.feed_title,
-            'feed_address': sub.feed.feed_address,
-            'feed_link': sub.feed.feed_link,
-            'ps': sub.unread_count_positive,
-            'nt': sub.unread_count_neutral,
-            'ng': sub.unread_count_negative, 
-            'updated': relative_timesince(sub.feed.last_update),
-            'subs': sub.feed.num_subscribers,
-            'active': sub.active,
-            'favicon': sub.feed.icon.data,
-            'favicon_color': sub.feed.icon.color,
-            'favicon_fetching': bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
-        }
-        
-        if not sub.feed.fetched_once:
+        feeds[sub.feed.pk] = sub.canonical()
+        if feeds[sub.feed.pk].get('not_yet_fetched'):
             not_yet_fetched = True
-            feeds[sub.feed.pk]['not_yet_fetched'] = True
-        if sub.feed.has_page_exception or sub.feed.has_feed_exception:
-            feeds[sub.feed.pk]['has_exception'] = True
-            feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
-            feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
-            feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
             sub.feed.count_subscribers()
             sub.feed.schedule_feed_fetch_immediately()

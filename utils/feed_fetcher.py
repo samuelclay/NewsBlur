@@ -11,7 +11,7 @@ from apps.rss_feeds.icon_importer import IconImporter
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, mail_error_to_admin
+from utils.feed_functions import timelimit, TimeoutError, mail_error_to_admin, utf8encode
 import time
 import datetime
 import traceback
@@ -186,7 +186,7 @@ class ProcessFeed:
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
-            self.feed.data.feed_tagline = tagline.encode('utf-8')
+            self.feed.data.feed_tagline = utf8encode(tagline)
             self.feed.data.save()
         self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         
@@ -281,7 +281,7 @@ class Dispatcher:
                 ENTRY_ERR: 0
             }
             start_time = datetime.datetime.utcnow()
-
+            ret_feed = FEED_ERREXC
             try:
                 feed = self.refresh_feed(feed_id)
                 
@@ -347,7 +347,6 @@ class Dispatcher:
                     tb = traceback.format_exc()
                     logging.error(tb)
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
-                    ret_feed = FEED_ERREXC 
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     mail_error_to_admin(feed, e)

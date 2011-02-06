@@ -88,11 +88,12 @@ def exception_retry(request):
         feed.fetched_once = True
     feed.save()
     
-    feed.update(force=True, compute_scores=False)
+    feed = feed.update(force=True, compute_scores=False)
     usersub = UserSubscription.objects.get(user=request.user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
-    return {'code': 1}
+    feeds = {feed.pk: usersub.canonical(full=True)}
+    return {'code': 1, 'feeds': feeds}
     
     
 @ajax_login_required
@@ -125,7 +126,11 @@ def exception_change_feed_address(request):
     logging.info(" ---> [%s] ~FRFixing feed exception by address: ~SB%s" % (request.user, retry_feed.feed_address))
     retry_feed.update()
     
-    return {'code': 1}
+    usersub = UserSubscription.objects.get(user=request.user, feed=retry_feed)
+    usersub.calculate_feed_scores(silent=False)
+    
+    feeds = {feed.pk: usersub.canonical(full=True)}
+    return {'code': 1, 'feeds': feeds}
     
 @ajax_login_required
 @json.json_view
@@ -162,6 +167,10 @@ def exception_change_feed_link(request):
     logging.info(" ---> [%s] ~FRFixing feed exception by link: ~SB%s" % (request.user, retry_feed.feed_link))
     retry_feed.update()
     
-    return {'code': code}
+    usersub = UserSubscription.objects.get(user=request.user, feed=retry_feed)
+    usersub.calculate_feed_scores(silent=False)
+    
+    feeds = {feed.pk: usersub.canonical(full=True)}
+    return {'code': code, 'feeds': feeds}
     
     

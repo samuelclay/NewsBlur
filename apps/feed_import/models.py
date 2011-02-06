@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 import datetime
-import lxml.etree
+from StringIO import StringIO
+from lxml import etree
 from utils import json_functions as json, urlnorm
 import utils.opml as opml
 from utils import log as logging
@@ -114,7 +115,9 @@ class GoogleReaderImporter(Importer):
 
 
     def parse(self):
-        self.feeds = lxml.etree.fromstring(self.feeds_xml).xpath('/object/list/object')
+        parser = etree.XMLParser(recover=True)
+        tree = etree.parse(StringIO(self.feeds_xml), parser)
+        self.feeds = tree.xpath('/object/list/object')
     
     def process_item(self, item, folders):
         feed_title = item.xpath('./string[@name="title"]') and \

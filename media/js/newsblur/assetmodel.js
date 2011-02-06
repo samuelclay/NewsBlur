@@ -331,37 +331,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            var updated_feeds = [];
-
-            for (var f in data.feeds) {
-                if (!self.feeds[f]) continue;
-                var updated = false;
-                f = parseInt(f, 10);
-                var feed = data.feeds[f];
-                for (var k in feed) {
-                    if (self.feeds[f][k] != feed[k]) {
-                        // NEWSBLUR.log(['New Feed', self.feeds[f][k], feed[k], f, k]);
-                        self.feeds[f][k] = feed[k];
-                        NEWSBLUR.log(['Different', k, self.feeds[f], feed]);
-                        updated = true;
-                    }
-                }
-                if ((feed['has_exception'] && !self.feeds[f]['has_exception']) ||
-                    (self.feeds[f]['has_exception'] && !feed['has_exception'])) {
-                  updated = true;
-                  self.feeds[f]['has_exception'] = !!feed['has_exception'];
-                }
-                if (feed['favicon']) {
-                    self.feeds[f]['favicon'] = feed['favicon'];
-                    self.feeds[f]['favicon_color'] = feed['favicon_color'];
-                    self.feeds[f]['favicon_fetching'] = false;
-                    updated = true;
-                }
-                if (updated && !(f in updated_feeds)) {
-                    updated_feeds.push(f);
-                }
-            }
-            callback(updated_feeds);
+            self.post_refresh_feeds(data, callback);
         };
         
         var data = {};
@@ -380,6 +350,44 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/refresh_feeds', data, pre_callback);
         }
+    },
+    
+    post_refresh_feeds: function(data, callback) {
+        var updated_feeds = [];
+
+        for (var f in data.feeds) {
+            if (!this.feeds[f]) continue;
+            var updated = false;
+            f = parseInt(f, 10);
+            var feed = data.feeds[f];
+            if (feed.id && f != feed.id) {
+                NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f]]);
+                this.feeds[feed.id] = this.feeds[f];
+            }
+            for (var k in feed) {
+                if (this.feeds[f][k] != feed[k]) {
+                    // NEWSBLUR.log(['New Feed', this.feeds[f][k], feed[k], f, k]);
+                    this.feeds[f][k] = feed[k];
+                    NEWSBLUR.log(['Different', k, this.feeds[f], feed]);
+                    updated = true;
+                }
+            }
+            if ((feed['has_exception'] && !this.feeds[f]['has_exception']) ||
+                (this.feeds[f]['has_exception'] && !feed['has_exception'])) {
+              updated = true;
+              this.feeds[f]['has_exception'] = !!feed['has_exception'];
+            }
+            if (feed['favicon']) {
+                this.feeds[f]['favicon'] = feed['favicon'];
+                this.feeds[f]['favicon_color'] = feed['favicon_color'];
+                this.feeds[f]['favicon_fetching'] = false;
+                updated = true;
+            }
+            if (updated && !(f in updated_feeds)) {
+                updated_feeds.push(f);
+            }
+        }
+        callback(updated_feeds);
     },
     
     refresh_feed: function(feed_id, callback, limit) {
@@ -637,11 +645,17 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
     save_exception_retry: function(feed_id, callback) {
         var self = this;
+        
+        var pre_callback = function(data) {
+            // NEWSBLUR.log(['refresh_feed pre_callback', data]);
+            self.post_refresh_feeds(data, callback);
+        };
+        
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/rss_feeds/exception_retry', {
               'feed_id': feed_id, 
               'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
-            }, callback);
+            }, pre_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -649,11 +663,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
     save_exception_change_feed_link: function(feed_id, feed_link, callback) {
         var self = this;
+        
+        var pre_callback = function(data) {
+            NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
+            self.post_refresh_feeds(data, callback);
+            NEWSBLUR.reader.force_feed_refresh(feed_id);
+        };
+        
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/rss_feeds/exception_change_feed_link', {
                 'feed_id': feed_id,
                 'feed_link': feed_link
-            }, callback);
+            }, pre_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -661,11 +682,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
     save_exception_change_feed_address: function(feed_id, feed_address, callback) {
         var self = this;
+        
+        var pre_callback = function(data) {
+            NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
+            self.post_refresh_feeds(data, callback);
+            NEWSBLUR.reader.force_feed_refresh(feed_id);
+        };
+        
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/rss_feeds/exception_change_feed_address', {
                 'feed_id': feed_id,
                 'feed_address': feed_address
-            }, callback);
+            }, pre_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
