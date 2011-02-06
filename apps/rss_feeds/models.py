@@ -720,8 +720,10 @@ class FeedData(models.Model):
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
     def save(self, *args, **kwargs):
+        print self.feed_tagline, len(self.feed_tagline)
         if self.feed_tagline and len(self.feed_tagline) >= 1000:
             self.feed_tagline = self.feed_tagline[:1000]
+        print self.feed_tagline, len(self.feed_tagline)
         
         try:    
             super(FeedData, self).save(*args, **kwargs)
