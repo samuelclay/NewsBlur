@@ -185,6 +185,7 @@ class ProcessFeed:
         
         self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
         self.feed.data.feed_tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
+        self.feed.data.save()
         self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         
         self.feed.last_update = datetime.datetime.utcnow()

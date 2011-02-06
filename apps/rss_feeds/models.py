@@ -452,7 +452,7 @@ class Feed(models.Model):
                                reverse=True)[:20]
 
         popular_authors = json.encode(feed_authors)
-        if len(popular_authors) < 1024:
+        if len(popular_authors) < 1023:
             self.data.popular_authors = popular_authors
             self.data.save()
             return
@@ -720,13 +720,13 @@ class FeedData(models.Model):
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
     def save(self, *args, **kwargs):
-        if self.feed_tagline and len(self.feed_tagline) > 1024:
-            self.feed_tagline = self.feed_tagline[:1024]
+        if self.feed_tagline and len(self.feed_tagline) >= 1023:
+            self.feed_tagline = self.feed_tagline[:1023]
         
         try:    
             super(FeedData, self).save(*args, **kwargs)
         except (IntegrityError, OperationError):
-            if self.id: self.delete()
+            if hasattr(self, 'id') and self.id: self.delete()
 
 
 class FeedIcon(models.Model):
