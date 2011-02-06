@@ -193,10 +193,10 @@ class ProcessFeed:
         for entry in self.fpf.entries:
             if entry.get('id', ''):
                 guids.append(entry.get('id', ''))
-            elif entry.title:
-                guids.append(entry.title)
-            elif entry.link:
+            elif entry.get('link'):
                 guids.append(entry.link)
+            elif entry.get('title'):
+                guids.append(entry.title)
         self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
