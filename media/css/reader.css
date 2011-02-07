@@ -3135,6 +3135,7 @@ background: transparent;
     position: relative;
     min-height: 77px;
     margin: 0 0 12px;
+    padding-bottom: 1px;
 }
 
 .NB-account .NB-module .NB-module-account.NB-last {
@@ -3170,9 +3171,9 @@ background: transparent;
     overflow: hidden;
     margin: 0 8px 2px 12px;
     border: 1px solid #606060;
-    -moz-box-shadow: 1px 1px 0 #303030;
-    -webkit-box-shadow: 1px 1px 0 #303030;
-    box-shadow: 1px 1px 0 #303030;
+    -moz-box-shadow: 1px 1px 0 #D0D0D0;
+    -webkit-box-shadow: 1px 1px 0 #D0D0D0;
+    box-shadow: 1px 1px 0 #D0D0D0;
 }
 
 .NB-account .NB-module .NB-modal-submit-close {
@@ -3837,6 +3838,10 @@ background: transparent;
 
 .NB-modal-about ul li .NB-faq-answer.last {
   margin-bottom: 0;
+}
+
+.NB-modal-about .NB-trainer-bullet {
+  vertical-align: middle;
 }
 
 .NB-modal-about .NB-faq-image {

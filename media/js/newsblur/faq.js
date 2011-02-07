@@ -29,7 +29,8 @@ NEWSBLUR.Faq.prototype = {
                     $.make('ul', { className: 'NB-about-what' }, [
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-question' }, 'What is the difference between the three views: Original, Feed, and Story?'),
-                        $.make('div', { className: 'NB-faq-answer' }, 'Original view is the original site. Feed view is the RSS feed from the site. And Story view is the same as Feed view, but only shows one story at a time. It\'s all personal preference, really.')
+                        $.make('div', { className: 'NB-faq-answer' }, 'Original view is the original site. Feed view is the RSS feed from the site. And Story view is the original site for one story at a time. Original view is the blog site, whereas Story view is an individual blog post. It\'s all personal preference, really.'),
+                        $.make('div', { className: 'NB-faq-answer' }, 'You can double-click a story to temporarily open it up in the Story view. The next story you open will transport you back to whichever view you were on before. Double-clicking a Feed will open up the feed in a new tab.')
                       ]),
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-question' }, 'Am I actually at the original site? Can NewsBlur see what I see?'),
@@ -84,7 +85,7 @@ NEWSBLUR.Faq.prototype = {
             ]),
             $.make('div', { className: 'NB-fieldset NB-modal-submit' }, [
                 $.make('h5', [
-                    $.make('span', { className: 'NB-exception-option-option', style: 'float:right' }, 'November - December 2010'),
+                    // $.make('span', { className: 'NB-exception-option-option', style: 'float:right' }, 'November - December 2010'),
                     'What\'s Coming'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -92,14 +93,8 @@ NEWSBLUR.Faq.prototype = {
                       $.make('li', [
                         $.make('div', { className: 'NB-faq-answer' }, 'An iPhone app.')
                       ]),
-                      $.make('li', [
-                        $.make('div', { className: 'NB-faq-answer' }, 'Indication of story titles that are below the intelligence slider threshold.')
-                      ]),
-                      $.make('li', [
-                        $.make('div', { className: 'NB-faq-answer' }, 'Sort sites alphabetically, by popularity, use, unread counts, and hiding sites with no unreads.')
-                      ]),
                       $.make('li', { className: 'last' }, [
-                        $.make('div', { className: 'NB-faq-answer' }, 'Account management, password recovery.')
+                        $.make('div', { className: 'NB-faq-answer last' }, 'Sort sites alphabetically, by popularity, use, unread counts.')
                       ])
                     ])
                 ])
