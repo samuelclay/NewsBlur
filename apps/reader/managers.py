@@ -7,9 +7,16 @@ class UserSubscriptionManager(models.Manager):
         try:
             return super(UserSubscriptionManager, self).get(*args, **kwargs)
         except:
-            dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=kwargs['feed'].pk)
+            if 'feed' in kwargs:
+                feed_id = kwargs['feed'].pk
+            elif 'feed__pk' in kwargs:
+                feed_id = kwargs['feed__pk']
+            dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
             if dupe_feed:
                 feed = dupe_feed[0].feed
-                kwargs['feed'] = feed
-                logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s" % (kwargs['user'].username, kwargs['feed']))
+                if 'feed' in kwargs: 
+                    kwargs['feed'] = feed
+                elif 'feed__pk' in kwargs:
+                    kwargs['feed__pk'] = feed.pk
+                logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s (%s)" % (kwargs['user'].username, feed, feed_id))
                 return super(UserSubscriptionManager, self).get(*args, **kwargs)
