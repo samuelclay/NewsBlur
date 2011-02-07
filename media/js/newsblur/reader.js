@@ -2315,9 +2315,9 @@
                 return [
                     '1px solid rgb(',
                     [
-                        r*(5/8),
-                        g*(5/8),
-                        b*(5/8)
+                        parseInt(r*(6/8), 10),
+                        parseInt(g*(6/8), 10),
+                        parseInt(b*(6/8), 10)
                     ].join(','),
                     ')'
                 ].join('');
@@ -2825,6 +2825,8 @@
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
                   // river_same_feed = 'NB-feed-story-river-same-feed';
                 }
+                
+                NEWSBLUR.log(['border', this.generate_gradient(feed, 'border')]);
 
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
@@ -2837,8 +2839,8 @@
                             )
                         ]).css('background-image', this.generate_gradient(feed, 'webkit'))
                           .css('background-image', this.generate_gradient(feed, 'moz'))
-                          .css('border-top', this.generate_gradient(feed, 'border'))
-                          .css('border-bottom', this.generate_gradient(feed, 'border'))
+                          .css('borderBottom', this.generate_gradient(feed, 'border'))
+                          .css('borderTop', this.generate_gradient(feed, 'border'))
                           .toggleClass('NB-inverse', this.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
