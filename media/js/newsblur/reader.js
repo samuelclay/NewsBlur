@@ -2315,9 +2315,9 @@
                 return [
                     '1px solid rgb(',
                     [
-                        Math.max(r-50, 0),
-                        Math.max(g-50, 0),
-                        Math.max(b-50, 0)
+                        r*(5/8),
+                        g*(5/8),
+                        b*(5/8)
                     ].join(','),
                     ')'
                 ].join('');
@@ -2837,6 +2837,7 @@
                             )
                         ]).css('background-image', this.generate_gradient(feed, 'webkit'))
                           .css('background-image', this.generate_gradient(feed, 'moz'))
+                          .css('border-top', this.generate_gradient(feed, 'border'))
                           .css('border-bottom', this.generate_gradient(feed, 'border'))
                           .toggleClass('NB-inverse', this.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
