@@ -205,7 +205,7 @@ DEBUG_TOOLBAR_PANELS = (
 # ==========================
 
 DAYS_OF_UNREAD          = 14
-SUBSCRIBER_EXPIRE       = 2
+SUBSCRIBER_EXPIRE       = 1
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
