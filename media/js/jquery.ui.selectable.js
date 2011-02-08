@@ -1,7 +1,7 @@
 /*
- * jQuery UI Selectable 1.8.6
+ * jQuery UI Selectable 1.8.9
  *
- * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -260,7 +260,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 });
 
 $.extend($.ui.selectable, {
-	version: "1.8.6"
+	version: "1.8.9"
 });
 
 })(jQuery);

@@ -1,7 +1,7 @@
 /*!
- * jQuery UI 1.8.6
+ * jQuery UI 1.8.9
  *
- * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -18,7 +18,7 @@ if ( $.ui.version ) {
 }
 
 $.extend( $.ui, {
-	version: "1.8.6",
+	version: "1.8.9",
 
 	keyCode: {
 		ALT: 18,

@@ -742,9 +742,9 @@ class FeedIcon(models.Model):
             self.icon_url = unicode(self.icon_url)
         try:    
             super(FeedIcon, self).save(*args, **kwargs)
-        except (IntegrityError, OperationError), e:
-            print "Error on Icon: %s" % e
-            if getattr(self, 'id'): self.delete()
+        except (IntegrityError, OperationError):
+            # print "Error on Icon: %s" % e
+            if hasattr(self, 'id'): self.delete()
 
 
 class MFeedPage(mongo.Document):
