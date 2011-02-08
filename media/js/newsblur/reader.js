@@ -2826,8 +2826,6 @@
                   // river_same_feed = 'NB-feed-story-river-same-feed';
                 }
                 
-                NEWSBLUR.log(['border', this.generate_gradient(feed, 'border')]);
-
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-header-feed ' + river_same_feed }, [
