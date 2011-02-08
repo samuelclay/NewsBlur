@@ -3936,23 +3936,37 @@ background: transparent;
     list-style: none;
 /*    margin: 12px 0;*/
     padding: 0;
-    max-height: 290px;
+    max-height: 320px;
     min-height: 186px;
     width: auto;
     border: 1px solid #909090;
 }
 
 .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
-    background-color: #F5FFB3;
     border-radius: 20px;
     padding: 12px;
-    border: 1px solid #E1E6AA;
+    border: 1px solid #F6BD44;
+    padding: 4px 12px 8px;
+    background-color: #FFED68;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #FFED68),
+        color-stop(0.84, #FFF8B1)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #FFED68 16%,
+        #FFF8B1 84%
+    );
 }
 
 .NB-modal-feedchooser .NB-feedchooser-paypal {
     min-height: 48px;
     width: 150px;
     float: left;
+    margin-top: 16px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar {
@@ -3960,10 +3974,48 @@ background: transparent;
     color: #1C55C0;
     font-size: 16px;
     margin: 0px 0px 0px 20px;
-    padding: 12px 0;
+    padding: 12px 0 0;
     font-weight: bold;
+    width: 112px;
 }
 
+.NB-modal-feedchooser .NB-feedchooser-dollar-value {
+    margin: 4px 0 0 0;
+    line-height: 20px;
+    text-shadow: 1px 1px 0 #FFF8B1;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar-month {
+    
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar-year {
+    text-transform: uppercase;
+    font-size: 13px;
+    color: #455596;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar.NB-0 .ui-slider-handle {
+    border: none;
+    background: transparent url('../img/icons/hamburger_s.png') no-repeat 50% 50%;
+    height: 24px;
+    width: 24px;
+    top: -6px;
+}
+.NB-modal-feedchooser .NB-feedchooser-dollar.NB-1 .ui-slider-handle {
+    border: none;
+    background: transparent url('../img/icons/hamburger.png') no-repeat 50% 50%;
+    height: 30px;
+    width: 30px;
+    top: -9px;
+}
+.NB-modal-feedchooser .NB-feedchooser-dollar.NB-2 .ui-slider-handle {
+    border: none;
+    background: transparent url('../img/icons/hamburger_l.png') no-repeat 50% 50%;
+    height: 36px;
+    width: 36px;
+    top: -12px;
+}
 .NB-modal-feedchooser .NB-feedchooser .feed_counts {
     display: block;
     text-transform: uppercase;
@@ -4078,7 +4130,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/pictures.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-3 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('../img/icons/silk/zoom.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-4 .NB-feedchooser-premium-bullet-image {
     background: transparent url('../img/icons/silk/lorry.png') no-repeat 0 0;

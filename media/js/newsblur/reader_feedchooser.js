@@ -17,6 +17,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         _.defer(_.bind(function() { this.open_modal(); }, this));
         this.find_feeds_in_feed_list();
         this.initial_load_feeds();
+        this.setup_dollar_slider();
+        this.update_dollar_count(1);
         
         this.flags = {
             'has_saved': false
@@ -34,7 +36,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 $.make('b', [
                     'You have a ',
                     $.make('span', { style: 'color: #303060;' }, 'Standard Account'),
-                    ', which can follow up to '+this.MAX_FEEDS+' sites at a time.'
+                    ', which can follow up to '+this.MAX_FEEDS+' sites.'
                 ]),
                 'You can always change these.'
             ]),
@@ -77,7 +79,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Access to future premium-only features like search, starring, sending to Instapaper.'
+                  'Access to the premium-only River of News.'
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -90,17 +92,19 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-6' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  $.make('span', { className: 'NB-feedchooser-premium-cost-dollars' }, '$12'),
-                  '/',
-                  $.make('span', { className: 'NB-feedchooser-premium-cost-time' }, 'year'),
-                  '. That\'s three lattes in 12 months.'
+                  'Choose how much you would like to pay.',
+                  $.make('div', { style: 'color: #490567' }, 'The only difference is happiness.')
                 ])
               ]),
               $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [
                   // this.make_google_checkout()
                   $.make('div', { className: 'NB-feedchooser-paypal' }),
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
-                      $.make('span', { className: 'NB-feedchooser-dollar-month' }, 'Just $1/month!')
+                      $.make('div', { className: 'NB-feedchooser-dollar-slider'}),
+                      $.make('div', { className: 'NB-feedchooser-dollar-value' }, [
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' })
+                      ])
                   ])
               ])
             ])
@@ -108,10 +112,12 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
     
     make_paypal_button: function() {
-      var $paypal = $('.NB-feedchooser-paypal', this.$modal);
-      $.get('/profile/paypal_form', function(response) {
-        $paypal.html(response);
-      });
+        var self = this;
+        var $paypal = $('.NB-feedchooser-paypal', this.$modal);
+        $.get('/profile/paypal_form', function(response) {
+          $paypal.html(response);
+          self.update_dollar_count(1);
+        });
     },
     
     make_google_button: function() {
@@ -361,6 +367,46 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
       $count.text(approve_list.length);
       $button.removeClass('NB-modal-submit-green').addClass('NB-modal-submit-close');
       $('.NB-module-account-trainer').removeClass('NB-hidden').hide().slideDown(500);
+    },
+    
+    setup_dollar_slider: function() {
+        var self = this;
+        
+        $('.NB-feedchooser-dollar-slider', this.$modal).slider({
+            range: 'max',
+            min: 0,
+            max: 2,
+            step: 1,
+            value: 1,
+            slide: function(e, ui) {
+                self.update_dollar_count(ui.value);
+            },
+            stop: function(e, ui) {
+                self.update_dollar_count(ui.value);
+            }
+        }).change();
+    },
+    
+    update_dollar_count: function(step) {
+        var $month = $('.NB-feedchooser-dollar-month', this.$modal);
+        var $year = $('.NB-feedchooser-dollar-year', this.$modal);
+        var $dollar = $('.NB-feedchooser-dollar', this.$modal);
+        var $input = $('input[name=a3]');
+        
+        $dollar.removeClass('NB-0').removeClass('NB-1').removeClass('NB-2').addClass('NB-'+step);
+        if (step == 0) {
+            $month.text('$1/month');
+            $year.text('($12/year)');
+            $input.val(12);
+        } else if (step == 1) {
+            $month.text('$2/month');
+            $year.text('($24/year)');
+            $input.val(24);
+        } else if (step == 2) {
+            $month.text('$5/month');
+            $year.text('($64/year)');
+            $input.val(64);
+        }
     },
     
     // ===========
