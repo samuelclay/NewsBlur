@@ -44,7 +44,7 @@ __license__ = "Python"
 __credits__ = """Abe Fettig for a patch to sort Syndic8 feeds by popularity
 Also Jason Diamond, Brian Lalor for bug reporting and patches"""
 
-_debug = 0
+_debug = 1
 
 import sgmllib, urllib, urlparse, re, sys, robotparser
 from StringIO import StringIO
@@ -73,7 +73,7 @@ class URLGatekeeper:
     def __init__(self):
         self.rpcache = {} # a dictionary of RobotFileParser objects, by domain
         self.urlopener = urllib.FancyURLopener()
-        self.urlopener.version = "feedfinder/" + __version__ + " " + self.urlopener.version + " +http://www.aaronsw.com/2002/feedfinder/"
+        self.urlopener.version = "NewsBlur Feed Finder"
         _debuglog(self.urlopener.version)
         self.urlopener.addheaders = [('User-agent', self.urlopener.version)]
         robotparser.URLopener.version = self.urlopener.version
@@ -211,7 +211,10 @@ def isFeed(uri):
     protocol = urlparse.urlparse(uri)
     if protocol[0] not in ('http', 'https'): return 0
     data = _gatekeeper.get(uri)
-    return couldBeFeedData(data)
+    count = couldBeFeedData(data)
+    print count
+    print data
+    return count
 
 def sortFeeds(feed1Info, feed2Info):
     return cmp(feed2Info['headlines_rank'], feed1Info['headlines_rank'])

@@ -10,8 +10,6 @@ from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from utils import urlnorm
-from utils.feed_functions import fetch_address_from_page
 from utils.feed_functions import add_object_to_folder
 from utils.feed_functions import relative_timesince
 
@@ -91,31 +89,14 @@ class UserSubscription(models.Model):
     
         logging.info(" ---> [%s] ~FRAdding URL: ~SB%s (in %s)" % (user, feed_address, folder))
     
-        if feed_address:
-            feed_address = urlnorm.normalize(feed_address)
-            # See if it exists as a duplicate first
-            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address).order_by('pk')
-            if duplicate_feed:
-                feed = [duplicate_feed[0].feed]
-            else:
-                feed = Feed.objects.filter(feed_address=feed_address).order_by('pk')
-
-        if feed:
-            feed = feed[0]
-        else:
-            try:
-                feed = fetch_address_from_page(feed_address)
-            except:
-                code    = -2
-                message = "This feed has been added, but something went wrong"\
-                          " when downloading it. Maybe the server's busy."
+        feed = Feed.get_feed_from_url(feed_address)
 
         if not feed:    
             code = -1
             if bookmarklet:
                 message = "This site does not have an RSS feed. Nothing is linked to from this page."
             else:
-                message = "This site does not point to an RSS feed or a website with an RSS feed."
+                message = "This address does not point to an RSS feed or a website with an RSS feed."
         else:
             us, subscription_created = cls.objects.get_or_create(
                 feed=feed, 

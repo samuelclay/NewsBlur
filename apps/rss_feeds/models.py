@@ -18,12 +18,13 @@ from apps.rss_feeds.tasks import UpdateFeeds
 from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder
+from utils import urlnorm
+from utils import log as logging
 from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.story_functions import pre_process_story
 from utils.diff import HTMLDiff
-from utils import log as logging
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -78,6 +79,40 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             pass
     
+    @classmethod
+    def get_feed_from_url(cls, url):
+        feed = None
+    
+        def by_url(address):
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=address).order_by('pk')
+            if duplicate_feed:
+                feed = [duplicate_feed[0].feed]
+            else:
+                feed = cls.objects.filter(feed_address=address).order_by('pk')
+            return feed
+            
+        url = urlnorm.normalize(url)
+        feed = by_url(url)
+    
+        if not feed:
+            if feedfinder.isFeed(url):
+                feed = cls.objects.create(feed_address=url)
+                feed.update()
+                feed = Feed.objects.get(pk=feed.pk)
+            else:
+                feed_finder_url = feedfinder.feed(url)
+                print "URL: %s %s" % (url, feed_finder_url)
+                if feed_finder_url:
+                    feed = by_url(feed_finder_url)
+                    if not feed:
+                        feed = cls.objects.create(feed_address=feed_finder_url)
+                        feed.update()
+                        feed = Feed.objects.get(pk=feed.pk)
+                    else:
+                        feed = feed[0]
+                    
+        return feed
+        
     @classmethod
     def task_feeds(cls, feeds, queue_size=12):
         print " ---> Tasking %s feeds..." % feeds.count()

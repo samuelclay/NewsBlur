@@ -5,7 +5,6 @@ import traceback
 import pprint
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
-from utils import feedfinder
 from utils import log as logging
 
 class TimeoutError(Exception): pass
@@ -79,32 +78,6 @@ def levenshtein_distance(first, second):
             distance_matrix[i][j] = min(insertion, deletion, substitution)
     return distance_matrix[first_length-1][second_length-1]
     
-    
-def fetch_address_from_page(url, existing_feed=None):
-    from apps.rss_feeds.models import Feed, DuplicateFeed
-    feed_finder_url = feedfinder.feed(url)
-    if feed_finder_url:
-        if existing_feed:
-            if Feed.objects.filter(feed_address=feed_finder_url):
-                return None
-            existing_feed.feed_address = feed_finder_url
-            existing_feed.save()
-            feed = existing_feed
-        else:
-            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=feed_finder_url)
-            if duplicate_feed:
-                feed = [duplicate_feed[0].feed]
-            else:
-                feed = Feed.objects.filter(feed_address=feed_finder_url)
-            if not feed:
-                feed = Feed(feed_address=feed_finder_url)
-                feed.save()
-                feed.update()
-                feed = Feed.objects.get(pk=feed.pk)
-            else:
-                feed = feed[0]
-        return feed
-        
 def _do_timesince(d, chunks, now=None):
     """
     Started as a copy of django.util.timesince.timesince, but modified to

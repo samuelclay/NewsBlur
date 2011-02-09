@@ -93,6 +93,21 @@ def backup_postgresql():
     with cd('~/newsblur/utils/backups'):
         run('./postgresql_backup.sh')
 
+# =============
+# = Bootstrap =
+# =============
+
+def setup():
+    env.user = 'root'
+    setup_user()
+    setup_installs()
+
+def setup_user():
+    run('useradd conesus ')
+    
+def setup_installs():
+    run('apt-get -y install sysstat git')
+    
 # ======
 # = S3 =
 # ======

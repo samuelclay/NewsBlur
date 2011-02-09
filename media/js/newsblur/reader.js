@@ -3467,13 +3467,15 @@
             // If this menu is already open, then hide it instead.
             if (($item && $item[0] == $manage_menu_container.data('item')) && 
                 parseInt($manage_menu_container.css('opacity'), 10) == 1) {
-                this.hide_manage_menu(type);
+                this.hide_manage_menu(type, $item);
                 return;
             } else {
-                this.hide_manage_menu(type);
+                this.hide_manage_menu(type, $item);
             }
             
             if ($item.hasClass('NB-empty')) return;
+            
+            $item.addClass('NB-showing-menu');
             
             // Create menu, size and position it, then attach to the right place.
             var feed_id, inverse, story_id;
@@ -3607,7 +3609,9 @@
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
             $manage_menu_container.uncorner();
-
+            
+            $item.removeClass('NB-showing-menu');
+            
             if (animate) {
                 $manage_menu_container.stop().animate({
                     'opacity': 0
@@ -4065,8 +4069,12 @@
             var self = this;
             var refresh_interval = this.FEED_REFRESH_INTERVAL;
             
+            if (!NEWSBLUR.Globals.is_premium) {
+                refresh_interval *= 5;
+            }
+            
             if (new_feeds) {
-                refresh_interval = (1000 * 60) * 1/6;
+                refresh_interval = (1000 * 60) * 1/4;
             }
             
             clearInterval(this.flags.feed_refresh);
@@ -4531,9 +4539,11 @@
                 if (!self.flags['sorting_feed']) {
                     stopPropagation = true;
                     if ($t.parent().hasClass('feed')) {
-                        self.show_manage_menu('feed', $t.parents('.feed').eq(0));
+                        self.show_manage_menu('feed', $t.closest('.feed'));
                     } else {
-                        self.show_manage_menu('folder', $t.parents('.folder').eq(0));
+                        var $folder = $t.closest('.folder');
+                        self.show_manage_menu('folder', $folder);
+                        $folder.addClass('NB-hover');
                     }
                 }
             });

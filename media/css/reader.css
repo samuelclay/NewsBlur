@@ -588,12 +588,14 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 
-.NB-is-premium .NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon {
+.NB-is-premium .NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon,
+.NB-is-premium .NB-feedlist .folder.NB-showing-menu > .folder_title .NB-feedlist-river-icon {
     display: block;
     opacity: .6;
 }
 
-.NB-is-premium .NB-feedlist .folder .folder_title:hover .feed_counts_floater {
+.NB-is-premium .NB-feedlist .folder .folder_title:hover .feed_counts_floater,
+.NB-is-premium .NB-feedlist .folder.NB-showing-menu > .folder_title .feed_counts_floater {
     margin-right: 24px;
 }
 .NB-feedlist .folder .folder_title.NB-feedlist-folder-title-recently-collapsed:hover .feed_counts_floater {
