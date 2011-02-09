@@ -220,7 +220,7 @@ def refresh_feeds(request):
     feeds = {}
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    favicons_fetching = [int(f) for f in request.POST.getlist('favicons_fetching')]
+    favicons_fetching = [int(f) for f in request.POST.getlist('favicons_fetching') if f]
 
     for sub in user_subs:
         if (sub.needs_unread_recalc or 
@@ -289,9 +289,11 @@ def load_single_feed(request):
     classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
     classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
-    usersub = UserSubscription.objects.get(user=user, feed=feed)        
+    usersub = UserSubscription.objects.get(user=user, feed=feed)
+    if not usersub:
+        usersub = UserSubscription.objects.create(user=user, feed=feed)
     userstories = []
-    userstories_db = MUserStory.objects(user_id=user.pk, 
+    userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id=feed.pk,
                                         read_date__gte=usersub.mark_read_date)
     starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
@@ -557,13 +559,13 @@ def mark_story_as_read(request):
 
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-    except Feed.DoesNotExist:
+    except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
         duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
         if duplicate_feed:
             try:
                 usersub = UserSubscription.objects.get(user=request.user, 
                                                        feed=duplicate_feed[0].feed)
-            except Feed.DoesNotExist:
+            except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
                 return dict(code=-1)
                 
     if not usersub.needs_unread_recalc:
@@ -625,7 +627,7 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
-    feed_ids = request.REQUEST.getlist('feed_id')
+    feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     code = 0
     for feed_id in feed_ids:
         try:
@@ -708,8 +710,7 @@ def delete_feed(request):
 def delete_folder(request):
     folder_to_delete = request.POST['folder_name']
     in_folder = request.POST.get('in_folder', '')
-    feed_ids_in_folder = request.REQUEST.getlist('feed_id')
-    feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
+    feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # Deletes all, but only in the same folder parent. But nobody should be doing that, right?

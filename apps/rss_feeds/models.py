@@ -99,16 +99,14 @@ class Feed(models.Model):
         else:
             if feedfinder.isFeed(url):
                 feed = cls.objects.create(feed_address=url)
-                feed.update()
-                feed = cls.objects.get(pk=feed.pk)
+                feed = feed.update()
             else:
                 feed_finder_url = feedfinder.feed(url)
                 if feed_finder_url:
                     feed = by_url(feed_finder_url)
                     if not feed:
                         feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed.update()
-                        feed = cls.objects.get(pk=feed.pk)
+                        feed = feed.update()
                     else:
                         feed = feed[0]
                     
