@@ -1,0 +1,45 @@
+# Path to your oh-my-zsh configuration.
+export ZSH=$HOME/.oh-my-zsh
+
+# Set to the name theme to load.
+# Look in ~/.oh-my-zsh/themes/
+export ZSH_THEME="risto"
+
+# Set to this to use case-sensitive completion
+export CASE_SENSITIVE="true"
+export LC_COLLATE='C'
+source $ZSH/oh-my-zsh.sh
+
+export PROMPT='%{$fg_bold[green]%}%n@%M:%{$fg_bold[blue]%}%~ $(git_prompt_info)%{$reset_color%}%(!.#.$) '
+
+export LSCOLORS='gxgxcxdxBxegedabagacad'
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors "=(#b) #([0-9]#)*=36=31"
+setopt  COMPLETE_IN_WORD
+# Don't complete stuff already on the line                                                                                
+zstyle ':completion::*:(rm|vi):*' ignore-line true
+# Don't complete directory we are already in (../here)                                                                    
+zstyle ':completion:*' ignore-parents parent pwd
+zstyle ':completion::approximate*:*' prefix-needed false
+
+expand-or-complete-with-dots() {
+  echo -n "\e[31m......\e[0m"
+  zle expand-or-complete
+  zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey "^I" expand-or-complete-with-dots
+unsetopt LIST_BEEP
+
+# Customize to your needs...
+alias ls='ls -pFa --color'
+alias cd..='cd ..'
+
+alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
+alias krf='ps ax | grep refresh_feeds | awk "{print $1}" | xargs kill -9'
+alias tlnb='echo "----------------\n"; tail -f logs/newsblur.log'
+alias cdsg='cd /home/conesus/staging'
+alias cdnb='cd /home/conesus/newsblur'
+
+cd /home/conesus/newsblur

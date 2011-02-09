@@ -402,12 +402,12 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
+    limit              = 25
+    offset             = 0
     start              = datetime.datetime.utcnow()
     user               = get_user(request)
     feed_ids           = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
     original_feed_ids  = list(feed_ids)
-    offset             = int(request.REQUEST.get('offset', 0))
-    limit              = int(request.REQUEST.get('limit', 25))
     page               = int(request.REQUEST.get('page', 0))+1
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -420,8 +420,7 @@ def load_river_stories(request):
     # Fetch all stories at and before the page number.
     # Not a single page, because reading stories can move them up in the unread order.
     # `read_stories_count` is an optimization, works best when all 25 stories before have been read.
-    # if page: offset = limit * page
-    if page: limit = limit * page - read_stories_count
+    limit = limit * page - read_stories_count
     
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
@@ -429,8 +428,8 @@ def load_river_stories(request):
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
     # max_feed_count     = 0
-    feed_counts        = {}
-    feed_last_reads    = {}
+    feed_counts     = {}
+    feed_last_reads = {}
     for feed_id in feed_ids:
         try:
             usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)

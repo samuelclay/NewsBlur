@@ -100,16 +100,15 @@ class Feed(models.Model):
             if feedfinder.isFeed(url):
                 feed = cls.objects.create(feed_address=url)
                 feed.update()
-                feed = Feed.objects.get(pk=feed.pk)
+                feed = cls.objects.get(pk=feed.pk)
             else:
                 feed_finder_url = feedfinder.feed(url)
-                print "URL: %s %s" % (url, feed_finder_url)
                 if feed_finder_url:
                     feed = by_url(feed_finder_url)
                     if not feed:
                         feed = cls.objects.create(feed_address=feed_finder_url)
                         feed.update()
-                        feed = Feed.objects.get(pk=feed.pk)
+                        feed = cls.objects.get(pk=feed.pk)
                     else:
                         feed = feed[0]
                     
@@ -117,7 +116,7 @@ class Feed(models.Model):
         
     @classmethod
     def task_feeds(cls, feeds, queue_size=12):
-        print " ---> Tasking %s feeds..." % feeds.count()
+        logging.debug(" ---> Tasking %s feeds..." % feeds.count())
         
         publisher = Task.get_publisher()
 

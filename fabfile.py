@@ -97,16 +97,99 @@ def backup_postgresql():
 # = Bootstrap =
 # =============
 
-def setup():
-    env.user = 'root'
-    setup_user()
+def setup_app():
+    setup_common()
+    setup_gunicorn()
+    update_gunicorn()
+    setup_nginx()
+
+def setup_db():
+    setup_postgres()
+    
+def setup_task():
+    setup_celery()
+
+def setup_common():
     setup_installs()
+    # setup_user()
+    setup_server()
+    setup_repo()
+    setup_python()
+    setup_libxml()
+    setup_mongoengine()
+    setup_supervisor()
 
 def setup_user():
-    run('useradd conesus ')
+    run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
+    run('openssl rand -base64 8 | tee -a ~conesus/.password | passwd -stdin conesus')
+    run('mkdir ~conesus/.ssh && chmod 700 ~conesus/.ssh')
+    
+def setup_server():
+    sudo('hostname app02')
     
 def setup_installs():
-    run('apt-get -y install sysstat git')
+    sudo('apt-get -y update')
+    sudo('apt-get -y upgrade')
+    sudo('apt-get -y install gcc sysstat git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging')
+    sudo('add-apt-repository ppa:pitti/postgresql')
+    sudo('apt-get -y update')
+    sudo('apt-get -y install postgresql-client-9.0')
+    run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
+    run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
+    sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
+
+def setup_repo():
+    run('mkdir -p ~/code')
+    run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
+    with cd('~/newsblur'):
+        run('cp local_settings.py.template local_settings.py')
+        run('mkdir -p logs')
+
+def setup_python():
+    sudo('easy_install pip')
+    sudo('easy_install django django-celery django-compress South django-devserver django-extensions guppy psycopg2 BeautifulSoup pyyaml nltk lxml oauth2 pytz boto')
+    sudo('su -c \'echo "import sys; sys.setdefaultencoding(\"utf-8\")" > /usr/lib/python2.6/sitecustomize.py\'')
+    
+def setup_libxml():
+    sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
+    # with cd('~/code'):
+    #     run('git clone git://git.gnome.org/libxml2')
+    #     run('git clone git://git.gnome.org/libxslt')
+    # 
+    # with cd('~/code/libxml2'):
+    #     run('./configure && make && sudo make install')
+    #     
+    # with cd('~/code/libxslt'):
+    #     run('./configure && make && sudo make install')
+        
+def setup_gunicorn():
+    with cd('~/code'):
+        run('git clone git://github.com/benoitc/gunicorn.git')
+        sudo('ln -s ~/code/gunicorn/gunicorn /usr/local/lib/python2.6/dist-packages/gunicorn')
+
+def update_gunicorn():
+    with cd('~/code/gunicorn'):
+        run('git pull')
+        sudo('python setup.py install')
+
+def setup_nginx():
+    with cd('~/code'):
+        run('wget http://sysoev.ru/nginx/nginx-0.9.4.tar.gz')
+        run('tar -xzf nginx-0.9.4.tar.gz')
+        run('rm nginx-0.9.4.tar.gz')
+        with cd('~/code/nginx-0.9.4'):
+            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+            run('make')
+            run('sudo make isntall')
+            
+def setup_mongoengine():
+    with cd('~/code'):
+        run('https://github.com/hmarr/mongoengine.git')
+        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
+        
+def setup_supervisor():
+    sudo('apt-get -y install supervisor')
+    
     
 # ======
 # = S3 =
