@@ -119,6 +119,12 @@ def setup_common():
     setup_mongoengine()
     setup_supervisor()
 
+def setup_postgres():
+    pass
+    
+def setup_celery():
+    pass
+    
 def setup_user():
     run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
     run('openssl rand -base64 8 | tee -a ~conesus/.password | passwd -stdin conesus')
