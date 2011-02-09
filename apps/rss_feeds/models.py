@@ -93,8 +93,10 @@ class Feed(models.Model):
             
         url = urlnorm.normalize(url)
         feed = by_url(url)
-    
-        if not feed:
+        
+        if feed:
+            feed = feed[0]
+        else:
             if feedfinder.isFeed(url):
                 feed = cls.objects.create(feed_address=url)
                 feed.update()
