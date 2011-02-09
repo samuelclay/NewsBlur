@@ -44,7 +44,7 @@ __license__ = "Python"
 __credits__ = """Abe Fettig for a patch to sort Syndic8 feeds by popularity
 Also Jason Diamond, Brian Lalor for bug reporting and patches"""
 
-_debug = 1
+_debug = 0
 
 import sgmllib, urllib, urlparse, re, sys, robotparser
 from StringIO import StringIO
@@ -212,8 +212,6 @@ def isFeed(uri):
     if protocol[0] not in ('http', 'https'): return 0
     data = _gatekeeper.get(uri)
     count = couldBeFeedData(data)
-    print count
-    print data
     return count
 
 def sortFeeds(feed1Info, feed2Info):
