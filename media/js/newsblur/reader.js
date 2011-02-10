@@ -3123,6 +3123,9 @@
                     'queue': false
                 });
                 this.load_story_iframe();
+                if (!this.active_story) {
+                    this.show_next_story(1);
+                }
             }
             
         },
