@@ -1407,6 +1407,8 @@
                       }
                     } else if (this.story_view == 'feed') {
                         this.prefetch_story_locations_in_feed_view();
+                    } else if (this.story_view == 'story') {
+                        this.show_next_story(1);
                     }
                 }
                 if (this.flags['open_unread_stories_in_tabs']) {
