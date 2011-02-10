@@ -92,7 +92,7 @@ class ProcessFeed:
         self.entry_keys = sorted(self.entry_trans.keys())
     
     def refresh_feed(self):
-        self.feed = Feed.objects.get(pk=self.feed_id) 
+        self.feed = Feed.objects.using('default').get(pk=self.feed_id) 
         
     def process(self, first_run=True):
         """ Downloads and parses a feed.
@@ -264,7 +264,7 @@ class Dispatcher:
 
     def refresh_feed(self, feed_id):
         """Update feed, since it may have changed"""
-        return Feed.objects.get(pk=feed_id)
+        return Feed.objects.using('default').get(pk=feed_id)
         
     def process_feed_wrapper(self, feed_queue):
         delta = None
