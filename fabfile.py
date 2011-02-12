@@ -18,7 +18,7 @@ env.user = 'conesus'
 env.roledefs ={
     'app': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
-    'task': ['db02.newsblur.com', 'db03.newsblur.com'],
+    'task': ['db02.newsblur.com', 'app02.newsblur.com'],
 }
 
 """
