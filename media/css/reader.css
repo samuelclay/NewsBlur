@@ -3714,6 +3714,12 @@ background: transparent;
   text-align: center;
 }
 
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {
+  float: left;
+  width: 50%;
+  text-align: center;
+}
+
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-stat {
   text-align: center;
   margin: 0 24px;
@@ -3749,6 +3755,37 @@ background: transparent;
   color: #A8A8A8;
   padding-right: 4px;
 }
+
+.NB-modal-statistics .NB-statistics-history-fetch {
+  overflow: hidden;
+  clear: both;
+  font-size: 10px;
+  margin: 2px 0 0 8px;
+  text-align: left;
+}
+.NB-modal-statistics .NB-statistics-history-fetch.NB-ok {
+  color: #135500;
+}
+.NB-modal-statistics .NB-statistics-history-fetch.NB-error {
+  color: #6A1000;
+}
+.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-code {
+  display: inline;
+  font-weight: normal;
+}
+.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-date {
+  float: left;
+  padding-right: 4px;
+}
+.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-message {
+  padding-right: 4px;
+  margin-left: 120px;
+  font-weight: bold;
+}
+.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-exception {
+  display: none;
+}
+
 
 /* ========================= */
 /* = Feed Exceptions Modal = */

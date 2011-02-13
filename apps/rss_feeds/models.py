@@ -916,6 +916,19 @@ class MFeedFetchHistory(mongo.Document):
             self.exception = unicode(self.exception)
         super(MFeedFetchHistory, self).save(*args, **kwargs)
         
+    @classmethod
+    def feed_history(cls, feed_id):
+        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')
+        fetch_history = []
+        for fetch in fetches:
+            history                = {}
+            history['message']     = fetch.message
+            history['fetch_date']  = fetch.fetch_date
+            history['status_code'] = fetch.status_code
+            history['exception']   = fetch.exception
+            fetch_history.append(history)
+        return fetch_history
+        
         
 class MPageFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
@@ -935,6 +948,18 @@ class MPageFetchHistory(mongo.Document):
             self.exception = unicode(self.exception)
         super(MPageFetchHistory, self).save(*args, **kwargs)
 
+    @classmethod
+    def feed_history(cls, feed_id):
+        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')
+        fetch_history = []
+        for fetch in fetches:
+            history                = {}
+            history['message']     = fetch.message
+            history['fetch_date']  = fetch.fetch_date
+            history['status_code'] = fetch.status_code
+            history['exception']   = fetch.exception
+            fetch_history.append(history)
+        return fetch_history
 
 class FeedLoadtime(models.Model):
     feed = models.ForeignKey(Feed)

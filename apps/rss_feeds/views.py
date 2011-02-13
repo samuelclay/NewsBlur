@@ -5,6 +5,7 @@ from django.http import HttpResponseForbidden
 from django.db.models import Q
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
 from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
 from utils import json_functions as json, feedfinder
@@ -64,6 +65,10 @@ def load_feed_statistics(request):
     stats['last_load_time'] = feed.last_load_time
     stats['premium_subscribers'] = feed.premium_subscribers
     stats['active_subscribers'] = feed.active_subscribers
+    
+    # Fetch histories
+    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
+    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
     
     logging.info(" ---> [%s] ~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (request.user, feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
