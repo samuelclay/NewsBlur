@@ -160,7 +160,7 @@ def add_object_to_folder(obj, folder, folders):
     for k, v in enumerate(folders):
         if isinstance(v, dict):
             for f_k, f_v in v.items():
-                if f_k == folder:
+                if f_k == folder and obj not in f_v:
                     f_v.append(obj)
                 folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
     return folders  
