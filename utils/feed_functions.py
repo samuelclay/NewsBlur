@@ -153,7 +153,7 @@ def format_relative_date(date, future=False):
                                     '' if future else 'ago')
 
 def add_object_to_folder(obj, folder, folders):
-    if not folder:
+    if not folder and obj not in folders:
         folders.append(obj)
         return folders
 
