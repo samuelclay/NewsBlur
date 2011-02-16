@@ -118,11 +118,12 @@ class BaseParser(sgmllib.SGMLParser):
     def normalize_attrs(self, attrs):
         def cleanattr(v):
             v = sgmllib.charref.sub(lambda m: unichr(int(m.groups()[0])), v)
+            if not v: return
             v = v.strip()
             v = v.replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'").replace('&quot;', '"').replace('&amp;', '&')
             return v
-        attrs = [(k.lower(), cleanattr(v)) for k, v in attrs]
-        attrs = [(k, k in ('rel','type') and v.lower() or v) for k, v in attrs]
+        attrs = [(k.lower(), cleanattr(v)) for k, v in attrs if cleanattr(v)]
+        attrs = [(k, k in ('rel','type') and v.lower() or v) for k, v in attrs if cleanattr(v)]
         return attrs
         
     def do_base(self, attrs):
@@ -154,6 +155,7 @@ class ALinkParser(BaseParser):
         self.links.append(urlparse.urljoin(self.baseuri, attrsD['href']))
 
 def makeFullURI(uri):
+    if not uri: return
     uri = uri.strip()
     if uri.startswith('feed://'):
         uri = 'http://' + uri.split('feed://', 1).pop()
@@ -199,7 +201,7 @@ r_brokenRedirect = re.compile('<newLocation[^>]*>(.*?)</newLocation>', re.S)
 def tryBrokenRedirect(data):
     if '<newLocation' in data:
         newuris = r_brokenRedirect.findall(data)
-        if newuris: return newuris[0].strip()
+        if newuris and newuris[0]: return newuris[0].strip()
 
 def couldBeFeedData(data):
     data = data.lower()

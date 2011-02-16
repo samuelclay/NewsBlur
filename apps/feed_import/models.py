@@ -61,8 +61,6 @@ class OPMLImporter(Importer):
                     continue
                 if feed_link and len(feed_link) > Feed._meta.get_field('feed_link').max_length:
                     continue
-                if len(feed.title) > Feed._meta.get_field('feed_title').max_length:
-                    feed.title = feed.title[:255]
                 # logging.info(' ---> \t~FR%s - %s - %s' % (feed.title, feed_link, feed_address,))
                 feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed.title)
                 # feeds.append(feed_data)

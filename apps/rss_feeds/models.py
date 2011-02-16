@@ -14,6 +14,7 @@ from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
 from mongoengine.queryset import OperationError
+from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
 from celery.task import Task
 from utils import json_functions as json
@@ -31,7 +32,7 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
-    feed_title = models.CharField(max_length=255, default="", blank=True, null=True)
+    feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
@@ -65,8 +66,11 @@ class Feed(models.Model):
             self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
             self.queued_date = datetime.datetime.utcnow()
+            
+        max_feed_title = Feed._meta.get_field('feed_title').max_length
+        if len(self.feed_title) > max_feed_title:
+            self.feed_title = self.feed_title[:max_feed_title]
         
-
         try:
             super(Feed, self).save(*args, **kwargs)
         except IntegrityError, e:
@@ -449,6 +453,9 @@ class Feed(models.Model):
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
                         logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                    except ValidationError, e:
+                        ret_values[ENTRY_ERR] += 1
+                        logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
@@ -558,7 +565,7 @@ class Feed(models.Model):
         fcat = []
         if entry.has_key('tags'):
             for tcat in entry.tags:
-                if tcat.label:
+                if hasattr(tcat, 'label') and tcat.label:
                     term = tcat.label
                 elif tcat.term:
                     term = tcat.term
@@ -836,12 +843,18 @@ class MStory(mongo.Document):
     }
     
     def save(self, *args, **kwargs):
+        story_title_max = MStory._fields['story_title'].max_length
+        story_content_type_max = MStory._fields['story_content_type'].max_length
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
             self.story_content = None
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
+        if len(self.story_title) > story_title_max:
+            self.story_title = self.story_title[:story_title_max]
+        if len(self.story_content_type) > story_content_type_max:
+            self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
 
 

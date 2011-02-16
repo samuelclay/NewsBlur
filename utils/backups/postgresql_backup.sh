@@ -9,8 +9,8 @@ log() {
 }
 
 do_cleanup(){
-    sudo su postgres -c "rm ${file_name}"
-    log 'cleaning up....'
+    log 'cleaning up...'
+    rm ${file_name}
 }
 
 do_backup(){

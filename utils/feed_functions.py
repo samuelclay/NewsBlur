@@ -34,6 +34,7 @@ def timelimit(timeout):
             if c.error:
                 tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
                 logging.debug(tb)
+                mail_admins('Error in timeout: %s' % repr(c.error), tb)
                 raise c.error[0], c.error[1]
             return c.result
         return _2
@@ -165,7 +166,7 @@ def add_object_to_folder(obj, folder, folders):
                 folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
     return folders  
 
-def mail_error_to_admin(feed, e):
+def mail_feed_error_to_admin(feed, e):
     # Mail the admins with the error
     exc_info = sys.exc_info()
     subject = 'Feed update error: %s' % repr(e)
