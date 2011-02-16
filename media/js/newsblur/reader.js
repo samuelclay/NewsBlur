@@ -2149,6 +2149,20 @@
             this.mark_story_as_read(story_id);
         },
         
+        send_story_to_readitlater: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://readitlaterlist.com/save';
+            var readitlater_url = [
+              url,
+              '?url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(readitlater_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
         send_story_to_twitter: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://twitter.com/';
@@ -3427,6 +3441,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-twitter');
                         }, this)),
+                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Read It Later').parent().addClass('NB-menu-manage-highlight-readitlater');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readitlater');
+                        }, this)),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
                     ]).bind('click', _.bind(function(e) {
@@ -3437,6 +3456,8 @@
                           this.send_story_to_facebook(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-twitter')) {
                           this.send_story_to_twitter(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-readitlater')) {
+                          this.send_story_to_readitlater(story.id);
                       } else {
                           this.send_story_to_instapaper(story.id);
                       }
