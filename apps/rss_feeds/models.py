@@ -851,9 +851,9 @@ class MStory(mongo.Document):
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
-        if len(self.story_title) > story_title_max:
+        if self.story_title and len(self.story_title) > story_title_max:
             self.story_title = self.story_title[:story_title_max]
-        if len(self.story_content_type) > story_content_type_max:
+        if self.story_content_type and len(self.story_content_type) > story_content_type_max:
             self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
 
