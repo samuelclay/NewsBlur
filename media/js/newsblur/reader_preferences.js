@@ -234,6 +234,33 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Feed view styling'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-story-share' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', { className: 'NB-preference-option', title: 'Twitter' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-twitter', name: 'story_share_twitter' }),
+                            $.make('label', { 'for': 'NB-preference-story-share-twitter' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-option', title: 'Facebook' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-facebook', name: 'story_share_facebook' }),
+                            $.make('label', { 'for': 'NB-preference-story-share-facebook' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-option', title: 'Readability' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readability', name: 'story_share_readability' }),
+                            $.make('label', { 'for': 'NB-preference-story-share-readability' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-option', title: 'Instapaper' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-instapaper', name: 'story_share_instapaper' }),
+                            $.make('label', { 'for': 'NB-preference-story-share-instapaper' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-option', title: 'Read It Later' }, [
+                            $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
+                            $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Sharing services'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-password' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', { className: 'NB-preference-option' }, [
@@ -331,6 +358,14 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
+        
+        var share_preferences = _.select(_.keys(NEWSBLUR.Preferences), function(p) { 
+            return p.indexOf('story_share') != -1; 
+        });
+        _.each(share_preferences, _.bind(function(share) {
+            var share_name = share.match(/story_share_(.*)/)[1];
+            $('input#NB-preference-story-share-'+share_name, this.$modal).attr('checked', NEWSBLUR.Preferences[share]);
+        }, this));
     },
     
     handle_cancel: function() {
@@ -347,6 +382,9 @@ NEWSBLUR.ReaderPreferences.prototype = {
 
         $('input[type=radio]:checked, select, input[type=password]', this.$modal).each(function() {
             preferences[$(this).attr('name')] = $(this).val();
+        });
+        $('input[type=checkbox]', this.$modal).each(function() {
+            preferences[$(this).attr('name')] = $(this).is(':checked');
         });
 
         return preferences;
@@ -403,7 +441,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
     
     handle_change: function() {
         
-        $('input[type=radio],select,input[type=password]', this.$modal).bind('change', _.bind(this.enable_save, this));
+        $('input[type=radio],input[type=checkbox],select,input[type=password]', this.$modal).bind('change', _.bind(this.enable_save, this));
         $('input[type=password]', this.$modal).bind('keydown', _.bind(this.enable_save, this));
     },
     

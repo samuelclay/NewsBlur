@@ -2163,6 +2163,20 @@
             this.mark_story_as_read(story_id);
         },
         
+        send_story_to_readability: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://readability.com/save';
+            var readability_url = [
+              url,
+              '?url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(readability_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
         send_story_to_twitter: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://twitter.com/';
@@ -3431,21 +3445,26 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
                     $.make('li', { className: 'NB-menu-manage-story-thirdparty' }, [
-                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
+                        (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-facebook');
-                        }, this)),
-                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-twitter'}).bind('mouseenter', _.bind(function(e) {
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_twitter'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-twitter'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Twitter').parent().addClass('NB-menu-manage-highlight-twitter');
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-twitter');
-                        }, this)),
-                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater'}).bind('mouseenter', _.bind(function(e) {
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_readitlater'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Read It Later').parent().addClass('NB-menu-manage-highlight-readitlater');
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readitlater');
-                        }, this)),
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Readability').parent().addClass('NB-menu-manage-highlight-readability');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readability');
+                        }, this))),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
                     ]).bind('click', _.bind(function(e) {
@@ -3458,6 +3477,8 @@
                           this.send_story_to_twitter(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readitlater')) {
                           this.send_story_to_readitlater(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
+                          this.send_story_to_readability(story.id);
                       } else {
                           this.send_story_to_instapaper(story.id);
                       }

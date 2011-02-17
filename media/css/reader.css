@@ -3650,6 +3650,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
     background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readability {
+    background: transparent url('../img/reader/readability.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
     background: transparent url('../img/reader/twitter.png') no-repeat 0 0;
 }
@@ -3676,6 +3679,13 @@ background: transparent;
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-readability {
   opacity: 1;
 }
 
@@ -4408,4 +4418,31 @@ background: transparent;
     -moz-box-shadow:2px 2px 0 #D0D0D0;
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
+}
+.NB-modal-preferences .NB-preference.NB-preference-story-share .NB-preference-option {
+  float: left;
+  margin: 0 8px 4px 0;
+}
+.NB-modal-preferences .NB-preference.NB-preference-story-share input {
+  clear: none;
+}
+.NB-modal-preferences .NB-preference.NB-preference-story-share label {
+  width: 16px;
+  height: 16px;
+  margin: 0 0 0 2px;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-twitter] {
+    background: transparent url('../img/reader/twitter.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-facebook] {
+    background: transparent url('../img/reader/facebook.gif') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
+    background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
+    background: transparent url('../img/reader/readability.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
+    background: transparent url('../img/reader/instapaper.png') no-repeat 0 0;
 }
