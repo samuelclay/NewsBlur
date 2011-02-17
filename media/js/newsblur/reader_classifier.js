@@ -227,7 +227,7 @@ var classifier_prototype = {
         if (this.options.feed_loaded) {
           this.feed_tags = this.model.get_feed_tags();
           this.feed_authors = this.model.get_feed_authors();
-          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', NEWSBLUR.Globals.google_favicon_url + this.feed['feed_link']);
+          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed.favicon));
           $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
         }
     },
@@ -343,7 +343,7 @@ var classifier_prototype = {
             $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: NEWSBLUR.Globals.google_favicon_url + this.feed.feed_link }),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
                 $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
             ]),
             (this.options['feed_loaded'] &&
@@ -593,7 +593,7 @@ var classifier_prototype = {
                     (classifier_type == 'feed' && 
                         $.make('img', { 
                             className: 'feed_favicon', 
-                            src: NEWSBLUR.Globals.google_favicon_url + this.feed.feed_link 
+                            src: $.favicon(this.feed.favicon)
                         })),
                     $.make('b', classifier_type_title+': '),
                     $.make('span', classifier_title)

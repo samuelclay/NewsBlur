@@ -862,7 +862,7 @@
                 $.make('div', { className: 'feed_counts' }, [
                     this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng)
                 ]),
-                $.make('img', { className: 'feed_favicon', src: this.get_favicon(feed.favicon) }),
+                $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
                 $.make('span', { className: 'feed_title' }, [
                   feed.feed_title,
                   (type == 'story' && $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' })),
@@ -884,11 +884,6 @@
             });
             
             return $feed;  
-        },
-        
-        get_favicon: function(feed_favicon) {
-            if (feed_favicon) return 'data:image/png;base64,' + feed_favicon;
-            return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/world.png';
         },
         
         make_feed_counts_floater: function(positive_count, neutral_count, negative_count) {
@@ -2286,7 +2281,7 @@
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     (options['river_stories'] && feed &&
                         $.make('div', { className: 'NB-story-feed' }, [
-                            $.make('img', { className: 'feed_favicon', src: this.get_favicon(feed.favicon) }),
+                            $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
                             $.make('span', { className: 'feed_title' }, feed.feed_title)
                         ])),
                     $.make('div', { className: 'NB-storytitles-star'}),
@@ -2861,7 +2856,7 @@
                         $.make('div', { className: 'NB-feed-story-header-feed ' + river_same_feed }, [
                             (options.river_stories && feed && // !river_same_feed
                                 $.make('div', { className: 'NB-feed-story-feed' }, [
-                                   $.make('img', { className: 'feed_favicon', src: this.get_favicon(feed.favicon) }),
+                                   $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
                                    $.make('span', { className: 'feed_title' }, feed.feed_title)
                                 ])
                             )
@@ -2943,7 +2938,7 @@
                 if (!$new_header.find('.NB-feed-story-feed').length) {
                   var feed = this.model.get_feed(story.story_feed_id);
                   feed && $new_header.append($.make('div', { className: 'NB-feed-story-feed' }, [
-                    $.make('img', { className: 'feed_favicon', src: this.get_favicon(feed.favicon) }),
+                    $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
                     $.make('span', { className: 'feed_title' }, feed.feed_title)
                   ]));
                 }
