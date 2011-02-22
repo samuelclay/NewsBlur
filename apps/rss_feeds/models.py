@@ -584,7 +584,7 @@ class Feed(models.Model):
                     if not tagname or tagname == ' ':
                         continue
                     fcat.append(tagname)
-        return fcat
+        return fcat[:12]
 
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
         story_in_system = None
