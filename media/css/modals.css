@@ -181,6 +181,8 @@
 .NB-modal img.feed_favicon {
     margin: 0 6px 0 0;
     vertical-align: middle;
+    width: 16px;
+    height: 16px;
 }
 
 .NB-modal .NB-fieldset {

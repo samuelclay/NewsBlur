@@ -2447,10 +2447,10 @@ a.NB-splash-link:hover {
     margin: 0 2px 0 0;
 }
 
-.NB-classifier .NB-classifier-count {
+.NB-classifier-container .NB-classifier-count {
     font-size: 10px;
-    font-weight: bold;
     margin: 0 6px 0 2px;
+    color: #A0A0A0;
 }
 
 .NB-modal-classifiers .NB-modal-title .NB-classifier-title-like {
@@ -2511,9 +2511,13 @@ a.NB-splash-link:hover {
     line-height: 23px;
     margin: 0 0 18px 0;
     clear: both;
+    font-size: 13px;
+    color: #707070;
 }
 .NB-modal-trainer .NB-trainer-points li b {
     display: block;
+    font-size: 16px;
+    color: #202020;
 }
 .NB-modal-trainer .NB-trainer-points li img {
     padding: 0 0 0 8px;
@@ -2898,6 +2902,8 @@ background: transparent;
 
 .NB-classifiers .NB-classifier .feed_favicon {
   margin-top: -2px;
+  width: 16px;
+  height: 16px;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-like {
