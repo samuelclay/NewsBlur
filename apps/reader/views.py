@@ -880,7 +880,7 @@ def login_as(request):
         assert False
         return HttpResponseForbidden()
     username = request.GET['user']
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username__iexact=username)
     user.backend = settings.AUTHENTICATION_BACKENDS[0]
     login_user(request, user)
     return HttpResponseRedirect(reverse('index'))
