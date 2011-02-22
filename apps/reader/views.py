@@ -567,6 +567,8 @@ def mark_story_as_read(request):
                                                        feed=duplicate_feed[0].feed)
             except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
                 return dict(code=-1)
+        else:
+            return dict(code=-1)
                 
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
