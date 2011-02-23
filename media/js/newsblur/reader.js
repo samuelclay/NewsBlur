@@ -1306,7 +1306,8 @@
                 'pause_feed_refreshing': false,
                 'feed_list_showing_manage_menu': false,
                 'unread_threshold_temporarily': null,
-                'river_view': false
+                'river_view': false,
+                'non_premium_river_view': false
             });
             
             $.extend(this.cache, {
@@ -1621,6 +1622,12 @@
             // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed]);
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
                 // NEWSBLUR.log(['post_open_river_stories', data.stories.length, first_load, this.flags['feed_view_positions_calculated']]);
+                if (!NEWSBLUR.Globals.is_premium &&
+                    NEWSBLUR.Globals.is_authenticated &&
+                    this.flags['river_view'] &&
+                    this.active_feed.indexOf('river:') != -1) {
+                    this.flags['non_premium_river_view'] = true;
+                }
                 this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
@@ -2268,6 +2275,11 @@
             options = options || {};
             
             for (s in stories) {
+                if (this.flags['non_premium_river_view'] && $story_titles.children(':visible').length >= 5) {
+                    NEWSBLUR.log(['create_story_titles break', $story_titles.children(':visible')]);
+                    this.append_story_titles_endbar();
+                    break;
+                }
                 var story = stories[s];
                 var $story_title = this.make_story_title(story, options);
                 if (!stories[s].read_status) {
@@ -2278,13 +2290,7 @@
             }
             // NEWSBLUR.log(['create_story_titles', stories]);
             if (!stories || stories.length == 0) {
-                var $end_stories_line = $.make('div', { 
-                    className: 'NB-story-titles-end-stories-line'
-                });
-                
-                if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
-                    $story_titles.append($end_stories_line);
-                }
+                this.append_story_titles_endbar();
             } 
         },
         
@@ -2607,7 +2613,7 @@
             var self = this;
             var $feed_iframe = $('.NB-feed-frame');
 
-            setTimeout(function() {
+            _.delay(function() {
                 var $feed_iframe = $('.NB-feed-frame');
                 var $taskbar_view_page = $('.NB-taskbar .task_view_page');
         
@@ -2631,6 +2637,7 @@
             var page = $story_titles.data('page');
 
             if (!this.flags['opening_feed']) {
+                    
                 this.show_feedbar_loading();
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
@@ -2655,7 +2662,7 @@
                 ($last.length == 0 ||
                  ($('#story_titles').scrollTop() == 0 && 
                   $last.position().top + $last.height() < container_height))) {
-                _.delay(_.bind(this.load_page_of_feed_stories, this), 500);
+                _.delay(_.bind(this.load_page_of_feed_stories, this), 250);
             }
         },
         
@@ -2866,6 +2873,13 @@
             }
 
             for (var s in stories) {
+                if (this.flags['non_premium_river_view'] && $stories.children(':visible').length >= 5) {
+                    NEWSBLUR.log(['make_story_feed_entries break', $stories.children(':visible')]);
+                    this.append_story_titles_endbar();
+                    this.append_river_premium_only_notification();
+                    break;
+                }
+                
                 var story = stories[s];
                 if (options.river_stories) feed = this.model.get_feed(story.story_feed_id);
                 var read = story.read_status
@@ -2955,7 +2969,7 @@
                 this.fetch_story_locations_in_feed_view();
             }
             
-            this.append_story_endbar();
+            this.append_feed_view_story_endbar();
             this.show_stories_preference_in_feed_view(true);
         },
         
@@ -3075,12 +3089,37 @@
             }
         },
         
-        append_story_endbar: function() {
+        append_feed_view_story_endbar: function() {
             var $feed_view = this.$s.$feed_view;
             var $stories = this.$s.$feed_stories;
             var $endbar = $.make('div', { className: 'NB-feed-story-endbar' });
             $stories.find('.NB-feed-story-endbar').remove();
             $stories.append($endbar);
+        },
+        
+        append_story_titles_endbar: function() {
+            var $story_titles = this.$s.$story_titles;
+            var $end_stories_line = $.make('div', { 
+                className: 'NB-story-titles-end-stories-line'
+            });
+
+            if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
+                $story_titles.append($end_stories_line);
+            }
+        },
+        
+        append_river_premium_only_notification: function() {
+            var $story_titles = this.$s.$story_titles;
+            var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+                $.make('div', { className: 'NB-feed-story-premium-only-divider'}),
+                $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                    'The full River of News is a ',
+                    $.make('a', { href: '#' }, 'premium feature'),
+                    '.'
+                ])
+            ]);
+            $('.NB-feed-story-premium-only', $story_titles).remove();
+            $story_titles.append($notice);
         },
         
         // ===================
@@ -4786,6 +4825,11 @@
                 var story_id = $t.attr('href').slice(1).split('/');
                 self.mark_story_as_read(story_id);
             });
+            $.targetIs(e, { tagSelector: '.NB-feed-story-premium-only a' }, function($t, $p){
+                e.preventDefault();
+                self.open_feedchooser_modal();
+            });
+            
             
             // = Taskbar ======================================================
             
@@ -5131,7 +5175,8 @@
                 var scroll_y = $('#story_titles').scrollTop();
                 // NEWSBLUR.log(['Story_titles Scroll', full_height, container_offset, visible_height, scroll_y]);
             
-                if (full_height <= visible_height) {
+                // Fudge factor is simply because it looks better at 3 pixels off.
+                if ((visible_height + 3) >= full_height) {
                     this.load_page_of_feed_stories();
                 }
             }
