@@ -1623,6 +1623,7 @@
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
                 // NEWSBLUR.log(['post_open_river_stories', data.stories.length, first_load, this.flags['feed_view_positions_calculated']]);
                 if (!NEWSBLUR.Globals.is_premium &&
+                    NEWSBLUR.Globals.is_authenticated &&
                     this.flags['river_view'] &&
                     this.active_feed.indexOf('river:') != -1) {
                     this.flags['non_premium_river_view'] = true;
