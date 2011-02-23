@@ -59,6 +59,7 @@
         // = Event Handlers =
         // ==================
         
+        $(window).bind('resize', _.throttle($.rescope(this.resize_window, this), 1000));
         this.$s.$body.bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
         this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
         this.$s.$body.live('contextmenu.reader', $.rescope(this.handle_rightclicks, this));
@@ -89,6 +90,7 @@
         this.handle_login_and_signup_forms();
         this.iframe_buster_buster();
         this.apply_story_styling();
+        this.apply_tipsy_titles();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -97,6 +99,20 @@
         // = Page =
         // ========
                 
+        resize_window: function() {
+            var flag;
+            var view = this.story_view;
+            
+            if (this.flags['page_view_showing_feed_view']) {
+                view = 'feed';
+                flag = 'page';
+            } else if (this.flags['feed_view_showing_story_view']) {
+                view = 'story';
+                flag = 'story';
+            }
+            this.switch_taskbar_view(view, flag);
+        },
+        
         apply_resizable_layout: function() {
             var outerLayout, rightLayout, contentLayout, leftLayout, leftCenterLayout;
             
@@ -158,6 +174,25 @@
             }); 
             
             $('.right-pane').hide();
+        },
+        
+        apply_tipsy_titles: function() {
+            $('.NB-taskbar-sidebar-toggle-close').tipsy({
+                gravity: 'se',
+                delayIn: 375
+            });
+            $('.NB-taskbar-sidebar-toggle-open').tipsy({
+                gravity: 'sw',
+                delayIn: 375
+            });
+            $('.NB-task-add').tipsy({
+                gravity: 'sw',
+                delayIn: 375
+            });
+            $('.NB-task-manage').tipsy({
+                gravity: 's',
+                delayIn: 375
+            });
         },
         
         save_feed_pane_size: function(w, pane, $pane, state, options, name) {
@@ -608,7 +643,6 @@
                     scroll = 0;
                 }
                 $feed_list.scrollTop(scroll);
-                NEWSBLUR.log(['feed_id', feed_id, this.next_feed]);
                 this.open_feed(feed_id, false, $next_feed, 350);
             }
         },
@@ -626,7 +660,6 @@
                 if (this.active_story != story) {
                     this.push_current_story_on_history();
                     this.active_story = story;
-            
                     this.mark_story_title_as_selected($next_story_title);
                     this.mark_story_as_read(story.id);
                     this.mark_story_as_read_in_feed_view(story, {'animate': this.story_view == 'feed'});
@@ -3290,6 +3323,26 @@
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
         
+        close_sidebar: function() {
+            this.$s.$body.layout().close('west');
+            this.resize_window();
+            $('.NB-taskbar-sidebar-toggle-open').stop().animate({
+                'left': -1
+            }, {
+                'duration': 1000,
+                'easing': 'easeOutQuint',
+                'queue': false
+            });
+        },
+        
+        open_sidebar: function() {
+            this.$s.$body.layout().open('west');
+            this.resize_window();
+            $('.NB-taskbar-sidebar-toggle-open').stop().css({
+                'left': -24
+            });
+        },
+        
         // =======================
         // = Sidebar Manage Menu =
         // =======================
@@ -3531,7 +3584,7 @@
                 story_id = $item.data('story_id') || $item.closest('.NB-feed-story').data('story_id');  
                 if ($item.hasClass('story')) inverse = true; 
             } else if (type == 'site') {
-                
+                $('.NB-task-manage').tipsy('hide');
             }
             var toplevel = $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
@@ -4743,6 +4796,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.show_manage_menu('site', $t);
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-taskbar-sidebar-toggle-close' }, function($t, $p){
+                e.preventDefault();
+                self.close_sidebar();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-taskbar-sidebar-toggle-open' }, function($t, $p){
+                e.preventDefault();
+                self.open_sidebar();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-train' }, function($t, $p){
                 e.preventDefault();
