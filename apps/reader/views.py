@@ -437,8 +437,9 @@ def load_river_stories(request):
             usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)
         except UserSubscription.DoesNotExist:
             continue
-        feed_counts[feed_id] = (usersub.unread_count_negative * 1+ 
-                                usersub.unread_count_neutral * 10+
+        if not usersub: continue
+        feed_counts[feed_id] = (usersub.unread_count_negative * 1 + 
+                                usersub.unread_count_neutral * 10 +
                                 usersub.unread_count_positive * 20)
         # if feed_counts[feed_id] > max_feed_count:
         #     max_feed_count = feed_counts[feed_id]
