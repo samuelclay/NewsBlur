@@ -187,8 +187,15 @@ def getALinks(data, baseuri):
 
 def getLocalLinks(links, baseuri):
     baseuri = baseuri.lower()
-    urilen = len(baseuri)
-    return [l for l in links if l.lower().startswith(baseuri)]
+    # urilen = len(baseuri)
+    links = []
+    for l in links:
+        try:
+            if l.lower().startswith(baseuri):
+                links.append(l)
+        except UnicodeDecodeError:
+            pass
+    return links
 
 def isFeedLink(link):
     return link[-4:].lower() in ('.rss', '.rdf', '.xml', '.atom')
@@ -212,7 +219,10 @@ def isFeed(uri):
     _debuglog('seeing if %s is a feed' % uri)
     protocol = urlparse.urlparse(uri)
     if protocol[0] not in ('http', 'https'): return 0
-    data = _gatekeeper.get(uri)
+    try:
+        data = _gatekeeper.get(uri)
+    except (KeyError, UnicodeDecodeError):
+        return False
     count = couldBeFeedData(data)
     return count
 

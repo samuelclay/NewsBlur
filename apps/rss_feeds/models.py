@@ -147,7 +147,11 @@ class Feed(models.Model):
         @timelimit(10)
         def _1():
             feed_address = None
-            if not feedfinder.isFeed(self.feed_address):
+            try:
+                is_feed = feedfinder.isFeed(self.feed_address)
+            except KeyError:
+                is_feed = False
+            if not is_feed:
                 feed_address = feedfinder.feed(self.feed_address)
                 if not feed_address and self.feed_link:
                     feed_address = feedfinder.feed(self.feed_link)
@@ -584,6 +588,7 @@ class Feed(models.Model):
                     if not tagname or tagname == ' ':
                         continue
                     fcat.append(tagname)
+        fcat = [t[:250] for t in fcat]
         return fcat[:12]
 
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
