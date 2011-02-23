@@ -193,7 +193,7 @@ def getLocalLinks(links, baseuri):
         try:
             if l.lower().startswith(baseuri):
                 links.append(l)
-        except UnicodeDecodeError:
+        except (AttributeError, UnicodeDecodeError):
             pass
     return links
 
