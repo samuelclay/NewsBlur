@@ -3766,6 +3766,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-star .NB-menu-manage-image {
     background: transparent url('../img/reader/star_blue.png') no-repeat 0 0px;
 }
+.NB-menu-manage .NB-menu-manage-story-open .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/house.png') no-repeat 0 1px;
+}
 .NB-menu-manage.NB-story-starred .NB-menu-manage-story-star .NB-menu-manage-image {
     background: transparent url('../img/reader/star_blue.png') no-repeat 0 0px;
     opacity: .55;

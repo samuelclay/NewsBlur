@@ -673,6 +673,9 @@
             $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story);
             $story.addClass('read');
 
+            // This block animates the falling of the sentiment bullet. It's neat, 
+            // but it stutters a fast scroll. Hence the delay.
+            //
             // if (false && options.animate && !$story.hasClass('read')) {
             //     var $feed_view = this.$s.$feed_view;
             //     var start = $feed_view.scrollTop();
@@ -1792,7 +1795,7 @@
                     
                 } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                     $feed_stories.scrollable().stop();
-                    $feed_stories.scrollTo($story, 420, { axis: 'y', easing: 'easeInOutQuint', offset: 0, queue: false, onAfter: function() {
+                    $feed_stories.scrollTo($story, 340, { axis: 'y', easing: 'easeInOutQuint', offset: 0, queue: false, onAfter: function() {
                         self.locks.scrolling = setTimeout(function() {
                             self.flags.scrolling_by_selecting_story_title = false;
                         }, 100);
@@ -1817,7 +1820,7 @@
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 }); // Do this at story_view switch
                 } else if (this.story_view == 'page') {
                     $iframe.scrollable().stop();
-                    $iframe.scrollTo($story, 580, { axis: 'y', easing: 'easeInOutQuint', offset: -24, queue: false, onAfter: function() {
+                    $iframe.scrollTo($story, 380, { axis: 'y', easing: 'easeInOutQuint', offset: -24, queue: false, onAfter: function() {
                         self.locks.scrolling = setTimeout(function() {
                             self.flags.scrolling_by_selecting_story_title = false;
                         }, 100);
@@ -2799,7 +2802,8 @@
             window.focus();
         },
         
-        open_story_in_new_tab: function(story, $t) {
+        open_story_in_new_tab: function(story_id, $t) {
+            var story = this.model.get_story(story_id);
             window.open(story['story_permalink'], '_blank');
             window.focus();
         },
@@ -3524,6 +3528,11 @@
 
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class }, [
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-story-open' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-star' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
@@ -3544,11 +3553,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Readability').parent().addClass('NB-menu-manage-highlight-readability');
-                        }, this)).bind('mouseleave', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readability');
-                        }, this))),
+                        // (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
+                        //     $(e.target).siblings('.NB-menu-manage-title').text('Send to Readability').parent().addClass('NB-menu-manage-highlight-readability');
+                        // }, this)).bind('mouseleave', _.bind(function(e) {
+                        //     $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readability');
+                        // }, this))),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Send to Instapaper')
                     ]).bind('click', _.bind(function(e) {
@@ -4778,6 +4787,12 @@
                 self.mark_story_as_like(story_id, feed_id);
                 story_prevent_bubbling = true;
             });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
+                self.open_story_in_new_tab(story_id);
+                story_prevent_bubbling = true;
+            });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-star' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
@@ -4809,11 +4824,11 @@
             $.targetIs(e, { tagSelector: '.story' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $('.story_id', $t).text();
-                var story = self.model.get_story(story_id);
                 self.push_current_story_on_history();
                 if (NEWSBLUR.hotkeys.command) {
-                    self.open_story_in_new_tab(story, $t);
+                    self.open_story_in_new_tab(story_id, $t);
                 } else {
+                    var story = self.model.get_story(story_id);
                     self.open_story(story, $t);
                 }
             });

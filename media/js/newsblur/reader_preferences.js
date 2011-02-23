@@ -244,10 +244,10 @@ NEWSBLUR.ReaderPreferences.prototype = {
                             $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-facebook', name: 'story_share_facebook' }),
                             $.make('label', { 'for': 'NB-preference-story-share-facebook' })
                         ]),
-                        $.make('div', { className: 'NB-preference-option', title: 'Readability' }, [
-                            $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readability', name: 'story_share_readability' }),
-                            $.make('label', { 'for': 'NB-preference-story-share-readability' })
-                        ]),
+                        // $.make('div', { className: 'NB-preference-option', title: 'Readability' }, [
+                        //     $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readability', name: 'story_share_readability' }),
+                        //     $.make('label', { 'for': 'NB-preference-story-share-readability' })
+                        // ]),
                         $.make('div', { className: 'NB-preference-option', title: 'Instapaper' }, [
                             $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-instapaper', name: 'story_share_instapaper' }),
                             $.make('label', { 'for': 'NB-preference-story-share-instapaper' })
