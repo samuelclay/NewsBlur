@@ -3366,6 +3366,7 @@
         close_sidebar: function() {
             this.$s.$body.layout().close('west');
             this.resize_window();
+            this.flags['sidebar_closed'] = true;
             $('.NB-taskbar-sidebar-toggle-open').stop().animate({
                 'left': -1
             }, {
@@ -3378,6 +3379,7 @@
         open_sidebar: function() {
             this.$s.$body.layout().open('west');
             this.resize_window();
+            this.flags['sidebar_closed'] = false;
             $('.NB-taskbar-sidebar-toggle-open').stop().css({
                 'left': -24
             });
@@ -5389,6 +5391,22 @@
             $document.bind('keydown', 'shift+space', function(e) {
                 e.preventDefault();
                 self.page_in_story(0.4, -1);
+            });
+            $document.bind('keydown', 'f', function(e) {
+                e.preventDefault();
+                if (self.flags['sidebar_closed']) {
+                    self.open_sidebar();
+                } else {
+                    self.close_sidebar();
+                }
+            });
+            $document.bind('keydown', 'u', function(e) {
+                e.preventDefault();
+                if (self.flags['sidebar_closed']) {
+                    self.open_sidebar();
+                } else {
+                    self.close_sidebar();
+                }
             });
         }
         

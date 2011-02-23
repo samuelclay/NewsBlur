@@ -2532,7 +2532,8 @@ a.NB-splash-link:hover {
 }
 
 .simplemodal-wrap {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* ====================== */
@@ -4348,6 +4349,7 @@ background: transparent;
   overflow: hidden;
   background-color: #F0F0F0;
   padding: 8px;
+  width: 570px;
 }
 .NB-modal-keyboard .NB-keyboard-shortcut {
   width: 270px;

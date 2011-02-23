@@ -126,8 +126,8 @@ NEWSBLUR.ReaderKeyboard.prototype = {
         var self = this;
         
         this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
+            'minWidth': 620,
+            'maxWidth': 620,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
