@@ -1621,7 +1621,6 @@
         post_open_river_stories: function(data, first_load) {
             // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed]);
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
-                // NEWSBLUR.log(['post_open_river_stories', data.stories.length, first_load, this.flags['feed_view_positions_calculated']]);
                 if (!NEWSBLUR.Globals.is_premium &&
                     NEWSBLUR.Globals.is_authenticated &&
                     this.flags['river_view'] &&
@@ -2276,7 +2275,6 @@
             
             for (s in stories) {
                 if (this.flags['non_premium_river_view'] && $story_titles.children(':visible').length >= 5) {
-                    NEWSBLUR.log(['create_story_titles break', $story_titles.children(':visible')]);
                     this.append_story_titles_endbar();
                     break;
                 }
@@ -2874,7 +2872,6 @@
 
             for (var s in stories) {
                 if (this.flags['non_premium_river_view'] && $stories.children(':visible').length >= 5) {
-                    NEWSBLUR.log(['make_story_feed_entries break', $stories.children(':visible')]);
                     this.append_story_titles_endbar();
                     this.append_river_premium_only_notification();
                     break;
