@@ -21,6 +21,10 @@ def getlogger():
 
     return logger
 
+def user(u, msg):
+    premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
+    info(' ---> [%s%s] %s' % (u, premium, msg))
+    
 def debug(msg):
     logger = getlogger()
     logger.debug(colorize(msg))
@@ -39,6 +43,7 @@ def colorize(msg):
         r'\*\*\*>'        : '~FB~SB~BB--->~BT~FW',
         r'\['             : '~SB~FB[~SN~FM',
         r'AnonymousUser'  : '~FBAnonymousUser',
+        r'\*\]'           : '~SN~FR*]',
         r'\]'             : '~FB~SB]~FW~SN',
     }
     colors = {

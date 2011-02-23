@@ -25,7 +25,7 @@ def opml_upload(request):
     
     if request.method == 'POST':
         if 'file' in request.FILES:
-            logging.info(" ---> [%s] ~FR~SBOPML upload starting..." % request.user)
+            logging.user(request.user, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
             xml_opml = file.read()
             opml_importer = OPMLImporter(xml_opml, request.user)
@@ -33,7 +33,7 @@ def opml_upload(request):
 
             feeds = UserSubscription.objects.filter(user=request.user).values()
             payload = dict(folders=folders, feeds=feeds)
-            logging.info(" ---> [%s] ~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (request.user, len(feeds)))
+            logging.user(request.user, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
             
             request.session['import_from_google_reader'] = False
         else:
@@ -45,8 +45,7 @@ def opml_upload(request):
 
         
 def reader_authorize(request):
-    logging.info(" ---> [%s] ~BB~FW~SBAuthorize Google Reader import - %s" % (
-        request.user,
+    logging.user(request.user, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
     ))
     oauth_key = settings.OAUTH_KEY
@@ -108,7 +107,6 @@ def reader_callback(request):
         client = oauth.Client(consumer, token)
         resp, content = client.request(access_token_url, "POST")
         access_token = dict(urlparse.parse_qsl(content))
-        # logging.info(" ---> [%s] OAuth Reader Content: %s -- %s" % (request.user, token, access_token))
         user_token.access_token = access_token.get('oauth_token')
         user_token.access_token_secret = access_token.get('oauth_token_secret')
         try:
@@ -120,7 +118,7 @@ def reader_callback(request):
         # Fetch imported feeds on next page load
         request.session['import_from_google_reader'] = True
     
-        logging.info(" ---> [%s] ~BB~FW~SBFinishing Google Reader import - %s" % (request.user, request.META['REMOTE_ADDR'],))
+        logging.user(request.user, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
     
         if request.user.is_authenticated():
             return HttpResponseRedirect(reverse('index'))

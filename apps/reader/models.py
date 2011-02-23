@@ -87,7 +87,7 @@ class UserSubscription(models.Model):
         feed = None
         us = None
     
-        logging.info(" ---> [%s] ~FRAdding URL: ~SB%s (in %s)" % (user, feed_address, folder))
+        logging.user(user, "~FRAdding URL: ~SB%s (in %s)" % (feed_address, folder))
     
         feed = Feed.get_feed_from_url(feed_address)
 
@@ -320,10 +320,10 @@ class UserSubscriptionFolders(models.Model):
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
                         multiples_found = True
-                        logging.info(" ---> [%s] ~FB~SBDeleting feed, and a multiple has been found in '%s'" % (self.user, folder_name))
+                        logging.user(self.user, "~FB~SBDeleting feed, and a multiple has been found in '%s'" % (folder_name))
                     if folder == feed_id and folder_name == in_folder and not deleted:
-                        logging.info(" ---> [%s] ~FBDelete feed: %s'th item: %s folders/feeds" % (
-                            self.user, k, len(old_folders)
+                        logging.user(self.user, "~FBDelete feed: %s'th item: %s folders/feeds" % (
+                            k, len(old_folders)
                         ))
                         deleted = True
                     else:
@@ -365,7 +365,7 @@ class UserSubscriptionFolders(models.Model):
                 elif isinstance(folder, dict):
                     for f_k, f_v in folder.items():
                         if f_k == folder_to_delete and folder_name == in_folder:
-                            logging.info(" ---> [%s] ~FBDeleting folder '~SB%s~SN' in '%s': %s" % (self.user, f_k, folder_name, folder))
+                            logging.user(self.user, "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder))
                         else:
                             nf, feeds_to_delete = _find_folder_in_folders(f_v, f_k, feeds_to_delete)
                             new_folders.append({f_k: nf})
@@ -389,8 +389,8 @@ class UserSubscriptionFolders(models.Model):
                     for f_k, f_v in folder.items():
                         nf = _find_folder_in_folders(f_v, f_k)
                         if f_k == folder_to_rename and folder_name == in_folder:
-                            logging.info(" ---> [%s] ~FBRenaming folder '~SB%s~SN' in '%s' to: ~SB%s" % (
-                                         self.user, f_k, folder_name, new_folder_name))
+                            logging.user(self.user, "~FBRenaming folder '~SB%s~SN' in '%s' to: ~SB%s" % (
+                                         f_k, folder_name, new_folder_name))
                             f_k = new_folder_name
                         new_folders.append({f_k: nf})
     

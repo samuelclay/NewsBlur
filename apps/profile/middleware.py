@@ -12,7 +12,7 @@ class LastSeenMiddleware(object):
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
             SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
             if request.user.profile.last_seen_on < hour_ago:
-                logging.info(" ---> [%s] ~FG~BBRepeat visitor: ~SB%s" % (request.user, request.user.profile.last_seen_on))
+                logging.user(request.user, "~FG~BBRepeat visitor: ~SB%s" % (request.user.profile.last_seen_on))
             if request.user.profile.last_seen_on < SUBSCRIBER_EXPIRE:
                 request.user.profile.refresh_stale_feeds()
             request.user.profile.last_seen_on = datetime.datetime.utcnow()

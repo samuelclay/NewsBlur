@@ -48,7 +48,7 @@ class Profile(models.Model):
         
         self.queue_new_feeds()
         
-        logging.info(' ---> [%s] ~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!' % (self.user.username, subs.count()))
+        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
         message = """Woohoo!
         
 User: %(user)s
@@ -64,7 +64,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                                         feed__fetched_once=False, 
                                                         active=True).values('feed_id')
             new_feeds = list(set([f['feed_id'] for f in new_feeds]))
-        logging.info(" ---> [%s] ~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (self.user, len(new_feeds), new_feeds))
+        logging.user(self.user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
         size = 4
         publisher = Task.get_publisher(exchange="new_feeds")
         for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
@@ -78,8 +78,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             stale_feeds = stale_feeds.filter(feed__fetched_once=True)
         all_feeds    = UserSubscription.objects.filter(user=self.user, active=True)
         
-        logging.info(" ---> [%s] ~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
-            self.user, stale_feeds.count(), all_feeds.count()))
+        logging.user(self.user, "~FG~BBRefreshing stale feeds: ~SB%s/%s" % (
+            stale_feeds.count(), all_feeds.count()))
 
         for sub in stale_feeds:
             sub.feed.fetched_once = False

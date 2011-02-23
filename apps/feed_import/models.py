@@ -107,7 +107,7 @@ class GoogleReaderImporter(Importer):
             folders = self.process_item(item, folders)
         # print dict(folders)
         self.rearrange_folders(folders)
-        logging.info(" ---> [%s] ~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.user, self.subscription_folders))
+        logging.user(self.user, "~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.subscription_folders))
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
 
