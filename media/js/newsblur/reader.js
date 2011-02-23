@@ -3585,6 +3585,7 @@
                 if ($item.hasClass('story')) inverse = true; 
             } else if (type == 'site') {
                 $('.NB-task-manage').tipsy('hide');
+                $('.NB-task-manage').tipsy('disable');
             }
             var toplevel = $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
@@ -3704,6 +3705,7 @@
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
             $manage_menu_container.uncorner();
+            $('.NB-task-manage').tipsy('enable');
             
             $item.removeClass('NB-showing-menu');
             
