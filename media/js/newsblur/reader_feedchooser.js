@@ -83,14 +83,18 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed my poor, hungry dog for 6 days!',
-                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
+                  'Access to the future premium-only features like searching and visualizations.'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You are supporting an indie developer.'
+                  'You feed my poor, hungry dog for 6 days!',
+                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
                 ]),
                 $.make('li', { className: 'NB-6' }, [
+                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                  'You are supporting an indie developer.'
+                ]),
+                $.make('li', { className: 'NB-7' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                   'Choose how much you would like to pay.',
                   $.make('div', { style: 'color: #490567' }, 'The only difference is happiness.')

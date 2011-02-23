@@ -1127,6 +1127,19 @@ background: transparent;
 #story_titles .NB-story-hidden-visible {
   opacity: .5;
 }
+
+#story_titles .NB-feed-story-premium-only .NB-feed-story-premium-only-divider {
+  background: transparent url(../img/reader/separator_small.png) no-repeat 50% 100%;
+  height: 20px;
+  width: 100%;
+  margin: 4px 0 0;
+}
+#story_titles .NB-feed-story-premium-only .NB-feed-story-premium-only-text {
+  text-align: center;
+  margin: 6px 0 8px 0;
+  color: #707070;
+}
+
 /* ======================== */
 /* = Story Titles - Story = */
 /* ======================== */
@@ -4061,7 +4074,7 @@ background: transparent;
     list-style: none;
 /*    margin: 12px 0;*/
     padding: 0;
-    max-height: 320px;
+    max-height: 348px;
     min-height: 186px;
     width: auto;
     border: 1px solid #909090;
@@ -4258,12 +4271,15 @@ background: transparent;
     background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-4 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('../img/icons/silk/lorry.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/magnifier.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-5 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('../img/icons/silk/star.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/lorry.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-6 .NB-feedchooser-premium-bullet-image {
+    background: transparent url('../img/icons/silk/star.png') no-repeat 0 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-7 .NB-feedchooser-premium-bullet-image {
     background: transparent url('../img/icons/silk/lightbulb.png') no-repeat 0 0;
 }
 

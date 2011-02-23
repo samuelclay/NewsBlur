@@ -3117,6 +3117,7 @@
                     '.'
                 ])
             ]);
+            $('.NB-feed-story-premium-only', $story_titles).remove();
             $story_titles.append($notice);
         },
         
@@ -4823,6 +4824,11 @@
                 var story_id = $t.attr('href').slice(1).split('/');
                 self.mark_story_as_read(story_id);
             });
+            $.targetIs(e, { tagSelector: '.NB-feed-story-premium-only a' }, function($t, $p){
+                e.preventDefault();
+                self.open_feedchooser_modal();
+            });
+            
             
             // = Taskbar ======================================================
             
