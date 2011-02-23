@@ -36,6 +36,8 @@ def set_preference(request):
                 if code == -1:
                     message = "Your old password is incorrect."
         else:
+            if preference_value in ["true", "false"]:
+                preference_value = True if preference_value == "true" else False
             preferences[preference_name] = preference_value
         
     request.user.profile.preferences = json.encode(preferences)

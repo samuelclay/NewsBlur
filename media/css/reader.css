@@ -1983,6 +1983,58 @@ background: transparent;
     border-top: 1px solid #F0F0F0;
 }
 
+.NB-taskbar .NB-taskbar-sidebar-toggle-close {
+  width: 20px;
+  height: 28px;
+  background: transparent url('../img/icons/silk/control_rewind.png') no-repeat 4px 6px;
+  right: 0px;
+  top: 0px;
+  position: absolute;
+  opacity: .8;
+  cursor: pointer;
+}
+
+.NB-taskbar .NB-taskbar-sidebar-toggle-close:hover {
+  opacity: 1;
+  background: transparent url('../img/icons/silk/control_rewind_blue.png') no-repeat 4px 6px;
+}
+
+.NB-taskbar-sidebar-toggle-open {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #818181;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-top-right-radius: 6px;
+  -webkit-border-bottom-right-radius: 6px;
+  -moz-border-radius-topright: 6px;
+  -moz-border-radius-bottomright: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  background: #E0E0E0 url("../img/reader/taskbar_background.png") repeat-x left top;
+  left: -24px;
+  bottom: 2px;
+  position: absolute;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.NB-taskbar-sidebar-toggle-open-image {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  opacity: .8;
+  background: transparent url('../img/icons/silk/control_fastforward.png') no-repeat 0;
+}
+
+.NB-taskbar-sidebar-toggle-open:hover .NB-taskbar-sidebar-toggle-open-image {
+  opacity: 1;
+  background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat 0;
+}
+
 .NB-taskbar .NB-task-view-switch-arrow {
     position: absolute;
     top: 8px;
@@ -2447,10 +2499,10 @@ a.NB-splash-link:hover {
     margin: 0 2px 0 0;
 }
 
-.NB-classifier .NB-classifier-count {
+.NB-classifier-container .NB-classifier-count {
     font-size: 10px;
-    font-weight: bold;
     margin: 0 6px 0 2px;
+    color: #A0A0A0;
 }
 
 .NB-modal-classifiers .NB-modal-title .NB-classifier-title-like {
@@ -2511,9 +2563,13 @@ a.NB-splash-link:hover {
     line-height: 23px;
     margin: 0 0 18px 0;
     clear: both;
+    font-size: 13px;
+    color: #707070;
 }
 .NB-modal-trainer .NB-trainer-points li b {
     display: block;
+    font-size: 16px;
+    color: #202020;
 }
 .NB-modal-trainer .NB-trainer-points li img {
     padding: 0 0 0 8px;
@@ -2540,7 +2596,7 @@ a.NB-splash-link:hover {
 .NB-taskbar-intelligence {
     width: 100px;
     position: absolute;
-    right: 18px;
+    left: 100px;
     top: 16px;
     font-size: .5em;
 }
@@ -2898,6 +2954,8 @@ background: transparent;
 
 .NB-classifiers .NB-classifier .feed_favicon {
   margin-top: -2px;
+  width: 16px;
+  height: 16px;
 }
 
 .NB-classifiers .NB-classifier .NB-classifier-icon-like {
@@ -3647,19 +3705,46 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-instapaper {
     background: transparent url('../img/reader/instapaper.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
+    background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readability {
+    background: transparent url('../img/reader/readability.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
     background: transparent url('../img/reader/twitter.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-facebook {
     background: transparent url('../img/reader/facebook.gif') no-repeat 0 0;
 }
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-image,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-thirdparty-facebook {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-thirdparty-icon {
   opacity: .2;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-thirdparty-twitter {
+  opacity: 1;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-image,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-thirdparty-twitter {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-thirdparty-icon {
   opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-thirdparty-facebook {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-readability {
+  opacity: 1;
 }
 
 .NB-menu-manage .NB-menu-manage-story-unread .NB-menu-manage-image {
@@ -4391,4 +4476,31 @@ background: transparent;
     -moz-box-shadow:2px 2px 0 #D0D0D0;
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
+}
+.NB-modal-preferences .NB-preference.NB-preference-story-share .NB-preference-option {
+  float: left;
+  margin: 0 8px 4px 0;
+}
+.NB-modal-preferences .NB-preference.NB-preference-story-share input {
+  clear: none;
+}
+.NB-modal-preferences .NB-preference.NB-preference-story-share label {
+  width: 16px;
+  height: 16px;
+  margin: 0 0 0 2px;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-twitter] {
+    background: transparent url('../img/reader/twitter.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-facebook] {
+    background: transparent url('../img/reader/facebook.gif') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
+    background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
+    background: transparent url('../img/reader/readability.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
+    background: transparent url('../img/reader/instapaper.png') no-repeat 0 0;
 }

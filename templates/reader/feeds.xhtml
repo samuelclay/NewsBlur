@@ -380,8 +380,8 @@ $(document).ready(function() {
           </div>
         </div>
         <ul class="taskbar_nav taskbar_nav_feeds">
-          <li class="task_button task_button_menu NB-task-add"></li>
-          <li class="task_button task_button_menu NB-task-manage NB-disabled"></li>
+          <li class="task_button task_button_menu NB-task-add" title="Add sites"></li>
+          <li class="task_button task_button_menu NB-task-manage NB-disabled" title="Manage NewsBlur"></li>
         </ul>
         <div class="NB-taskbar-intelligence">
           <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
@@ -389,6 +389,7 @@ $(document).ready(function() {
           <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
           <div class="NB-intelligence-slider"></div>
         </div>
+        <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar"></div>
       </div>
     </div>
 
@@ -396,8 +397,10 @@ $(document).ready(function() {
 
 <div class="NB-menu-manage-container"></div>
 
-<div class="right-pane">
+<div class="NB-taskbar-sidebar-toggle-open" title="Show sidebar"><div class="NB-taskbar-sidebar-toggle-open-image"></div></div>
     
+<div class="right-pane">
+  
     <div id="story_titles" class="right-north"></div>
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar-container content-north">

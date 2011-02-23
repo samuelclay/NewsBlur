@@ -16,6 +16,11 @@
 
 @synthesize appDelegate;
 @synthesize webView;
+@synthesize scrollView;
+@synthesize toolbar;
+@synthesize buttonNext;
+@synthesize buttonPrevious;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -33,7 +38,12 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Original" style:UIBarButtonItemStyleBordered target:self action:@selector(showOriginalSubview:)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
+                                               initWithTitle:@"Original" 
+                                               style:UIBarButtonItemStyleBordered 
+                                               target:self 
+                                               action:@selector(showOriginalSubview:)
+                                              ] autorelease];
 	[super viewDidAppear:animated];
 }
 
@@ -109,6 +119,8 @@
     [webView loadHTMLString:htmlString
                     baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
                                                   objectForKey:@"feed_link"]]];
+    
+    
 }
 
 - (void)showOriginalSubview:(id)sender {
@@ -142,6 +154,29 @@
     }
     
     return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    [self resizeWebView];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [self resizeWebView];
+}
+
+- (void)resizeWebView {
+    
+    CGRect frame = webView.frame;
+    frame.size.height = 1;
+    webView.frame = frame;
+    CGSize fittingSize = [webView sizeThatFits:CGSizeZero];
+    frame.size = fittingSize;
+    webView.frame = frame;
+    NSLog(@"heights: %f / %f", frame.size.width, frame.size.height, toolbar.frame.size.height);
+    toolbar.frame = CGRectMake(0, webView.frame.size.height, toolbar.frame.size.width, toolbar.frame.size.height);
+    
+    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    scrollView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
 }
 
 

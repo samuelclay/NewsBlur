@@ -109,10 +109,7 @@ class UserSubscription(models.Model):
             code = 1
             message = ""
     
-        if us and not subscription_created:
-            code = -3
-            message = "You are already subscribed to this site."
-        elif us:
+        if us:
             user_sub_folders_object, created = UserSubscriptionFolders.objects.get_or_create(
                 user=user,
                 defaults={'folders': '[]'}
@@ -130,7 +127,6 @@ class UserSubscription(models.Model):
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed.update()
 
-        print code, message, us
         return code, message, us
 
     def mark_feed_read(self):

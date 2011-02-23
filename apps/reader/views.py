@@ -567,6 +567,8 @@ def mark_story_as_read(request):
                                                        feed=duplicate_feed[0].feed)
             except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
                 return dict(code=-1)
+        else:
+            return dict(code=-1)
                 
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
@@ -880,7 +882,7 @@ def login_as(request):
         assert False
         return HttpResponseForbidden()
     username = request.GET['user']
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username__iexact=username)
     user.backend = settings.AUTHENTICATION_BACKENDS[0]
     login_user(request, user)
     return HttpResponseRedirect(reverse('index'))

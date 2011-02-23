@@ -120,7 +120,7 @@ def setup_common():
     setup_supervisor()
 
 def setup_postgres():
-    pass
+    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     
 def setup_celery():
     pass
@@ -136,7 +136,7 @@ def setup_server():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install gcc sysstat git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging')
+    sudo('apt-get -y install build-essential gcc scons sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra ')
     sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client-9.0')

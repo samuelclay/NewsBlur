@@ -34,6 +34,7 @@ def timelimit(timeout):
             if c.error:
                 tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
                 logging.debug(tb)
+                mail_admins('Error in timeout: %s' % c.error[0], tb)
                 raise c.error[0], c.error[1]
             return c.result
         return _2
@@ -153,19 +154,19 @@ def format_relative_date(date, future=False):
                                     '' if future else 'ago')
 
 def add_object_to_folder(obj, folder, folders):
-    if not folder:
+    if not folder and obj not in folders:
         folders.append(obj)
         return folders
 
     for k, v in enumerate(folders):
         if isinstance(v, dict):
             for f_k, f_v in v.items():
-                if f_k == folder:
+                if f_k == folder and obj not in f_v:
                     f_v.append(obj)
                 folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
     return folders  
 
-def mail_error_to_admin(feed, e):
+def mail_feed_error_to_admin(feed, e):
     # Mail the admins with the error
     exc_info = sys.exc_info()
     subject = 'Feed update error: %s' % repr(e)

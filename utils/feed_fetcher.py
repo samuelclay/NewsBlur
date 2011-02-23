@@ -11,7 +11,7 @@ from apps.rss_feeds.icon_importer import IconImporter
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError, mail_error_to_admin, utf8encode
+from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
 import time
 import datetime
 import traceback
@@ -326,7 +326,7 @@ class Dispatcher:
                 ret_feed = FEED_ERREXC 
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
-                mail_error_to_admin(feed, e)
+                mail_feed_error_to_admin(feed, e)
             
             feed = self.refresh_feed(feed_id)
             if ((self.options['force']) or 
@@ -349,7 +349,7 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
-                    mail_error_to_admin(feed, e)
+                    mail_feed_error_to_admin(feed, e)
                     
                 logging.debug(u'   ---> [%-30s] Fetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
@@ -364,7 +364,7 @@ class Dispatcher:
                     logging.error(tb)
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
-                    mail_error_to_admin(feed, e)
+                    mail_feed_error_to_admin(feed, e)
                 
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
