@@ -2872,9 +2872,10 @@
             }
 
             for (var s in stories) {
-                if (this.flags['non_premium_river_view'] && $stories.children(':visible').length > 5) {
+                if (this.flags['non_premium_river_view'] && $stories.children(':visible').length >= 5) {
                     NEWSBLUR.log(['make_story_feed_entries break', $stories.children(':visible')]);
                     this.append_story_titles_endbar();
+                    this.append_river_premium_only_notification();
                     break;
                 }
                 
@@ -3104,6 +3105,19 @@
             if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
                 $story_titles.append($end_stories_line);
             }
+        },
+        
+        append_river_premium_only_notification: function() {
+            var $story_titles = this.$s.$story_titles;
+            var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
+                $.make('div', { className: 'NB-feed-story-premium-only-divider'}),
+                $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                    'The full River of News is a ',
+                    $.make('a', { href: '#' }, 'premium feature'),
+                    '.'
+                ])
+            ]);
+            $story_titles.append($notice);
         },
         
         // ===================
@@ -3608,6 +3622,7 @@
                 if ($item.hasClass('story')) inverse = true; 
             } else if (type == 'site') {
                 $('.NB-task-manage').tipsy('hide');
+                $('.NB-task-manage').tipsy('disable');
             }
             var toplevel = $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
@@ -3727,6 +3742,7 @@
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
             $manage_menu_container.uncorner();
+            $('.NB-task-manage').tipsy('enable');
             
             $item.removeClass('NB-showing-menu');
             
