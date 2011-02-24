@@ -146,6 +146,9 @@ def load_feeds(request):
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
             sub.feed.count_subscribers()
             sub.feed.schedule_feed_fetch_immediately()
+        if sub.feed.active_subscribers <= 0:
+            sub.feed.count_subscribers()
+            sub.feed.schedule_feed_fetch_immediately()
             
     if not_yet_fetched:
         for f in feeds:
