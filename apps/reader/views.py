@@ -598,10 +598,10 @@ def mark_story_as_read(request):
         try:
             m.save()
         except OperationError:
-            m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
+            logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
+            m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
             m.read_date = date
             m.save()
-            logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
     
     return data
     
