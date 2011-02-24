@@ -1717,7 +1717,9 @@
                 // Used when auto-tracking the user as they move over the feed/page.
                 // No need to find the story, since they have already found it.
                 clearTimeout(this.locks.scrolling);
-                this.flags['scrolling_by_selecting_story_title'] = true;
+                if (_.contains(['feed', 'page'], this.story_view)) {
+                    this.flags['scrolling_by_selecting_story_title'] = true;
+                }
                 
                 // User clicks on story, scroll them to it.
                 var $feed_story = this.find_story_in_feed_view(story);
@@ -5285,6 +5287,7 @@
         handle_scroll_feed_view: function(elem, e) {
             var self = this;
             
+            // NEWSBLUR.log(['handle_scroll_feed_view', this.story_view, this.flags['switching_to_feed_view'], this.flags['scrolling_by_selecting_story_title']]);
             if ((this.story_view == 'feed' ||
                  (this.story_view == 'page' && this.flags['page_view_showing_feed_view'])) &&
                 !this.flags['switching_to_feed_view'] &&

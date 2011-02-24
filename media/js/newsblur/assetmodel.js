@@ -101,13 +101,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         var read = false;
         
-        for (s in this.stories) {
-            if (this.stories[s].id == story_id) {
-                read = this.stories[s].read_status ? true : false;
-                this.stories[s].read_status = true;
-                break;
-            }
-        }
+        var story = this.get_story(story_id);
+        read = story.read_status;
+        story.read_status = true;
 
         if (!read && NEWSBLUR.Globals.is_authenticated) {
             if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
