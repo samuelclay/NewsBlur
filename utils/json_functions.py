@@ -87,6 +87,7 @@ def json_encode(data, *args, **kwargs):
 def json_view(func):
     def wrap(request, *a, **kw):
         response = None
+        code = 200
         try:
             response = func(request, *a, **kw)
             if isinstance(response, dict):
@@ -116,11 +117,12 @@ def json_view(func):
 
             response = {'result': 'error',
                         'text': unicode(e)}
+            code = 500
         
         if isinstance(response, HttpResponseForbidden):
             return response
         json = json_encode(response)
-        return HttpResponse(json, mimetype='application/json')
+        return HttpResponse(json, mimetype='application/json', status=code)
     return wrap
 
 def main():

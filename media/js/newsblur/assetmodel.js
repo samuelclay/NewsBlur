@@ -90,7 +90,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 } else if ($.isFunction(callback)) {
-                    callback({'message': 'Please create an account. Not much to do without an account.'});
+                    var message = "Please create an account. Not much to do without an account.";
+                    if (NEWSBLUR.Globals.is_authenticated) {
+                      message = "Sorry, there was an unhandled error.";
+                    }
+                    callback({'message': message});
                 }
             }
         }); 
@@ -552,14 +556,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/add_url/', {
             'url': url,
             'folder': folder
-        }, callback, null);
+        }, callback, function() {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.'});
+        });
     },
     
     save_add_folder: function(folder, parent_folder, callback) {
         this.make_request('/reader/add_folder/', {
             'folder': folder,
             'parent_folder': parent_folder
-        }, callback, null);
+        }, callback, function() {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this folder. Please try a different URL.'});
+        });
     },
     
     preference: function(preference, value, callback) {

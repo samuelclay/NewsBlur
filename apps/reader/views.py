@@ -593,10 +593,14 @@ def mark_story_as_read(request):
             # Story has been deleted, probably by feed_fetcher.
             continue
         now = datetime.datetime.utcnow()
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=now)
+        date = now if now > story.story_date else story.story_date # For handling future stories
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date)
         try:
             m.save()
         except OperationError:
+            m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
+            m.read_date = date
+            m.save()
             logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
     
     return data
