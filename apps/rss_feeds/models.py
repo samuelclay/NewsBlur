@@ -380,7 +380,8 @@ class Feed(models.Model):
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
-        return self
+        
+        return Feed.objects.get(pk=self.pk)
 
     def add_update_stories(self, stories, existing_stories):
         ret_values = {
