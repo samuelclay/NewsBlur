@@ -1,4 +1,4 @@
-NEWSBLUR.ReaderAddFeed = function(feed_id, score, options) {
+NEWSBLUR.ReaderAddFeed = function(options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
@@ -33,7 +33,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         $.make('div', [
                             $.make('div', { className: 'NB-loading' }),
                             $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
-                            $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url' }),
+                            $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url }),
                             $.make('input', { type: 'submit', value: 'Add it', className: 'NB-modal-submit-green NB-add-url-submit' }),
                             $.make('div', { className: 'NB-error' })
                         ])

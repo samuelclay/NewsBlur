@@ -4316,7 +4316,8 @@ background: transparent;
   text-shadow: 1px 1px 0 #E0E0E0;
 }
 
-.NB-modal-goodies .NB-goodies-bookmarklet-button {
+.NB-modal-goodies .NB-goodies-bookmarklet-button,
+.NB-modal-goodies .NB-goodies-contenthandler-button {
     display: inline-block;
     float: right;
     font-family: 'Lucida Grande', Verdana, sans-serif;
@@ -4337,6 +4338,17 @@ background: transparent;
     text-decoration: none; 
     outline: none;
     margin: 8px 8px;
+}
+
+.NB-modal-goodies .NB-goodies-firefox-link {
+  float: right;
+}
+.NB-modal-goodies .NB-goodies-firefox {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('../img/reader/firefox.png') no-repeat 0 0;
 }
 
 /* ============================ */

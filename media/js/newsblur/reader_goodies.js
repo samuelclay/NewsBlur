@@ -23,6 +23,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
               $.make('div', { className: 'NB-goodies-title' }, 'Add Site Bookmarklet')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
+                  href: '#'
+              }, 'Add NewsBlur'),
+              $.make('div', { className: 'NB-goodies-firefox' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register Newsblur as an RSS reader')
             ])
         ]);
     },
@@ -66,6 +74,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
             e.preventDefault();
             
             alert('Drag this button to your bookmark toolbar.');
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-goodies-firefox-link' }, function($t, $p) {
+            e.preventDefault();
+
+            navigator.registerContentHandler("application/vnd.mozilla.maybe.feed",
+                                             document.location +"?url=%s",
+                                             "NewsBlur");
         });
     }
     

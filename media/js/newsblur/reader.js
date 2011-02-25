@@ -91,6 +91,7 @@
         this.iframe_buster_buster();
         this.apply_story_styling();
         this.apply_tipsy_titles();
+        this.add_url_from_querystring();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -254,6 +255,14 @@
                     }
                 }
             }, 1);
+        },
+
+        add_url_from_querystring: function() {
+            var url = $.getQueryString('url');
+
+            if (url) {
+                this.open_add_feed_modal({url: url});
+            }
         },
         
         animate_progress_bar: function($bar, seconds, percentage) {
@@ -3322,11 +3331,11 @@
         // = Taskbar - Feeds =
         // ===================
         
-        open_add_feed_modal: function() {
+        open_add_feed_modal: function(options) {
             clearInterval(this.flags['bouncing_callout']);
             $.modal.close();
             
-            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed();
+            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed(options);
         },
         
         open_manage_feed_modal: function(feed_id) {
