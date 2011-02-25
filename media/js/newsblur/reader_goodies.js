@@ -28,7 +28,7 @@ NEWSBLUR.ReaderGoodies.prototype = {
               $.make('a', {
                   className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
-              }, 'Add NewsBlur to Firefox'),
+              }, 'Add to Firefox'),
               $.make('div', { className: 'NB-goodies-firefox' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register Newsblur as an RSS reader')
             ]),
@@ -36,9 +36,17 @@ NEWSBLUR.ReaderGoodies.prototype = {
               $.make('a', {
                   className: 'NB-goodies-safari-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
-              }, 'Add NewsBlur to Safari'),
+              }, 'Add to Safari'),
               $.make('div', { className: 'NB-goodies-safari' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('input', {
+                  className: 'NB-goodies-custom-input',
+                  value: 'http://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
+              }),
+              $.make('div', { className: 'NB-goodies-custom' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
             ])
         ]);
     },
@@ -54,6 +62,9 @@ NEWSBLUR.ReaderGoodies.prototype = {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
                     dialog.data.fadeIn(200);
+                    setTimeout(function() {
+                        $(window).resize();
+                    });
                 });
             },
             'onShow': function(dialog) {
@@ -96,6 +107,11 @@ NEWSBLUR.ReaderGoodies.prototype = {
             e.preventDefault();
 
             window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'NewsBlur Safari Helper.app';
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {
+            e.preventDefault();
+            $t.select();
         });
     }
     

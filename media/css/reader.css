@@ -4362,6 +4362,13 @@ background: transparent;
   background: transparent url('../img/reader/safari.png') no-repeat 0 0;
 }
 
+.NB-modal-goodies .NB-goodies-custom-input {
+  float: right;
+  width: 220px;
+  border: 1px solid #909090;
+  padding: 4px;
+}
+
 /* ============================ */
 /* = Keyboard Shortcuts Modal = */
 /* ============================ */
