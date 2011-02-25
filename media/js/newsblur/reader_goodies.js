@@ -28,9 +28,17 @@ NEWSBLUR.ReaderGoodies.prototype = {
               $.make('a', {
                   className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
-              }, 'Add NewsBlur'),
+              }, 'Add NewsBlur to Firefox'),
               $.make('div', { className: 'NB-goodies-firefox' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register Newsblur as an RSS reader')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-safari-link NB-modal-submit-button NB-modal-submit-green',
+                  href: '#'
+              }, 'Add NewsBlur to Safari'),
+              $.make('div', { className: 'NB-goodies-safari' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader')
             ])
         ]);
     },
@@ -82,6 +90,12 @@ NEWSBLUR.ReaderGoodies.prototype = {
             navigator.registerContentHandler("application/vnd.mozilla.maybe.feed",
                                              document.location +"?url=%s",
                                              "NewsBlur");
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-goodies-safari-link' }, function($t, $p) {
+            e.preventDefault();
+
+            window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'NewsBlur Safari Helper.app';
         });
     }
     

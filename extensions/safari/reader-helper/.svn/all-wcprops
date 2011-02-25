@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 21
+/svn/!svn/ver/7/trunk
+END
+main.m
+K 25
+svn:wc:ra_dav:version-url
+V 28
+/svn/!svn/ver/2/trunk/main.m
+END
+Info.plist
+K 25
+svn:wc:ra_dav:version-url
+V 32
+/svn/!svn/ver/7/trunk/Info.plist
+END
+GoogleReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/5/trunk/GoogleReader.h
+END
+Reader Helper_Prefix.pch
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/2/trunk/Reader%20Helper_Prefix.pch
+END
+Controller.h
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/5/trunk/Controller.h
+END
+GoogleReader.m
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/!svn/ver/5/trunk/GoogleReader.m
+END
+ReaderHelper.icns
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/5/trunk/ReaderHelper.icns
+END
+Controller.m
+K 25
+svn:wc:ra_dav:version-url
+V 34
+/svn/!svn/ver/7/trunk/Controller.m
+END
