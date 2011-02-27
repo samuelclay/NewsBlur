@@ -78,11 +78,13 @@ class MClassifierTag(mongo.Document):
     
     
 def apply_classifier_titles(classifiers, story):
+    score = 0
     for classifier in classifiers:
         if classifier.title.lower() in story['story_title'].lower():
             # print 'Titles: (%s) %s -- %s' % (classifier.title in story['story_title'], classifier.title, story['story_title'])
-            return classifier.score
-    return 0
+            score = classifier.score
+            if score > 0: return score
+    return score
     
 def apply_classifier_feeds(classifiers, feed):
     feed_id = feed if isinstance(feed, int) else feed.pk
@@ -93,18 +95,22 @@ def apply_classifier_feeds(classifiers, feed):
     return 0
     
 def apply_classifier_authors(classifiers, story):
+    score = 0
     for classifier in classifiers:
         if story.get('story_authors') and classifier.author == story.get('story_authors'):
             # print 'Authors: %s -- %s' % (classifier.author, story['story_authors'])
-            return classifier.score
-    return 0
+            score = classifier.score
+            if score > 0: return classifier.score
+    return score
     
 def apply_classifier_tags(classifiers, story):
+    score = 0
     for classifier in classifiers:
         if story['story_tags'] and classifier.tag in story['story_tags']:
             # print 'Tags: (%s-%s) %s -- %s' % (classifier.tag in story['story_tags'], classifier.score, classifier.tag, story['story_tags'])
-            return classifier.score
-    return 0
+            score = classifier.score
+            if score > 0: return classifier.score
+    return score
     
 def get_classifiers_for_user(user, feed_id, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
     if classifier_feeds is None:

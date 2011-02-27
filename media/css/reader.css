@@ -1201,7 +1201,7 @@ background: transparent;
     font-weight: normal;
 }
 #story_titles .story.read .NB-storytitles-sentiment {
-    background: none;
+  opacity: .15;
 }
 
 #story_titles .story:hover {

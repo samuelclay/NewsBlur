@@ -2468,6 +2468,35 @@
             return score;
         },
         
+        recalculate_story_scores: function() {
+            this.model.recalculate_story_scores();
+            
+            var replace_stories = _.bind(function($story, story_id) {
+                var story = this.model.get_story(story_id);
+                var score = this.compute_story_score(story);
+                $story.removeClass('NB-story-positive')
+                      .removeClass('NB-story-neutral')
+                      .removeClass('NB-story-negative');
+                if (score > 0) {
+                    $story.addClass('NB-story-positive');
+                } else if (score == 0) {
+                    $story.addClass('NB-story-neutral');
+                } else if (score < 0) {
+                    $story.addClass('NB-story-negative');
+                }
+            }, this);
+            
+            _.each(this.cache.feed_view_stories, _.bind(function($story, story_id) { 
+                replace_stories($story, story_id);
+            }));
+            
+            $('.story', this.$s.$story_titles).each(function() {
+                var $story = $(this);
+                var story_id = $story.data('story_id');
+                replace_stories($story, story_id);
+            });
+        },
+        
         // =================================
         // = Story Pane - iFrame/Page View =
         // =================================
@@ -4272,10 +4301,10 @@
                 var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 
-                if (feed_id == this.active_feed) {
+                if (feed_id == this.active_feed && update_all) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     var limit = $('.story', this.$s.$story_titles).length;
-                    this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                    // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
                     $feed_on_page.replaceWith($feed);
                     this.mark_feed_as_selected(this.active_feed, $feed);
                 } else {

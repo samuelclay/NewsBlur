@@ -711,6 +711,42 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         } else {
             if ($.isFunction(callback)) callback();
         }
+    },
+    
+    recalculate_story_scores: function() {
+        _.each(this.stories, _.bind(function(story, i) {
+            this.stories[i].intelligence.title = 0;
+            _.each(this.classifiers.titles, _.bind(function(classifier_score, classifier_title) {
+                if (this.stories[i].intelligence.title <= 0 && 
+                    story.story_title && story.story_title.indexOf(classifier_title) != -1) {
+                    this.stories[i].intelligence.title = classifier_score;
+                }
+            }, this));
+            
+            this.stories[i].intelligence.author = 0;
+            _.each(this.classifiers.authors, _.bind(function(classifier_score, classifier_author) {
+                if (this.stories[i].intelligence.author <= 0 && 
+                    story.story_authors && story.story_authors.indexOf(classifier_author) != -1) {
+                    this.stories[i].intelligence.author = classifier_score;
+                }
+            }, this));
+            
+            this.stories[i].intelligence.tags = 0;
+            _.each(this.classifiers.tags, _.bind(function(classifier_score, classifier_tag) {
+                if (this.stories[i].intelligence.tags <= 0 && 
+                    story.story_tags && _.contains(story.story_tags, classifier_tag)) {
+                    this.stories[i].intelligence.tags = classifier_score;
+                }
+            }, this));
+            
+            this.stories[i].intelligence.feed = 0;
+            _.each(this.classifiers.feeds, _.bind(function(classifier_score, classifier_feed_id) {
+                if (this.stories[i].intelligence.feed <= 0 && 
+                    story.story_feed_id == classifier_feed_id) {
+                    this.stories[i].intelligence.feed = classifier_score;
+                }
+            }, this));
+        }, this));
     }
 
 };
