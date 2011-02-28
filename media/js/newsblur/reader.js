@@ -4115,6 +4115,7 @@
             
             if (this.flags['unread_threshold_temporarily']) {
               unread_view_name = this.flags['unread_threshold_temporarily'];
+              options['temporary'] = true;
             }
 
             if (unread_view_name == 'positive') {

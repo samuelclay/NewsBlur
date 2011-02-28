@@ -1222,6 +1222,7 @@ background: transparent;
     padding: 4px 0px;
     float: left;
     position: relative;
+    width: 100%;
 }
 #story_titles .story.read a.story_title {
     color: #575757;
