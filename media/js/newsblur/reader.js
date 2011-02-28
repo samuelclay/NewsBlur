@@ -2468,11 +2468,14 @@
             return score;
         },
         
-        recalculate_story_scores: function() {
-            this.model.recalculate_story_scores();
+        recalculate_story_scores: function(feed_id) {
+            feed_id = feed_id || this.active_feed;
+            
+            this.model.recalculate_story_scores(feed_id);
             
             var replace_stories = _.bind(function($story, story_id) {
                 var story = this.model.get_story(story_id);
+                if (story.story_feed_id != feed_id) return;
                 var score = this.compute_story_score(story);
                 $story.removeClass('NB-story-positive')
                       .removeClass('NB-story-neutral')
@@ -4185,8 +4188,6 @@
     
         update_opinions: function($modal, feed_id) {
             var self = this;
-            
-            if (feed_id != this.model.feed_id) return;
             
             $('input[type=checkbox]', $modal).each(function() {
                 var $this = $(this);

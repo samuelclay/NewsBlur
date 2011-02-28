@@ -848,8 +848,9 @@ var classifier_prototype = {
         var self = this;
         var $save = $('.NB-modal-submit-save', this.$modal);
         var data = this.serialize_classifier();
+        var feed_id = this.feed_id;
         
-        NEWSBLUR.reader.update_opinions(this.$modal, this.feed_id);
+        NEWSBLUR.reader.update_opinions(this.$modal, feed_id);
         
         if (this.options['training']) {
             this.cache[this.feed_id] = this.$modal.clone();
@@ -861,7 +862,7 @@ var classifier_prototype = {
         
         this.model.save_classifier_publisher(data, function() {
             if (!keep_modal_open) {
-                NEWSBLUR.reader.recalculate_story_scores();
+                NEWSBLUR.reader.recalculate_story_scores(feed_id);
                 NEWSBLUR.reader.force_feeds_refresh(null, true);
                 // NEWSBLUR.reader.force_feed_refresh();
                 // NEWSBLUR.reader.open_feed(self.feed_id, true);
@@ -876,13 +877,14 @@ var classifier_prototype = {
         var $save = $('.NB-modal-submit-save', this.$modal);
         var story_id = this.story_id;
         var data = this.serialize_classifier();
+        var feed_id = this.feed_id;
         
-        NEWSBLUR.reader.update_opinions(this.$modal, this.feed_id);
+        NEWSBLUR.reader.update_opinions(this.$modal, feed_id);
         
         $save.text('Saving...').addClass('NB-disabled').attr('disabled', true);
         this.model.save_classifier_story(story_id, data, function() {
             NEWSBLUR.reader.force_feeds_refresh(null, true);
-            NEWSBLUR.reader.recalculate_story_scores();
+            NEWSBLUR.reader.recalculate_story_scores(feed_id);
             // NEWSBLUR.reader.open_feed(self.feed_id, true);
             $.modal.close();
         });

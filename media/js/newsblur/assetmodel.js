@@ -16,12 +16,20 @@ NEWSBLUR.AssetModel = function() {
 }();
 
 NEWSBLUR.AssetModel.Reader = function() {
+    this.defaults = {
+        classifiers: {
+            titles: {},
+            tags: {},
+            authors: {},
+            feeds: {}
+        }
+    };
     this.feeds = {};
     this.folders = [];
     this.stories = {};
     this.story_keys = {};
     this.queued_read_stories = {};
-    this.classifiers = {};
+    this.classifiers = _.extend({}, this.defaults['classifiers']);
     this.starred_stories = [];
     this.starred_count = 0;
     this.read_stories_river_count = 0;
@@ -246,10 +254,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         if (feed_id == this.feed_id) {
             if (data && first_load) {
                 this.stories = data.stories;
-                this.feed_tags = data.feed_tags;
-                this.feed_authors = data.feed_authors;
+                this.feed_tags = data.feed_tags || {};
+                this.feed_authors = data.feed_authors || {};
                 this.feed_id = feed_id;
-                this.classifiers = data.classifiers;
+                this.classifiers = data.classifiers || this.defaults['classifiers'];
                 this.starred_stories = data.starred_stories;
                 this.story_keys = {};
                 for (var s in data.stories) {
@@ -713,8 +721,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    recalculate_story_scores: function() {
+    recalculate_story_scores: function(feed_id) {
         _.each(this.stories, _.bind(function(story, i) {
+            if (story.story_feed_id != feed_id) return;
             this.stories[i].intelligence.title = 0;
             _.each(this.classifiers.titles, _.bind(function(classifier_score, classifier_title) {
                 if (this.stories[i].intelligence.title <= 0 && 
