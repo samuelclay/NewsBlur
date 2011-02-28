@@ -1157,7 +1157,7 @@ background: transparent;
     background-color: white;
 }
 .NB-view-river #story_titles .story {
-/*    padding-right: 326px;*/
+  padding-left: 148px;
 }
 
 #story_titles .story .NB-storytitles-sentiment {
@@ -1228,7 +1228,7 @@ background: transparent;
     color: #575757;
 }
 .NB-view-river #story_titles .story a.story_title {
-    margin-left: 120px;
+
 }
 
 #story_titles .story .story_title .NB-storytitles-author {
