@@ -2,7 +2,7 @@
  * project-site: http://plugins.jquery.com/project/AjaxManager
  * repository: http://github.com/aFarkas/Ajaxmanager
  * @author Alexander Farkas
- * @version 3.10
+ * @version 3.11
  * Copyright 2010, Alexander Farkas
  * Dual licensed under the MIT or GPL Version 2 licenses.
  */
@@ -47,7 +47,12 @@
 	};
 	
 	$.manageAjax._manager.prototype = {
-		add: function(o){
+		add: function(url, o){
+			if(typeof url == 'object'){
+				o = url;
+			} else if(typeof url == 'string'){
+				o = $.extend(o || {}, {url: url});
+			}
 			o = $.extend({}, this.opts, o);
 			
 			var origCom		= o.complete || $.noop,
@@ -59,15 +64,15 @@
 				that 		= this,
 				ajaxFn 		= this._createAjax(xhrID, o, origSuc, origCom)
 			;
-			if(o.preventDoubbleRequests && o.queueDuplicateRequests){
-				if(o.preventDoubbleRequests){
+			if(o.preventDoubleRequests && o.queueDuplicateRequests){
+				if(o.preventDoubleRequests){
 					o.queueDuplicateRequests = false;
 				}
 				setTimeout(function(){
-					throw("preventDoubbleRequests and queueDuplicateRequests can't be both true");
+					throw("preventDoubleRequests and queueDuplicateRequests can't be both true");
 				}, 0);
 			}
-			if(this.requests[xhrID] && o.preventDoubbleRequests){
+			if(this.requests[xhrID] && o.preventDoubleRequests){
 				return;
 			}
 			ajaxFn.xhrID = xhrID;
@@ -312,7 +317,7 @@
 		cacheResponse: false,
 		domCompleteTrigger: false,
 		domSuccessTrigger: false,
-		preventDoubbleRequests: true,
+		preventDoubleRequests: true,
 		queueDuplicateRequests: false,
 		cacheTTL: -1,
 		queue: false // true, false, clear

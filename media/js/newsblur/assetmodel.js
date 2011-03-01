@@ -59,7 +59,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             'ajax_group': 'queue',
             'traditional': true,
             'domSuccessTrigger': true,
-            'preventDoubbleRequests': false
+            'preventDoubleRequests': false
         }, options);
         var request_type = 'POST';
         var clear_queue = false;
@@ -80,7 +80,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             url: url,
             data: data,
             type: request_type,
-            dataType: 'json',
             beforeSend: function() {
                 // NEWSBLUR.log(['beforeSend', options]);
                 $.isFunction(options['beforeSend']) && options['beforeSend']();

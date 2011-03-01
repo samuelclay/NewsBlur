@@ -86,7 +86,7 @@ MIDDLEWARE_CLASSES = (
 COMPRESS_JS = {
     'all': {
         'source_filenames': (
-            'js/jquery-1.4.4.js',
+            'js/jquery-1.5.1.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
@@ -139,7 +139,7 @@ COMPRESS_JS = {
     },
     'bookmarklet': {
         'source_filenames': (
-            'js/jquery-1.4.4.min.js',
+            'js/jquery-1.5.1.min.js',
             'js/jquery.noConflict.js',
             'js/jquery.newsblur.js',
             'js/jquery.tinysort.js',
