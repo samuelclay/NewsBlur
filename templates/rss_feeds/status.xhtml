@@ -19,7 +19,7 @@
   {% for feed in feeds %}
     <tr>
       <td>{{ feed.pk }}</td>
-      <td><img class="NB-favicon" src="data:image/png;base64,{{ feed.icon.data }}" /> {{ feed.feed_title }}</td>
+      <td><img class="NB-favicon" src="data:image/png;base64,{{ feed.icon.data }}" /> {{ feed.feed_title|truncatewords:4 }}</td>
       <td class="NB-status-update">
         {{ feed.last_update|date:"M j H:m:s" }}
         <br>
