@@ -186,7 +186,7 @@ def status(request):
         logging.user(request.user, "~SKNON-STAFF VIEWING RSS FEEDS STATUS!")
         assert False
         return HttpResponseForbidden()
-    minutes  = request.GET.get('minutes', 10)
+    minutes  = int(request.GET.get('minutes', 10))
     now      = datetime.datetime.now()
     hour_ago = now - datetime.timedelta(minutes=minutes)
     feeds    = Feed.objects.filter(last_update__gte=hour_ago).order_by('-last_update')

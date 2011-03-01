@@ -21,9 +21,9 @@
       <td>{{ feed.pk }}</td>
       <td><img class="NB-favicon" src="data:image/png;base64,{{ feed.icon.data }}" /> {{ feed.feed_title|truncatewords:4 }}</td>
       <td class="NB-status-update">
-        {{ feed.last_update|date:"M j H:m:s" }}
+        {{ feed.last_update|date:"M j H:i:s" }}
         <br>
-        {{ feed.next_scheduled_update|date:"M j H:m:s" }}
+        {{ feed.next_scheduled_update|date:"M j H:i:s" }}
       </td>
       <td>{{ feed.min_to_decay }}</td>
       <td>{{ feed.num_subscribers }}</td>
