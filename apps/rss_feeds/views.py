@@ -1,8 +1,10 @@
 import datetime
 from utils import log as logging
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponseForbidden
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
@@ -177,5 +179,17 @@ def exception_change_feed_link(request):
     
     feeds = {feed.pk: usersub.canonical(full=True)}
     return {'code': code, 'feeds': feeds}
-    
-    
+
+@login_required
+def status(request):
+    if not request.user.is_staff:
+        logging.user(request.user, "~SKNON-STAFF VIEWING RSS FEEDS STATUS!")
+        assert False
+        return HttpResponseForbidden()
+        
+    now      = datetime.datetime.now()
+    hour_ago = now - datetime.timedelta(hours=1)
+    feeds    = Feed.objects.filter(last_update__gte=hour_ago).order_by('-last_update')
+    return render_to_response('rss_feeds/status.xhtml', {
+        'feeds': feeds
+    }, context_instance=RequestContext(request))

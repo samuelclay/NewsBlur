@@ -155,6 +155,7 @@ COMPRESS_CSS = {
         'source_filenames': (
             'css/reader.css',
             'css/modals.css',
+            'css/status.css',
             'css/jquery-ui/jquery.theme.css',
             'css/jquery.tipsy.css',
         ),

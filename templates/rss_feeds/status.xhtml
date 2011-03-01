@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load utils_tags %}
+
+{% block content %}
+
+<table class="NB-status">
+
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Last Update<br>Next Update</th>
+    <th>Decay</th>
+    <th>Subs</th>
+    <th>Active</th>
+    <th>Premium</th>
+    <th>Per Month</th>
+  </tr>
+  {% for feed in feeds %}
+    <tr>
+      <td>{{ feed.pk }}</td>
+      <td><img class="NB-favicon" src="data:image/png;base64,{{ feed.icon.data }}" /> {{ feed.feed_title }}</td>
+      <td class="NB-status-update">
+        {{ feed.last_update|date:"M j H:m:s" }}
+        <br>
+        {{ feed.next_scheduled_update|date:"M j H:m:s" }}
+      </td>
+      <td>{{ feed.min_to_decay }}</td>
+      <td>{{ feed.num_subscribers }}</td>
+      <td>{{ feed.active_subscribers }}</td>
+      <td>{{ feed.premium_subscribers }}</td>
+      <td>{{ feed.average_stories_per_month }}</td>
+    </tr>
+  {% endfor %}
+  
+</table>
+
+{% endblock content %}

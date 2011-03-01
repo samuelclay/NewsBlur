@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     url(r'^exception_retry', views.exception_retry, name='exception-retry'),
     url(r'^exception_change_feed_address', views.exception_change_feed_address, name='exception-change-feed-address'),
     url(r'^exception_change_feed_link', views.exception_change_feed_link, name='exception-change-feed-link'),
+    url(r'^status', views.status, name='status'),
 )

@@ -26,5 +26,7 @@
   </h5>
 
   <div class="NB-module-title">{{ recommended_feed.feed.feed_title }}</div>
-  {{ recommended_feed.feed.data.feed_tagline }}
+  <img class="NB-recommended-favicon" src="data:image/png;base64,{{ recommended_feed.feed.icon.data }}" />
+  <div class="NB-recommended-link">{{ recommended_feed.feed.feed_link }}</div>
+  <div class="NB-recommended-tagline">{{ recommended_feed.feed.data.feed_tagline }}</div>
 </div>
