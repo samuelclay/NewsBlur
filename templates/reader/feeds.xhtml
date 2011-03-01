@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load typogrify_tags %}
+{% load typogrify_tags recommendations_tags %}
 
 {% block content %}
 
@@ -16,6 +16,10 @@ $(document).ready(function() {
 <h2 class="NB-splash-heading">- A feed reader with intelligence.</h2>
 
 <div id="NB-splash">
+
+  <div class="NB-modules-center">
+    {# {% render_recommended_feed recommended_feed %} #}
+  </div>
 
   <div class="NB-account">
     

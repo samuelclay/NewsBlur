@@ -246,6 +246,7 @@ INSTALLED_APPS = (
     'apps.analyzer',
     'apps.feed_import',
     'apps.profile',
+    'apps.recommendations',
     'south',
     'utils',
     'utils.typogrify',

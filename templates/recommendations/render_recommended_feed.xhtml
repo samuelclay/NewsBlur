@@ -1,0 +1,30 @@
+<div class="NB-module-recommended NB-module">
+  <h5 class="NB-module-header">
+    Recommended Site
+    <div class="NB-module-header-right">
+      <div class="NB-module-recommended-date">
+        {{ recommended_feed.approved_date|date:"M j" }}
+        <span>{{ recommended_feed.approved_date|date:"S" }}</span>,
+        {{ recommended_feed.approved_date|date:"Y" }}
+      </div>
+      {% if user.is_staff %}
+        <div class="NB-module-recommended-add">
+          <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
+        </div>
+        <script>
+        $(document).ready(function() {
+          $('#add-feature-button').click(function(e) {
+            e.preventDefault();
+            $('#add-feature-form').fadeIn(500);
+          });
+        });
+        </script>
+      {% endif %}
+      <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+      <a href="#" class="NB-module-direction NB-module-next-page"></a>
+    </div>
+  </h5>
+
+  <div class="NB-module-title">{{ recommended_feed.feed.feed_title }}</div>
+  {{ recommended_feed.feed.data.feed_tagline }}
+</div>

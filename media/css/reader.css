@@ -3114,7 +3114,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     float: left;
-    padding: 2px 3px 0px;
+    padding: 0 3px 0px;
 }
 
 .NB-module .NB-module-direction.NB-disabled {
@@ -3170,41 +3170,45 @@ background: transparent;
 /* = Main Page = */
 /* ============= */
 
+.NB-module a {
+    text-decoration: none;
+/*    color: #3E4773;*/
+}
+
+.NB-module a:hover {
+/*    color: #0E1763;*/
+}
+
+#NB-splash .NB-module h5 {
+    margin: 0 0 12px;
+    padding: 8px 12px 6px;
+}
+
+.NB-module .NB-module-header-left {
+    float: left;
+}
+.NB-module .NB-module-header-center {
+    text-align: center;
+    margin: 0 auto;
+    width: 132px;
+}
+.NB-module .NB-module-header-right {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: normal;
+    float: right;
+}
+
+/* =========================== */
+/* = Right Modules - Account = */
+/* =========================== */
+
 .NB-account .NB-module {
     margin: 24px 0 0;
     padding: 0;
     width: 478px;
     clear: both;
     overflow: hidden;
-}
-
-.NB-account .NB-module a {
-    text-decoration: none;
-/*    color: #3E4773;*/
-}
-
-.NB-account .NB-module a:hover {
-/*    color: #0E1763;*/
-}
-
-.NB-account .NB-module h5 {
-    margin: 0 0 12px;
-    padding: 8px 12px 6px;
-}
-
-.NB-account .NB-module .NB-module-header-left {
-    float: left;
-}
-.NB-account .NB-module .NB-module-header-center {
-    text-align: center;
-    margin: 0 auto;
-    width: 132px;
-}
-.NB-account .NB-module .NB-module-header-right {
-    font-size: 13px;
-    line-height: 16px;
-    font-weight: normal;
-    float: right;
 }
 
 .NB-account .NB-module .NB-module-account {
@@ -3405,6 +3409,37 @@ background: transparent;
     vertical-align: middle;
     text-align: center;
 }
+
+/* ================== */
+/* = Center Modules = */
+/* ================== */
+
+.NB-modules-center {
+  margin-left: 284px;
+  margin-right: 478px;
+  padding: 24px;
+}
+
+/* ============================ */
+/* = Module: Recommended Feed = */
+/* ============================ */
+
+.NB-module-recommended {
+  
+}
+  .NB-module-recommended .NB-module-recommended-date {
+    line-height: 14px;
+    float: left;
+    color: #8493CD;
+    margin: 1px 2px 0 0;
+    text-shadow: 0 1px 0 #E9E9E9;
+  }
+  .NB-module-recommended .NB-module-recommended-date span {
+    vertical-align: text-top;
+    margin: 0 0 0 -3px;
+    font-size: 8px;
+    color: #8487C4;
+  }
 
 /* ========= */
 /* = Menus = */
