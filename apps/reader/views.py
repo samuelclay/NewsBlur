@@ -17,7 +17,7 @@ from django.core.mail import mail_admins
 from collections import defaultdict
 from operator import itemgetter
 from mongoengine.queryset import OperationError
-from apps.recommendations.models import RecommendedFeed, RecommendedFeedUserFeedback
+from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -67,8 +67,9 @@ def index(request):
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
         
-    recommended_feed = RecommendedFeed.objects.filter(is_public=True)[0]
-    recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
+    recommended_feed = RecommendedFeed.objects.filter(is_public=True).select_related('feed')
+    if recommended_feed: recommended_feed = recommended_feed[0]
+    # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
     howitworks_page = random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
@@ -84,7 +85,7 @@ def index(request):
         'train_count': active_count - train_count,
         'account_images': range(1, 4),
         'recommended_feed': recommended_feed,
-        'recommended_feed_feedback': recommended_feed_feedback,
+        # 'recommended_feed_feedback': recommended_feed_feedback,
     }, context_instance=RequestContext(request))
 
 @never_cache

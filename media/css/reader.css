@@ -3425,7 +3425,7 @@ background: transparent;
 /* ============================ */
 
 .NB-module-recommended {
-  
+  overflow: hidden;
 }
   .NB-module-recommended .NB-module-recommended-date {
     line-height: 14px;
@@ -3443,13 +3443,20 @@ background: transparent;
   .NB-module-recommended .NB-recommended {
     padding: 0 12px;
   }
+  
+  .NB-module-recommended .NB-javascript.NB-module-direction,
+  .NB-module-recommended .NB-javascript.NB-modal-submit-button,
+  .NB-module-recommended .NB-javascript.NB-recommended-statistics,
+  .NB-module-recommended .NB-javascript.NB-recommended-intelligence {
+    opacity: .2;
+  }
   .NB-module-recommended .NB-recommended-intelligence {
     margin: 2px 8px 0 0;
     float: right;
     width: 16px;
     height: 16px;
     cursor: pointer;
-    background: transparent url(http://nb.local.host:8000/media/img/icons/silk/bricks.png) no-repeat 50% 50%;
+    background: transparent url(../img/icons/silk/bricks.png) no-repeat 50% 50%;
   }
   .NB-module-recommended .NB-recommended-statistics {
     margin: 2px 0 0 0;
@@ -3457,7 +3464,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     cursor: pointer;
-    background: transparent url(http://nb.local.host:8000/media/img/icons/silk/chart_curve.png) no-repeat 50% 50%;
+    background: transparent url(../img/icons/silk/chart_curve.png) no-repeat 50% 50%;
   }
   .NB-module-recommended .NB-recommended-favicon {
     float: left;
@@ -3474,6 +3481,7 @@ background: transparent;
     color: #505050;
     padding-bottom: 8px;
     border-bottom: 1px solid #E0E0E0;
+    overflow: hidden;
   }
   .NB-module-recommended .NB-modal-submit {
     margin: 8px 0 0 0;
@@ -3489,6 +3497,14 @@ background: transparent;
     float: left;
     margin-left: 0 !important;
     margin-right: 8px !important;
+  }
+  .NB-module-recommended .NB-recommended-added {
+    padding: 6px 0 0 20px;
+    background: transparent url('../img/icons/silk/accept.png') no-repeat 0 6px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #123B00;
+    overflow: hidden;
   }
   
 /* ========= */

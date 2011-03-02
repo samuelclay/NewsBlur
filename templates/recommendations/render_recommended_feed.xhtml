@@ -2,7 +2,7 @@
   <h5 class="NB-module-header">
     Recommended Site
     <div class="NB-module-header-right">
-      <a href="#" class="NB-module-direction NB-module-next-page"></a>
+      <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
       <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
       <div class="NB-module-recommended-date">
         {{ recommended_feed.approved_date|date:"M j" }}
@@ -13,8 +13,8 @@
   </h5>
   
   <div class="NB-recommended">
-    <div class="NB-recommended-statistics"></div>
-    <div class="NB-recommended-intelligence"></div>
+    <div class="NB-recommended-statistics NB-javascript"></div>
+    <div class="NB-recommended-intelligence NB-javascript"></div>
     <img class="NB-recommended-favicon" src="data:image/png;base64,{{ recommended_feed.feed.icon.data }}" />
     <div class="NB-recommended-title">{{ recommended_feed.feed.feed_title }}</div>
     {# <div class="NB-recommended-link">{{ recommended_feed.feed.feed_link }}</div> #}
@@ -25,8 +25,12 @@
         <br />
         <b>{{ recommended_feed.feed.average_stories_per_month }}</b> {{ recommended_feed.feed.average_stories_per_month|pluralize:"story,stories" }}  per month
       </div>
-      <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button">Try</div>
-      <div class="NB-recommended-add NB-modal-submit-close NB-modal-submit-button">Add</div>
+      {% if usersub %}
+        <div class="NB-recommended-added">Subscribed</div>
+      {% else %}
+        <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">Try</div>
+        <div class="NB-recommended-add NB-modal-submit-close NB-modal-submit-button NB-javascript">Add</div>
+      {% endif %}
     </div>
   </div>
 
