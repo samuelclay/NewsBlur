@@ -1250,7 +1250,8 @@ background: transparent;
     font-size: 9px;
     padding: 0px 4px;
     margin: 0 2px;
-    color: #808080;
+    color: #9D9A95;
+    text-shadow: 0 1px 0 #F3F3F3;
     background-color: #E9E9E9;
 }
 #story_titles .story .NB-story-feed {
@@ -1620,6 +1621,7 @@ background: transparent;
 
 #story_pane .NB-feed-story-title-container {
     position: relative;
+    clear: both;
 }
 
 #story_pane a.NB-feed-story-title {
@@ -1635,13 +1637,33 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-author {
+    float: left;
     color: #808080;
     font-size: 9px;
     text-transform: uppercase;
-    margin: 4px 0 -6px;
+    margin: 4px 24px 0 0;
     text-shadow: 1px 1px 0 #F0F0F0;
 }
 
+#story_pane .NB-feed-story-tags {
+    margin: 6px 0 -6px;
+    overflow: hidden;
+    line-height: 12px;
+    height: 14px;
+}
+#story_pane .NB-feed-story-tag {
+    float: left;
+    font-weight: normal;
+    font-size: 9px;
+    padding: 0px 4px;
+    margin: 0 2px 2px;
+    background-color: #DBDBDB;
+    color: #9D9A95;
+    text-shadow: 0 1px 0 #E9E9E9;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+} 
 #story_pane .NB-feed-story-header .NB-feed-story-date {
     position: absolute;
     right: 28px;
@@ -4124,7 +4146,7 @@ background: transparent;
     border-radius: 20px;
     padding: 12px;
     border: 1px solid #F6BD44;
-    padding: 4px 12px 8px;
+    padding: 0 8px 4px 0px;
     background-color: #FFED68;
     background-image: -webkit-gradient(
         linear,
@@ -4142,58 +4164,79 @@ background: transparent;
 
 .NB-modal-feedchooser .NB-feedchooser-paypal {
     min-height: 48px;
-    width: 150px;
-    float: left;
+    width: 135px;
+    text-align: center;
+    overflow: hidden;
+    float: right;
     margin-top: 16px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar {
     float: left;
-    color: #1C55C0;
-    font-size: 16px;
-    margin: 0px 0px 0px 20px;
-    padding: 12px 0 0;
+    margin: 0px 0px 0px 0;
+    padding: 4px 0 4px 2px;
     font-weight: bold;
     width: 112px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value {
-    margin: 4px 0 0 0;
-    line-height: 20px;
+    margin: 4px 0 4px 0;
+    padding: 0 0 0 36px;
     text-shadow: 1px 1px 0 #FFF8B1;
+    clear: both;
+    cursor: pointer;
+    position: relative;
+    opacity: .7;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar-value:hover,
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected {
+    opacity: 1;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar-value .NB-feedchooser-dollar-image {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 0;
+    left: 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image {
+    top: -3px;
+    background: transparent url('../img/icons/hamburger_s.png') no-repeat 6px 0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-2 .NB-feedchooser-dollar-image {
+    top: -6px;
+    background: transparent url('../img/icons/hamburger.png') no-repeat 3px 0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-3 .NB-feedchooser-dollar-image {
+    top: -10px;
+    background: transparent url('../img/icons/hamburger_l.png') no-repeat 0 0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-month {
-    
+    color: #9BA6CC;
+    display: inline;
+    padding: 0 4px 0 0;
+    font-size: 15px;
+}
+
+.NB-modal-feedchooser .NB-selected .NB-feedchooser-dollar-month {
+    color: #1C55C0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-year {
     text-transform: uppercase;
-    font-size: 13px;
+    font-size: 11px;
+    color: #86899F;
+    display: inline;
+}
+.NB-modal-feedchooser .NB-selected .NB-feedchooser-dollar-year {
     color: #455596;
 }
 
-.NB-modal-feedchooser .NB-feedchooser-dollar.NB-0 .ui-slider-handle {
-    border: none;
-    background: transparent url('../img/icons/hamburger_s.png') no-repeat 50% 50%;
-    height: 24px;
-    width: 24px;
-    top: -6px;
-}
-.NB-modal-feedchooser .NB-feedchooser-dollar.NB-1 .ui-slider-handle {
-    border: none;
-    background: transparent url('../img/icons/hamburger.png') no-repeat 50% 50%;
-    height: 30px;
-    width: 30px;
-    top: -9px;
-}
-.NB-modal-feedchooser .NB-feedchooser-dollar.NB-2 .ui-slider-handle {
-    border: none;
-    background: transparent url('../img/icons/hamburger_l.png') no-repeat 50% 50%;
-    height: 36px;
-    width: 36px;
-    top: -12px;
-}
 .NB-modal-feedchooser .NB-feedchooser .feed_counts {
     display: block;
     text-transform: uppercase;

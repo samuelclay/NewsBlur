@@ -17,8 +17,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         _.defer(_.bind(function() { this.open_modal(); }, this));
         this.find_feeds_in_feed_list();
         this.initial_load_feeds();
-        this.setup_dollar_slider();
-        this.update_dollar_count(1);
+        this.choose_dollar_amount(2);
         
         this.flags = {
             'has_saved': false
@@ -104,10 +103,20 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   // this.make_google_checkout()
                   $.make('div', { className: 'NB-feedchooser-paypal' }),
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
-                      $.make('div', { className: 'NB-feedchooser-dollar-slider'}),
-                      $.make('div', { className: 'NB-feedchooser-dollar-value' }, [
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' })
+                      $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
+                          $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$1/month'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($12/year)')
+                      ]),
+                      $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
+                          $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$2/month'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($24/year)')
+                      ]),
+                      $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
+                          $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$3/month'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($36/year)')
                       ])
                   ])
               ])
@@ -120,7 +129,6 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $paypal = $('.NB-feedchooser-paypal', this.$modal);
         $.get('/profile/paypal_form', function(response) {
           $paypal.html(response);
-          self.update_dollar_count(1);
         });
     },
     
@@ -373,43 +381,18 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
       $('.NB-module-account-trainer').removeClass('NB-hidden').hide().slideDown(500);
     },
     
-    setup_dollar_slider: function() {
-        var self = this;
-        
-        $('.NB-feedchooser-dollar-slider', this.$modal).slider({
-            range: 'max',
-            min: 0,
-            max: 2,
-            step: 1,
-            value: 1,
-            slide: function(e, ui) {
-                self.update_dollar_count(ui.value);
-            },
-            stop: function(e, ui) {
-                self.update_dollar_count(ui.value);
-            }
-        }).change();
-    },
-    
-    update_dollar_count: function(step) {
-        var $month = $('.NB-feedchooser-dollar-month', this.$modal);
-        var $year = $('.NB-feedchooser-dollar-year', this.$modal);
-        var $dollar = $('.NB-feedchooser-dollar', this.$modal);
+    choose_dollar_amount: function(step) {
+        var $value = $('.NB-feedchooser-dollar-value', this.$modal);
         var $input = $('input[name=a3]');
-        
-        $dollar.removeClass('NB-0').removeClass('NB-1').removeClass('NB-2').addClass('NB-'+step);
-        if (step == 0) {
-            $month.text('$1/month');
-            $year.text('($12/year)');
+
+        $value.removeClass('NB-selected');
+        $value.filter('.NB-'+step).addClass('NB-selected');
+        if (step == 1) {
             $input.val(12);
-        } else if (step == 1) {
-            $month.text('$2/month');
-            $year.text('($24/year)');
-            $input.val(24);
         } else if (step == 2) {
-            $month.text('$5/month');
-            $year.text('($64/year)');
-            $input.val(64);
+            $input.val(24);
+        } else if (step == 3) {
+            $input.val(36);
         }
     },
     
@@ -435,10 +418,23 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             e.preventDefault();
             this.save();
         }, this));
-        
+              
         $.targetIs(e, { tagSelector: '.NB-modal-submit-add' }, _.bind(function($t, $p) {
             e.preventDefault();
             this.close_and_add();
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-feedchooser-dollar-value' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            var step;
+            if ($t.hasClass('NB-1')) {
+                step = 1;
+            } else if ($t.hasClass('NB-2')) {
+                step = 2;
+            } else if ($t.hasClass('NB-3')) {
+                step = 3;
+            }
+            this.choose_dollar_amount(step);
         }, this));
     },
 
