@@ -3113,7 +3113,7 @@ background: transparent;
     display: block;
     width: 16px;
     height: 16px;
-    float: left;
+    float: right;
     padding: 0 3px 0px;
 }
 
@@ -3440,7 +3440,57 @@ background: transparent;
     font-size: 8px;
     color: #8487C4;
   }
-
+  .NB-module-recommended .NB-recommended {
+    padding: 0 12px;
+  }
+  .NB-module-recommended .NB-recommended-intelligence {
+    margin: 2px 8px 0 0;
+    float: right;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background: transparent url(http://nb.local.host:8000/media/img/icons/silk/bricks.png) no-repeat 50% 50%;
+  }
+  .NB-module-recommended .NB-recommended-statistics {
+    margin: 2px 0 0 0;
+    float: right;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background: transparent url(http://nb.local.host:8000/media/img/icons/silk/chart_curve.png) no-repeat 50% 50%;
+  }
+  .NB-module-recommended .NB-recommended-favicon {
+    float: left;
+    margin: 2px 4px 0 0px;
+  }
+  .NB-module-recommended .NB-recommended-title {
+    padding: 0 0 4px 20px;
+    border-bottom: 1px solid #E0E0E0;
+  }
+  .NB-module-recommended .NB-recommended-description {
+    font-size: 13px;
+    line-height: 20px;
+    margin: 8px 0 0 0;
+    color: #505050;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E0E0E0;
+  }
+  .NB-module-recommended .NB-modal-submit {
+    margin: 8px 0 0 0;
+  }
+  .NB-module-recommended .NB-recommended-subscribers {
+    float: right;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: #808080;
+    margin: 0 0 0 0;
+  }
+  .NB-module-recommended .NB-modal-submit-button {
+    float: left;
+    margin-left: 0 !important;
+    margin-right: 8px !important;
+  }
+  
 /* ========= */
 /* = Menus = */
 /* ========= */

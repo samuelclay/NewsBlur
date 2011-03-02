@@ -18,9 +18,9 @@ $(document).ready(function() {
 <div id="NB-splash">
 
   <div class="NB-modules-center">
-    {# {% if recommended_feed %} #}
-    {#   {% render_recommended_feed recommended_feed %} #}
-    {# {% endif %} #}
+    {% if recommended_feed %}
+      {% render_recommended_feed recommended_feed %}
+    {% endif %}
   </div>
 
   <div class="NB-account">
@@ -101,8 +101,8 @@ $(document).ready(function() {
             How It Works
           </div>
           <div class="NB-module-header-right">
-            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
             <a href="#" class="NB-module-direction NB-module-next-page {% if howitworks_page == 5 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
           </div>
         </h5>
         
@@ -279,8 +279,8 @@ $(document).ready(function() {
             });
             </script>
           {% endif %}
-          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
           <a href="#" class="NB-module-direction NB-module-next-page"></a>
+          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
         </div>
       </h5>
       
