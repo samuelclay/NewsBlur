@@ -826,21 +826,24 @@ var classifier_prototype = {
     },
     
     serialize_classifier: function() {
-        var data = [];
+        var data = {};
         $('.NB-classifier', this.$modal).each(function() {
+            var value = $('.NB-classifier-input-like', this).val();
             if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
-                data.push([$('input:checked', this).attr('name'), $('.NB-classifier-input-like', this).val()]);
+                var name = $('input:checked', this).attr('name');
+                if (!data[name]) data[name] = [];
+                data[name].push(value);
             } else {
-                data.push(['remove_'+$('.NB-classifier-input-like', this).attr('name'), $('.NB-classifier-input-like', this).val()]);
+                var name = 'remove_'+$('.NB-classifier-input-like', this).attr('name');
+                if (!data[name]) data[name] = [];
+                data[name].push(value);
             }
         });
-        data.push(['feed_id', this.feed_id]);
+        
+        data['feed_id'] = this.feed_id;
         if (this.story_id) {
-            data.push(['story_id', this.story_id]);
+            data['story_id'] = this.story_id;
         }
-        data = _.map(data, function(c) { 
-            return [c[0], '=', c[1]].join(''); 
-        }).join('&');
         return data;
     },
         
