@@ -2492,6 +2492,7 @@
                 } else if (score < 0) {
                     $story.addClass('NB-story-negative');
                 }
+                $('.NB-feed-story-tags', $story).replaceWith(this.make_story_feed_tags(story));
             }, this);
             
             _.each(this.cache.feed_view_stories, _.bind(function($story, story_id) { 
@@ -2963,10 +2964,7 @@
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
                                 $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
-                            (story.story_tags && story.story_tags.length && $.make('div', { className: 'NB-feed-story-tags' }, 
-                              _.map(story.story_tags, function(tag) { 
-                                return $.make('div', { className: 'NB-feed-story-tag' }, tag); 
-                              }))),
+                            (story.story_tags && story.story_tags.length && this.make_story_feed_tags(story)),
                             $.make('div', { className: 'NB-feed-story-title-container' }, [
                                 $.make('div', { className: 'NB-feed-story-sentiment' }),
                                 $.make('div', { className: 'NB-feed-story-manage-icon' }),
@@ -3023,6 +3021,18 @@
             
             this.append_feed_view_story_endbar();
             this.show_stories_preference_in_feed_view(true);
+        },
+        
+        make_story_feed_tags: function(story) {
+          var feed_tags = this.model.classifiers.tags;
+          
+          return $.make('div', { className: 'NB-feed-story-tags' }, 
+            _.map(story.story_tags, function(tag) { 
+              var score = feed_tags[tag];
+              return $.make('div', { 
+                className: 'NB-feed-story-tag ' + (!!score && 'NB-score-'+score || '') 
+              }, tag); 
+            }));
         },
         
         show_correct_feed_in_feed_title_floater: function(story) {

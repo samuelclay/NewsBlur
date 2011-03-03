@@ -1655,7 +1655,7 @@ background: transparent;
     float: left;
     font-weight: normal;
     font-size: 9px;
-    padding: 0px 4px;
+    padding: 0px 4px 1px;
     margin: 0 2px 2px;
     background-color: #DBDBDB;
     color: #9D9A95;
@@ -1664,6 +1664,18 @@ background: transparent;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
 } 
+#story_pane .NB-feed-story-tag.NB-score-1 {
+  background-color: #34912E;
+  color: white;
+  text-shadow: 0 1px 0 #000;
+  opacity: .4;
+}
+#story_pane .NB-feed-story-tag.NB-score--1 {
+  background-color: #A90103;
+  color: white;
+  text-shadow: 0 1px 0 #000;
+  opacity: .4;
+}
 #story_pane .NB-feed-story-header .NB-feed-story-date {
     position: absolute;
     right: 28px;
