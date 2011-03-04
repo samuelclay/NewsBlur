@@ -11,7 +11,6 @@ from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from utils.feed_functions import add_object_to_folder
-from utils.feed_functions import relative_timesince
 
 class UserSubscription(models.Model):
     """
@@ -44,32 +43,12 @@ class UserSubscription(models.Model):
         return '[' + self.feed.feed_title + '] '
     
     def canonical(self, full=False):
-        feed = {
-            'id': self.feed.pk,
-            'feed_title': self.user_title or self.feed.feed_title,
-            'feed_address': self.feed.feed_address,
-            'feed_link': self.feed.feed_link,
-            'ps': self.unread_count_positive,
-            'nt': self.unread_count_neutral,
-            'ng': self.unread_count_negative, 
-            'updated': relative_timesince(self.feed.last_update),
-            'subs': self.feed.num_subscribers,
-            'active': self.active,
-            'favicon': self.feed.icon.data,
-            'favicon_color': self.feed.icon.color,
-            'favicon_fetching': bool(not (self.feed.icon.not_found or self.feed.icon.data))
-        }
-        
-        if not self.feed.fetched_once:
-            feed['not_yet_fetched'] = True
-        if self.feed.has_page_exception or self.feed.has_feed_exception:
-            feed['has_exception'] = True
-            feed['exception_type'] = 'feed' if self.feed.has_feed_exception else 'page'
-            feed['exception_code'] = self.feed.exception_code
-        elif full:
-            feed['has_exception'] = False
-            feed['exception_type'] = None
-            feed['exception_code'] = self.feed.exception_code
+        feed               = self.feed.canonical(full=full)
+        feed['feed_title'] = self.user_title or feed['feed_title']
+        feed['ps']         = self.unread_count_positive
+        feed['nt']         = self.unread_count_neutral
+        feed['ng']         = self.unread_count_negative
+        feed['active']     = self.active
 
         return feed
             

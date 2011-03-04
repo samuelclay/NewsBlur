@@ -11,6 +11,7 @@ body {
     text-decoration: none;
     list-style: none;
     height: 100%;
+    overflow: hidden;
     text-rendering: optimizeLegibility;
 }
 
@@ -20,6 +21,10 @@ a, a:active, a:hover, a:visited, button {
 
 a img {
     border: none;
+}
+
+.NB-hidden {
+  display: none;
 }
 
 /* ==================== */
@@ -3158,6 +3163,9 @@ background: transparent;
 .NB-module .NB-module-next-page {
     background: transparent url('../img/icons/silk/control_play_blue.png') no-repeat center center;
 }
+.NB-module .NB-module-next-page.NB-javascript {
+  opacity: .2;
+}
 .NB-module .NB-module-next-page:link {
     background: transparent url('../img/icons/silk/control_play.png') no-repeat center center;
 }
@@ -3303,6 +3311,9 @@ background: transparent;
 .NB-account .NB-module .NB-module-account .NB-module-account-premium {
     float: right;
     margin-right: 12px;
+}
+.NB-account .NB-module .NB-module-account .NB-modal-submit-button.NB-javascript {
+  opacity: .2;
 }
 
 .NB-account .NB-module .NB-module-account-trainer.NB-hidden {

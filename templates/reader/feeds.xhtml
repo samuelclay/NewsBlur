@@ -231,11 +231,11 @@ $(document).ready(function() {
             {% else %}
               
               <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade NB-module-account-premium">Go Premium!</div>
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade NB-module-account-premium NB-javascript">Go Premium!</div>
                 {% if feed_count == 0 %}
-                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add">Add Sites</div>
+                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add NB-javascript">Add Sites</div>
                 {% else %}
-                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
+                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade NB-javascript">Choose Your 64</div>
                 {% endif %}
               </div>
             {% endif %}
@@ -253,7 +253,7 @@ $(document).ready(function() {
           </h3>
           <div class="NB-module-account-title">
               <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Launch Intelligence Trainer</div>
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
               </div>
           </div>
         </div>
@@ -279,7 +279,7 @@ $(document).ready(function() {
             });
             </script>
           {% endif %}
-          <a href="#" class="NB-module-direction NB-module-next-page"></a>
+          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
           <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
         </div>
       </h5>

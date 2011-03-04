@@ -275,6 +275,21 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
+    load_canonical_feed: function(feed_id, callback) {
+        var pre_callback = _.bind(function(data) {
+            this.feeds[data.id] = data;
+            this.feed_tags = data.feed_tags || {};
+            this.feed_authors = data.feed_authors || {};
+            this.feed_id = feed_id;
+            this.classifiers = data.classifiers || this.defaults['classifiers'];
+            callback && callback();
+        }, this);
+        
+        this.make_request('/rss_feeds/load_single_feed', {
+            feed_id: feed_id
+        }, pre_callback, $.noop);
+    },
+    
     fetch_starred_stories: function(page, callback, first_load) {
         var self = this;
         

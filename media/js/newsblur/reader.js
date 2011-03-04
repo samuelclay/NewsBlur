@@ -73,6 +73,7 @@
         // = Initialization =
         // ==================
         
+        this.load_javascript_elements_on_page();
         this.unload_feed_iframe();
         this.unload_story_iframe();
         this.apply_resizable_layout();
@@ -100,7 +101,11 @@
         // ========
         // = Page =
         // ========
-                
+        
+        load_javascript_elements_on_page: function() {
+          $('.NB-javascript').removeClass('NB-javascript');
+        },
+        
         resize_window: function() {
             var flag;
             var view = this.story_view;
@@ -4732,10 +4737,6 @@
         
         load_recommended_feeds: function() {
           var $module = this.$s.$recommended_feeds;
-          $('.NB-javascript', $module).removeClass('NB-javascript');
-          // _.delay(function() {
-          //     $('.NB-javascript', $module).animate({'opacity': 1}, {'duration': 1000, 'queue': false});
-          // }, 1500);
         },
         
         // ==========
@@ -5135,6 +5136,50 @@
             $.targetIs(e, { tagSelector: '.NB-feeds-header' }, function($t, $p){
                 e.preventDefault();
                 self.show_splash_page();
+            }); 
+            
+            // =====================
+            // = Recommended Feeds =
+            // =====================
+            
+            $.targetIs(e, { tagSelector: '.NB-recommended-statistics' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                self.model.load_canonical_feed(feed_id, function() {
+                    self.open_feed_statistics_modal(feed_id);
+                });
+            }); 
+            
+            $.targetIs(e, { tagSelector: '.NB-recommended-intelligence' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                self.model.load_canonical_feed(feed_id, function() {
+                    self.open_feed_intelligence_modal(1, feed_id);
+                });
+            }); 
+            
+            $.targetIs(e, { tagSelector: '.NB-recommended-try' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                self.load_feed_in_try_view(feed_id);
+            }); 
+            
+            $.targetIs(e, { tagSelector: '.NB-recommended-add' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                self.load_n(1, feed_id);
+            }); 
+            
+            $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-next-page' }, function($t, $p){
+                e.preventDefault();
+                self.load_next_feed_in_recommended_feeds();
+            }); 
+            
+            $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-previous-page' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                  self.load_previous_feed_in_recommended_feeds();
+                }
             }); 
             
             // = One-offs =====================================================
