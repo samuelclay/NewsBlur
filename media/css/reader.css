@@ -27,6 +27,13 @@ a img {
   display: none;
 }
 
+.NB-left {
+  float: left;
+}
+.NB-right {
+  float: right;
+}
+
 /* ==================== */
 /* = Styling & Themes = */
 /* ==================== */
@@ -3239,6 +3246,17 @@ background: transparent;
     line-height: 16px;
     font-weight: normal;
     float: right;
+}
+.NB-module .NB-spinner {
+    background: transparent url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+    margin: 0 6px;
+    opacity: .6;
+    display: none;
+}
+.NB-module.NB-loading .NB-spinner {
+    display: block;
 }
 
 /* =========================== */

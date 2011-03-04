@@ -4521,17 +4521,28 @@
         
         load_feature_page: function(direction) {
             var self = this;
+            var $module = $('.NB-module-features');
             var $next = $('.NB-module-features .NB-module-next-page');
             var $previous = $('.NB-module-features .NB-module-previous-page');
+
+            $module.removeClass('NB-loaded');
+            _.delay(function() {
+                if (!$module.hasClass('NB-loaded')) {
+                  $module.addClass('NB-loading');
+                }
+            }, 50);
             
             if (direction == -1 && !this.counts['feature_page']) {
+                $module.addClass('NB-loaded');
                 return;
             }
             if (direction == 1 && this.flags['features_last_page']) {
+                $module.addClass('NB-loaded');
                 return;
             }
             
             this.model.get_features_page(this.counts['feature_page']+direction, function(features) {
+                $('.NB-module-features').addClass('NB-loaded').removeClass('NB-loading');
                 self.counts['feature_page'] += direction;
                 
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
@@ -5145,7 +5156,9 @@
             $.targetIs(e, { tagSelector: '.NB-recommended-statistics' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                $('.NB-module-recommended').addClass('NB-loading');
                 self.model.load_canonical_feed(feed_id, function() {
+                    $('.NB-module-recommended').removeClass('NB-loading');
                     self.open_feed_statistics_modal(feed_id);
                 });
             }); 
@@ -5153,7 +5166,9 @@
             $.targetIs(e, { tagSelector: '.NB-recommended-intelligence' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                $('.NB-module-recommended').addClass('NB-loading');
                 self.model.load_canonical_feed(feed_id, function() {
+                    $('.NB-module-recommended').removeClass('NB-loading');
                     self.open_feed_intelligence_modal(1, feed_id);
                 });
             }); 
