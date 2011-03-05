@@ -1664,6 +1664,18 @@ background: transparent;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
 } 
+#story_pane .NB-feed-story-title .NB-score-1 {
+  color: #34912E;
+}
+#story_pane .NB-feed-story-title .NB-score--1 {
+  color: #A90103;
+}
+#story_pane .NB-feed-story-author.NB-score-1 {
+  color: #34912E;
+}
+#story_pane .NB-feed-story-author.NB-score--1 {
+  color: #A90103;
+}
 #story_pane .NB-feed-story-tag.NB-score-1 {
   background-color: #34912E;
   color: white;

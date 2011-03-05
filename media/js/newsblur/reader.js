@@ -2493,6 +2493,8 @@
                     $story.addClass('NB-story-negative');
                 }
                 $('.NB-feed-story-tags', $story).replaceWith(this.make_story_feed_tags(story));
+                $('.NB-feed-story-author', $story).replaceWith(this.make_story_feed_author(story));
+                $('.NB-feed-story-title', $story).replaceWith(this.make_story_feed_title(story));
             }, this);
             
             _.each(this.cache.feed_view_stories, _.bind(function($story, story_id) { 
@@ -2963,13 +2965,13 @@
                           .toggleClass('NB-inverse', this.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
-                                $.make('div', { className: 'NB-feed-story-author' }, story.story_authors)),
+                                this.make_story_feed_author(story)),
                             (story.story_tags && story.story_tags.length && this.make_story_feed_tags(story)),
                             $.make('div', { className: 'NB-feed-story-title-container' }, [
                                 $.make('div', { className: 'NB-feed-story-sentiment' }),
                                 $.make('div', { className: 'NB-feed-story-manage-icon' }),
                                 // $.make('div', { className: 'NB-feed-story-sentiment NB-feed-story-sentiment-animate' }),
-                                $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, story.story_title)
+                                this.make_story_feed_title(story)
                             ]),
                             (story.long_parsed_date &&
                                 $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date)),
@@ -3023,16 +3025,34 @@
             this.show_stories_preference_in_feed_view(true);
         },
         
+        make_story_feed_title: function(story) {
+            var title = story.story_title;
+            _.each(this.model.classifiers.titles, function(score, title_classifier) {
+                if (title.indexOf(title_classifier) != -1) {
+                    title = title.replace(title_classifier, '<span class="NB-score-'+score+'">'+title_classifier+'</span>');
+                }
+            });
+            return $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, title);
+        },
+        
+        make_story_feed_author: function(story) {
+            var score = this.model.classifiers.authors[story.story_authors];
+
+            return $.make('div', { 
+                className: 'NB-feed-story-author ' + (!!score && 'NB-score-'+score) 
+            }, story.story_authors);
+        },
+        
         make_story_feed_tags: function(story) {
-          var feed_tags = this.model.classifiers.tags;
-          
-          return $.make('div', { className: 'NB-feed-story-tags' }, 
-            _.map(story.story_tags, function(tag) { 
-              var score = feed_tags[tag];
-              return $.make('div', { 
-                className: 'NB-feed-story-tag ' + (!!score && 'NB-score-'+score || '') 
-              }, tag); 
-            }));
+            var feed_tags = this.model.classifiers.tags;
+
+            return $.make('div', { className: 'NB-feed-story-tags' }, 
+                _.map(story.story_tags, function(tag) { 
+                    var score = feed_tags[tag];
+                    return $.make('div', { 
+                        className: 'NB-feed-story-tag ' + (!!score && 'NB-score-'+score || '') 
+                    }, tag); 
+                }));
         },
         
         show_correct_feed_in_feed_title_floater: function(story) {
