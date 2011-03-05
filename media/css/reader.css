@@ -1632,7 +1632,9 @@ background: transparent;
     text-shadow: 1px 1px 0 #e8e8e8;
 }
 
-#story_pane a.NB-feed-story-title:hover {
+#story_pane a.NB-feed-story-title:hover,
+#story_pane a.NB-feed-story-title:hover .NB-score-1,
+#story_pane a.NB-feed-story-title:hover .NB-score--1 {
     color: #1010A0;
 }
 
