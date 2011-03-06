@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load typogrify_tags recommendations_tags %}
+{% load typogrify_tags recommendations_tags utils_tags %}
 
 {% block content %}
 
@@ -287,7 +287,7 @@ $(document).ready(function() {
       <table class="" cellpadding="0" cellspacing="0">
         {% for feature in features %}
           <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
-            <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
+            <td class="NB-module-feature-date">{% localdatetime feature.date "M d, Y" %}</td>
             <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
           </tr>
         {% endfor %}

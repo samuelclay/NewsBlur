@@ -783,12 +783,13 @@ def add_feature(request):
     
 @json.json_view
 def load_features(request):
+    user = get_user(request)
     page = int(request.POST.get('page', 0))
     logging.user(request.user, "~FBBrowse features: Page #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
         'description': f['description'], 
-        'date': f['date'].strftime("%b %d, %Y")
+        'date': localtime_for_timezone(f['date'], user.profile.timezone).strftime("%b %d, %Y")
     } for f in features]
     return features
 
