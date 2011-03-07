@@ -2126,20 +2126,10 @@
             }
         },
         
-        mark_story_as_like: function(story_id, feed_id) {
+        open_story_trainer: function(story_id, feed_id) {
             feed_id = feed_id || this.model.get_story(story_id).story_feed_id;
             
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
-                'score': 1,
-                'feed_loaded': !this.flags['river_view']
-            });
-        },
-        
-        mark_story_as_dislike: function(story_id, feed_id) {
-            feed_id = feed_id || this.active_feed;
-            
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
-                'score': -1,
                 'feed_loaded': !this.flags['river_view']
             });
         },
@@ -2348,13 +2338,6 @@
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
                 $.make('span', { className: 'story_id' }, ''+story.id),
                 $.make('div', { className: 'NB-story-manage-icon' })
-                // $.make('div', { className: 'NB-story-sentiment NB-story-like', title: 'What I like about this story...' }),
-                // $.make('div', { 
-                //     className: 'NB-story-sentiment NB-story-star', 
-                //     title: (story.starred
-                //             ? 'Remove bookmark'
-                //             : 'Save this story for later')
-                // })
             ]).data('story_id', story.id).data('feed_id', story.story_feed_id);
             
             if (unread_view > score) {
@@ -4223,41 +4206,6 @@
                 }, 550);
             }
         },
-    
-        update_opinions: function($modal, feed_id) {
-            var self = this;
-            
-            $('input[type=checkbox]', $modal).each(function() {
-                var $this = $(this);
-                var name = $this.attr('name').replace(/^(dis)?like_/, '');
-                var score = /^dislike/.test($this.attr('name')) ? -1 : 1;
-                var value = $this.val();
-                var checked = $this.attr('checked');
-            
-                if (checked) {
-                    if (name == 'tag') {
-                        self.model.classifiers.tags[value] = score;
-                    } else if (name == 'title') {
-                        self.model.classifiers.titles[value] = score;
-                    } else if (name == 'author') {
-                        self.model.classifiers.authors[value] = score;
-                    } else if (name == 'feed') {
-                        self.model.classifiers.feeds[feed_id] = score;
-                    }
-                } else {
-                    if (name == 'tag' && self.model.classifiers.tags[value] == score) {
-                        delete self.model.classifiers.tags[value];
-                    } else if (name == 'title' && self.model.classifiers.titles[value] == score) {
-                        delete self.model.classifiers.titles[value];
-                    } else if (name == 'author' && self.model.classifiers.authors[value] == score) {
-                        delete self.model.classifiers.authors[value];
-                    } else if (name == 'feed' && self.model.classifiers.feeds[feed_id] == score) {
-                        delete self.model.classifiers.feeds[feed_id];
-                    }
-                }
-            });
-            
-        },
         
         // ===================
         // = Feed Refreshing =
@@ -4861,13 +4809,6 @@
                 story_prevent_bubbling = true;
                 self.show_manage_menu('story', $t);
             });
-            $.targetIs(e, { tagSelector: '.NB-story-like' }, function($t, $p){
-                e.preventDefault();
-                var story_id = $t.closest('.story').data('story_id');
-                var feed_id = $t.closest('.story').data('feed_id');
-                self.mark_story_as_like(story_id, feed_id);
-                story_prevent_bubbling = true;
-            });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
@@ -4883,20 +4824,6 @@
                 } else {
                   self.mark_story_as_starred(story_id, $story);
                 }
-                story_prevent_bubbling = true;
-            });
-            $.targetIs(e, { tagSelector: 'a.button.like' }, function($t, $p){
-                e.preventDefault();
-                var story_id = self.$s.$story_pane.data('story_id');
-                var feed_id = $t.closest('.story').data('feed_id');
-                self.mark_story_as_like(story_id, feed_id);
-                story_prevent_bubbling = true;
-            });
-            $.targetIs(e, { tagSelector: 'a.button.dislike' }, function($t, $p){
-                e.preventDefault();
-                var story_id = self.$s.$story_pane.data('story_id');
-                var feed_id = $t.closest('.story').data('feed_id');
-                self.mark_story_as_dislike(story_id, feed_id);
                 story_prevent_bubbling = true;
             });
             
@@ -4956,7 +4883,7 @@
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.closest('.NB-menu-manage').data('feed_id');
                     var story_id = $t.closest('.NB-menu-manage').data('story_id');
-                    self.mark_story_as_like(story_id, feed_id);
+                    self.open_story_trainer(story_id, feed_id);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-trainer' }, function($t, $p){
