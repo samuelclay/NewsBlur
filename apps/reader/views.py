@@ -256,7 +256,7 @@ def refresh_feeds(request):
             
     diff = datetime.datetime.utcnow()-start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.user(request.user, "~FBRefreshing (%s seconds)" % (timediff))
+    logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
     
     return {'feeds': feeds}
 
