@@ -765,7 +765,7 @@ var classifier_prototype = {
             });
             $.targetIs(e, { tagSelector: '.NB-modal-submit-save.NB-modal-submit-next' }, function($t, $p){
                 e.preventDefault();
-                self.save_publisher(true);
+                self.save(true);
                 self.load_next_feed_in_trainer();
                 self.update_homepage_counts();
             });
@@ -782,7 +782,7 @@ var classifier_prototype = {
 
             $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){
                 e.preventDefault();
-                self.save_publisher();
+                self.save();
             });
 
             $.targetIs(e, { tagSelector: '.NB-modal-submit-end' }, function($t, $p){
@@ -795,7 +795,7 @@ var classifier_prototype = {
         } else {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-save:not(.NB-modal-submit-next)' }, function($t, $p){
                 e.preventDefault();
-                self.save_publisher();
+                self.save();
                 return false;
             });
         }

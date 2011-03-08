@@ -225,6 +225,7 @@ def load_feeds_iphone(request):
 
 @json.json_view
 def refresh_feeds(request):
+    start = datetime.datetime.utcnow()
     user = get_user(request)
     feeds = {}
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
@@ -253,10 +254,15 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['favicon_color'] = sub.feed.icon.color
             feeds[sub.feed.pk]['favicon_fetching'] = bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
             
+    diff = datetime.datetime.utcnow()-start
+    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+    logging.user(request.user, "~FBRefreshing (%s seconds)" % (timediff))
+    
     return {'feeds': feeds}
 
 @json.json_view
 def load_single_feed(request):
+    start = datetime.datetime.utcnow()
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 30))
@@ -286,7 +292,6 @@ def load_single_feed(request):
         
     force_update = request.GET.get('force_update', False)
     
-    start = datetime.datetime.utcnow()
     stories = feed.get_stories(offset, limit) 
         
     if force_update:
