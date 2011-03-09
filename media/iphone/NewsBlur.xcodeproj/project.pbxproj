@@ -392,10 +392,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					"~/three20/Build/Products/three20",
-					"~/Projects/three20/Build/Products/three20",
-				);
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -412,24 +409,9 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../../../code/three20/Build/Products/three20;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20UICommon.a",
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20.a",
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20UINavigator.a",
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20Core.a",
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20UI.a",
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20Network.a",
-					"-force_load",
-					"../../../code/three20/Build/Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/libThree20Style.a",
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = NewsBlur;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -444,6 +426,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "~/code/three20/Build/Products/three20";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -462,9 +445,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.1.3;
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};

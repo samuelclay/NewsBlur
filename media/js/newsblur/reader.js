@@ -125,7 +125,8 @@
                 west__size:             this.model.preference('feed_pane_size'),
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
                 spacing_open:           4,
-                resizerDragOpacity:     0.6
+                resizerDragOpacity:     0.6,
+                enableCursorHotkey:     false
             }); 
             
             leftLayout = $('.left-pane').layout({
@@ -137,7 +138,8 @@
                 south__paneSelector:    ".left-south",
                 south__size:            31,
                 south__resizable:       false,
-                south__spacing_open:    0
+                south__spacing_open:    0,
+                enableCursorHotkey:     false
             });
             
             leftCenterLayout = $('.left-center').layout({
@@ -155,7 +157,8 @@
                 south__initClosed:      true,
                 fxName:                 "slide",
                 fxSpeed:                 1000,
-                fxSettings:             { duration: 1000, easing: "easeInOutQuint" }
+                fxSettings:             { duration: 1000, easing: "easeInOutQuint" },
+                enableCursorHotkey:     false
             });
 
             rightLayout = $('.right-pane').layout({ 
@@ -164,7 +167,8 @@
                 south__size:            this.model.preference('story_titles_pane_size'),
                 south__onresize_end:    $.rescope(this.save_story_titles_pane_size, this),
                 spacing_open:           10,
-                resizerDragOpacity:     0.6
+                resizerDragOpacity:     0.6,
+                enableCursorHotkey:     false
             }); 
 
             contentLayout = this.$s.$content_pane.layout({ 
@@ -172,7 +176,8 @@
                 south__paneSelector:    ".content-north",
                 south__size:            30,
                 spacing_open:           0,
-                resizerDragOpacity:     0.6
+                resizerDragOpacity:     0.6,
+                enableCursorHotkey:     false
             }); 
             
             $('.right-pane').hide();
