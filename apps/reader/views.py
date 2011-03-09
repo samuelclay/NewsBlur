@@ -227,8 +227,11 @@ def load_feeds_iphone(request):
 def refresh_feeds(request):
     start = datetime.datetime.utcnow()
     user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_id')
     feeds = {}
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    if feed_ids:
+        user_subs = user_subs.filter(feed__in=feed_ids)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     favicons_fetching = [int(f) for f in request.POST.getlist('favicons_fetching') if f]
 

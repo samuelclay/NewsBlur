@@ -41,7 +41,8 @@
         this.counts = {
             'feature_page': 0,
             'unfetched_feeds': 0,
-            'fetched_feeds': 0
+            'fetched_feeds': 0,
+            'page_fill_outs': 0
         };
         this.cache = {
             'iframe_stories': {},
@@ -1338,6 +1339,10 @@
                 'feed_title_floater_feed_id': null,
                 'feed_title_floater_story_id': null,
                 'last_feed_view_story_feed_id': null
+            });
+            
+            $.extend(this.counts, {
+                'page_fill_outs': 0
             });
             
             this.active_feed = null;
@@ -2697,7 +2702,12 @@
                 ($last.length == 0 ||
                  ($('#story_titles').scrollTop() == 0 && 
                   $last.position().top + $last.height() < container_height))) {
-                _.delay(_.bind(this.load_page_of_feed_stories, this), 250);
+                if (this.counts['page_fill_outs'] < 8) {
+                    this.counts['page_fill_outs'] += 1;
+                    _.delay(_.bind(this.load_page_of_feed_stories, this), 250);
+                } else {
+                    this.append_story_titles_endbar();
+                }
             }
         },
         
@@ -3033,9 +3043,50 @@
                 _.map(story.story_tags, function(tag) { 
                     var score = feed_tags[tag];
                     return $.make('div', { 
-                        className: 'NB-feed-story-tag ' + (!!score && 'NB-score-'+score || '') 
-                    }, tag); 
+                        className: 'NB-feed-story-tag ' + (!!score && 'NB-score-'+score || '')
+                    }, tag).data('tag', tag); 
                 }));
+        },
+        
+        preserve_classifier_color: function($story, value, score) {
+            var $t;
+            $('.NB-feed-story-tag', $story).each(function() {
+                if ($(this).data('tag') == value) {
+                    $t = $(this);
+                    return false;
+                }
+            });
+            $t.removeClass('NB-score-now-1')
+              .removeClass('NB-score-now--1')
+              .removeClass('NB-score-now-0')
+              .addClass('NB-score-now-'+score)
+              .one('mouseleave', function() {
+                  $t.removeClass('NB-score-now-'+score);
+              });
+              _.defer(function() {
+                  $t.one('mouseenter', function() {
+                      $t.removeClass('NB-score-now-'+score);
+                  });
+              });
+        },
+        
+        save_classifier: function(type, value, score, feed_id) {
+            var data = {
+                'feed_id': feed_id
+            };
+            if (score == 0) {
+                data['remove_like_'+type] = value;
+            } else if (score == 1) {
+                data['like_'+type] = value;
+            } else if (score == -1) {
+                data['dislike_'+type] = value;
+            }
+            
+            this.model.classifiers[type+'s'][value] = score;
+            this.model.save_classifier_publisher(data, _.bind(function(resp) {
+                this.force_feeds_refresh(null, true, feed_id);
+            }, this));
+            this.recalculate_story_scores(feed_id);
         },
         
         show_correct_feed_in_feed_title_floater: function(story) {
@@ -4259,7 +4310,7 @@
             }, refresh_interval);
         },
         
-        force_feeds_refresh: function(callback, update_all) {
+        force_feeds_refresh: function(callback, update_all, feed_id) {
             if (callback) {
                 this.cache.refresh_callback = callback;
             } else {
@@ -4270,7 +4321,7 @@
             
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
               this.post_feed_refresh(updated_feeds, update_all);
-            }, this), this.flags['has_unfetched_feeds']);
+            }, this), this.flags['has_unfetched_feeds'], feed_id);
         },
         
         post_feed_refresh: function(updated_feeds, update_all) {
@@ -4828,6 +4879,16 @@
             });
             
             if (story_prevent_bubbling) return false;
+            
+            $.targetIs(e, { tagSelector: '.NB-feed-story-tag' }, function($t, $p){
+                e.preventDefault();
+                var $story = $t.closest('.NB-feed-story');
+                var feed_id = $story.data('feed_id');
+                var tag = $t.data('tag');
+                var score = $t.hasClass('NB-score-1') ? -1 : $t.hasClass('NB-score--1') ? 0 : 1;
+                self.save_classifier('tag', tag, score, feed_id);
+                self.preserve_classifier_color($story, tag, score);
+            });
             
             $.targetIs(e, { tagSelector: '.story' }, function($t, $p){
                 e.preventDefault();
