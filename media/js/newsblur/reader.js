@@ -3090,7 +3090,7 @@
             
             this.model.classifiers[type+'s'][value] = score;
             this.model.save_classifier_publisher(data, _.bind(function(resp) {
-                this.force_feeds_refresh(null, true, feed_id);
+                this.force_feeds_refresh(null, false, feed_id);
             }, this));
             this.recalculate_story_scores(feed_id);
         },
@@ -4290,7 +4290,7 @@
                 if (self.active_feed == feed_id) {
                     self.open_feed(feed_id, true, $new_feed);
                 }
-            }, true);
+            }, true, feed_id);
         },
         
         setup_feed_refresh: function(new_feeds) {
@@ -4346,20 +4346,23 @@
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 
                 if (feed_id == this.active_feed && !update_all) {
-                    NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
+                    NEWSBLUR.log(['REFRESHING INLINE', feed.feed_title, $feed, $feed_on_page]);
                     // var limit = $('.story', this.$s.$story_titles).length;
                     // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
-                    // $feed_on_page.replaceWith($feed);
-                    // this.mark_feed_as_selected(this.active_feed, $feed);
                 } else {
                     if (!this.flags['has_unfetched_feeds']) {
-                        NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                        NEWSBLUR.log(['UPDATING', feed_id, this.active_feed, feed.feed_title, $feed, $feed_on_page]);
                     }
                     if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                     $feed_on_page.replaceWith($feed);
                     $feed.css({'backgroundColor': '#D7DDE6'})
                          .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                          .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
+                }
+                if (feed_id == this.active_feed) {
+                    NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
+                    $feed_on_page.replaceWith($feed);
+                    this.mark_feed_as_selected(this.active_feed, $feed);
                 }
                 this.hover_over_feed_titles($feed);
             }
