@@ -3090,7 +3090,7 @@
             
             this.model.classifiers[type+'s'][value] = score;
             this.model.save_classifier_publisher(data, _.bind(function(resp) {
-                this.force_feeds_refresh(null, false, feed_id);
+                this.force_feeds_refresh(null, true, feed_id);
             }, this));
             this.recalculate_story_scores(feed_id);
         },
@@ -4316,7 +4316,7 @@
             }, refresh_interval);
         },
         
-        force_feeds_refresh: function(callback, update_all, feed_id) {
+        force_feeds_refresh: function(callback, replace_active_feed, feed_id) {
             if (callback) {
                 this.cache.refresh_callback = callback;
             } else {
@@ -4326,11 +4326,11 @@
             this.flags['pause_feed_refreshing'] = true;
             
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
-              this.post_feed_refresh(updated_feeds, update_all);
+              this.post_feed_refresh(updated_feeds, replace_active_feed);
             }, this), this.flags['has_unfetched_feeds'], feed_id);
         },
         
-        post_feed_refresh: function(updated_feeds, update_all) {
+        post_feed_refresh: function(updated_feeds, replace_active_feed) {
             var feeds = this.model.feeds;
             
             if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
@@ -4345,24 +4345,29 @@
                 var $feed = this.make_feed_title_line(feed, true, 'feed');
                 var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 
-                if (feed_id == this.active_feed && !update_all) {
-                    NEWSBLUR.log(['REFRESHING INLINE', feed.feed_title, $feed, $feed_on_page]);
-                    // var limit = $('.story', this.$s.$story_titles).length;
-                    // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                if (feed_id == this.active_feed) {
+                    NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
+                    if (!replace_active_feed) {
+                        // var limit = $('.story', this.$s.$story_titles).length;
+                        // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                        // Set the unread counts to what the client thinks they are, so when
+                        // the counts can be updated, they will force a refresh of the feed.
+                        this.model.feeds[feed_id].ps = parseInt($('.unread_count_positive', $feed_on_page).text(), 10);
+                        this.model.feeds[feed_id].nt = parseInt($('.unread_count_neutral', $feed_on_page).text(), 10);
+                        this.model.feeds[feed_id].ng = parseInt($('.unread_count_negative', $feed_on_page).text(), 10);
+                    } else {
+                        $feed_on_page.replaceWith($feed);
+                        this.mark_feed_as_selected(this.active_feed, $feed);
+                    }
                 } else {
                     if (!this.flags['has_unfetched_feeds']) {
-                        NEWSBLUR.log(['UPDATING', feed_id, this.active_feed, feed.feed_title, $feed, $feed_on_page]);
+                        NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
                     }
                     if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                     $feed_on_page.replaceWith($feed);
                     $feed.css({'backgroundColor': '#D7DDE6'})
                          .animate({'backgroundColor': '#F0F076'}, {'duration': 800})
                          .animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000});
-                }
-                if (feed_id == this.active_feed) {
-                    NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page]);
-                    $feed_on_page.replaceWith($feed);
-                    this.mark_feed_as_selected(this.active_feed, $feed);
                 }
                 this.hover_over_feed_titles($feed);
             }
