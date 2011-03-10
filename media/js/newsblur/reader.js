@@ -1343,7 +1343,9 @@
                 'prefetch_iteration': 0,
                 'feed_title_floater_feed_id': null,
                 'feed_title_floater_story_id': null,
-                'last_feed_view_story_feed_id': null
+                'last_feed_view_story_feed_id': null,
+                $feed_in_feed_list: {},
+                $feed_counts_in_feed_list: {}
             });
             
             $.extend(this.counts, {
@@ -1352,8 +1354,6 @@
             
             this.active_feed = null;
             this.active_story = null;
-            this.cache.$feed_in_feed_list = null;
-            this.cache.$feed_counts_in_feed_list = null;
             this.$s.$story_titles.data('page', 0);
             this.$s.$story_titles.data('feed_id', null);
             this.$s.$feed_stories.scrollTop(0);
@@ -2003,20 +2003,21 @@
         },
         
         update_read_count: function(story_id, feed_id, unread, previously_read) {
+            // NEWSBLUR.log(['update_read_count', feed_id, unread, previously_read]);
             if (previously_read) return;
             
             var feed                  = this.model.get_feed(feed_id);
             var $feed_list            = this.$s.$feed_list;
-            var $feed                 = this.cache.$feed_in_feed_list || this.find_feed_in_feed_list(feed_id);
-            var $feed_counts          = this.cache.$feed_counts_in_feed_list || $('.feed_counts_floater', $feed);
+            var $feed                 = this.cache.$feed_in_feed_list[feed_id] || this.find_feed_in_feed_list(feed_id);
+            var $feed_counts          = this.cache.$feed_counts_in_feed_list[feed_id] || $('.feed_counts_floater', $feed);
             var $story_title          = this.find_story_in_story_titles(story_id);
             var $content_pane         = this.$s.$content_pane;
             var unread_count_positive = feed.ps;
             var unread_count_neutral  = feed.nt;
             var unread_count_negative = feed.ng;
             
-            this.cache.$feed_in_feed_list = $feed;
-            this.cache.$feed_counts_in_feed_list = $feed_counts;
+            this.cache.$feed_in_feed_list[feed_id] = $feed;
+            this.cache.$feed_counts_in_feed_list[feed_id] = $feed_counts;
 
             $story_title.toggleClass('read', !unread);
             // NEWSBLUR.log(['marked read', unread_count_positive, unread_count_neutral, unread_count_negative, $story_title.is('.NB-story-positive'), $story_title.is('.NB-story-neutral'), $story_title.is('.NB-story-negative')]);
