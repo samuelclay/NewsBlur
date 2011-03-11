@@ -153,7 +153,7 @@ def format_relative_date(date, future=False):
             return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), 
                                     '' if future else 'ago')
 
-def add_object_to_folder(obj, folder, folders):
+def add_object_to_folder(obj, folder, folders, added=False):
     if not folder and obj not in folders:
         folders.append(obj)
         return folders
@@ -161,9 +161,10 @@ def add_object_to_folder(obj, folder, folders):
     for k, v in enumerate(folders):
         if isinstance(v, dict):
             for f_k, f_v in v.items():
-                if f_k == folder and obj not in f_v:
+                if f_k == folder and obj not in f_v and not added:
                     f_v.append(obj)
-                folders[k][f_k] = add_object_to_folder(obj, folder, f_v)
+                    added = True
+                folders[k][f_k] = add_object_to_folder(obj, folder, f_v, added)
     return folders  
 
 def mail_feed_error_to_admin(feed, e):

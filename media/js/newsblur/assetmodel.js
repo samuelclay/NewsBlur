@@ -334,7 +334,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },    
     
-    refresh_feeds: function(callback, has_unfetched_feeds) {
+    refresh_feeds: function(callback, has_unfetched_feeds, feed_id) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -352,6 +352,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             if (favicons_fetching.length) {
                 data['favicons_fetching'] = favicons_fetching;
             }
+        }
+        if (feed_id) {
+            data['feed_id'] = feed_id;
         }
         
         if (NEWSBLUR.Globals.is_authenticated) {
