@@ -56,6 +56,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
+                // $.make('div', { className: 'NB-fieldset-divider' }, [
+                //     'Google Reader and OPML'
+                // ]),
                 $.make('div', { className: 'NB-fieldset NB-anonymous-ok NB-modal-submit' }, [
                     $.make('h5', [
                         'Import feeds'
@@ -72,7 +75,10 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                     ])
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-add-opml NB-modal-submit' }, [
-                    $.make('h5', 'Upload OPML'),
+                    $.make('h5', [
+                        'Upload OPML',
+                        $.make('a', { className: 'NB-right NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Export OPML')
+                    ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
                             $.make('div', { className: 'NB-loading' }),
@@ -224,7 +230,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 
         // NEWSBLUR.log(['Uploading']);
         $.ajaxFileUpload({
-            url: '/import/opml_upload', 
+            url: NEWSBLUR.URLs['opml-upload'], 
             secureuri: false,
             fileElementId: 'opml_file_input',
             dataType: 'text',

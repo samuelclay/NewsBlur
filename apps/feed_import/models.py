@@ -29,13 +29,7 @@ class OAuthToken(models.Model):
     access_token_secret = models.CharField(max_length=50)
     created_date = models.DateTimeField(default=datetime.datetime.now)
     
-
-class Importer:
-
-    def clear_feeds(self):
-        UserSubscriptionFolders.objects.filter(user=self.user).delete()
-        UserSubscription.objects.filter(user=self.user).delete()
-
+    
 class OPMLExporter:
     
     def __init__(self, user):
@@ -93,6 +87,13 @@ class OPMLExporter:
         subs = UserSubscription.objects.filter(user=self.user)
         self.feeds = dict((sub.feed.pk, sub.canonical()) for sub in subs)
         
+
+class Importer:
+
+    def clear_feeds(self):
+        UserSubscriptionFolders.objects.filter(user=self.user).delete()
+        UserSubscription.objects.filter(user=self.user).delete()
+
     
 class OPMLImporter(Importer):
     

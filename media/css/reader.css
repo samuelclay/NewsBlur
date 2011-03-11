@@ -22,6 +22,14 @@ a img {
     border: none;
 }
 
+.NB-right {
+    float: right;
+}
+
+.NB-left {
+    float: left;
+}
+
 /* ==================== */
 /* = Styling & Themes = */
 /* ==================== */
