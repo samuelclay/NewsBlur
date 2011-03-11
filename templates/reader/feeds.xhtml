@@ -17,6 +17,15 @@ $(document).ready(function() {
 
 <div id="NB-splash">
 
+  <div class="NB-splash-info NB-splash-blur">
+    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" />
+    <ul class="NB-splash-links">
+      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
+      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
+      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
+    </ul>
+  </div>
+      
   <div class="NB-modules-center">
     {# {% if recommended_feed %} #}
     {#   {% render_recommended_feed recommended_feed %} #}
@@ -196,7 +205,7 @@ $(document).ready(function() {
       </div>
       
     {% else %}
-    
+      
       <div class="NB-module NB-module-stats">
         <h5 class="NB-module-header">
           Welcome, {{ user.username }}
@@ -303,15 +312,15 @@ $(document).ready(function() {
   </div>
 
   <div class="NB-splash-info">
+    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur.png" />
     <ul class="NB-splash-links">
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
+      {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li> #}
+      <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">FAQ</a></li>
       <li class="NB-splash-link NB-splash-meta-about"><a href="#about">About</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
-      <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">Questions</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
-      <li class="NB-splash-link"><a href="mailto:samuel@ofbrooklyn.com">Email Samuel</a></li>
+      <li class="NB-splash-link NB-splash-link-blog"><a href="http://www.@ofbrooklyn.com">The Blog</a></li>
+      {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li> #}
+      {# <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li> #}
     </ul>
-    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/reader/newsblur_logo.png" />
   </div>
 
 </div>
