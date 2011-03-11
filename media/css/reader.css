@@ -63,7 +63,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-account {
     position: absolute;
     right: 0px;
-    top: 0px;
+    top: 55px;
     width: 478px;
     z-index: 1;
     overflow: hidden;
@@ -2448,21 +2448,22 @@ form.opml_import_form input {
     position: absolute;
     bottom: -1px;
     height: 55px;
-    right: 0;
-    width: 235px;
+    right: 166px;
+    width: 312px;
 }
 
-#NB-splash .NB-splash-image {
-    margin: 0 auto;
-    height: 376px;
-    width: 600px;
-    background: transparent url('../img/reader/newsblur_splash_image.png') no-repeat 0 0;
+#NB-splash .NB-splash-blur .NB-splash-title {
+    top: 0px;
+    bottom: inherit;
+    right: 166px;
+    width: 312px;
+    height: 55px;
 }
 
 #NB-splash .NB-splash-links {
     position: absolute;
-    right: 236px;
-    width: 242px;
+    right: 0px;
+    width: 164px;
     text-align: right;
     bottom: 0;
     display: block;
@@ -2475,12 +2476,16 @@ form.opml_import_form input {
     z-index: 0;
 }
 
+#NB-splash .NB-splash-blur .NB-splash-links {
+    top: 0;
+}
+
 #NB-splash .NB-splash-links .NB-splash-link {
   display: block;
   line-height: 12px;
   margin: 1px 0;
   padding: 0;
-  width: 121px; 
+  width: 164px; 
   float: left;
 }
 #NB-splash .NB-splash-links .NB-splash-link.NB-first {
@@ -2499,6 +2504,9 @@ form.opml_import_form input {
 }
 #NB-splash .NB-splash-links .NB-splash-link-github a:hover {
   background: #E9ECF6 url('../img/reader/github_icon.png') no-repeat 0 0;
+}
+#NB-splash .NB-splash-links .NB-splash-link-blog a:hover {
+  background: #E9ECF6 url('../img/reader/ofbrooklyn_icon.png') no-repeat 0 0;
 }
 
 #NB-splash .NB-splash-links .NB-splash-link-twitter a:hover {
@@ -2525,15 +2533,7 @@ a.NB-splash-link {
 a.NB-splash-link:hover {
     color: #A85B40;
 }
-.NB-splash-info {
-    background-color: white;
-    z-index: 1;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 500px;
-    height: 56px;
-}
+
 
 /* ===================== */
 /* = Splash Meta Links = */
