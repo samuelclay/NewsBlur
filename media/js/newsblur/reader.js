@@ -93,7 +93,6 @@
         this.iframe_buster_buster();
         this.apply_story_styling();
         this.apply_tipsy_titles();
-        this.add_url_from_querystring();
         this.load_recommended_feeds();
     };
 
@@ -270,7 +269,10 @@
         },
 
         add_url_from_querystring: function() {
+            if (this.flags['added_url_from_querystring']) return;
+            
             var url = $.getQueryString('url');
+            this.flags['added_url_from_querystring'] = true;
 
             if (url) {
                 this.open_add_feed_modal({url: url});
@@ -800,6 +802,8 @@
                 this.update_header_counts();
                 _.delay(_.bind(this.update_starred_count, this), 250);
             }
+            
+            this.add_url_from_querystring();
         },
         
         detect_all_inactive_feeds: function() {
@@ -4783,6 +4787,23 @@
           var $module = this.$s.$recommended_feeds;
         },
         
+        load_feed_in_try_view: function(feed_id) {
+            
+        },
+        
+        add_recommended_feed: function(feed_id) {
+            var feed = this.model.get_feed(feed_id);
+            this.open_add_feed_modal({url: feed.feed_address});
+        },
+        
+        load_next_feed_in_recommended_feeds: function() {
+            
+        },
+        
+        load_previous_feed_in_recommended_feeds: function() {
+            
+        },
+        
         // ==========
         // = Events =
         // ==========
@@ -5204,7 +5225,11 @@
             $.targetIs(e, { tagSelector: '.NB-recommended-add' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
-                self.load_n(1, feed_id);
+                $('.NB-module-recommended').addClass('NB-loading');
+                self.model.load_canonical_feed(feed_id, function() {
+                    $('.NB-module-recommended').removeClass('NB-loading');
+                    self.add_recommended_feed(feed_id);
+                });
             }); 
             
             $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-next-page' }, function($t, $p){
