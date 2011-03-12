@@ -1,10 +1,9 @@
 {
   "name": "NewsBlur",
-  "description": "RSS feed reading with intelligence.",
-  "version": "1.0",
+  "description": "Visual feed reading with intelligence.",
+  "version": "1.1",
   "icons": { 
-    "48": "48.png",
-    "128": "128.png"
+    "128": "logo_128.png"
   },
   "app": {
     "urls": [

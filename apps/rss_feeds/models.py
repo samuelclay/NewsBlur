@@ -88,16 +88,17 @@ class Feed(models.Model):
         feed = None
     
         def by_url(address):
-            duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=address).order_by('pk')
-            if duplicate_feed:
-                feed = [duplicate_feed[0].feed]
-            else:
-                feed = cls.objects.filter(feed_address=address).order_by('pk')
+            feed = cls.objects.filter(feed_address=address)
+            if not feed:
+                duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=address).order_by('pk')
+                if duplicate_feed:
+                    feed = [duplicate_feed[0].feed]
+                
             return feed
             
         url = urlnorm.normalize(url)
         feed = by_url(url)
-        
+
         if feed:
             feed = feed[0]
         else:
@@ -992,6 +993,9 @@ class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255)
     duplicate_feed_id = models.CharField(max_length=255, null=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
+   
+    def __unicode__(self):
+        return "%s: %s" % (self.feed, self.duplicate_address)
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory

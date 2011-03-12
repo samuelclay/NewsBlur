@@ -121,7 +121,7 @@
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
-    int score_max = 0;
+//    int score_max = 0;
 //    [intelligence objectForKey:@"title"]
 //    var score_max = Math.max(story.intelligence['title'],
 //                             story.intelligence['author'],

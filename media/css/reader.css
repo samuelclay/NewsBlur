@@ -22,6 +22,14 @@ a img {
     border: none;
 }
 
+.NB-right {
+    float: right;
+}
+
+.NB-left {
+    float: left;
+}
+
 /* ==================== */
 /* = Styling & Themes = */
 /* ==================== */
@@ -63,7 +71,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-account {
     position: absolute;
     right: 0px;
-    top: 0px;
+    top: 55px;
     width: 478px;
     z-index: 1;
     overflow: hidden;
@@ -1648,12 +1656,13 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-tags {
-    margin: 6px 0 -6px;
+    margin: 7px 0 -6px;
     overflow: hidden;
     line-height: 12px;
     height: 14px;
 }
 #story_pane .NB-feed-story-tag {
+    /* Grey */
     float: left;
     font-weight: normal;
     font-size: 9px;
@@ -1665,30 +1674,74 @@ background: transparent;
     border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
+    cursor: pointer;
 } 
-#story_pane .NB-feed-story-title .NB-score-1 {
-  color: #34912E;
-}
-#story_pane .NB-feed-story-title .NB-score--1 {
-  color: #A90103;
-}
-#story_pane .NB-feed-story-author.NB-score-1 {
-  color: #34912E;
-}
-#story_pane .NB-feed-story-author.NB-score--1 {
-  color: #A90103;
-}
 #story_pane .NB-feed-story-tag.NB-score-1 {
-  background-color: #34912E;
-  color: white;
-  text-shadow: 0 1px 0 #000;
-  opacity: .4;
+    /* Green */
+    background-color: #34912E;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+    opacity: .4;
 }
 #story_pane .NB-feed-story-tag.NB-score--1 {
-  background-color: #A90103;
-  color: white;
-  text-shadow: 0 1px 0 #000;
-  opacity: .4;
+    /* Red */
+    background-color: #A90103;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+    opacity: .4;
+}
+#story_pane .NB-feed-story-tag:hover {
+    /* Gray, active -> [Light] Green */
+    background-color: #89AE6E;
+    text-shadow: 0 1px 0 #000;
+    color: white;
+    opacity: .4;
+}
+#story_pane .NB-feed-story-tag.NB-score-1:hover {
+    /* Green, active -> [Light] Red */
+    background-color: #E35356;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+}
+#story_pane .NB-feed-story-tag.NB-score--1:hover {
+    /* Red, active -> [Light] Grey */
+    background-color: #E2E2E2;
+    color: #A7A399;
+    text-shadow: 0 1px 0 #E9E9E9;
+    opacity: 1;
+}
+#story_pane .NB-feed-story-tag.NB-score-now-0:hover {
+    /* Grey, active */
+    background-color: #DBDBDB;
+    color: #9D9A95;
+    text-shadow: 0 1px 0 #E9E9E9;
+    opacity: 1;
+}
+#story_pane .NB-feed-story-tag.NB-score-now-1.NB-score-1:hover {
+    /* Green, active */
+    background-color: #34912E;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+}
+#story_pane .NB-feed-story-tag.NB-score-now--1.NB-score--1:hover {
+    /* Red, active */
+    background-color: #A90103;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+    opacity: .4;
+}
+
+#story_pane .NB-feed-story-title .NB-score-1 {
+    color: #34912E;
+}
+#story_pane .NB-feed-story-title .NB-score--1 {
+    color: #A90103;
+}
+#story_pane .NB-feed-story-author.NB-score-1 {
+    color: #34912E;
+}
+#story_pane .NB-feed-story-author.NB-score--1 {
+    color: #A90103;
 }
 #story_pane .NB-feed-story-header .NB-feed-story-date {
     position: absolute;
@@ -2399,25 +2452,40 @@ form.opml_import_form input {
     left: 0;
 }
 
+#NB-splash .NB-splash-info {
+  width: 478px;
+  height: 55px;
+  background-color: white;
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+#NB-splash .NB-splash-info.NB-splash-blur {
+  top: 0;
+  bottom: inherit;
+}
 #NB-splash .NB-splash-title {
     position: absolute;
     bottom: -1px;
     height: 55px;
-    right: 0;
-    width: 235px;
+    right: 166px;
+    width: 312px;
+    z-index: 2;
 }
 
-#NB-splash .NB-splash-image {
-    margin: 0 auto;
-    height: 376px;
-    width: 600px;
-    background: transparent url('../img/reader/newsblur_splash_image.png') no-repeat 0 0;
+#NB-splash .NB-splash-blur .NB-splash-title {
+    top: 0px;
+    bottom: inherit;
+    right: 166px;
+    width: 312px;
+    height: 55px;
 }
 
 #NB-splash .NB-splash-links {
     position: absolute;
-    right: 236px;
-    width: 242px;
+    right: 0px;
+    width: 164px;
     text-align: right;
     bottom: 0;
     display: block;
@@ -2427,7 +2495,11 @@ form.opml_import_form input {
     text-shadow: 1px 1px 0 #F0F0F0;
     list-style: none;
     white-space: nowrap;
-    z-index: 0;
+    z-index: 1;
+}
+
+#NB-splash .NB-splash-blur .NB-splash-links {
+    top: 0;
 }
 
 #NB-splash .NB-splash-links .NB-splash-link {
@@ -2435,7 +2507,7 @@ form.opml_import_form input {
   line-height: 12px;
   margin: 1px 0;
   padding: 0;
-  width: 121px; 
+  width: 164px; 
   float: left;
 }
 #NB-splash .NB-splash-links .NB-splash-link.NB-first {
@@ -2454,6 +2526,9 @@ form.opml_import_form input {
 }
 #NB-splash .NB-splash-links .NB-splash-link-github a:hover {
   background: #E9ECF6 url('../img/reader/github_icon.png') no-repeat 0 0;
+}
+#NB-splash .NB-splash-links .NB-splash-link-blog a:hover {
+  background: #E9ECF6 url('../img/reader/ofbrooklyn_icon.png') no-repeat 0 0;
 }
 
 #NB-splash .NB-splash-links .NB-splash-link-twitter a:hover {
@@ -2480,15 +2555,7 @@ a.NB-splash-link {
 a.NB-splash-link:hover {
     color: #A85B40;
 }
-.NB-splash-info {
-    background-color: white;
-    z-index: 1;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 500px;
-    height: 56px;
-}
+
 
 /* ===================== */
 /* = Splash Meta Links = */
