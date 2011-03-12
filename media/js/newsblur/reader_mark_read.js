@@ -121,7 +121,7 @@ NEWSBLUR.ReaderMarkRead.prototype = {
                 $.modal.close();
                 NEWSBLUR.reader.force_feeds_refresh(function() {
                     NEWSBLUR.reader.finish_count_unreads_after_import();
-                });
+                }, true);
             });
         } else {
             $.modal.close();

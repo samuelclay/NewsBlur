@@ -153,6 +153,7 @@
 		[results release];
 		[jsonString release];
 	}
+	[jsonString release];
 }
 
 
@@ -166,6 +167,7 @@
 	LogoutDelegate *ld = [LogoutDelegate alloc];
 	NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:urlR delegate:ld];
 	[urlConnection release];
+	[ld release];
 }
 
 #pragma mark -
