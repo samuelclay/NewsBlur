@@ -2452,12 +2452,26 @@ form.opml_import_form input {
     left: 0;
 }
 
+#NB-splash .NB-splash-info {
+  width: 478px;
+  height: 55px;
+  background-color: white;
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+#NB-splash .NB-splash-info.NB-splash-blur {
+  top: 0;
+  bottom: inherit;
+}
 #NB-splash .NB-splash-title {
     position: absolute;
     bottom: -1px;
     height: 55px;
     right: 166px;
     width: 312px;
+    z-index: 2;
 }
 
 #NB-splash .NB-splash-blur .NB-splash-title {
@@ -2481,7 +2495,7 @@ form.opml_import_form input {
     text-shadow: 1px 1px 0 #F0F0F0;
     list-style: none;
     white-space: nowrap;
-    z-index: 0;
+    z-index: 1;
 }
 
 #NB-splash .NB-splash-blur .NB-splash-links {
