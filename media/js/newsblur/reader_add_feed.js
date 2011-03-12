@@ -14,6 +14,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.open_modal();
         this.handle_keystrokes();
         this.setup_autocomplete();
+        this.focus_add_feed();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -170,12 +171,21 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         });
     },
     
+    focus_add_feed: function() {
+        var $add = $('.NB-add-url', this.$modal);
+        if (!NEWSBLUR.Globals.is_anonymous) {
+            _.delay(function() {
+                $add.focus();
+            }, 200);
+        }
+    },
+    
     setup_autocomplete: function() {
         var self = this;
         var $add = $('.NB-add-url', this.$modal);
         
         $add.autocomplete({
-            minLength: 0,
+            minLength: 1,
             source: '/rss_feeds/feed_autocomplete',
             focus: function(e, ui) {
                 $add.val(ui.item.value);
