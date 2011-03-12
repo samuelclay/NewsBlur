@@ -57,7 +57,7 @@ class OPMLExporter:
         
     def process_outline(self, body, folders):
         for obj in folders:
-            if isinstance(obj, int):
+            if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
