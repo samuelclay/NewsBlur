@@ -144,7 +144,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
+                    dialog.data.fadeIn(200, function() {
+                        self.focus_add_feed();
+                    });
                 });
             },
             'onShow': function(dialog) {

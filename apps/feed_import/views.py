@@ -14,7 +14,7 @@ from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken, OPMLImporter, OPMLExporter, GoogleReaderImporter
 from utils import json_functions as json
-from utils.user_functions import ajax_login_required
+from utils.user_functions import ajax_login_required, get_user
 
 
 @ajax_login_required
@@ -44,9 +44,9 @@ def opml_upload(request):
     data = json.encode(dict(message=message, code=code, payload=payload))
     return HttpResponse(data, mimetype='text/plain')
 
-@ajax_login_required
 def opml_export(request):
-    exporter = OPMLExporter(request.user)
+    user     = get_user(request)
+    exporter = OPMLExporter(user)
     opml     = exporter.process()
     now      = datetime.datetime.now()
     
