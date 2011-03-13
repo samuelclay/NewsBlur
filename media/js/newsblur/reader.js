@@ -43,7 +43,8 @@
             'feature_page': 0,
             'unfetched_feeds': 0,
             'fetched_feeds': 0,
-            'page_fill_outs': 0
+            'page_fill_outs': 0,
+            'recommended_feed_page': 0
         };
         this.cache = {
             'iframe_stories': {},
@@ -138,6 +139,10 @@
                 closable:               false,
                 fxName:                 "scale",
                 fxSettings:             { duration: 500, easing: "easeInOutQuint" },
+                north__paneSelector:    ".left-north",
+                north__size:            18,
+                north__resizeable:      false,
+                north__spacing_open:    0,
                 center__paneSelector:   ".left-center",
                 center__resizable:      false,
                 south__paneSelector:    ".left-south",
@@ -3246,7 +3251,7 @@
                 $.make('div', { className: 'NB-feed-story-premium-only-divider'}),
                 $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
                     'The full River of News is a ',
-                    $.make('a', { href: '#' }, 'premium feature'),
+                    $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
                     '.'
                 ])
             ]);
@@ -4122,10 +4127,10 @@
             
             if (NEWSBLUR.Preferences['hide_read_feeds'] == 1) {
                 $hidereadfeeds_button.attr('title', 'Show all sites');
-                $feed_list.parent().addClass('NB-feedlist-hide-read-feeds');
+                this.$s.$body.addClass('NB-feedlist-hide-read-feeds');
             } else {
                 $hidereadfeeds_button.attr('title', 'Show only unread stories');
-                $feed_list.parent().removeClass('NB-feedlist-hide-read-feeds');
+                this.$s.$body.removeClass('NB-feedlist-hide-read-feeds');
             }
             $hidereadfeeds_button.tipsy({
                 gravity: 'n',
@@ -4562,24 +4567,19 @@
             var $next = $('.NB-module-features .NB-module-next-page');
             var $previous = $('.NB-module-features .NB-module-previous-page');
 
-            $module.removeClass('NB-loaded');
-            _.delay(function() {
-                if (!$module.hasClass('NB-loaded')) {
-                  $module.addClass('NB-loading');
-                }
-            }, 50);
+            $module.addClass('NB-loading');
             
             if (direction == -1 && !this.counts['feature_page']) {
-                $module.addClass('NB-loaded');
+                $module.removeClass('NB-loading');
                 return;
             }
             if (direction == 1 && this.flags['features_last_page']) {
-                $module.addClass('NB-loaded');
+                $module.removeClass('NB-loading');
                 return;
             }
             
             this.model.get_features_page(this.counts['feature_page']+direction, function(features) {
-                $('.NB-module-features').addClass('NB-loaded').removeClass('NB-loading');
+                $module.removeClass('NB-loading');
                 self.counts['feature_page'] += direction;
                 
                 var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
@@ -4796,12 +4796,19 @@
             this.open_add_feed_modal({url: feed.feed_address});
         },
         
-        load_next_feed_in_recommended_feeds: function() {
+        load_recommended_feed: function(direction) {
+            var self = this;
+            var $module = $('.NB-module-recommended');
+            $module.addClass('NB-loading');
+            direction = direction || 0;
             
-        },
-        
-        load_previous_feed_in_recommended_feeds: function() {
-            
+            this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, function(resp) {
+                self.counts['recommended_feed_page'] += direction;
+
+                $module.removeClass('NB-loading');
+                $module.replaceWith(resp);
+                self.load_javascript_elements_on_page();
+            });
         },
         
         // ==========
@@ -5234,13 +5241,15 @@
             
             $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-next-page' }, function($t, $p){
                 e.preventDefault();
-                self.load_next_feed_in_recommended_feeds();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.load_recommended_feed(1);
+                }
             }); 
             
             $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-previous-page' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                  self.load_previous_feed_in_recommended_feeds();
+                  self.load_recommended_feed(-1);
                 }
             }); 
             

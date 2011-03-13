@@ -250,6 +250,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             {
                 $loading.removeClass('NB-active');
                 NEWSBLUR.reader.load_feeds();
+                NEWSBLUR.reader.load_recommended_feed();
                 $.modal.close();
             },
             error: function (data, status, e)
@@ -303,6 +304,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
         } else {

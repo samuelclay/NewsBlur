@@ -656,6 +656,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/load_features', {'page': page}, callback);
     },
     
+    load_recommended_feed: function(page, callback) {
+        this.make_request('/recommendations/load_recommended_feed', {'page': page}, callback);
+    },
+    
     save_feed_order: function(folders, callback) {
         this.make_request('/reader/save_feed_order', {'folders': $.toJSON(folders)}, callback);
     },

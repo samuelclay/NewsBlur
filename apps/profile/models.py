@@ -20,6 +20,7 @@ class Profile(models.Model):
     preferences = models.TextField(default="{}")
     view_settings = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
+    feed_pane_size = models.IntegerField(default=240)
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
     timezone = TimeZoneField(default="America/New_York")

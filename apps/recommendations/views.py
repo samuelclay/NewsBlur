@@ -1,1 +1,26 @@
-# Create your views here.
+from utils import log as logging
+from django.template import RequestContext
+from django.shortcuts import render_to_response
+from apps.recommendations.models import RecommendedFeed
+from apps.reader.models import UserSubscription
+# from utils import json_functions as json
+from utils.user_functions import get_user
+
+
+def load_recommended_feed(request):
+    user = get_user(request)
+    page = int(request.REQUEST.get('page', 0))
+    usersub = None
+    
+    recommended_feeds = RecommendedFeed.objects.all()[page:page+2]
+    if recommended_feeds:
+        usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
+    print recommended_feeds, len(recommended_feeds)
+    logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
+    
+    return render_to_response('recommendations/render_recommended_feed.xhtml', {
+        'recommended_feed'  : recommended_feeds and recommended_feeds[0],
+        'usersub'           : usersub,
+        'has_next_page'     : len(recommended_feeds) > 1,
+        'has_previous_page' : page != 0,
+    }, context_instance=RequestContext(request))

@@ -26,7 +26,7 @@ $(document).ready(function() {
     </ul>
   </div>
       
-  <div class="NB-modules-center">
+  <div class="NB-modules-center" style="margin-left: {{ user.profile.feed_pane_size }}px">
     {% if recommended_feed %}
       {% render_recommended_feed recommended_feed %}
     {% endif %}
@@ -329,23 +329,26 @@ $(document).ready(function() {
 
 
 <div class="left-pane">
+
+    <div class="left-north">
+      <div class="NB-feeds-header">
+        <div class="NB-feeds-header-right">
+          <div class="NB-feeds-header-sites">&nbsp;</div>
+        </div>
+        <div class="NB-feeds-header-left">
+          <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
+          <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
+          <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
+        </div>
+        <div class="NB-feeds-header-home">Dashboard</div>
+      </div>
+    </div>
     
     <div class="left-center">
 
       <div class="left-center-content NB-feedlist">
         <div id="NB-feeds-list-loader">Everything is on its way...</div>
         <div class="NB-feeds-header-container">
-          <div class="NB-feeds-header">
-            <div class="NB-feeds-header-right">
-              <div class="NB-feeds-header-sites">&nbsp;</div>
-            </div>
-            <div class="NB-feeds-header-left">
-              <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
-              <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
-              <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
-            </div>
-            <div class="NB-feeds-header-home">Dashboard</div>
-          </div>
           <div class="NB-feeds-header-river-container">
             <div class="NB-feeds-header-river NB-empty">
               <div class="NB-feeds-header-river-count unread_count"></div>

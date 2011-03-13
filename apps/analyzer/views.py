@@ -25,7 +25,10 @@ def save_classifier(request):
     payload = {}
 
     # Mark subscription as dirty, so unread counts can be recalculated
-    usersub = UserSubscription.objects.filter(user=request.user, feed=feed)
+    try:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersub = None
     if usersub and (not usersub.needs_unread_recalc or not usersub.is_trained):
         usersub.needs_unread_recalc = True
         usersub.is_trained = True

@@ -729,6 +729,10 @@ def delete_feed(request):
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_feed(feed_id, in_folder)
     
+    feed = Feed.objects.filter(pk=feed_id)
+    if feed:
+        feed[0].count_subscribers()
+    
     return dict(code=1)
     
 @ajax_login_required
@@ -793,7 +797,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     page = int(request.POST.get('page', 0))
-    logging.user(request.user, "~FBBrowse features: Page #%s" % (page+1))
+    logging.user(request.user, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
         'description': f['description'], 
