@@ -213,6 +213,7 @@
         },
         
         save_feed_pane_size: function(w, pane, $pane, state, options, name) {
+            $('.NB-modules-center').css('margin-left', state.size);
             this.model.preference('feed_pane_size', state.size);
         },
         
