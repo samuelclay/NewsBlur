@@ -32,14 +32,18 @@ zle -N expand-or-complete-with-dots
 bindkey "^I" expand-or-complete-with-dots
 unsetopt LIST_BEEP
 
+PROMPT='%{$fg_bold[green]%}%n%{$reset_color%}%{$fg[yellow]%}@%M:%{$fg_bold[blue]%}%~%b $(git_prompt_info)%{$reset_color%}%(!.#.$) '
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[red]%}‹%B"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%b%{$fg[red]%}›%{$reset_color%}"
+
 # Customize to your needs...
 alias ls='ls -pFa --color'
 alias cd..='cd ..'
 
 alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
-alias krf='ps ax | grep refresh_feeds | awk "{print $1}" | xargs kill -9'
 alias tlnb='echo "----------------\n"; tail -f logs/newsblur.log'
-alias cdsg='cd /home/conesus/staging'
-alias cdnb='cd /home/conesus/newsblur'
+alias cdsg='cd ~/staging'
+alias cdnb='cd ~/newsblur'
 
 cd ~/newsblur
