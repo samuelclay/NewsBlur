@@ -11,7 +11,7 @@ export LC_COLLATE='C'
 source $ZSH/oh-my-zsh.sh
 
 export PROMPT='%{$fg_bold[green]%}%n@%M:%{$fg_bold[blue]%}%~ $(git_prompt_info)%{$reset_color%}%(!.#.$) '
-export PYTHONSTARTUP=/root/.pystartup
+export PYTHONSTARTUP=$HOME/.pystartup
 export LSCOLORS='gxgxcxdxBxegedabagacad'
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'

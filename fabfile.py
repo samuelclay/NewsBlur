@@ -97,16 +97,6 @@ def backup_postgresql():
 # = Bootstrap =
 # =============
 
-def setup_common():
-    setup_installs()
-    setup_user()
-    setup_server()
-    setup_repo()
-    setup_libxml()
-    setup_python()
-    setup_mongoengine()
-    setup_supervisor()
-
 def setup_app():
     setup_common()
     setup_gunicorn()
@@ -114,11 +104,26 @@ def setup_app():
     setup_nginx()
 
 def setup_db():
+    setup_common()
+    setup_db_installs()
+    setup_rabbitmq()
     setup_postgres()
     setup_mongo()
 
 def setup_task():
+    setup_common()
+    setup_task_installs()
     setup_celery()
+
+def setup_common():
+    setup_installs()
+    setup_user()
+    setup_repo()
+    setup_local_files()
+    setup_libxml()
+    setup_python()
+    setup_mongoengine()
+    setup_supervisor()
 
 # ==================
 # = Setup - Common =
@@ -127,25 +132,29 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl')
     sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client-9.0')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
+    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
+    put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
-
+    sudo('chsh sclay -s /bin/zsh')
+    put('config/motd', '/etc/motd.tail', use_sudo=True)
+    
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
     # run('openssl rand -base64 8 | tee -a ~conesus/.password | passwd -stdin conesus')
     run('mkdir -p ~/.ssh && chmod 700 ~/.ssh')
+    run('rm -fr ~/.ssh/id_dsa*')
     run('ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ""')
-    put("~/.ssh/id_dsa.pub", "~/.ssh/authorized_keys")
-    
-def setup_server():
-    sudo('hostname app02')
+    run('touch ~/.ssh/authorized_keys')
+    put("~/.ssh/id_dsa.pub", "authorized_keys")
+    run('mv authorized_keys ~/.ssh/')
     
 def setup_repo():
     run('mkdir -p ~/code')
@@ -153,6 +162,10 @@ def setup_repo():
     with cd('~/newsblur'):
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
+
+def setup_local_files():
+    put("config/toprc", "./.toprc")
+    put("config/zshrc", "./.zshrc")
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -168,12 +181,13 @@ def setup_libxml():
         
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk lxml oauth2 pytz boto')
-    sudo('su -c \'echo "import sys; sys.setdefaultencoding(\"utf-8\")" > /usr/lib/python2.6/sitecustomize.py\'')
+    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk lxml oauth2 pytz boto')
+    sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+    put('config/pystartup.py', '.pystartup')
     
 def setup_mongoengine():
     with cd('~/code'):
-        run('git clone -f https://github.com/hmarr/mongoengine.git')
+        run('git clone https://github.com/hmarr/mongoengine.git')
         sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
         
 def setup_supervisor():
@@ -184,17 +198,19 @@ def setup_supervisor():
 # ===============
 
 def setup_app_installs():
-    sudo('apt-get install -y mongodb-clients')
+    # sudo('apt-get install -y ')
+    pass
     
 def setup_gunicorn():
     with cd('~/code'):
         run('git clone -f git://github.com/benoitc/gunicorn.git')
         sudo('ln -s ~/code/gunicorn/gunicorn /usr/local/lib/python2.6/dist-packages/gunicorn')
+    put('config/supervisor_gunicorn.conf', '/etc/supervisord/conf.d/gunicorn.conf', use_sudo=True)
 
 def update_gunicorn():
     with cd('~/code/gunicorn'):
         run('git pull')
-        sudo('python setup.py install')
+        sudo('python setup.py develop')
 
 def setup_nginx():
     with cd('~/code'):
@@ -218,18 +234,29 @@ def setup_nginx():
 # = Setup - DB =
 # ==============    
 
+def setup_db_installs():
+    pass
+    
+def setup_rabbitmq():
+    sudo('apt-get install -y rabbitmq-server')
+
 def setup_postgres():
     sudo('apt-get -y install postgresql-9.0 postgresql-client-9.0 postgresql-contrib-9.0 libpq-dev')
     
 def setup_mongo():
-    sudo('sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
+    sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
+    sudo('apt-get update')
     sudo('apt-get -y install mongodb')
     
 # ================
 # = Setup - Task =
 # ================
 
+def setup_task_installs():
+    # sudo('apt-get install -y ')
+    pass
+    
 def setup_celery():
     pass
     
