@@ -25,8 +25,9 @@
             $feed_link_loader: $('#NB-feeds-list-loader'),
             $feeds_progress: $('#NB-progress'),
             $header: $('.NB-feeds-header'),
-            $starred_header: $('.NB-feeds-header-starred'),
             $river_header: $('.NB-feeds-header-river'),
+            $starred_header: $('.NB-feeds-header-starred'),
+            $tryfeed_header: $('.NB-feeds-header-tryfeed'),
             $taskbar: $('.taskbar_nav'),
             $feed_floater: $('.NB-feed-story-view-floater'),
             $recommended_feeds: $('.NB-module-recommended')
@@ -946,7 +947,7 @@
                 $.make('div', { className: 'NB-feed-unfetched-icon' }),
                 (type == 'feed' && $.make('div', { className: 'NB-feedlist-manage-icon' }))
             ]).data('feed_id', feed.id);  
-            
+            NEWSBLUR.log(['make feed', $feed, feed]);
             $('.NB-feedbar-train-feed, .NB-feedbar-statistics', $feed).tipsy({
                 gravity: 's',
                 delayIn: 375
@@ -4796,8 +4797,17 @@
           }, this), 10*60*1000);
         },
         
-        load_feed_in_try_view: function(feed_id) {
-            
+        load_feed_in_tryfeed_view: function(feed_id) {
+            var feed = {
+                feed_title: $('.NB-recommended-title', this.$s.$recommended_feeds).text(),
+                feed_favicon: $('.NB-recommended-favicon', this.$s.$recommended_feeds).attr('src')
+            };
+            var $feed = this.make_feed_title_line(feed, false, 'feed');
+            NEWSBLUR.log(['load_feed_in_tryfeed_view', $feed, feed]);
+            var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
+
+            this.$s.$tryfeed_header.html($feed);
+            $tryfeed_container.slideDown(350);
         },
         
         add_recommended_feed: function(feed_id) {
@@ -5235,7 +5245,7 @@
             $.targetIs(e, { tagSelector: '.NB-recommended-try' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
-                self.load_feed_in_try_view(feed_id);
+                self.load_feed_in_tryfeed_view(feed_id);
             }); 
             
             $.targetIs(e, { tagSelector: '.NB-recommended-add' }, function($t, $p){
