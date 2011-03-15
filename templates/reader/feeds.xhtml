@@ -331,7 +331,7 @@ $(document).ready(function() {
 <div class="left-pane">
 
     <div class="left-north">
-      <div class="NB-feeds-header">
+      <div class="NB-feeds-header-dashboard">
         <div class="NB-feeds-header-right">
           <div class="NB-feeds-header-sites">&nbsp;</div>
         </div>
@@ -348,25 +348,36 @@ $(document).ready(function() {
 
       <div class="left-center-content NB-feedlist">
         <div id="NB-feeds-list-loader">Everything is on its way...</div>
-        <div class="NB-feeds-header-container">
-          <div class="NB-feeds-header-river-container">
-            <div class="NB-feeds-header-river NB-empty">
-              <div class="NB-feeds-header-river-count unread_count"></div>
-              <div class="NB-feeds-header-river-icon"></div>
-              <div class="NB-feeds-header-river-title">
+        <div class="NB-feeds-header-wrapper">
+          
+          <div class="NB-feeds-header-container NB-feeds-header-river-container">
+            <div class="NB-feeds-header NB-feeds-header-river NB-empty">
+              <div class="NB-feeds-header-count unread_count"></div>
+              <div class="NB-feeds-header-icon"></div>
+              <div class="NB-feeds-header-title">
                 Everything
               </div>
             </div>
           </div>
-          <div class="NB-feeds-header-starred-container">
-            <div class="NB-feeds-header-starred NB-empty">
-              <div class="NB-feeds-header-starred-count unread_count"></div>
-              <div class="NB-feeds-header-starred-icon"></div>
-              <div class="NB-feeds-header-starred-title">
+          
+          <div class="NB-feeds-header-container NB-feeds-header-starred-container">
+            <div class="NB-feeds-header NB-feeds-header-starred NB-empty">
+              <div class="NB-feeds-header-count unread_count"></div>
+              <div class="NB-feeds-header-icon"></div>
+              <div class="NB-feeds-header-title">
                 Saved Stories
               </div>
             </div>
           </div>
+          
+          <div class="NB-feeds-header-container NB-feeds-header-tryfeed-container">
+            <div class="NB-feeds-header NB-feeds-header-tryfeed NB-empty">
+              <div class="NB-feeds-header-count unread_count"></div>
+              <div class="NB-feeds-header-icon"></div>
+              <div class="NB-feeds-header-title"></div>
+            </div>
+          </div>
+          
         </div>
         <ul class="folder NB-feedlist" id="feed_list"></ul>
       </div>
