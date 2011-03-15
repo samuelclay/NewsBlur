@@ -108,7 +108,9 @@ def setup_db():
     setup_db_installs()
     setup_rabbitmq()
     setup_postgres()
+    configure_postgres()
     setup_mongo()
+    configure_mongo()
 
 def setup_task():
     setup_common()
@@ -124,6 +126,7 @@ def setup_common():
     setup_python()
     setup_mongoengine()
     setup_supervisor()
+    setup_hosts()
 
 # ==================
 # = Setup - Common =
@@ -144,7 +147,7 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh sclay -s /bin/zsh')
-    put('config/motd', '/etc/motd.tail', use_sudo=True)
+    
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
@@ -166,6 +169,7 @@ def setup_repo():
 def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")
+    put('config/motd', '/etc/motd.tail', use_sudo=True)
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -192,6 +196,9 @@ def setup_mongoengine():
         
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
+    
+def setup_hosts():
+    put('config/hosts', '/etc/hosts', use_sudo=True)
     
 # ===============
 # = Setup - App =
@@ -242,12 +249,18 @@ def setup_rabbitmq():
 
 def setup_postgres():
     sudo('apt-get -y install postgresql-9.0 postgresql-client-9.0 postgresql-contrib-9.0 libpq-dev')
+
+def configure_postgres():    
+    pass
     
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb')
+    
+def configure_mongo():
+    pass
     
 # ================
 # = Setup - Task =
