@@ -43,7 +43,7 @@ def set_preference(request):
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
-    response = dict(code=code, message=message)
+    response = dict(code=code, message=message, new_preferences=new_preferences)
     return response
 
 @ajax_login_required
