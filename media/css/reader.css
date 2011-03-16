@@ -1974,6 +1974,7 @@ background: transparent;
     padding-right: 2px;
     font-size: 10px;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .NB-feeds-header.NB-selected {
@@ -1990,10 +1991,10 @@ background: transparent;
 
 .NB-feeds-header .NB-feeds-header-title {
     display: block;
-    padding: 3px 40px 2px 23px;
+    padding: 0 40px 2px 23px;
     text-decoration: none;
     color: #F0F0F0;
-    line-height: 1.3em;
+    line-height: 18px;
     height: 14px;
     overflow: hidden;
     text-shadow: 0 1px 0 #060607;
@@ -2059,18 +2060,11 @@ background: transparent;
     display: none;
 }
 
-.NB-feeds-header-starred .NB-feeds-header-icon {
-    background: transparent url('../img/reader/star_blue.png') no-repeat 0 0;
+.NB-feeds-header-tryfeed .NB-feeds-header-title {
+  text-transform: none;
 }
 
-.NB-feeds-header-starred .NB-feeds-header-count {
-  background-color: #11448B;
-  display: block;
-  padding: 0 4px;
-  margin: 2px 3px 0 0;
-}
-
-.NB-feeds-header-starred.NB-empty .NB-feeds-header-count {
+.NB-feeds-header-tryfeed.NB-empty .NB-feeds-header-count {
   display: none;
 }
 
@@ -2274,6 +2268,16 @@ background: transparent;
 
 #story_taskbar {
     display: none;
+}
+
+#story_taskbar .NB-tryfeed-add {
+    margin: 1px auto 0px;
+    width: 30px;
+    height: 14px;
+    cursor: pointer;
+    -webkit-box-shadow: #9A9A9A 2px 2px 0px;
+    -moz-box-shadow: #9A9A9A 2px 2px 0px;
+    box-shadow: #9A9A9A 2px 2px 0px;
 }
 
 .NB-taskbar .NB-task-title {
@@ -3955,10 +3959,10 @@ background: transparent;
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
-    background: transparent url('../img/reader/twitter.png') no-repeat 0 0;
+    background: transparent url('../img/reader/twitter_icon_2.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-facebook {
-    background: transparent url('../img/reader/facebook.gif') no-repeat 0 0;
+    background: transparent url('../img/reader/facebook_icon.png') no-repeat 0 0;
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-image,

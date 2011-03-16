@@ -49,10 +49,16 @@ class UserSubscription(models.Model):
         feed['nt']         = self.unread_count_neutral
         feed['ng']         = self.unread_count_negative
         feed['active']     = self.active
+        if not self.active and self.user.profile.is_premium:
+            feed['active'] = True
+            self.active = True
+            self.save()
 
         return feed
             
     def save(self, *args, **kwargs):
+        if not self.active and self.user.profile.is_premium:
+            self.active = True
         try:
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:

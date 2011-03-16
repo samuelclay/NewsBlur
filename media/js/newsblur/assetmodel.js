@@ -36,8 +36,6 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.flags = {
         'favicons_fetching': false
     };
-    
-    this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
 
 NEWSBLUR.AssetModel.Reader.prototype = {
@@ -262,6 +260,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 for (var s in data.stories) {
                     this.story_keys[data.stories[s].id] = true;
                 }
+                this.feeds[feed_id].feed_address = data.feed_address || this.feeds[feed_id].feed_address;
             } else if (data) {
                 data.stories = _.select(data.stories, function(story) {
                     if (!self.story_keys[story.id]) {
@@ -461,6 +460,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return counts;
     },
     
+    set_feed: function(feed_id, feed) {
+        var self = this;
+        
+        return this.feeds[feed_id] = feed;
+    },
+    
     get_feed: function(feed_id) {
         var self = this;
         
@@ -622,7 +627,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     view_setting: function(feed_id, feed_view_setting, callback) {
         if (typeof feed_view_setting == 'undefined') {
-            return NEWSBLUR.Preferences.view_settings[feed_id+''] || this.DEFAULT_VIEW;
+            return NEWSBLUR.Preferences.view_settings[feed_id+''] || NEWSBLUR.Preferences.default_view;
         }
         
         NEWSBLUR.Preferences.view_settings[feed_id+''] = feed_view_setting;

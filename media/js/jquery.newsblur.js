@@ -131,7 +131,8 @@ NEWSBLUR.log = function(msg) {
     $.extend({
       
         favicon: function(feed_favicon) {
-            if (feed_favicon) return 'data:image/png;base64,' + feed_favicon;
+            if (feed_favicon && feed_favicon.indexOf('data:image/png;base64,') != -1) return feed_favicon;
+            else if (feed_favicon) return 'data:image/png;base64,' + feed_favicon;
             return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/world.png';
         },
         
