@@ -112,7 +112,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         var story = this.get_story(story_id);
         read = story.read_status;
-        story.read_status = true;
+        story.read_status = 1;
 
         if (!read && NEWSBLUR.Globals.is_authenticated) {
             if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
@@ -141,7 +141,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         for (s in this.stories) {
             if (this.stories[s].id == story_id) {
-                this.stories[s].read_status = false;
+                this.stories[s].read_status = 0;
                 break;
             }
         }
@@ -260,7 +260,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 for (var s in data.stories) {
                     this.story_keys[data.stories[s].id] = true;
                 }
-                this.feeds[feed_id].feed_address = data.feed_address || this.feeds[feed_id].feed_address;
+                if (data.feed_address) {
+                  this.feeds[feed_id].feed_address = data.feed_address;
+                }
             } else if (data) {
                 data.stories = _.select(data.stories, function(story) {
                     if (!self.story_keys[story.id]) {
