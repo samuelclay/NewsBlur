@@ -5,16 +5,16 @@ from utils.user_functions import get_user
 register = template.Library()
 
 @register.inclusion_tag('recommendations/render_recommended_feed.xhtml', takes_context=True)
-def render_recommended_feed(context, recommended_feed):
+def render_recommended_feed(context, recommended_feeds):
     user = get_user(context['user'])
     
-    usersub = UserSubscription.objects.filter(user=user, feed=recommended_feed.feed)
+    usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     
-    if recommended_feed.feed:
+    if recommended_feeds[0].feed:
         return {
-            'recommended_feed': recommended_feed,
+            'recommended_feed': recommended_feeds and recommended_feeds[0],
             'usersub': usersub,
             'user': context['user'],
-            'has_next_page': True
+            'has_next_page': len(recommended_feeds) > 1
         }
     

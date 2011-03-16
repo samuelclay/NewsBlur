@@ -54,7 +54,9 @@
             'iframe_story_positions_keys': [],
             'feed_view_story_positions_keys': [],
             'river_feeds_with_unreads': [],
-            'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10)
+            'mouse_position_y': parseInt(this.model.preference('lock_mouse_indicator'), 10),
+            '$feed_in_feed_list': {},
+            '$feed_counts_in_feed_list': {}
         };
         this.FEED_REFRESH_INTERVAL = (1000 * 60) * 1; // 1 minute
         
@@ -766,9 +768,6 @@
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.$s.$feed_link_loader.css({'display': 'block'});
                 this.model.load_feeds($.rescope(this.make_feeds, this));
-                if (this.flags['showing_feed_in_tryfeed_view']) {
-                    this.hide_tryfeed_view();
-                }
             }
         },
         
@@ -814,6 +813,10 @@
                 _.delay(_.bind(this.update_starred_count, this), 250);
             }
             
+            if (this.flags['showing_feed_in_tryfeed_view']) {
+                this.hide_tryfeed_view();
+                this.force_feed_refresh();
+            }
             this.add_url_from_querystring();
         },
         
@@ -1366,8 +1369,8 @@
                 'feed_title_floater_feed_id': null,
                 'feed_title_floater_story_id': null,
                 'last_feed_view_story_feed_id': null,
-                $feed_in_feed_list: {},
-                $feed_counts_in_feed_list: {}
+                '$feed_in_feed_list': {},
+                '$feed_counts_in_feed_list': {}
             });
             
             $.extend(this.counts, {

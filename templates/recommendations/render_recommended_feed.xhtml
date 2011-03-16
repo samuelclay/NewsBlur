@@ -2,8 +2,10 @@
   <h5 class="NB-module-header">
     Recommended Site
     <div class="NB-module-header-right">
-      <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
-      <a href="#" class="NB-module-direction NB-module-previous-page {% if not has_previous_page %}NB-disabled{% endif %}"></a>
+      {% if has_next_page or has_previous_page %}
+        <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
+        <a href="#" class="NB-module-direction NB-module-previous-page {% if not has_previous_page %}NB-disabled{% endif %}"></a>
+      {% endif %}
       <div class="NB-spinner NB-left"></div>
       <div class="NB-module-recommended-date">
         {{ recommended_feed.approved_date|date:"M j" }}

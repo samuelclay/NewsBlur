@@ -67,8 +67,7 @@ def index(request):
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
         
-    recommended_feed = RecommendedFeed.objects.filter(is_public=True).select_related('feed')
-    if recommended_feed: recommended_feed = recommended_feed[0]
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True).select_related('feed')
     # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
     howitworks_page = random.randint(0, 5)
@@ -84,7 +83,7 @@ def index(request):
         'active_count': active_count,
         'train_count': active_count - train_count,
         'account_images': range(1, 4),
-        'recommended_feed': recommended_feed,
+        'recommended_feeds': recommended_feeds,
         # 'recommended_feed_feedback': recommended_feed_feedback,
     }, context_instance=RequestContext(request))
 

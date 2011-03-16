@@ -3236,7 +3236,7 @@ background: transparent;
     margin-right: -12px;
     padding-right: 8px;
     
-    background: transparent url('../img/icons/silk/control_play_blue.png') no-repeat 4px center;
+    background: transparent url('../img/icons/silk/control_play.png') no-repeat 4px center;
 }
 .NB-module .NB-module-next-page.NB-javascript {
   opacity: .2;
@@ -3253,7 +3253,7 @@ background: transparent;
 }
 .NB-module .NB-module-previous-page {
     padding-left: 4px;
-    background: transparent url('../img/icons/silk/control_play_left_blue.png') no-repeat 8px center;
+    background: transparent url('../img/icons/silk/control_play_left.png') no-repeat 8px center;
 }
 .NB-module .NB-module-previous-page:link {
     background: transparent url('../img/icons/silk/control_play_left.png') no-repeat 8px center;

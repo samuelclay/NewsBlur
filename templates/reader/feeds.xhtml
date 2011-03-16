@@ -26,9 +26,9 @@ $(document).ready(function() {
     </ul>
   </div>
       
-  <div class="NB-modules-center" style="margin-left: {{ user.profile.feed_pane_size }}px">
-    {% if recommended_feed %}
-      {% render_recommended_feed recommended_feed %}
+  <div class="NB-modules-center" style="margin-left: {{ user_profile.feed_pane_size }}px">
+    {% if recommended_feeds %}
+      {% render_recommended_feed recommended_feeds %}
     {% endif %}
   </div>
 
