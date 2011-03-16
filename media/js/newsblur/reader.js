@@ -4850,6 +4850,8 @@
         },
         
         show_tryfeed_add_button: function() {
+            if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
+            
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button' }, 'Add')
             ]).css({'opacity': 0});

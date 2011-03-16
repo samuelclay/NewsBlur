@@ -21,7 +21,7 @@
     <img class="NB-recommended-favicon" src="data:image/png;base64,{{ recommended_feed.feed.icon.data }}" />
     <div class="NB-recommended-title">{{ recommended_feed.feed.feed_title }}</div>
     {# <div class="NB-recommended-link">{{ recommended_feed.feed.feed_link }}</div> #}
-    <div class="NB-recommended-description">{{ recommended_feed.feed.data.feed_tagline }}</div>
+    <div class="NB-recommended-description">{{ description }}</div>
     <div class="NB-modal-submit">
       <div class="NB-recommended-subscribers">
         <b>{{ recommended_feed.feed.num_subscribers }}</b> subscriber{{ recommended_feed.feed.num_subscribers|pluralize }}

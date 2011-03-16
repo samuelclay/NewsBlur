@@ -9,10 +9,12 @@ def render_recommended_feed(context, recommended_feeds):
     user = get_user(context['user'])
     
     usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
+    recommended_feed = recommended_feeds and recommended_feeds[0]
     
-    if recommended_feeds[0].feed:
+    if recommended_feed:
         return {
-            'recommended_feed': recommended_feeds and recommended_feeds[0],
+            'recommended_feed': recommended_feed,
+            'description': recommended_feed.description or recommended_feed.feed.data.feed_tagline,
             'usersub': usersub,
             'user': context['user'],
             'has_next_page': len(recommended_feeds) > 1

@@ -15,12 +15,15 @@ def load_recommended_feed(request):
     recommended_feeds = RecommendedFeed.objects.all()[page:page+2]
     if recommended_feeds:
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
-    print recommended_feeds, len(recommended_feeds)
     logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
-    return render_to_response('recommendations/render_recommended_feed.xhtml', {
-        'recommended_feed'  : recommended_feeds and recommended_feeds[0],
-        'usersub'           : usersub,
-        'has_next_page'     : len(recommended_feeds) > 1,
-        'has_previous_page' : page != 0,
-    }, context_instance=RequestContext(request))
+    recommended_feed = recommended_feeds and recommended_feeds[0]
+    
+    if recommended_feed:
+        return render_to_response('recommendations/render_recommended_feed.xhtml', {
+            'recommended_feed'  : recommended_feed,
+            'description'       : recommended_feed.description or recommended_feed.feed.data.feed_tagline,
+            'usersub'           : usersub,
+            'has_next_page'     : len(recommended_feeds) > 1,
+            'has_previous_page' : page != 0,
+        }, context_instance=RequestContext(request))
