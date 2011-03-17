@@ -1657,6 +1657,38 @@ background: transparent;
     text-transform: uppercase;
     margin: 4px 24px 0 0;
     text-shadow: 1px 1px 0 #F0F0F0;
+    cursor: pointer;
+}
+#story_pane .NB-feed-story-author.NB-score-1 {
+    color: #34912E;
+}
+#story_pane .NB-feed-story-author.NB-score--1 {
+    color: #A90103;
+}
+#story_pane .NB-feed-story-author:hover {
+    /* Gray, active -> [Light] Green */
+    color: #89AE6E;
+}
+#story_pane .NB-feed-story-author.NB-score-1:hover {
+    /* Green, active -> [Light] Red */
+    color: #E35356;
+}
+#story_pane .NB-feed-story-author.NB-score--1:hover {
+    /* Red, active -> [Light] Grey */
+    color: #E2E2E2;
+/*    color: #A7A399;*/
+}
+#story_pane .NB-feed-story-author.NB-score-now-0:hover {
+    /* Grey, active */
+    color: #808080;
+}
+#story_pane .NB-feed-story-author.NB-score-now-1.NB-score-1:hover {
+    /* Green, active */
+    color: #34912E;
+}
+#story_pane .NB-feed-story-author.NB-score-now--1.NB-score--1:hover {
+    /* Red, active */
+    color: #A90103;
 }
 
 #story_pane .NB-feed-story-tags {
@@ -1739,12 +1771,6 @@ background: transparent;
     color: #34912E;
 }
 #story_pane .NB-feed-story-title .NB-score--1 {
-    color: #A90103;
-}
-#story_pane .NB-feed-story-author.NB-score-1 {
-    color: #34912E;
-}
-#story_pane .NB-feed-story-author.NB-score--1 {
     color: #A90103;
 }
 #story_pane .NB-feed-story-header .NB-feed-story-date {

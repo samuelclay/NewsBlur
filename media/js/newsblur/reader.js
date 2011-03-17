@@ -2526,7 +2526,7 @@
                 } else if (score < 0) {
                     $story.addClass('NB-story-negative');
                 }
-                // NEWSBLUR.log(['story', story, story.read_status, $story]);
+                NEWSBLUR.log(['story recalculation', story, story.read_status, $story]);
                 // $story.toggleClass('read', !story.read_status);
                 $('.NB-feed-story-tags', $story).replaceWith(this.make_story_feed_tags(story));
                 $('.NB-feed-story-author', $story).replaceWith(this.make_story_feed_author(story));
@@ -3080,8 +3080,8 @@
             var score = this.model.classifiers.authors[story.story_authors];
 
             return $.make('div', { 
-                className: 'NB-feed-story-author ' + (!!score && 'NB-score-'+score) 
-            }, story.story_authors);
+                className: 'NB-feed-story-author ' + (!!score && 'NB-score-'+score || '') 
+            }, story.story_authors).data('author', story.story_authors);
         },
         
         make_story_feed_tags: function(story) {
@@ -3096,10 +3096,10 @@
                 }));
         },
         
-        preserve_classifier_color: function($story, value, score) {
+        preserve_classifier_color: function($story, classifier_type, value, score) {
             var $t;
-            $('.NB-feed-story-tag', $story).each(function() {
-                if ($(this).data('tag') == value) {
+            $('.NB-feed-story-'+classifier_type, $story).each(function() {
+                if ($(this).data(classifier_type) == value) {
                     $t = $(this);
                     return false;
                 }
@@ -3118,7 +3118,7 @@
               });
         },
         
-        save_classifier: function(type, value, score, feed_id) {
+        save_classifier: function(type, value, score, feed_id, callback) {
             var data = {
                 'feed_id': feed_id
             };
@@ -3132,7 +3132,7 @@
             
             this.model.classifiers[type+'s'][value] = score;
             this.model.save_classifier_publisher(data, _.bind(function(resp) {
-                this.force_feeds_refresh(null, true, feed_id);
+                this.force_feeds_refresh(callback, false, feed_id);
             }, this));
             this.recalculate_story_scores(feed_id);
         },
@@ -4319,22 +4319,6 @@
             this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed));
         },
         
-        force_feed_refresh: function(feed_id, $feed) {
-            var self = this;
-            feed_id  = feed_id || this.active_feed;
-            $feed    = $feed || this.find_feed_in_feed_list(feed_id);
-            
-            this.force_feeds_refresh(function(feeds) {
-                var $new_feed = self.make_feed_title_line(feeds[feed_id], true, 'feed');
-                if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
-                $feed.replaceWith($new_feed);
-                self.hover_over_feed_titles($new_feed);
-                if (self.active_feed == feed_id) {
-                    self.open_feed(feed_id, true, $new_feed);
-                }
-            }, true, feed_id);
-        },
-        
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.FEED_REFRESH_INTERVAL;
@@ -4356,6 +4340,22 @@
                   }, self), self.flags['has_unfetched_feeds']);
                 }
             }, refresh_interval);
+        },
+        
+        force_feed_refresh: function(feed_id, $feed) {
+            var self = this;
+            feed_id  = feed_id || this.active_feed;
+            $feed    = $feed || this.find_feed_in_feed_list(feed_id);
+            
+            this.force_feeds_refresh(function(feeds) {
+                var $new_feed = self.make_feed_title_line(feeds[feed_id], true, 'feed');
+                if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
+                $feed.replaceWith($new_feed);
+                self.hover_over_feed_titles($new_feed);
+                if (self.active_feed == feed_id) {
+                    self.open_feed(feed_id, true, $new_feed);
+                }
+            }, true, feed_id);
         },
         
         force_feeds_refresh: function(callback, replace_active_feed, feed_id) {
@@ -5020,10 +5020,22 @@
                 e.preventDefault();
                 var $story = $t.closest('.NB-feed-story');
                 var feed_id = $story.data('feed_id');
-                var tag = $t.data('tag');
+                var classifier_type = 'tag';
+                var tag = $t.data(classifier_type);
                 var score = $t.hasClass('NB-score-1') ? -1 : $t.hasClass('NB-score--1') ? 0 : 1;
-                self.save_classifier('tag', tag, score, feed_id);
-                self.preserve_classifier_color($story, tag, score);
+                self.save_classifier(classifier_type, tag, score, feed_id);
+                self.preserve_classifier_color($story, classifier_type, tag, score);
+            });
+            
+            $.targetIs(e, { tagSelector: '.NB-feed-story-author' }, function($t, $p){
+                e.preventDefault();
+                var $story = $t.closest('.NB-feed-story');
+                var feed_id = $story.data('feed_id');
+                var classifier_type = 'author';
+                var author = $t.data(classifier_type);
+                var score = $t.hasClass('NB-score-1') ? -1 : $t.hasClass('NB-score--1') ? 0 : 1;
+                self.save_classifier(classifier_type, author, score, feed_id);
+                self.preserve_classifier_color($story, classifier_type, tag, score);
             });
             
             $.targetIs(e, { tagSelector: '.story' }, function($t, $p){
