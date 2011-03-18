@@ -1675,7 +1675,7 @@ background: transparent;
 }
 #story_pane .NB-feed-story-author.NB-score--1:hover {
     /* Red, active -> [Light] Grey */
-    color: #E2E2E2;
+    color: #B1B1B1;
 /*    color: #A7A399;*/
 }
 #story_pane .NB-feed-story-author.NB-score-now-0:hover {
@@ -1858,38 +1858,26 @@ background: transparent;
     margin: 0px;
 }
 
-.content-pane .feed {
+.content-pane .feed_counts_floater {
     position: absolute;
     bottom: 1px;
     left: 350px;
+    height: 30px;
     z-index: 10;
     display: block;
     opacity: .1;
     font-size: 20px;
 }
 
-.content-pane .feed .feed_counts {
-    float: left;
-}
-
-.content-pane .feed .feed_counts .feed_counts_floater {
-    float: left;
-}
-
-.content-pane .feed .feed_counts .unread_count {
+.content-pane .feed_counts_floater .unread_count {
     float: right;
     padding: 0 8px;
 }
 
-.content-pane .feed .unread_count.unread_count_full {
+.content-pane .feed_counts_floater .unread_count.unread_count_full {
     display: block;
 }
 
-.content-pane .feed .feed_favicon,
-.content-pane .feed .feed_title,
-.content-pane .feed .NB-feedbar-mark-feed-read {
-    display: none;
-}
 
 /* ================ */
 /* = Feeds Header = */
@@ -4647,6 +4635,7 @@ background: transparent;
   width: 220px;
   border: 1px solid #909090;
   padding: 4px;
+  margin: 6px 0 0 0;
 }
 
 /* ============================ */

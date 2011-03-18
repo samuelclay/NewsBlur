@@ -2310,11 +2310,12 @@
         
         make_content_pane_feed_counter: function(feed_id) {
             var $content_pane = this.$s.$content_pane;
+            feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
-            var $counter = this.make_feed_title_line(feed, false, 'counter');
+            var $counter = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng);
             $counter.css({'opacity': 0});
             
-            $('.feed', $content_pane).remove();
+            $('.feed_counts_floater', $content_pane).remove();
             this.$s.$story_taskbar.append($counter);
             _.delay(function() {
                 $counter.animate({'opacity': .1}, {'duration': 1000, 'queue': false});
@@ -2323,10 +2324,10 @@
             $('.unread_count', $content_pane).corner('4px');
             
             // Center the counter
-            var i_width = $('.feed', $content_pane).width();
+            var i_width = $('.feed_counts_floater', $content_pane).width();
             var o_width = $content_pane.width();
             var left = (o_width / 2.0) - (i_width / 2.0);
-            $('.feed', $content_pane).css({'left': left});
+            $('.feed_counts_floater', $content_pane).css({'left': left});
         },
         
         create_story_titles: function(stories, options) {
@@ -4355,7 +4356,7 @@
                 if (self.active_feed == feed_id) {
                     self.open_feed(feed_id, true, $new_feed);
                 }
-            }, true, feed_id);
+            }, false, feed_id);
         },
         
         force_feeds_refresh: function(callback, replace_active_feed, feed_id) {
@@ -4368,11 +4369,11 @@
             this.flags['pause_feed_refreshing'] = true;
             
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
-              this.post_feed_refresh(updated_feeds, replace_active_feed);
+              this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
             }, this), this.flags['has_unfetched_feeds'], feed_id);
         },
         
-        post_feed_refresh: function(updated_feeds, replace_active_feed) {
+        post_feed_refresh: function(updated_feeds, replace_active_feed, single_feed_id) {
             var feeds = this.model.feeds;
             
             if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
@@ -4402,7 +4403,9 @@
                         if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                         $feed_on_page.replaceWith($feed);
                         this.mark_feed_as_selected(this.active_feed, $feed);
-                        this.recalculate_story_scores(feed_id);
+                        if (!single_feed_id) this.recalculate_story_scores(feed_id);
+                        this.show_feed_hidden_story_title_indicator();
+                        this.make_content_pane_feed_counter();
                     }
                 } else {
                     if (!this.flags['has_unfetched_feeds']) {
