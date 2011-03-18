@@ -17,13 +17,14 @@ def index(requst):
 @json.json_view
 def save_classifier(request):
     post = request.POST
-    logging.user(request.user, "~FGSaving classifier: ~SB%s~SN ~FW%s" % (feed, post))
     feed_id = int(post['feed_id'])
     feed = get_object_or_404(Feed, pk=feed_id)
     code = 0
     message = 'OK'
     payload = {}
 
+    logging.user(request.user, "~FGSaving classifier: ~SB%s~SN ~FW%s" % (feed, post))
+    
     # Mark subscription as dirty, so unread counts can be recalculated
     try:
         usersub = UserSubscription.objects.get(user=request.user, feed=feed)
