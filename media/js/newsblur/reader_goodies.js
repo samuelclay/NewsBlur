@@ -106,7 +106,7 @@ NEWSBLUR.ReaderGoodies.prototype = {
         $.targetIs(e, { tagSelector: '.NB-goodies-safari-link' }, function($t, $p) {
             e.preventDefault();
 
-            window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'NewsBlur Safari Helper.app';
+            window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'extensions/NewsBlur Safari Helper.app.zip';
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {
