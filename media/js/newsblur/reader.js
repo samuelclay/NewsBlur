@@ -3132,7 +3132,7 @@
             
             this.model.classifiers[type+'s'][value] = score;
             this.model.save_classifier_publisher(data, _.bind(function(resp) {
-                this.force_feeds_refresh(callback, false, feed_id);
+                this.force_feeds_refresh(callback, true, feed_id);
             }, this));
             this.recalculate_story_scores(feed_id);
         },
@@ -5035,7 +5035,7 @@
                 var author = $t.data(classifier_type);
                 var score = $t.hasClass('NB-score-1') ? -1 : $t.hasClass('NB-score--1') ? 0 : 1;
                 self.save_classifier(classifier_type, author, score, feed_id);
-                self.preserve_classifier_color($story, classifier_type, tag, score);
+                self.preserve_classifier_color($story, classifier_type, author, score);
             });
             
             $.targetIs(e, { tagSelector: '.story' }, function($t, $p){
