@@ -238,10 +238,10 @@ class UserSubscription(models.Model):
         self.needs_unread_recalc = False
         
         self.save()
-        
-        if (self.unread_count_positive == 0 and 
-            self.unread_count_neutral == 0):
-            self.mark_feed_read()
+
+        # if (self.unread_count_positive == 0 and 
+        #     self.unread_count_neutral == 0):
+        #     self.mark_feed_read()
         
         cache.delete('usersub:%s' % self.user.id)
         
