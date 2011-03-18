@@ -99,12 +99,14 @@ def backup_postgresql():
 
 def setup_app():
     setup_common()
+    setup_app_motd()
     setup_gunicorn()
     update_gunicorn()
     setup_nginx()
 
 def setup_db():
     setup_common()
+    setup_db_motd()
     setup_db_installs()
     setup_rabbitmq()
     setup_postgres()
@@ -114,6 +116,7 @@ def setup_db():
 
 def setup_task():
     setup_common()
+    setup_task_motd()
     setup_task_installs()
     setup_celery()
 
@@ -169,7 +172,6 @@ def setup_repo():
 def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")
-    put('config/motd', '/etc/motd.tail', use_sudo=True)
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -207,12 +209,15 @@ def setup_hosts():
 def setup_app_installs():
     # sudo('apt-get install -y ')
     pass
-    
+
+def setup_app_motd():
+    put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
+
 def setup_gunicorn():
+    put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
     with cd('~/code'):
-        run('git clone -f git://github.com/benoitc/gunicorn.git')
+        run('git clone git://github.com/benoitc/gunicorn.git')
         sudo('ln -s ~/code/gunicorn/gunicorn /usr/local/lib/python2.6/dist-packages/gunicorn')
-    put('config/supervisor_gunicorn.conf', '/etc/supervisord/conf.d/gunicorn.conf', use_sudo=True)
 
 def update_gunicorn():
     with cd('~/code/gunicorn'):
@@ -243,9 +248,15 @@ def setup_nginx():
 
 def setup_db_installs():
     pass
+
+def setup_db_motd():
+    put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)
     
 def setup_rabbitmq():
     sudo('apt-get install -y rabbitmq-server')
+    sudo('rabbitmqctl add_user newsblur newsblur')
+    sudo('rabbitmqctl add_vhost newsblurvhost')
+    sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
 def setup_postgres():
     sudo('apt-get -y install postgresql-9.0 postgresql-client-9.0 postgresql-contrib-9.0 libpq-dev')
@@ -269,9 +280,12 @@ def configure_mongo():
 def setup_task_installs():
     # sudo('apt-get install -y ')
     pass
+
+def setup_task_motd():
+    put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
     
 def setup_celery():
-    pass
+    put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     
 # ======
 # = S3 =
