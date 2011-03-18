@@ -2305,7 +2305,7 @@
         
         hide_content_pane_feed_counter: function() {
             var $content_pane = this.$s.$content_pane;
-            $('.feed', $content_pane).remove();
+            $('.feed_counts_floater', $content_pane).remove();
         },
         
         make_content_pane_feed_counter: function(feed_id) {
