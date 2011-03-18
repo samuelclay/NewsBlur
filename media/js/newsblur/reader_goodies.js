@@ -34,6 +34,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
+                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
+                  href: '#'
+              }, 'Add to Chrome'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chome: NewsBlur Chrome Web App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
                   className: 'NB-goodies-safari-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
               }, 'Add to Safari'),
@@ -114,6 +122,12 @@ NEWSBLUR.ReaderGoodies.prototype = {
             e.preventDefault();
 
             window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'extensions/NewsBlur Safari Helper.app.zip';
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {
+            e.preventDefault();
+
+            window.location.href = 'https://chrome.google.com/webstore/detail/gchdledhagjbhhodjjhiclbnaioljomj';
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {

@@ -4629,6 +4629,16 @@ background: transparent;
   margin: 0 6px 0 0;
   background: transparent url('../img/reader/safari.png') no-repeat 0 0;
 }
+.NB-modal-goodies .NB-goodies-chrome-link {
+  float: right;
+}
+.NB-modal-goodies .NB-goodies-chrome {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('../img/reader/chrome.png') no-repeat 0 0;
+}
 .NB-modal-goodies .NB-goodies-subtitle {
     margin: 14px 8px 4px;
     line-height: 18px;
