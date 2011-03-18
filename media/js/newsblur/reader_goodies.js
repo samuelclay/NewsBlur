@@ -38,7 +38,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
                   href: '#'
               }, 'Add to Safari'),
               $.make('div', { className: 'NB-goodies-safari' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader')
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                'To use this extension, extract and move the NewsBlur Safari Helper.app ',
+                'to your Applications folder. Then in ',
+                $.make('b', 'Safari > Settings > RSS'),
+                ' choose the new NewsBlur Safari Helper.app. Then clicking on the RSS button in ',
+                'Safari will open the feed in NewsBlur. Simple!'
+              ])
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {

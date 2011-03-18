@@ -4629,6 +4629,11 @@ background: transparent;
   margin: 0 6px 0 0;
   background: transparent url('../img/reader/safari.png') no-repeat 0 0;
 }
+.NB-modal-goodies .NB-goodies-subtitle {
+    margin: 14px 8px 4px;
+    line-height: 18px;
+    color: #707070;
+}
 
 .NB-modal-goodies .NB-goodies-custom-input {
   float: right;
