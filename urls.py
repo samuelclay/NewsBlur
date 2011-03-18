@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     (r'^profile/', include('apps.profile.urls')),
     (r'^import/', include('apps.feed_import.urls')),
     (r'^api/', include('apps.api.urls')),
+    (r'^recommendations/', include('apps.recommendations.urls')),
 )
 
 if settings.DEVELOPMENT:

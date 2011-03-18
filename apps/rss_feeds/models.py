@@ -24,6 +24,7 @@ from utils import log as logging
 from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
+from utils.feed_functions import relative_timesince
 from utils.story_functions import pre_process_story
 from utils.diff import HTMLDiff
 
@@ -58,6 +59,38 @@ class Feed(models.Model):
             self.feed_title = "[Untitled]"
             self.save()
         return self.feed_title
+        
+    def canonical(self, full=False):
+        feed = {
+            'id': self.pk,
+            'feed_title': self.feed_title,
+            'feed_address': self.feed_address,
+            'feed_link': self.feed_link,
+            'updated': relative_timesince(self.last_update),
+            'subs': self.num_subscribers,
+            'favicon': self.icon.data,
+            'favicon_color': self.icon.color,
+            'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
+        }
+        
+        if not self.fetched_once:
+            feed['not_yet_fetched'] = True
+        if self.has_page_exception or self.has_feed_exception:
+            feed['has_exception'] = True
+            feed['exception_type'] = 'feed' if self.has_feed_exception else 'page'
+            feed['exception_code'] = self.exception_code
+        elif full:
+            feed['has_exception'] = False
+            feed['exception_type'] = None
+            feed['exception_code'] = self.exception_code
+        
+        if full:
+            feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
+            feed['feed_authors'] = json.decode(self.data.popular_authors) if self.data.popular_authors else []
+
+            
+        return feed
+
 
     def save(self, *args, **kwargs):
         if not self.last_update:

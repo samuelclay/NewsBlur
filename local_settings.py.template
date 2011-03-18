@@ -33,7 +33,7 @@ BROKER_HOST = "127.0.0.1"
 # Logging (setup for development)
 LOG_TO_STREAM = True
 if len(logging._handlerList) < 1:
-    LOG_FILE = '/home/conesus/newsblur/logs/development.log'
+    LOG_FILE = '~/newsblur/logs/development.log'
     logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)-12s: %(message)s',
                             datefmt='%b %d %H:%M:%S',

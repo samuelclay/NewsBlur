@@ -14,6 +14,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.open_modal();
         this.handle_keystrokes();
         this.setup_autocomplete();
+        this.focus_add_feed();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -56,6 +57,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         ])
                     ])
                 ]),
+                // $.make('div', { className: 'NB-fieldset-divider' }, [
+                //     'Google Reader and OPML'
+                // ]),
                 $.make('div', { className: 'NB-fieldset NB-anonymous-ok NB-modal-submit' }, [
                     $.make('h5', [
                         'Import feeds'
@@ -72,7 +76,10 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                     ])
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-add-opml NB-modal-submit' }, [
-                    $.make('h5', 'Upload OPML'),
+                    $.make('h5', [
+                        'Upload OPML',
+                        $.make('a', { className: 'NB-right NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Export OPML')
+                    ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
                             $.make('div', { className: 'NB-loading' }),
@@ -137,7 +144,9 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
+                    dialog.data.fadeIn(200, function() {
+                        self.focus_add_feed();
+                    });
                 });
             },
             'onShow': function(dialog) {
@@ -164,12 +173,21 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         });
     },
     
+    focus_add_feed: function() {
+        var $add = $('.NB-add-url', this.$modal);
+        if (!NEWSBLUR.Globals.is_anonymous) {
+            _.delay(function() {
+                $add.focus();
+            }, 200);
+        }
+    },
+    
     setup_autocomplete: function() {
         var self = this;
         var $add = $('.NB-add-url', this.$modal);
         
         $add.autocomplete({
-            minLength: 0,
+            minLength: 1,
             source: '/rss_feeds/feed_autocomplete',
             focus: function(e, ui) {
                 $add.val(ui.item.value);
@@ -224,7 +242,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
 
         // NEWSBLUR.log(['Uploading']);
         $.ajaxFileUpload({
-            url: '/import/opml_upload', 
+            url: NEWSBLUR.URLs['opml-upload'], 
             secureuri: false,
             fileElementId: 'opml_file_input',
             dataType: 'text',
@@ -232,6 +250,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             {
                 $loading.removeClass('NB-active');
                 NEWSBLUR.reader.load_feeds();
+                NEWSBLUR.reader.load_recommended_feed();
                 $.modal.close();
             },
             error: function (data, status, e)
@@ -285,6 +304,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
         } else {

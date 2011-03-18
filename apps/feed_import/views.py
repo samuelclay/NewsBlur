@@ -1,3 +1,4 @@
+import datetime
 import urlparse
 from utils import log as logging
 import oauth2 as oauth
@@ -11,9 +12,9 @@ from django.contrib.auth import login as login_user
 from django.shortcuts import render_to_response
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
-from apps.feed_import.models import OAuthToken, OPMLImporter, GoogleReaderImporter
+from apps.feed_import.models import OAuthToken, OPMLImporter, OPMLExporter, GoogleReaderImporter
 from utils import json_functions as json
-from utils.user_functions import ajax_login_required
+from utils.user_functions import ajax_login_required, get_user
 
 
 @ajax_login_required
@@ -43,6 +44,18 @@ def opml_upload(request):
     data = json.encode(dict(message=message, code=code, payload=payload))
     return HttpResponse(data, mimetype='text/plain')
 
+def opml_export(request):
+    user     = get_user(request)
+    exporter = OPMLExporter(user)
+    opml     = exporter.process()
+    now      = datetime.datetime.now()
+    
+    response = HttpResponse(opml, mimetype='text/xml')
+    response['Content-Disposition'] = 'attachment; filename=NewsBlur Subscriptions - %s' % (
+        now.strftime('%d %B %Y')
+    )
+    
+    return response
         
 def reader_authorize(request):
     logging.user(request.user, "~BB~FW~SBAuthorize Google Reader import - %s" % (

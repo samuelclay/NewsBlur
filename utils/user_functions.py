@@ -28,9 +28,12 @@ def ajax_login_required(function=None):
         return _dec(function)
 
 def get_user(request):
-    if request.user.is_authenticated():
-        user = request.user
+    if not hasattr(request, 'user'):
+        user = request
     else:
+        user = request.user
+        
+    if user.is_anonymous():
         user = cache.get('user:%s' % DEFAULT_USER, None)
         if not user:
             user = User.objects.get(username=DEFAULT_USER)

@@ -2,31 +2,39 @@
   <h5 class="NB-module-header">
     Recommended Site
     <div class="NB-module-header-right">
+      {% if has_next_page or has_previous_page %}
+        <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
+        <a href="#" class="NB-module-direction NB-module-previous-page {% if not has_previous_page %}NB-disabled{% endif %}"></a>
+      {% endif %}
+      <div class="NB-spinner NB-left"></div>
       <div class="NB-module-recommended-date">
         {{ recommended_feed.approved_date|date:"M j" }}
         <span>{{ recommended_feed.approved_date|date:"S" }}</span>,
         {{ recommended_feed.approved_date|date:"Y" }}
       </div>
-      {% if user.is_staff %}
-        <div class="NB-module-recommended-add">
-          <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
-        </div>
-        <script>
-        $(document).ready(function() {
-          $('#add-feature-button').click(function(e) {
-            e.preventDefault();
-            $('#add-feature-form').fadeIn(500);
-          });
-        });
-        </script>
-      {% endif %}
-      <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-      <a href="#" class="NB-module-direction NB-module-next-page"></a>
     </div>
   </h5>
+  
+  <div class="NB-recommended" data-feed-id="{{ recommended_feed.feed.pk }}">
+    <div class="NB-recommended-statistics NB-javascript"></div>
+    <div class="NB-recommended-intelligence NB-javascript"></div>
+    <img class="NB-recommended-favicon" src="data:image/png;base64,{{ recommended_feed.feed.icon.data }}" />
+    <div class="NB-recommended-title">{{ recommended_feed.feed.feed_title }}</div>
+    {# <div class="NB-recommended-link">{{ recommended_feed.feed.feed_link }}</div> #}
+    <div class="NB-recommended-description">{{ description }}</div>
+    <div class="NB-modal-submit">
+      <div class="NB-recommended-subscribers">
+        <b>{{ recommended_feed.feed.num_subscribers }}</b> subscriber{{ recommended_feed.feed.num_subscribers|pluralize }}
+        <br />
+        <b>{{ recommended_feed.feed.average_stories_per_month }}</b> {{ recommended_feed.feed.average_stories_per_month|pluralize:"story,stories" }}  per month
+      </div>
+      {% if usersub %}
+        <div class="NB-recommended-added">Subscribed</div>
+      {% else %}
+        <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">Try</div>
+        <div class="NB-recommended-add NB-modal-submit-close NB-modal-submit-button NB-javascript">Add</div>
+      {% endif %}
+    </div>
+  </div>
 
-  <div class="NB-module-title">{{ recommended_feed.feed.feed_title }}</div>
-  <img class="NB-recommended-favicon" src="data:image/png;base64,{{ recommended_feed.feed.icon.data }}" />
-  <div class="NB-recommended-link">{{ recommended_feed.feed.feed_link }}</div>
-  <div class="NB-recommended-tagline">{{ recommended_feed.feed.data.feed_tagline }}</div>
 </div>

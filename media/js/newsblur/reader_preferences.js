@@ -261,6 +261,15 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Sharing services'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-opml' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Backup Your Sites',
+                        $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup.')
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-password' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', { className: 'NB-preference-option' }, [

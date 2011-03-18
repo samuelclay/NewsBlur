@@ -12,7 +12,7 @@ from utils.user_functions import ajax_login_required
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 
-SINGLE_FIELD_PREFS = ('timezone',)
+SINGLE_FIELD_PREFS = ('timezone','feed_pane_size')
 SPECIAL_PREFERENCES = ('old_password', 'new_password',)
 
 @ajax_login_required
@@ -43,7 +43,7 @@ def set_preference(request):
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
-    response = dict(code=code, message=message)
+    response = dict(code=code, message=message, new_preferences=new_preferences)
     return response
 
 @ajax_login_required
