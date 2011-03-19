@@ -73,6 +73,8 @@
                 $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
                     $.make('img', { className: 'NB-bookmarklet-folder-label', src: 'data:image/png;charset=utf-8;base64,{{ folder_image }}' }),
                     this.make_folders(),
+                    $.make('input', { type: 'text', name: 'new_folder_name', className: 'NB-bookmarklet-folder-new' }),
+                    $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' })
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Add this site')

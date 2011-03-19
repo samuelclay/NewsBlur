@@ -16,6 +16,8 @@ def add_site_load_script(request, token):
     accept_image = base64.b64encode(accept_image.read())
     error_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/error.png'))
     error_image = base64.b64encode(error_image.read())
+    new_folder_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/arrow_down_right.png'))
+    new_folder_image = base64.b64encode(new_folder_image.read())
     try:
         profile = Profile.objects.get(secret_token=token)
         usf = UserSubscriptionFolders.objects.get(
@@ -34,6 +36,7 @@ def add_site_load_script(request, token):
             'folder_image': folder_image,
             'accept_image': accept_image,
             'error_image': error_image,
+            'new_folder_image': new_folder_image,
         }, 
         context_instance=RequestContext(request),
         mimetype='application/javascript')
