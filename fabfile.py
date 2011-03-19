@@ -127,9 +127,9 @@ def setup_common():
     setup_local_files()
     setup_libxml()
     setup_python()
-    setup_mongoengine()
     setup_supervisor()
     setup_hosts()
+    setup_mongoengine()
 
 # ==================
 # = Setup - Common =
@@ -191,17 +191,29 @@ def setup_python():
     sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
     put('config/pystartup.py', '.pystartup')
     
-def setup_mongoengine():
-    with cd('~/code'):
-        run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
-        
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
     
 def setup_hosts():
     put('config/hosts', '/etc/hosts', use_sudo=True)
-    
+
+def setup_mongoengine():
+    with cd('~/code'):
+        run('git clone https://github.com/hmarr/mongoengine.git')
+        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
+        
+def setup_pymongo_repo():
+    with cd('~/code'):
+        run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
+    with cd('~/code/pymongo'):
+        sudo('python setup.py install')
+        
+def setup_forked_mongoengine():
+    with cd('~/code/mongoengine'):
+        run('git remote add github http://github.com/samuelclay/mongoengine')
+        run('git pull github dev')
+        
+        
 # ===============
 # = Setup - App =
 # ===============
