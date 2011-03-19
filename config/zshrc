@@ -43,6 +43,7 @@ alias cd..='cd ..'
 
 alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
 alias tlnb='echo "----------------\n"; tail -f logs/newsblur.log'
+alias sp='~/newsblur/manage.py shell_plus'
 alias cdsg='cd ~/staging'
 alias cdnb='cd ~/newsblur'
 

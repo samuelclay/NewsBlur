@@ -100,12 +100,13 @@ def backup_postgresql():
 def setup_app():
     setup_common()
     setup_app_motd()
+    setup_nginx()
     setup_gunicorn()
     update_gunicorn()
-    setup_nginx()
 
 def setup_db():
     setup_common()
+    setup_db_firewall()
     setup_db_motd()
     setup_db_installs()
     setup_rabbitmq()
@@ -119,6 +120,8 @@ def setup_task():
     setup_task_motd()
     setup_task_installs()
     setup_celery()
+    setup_gunicorn(supervisor=False)
+    update_gunicorn()
 
 def setup_common():
     setup_installs()
@@ -151,6 +154,9 @@ def setup_installs():
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh sclay -s /bin/zsh')
     
+def config_pgbouncer():
+    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
+    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
@@ -168,6 +174,7 @@ def setup_repo():
     with cd('~/newsblur'):
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
+        run('touch logs/newsblur.log')
 
 def setup_local_files():
     put("config/toprc", "./.toprc")
@@ -225,11 +232,12 @@ def setup_app_installs():
 def setup_app_motd():
     put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
 
-def setup_gunicorn():
-    put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
+def setup_gunicorn(supervisor=True):
+    if supervisor:
+        put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
     with cd('~/code'):
+        sudo('rm -fr gunicorn')
         run('git clone git://github.com/benoitc/gunicorn.git')
-        sudo('ln -s ~/code/gunicorn/gunicorn /usr/local/lib/python2.6/dist-packages/gunicorn')
 
 def update_gunicorn():
     with cd('~/code/gunicorn'):
@@ -261,6 +269,14 @@ def setup_nginx():
 def setup_db_installs():
     pass
 
+def setup_db_firewall():
+    sudo('ufw default deny')
+    sudo('ufw allow ssh')
+    sudo('ufw allow 5432')
+    sudo('ufw allow 27017')
+    sudo('ufw allow 5672')
+    sudo('ufw enable')
+    
 def setup_db_motd():
     put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)
     

@@ -1,4 +1,5 @@
 from utils import log as logging
+from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from apps.recommendations.models import RecommendedFeed
@@ -27,3 +28,5 @@ def load_recommended_feed(request):
             'has_next_page'     : len(recommended_feeds) > 1,
             'has_previous_page' : page != 0,
         }, context_instance=RequestContext(request))
+    else:
+        return HttpResponse("")
