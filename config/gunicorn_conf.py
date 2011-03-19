@@ -6,8 +6,8 @@ def numCPUs():
     return os.sysconf("SC_NPROCESSORS_ONLN")
 
 bind = "127.0.0.1:8000"
-pidfile = "/home/conesus/newsblur/logs/gunicorn.pid"
-logfile = "/home/conesus/newsblur/logs/production.log"
+pidfile = "/home/sclay/newsblur/logs/gunicorn.pid"
+logfile = "/home/sclay/newsblur/logs/production.log"
 loglevel = "debug"
 name = "newsblur"
 workers = numCPUs() * 2

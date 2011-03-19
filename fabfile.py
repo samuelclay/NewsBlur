@@ -179,6 +179,7 @@ def setup_repo():
 def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")
+    put('config/gitconfig.txt', './.gitconfig')
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -281,6 +282,11 @@ def setup_db_motd():
     put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)
     
 def setup_rabbitmq():
+    sudo('echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list')
+    run('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc')
+    sudo('apt-key add rabbitmq-signing-key-public.asc')
+    run('rm rabbitmq-signing-key-public.asc')
+    sudo('apt-get update')
     sudo('apt-get install -y rabbitmq-server')
     sudo('rabbitmqctl add_user newsblur newsblur')
     sudo('rabbitmqctl add_vhost newsblurvhost')
