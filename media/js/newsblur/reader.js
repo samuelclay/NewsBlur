@@ -650,7 +650,7 @@
             var $current_feed = $current_feed || $('.selected', $feed_list);
             var $next_feed,
                 scroll;
-            var $feeds = $('.feed:visible:not(.NB-empty)', $feed_list);
+            var $feeds = $('.feed:visible:not(.NB-empty)', $feed_list).add('.feed.selected');
             if (!$current_feed.length) {
                 $current_feed = $('.feed:first:visible:not(.NB-empty)', $feed_list);
                 $next_feed = $current_feed;
@@ -845,9 +845,7 @@
                     
                     if (feed.not_yet_fetched) {
                         // NEWSBLUR.log(['Feed not fetched', feed]);
-                        if (!this.model.preference('hide_fetch_progress')) {
-                            this.flags['has_unfetched_feeds'] = true;
-                        }
+                        this.flags['has_unfetched_feeds'] = true;
                     }
                 } else if (typeof item == "object" && item) {
                     for (var o in item) {
@@ -1291,7 +1289,7 @@
                 value: percentage
             });
             
-            if (!$progress.is(':visible')) {
+            if (!$progress.is(':visible') && !this.model.preference('hide_fetch_progress')) {
                 setTimeout(function() {
                     self.show_progress_bar();
                 }, 1000);
