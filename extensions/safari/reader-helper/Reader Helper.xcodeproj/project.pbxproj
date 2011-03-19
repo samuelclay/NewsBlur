@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		783384C313330C820010D776 /* NewsBlur Logo.icns in Resources */ = {isa = PBXBuildFile; fileRef = 783384C213330C820010D776 /* NewsBlur Logo.icns */; };
 		78C0FD1913182AD0006CA858 /* NewsBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = 78C0FD1813182AD0006CA858 /* NewsBlur.m */; };
 		78C0FD3713182BE5006CA858 /* NewsBlurHelper.icns in Resources */ = {isa = PBXBuildFile; fileRef = 78C0FD3613182BE5006CA858 /* NewsBlurHelper.icns */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -27,6 +28,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Reader Helper_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Reader Helper_Prefix.pch"; sourceTree = "<group>"; };
+		783384C213330C820010D776 /* NewsBlur Logo.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "NewsBlur Logo.icns"; sourceTree = "<group>"; };
 		78C0FD1713182AD0006CA858 /* NewsBlur.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlur.h; sourceTree = "<group>"; };
 		78C0FD1813182AD0006CA858 /* NewsBlur.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsBlur.m; sourceTree = "<group>"; };
 		78C0FD3613182BE5006CA858 /* NewsBlurHelper.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = NewsBlurHelper.icns; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				783384C213330C820010D776 /* NewsBlur Logo.icns */,
 				B1F3C2850E3ECCCE00017083 /* ReaderHelper.icns */,
 				78C0FD3613182BE5006CA858 /* NewsBlurHelper.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -186,6 +189,7 @@
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B1F3C2860E3ECCCE00017083 /* ReaderHelper.icns in Resources */,
 				78C0FD3713182BE5006CA858 /* NewsBlurHelper.icns in Resources */,
+				783384C313330C820010D776 /* NewsBlur Logo.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,7 +242,7 @@
 				GCC_PREFIX_HEADER = "Reader Helper_Prefix.pch";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = "Reader Helper";
+				PRODUCT_NAME = "NewsBlur Safari Helper";
 			};
 			name = Debug;
 		};
