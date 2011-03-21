@@ -652,7 +652,7 @@
                 scroll;
             var $feeds = $('.feed:visible:not(.NB-empty)', $feed_list).add('.feed.selected');
             if (!$current_feed.length) {
-                $current_feed = $('.feed:first:visible:not(.NB-empty)', $feed_list);
+                $current_feed = $('.feed:visible:not(.NB-empty)', $feed_list)[direction==1?'first':'last']();
                 $next_feed = $current_feed;
             } else {
                 $feeds.each(function(i) {
@@ -661,9 +661,9 @@
                         return false;
                     }
                 });
-                $next_feed = $feeds.eq(current_feed+direction);
+                $next_feed = $feeds.eq((current_feed+direction) % ($feeds.length));
             }
-            
+
             var feed_id = $next_feed.data('feed_id');
             if (feed_id && feed_id == this.active_feed) {
                 this.show_next_feed(direction, $next_feed);
@@ -4873,6 +4873,7 @@
             direction = direction || 0;
             
             this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, function(resp) {
+                if (!resp) return;
                 self.counts['recommended_feed_page'] += direction;
 
                 $module.removeClass('NB-loading');
