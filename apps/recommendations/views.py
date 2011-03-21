@@ -1,4 +1,5 @@
 from utils import log as logging
+from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from apps.recommendations.models import RecommendedFeed
@@ -15,7 +16,8 @@ def load_recommended_feed(request):
     recommended_feeds = RecommendedFeed.objects.all()[page:page+2]
     if recommended_feeds:
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
-    logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
+    if page != 0:
+        logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
     recommended_feed = recommended_feeds and recommended_feeds[0]
     
@@ -27,3 +29,5 @@ def load_recommended_feed(request):
             'has_next_page'     : len(recommended_feeds) > 1,
             'has_previous_page' : page != 0,
         }, context_instance=RequestContext(request))
+    else:
+        return HttpResponse("")

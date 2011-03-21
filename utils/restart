@@ -1,4 +1,4 @@
 #!/bin/sh
 kill -HUP `cat ~/newsblur/logs/gunicorn.pid`
 echo '----\n'
-tail -f /home/conesus/newsblur/logs/newsblur.log
+tail -f ~/newsblur/logs/newsblur.log

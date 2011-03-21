@@ -4629,10 +4629,25 @@ background: transparent;
   margin: 0 6px 0 0;
   background: transparent url('../img/reader/safari.png') no-repeat 0 0;
 }
+.NB-modal-goodies .NB-goodies-chrome-link {
+  float: right;
+}
+.NB-modal-goodies .NB-goodies-chrome {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('../img/reader/chrome.png') no-repeat 0 0;
+}
+.NB-modal-goodies .NB-goodies-subtitle {
+    margin: 14px 8px 4px;
+    line-height: 18px;
+    color: #707070;
+}
 
 .NB-modal-goodies .NB-goodies-custom-input {
   float: right;
-  width: 220px;
+  width: 320px;
   border: 1px solid #909090;
   padding: 4px;
   margin: 6px 0 0 0;

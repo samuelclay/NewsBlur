@@ -99,13 +99,15 @@ def backup_postgresql():
 
 def setup_app():
     setup_common()
+    config_pgbouncer()
     setup_app_motd()
+    setup_nginx()
     setup_gunicorn()
     update_gunicorn()
-    setup_nginx()
 
 def setup_db():
     setup_common()
+    setup_db_firewall()
     setup_db_motd()
     setup_db_installs()
     setup_rabbitmq()
@@ -119,6 +121,8 @@ def setup_task():
     setup_task_motd()
     setup_task_installs()
     setup_celery()
+    setup_gunicorn(supervisor=False)
+    update_gunicorn()
 
 def setup_common():
     setup_installs()
@@ -127,9 +131,9 @@ def setup_common():
     setup_local_files()
     setup_libxml()
     setup_python()
-    setup_mongoengine()
     setup_supervisor()
     setup_hosts()
+    setup_mongoengine()
 
 # ==================
 # = Setup - Common =
@@ -144,13 +148,18 @@ def setup_installs():
     sudo('apt-get -y install postgresql-client-9.0')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
-    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh sclay -s /bin/zsh')
     
+def config_pgbouncer():
+    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
+    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    sudo('mkdir -p /var/run/postgresql')
+    sudo('chown postgres.postgres /var/run/postgresql')
+    sudo('echo "START=1" > /etc/default/pgbouncer')
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
@@ -168,10 +177,12 @@ def setup_repo():
     with cd('~/newsblur'):
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
+        run('touch logs/newsblur.log')
 
 def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")
+    put('config/gitconfig.txt', './.gitconfig')
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -191,17 +202,29 @@ def setup_python():
     sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
     put('config/pystartup.py', '.pystartup')
     
-def setup_mongoengine():
-    with cd('~/code'):
-        run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
-        
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
     
 def setup_hosts():
     put('config/hosts', '/etc/hosts', use_sudo=True)
-    
+
+def setup_mongoengine():
+    with cd('~/code'):
+        run('git clone https://github.com/hmarr/mongoengine.git')
+        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
+        
+def setup_pymongo_repo():
+    with cd('~/code'):
+        run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
+    with cd('~/code/pymongo'):
+        sudo('python setup.py install')
+        
+def setup_forked_mongoengine():
+    with cd('~/code/mongoengine'):
+        run('git remote add github http://github.com/samuelclay/mongoengine')
+        run('git pull github dev')
+        
+        
 # ===============
 # = Setup - App =
 # ===============
@@ -213,11 +236,12 @@ def setup_app_installs():
 def setup_app_motd():
     put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
 
-def setup_gunicorn():
-    put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
+def setup_gunicorn(supervisor=True):
+    if supervisor:
+        put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
     with cd('~/code'):
+        sudo('rm -fr gunicorn')
         run('git clone git://github.com/benoitc/gunicorn.git')
-        sudo('ln -s ~/code/gunicorn/gunicorn /usr/local/lib/python2.6/dist-packages/gunicorn')
 
 def update_gunicorn():
     with cd('~/code/gunicorn'):
@@ -249,10 +273,23 @@ def setup_nginx():
 def setup_db_installs():
     pass
 
+def setup_db_firewall():
+    sudo('ufw default deny')
+    sudo('ufw allow ssh')
+    sudo('ufw allow 5432')
+    sudo('ufw allow 27017')
+    sudo('ufw allow 5672')
+    sudo('ufw enable')
+    
 def setup_db_motd():
     put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)
     
 def setup_rabbitmq():
+    sudo('echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list')
+    run('wget http://www.rabbitmq.com/rabbitmq-signing-key-public.asc')
+    sudo('apt-key add rabbitmq-signing-key-public.asc')
+    run('rm rabbitmq-signing-key-public.asc')
+    sudo('apt-get update')
     sudo('apt-get install -y rabbitmq-server')
     sudo('rabbitmqctl add_user newsblur newsblur')
     sudo('rabbitmqctl add_vhost newsblurvhost')
