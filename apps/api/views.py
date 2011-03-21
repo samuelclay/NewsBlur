@@ -7,17 +7,20 @@ from django.template import RequestContext
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
+from utils import log as logging
 
 def add_site_load_script(request, token):
     code = 0
-    folder_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/folder.png'))
-    folder_image = base64.b64encode(folder_image.read())
-    accept_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/accept.png'))
-    accept_image = base64.b64encode(accept_image.read())
-    error_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/error.png'))
-    error_image = base64.b64encode(error_image.read())
-    new_folder_image = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/arrow_down_right.png'))
-    new_folder_image = base64.b64encode(new_folder_image.read())
+    def image_base64(image_name):
+        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/%s.png' % image_name))
+        return base64.b64encode(image_file.read())
+    
+    folder_image     = image_base64('folder')
+    accept_image     = image_base64('accept')
+    error_image      = image_base64('error')
+    new_folder_image = image_base64('arrow_down_right')
+    add_image        = image_base64('add')
+
     try:
         profile = Profile.objects.get(secret_token=token)
         usf = UserSubscriptionFolders.objects.get(
@@ -28,30 +31,35 @@ def add_site_load_script(request, token):
     except UserSubscriptionFolders.DoesNotExist:
         code = -1
     
-    return render_to_response('api/bookmarklet_subscribe.js', 
-        {
-            'code': code,
-            'token': token,
-            'folders': usf.folders,
-            'folder_image': folder_image,
-            'accept_image': accept_image,
-            'error_image': error_image,
-            'new_folder_image': new_folder_image,
-        }, 
-        context_instance=RequestContext(request),
-        mimetype='application/javascript')
+    return render_to_response('api/bookmarklet_subscribe.js', {
+        'code': code,
+        'token': token,
+        'folders': usf.folders,
+        'folder_image': folder_image,
+        'accept_image': accept_image,
+        'error_image': error_image,
+        'add_image': add_image,
+        'new_folder_image': new_folder_image,
+    }, 
+    context_instance=RequestContext(request),
+    mimetype='application/javascript')
 
 def add_site(request, token):
-    code = 0
-    url = request.GET['url']
-    folder = request.GET['folder']
-    callback = request.GET['callback']
+    code       = 0
+    url        = request.GET['url']
+    folder     = request.GET['folder']
+    new_folder = request.GET['new_folder']
+    callback   = request.GET['callback']
     
     if not url:
         code = -1
     else:
         try:
             profile = Profile.objects.get(secret_token=token)
+            if new_folder:
+                usf, _ = UserSubscriptionFolders.objects.get_or_create(user=profile.user)
+                usf.add_folder(folder, new_folder)
+                folder = new_folder
             code, message, us = UserSubscription.add_subscription(
                 user=profile.user, 
                 feed_address=url,
@@ -64,6 +72,8 @@ def add_site(request, token):
     if code > 0:
         message = 'OK'
         
+    logging.user(profile.user, "~FRAdding URL from site: ~SB%s (in %s)" % (url, folder))
+    
     return HttpResponse(callback + '(' + json.encode({
         'code':    code,
         'message': message,

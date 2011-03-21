@@ -30,7 +30,6 @@ except:
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
-from utils.feed_functions import add_object_to_folder
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
@@ -710,14 +709,7 @@ def add_folder(request):
         code = 1
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
-        if user_sub_folders_object.folders:
-            user_sub_folders = json.decode(user_sub_folders_object.folders)
-        else:
-            user_sub_folders = []
-        obj = {folder: []}
-        user_sub_folders = add_object_to_folder(obj, parent_folder, user_sub_folders)
-        user_sub_folders_object.folders = json.encode(user_sub_folders)
-        user_sub_folders_object.save()
+        user_sub_folders_object.add_folder(parent_folder, folder)
     else:
         code = -1
         message = "Gotta write in a folder name."

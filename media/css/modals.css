@@ -249,6 +249,11 @@
 .NB-bookmarklet .NB-bookmarklet-folder-container .NB-folders {
   font-size: 14px;
 }
+.NB-bookmarklet .NB-bookmarklet-new-folder-container {
+  display: none;
+  float: right;
+  clear: both;
+}
 .NB-bookmarklet .NB-folders {
   width: 200px;
 }

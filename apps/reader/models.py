@@ -295,6 +295,16 @@ class UserSubscriptionFolders(models.Model):
     class Meta:
         verbose_name_plural = "folders"
         verbose_name = "folder"
+    
+    def add_folder(self, parent_folder, folder):
+        if self.folders:
+            user_sub_folders = json.decode(self.folders)
+        else:
+            user_sub_folders = []
+        obj = {folder: []}
+        user_sub_folders = add_object_to_folder(obj, parent_folder, user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
         
     def delete_feed(self, feed_id, in_folder):
         def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
