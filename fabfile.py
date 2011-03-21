@@ -99,6 +99,7 @@ def backup_postgresql():
 
 def setup_app():
     setup_common()
+    config_pgbouncer()
     setup_app_motd()
     setup_nginx()
     setup_gunicorn()
@@ -147,7 +148,6 @@ def setup_installs():
     sudo('apt-get -y install postgresql-client-9.0')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
-    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
@@ -157,6 +157,9 @@ def setup_installs():
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    sudo('mkdir -p /var/run/postgresql')
+    sudo('chown postgres.postgres /var/run/postgresql')
+    sudo('echo "START=1" > /etc/default/pgbouncer')
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
