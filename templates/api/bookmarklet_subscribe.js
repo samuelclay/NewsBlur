@@ -14,7 +14,7 @@
         this.domain   = "{% current_domain %}";
         this.flags    = {
             'new_folder': false
-        }
+        };
         
         this.options  = $.extend({}, defaults, options);
         this.runner();
@@ -74,12 +74,11 @@
                 ]),
                 $.make('div', { className: 'NB-modal-title' }, 'Adding \"'+this.get_page_title()+'\"'),
                 $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
-                    $.make('img', { className: 'NB-bookmarklet-folder-label', src: 'data:image/png;charset=utf-8;base64,{{ folder_image }}' }),
+                    $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Add New Folder' }),
                     this.make_folders(),
-                    $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}' }),
                     $.make('div', { className: 'NB-bookmarklet-new-folder-container' }, [
-                        $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' })
-                        $.make('input', { type: 'text', name: 'new_folder_name', className: 'NB-bookmarklet-folder-new' }),
+                        $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' }),
+                        $.make('input', { type: 'text', name: 'new_folder_name', className: 'NB-bookmarklet-folder-new' })
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
@@ -104,8 +103,6 @@
         
             $options = this.make_folder_options($options, folders, '-');
             
-            $('option', $options).tsort();
-        
             var $option = $.make('option', { value: '', selected: true }, "Top Level");
             $options.prepend($option);
     
@@ -176,7 +173,7 @@
             if (this.flags['new_folder']) {
                 var new_folder_name = $('input[name=new_folder_name]', this.$modal).val();
                 if (new_folder_name) {
-                    data['new_folder'] = new_folder_name
+                    data['new_folder'] = new_folder_name;
                 }
             }
             

@@ -15,7 +15,6 @@ def add_site_load_script(request, token):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/%s.png' % image_name))
         return base64.b64encode(image_file.read())
     
-    folder_image     = image_base64('folder')
     accept_image     = image_base64('accept')
     error_image      = image_base64('error')
     new_folder_image = image_base64('arrow_down_right')
@@ -35,7 +34,6 @@ def add_site_load_script(request, token):
         'code': code,
         'token': token,
         'folders': usf.folders,
-        'folder_image': folder_image,
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
@@ -48,7 +46,7 @@ def add_site(request, token):
     code       = 0
     url        = request.GET['url']
     folder     = request.GET['folder']
-    new_folder = request.GET['new_folder']
+    new_folder = request.GET.get('new_folder')
     callback   = request.GET['callback']
     
     if not url:

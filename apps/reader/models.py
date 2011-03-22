@@ -304,6 +304,7 @@ class UserSubscriptionFolders(models.Model):
         obj = {folder: []}
         user_sub_folders = add_object_to_folder(obj, parent_folder, user_sub_folders)
         self.folders = json.encode(user_sub_folders)
+        print self.folders, parent_folder, folder
         self.save()
         
     def delete_feed(self, feed_id, in_folder):

@@ -249,10 +249,28 @@
 .NB-bookmarklet .NB-bookmarklet-folder-container .NB-folders {
   font-size: 14px;
 }
+.NB-bookmarklet .NB-bookmarklet-folder-add-button {
+  float: left;
+  margin: 2px 4px 0 0;
+  cursor: pointer;
+}
 .NB-bookmarklet .NB-bookmarklet-new-folder-container {
   display: none;
   float: right;
   clear: both;
+}
+.NB-bookmarklet .NB-bookmarklet-folder-new {
+  float: left;
+  padding: 2px;
+  border: 1px solid #505050;
+  font-size: 11px;
+  line-height: 13px;
+  margin: 2px 0 0;
+  width: 170px;
+}
+.NB-bookmarklet .NB-bookmarklet-folder-new-label {
+  margin: 4px 4px 0 0;
+  float: left;
 }
 .NB-bookmarklet .NB-folders {
   width: 200px;
@@ -290,19 +308,4 @@
 }
 .NB-bookmarklet .NB-folders {
   float: right;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-new-label {
-  float: right;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-new {
-  clear: both;
-  float: right;
-  padding: 2px;
-  border: 1px solid #505050;
-  font-size: 11px;
-  line-height: 13px;
-  margin: 2px 0 0 4px;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-new-label {
-  margin: 4px 0 0 0;
 }
