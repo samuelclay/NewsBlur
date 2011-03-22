@@ -8,7 +8,9 @@ register = template.Library()
 def render_recommended_feed(context, recommended_feeds):
     user = get_user(context['user'])
     
-    usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
+    usersub = None
+    if context['user'].is_authenticated():
+        usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     recommended_feed = recommended_feeds and recommended_feeds[0]
     
     if recommended_feed:

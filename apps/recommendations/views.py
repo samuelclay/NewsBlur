@@ -14,7 +14,7 @@ def load_recommended_feed(request):
     usersub = None
     
     recommended_feeds = RecommendedFeed.objects.all()[page:page+2]
-    if recommended_feeds:
+    if recommended_feeds and request.user.is_authenticated():
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     if page != 0:
         logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
