@@ -13,12 +13,12 @@ from django.conf import settings as django_settings
 # = Roles =
 # =========
 
-env.user = 'conesus'
+env.user = 'sclay'
 # env.hosts = ['www.newsblur.com', 'db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com']
 env.roledefs ={
     'app': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
-    'task': ['db02.newsblur.com', 'app02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com'],
 }
 
 """
@@ -255,15 +255,17 @@ def setup_nginx():
         run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
         run('tar -xzf nginx-0.9.5.tar.gz')
         run('rm nginx-0.9.5.tar.gz')
-        with cd('~/code/nginx-0.9.5'):
+        with cd('nginx-0.9.5'):
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
-            run('sudo make install')
-        put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
-        sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
-        put("config/newsblur.conf", "/usr/local/nginx/conf/site-enabled/newsblur.conf", use_sudo=True)
-        put("config/nginx-init", "/etc/init.d/nginx", mode=0755, use_sudo=True)
-        sudo("/usr/sbin/update-rc.d -f nginx defaults")
+            sudo('make install')
+    put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
+    sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
+    sudo("mkdir -p /var/log/nginx")
+    put("config/newsblur.conf", "/usr/local/nginx/conf/sites-enabled/newsblur.conf", use_sudo=True)
+    put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
+    sudo("chmod 0755 /etc/init.d/nginx")
+    sudo("/usr/sbin/update-rc.d -f nginx defaults")
             
 
 # ==============

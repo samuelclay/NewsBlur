@@ -186,9 +186,9 @@ def getALinks(data, baseuri):
     return p.links
 
 def getLocalLinks(links, baseuri):
+    if not baseuri: return links
     baseuri = baseuri.lower()
     # urilen = len(baseuri)
-    links = []
     for l in links:
         try:
             if l.lower().startswith(baseuri):
