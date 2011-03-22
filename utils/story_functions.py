@@ -58,7 +58,7 @@ def pre_process_story(entry):
     publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
     entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
     
-    entry_link = entry.get('link', '')
+    entry_link = entry.get('link') or ''
     protocol_index = entry_link.find("://")
     if protocol_index != -1:
         entry['link'] = (entry_link[:protocol_index+3]
