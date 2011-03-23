@@ -233,7 +233,7 @@ def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     
 def setup_sudoers():
-    sudo('su - root -c "echo \"sclay ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers"')
+    sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
     
 # ===============
 # = Setup - App =
