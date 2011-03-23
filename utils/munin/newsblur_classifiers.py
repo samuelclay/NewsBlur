@@ -1,7 +1,6 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -13,12 +12,15 @@ graph_config = {
     'titles.label': 'titles',
 }
 
-metrics = {
-    'feeds': MClassifierFeed.objects.count(),
-    'authors': MClassifierAuthor.objects.count(),
-    'tags': MClassifierTag.objects.count(),
-    'titles': MClassifierTitle.objects.count(),
-}
+def calculate_metrics():
+    from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
+    
+    return {
+        'feeds': MClassifierFeed.objects.count(),
+        'authors': MClassifierAuthor.objects.count(),
+        'tags': MClassifierTag.objects.count(),
+        'titles': MClassifierTitle.objects.count(),
+    }
 
 if __name__ == '__main__':
-    MuninGraph(graph_config, metrics).run()
+    MuninGraph(graph_config, calculate_metrics).run()

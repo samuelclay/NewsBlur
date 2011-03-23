@@ -1,7 +1,5 @@
 #!/usr/bin/env python 
 from utils.munin.base import MuninGraph
-from apps.rss_feeds.models import Feed, DuplicateFeed
-from apps.reader.models import UserSubscription
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -11,10 +9,13 @@ graph_config = {
     'subscriptions.label': 'subscriptions',
 }
 
-metrics = {
-    'feeds': Feed.objects.count(),
-    'subscriptions': UserSubscription.objects.count(),
-}
+def calculate_metrics():
+    from apps.rss_feeds.models import Feed
+    from apps.reader.models import UserSubscription
+    return {
+        'feeds': Feed.objects.count(),
+        'subscriptions': UserSubscription.objects.count(),
+    }
 
 if __name__ == '__main__':
-    MuninGraph(graph_config, metrics).run()
+    MuninGraph(graph_config, calculate_metrics).run()

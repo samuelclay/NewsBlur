@@ -99,7 +99,6 @@ def backup_postgresql():
 
 def setup_app():
     setup_common()
-    config_pgbouncer()
     setup_app_motd()
     setup_nginx()
     setup_gunicorn()
@@ -133,7 +132,12 @@ def setup_common():
     setup_python()
     setup_supervisor()
     setup_hosts()
+    config_pgbouncer()
     setup_mongoengine()
+    setup_forked_mongoengine()
+    setup_pymongo_repo()
+    setup_logrotate()
+    setup_sudoers()
 
 # ==================
 # = Setup - Common =
@@ -153,13 +157,6 @@ def setup_installs():
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh sclay -s /bin/zsh')
-    
-def config_pgbouncer():
-    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
-    sudo('mkdir -p /var/run/postgresql')
-    sudo('chown postgres.postgres /var/run/postgresql')
-    sudo('echo "START=1" > /etc/default/pgbouncer')
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
@@ -208,6 +205,13 @@ def setup_supervisor():
 def setup_hosts():
     put('config/hosts', '/etc/hosts', use_sudo=True)
 
+def config_pgbouncer():
+    put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
+    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    sudo('mkdir -p /var/run/postgresql')
+    sudo('chown postgres.postgres /var/run/postgresql')
+    sudo('echo "START=1" > /etc/default/pgbouncer')
+    
 def setup_mongoengine():
     with cd('~/code'):
         run('git clone https://github.com/hmarr/mongoengine.git')
@@ -222,9 +226,15 @@ def setup_pymongo_repo():
 def setup_forked_mongoengine():
     with cd('~/code/mongoengine'):
         run('git remote add github http://github.com/samuelclay/mongoengine')
+        run('git checkout dev')
         run('git pull github dev')
         
-        
+def setup_logrotate():
+    put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
+    
+def setup_sudoers():
+    sudo('su - root -c "echo \"sclay ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers"')
+    
 # ===============
 # = Setup - App =
 # ===============
