@@ -160,6 +160,10 @@ def setup_user():
     put("~/.ssh/id_dsa.pub", "authorized_keys")
     run('mv authorized_keys ~/.ssh/')
     
+def add_machine_to_ssh():
+    put("~/.ssh/id_dsa.pub", "local_keys")
+    run("echo `cat local_keys` >> .ssh/authorized_keys")
+    
 def setup_repo():
     run('mkdir -p ~/code')
     run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
