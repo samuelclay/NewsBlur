@@ -7,8 +7,8 @@ graph_config = {
     'graph_vlabel' : '# of updates',
     'update_queue.label': 'Queued Feeds last hour',
     'feeds_fetched.label': 'Fetched feeds last hour',
-    'celery_update_feeds.label': 'Celery - Queued Feeds',
-    'celery_update_feeds.label': 'Celery - Queued Feeds',
+    'celery_update_feeds.label': 'Celery - Update Feeds',
+    'celery_new_feeds.label': 'Celery - New Feeds',
 }
 
 
