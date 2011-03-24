@@ -14,20 +14,16 @@ from django.conf import settings as django_settings
 # =========
 
 env.user = 'sclay'
-# env.hosts = ['www.newsblur.com', 'db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com']
 env.roledefs ={
     'app': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com', 'task04.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', '199.15.250.231', '199.15.250.250'],
 }
 
-"""
-Base configuration
-"""
+# ================
+# = Environments =
+# ================
 
-"""
-Environments
-"""
 def app():
     env.roles = ['app']
 def db():
@@ -97,32 +93,6 @@ def backup_postgresql():
 # = Bootstrap =
 # =============
 
-def setup_app():
-    setup_common()
-    setup_app_motd()
-    setup_nginx()
-    setup_gunicorn()
-    update_gunicorn()
-
-def setup_db():
-    setup_common()
-    setup_db_firewall()
-    setup_db_motd()
-    setup_db_installs()
-    setup_rabbitmq()
-    setup_postgres()
-    configure_postgres()
-    setup_mongo()
-    configure_mongo()
-
-def setup_task():
-    setup_common()
-    setup_task_motd()
-    setup_task_installs()
-    setup_celery()
-    setup_gunicorn(supervisor=False)
-    update_gunicorn()
-
 def setup_common():
     setup_installs()
     setup_user()
@@ -138,6 +108,28 @@ def setup_common():
     setup_pymongo_repo()
     setup_logrotate()
     setup_sudoers()
+    setup_nginx()
+
+def setup_app():
+    setup_common()
+    setup_app_motd()
+    setup_gunicorn()
+    update_gunicorn()
+
+def setup_db():
+    setup_common()
+    setup_db_firewall()
+    setup_db_motd()
+    setup_rabbitmq()
+    setup_postgres()
+    setup_mongo()
+
+def setup_task():
+    setup_common()
+    setup_task_motd()
+    enable_celery_supervisor()
+    setup_gunicorn(supervisor=False)
+    update_gunicorn()
 
 # ==================
 # = Setup - Common =
@@ -183,15 +175,17 @@ def setup_local_files():
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
-    # with cd('~/code'):
-    #     run('git clone git://git.gnome.org/libxml2')
-    #     run('git clone git://git.gnome.org/libxslt')
-    # 
-    # with cd('~/code/libxml2'):
-    #     run('./configure && make && sudo make install')
-    #     
-    # with cd('~/code/libxslt'):
-    #     run('./configure && make && sudo make install')
+
+def setup_libxml_code():
+    with cd('~/code'):
+        run('git clone git://git.gnome.org/libxml2')
+        run('git clone git://git.gnome.org/libxslt')
+    
+    with cd('~/code/libxml2'):
+        run('./configure && make && sudo make install')
+        
+    with cd('~/code/libxslt'):
+        run('./configure && make && sudo make install')
         
 def setup_python():
     sudo('easy_install pip')
@@ -234,29 +228,6 @@ def setup_logrotate():
     
 def setup_sudoers():
     sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
-    
-# ===============
-# = Setup - App =
-# ===============
-
-def setup_app_installs():
-    # sudo('apt-get install -y ')
-    pass
-
-def setup_app_motd():
-    put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
-
-def setup_gunicorn(supervisor=True):
-    if supervisor:
-        put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
-    with cd('~/code'):
-        sudo('rm -fr gunicorn')
-        run('git clone git://github.com/benoitc/gunicorn.git')
-
-def update_gunicorn():
-    with cd('~/code/gunicorn'):
-        run('git pull')
-        sudo('python setup.py develop')
 
 def setup_nginx():
     with cd('~/code'):
@@ -276,21 +247,36 @@ def setup_nginx():
     put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
-            
+    
+# ===============
+# = Setup - App =
+# ===============
+
+def setup_app_motd():
+    put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
+
+def setup_gunicorn(supervisor=True):
+    if supervisor:
+        put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
+    with cd('~/code'):
+        sudo('rm -fr gunicorn')
+        run('git clone git://github.com/benoitc/gunicorn.git')
+
+def update_gunicorn():
+    with cd('~/code/gunicorn'):
+        run('git pull')
+        sudo('python setup.py develop')
 
 # ==============
 # = Setup - DB =
 # ==============    
 
-def setup_db_installs():
-    pass
-
 def setup_db_firewall():
     sudo('ufw default deny')
-    sudo('ufw allow ssh')
-    sudo('ufw allow 5432')
-    sudo('ufw allow 27017')
-    sudo('ufw allow 5672')
+    sudo('ufw allow ssh')   # SSH
+    sudo('ufw allow 5432')  # PostgreSQL
+    sudo('ufw allow 27017') # MongoDB
+    sudo('ufw allow 5672')  # RabbitMQ
     sudo('ufw enable')
     
 def setup_db_motd():
@@ -310,30 +296,20 @@ def setup_rabbitmq():
 def setup_postgres():
     sudo('apt-get -y install postgresql-9.0 postgresql-client-9.0 postgresql-contrib-9.0 libpq-dev')
 
-def configure_postgres():    
-    pass
-    
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb')
     
-def configure_mongo():
-    pass
-    
 # ================
 # = Setup - Task =
 # ================
 
-def setup_task_installs():
-    # sudo('apt-get install -y ')
-    pass
-
 def setup_task_motd():
     put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)
     
-def setup_celery():
+def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     
 # ======
