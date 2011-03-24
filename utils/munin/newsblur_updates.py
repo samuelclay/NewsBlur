@@ -18,7 +18,7 @@ def calculate_metrics():
     from apps.rss_feeds.models import Feed
     
     hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-    update_feeds_query = "ssh db01 \"sudo rabbitmqctl list_queues -p newsblurvhost | grep %s\" | awk '{print $2}'"
+    update_feeds_query = "ssh sclay@db01 \"sudo rabbitmqctl list_queues -p newsblurvhost | grep %s\" | awk '{print $2}'"
     
     return {
         'update_queue': Feed.objects.filter(queued_date__gte=hour_ago).count(),
