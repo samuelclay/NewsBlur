@@ -718,7 +718,7 @@ class Feed(models.Model):
         # 7 hours for 2 subscribers.
         # 3 hours for 3 subscribers.
         # 25 min for 10 subscribers.
-        subscriber_bonus = 7 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= 6
         
