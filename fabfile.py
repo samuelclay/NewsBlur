@@ -17,7 +17,7 @@ env.user = 'sclay'
 env.roledefs ={
     'app': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', '199.15.250.231', '199.15.250.250'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com', 'task04.newsblur.com'],
 }
 
 # ================
@@ -138,7 +138,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
     sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client-9.0')
@@ -209,6 +209,12 @@ def config_pgbouncer():
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
     sudo('echo "START=1" > /etc/default/pgbouncer')
+    
+def config_monit():
+    # sudo('apt-get install -y monit')
+    put('config/monit.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
+    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
     
 def setup_mongoengine():
     with cd('~/code'):
