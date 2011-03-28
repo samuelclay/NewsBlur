@@ -3846,6 +3846,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }
+.NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/award_star_bronze_3.png') no-repeat  0 1px;    
+}
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }

@@ -2947,6 +2947,10 @@
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({'score': score});
         },
         
+        open_recommend_modal: function(feed_id) {
+            NEWSBLUR.recommend_feed = new NEWSBLUR.ReaderRecommendFeed({'feed_id': feed_id});
+        },
+        
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
@@ -3623,13 +3627,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
-                    (tab_unread_count && $.make('li', { className: 'NB-menu-separator' })),
-                    (tab_unread_count && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-unreadtabs' }, [
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-recommend' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Open unreads in '+tab_unread_count+Inflector.pluralize(' tab', tab_unread_count))
-                    ]).bind('click', _.bind(function(e) {
-                        this.open_unread_stories_in_tabs(feed_id);
-                    }, this))),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                    ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -5088,6 +5090,11 @@
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                     self.open_feed_intelligence_modal(1, feed_id, false);
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-recommend' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                self.open_recommend_modal(feed_id);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-train' }, function($t, $p){
                 e.preventDefault();
