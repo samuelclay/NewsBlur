@@ -16,8 +16,8 @@ from django.conf import settings as django_settings
 env.user = 'sclay'
 env.roledefs ={
     'app': ['www.newsblur.com'],
-    'db': ['db01.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', '199.15.250.231', '199.15.250.250'],
+    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
+    'task': ['task01.newsblur.com', '199.15.250.250'],
 }
 
 # ================
