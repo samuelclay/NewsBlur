@@ -267,7 +267,7 @@ def load_single_feed(request):
     start = datetime.datetime.utcnow()
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 30))
+    limit = int(request.REQUEST.get('limit', 12))
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
@@ -425,7 +425,7 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    limit              = 25
+    limit              = 18
     offset             = 0
     start              = datetime.datetime.utcnow()
     user               = get_user(request)
