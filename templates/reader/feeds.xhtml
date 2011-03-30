@@ -27,83 +27,9 @@ $(document).ready(function() {
   </div>
       
   <div class="NB-modules-center" style="margin-left: {{ user_profile.feed_pane_size }}px">
-    {% if recommended_feeds %}
-      {% render_recommended_feed recommended_feeds %}
-    {% endif %}
-  </div>
 
-  <div class="NB-account">
-    
     {% if not user.is_authenticated %}
-      <div class="NB-module">
-        <h5>
-          <div class="NB-module-header-login">Login</div>
-          <div class="NB-module-header-signup">Signup</div>
-        </h5>
 
-        <div class="NB-login">
-          {% if login_form.errors %}
-            {% for field, error in login_form.errors.items %}
-              {{ error|safe }}
-            {% endfor %}
-          {% endif %}
-      
-          <form method="post" action="{% url login %}">
-            <div>
-              {{ login_form.username.label_tag }}
-              {{ login_form.username }}
-            </div>
-            <div>
-              <div class="NB-signup-optional">
-                {% if login_form.errors %}
-                  {% for field, error in login_form.errors.items %}
-                    <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password" class="NB-splash-link">Forgot password?</a>
-                  {% endfor %}
-                {% else %}
-                  Optional
-                {% endif %}
-              </div>
-              {{ login_form.password.label_tag }}
-              {{ login_form.password }}
-            </div>
-
-            <input name="submit" type="submit" value="login" />
-            <input type="hidden" name="next" value="/" />
-          </form>
-        </div>
-
-        <div class="NB-signup">
-          <form method="post" action="{% url signup %}">
-            <div>
-              {{ signup_form.signup_username.label_tag }}
-              {{ signup_form.signup_username }}
-            </div>
-            <div class="NB-signup-hidden">
-              <div class="NB-signup-optional">Optional</div>
-              {{ signup_form.signup_password.label_tag }}
-              {{ signup_form.signup_password }}
-            </div>
-            <div class="NB-signup-hidden">
-              <div class="NB-signup-optional">Optional</div>
-              {{ signup_form.email.label_tag }}
-              {{ signup_form.email }}
-            </div>
-
-            <input name="submit" type="submit" value="create account" />
-            <input type="hidden" name="next" value="/" />
-          </form>
-          
-          {% if signup_form.errors %}
-            {% for field, error in signup_form.errors.items %}
-              {{ error|safe }}
-            {% endfor %}
-          {% endif %}
-      
-          <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-          <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
-        </div>
-      </div>
-      
       <div class="NB-module NB-module-howitworks">
         <h5 class="NB-module-header">
           <div class="NB-module-header-left">
@@ -202,6 +128,86 @@ $(document).ready(function() {
           </table>
         </div>
         
+      </div>
+      
+    {% endif %}
+    
+    {% if recommended_feeds %}
+      {% render_recommended_feed recommended_feeds %}
+    {% endif %}
+
+  </div>
+
+  <div class="NB-account">
+    
+    {% if not user.is_authenticated %}
+      <div class="NB-module">
+        <h5>
+          <div class="NB-module-header-login">Login</div>
+          <div class="NB-module-header-signup">Signup</div>
+        </h5>
+
+        <div class="NB-login">
+          {% if login_form.errors %}
+            {% for field, error in login_form.errors.items %}
+              {{ error|safe }}
+            {% endfor %}
+          {% endif %}
+      
+          <form method="post" action="{% url login %}">
+            <div>
+              {{ login_form.username.label_tag }}
+              {{ login_form.username }}
+            </div>
+            <div>
+              <div class="NB-signup-optional">
+                {% if login_form.errors %}
+                  {% for field, error in login_form.errors.items %}
+                    <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password" class="NB-splash-link">Forgot password?</a>
+                  {% endfor %}
+                {% else %}
+                  Optional
+                {% endif %}
+              </div>
+              {{ login_form.password.label_tag }}
+              {{ login_form.password }}
+            </div>
+
+            <input name="submit" type="submit" value="login" />
+            <input type="hidden" name="next" value="/" />
+          </form>
+        </div>
+
+        <div class="NB-signup">
+          <form method="post" action="{% url signup %}">
+            <div>
+              {{ signup_form.signup_username.label_tag }}
+              {{ signup_form.signup_username }}
+            </div>
+            <div class="NB-signup-hidden">
+              <div class="NB-signup-optional">Optional</div>
+              {{ signup_form.signup_password.label_tag }}
+              {{ signup_form.signup_password }}
+            </div>
+            <div class="NB-signup-hidden">
+              <div class="NB-signup-optional">Optional</div>
+              {{ signup_form.email.label_tag }}
+              {{ signup_form.email }}
+            </div>
+
+            <input name="submit" type="submit" value="create account" />
+            <input type="hidden" name="next" value="/" />
+          </form>
+          
+          {% if signup_form.errors %}
+            {% for field, error in signup_form.errors.items %}
+              {{ error|safe }}
+            {% endfor %}
+          {% endif %}
+      
+          <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
+          <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
+        </div>
       </div>
       
     {% else %}

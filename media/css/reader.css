@@ -3287,6 +3287,7 @@ background: transparent;
     float: left;
     padding: 2px 3px 0px;
     opacity: .25;
+    cursor: pointer;
     background: transparent url('../img/icons/silk/bullet_blue.png') no-repeat center center;
 }
 .NB-module .NB-module-page-indicator:hover {
@@ -3295,7 +3296,6 @@ background: transparent;
 .NB-module .NB-module-page-indicator.NB-active {
     opacity: 1;
     background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat center center;
-    cursor: default;
 }
 
 /* ============= */
@@ -3511,6 +3511,7 @@ background: transparent;
 
 .NB-module-howitworks {
     position: relative;
+    overflow: hidden;
 }
 
 .NB-module-howitworks .NB-howitworks-page-indicators {
@@ -3518,12 +3519,13 @@ background: transparent;
     width: 132px;
     height: 20px;
     right: 64px;
-    bottom: 0px;
+    top: 8px;
 }
 
 .NB-module-howitworks .NB-howitworks-page {
     display: none;
     overflow: hidden;
+    left: 0;
 }
 
 .NB-module-howitworks .NB-howitworks-page.NB-active {
@@ -3535,14 +3537,12 @@ background: transparent;
     height: 135px;
     padding: 2px;
     border: 1px solid #E0E0E0;
-    margin: 0 12px;
+    margin: 0 12px 24px;
     float: left;
 }
 
 .NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-description {
     height: 135px;
-    width: 238px;
-    float: left;
     line-height: 30px;
     font-size: 22px;
     color: #303030;

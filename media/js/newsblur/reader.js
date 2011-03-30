@@ -97,6 +97,7 @@
         this.apply_story_styling();
         this.apply_tipsy_titles();
         this.load_recommended_feeds();
+        this.setup_howitworks_hovers();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -4641,6 +4642,14 @@
                 }
                 
             });
+        },
+        
+        setup_howitworks_hovers: function() {
+            var $page_indicators = $('.NB-module-howitworks .NB-module-page-indicator');
+            $page_indicators.bind('mouseenter', _.bind(function(e) {
+                var page = $(e.target).prevAll('.NB-module-page-indicator').length;
+                this.load_howitworks_page(page);
+            }, this));
         },
         
         load_howitworks_page: function(page) {
