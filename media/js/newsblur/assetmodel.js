@@ -650,9 +650,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             NEWSBLUR.Preferences.collapsed_folders = _.without(folders, folder_title);
             changed = true;
         }
-        this.make_request('/profile/set_collapsed_folders', {
-            'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
-        }, callback, null);
+        
+        if (changed) {
+            this.make_request('/profile/set_collapsed_folders', {
+                'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
+            }, callback, null);
+        }
     },
     
     save_mark_read: function(days, callback) {
