@@ -109,6 +109,7 @@ def setup_common():
     setup_logrotate()
     setup_sudoers()
     setup_nginx()
+    configure_nginx()
 
 def setup_app():
     setup_common()
@@ -250,6 +251,8 @@ def setup_nginx():
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
             sudo('make install')
+            
+def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
     sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
     sudo("mkdir -p /var/log/nginx")
@@ -257,6 +260,7 @@ def setup_nginx():
     put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
+    sudo("/etc/init.d/nginx restart")
     
 # ===============
 # = Setup - App =
