@@ -27,115 +27,51 @@ $(document).ready(function() {
   </div>
       
   <div class="NB-modules-center" style="margin-left: {{ user_profile.feed_pane_size }}px">
-
-    {% if not user.is_authenticated %}
-
-      <div class="NB-module NB-module-howitworks">
-        <h5 class="NB-module-header">
-          <div class="NB-module-header-left">
-            How It Works
-          </div>
-          <div class="NB-module-header-right">
-            <a href="#" class="NB-module-direction NB-module-next-page {% if howitworks_page == 5 %}NB-disabled{% endif %}"></a>
-            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
-          </div>
-        </h5>
-        
-        <div class="NB-howitworks-page-indicators">
-          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 0 %}NB-active{% endif %}"></a>
-          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 1 %}NB-active{% endif %}"></a>
-          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 2 %}NB-active{% endif %}"></a>
-          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 3 %}NB-active{% endif %}"></a>
-          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 4 %}NB-active{% endif %}"></a>
-          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 5 %}NB-active{% endif %}"></a>
-        </div>
-      
-        <div class="NB-howitworks-page {% if howitworks_page == 0 %}NB-active{% endif %}">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_original.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Read the original site.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page {% if howitworks_page == 1 %}NB-active{% endif %}">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_like.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Intelligently find good stories you will like.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page {% if howitworks_page == 2 %}NB-active{% endif %}">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_dislike.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Intelligently filter out stories which you may dislike.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page {% if howitworks_page == 3 %}NB-active{% endif %}">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_import.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Import your feeds from Google Reader.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page {% if howitworks_page == 4 %}NB-active{% endif %}">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_iphone.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Use the iPhone app, available in Summer 2011.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page {% if howitworks_page == 5 %}NB-active{% endif %}">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_github.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Open source, regularly improved, attention to detail.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-        
-      </div>
-      
-    {% endif %}
     
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}
     {% endif %}
 
+    <div class="NB-module NB-module-features">
+      
+      <h5 class="NB-module-header">
+        New Features
+        <div class="NB-module-header-right">
+          {% if user.is_staff %}
+            <div class="NB-features-add">
+              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
+            </div>
+            <script>
+            $(document).ready(function() {
+              $('#add-feature-button').click(function(e) {
+                e.preventDefault();
+                $('#add-feature-form').fadeIn(500);
+              });
+            });
+            </script>
+          {% endif %}
+          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
+          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+          <div class="NB-spinner NB-left"></div>
+        </div>
+      </h5>
+      
+      <table class="" cellpadding="0" cellspacing="0">
+        {% for feature in features %}
+          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
+            <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
+            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% if user.is_staff %}
+        <form action="{% url add-feature %}" id="add-feature-form" method="post">
+          {{ feature_form.description }}
+          <input type="submit" value="Add feature" />
+        </form>
+      {% endif %}
+    </div>
+    
   </div>
 
   <div class="NB-account">
@@ -209,6 +145,106 @@ $(document).ready(function() {
           <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
         </div>
       </div>
+
+      <div class="NB-module NB-module-howitworks">
+        <h5 class="NB-module-header">
+          <div class="NB-module-header-left">
+            How It Works
+          </div>
+          <div class="NB-module-header-right">
+            <a href="#" class="NB-module-direction NB-module-next-page {% if howitworks_page == 5 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
+          </div>
+        </h5>
+        
+        <div class="NB-howitworks-page-indicators">
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 0 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 1 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 2 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 3 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 4 %}NB-active{% endif %}"></a>
+          <a href="#" class="NB-module-page-indicator {% if howitworks_page == 5 %}NB-active{% endif %}"></a>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 0 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_original.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Read the original site.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 1 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_like.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Easily train NewsBlur to highlight stories you like.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 2 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_dislike.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}NewsBlur will filter out stories which you don't like.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 3 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_import.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Quickly import your feeds from Google Reader.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 4 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_iphone.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Use the iPhone app, available in Summer 2011.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      
+        <div class="NB-howitworks-page {% if howitworks_page == 5 %}NB-active{% endif %}">
+          <div class="NB-howitworks-page-image">
+            <img src="{{ MEDIA_URL }}img/reader/howitworks_github.png" />
+          </div>
+          <table class="NB-howitworks-page-description">
+            <tr>
+              <td>
+                {% filter typogrify %}Open source, regularly improved, attention to detail.{% endfilter %}
+              </td>
+            </tr>
+          </table>
+        </div>
+        
+      </div>
       
     {% else %}
       
@@ -276,44 +312,46 @@ $(document).ready(function() {
       
     {% endif %}
     
-    <div class="NB-module NB-module-features">
-      
+    <div class="NB-module NB-module-more">
       <h5 class="NB-module-header">
-        New Features
-        <div class="NB-module-header-right">
-          {% if user.is_staff %}
-            <div class="NB-features-add">
-              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
-            </div>
-            <script>
-            $(document).ready(function() {
-              $('#add-feature-button').click(function(e) {
-                e.preventDefault();
-                $('#add-feature-form').fadeIn(500);
-              });
-            });
-            </script>
-          {% endif %}
-          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
-          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-          <div class="NB-spinner NB-left"></div>
+        <div class="NB-module-header-left">
+          More More More
         </div>
       </h5>
-      
       <table class="" cellpadding="0" cellspacing="0">
-        {% for feature in features %}
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
-            <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
-            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
-          </tr>
-        {% endfor %}
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="{% url about %}"><span class="raquo">&raquo;</span> About NewsBlur</a></td>
+          <td class="NB-module-more-description">Who built this and why</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="{% url faq %}"><span class="raquo">&raquo;</span> F.A.Q.</a></td>
+          <td class="NB-module-more-description">Questions you might have</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="{% url api %}"><span class="raquo">&raquo;</span> API</a></td>
+          <td class="NB-module-more-description">Developers can build on top of NewsBlur</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="{% url press %}"><span class="raquo">&raquo;</span> Press</a></td>
+          <td class="NB-module-more-description">Reviews and tweets about NewsBlur</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="{% url privacy %}"><span class="raquo">&raquo;</span> Privacy Policy</a></td>
+          <td class="NB-module-more-description">...</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="{% url tos %}"><span class="raquo">&raquo;</span> Terms of Service</a></td>
+          <td class="NB-module-more-description">...</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="http://blog.newsblur.com"><span class="raquo">&raquo;</span> The Blog</a></td>
+          <td class="NB-module-more-description">Stay abreast of developments</td>
+        </tr>
+        <tr class="NB-module-more-item">
+          <td class="NB-module-more-link"><a href="http://github.com/samuelclay/"><span class="raquo">&raquo;</span> GitHub</a></td>
+          <td class="NB-module-more-description">Open-source = transparency and accountability</td>
+        </tr>
       </table>
-      {% if user.is_staff %}
-        <form action="{% url add-feature %}" id="add-feature-form" method="post">
-          {{ feature_form.description }}
-          <input type="submit" value="Add feature" />
-        </form>
-      {% endif %}
     </div>
     
   </div>

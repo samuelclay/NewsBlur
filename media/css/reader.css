@@ -3420,6 +3420,7 @@ background: transparent;
 .NB-account .NB-module .NB-module-account-trainer.NB-hidden {
     display: none;
 }
+
 /* ============ */
 /* = Features = */
 /* ============ */
@@ -3428,7 +3429,6 @@ background: transparent;
     list-style: none;
     padding: 0;
     margin: 0 6px;
-    width: 466px;
 }
 
 .NB-module-features .NB-features-add {
@@ -3505,6 +3505,78 @@ background: transparent;
     display: none;
 }
 
+/* ========================= */
+/* = More More More Module = */
+/* ========================= */
+
+
+/* ============ */
+/* = Features = */
+/* ============ */
+
+.NB-module-more table {
+    list-style: none;
+    padding: 0;
+    margin: 0 6px;
+}
+
+.NB-module-more .NB-module-more-item td {
+    margin: 0 0 0;
+}
+
+.NB-module-more .NB-module-more-item.last td {
+    margin-bottom: 0;
+}
+
+.NB-module-more .NB-module-more-item:hover td {
+    background-color: #FCFFB4;
+}
+
+.NB-module-more .NB-module-more-item .NB-module-more-link {
+    float: left;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    margin: 0;
+    color: #134160;
+    text-shadow: 1px 1px 0 #E0E0E0;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 20px;
+    white-space: nowrap;
+    min-width: 130px;
+}
+
+.NB-module-more .NB-module-more-item.last .NB-module-more-link {
+    margin-bottom: 0;
+}
+
+.NB-module-more .NB-module-more-item .NB-module-more-link a {
+  display: block;
+}
+.NB-module-more .NB-module-more-item .NB-module-more-link .raquo {
+  font-size: 16px;
+  line-height: 16px;
+}
+.NB-module-more .NB-module-more-item .NB-module-more-description {
+    line-height: 20px;
+    font-size: 12px;
+    color: #404040;
+    padding: 4px 8px;
+    margin: 0;
+    width: 100%;
+}
+
+.NB-module-more .NB-module-more-item.last .NB-module-more-description {
+    margin-bottom: 0;
+}
+
+.NB-module-more .NB-module-more-item .NB-module-more-link a {
+    color: #405BA8;
+}
+.NB-module-more .NB-module-more-item .NB-module-more-link a:hover {
+    color: #A85B40;
+}
+
 /* ======================= */
 /* = How it Works Module = */
 /* ======================= */
@@ -3563,6 +3635,10 @@ background: transparent;
 .NB-modules-center {
     margin: 55px 478px 0 284px;
     padding: 24px;
+}
+
+.NB-modules-center .NB-module {
+    margin: 0 0 24px;
 }
 
 /* ============================ */
