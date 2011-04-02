@@ -177,6 +177,7 @@ def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")
     put('config/gitconfig.txt', './.gitconfig')
+    put('config/ssh.conf', './.ssh/config')
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
