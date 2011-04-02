@@ -709,8 +709,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.80)
-                                                   * (updates_per_month**.5)))
+        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
+                                                   * (updates_per_month**1.5)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= 5
         # Lots of subscribers = lots of updates
