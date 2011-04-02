@@ -269,7 +269,10 @@
             this.locks.iframe_buster_buster = setInterval(function() {
                 if (prevent_bust > 0) {
                     prevent_bust -= 2;
-                    if (!self.flags['iframe_view_loaded'] && !self.flags['iframe_view_not_busting'] && self.story_view == 'page' && self.active_feed) {
+                    if (!self.flags['iframe_view_loaded'] && 
+                        !self.flags['iframe_view_not_busting'] && 
+                        _.contains(['page', 'story'], self.story_view) && 
+                        self.active_feed) {
                       $('.task_view_feed').click();
                       $('.NB-feed-frame').attr('src', '');
                       window.top.location = '/reader/buster';
@@ -2748,8 +2751,8 @@
             if (!$feedbar.length && 
                 ($last.length == 0 ||
                  ($('#story_titles').scrollTop() == 0 && 
-                  $last.position().top + $last.height() < container_height))) {
-                if (this.counts['page_fill_outs'] < 8) {
+                  $last.position().top + $last.height() + 13 < container_height))) {
+                if (this.counts['page_fill_outs'] < 6) {
                     this.counts['page_fill_outs'] += 1;
                     _.delay(_.bind(this.load_page_of_feed_stories, this), 250);
                 } else {
@@ -5466,8 +5469,8 @@
                 var scroll_y = $('#story_titles').scrollTop();
                 // NEWSBLUR.log(['Story_titles Scroll', full_height, container_offset, visible_height, scroll_y]);
             
-                // Fudge factor is simply because it looks better at 3 pixels off.
-                if ((visible_height + 3) >= full_height) {
+                // Fudge factor is simply because it looks better at 13 pixels off.
+                if ((visible_height + 13) >= full_height) {
                     this.load_page_of_feed_stories();
                 }
             }
