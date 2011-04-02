@@ -2494,7 +2494,7 @@ form.opml_import_form input {
 #NB-splash .NB-splash-links {
     position: absolute;
     right: 0px;
-    width: 164px;
+    width: 80px;
     text-align: right;
     bottom: 0;
     display: block;
@@ -2507,8 +2507,12 @@ form.opml_import_form input {
     z-index: 1;
 }
 
+#NB-splash .NB-splash-links-2 {
+    right: 82px;
+}
 #NB-splash .NB-splash-blur .NB-splash-links {
     top: 0;
+    width: 164px;
 }
 
 #NB-splash .NB-splash-links .NB-splash-link {
@@ -2516,7 +2520,7 @@ form.opml_import_form input {
   line-height: 12px;
   margin: 1px 0;
   padding: 0;
-  width: 164px; 
+  width: 100%;
   float: left;
 }
 #NB-splash .NB-splash-links .NB-splash-link.NB-first {
@@ -2563,25 +2567,6 @@ a.NB-splash-link {
 .NB-modal-about a:hover,
 a.NB-splash-link:hover {
     color: #A85B40;
-}
-
-
-/* ===================== */
-/* = Splash Meta Links = */
-/* ===================== */
-
-.NB-splash-meta {
-  bottom: 47px;
-  margin: 0;
-  position: absolute;
-  right: 250px;
-  width: 230px;
-}
-
-.NB-splash-meta .NB-splash-meta-link {
-  cursor: pointer;
-  float: right;
-  margin: 0 0 0 4px;
 }
 
 /* ============== */

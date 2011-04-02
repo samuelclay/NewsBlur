@@ -22,7 +22,7 @@ $(document).ready(function() {
     <ul class="NB-splash-links">
       <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
       <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
+      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
     </ul>
   </div>
       
@@ -312,62 +312,22 @@ $(document).ready(function() {
       
     {% endif %}
     
-    <div class="NB-module NB-module-more">
-      <h5 class="NB-module-header">
-        <div class="NB-module-header-left">
-          More More More
-        </div>
-      </h5>
-      <table class="" cellpadding="0" cellspacing="0">
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="{% url about %}"><span class="raquo">&raquo;</span> About NewsBlur</a></td>
-          <td class="NB-module-more-description">Who built this and why</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="{% url faq %}"><span class="raquo">&raquo;</span> F.A.Q.</a></td>
-          <td class="NB-module-more-description">Questions you might have</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="{% url api %}"><span class="raquo">&raquo;</span> API</a></td>
-          <td class="NB-module-more-description">Developers can build on top of NewsBlur</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="{% url press %}"><span class="raquo">&raquo;</span> Press</a></td>
-          <td class="NB-module-more-description">Reviews and tweets about NewsBlur</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="{% url privacy %}"><span class="raquo">&raquo;</span> Privacy Policy</a></td>
-          <td class="NB-module-more-description">...</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="{% url tos %}"><span class="raquo">&raquo;</span> Terms of Service</a></td>
-          <td class="NB-module-more-description">...</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="http://blog.newsblur.com"><span class="raquo">&raquo;</span> The Blog</a></td>
-          <td class="NB-module-more-description">Stay abreast of developments</td>
-        </tr>
-        <tr class="NB-module-more-item">
-          <td class="NB-module-more-link"><a href="http://github.com/samuelclay/"><span class="raquo">&raquo;</span> GitHub</a></td>
-          <td class="NB-module-more-description">Open-source = transparency and accountability</td>
-        </tr>
-      </table>
-    </div>
-    
   </div>
 
   <div class="NB-splash-info">
     <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur.png" />
     <ul class="NB-splash-links">
-      {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li> #}
       <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">FAQ</a></li>
       <li class="NB-splash-link NB-splash-meta-about"><a href="#about">About</a></li>
-      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
-      {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li> #}
-      {# <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li> #}
+      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
+    </ul>
+    <ul class="NB-splash-links NB-splash-links-2">
+      <li class="NB-splash-link"><a href="{% url api %}">API</a></li>
+      <li class="NB-splash-link"><a href="{% url press %}">Press</a></li>
+      <li class="NB-splash-link"><a href="{% url privacy %}">Privacy</a></li>
     </ul>
   </div>
-
+  
 </div>
 
 
