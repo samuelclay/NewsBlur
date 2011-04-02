@@ -1,6 +1,5 @@
 import datetime
 import time
-import random
 import re
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -69,7 +68,7 @@ def index(request):
     recommended_feeds = RecommendedFeed.objects.filter(is_public=True).select_related('feed')
     # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
-    howitworks_page = random.randint(0, 5)
+    howitworks_page = 0 # random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
         'user_profile': user.profile,
         'login_form': login_form,

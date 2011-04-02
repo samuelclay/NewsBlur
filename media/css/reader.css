@@ -97,7 +97,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-login {
     padding: 0 4px 64px;
-    margin: 0 50px 0 12px;
+    margin: 12px 50px 0 12px;
     width: 186px;
     float: left;
     background: transparent url('../img/reader/separator.png') no-repeat bottom center;
@@ -107,7 +107,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     float: left;
     width: 186px;
     padding: 0 4px;
-    margin: 0;
+    margin: 12px 0 0;
     height: 206px;
     overflow: hidden;
 }
@@ -2461,7 +2461,7 @@ form.opml_import_form input {
     left: 0;
 }
 
-#NB-splash .NB-splash-info {
+.NB-splash-info {
   width: 478px;
   height: 55px;
   background-color: white;
@@ -2470,11 +2470,11 @@ form.opml_import_form input {
   right: 0;
   z-index: 1;
 }
-#NB-splash .NB-splash-info.NB-splash-blur {
+.NB-splash-info.NB-splash-top {
   top: 0;
   bottom: inherit;
 }
-#NB-splash .NB-splash-title {
+.NB-splash-info .NB-splash-title {
     position: absolute;
     bottom: -1px;
     height: 55px;
@@ -2483,7 +2483,7 @@ form.opml_import_form input {
     z-index: 2;
 }
 
-#NB-splash .NB-splash-blur .NB-splash-title {
+.NB-splash-info.NB-splash-top .NB-splash-title {
     top: 0px;
     bottom: inherit;
     right: 166px;
@@ -2491,7 +2491,7 @@ form.opml_import_form input {
     height: 55px;
 }
 
-#NB-splash .NB-splash-links {
+.NB-splash-info .NB-splash-links {
     position: absolute;
     right: 0px;
     width: 80px;
@@ -2507,15 +2507,15 @@ form.opml_import_form input {
     z-index: 1;
 }
 
-#NB-splash .NB-splash-links-2 {
+.NB-splash-bottom .NB-splash-links-2 {
     right: 82px;
 }
-#NB-splash .NB-splash-blur .NB-splash-links {
+.NB-splash-info.NB-splash-top .NB-splash-links {
     top: 0;
     width: 164px;
 }
 
-#NB-splash .NB-splash-links .NB-splash-link {
+.NB-splash-info .NB-splash-links .NB-splash-link {
   display: block;
   line-height: 12px;
   margin: 1px 0;
@@ -2523,39 +2523,39 @@ form.opml_import_form input {
   width: 100%;
   float: left;
 }
-#NB-splash .NB-splash-links .NB-splash-link.NB-first {
+.NB-splash-info .NB-splash-links .NB-splash-link.NB-first {
   clear: both;
 }
 
 
-#NB-splash .NB-splash-links .NB-splash-link a {
+.NB-splash-info .NB-splash-links .NB-splash-link a {
   background-color: #F3F6F9;
   margin: 0;
   padding: 2px 4px;
 }
 
-#NB-splash .NB-splash-links .NB-splash-link a:hover {
+.NB-splash-info .NB-splash-links .NB-splash-link a:hover {
   background-color: #E9ECF6;
 }
-#NB-splash .NB-splash-links .NB-splash-link-github a:hover {
+.NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
   background: #E9ECF6 url('../img/reader/github_icon.png') no-repeat 0 0;
 }
-#NB-splash .NB-splash-links .NB-splash-link-blog a:hover {
+.NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
   background: #E9ECF6 url('../img/reader/ofbrooklyn_icon.png') no-repeat 0 0;
 }
 
-#NB-splash .NB-splash-links .NB-splash-link-twitter a:hover {
+.NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
   background: #E9ECF6 url('../img/reader/twitter_icon.png') no-repeat 0 0;
 }
 
-#NB-splash .NB-splash-links a {
+.NB-splash-info .NB-splash-links a {
     font-weight: bold;
     text-transform: uppercase;
     font-size: 11px;
     display: block;
 }
 
-#NB-splash .NB-splash-links a,
+.NB-splash-info .NB-splash-links a,
 .NB-modal-about a,
 a.NB-splash-link {
     color: #405BA8;
@@ -2563,7 +2563,7 @@ a.NB-splash-link {
     font-weight: bold;
 }
 
-#NB-splash .NB-splash-links a:hover,
+.NB-splash-info .NB-splash-links a:hover,
 .NB-modal-about a:hover,
 a.NB-splash-link:hover {
     color: #A85B40;
@@ -3296,7 +3296,7 @@ background: transparent;
 /*    color: #0E1763;*/
 }
 
-#NB-splash .NB-module h5 {
+.NB-module h5 {
     margin: 0 0 12px;
     padding: 8px 12px 6px;
 }
@@ -3342,7 +3342,7 @@ background: transparent;
 .NB-account .NB-module .NB-module-account {
     position: relative;
     min-height: 77px;
-    margin: 0 0 12px;
+    margin: 12px 0;
     padding-bottom: 1px;
 }
 
@@ -3406,6 +3406,72 @@ background: transparent;
     display: none;
 }
 
+/* ======================= */
+/* = How it Works Module = */
+/* ======================= */
+
+.NB-module-howitworks {
+    position: relative;
+    overflow: hidden;
+}
+
+.NB-module-howitworks .NB-howitworks-page-indicators {
+    position: absolute;
+    width: 132px;
+    height: 20px;
+    right: 64px;
+    top: 8px;
+}
+
+.NB-module-howitworks .NB-howitworks-page {
+    display: none;
+    overflow: hidden;
+    left: 0;
+    margin: 12px 0;
+}
+
+.NB-module-howitworks .NB-howitworks-page.NB-active {
+    display: block;
+}
+
+.NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-image {
+    width: 200px;
+    height: 135px;
+    padding: 2px;
+    border: 1px solid #E0E0E0;
+    margin: 0 12px 24px;
+    float: left;
+}
+
+.NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-description {
+    height: 135px;
+    line-height: 30px;
+    font-size: 22px;
+    color: #303030;
+    text-shadow: 1px 1px 0px #F0F0F0;
+    width: 248px;
+}
+
+.NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-description td {
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* ================== */
+/* = Center Modules = */
+/* ================== */
+
+.NB-modules-center {
+    margin: 79px 478px 0 284px;
+    padding: 0 24px;
+}
+
+.NB-modules-center .NB-module {
+    margin: 0 0 24px;
+}
+
 /* ============ */
 /* = Features = */
 /* ============ */
@@ -3413,7 +3479,7 @@ background: transparent;
 .NB-module-features table {
     list-style: none;
     padding: 0;
-    margin: 0 6px;
+    margin: 12px 6px;
 }
 
 .NB-module-features .NB-features-add {
@@ -3455,8 +3521,9 @@ background: transparent;
 }
 
 .NB-module-features .NB-module-feature .NB-module-feature-description {
-    line-height: 20px;
-    font-size: 13px;
+    color: #404040;
+    font-size: 12px;
+    line-height: 16px;
     padding: 4px 8px;
     margin: 0;
     width: 100%;
@@ -3490,142 +3557,6 @@ background: transparent;
     display: none;
 }
 
-/* ========================= */
-/* = More More More Module = */
-/* ========================= */
-
-
-/* ============ */
-/* = Features = */
-/* ============ */
-
-.NB-module-more table {
-    list-style: none;
-    padding: 0;
-    margin: 0 6px;
-}
-
-.NB-module-more .NB-module-more-item td {
-    margin: 0 0 0;
-}
-
-.NB-module-more .NB-module-more-item.last td {
-    margin-bottom: 0;
-}
-
-.NB-module-more .NB-module-more-item:hover td {
-    background-color: #FCFFB4;
-}
-
-.NB-module-more .NB-module-more-item .NB-module-more-link {
-    float: left;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    margin: 0;
-    color: #134160;
-    text-shadow: 1px 1px 0 #E0E0E0;
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 20px;
-    white-space: nowrap;
-    min-width: 130px;
-}
-
-.NB-module-more .NB-module-more-item.last .NB-module-more-link {
-    margin-bottom: 0;
-}
-
-.NB-module-more .NB-module-more-item .NB-module-more-link a {
-  display: block;
-}
-.NB-module-more .NB-module-more-item .NB-module-more-link .raquo {
-  font-size: 16px;
-  line-height: 16px;
-}
-.NB-module-more .NB-module-more-item .NB-module-more-description {
-    line-height: 20px;
-    font-size: 12px;
-    color: #404040;
-    padding: 4px 8px;
-    margin: 0;
-    width: 100%;
-}
-
-.NB-module-more .NB-module-more-item.last .NB-module-more-description {
-    margin-bottom: 0;
-}
-
-.NB-module-more .NB-module-more-item .NB-module-more-link a {
-    color: #405BA8;
-}
-.NB-module-more .NB-module-more-item .NB-module-more-link a:hover {
-    color: #A85B40;
-}
-
-/* ======================= */
-/* = How it Works Module = */
-/* ======================= */
-
-.NB-module-howitworks {
-    position: relative;
-    overflow: hidden;
-}
-
-.NB-module-howitworks .NB-howitworks-page-indicators {
-    position: absolute;
-    width: 132px;
-    height: 20px;
-    right: 64px;
-    top: 8px;
-}
-
-.NB-module-howitworks .NB-howitworks-page {
-    display: none;
-    overflow: hidden;
-    left: 0;
-}
-
-.NB-module-howitworks .NB-howitworks-page.NB-active {
-    display: block;
-}
-
-.NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-image {
-    width: 200px;
-    height: 135px;
-    padding: 2px;
-    border: 1px solid #E0E0E0;
-    margin: 0 12px 24px;
-    float: left;
-}
-
-.NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-description {
-    height: 135px;
-    line-height: 30px;
-    font-size: 22px;
-    color: #303030;
-    text-shadow: 1px 1px 0px #F0F0F0;
-}
-
-.NB-module-howitworks .NB-howitworks-page .NB-howitworks-page-description td {
-    padding: 0;
-    margin: 0;
-    vertical-align: middle;
-    text-align: center;
-}
-
-/* ================== */
-/* = Center Modules = */
-/* ================== */
-
-.NB-modules-center {
-    margin: 55px 478px 0 284px;
-    padding: 24px;
-}
-
-.NB-modules-center .NB-module {
-    margin: 0 0 24px;
-}
-
 /* ============================ */
 /* = Module: Recommended Feed = */
 /* ============================ */
@@ -3647,6 +3578,7 @@ background: transparent;
     color: #8487C4;
   }
   .NB-module-recommended .NB-recommended {
+    margin: 12px 0 0 0;
     padding: 0 12px;
   }
   

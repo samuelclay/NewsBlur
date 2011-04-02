@@ -240,6 +240,7 @@
             var self = this;
             $('.right-pane').show();
             $('#NB-splash').hide();
+            $('.NB-splash-info').hide();
             $('#NB-splash-overlay').hide();
             this.$s.$body.layout().resizeAll();
             this.$s.$dashboard.addClass('NB-active');
@@ -255,6 +256,7 @@
             this.unload_story_iframe();
             this.mark_feed_as_selected(null, null);
             $('.right-pane').hide();
+            $('.NB-splash-info').show();
             $('#NB-splash').show();
             $('#NB-splash-overlay').show();
             this.$s.$dashboard.removeClass('NB-active');
@@ -4580,7 +4582,7 @@
             $signup_username.bind('focus', function() {
                 $hidden_inputs.slideDown(300);
             }).bind('blur', function() {
-                if ($signup_username.val().length < 2) {
+                if ($signup_username.val().length < 1) {
                     $hidden_inputs.slideUp(300);
                 }
             });
