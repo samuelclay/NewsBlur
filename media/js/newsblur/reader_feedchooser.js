@@ -176,8 +176,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     open_modal: function() {
         var self = this;
         this.$modal.modal({
-            'minWidth': 750,
-            'maxWidth': 750,
+            'minWidth': 780,
+            'maxWidth': 780,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -234,7 +234,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $feeds = {};
         
         $('.feed', $feed_list).each(function() {
-            var feed_id = $(this).data('feed_id');
+            var feed_id = parseInt($(this).attr('data-id'), 10);
             if (!(feed_id in $feeds)) {
                 $feeds[feed_id] = $([]);
             }
@@ -338,7 +338,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             // Approve or decline
             var feeds = [];
             $feeds.each(function() {
-                var feed_id = $(this).data('feed_id');
+                var feed_id = parseInt($(this).attr('data-id'), 10);
                 
                 if (_.contains(active_feeds, feed_id)) {
                     self.add_feed_to_approve(feed_id);
@@ -406,7 +406,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $.targetIs(e, { tagSelector: '.feed' }, _.bind(function($t, $p) {
             e.preventDefault();
             
-            var feed_id = $t.data('feed_id');
+            var feed_id = parseInt($t.attr('data-id'), 10);
             if (_.contains(this.approve_list, feed_id)) {
                 this.add_feed_to_decline(feed_id, true);
             } else {

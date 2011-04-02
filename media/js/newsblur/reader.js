@@ -355,7 +355,7 @@
             var $feeds = $([]);
             
             $('.feed', $feed_list).each(function() {
-                if ($(this).data('feed_id') == feed_id) {
+                if (parseInt($(this).attr('data-id'), 10) == feed_id) {
                     $feeds.push($(this).get(0));
                 }
             });
@@ -544,7 +544,7 @@
             
             var $feeds = $('.feed:not(.NB-empty)', $folder);
             var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
-                var feed_id = $(o).data('feed_id');
+                var feed_id = parseInt($(o).attr('data-id'), 10);
                 if (self.model.get_feed(feed_id).active) {
                   return feed_id;
                 }
@@ -667,7 +667,7 @@
                 $next_feed = $feeds.eq((current_feed+direction) % ($feeds.length));
             }
 
-            var feed_id = $next_feed.data('feed_id');
+            var feed_id = parseInt($next_feed.attr('data-id'), 10);
             if (feed_id && feed_id == this.active_feed) {
                 this.show_next_feed(direction, $next_feed);
             } else if (feed_id) {
@@ -784,15 +784,17 @@
             $feed_list.empty();
             
             this.$s.$story_taskbar.css({'display': 'block'});
-            
             this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
-            this.make_feeds_folder($feed_list, folders, 0);
+            var $feeds = this.make_feeds_folder(folders, 0);
             $feed_list.css({
                 'display': 'block', 
                 'opacity': 0
-            }).animate({'opacity': 1}, {'duration': 500});
-            this.hover_over_feed_titles();
-            $feed_list.prepend($.make('li', { className: 'feed NB-empty' }));
+            });
+            $feed_list.html($feeds);
+            this.sort_feeds($feed_list);
+            this.count_collapsed_unread_stories();
+            $feed_list.animate({'opacity': 1}, {'duration': 700});
+            this.hover_over_feed_titles($feed_list);
             this.$s.$feed_link_loader.fadeOut(250);
 
             if (folders.length) {
@@ -823,6 +825,11 @@
             this.add_url_from_querystring();
         },
         
+        sort_feeds: function($feeds) {
+            $('.feed', $feeds).tsort('.feed_title');
+            $('.folder', $feeds).tsort('.folder_title_text');
+        },
+        
         detect_all_inactive_feeds: function() {
           var feeds = this.model.feeds;
           var has_chosen_feeds = _.any(feeds, function(feed) {
@@ -831,8 +838,9 @@
           return has_chosen_feeds;
         },
         
-        make_feeds_folder: function($feeds, items, depth, collapsed_parent) {
+        make_feeds_folder: function(items, depth, collapsed_parent) {
             var self = this;
+            var $feeds = "";
             
             for (var i in items) {
                 var item = items[i];
@@ -840,11 +848,8 @@
                 if (typeof item == "number") {
                     var feed = this.model.get_feed(item);
                     if (!feed) continue;
-                    var $feed = this.make_feed_title_line(feed, true, 'feed');
-                    $feeds.append($feed);
-                    if (depth == 0) {
-                        $feed.addClass('NB-toplevel');
-                    }
+                    var $feed = this.make_feed_title_template(feed, 'feed', depth);
+                    $feeds += $feed;
                     
                     if (feed.not_yet_fetched) {
                         // NEWSBLUR.log(['Feed not fetched', feed]);
@@ -852,67 +857,32 @@
                     }
                 } else if (typeof item == "object" && item) {
                     for (var o in item) {
-                        var folder = item[o];
-                        var $folder = $.make('li', { className: 'folder' }, [
-                            $.make('div', { className: 'folder_title ' + (depth==0 ? 'NB-toplevel':'') }, [
-                                $.make('div', { className: 'NB-folder-icon' }),
-                                $.make('div', { className: 'NB-feedlist-river-icon', title: 'River of News' }),
-                                $.make('div', { className: 'NB-feedlist-manage-icon' }),
-                                $.make('span', { className: 'folder_title_text' }, o)
-                            ]),
-                            $.make('ul', { className: 'folder' }, [])
-                        ]);
                         var is_collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, o);
-
-                        (function($feeds, $folder, is_collapsed, collapsed_parent) {
-                            var continue_loading_next_feed = function() {
-                                if (is_collapsed) {
-                                    $('ul.folder', $folder).css({'display': 'none'});
-                                    $feeds.append($folder);
-                                    self.collapse_folder($('.folder_title', $folder).eq(0), true);
-                                    if (collapsed_parent) {
-                                        $folder.parents('li.folder').each(function() {
-                                            self.collapse_folder($('.folder_title', this).eq(0), true);
-                                        });
-                                    }
-                                } else {
-                                    $feeds.append($folder);
-
-                                    // Parent folder collapsed? Update unread count for parent folder.
-                                    if (_.any($folder.parents('li.folder'), function(f) {
-                                        return _.contains(NEWSBLUR.Preferences.collapsed_folders,
-                                                          $('.folder_title_text', f).eq(0).text());
-                                    })) {
-                                        var $folder_title = $folder.parents('li.folder').children('.folder_title');
-                                        var $children = $folder.parents('li.folder').children('.folder, .feed');
-                                        self.show_collapsed_folder_count($folder_title, $children);
-                                    }
-                                }
-                                // if (self.flags['has_chosen_feeds']) {
-                                //     $folder.css({
-                                //         'display': 'block', 
-                                //         'opacity': 0
-                                //     }).animate({'opacity': 1}, {'duration': 500});
-                                // }
-            
-                                // $('.feed', $feeds).tsort('.feed_title');
-                                // $('.folder', $feeds).tsort('.folder_title_text');
-                                self.hover_over_feed_titles($folder);
-                            };
-                            if (!self.flags['has_chosen_feeds']) {
-                                continue_loading_next_feed();
-                            } else {
-                                setTimeout(continue_loading_next_feed, depth*50);
-                            }
-                        })($feeds, $folder, is_collapsed, collapsed_parent);
-                        this.make_feeds_folder($('ul.folder', $folder), folder, depth+1, is_collapsed);
+                        var folder = item[o];
+                        var $folder_pre = _.template('\
+                        <li class="folder">\
+                          <div class="folder_title <% if (depth == 0) { %>NB-toplevel<% } %>">\
+                            <div class="NB-folder-icon"></div>\
+                            <div class="NB-feedlist-river-icon" title="River of News"></div>\
+                            <div class="NB-feedlist-manage-icon"></div>\
+                            <span class="folder_title_text"><%= folder_title %></span>\
+                          </div>\
+                          <ul class="folder" <% if (is_collapsed) { %>style="display: none"<% } %>>\
+                        ', {
+                          depth         : depth,
+                          folder_title  : o,
+                          is_collapsed  : is_collapsed
+                        });
+                        var $folder_post = "</ul></li>";
+                        $feeds += $folder_pre + this.make_feeds_folder(folder, depth+1, is_collapsed) + $folder_post;
                     }
                 }
             }
-            $feeds.append($.make('li', { className: 'feed NB-empty' }));
+            $feeds += '<li class="feed NB-empty"></li>';
+            return $feeds;
         },
         
-        make_feed_title_line: function(feed, list_item, type) {
+        make_feed_title_template: function(feed, type, depth) {
             var unread_class = '';
             var exception_class = '';
             if (feed.ps) {
@@ -933,37 +903,52 @@
             if (!feed.active) {
                 exception_class += ' NB-feed-inactive';
             }
+            var feed_counts_floater = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng, true);
             
-            var $feed = $.make((list_item?'li':'div'), { className: 'feed ' + unread_class + exception_class }, [
-                $.make('div', { className: 'feed_counts' }, [
-                    this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng)
-                ]),
-                $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
-                $.make('span', { className: 'feed_title' }, [
-                  feed.feed_title,
-                  (type == 'story' && $.make('span', { className: 'NB-feedbar-train-feed', title: 'Train Intelligence' })),
-                  (type == 'story' && $.make('span', { className: 'NB-feedbar-statistics', title: 'Statistics' }))
-                ]),
-                (type == 'story' && $.make('div', { className: 'NB-feedbar-last-updated' }, [
-                    $.make('span', { className: 'NB-feedbar-last-updated-label' }, 'Updated: '),
-                    $.make('span', { className: 'NB-feedbar-last-updated-date' }, feed.updated ? feed.updated + ' ago' : 'Loading...')
-                ])),
-                (type == 'story' && $.make('div', { className: 'NB-feedbar-mark-feed-read' }, 'Mark All as Read')),
-                $.make('div', { className: 'NB-feed-exception-icon' }),
-                $.make('div', { className: 'NB-feed-unfetched-icon' }),
-                (type == 'feed' && $.make('div', { className: 'NB-feedlist-manage-icon' }))
-            ]);  
-            $feed.data('feed_id', feed.id);
-
-            $('.NB-feedbar-train-feed, .NB-feedbar-statistics', $feed).tipsy({
-                gravity: 's',
-                delayIn: 375
+            var $feed = _.template('\
+            <<%= list_type %> class="feed <%= unread_class %> <%= exception_class %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+              <div class="feed_counts">\
+                <%= feed_counts_floater %>\
+              </div>\
+              <img class="feed_favicon" src="<%= $.favicon(feed.favicon) %>">\
+              <span class="feed_title">\
+                <%= feed.feed_title %>\
+                <% if (type == "story") { %>\
+                  <span class="NB-feedbar-train-feed" title="Train Intelligence"></span>\
+                  <span class="NB-feedbar-statistics" title="Statistics"></span>\
+                <% } %>\
+              </span>\
+              <% if (type == "story") { %>\
+                <div class="NB-feedbar-last-updated">\
+                  <span class="NB-feedbar-last-updated-label">Updated:</span>\
+                  <span class="NB-feedbar-last-updated-date">\
+                    <% if (feed.updated) { %>\
+                      <%= feed.updated %> ago\
+                    <% } else { %>\
+                      Loading...\
+                    <% } %>\
+                  </span>\
+                </div>\
+                <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
+              <% } %>\
+              <div class="NB-feed-exception-icon"></div>\
+              <div class="NB-feed-unfetched-icon"></div>\
+              <div class="NB-feedlist-manage-icon"></div>\
+            </<%= list_type %>>\
+            ', {
+              feed                : feed,
+              type                : type,
+              feed_counts_floater : feed_counts_floater,
+              unread_class        : unread_class,
+              exception_class     : exception_class,
+              toplevel            : depth == 0,
+              list_type           : type == 'feed' ? 'li' : 'div'
             });
             
-            return $feed;  
+            return $feed;
         },
         
-        make_feed_counts_floater: function(positive_count, neutral_count, negative_count) {
+        make_feed_counts_floater: function(positive_count, neutral_count, negative_count, skip_render) {
             var unread_class = "";
             if (positive_count) {
                 unread_class += ' unread_positive';
@@ -975,26 +960,30 @@
                 unread_class += ' unread_negative';
             }
             
-            return $.make('div', { className: 'feed_counts_floater ' + unread_class }, [
-                $.make('span', { 
-                    className: 'unread_count unread_count_positive '
-                                + (positive_count
-                                   ? "unread_count_full"
-                                   : "unread_count_empty")
-                }, ''+positive_count),
-                $.make('span', { 
-                    className: 'unread_count unread_count_neutral '
-                                + (neutral_count
-                                   ? "unread_count_full"
-                                   : "unread_count_empty") 
-                }, ''+neutral_count),
-                $.make('span', { 
-                    className: 'unread_count unread_count_negative '
-                                + (negative_count
-                                   ? "unread_count_full"
-                                   : "unread_count_empty")
-                }, ''+negative_count)
-            ]);
+            var $floater = _.template('\
+            <div class="feed_counts_floater <%= unread_class %>">\
+              <span class="unread_count unread_count_positive <% if (positive_count) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+                <%= positive_count %>\
+              </span>\
+              <span class="unread_count unread_count_neutral <% if (neutral_count) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+                <%= neutral_count %>\
+              </span>\
+              <span class="unread_count unread_count_negative <% if (negative_count) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+                <%= negative_count %>\
+              </span>\
+            </div>\
+            ', {
+              positive_count  : positive_count,
+              neutral_count   : neutral_count,
+              negative_count  : negative_count,
+              unread_class    : unread_class
+            });
+            
+            if (!skip_render) {
+              $floater = $($floater);
+            }
+            
+            return $floater;
         },
         
         load_sortable_feeds: function() {
@@ -1059,7 +1048,7 @@
                     var $item = $items.eq(i);
 
                     if ($item.hasClass('feed')) {
-                        var feed_id = $item.data('feed_id');
+                        var feed_id = parseInt($item.attr('data-id'), 10);
                         if (feed_id) {
                             folders.push(feed_id);
                         }
@@ -1077,6 +1066,15 @@
             var combined_folders = combine_folders(this.$s.$feed_list);
             // NEWSBLUR.log(['Save new folder/feed order', {'combined': combined_folders}]);
             this.model.save_feed_order(combined_folders);
+        },
+        
+        count_collapsed_unread_stories: function() {
+            _.each(NEWSBLUR.Preferences.collapsed_folders, _.bind(function(folder) {
+                var $folder_title = $('.folder_title', this.$s.$feed_list).filter(function() {
+                    return $.trim($(this).text()) == folder;
+                });
+                this.collapse_folder($folder_title, true);
+            }, this));
         },
         
         collapse_folder: function($folder_title, force_collapse) {
@@ -1642,7 +1640,6 @@
             this.hide_splash_page();
             if (!folder_title) {
                 this.active_feed = 'river:';
-                NEWSBLUR.log(['this.$s.$river_header', this.$s.$river_header]);
                 this.$s.$river_header.addClass('NB-selected');
             } else {
                 this.active_feed = 'river:' + folder_title;
@@ -1710,7 +1707,7 @@
             
             var $feeds = $('.feed:not(.NB-empty)', $folder);
             var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
-                var feed_id = $(o).data('feed_id');
+                var feed_id = parseInt($(o).attr('data-id'), 10);
                 var feed = model.get_feed(feed_id);
                 if (counts_only && !visible_only) {
                     return feed.ps + feed.nt + feed.ng;
@@ -2342,13 +2339,8 @@
                 }
                 var story = stories[s];
                 var $story_title = this.make_story_title(story, options);
-                if (!stories[s].read_status) {
-                    var $mark_read = $.make('a', { className: 'mark_story_as_read', href: '#'+stories[s].id }, '[Mark Read]');
-                    $story_title.find('.title').append($mark_read);
-                }
                 $story_titles.append($story_title);
             }
-            // NEWSBLUR.log(['create_story_titles', stories]);
             if (!stories || stories.length == 0) {
                 this.append_story_titles_endbar();
             } 
@@ -2785,7 +2777,7 @@
             if (!feed) return;
 
             var $feedbar = $.make('div', { className: 'NB-feedbar' }, [
-                this.make_feed_title_line(feed, false, 'story'),
+                $(this.make_feed_title_template(feed, 'story')),
                 // $.make('div', { className: 'NB-feedbar-intelligence' }, [
                 //     $.make('div', { className: 'NB-feed-sentiment NB-feed-like', title: 'What I like about this site...' }),
                 //     $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike', title: 'What I dislike about this site...' })
@@ -2795,6 +2787,11 @@
                 $(this).addClass('NB-feedbar-hover');
             },function() {
                 $(this).removeClass('NB-feedbar-hover');
+            });
+            
+            $('.NB-feedbar-train-feed, .NB-feedbar-statistics', $feedbar).tipsy({
+                gravity: 's',
+                delayIn: 375
             });
             
             $story_titles.prepend($feedbar);
@@ -3789,7 +3786,7 @@
                 feed_id = $('.folder_title_text', $item).eq(0).text();
                 inverse = $('.folder_title', $item).hasClass("NB-hover-inverse");
             } else if (type == 'feed') {
-                feed_id = $item && $item.data('feed_id');
+                feed_id = $item && parseInt($item.attr('data-id'), 10);
                 inverse = $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
                 story_id = $item.data('story_id') || $item.closest('.NB-feed-story').data('story_id');  
@@ -3994,7 +3991,7 @@
             $feed = $feed || this.find_feed_in_feed_list(feed_id);
             $feed.slideUp(500);
             
-            if (this.active_feed == $feed.data('feed_id')) {
+            if (this.active_feed == parseInt($feed.attr('data-id'), 10)) {
                 this.reset_feed();
                 this.show_splash_page();
             }
@@ -4350,7 +4347,7 @@
             $feed    = $feed || this.find_feed_in_feed_list(feed_id);
             
             this.force_feeds_refresh(function(feeds) {
-                var $new_feed = self.make_feed_title_line(feeds[feed_id], true, 'feed');
+                var $new_feed = $(self.make_feed_title_template(feeds[feed_id], 'feed'));
                 if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
                 $feed.replaceWith($new_feed);
                 self.hover_over_feed_titles($new_feed);
@@ -4386,7 +4383,7 @@
                 var feed_id = updated_feeds[f];
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) continue;
-                var $feed = this.make_feed_title_line(feed, true, 'feed');
+                var $feed = $(this.make_feed_title_template(feed, 'feed'));
                 var $feed_on_page = this.cache.$feed_in_feed_list[feed_id] ||
                                     this.find_feed_in_feed_list(feed_id);
                 
@@ -4914,7 +4911,7 @@
             $.targetIs(e, { tagSelector: '#feed_list .feed.NB-feed-exception' }, function($t, $p){
                 e.preventDefault();
                 if (!self.flags['sorting_feed']) {
-                    var feed_id = $t.data('feed_id');
+                    var feed_id = parseInt($t.attr('data-id'), 10);
                     stopPropagation = true;
                     self.open_feed_exception_modal(feed_id, $t);
                 }
@@ -4924,7 +4921,7 @@
             $.targetIs(e, { tagSelector: '#feed_list .feed:not(.NB-empty)' }, function($t, $p){
                 e.preventDefault();
                 if (!self.flags['sorting_feed']) {
-                    var feed_id = $t.data('feed_id');
+                    var feed_id = parseInt($t.attr('data-id'), 10);
                     if (NEWSBLUR.hotkeys.command) {
                         self.open_unread_stories_in_tabs(feed_id);
                     } else {
@@ -4948,7 +4945,7 @@
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){
                 e.preventDefault();
-                var feed_id = $t.parents('.feed').data('feed_id');
+                var feed_id = parseInt($t.closest('.feed').attr('data-id'), 10);
                 self.mark_feed_as_read(feed_id, $t);
                 $t.fadeOut(400);
             });
@@ -5422,7 +5419,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 // NEWSBLUR.log(['Feed dblclick', $('.feed_id', $t), $t]);
-                var feed_id = $t.data('feed_id');
+                var feed_id = parseInt($t.attr('data-id'), 10);
                 self.open_feed_link(feed_id, $t);
             });
         },
