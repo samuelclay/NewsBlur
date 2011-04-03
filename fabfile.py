@@ -16,6 +16,7 @@ from django.conf import settings as django_settings
 env.user = 'sclay'
 env.roledefs ={
     'app': ['app01.newsblur.com'],
+    'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
     'task': ['task01.newsblur.com', 'task02.newsblur.com'],
 }
@@ -26,6 +27,8 @@ env.roledefs ={
 
 def app():
     env.roles = ['app']
+def web():
+    env.roles = ['web']
 def db():
     env.roles = ['db']
 def task():
@@ -35,26 +38,26 @@ def task():
 # = Deploy =
 # ==========
 
-@roles('app')
+@roles('web')
 def deploy():
     with cd('~/newsblur'):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
 
-@roles('app')
+@roles('web')
 def deploy_full():
     with cd('~/newsblur'):
         run('git pull')
         run('./manage.py migrate')
         run('sudo supervisorctl restart gunicorn')
 
-@roles('app')
+@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
         run('kill -HUP `cat /var/run/gunicorn/gunicorn_staging.pid`')
 
-@roles('app')
+@roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
