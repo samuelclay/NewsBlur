@@ -5,6 +5,7 @@ import re
 import mongoengine as mongo
 import zlib
 import urllib
+from pprint import pprint
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -13,6 +14,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
+from django.core.mail import mail_admins
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -195,6 +197,12 @@ class Feed(models.Model):
                     feed_address = feed_address_from_link
         
             if feed_address:
+                if feed_address.endswith('feedburner.com/atom.xml'):
+                    message = """
+                    %s - %s
+                    """ % (feed_address, pprint(self.feed.__dict__))
+                    mail_admins('Wierdo alert', message, fail_silently=True)
+                    return False
                 try:
                     self.feed_address = feed_address
                     self.next_scheduled_update = datetime.datetime.utcnow()
