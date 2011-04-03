@@ -2713,14 +2713,14 @@
             }, 1000);
         },
         
-        load_page_of_feed_stories: function() {
+        load_page_of_feed_stories: function(hide_loading) {
             var $story_titles = this.$s.$story_titles;
             var feed_id = $story_titles.data('feed_id');
             var page = $story_titles.data('page');
 
             if (!this.flags['opening_feed']) {
-                    
-                this.show_feedbar_loading();
+                
+                if (!hide_loading) this.show_feedbar_loading();
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, 
@@ -2746,7 +2746,7 @@
                   $last.position().top + $last.height() + 13 < container_height))) {
                 if (this.counts['page_fill_outs'] < 6) {
                     this.counts['page_fill_outs'] += 1;
-                    _.delay(_.bind(this.load_page_of_feed_stories, this), 250);
+                    _.delay(_.bind(this.load_page_of_feed_stories, this, true), 250);
                 } else {
                     this.append_story_titles_endbar();
                 }
