@@ -1004,6 +1004,34 @@ background: transparent;
     background-color: #00609f;
 }
 
+#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon {
+    opacity: 0;
+    display: none;
+    position: absolute;
+    left: 4px;
+    top: 0px;
+    width: 20px;
+    height: 22px;
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
+}
+
+#story_titles .NB-feedbar .feed:hover .NB-feedlist-manage-icon {
+  display: block;
+  opacity: 1;
+}
+
+#story_titles .NB-feedbar .feed:hover .feed_favicon {
+  display: none;
+}
+#story_titles .NB-feedbar .folder_title .NB-feedlist-manage-icon {
+    background-position: 3px 5px;
+}
+
+#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 3px 4px;
+}
+
 #story_titles .NB-feedbar .feed .feed_counts {
     width: 200px;
     position: absolute;
