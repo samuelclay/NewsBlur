@@ -3760,8 +3760,12 @@
             return $manage_menu;
         },
         
-        show_manage_menu: function(type, $item) {
+        show_manage_menu: function(type, $item, options) {
             var self = this;
+            var options = _.extend({
+              'toplevel': false,
+              'inverse':  false
+            }, options);
             var $manage_menu_container = $('.NB-menu-manage-container');
             // NEWSBLUR.log(['show_manage_menu', type, $item, $manage_menu_container.data('item'), $item && $item[0] == $manage_menu_container.data('item')]);
             clearTimeout(this.flags.closed_manage_menu);
@@ -3784,10 +3788,10 @@
             var feed_id, inverse, story_id;
             if (type == 'folder') {
                 feed_id = $('.folder_title_text', $item).eq(0).text();
-                inverse = $('.folder_title', $item).hasClass("NB-hover-inverse");
+                inverse = options.inverse || $('.folder_title', $item).hasClass("NB-hover-inverse");
             } else if (type == 'feed') {
                 feed_id = $item && parseInt($item.attr('data-id'), 10);
-                inverse = $item.hasClass("NB-hover-inverse");
+                inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
                 story_id = $item.data('story_id') || $item.closest('.NB-feed-story').data('story_id');  
                 if ($item.hasClass('story')) inverse = true; 
@@ -3795,7 +3799,7 @@
                 $('.NB-task-manage').tipsy('hide');
                 $('.NB-task-manage').tipsy('disable');
             }
-            var toplevel = $item.hasClass("NB-toplevel") ||
+            var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
@@ -4942,6 +4946,15 @@
                 if (!self.flags['sorting_feed']) {
                     self.collapse_folder($folder);
                 }
+            });
+            
+            // ============
+            // = Feed Bar =
+            // ============
+            
+            $.targetIs(e, { tagSelector: '.NB-feedbar .NB-feedlist-manage-icon' }, function($t, $p) {
+                e.preventDefault();
+                self.show_manage_menu('feed', $t.closest('.feed'), {inverse: true, toplevel: true});
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){
                 e.preventDefault();
