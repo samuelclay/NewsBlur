@@ -2573,7 +2573,7 @@ form.opml_import_form input {
 }
 
 .NB-splash-info .NB-splash-links a,
-.NB-modal-about a,
+.NB-static a,
 a.NB-splash-link {
     color: #405BA8;
     text-decoration: none;
@@ -2581,7 +2581,7 @@ a.NB-splash-link {
 }
 
 .NB-splash-info .NB-splash-links a:hover,
-.NB-modal-about a:hover,
+.NB-static a:hover,
 a.NB-splash-link:hover {
     color: #A85B40;
 }
@@ -4183,75 +4183,6 @@ background: transparent;
   margin: 0 10px;
 }
 
-/* =============== */
-/* = About Modal = */
-/* =============== */
-
-.NB-modal-about ul {
-  margin: 2px 12px 4px 0;
-  padding: 0 0 1px;
-  font-size: 13px;
-}
-
-.NB-modal-about ul li {
-  margin: 0 0 12px;
-  padding-left: 20px;
-  list-style: none;
-}
-
-.NB-modal-about ul li.last {
-  margin-bottom: 0;
-}
-
-.NB-modal-about ul.NB-about-what li {
-  background: transparent url('../img/icons/silk/bullet_blue.png') no-repeat 0 0;
-}
-.NB-modal-about ul.NB-about-server li {
-  background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
-}
-.NB-modal-about ul.NB-about-client li {
-  background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
-}
-.NB-modal-about ul.NB-about-who li {
-  background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
-}
-.NB-modal-about ul.NB-about-why li {
-  background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 0 0;
-}
-
-.NB-modal-about .NB-link-about-faq {
-  float: right;
-  line-height: 30px;
-}
-
-.NB-modal-about ul li .NB-faq-question {
-  display: block;
-  font-weight: bold;
-  margin: 0 0 10px 0;
-}
-
-.NB-modal-about ul li .NB-faq-answer {
-  line-height: 18px;
-  color: #404040;
-  margin: 0 0 16px 0;
-  font-size: 12px;
-}
-
-.NB-modal-about ul li .NB-faq-answer.last {
-  margin-bottom: 0;
-}
-
-.NB-modal-about .NB-trainer-bullet {
-  vertical-align: middle;
-}
-
-.NB-modal-about .NB-faq-image {
-  float: right;
-  border-color:#C0C0C0 #A0A0A0 #A0A0A0 #C0C0C0;
-  border-style:solid;
-  border-width:1px;
-}
-
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */
@@ -4859,7 +4790,7 @@ background: transparent;
 
 .NB-static {
   overflow: auto;
-  padding-bottom: 65px;
+  padding: 78px 0 65px;
   font-size: 13px;
   color: #303030;
   line-height: 18px;
@@ -4871,8 +4802,9 @@ background: transparent;
 }
 
 .NB-static .NB-static-title {
-  position: relative;
-  display: inline;
+  top: 0;
+  left: 0;
+  position: fixed;
   height: 55px;
   font-size: 36px;
   line-height: 78px;
@@ -4897,6 +4829,23 @@ background: transparent;
 .NB-static ul {
   padding-left: 20px;
 }
+
+.NB-static pre {
+  overflow-x: auto;
+  padding: 8px;
+}
+.NB-static pre,
+.NB-static code {
+  background-color: ghostWhite;
+  padding: 0px 4px;
+  border: 1px solid #DEDEDE;
+  font: normal normal normal 11px/normal Menlo, Consolas, Monaco, Courier, monospace;
+}
+.NB-static .NB-module-title-prefix {
+  color: #A0A0A0;
+  padding: 0 8px 0 0;
+}
+
 /* ============== */
 /* = Press Page = */
 /* ============== */
@@ -4915,10 +4864,83 @@ background: transparent;
 }
 .NB-static-press-reviews .NB-press-publisher img {
   vertical-align: text-bottom;
+  width: 16px;
+  height: 16px;
 }
 .NB-static-press-reviews .NB-press-author {
   font-weight: bold;
 } 
 .NB-static-press-reviews .NB-press-date {
   color: #404040;
+}
+
+/* ============== */
+/* = About page = */
+/* ============== */
+
+.NB-static-about ul,
+.NB-static-faq ul {
+  margin: 2px 12px 4px 0;
+  font-size: 13px;
+}
+
+.NB-static-about ul li
+.NB-static-faq ul li {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.NB-static-about ul li.last,
+.NB-static-static ul li.last {
+  margin-bottom: 0;
+}
+
+.NB-static-about ul.NB-about-what li {
+  background: transparent url('../img/icons/silk/bullet_blue.png') no-repeat 0 0;
+}
+.NB-static-about ul.NB-about-server li {
+  background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+}
+.NB-static-about ul.NB-about-client li {
+  background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
+}
+.NB-static-about ul.NB-about-who li {
+  background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
+}
+.NB-static-about ul.NB-about-why li {
+  background: transparent url('../img/icons/silk/bullet_orange.png') no-repeat 0 0;
+}
+
+.NB-static-faq .NB-link-about-faq {
+  float: right;
+  line-height: 30px;
+}
+
+.NB-static-faq ul li .NB-faq-question {
+  display: block;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.NB-static-faq ul li .NB-faq-answer {
+  line-height: 18px;
+  color: #404040;
+  margin: 0 0 16px 0;
+  font-size: 12px;
+}
+
+.NB-static-faq ul li .NB-faq-answer.last {
+  margin-bottom: 0;
+}
+
+.NB-static-faq .NB-trainer-bullet {
+  vertical-align: middle;
+}
+
+.NB-static-faq .NB-faq-image {
+  float: right;
+  border-color:#C0C0C0 #A0A0A0 #A0A0A0 #C0C0C0;
+  border-style:solid;
+  border-width:1px;
 }

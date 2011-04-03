@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block bodyclass %}NB-static{% endblock %}
+
+{% block content %}
+
+  <div class="NB-static-title">
+    About NewsBlur
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">What:</span>A Feed Reader with Intelligence</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-what">
+        <li>Read the original site or the RSS feed.</li>
+        <li>Automatically highlight stories you want to read.</li>
+        <li class="last">Filter out stories you don't want to read.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Who:</span>A Labor of Love</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-who">
+        <li>Hand-crafted by: <a href="http://www.samuelclay.com">Samuel Clay</a></li>
+        <li>Find him on Twitter: <a href="http://twitter.com/samuelclay">@samuelclay</a></li>
+        <li>E-mail: <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
+        <li class="last">Made in: <a href="http://www.newyorkfieldguide.com">New York City</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">How:</span>Server-side technologies</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-server">
+        <li><a href="http://www.djangoproject.com">Django</a>: Web framework written in Python, used to serve all pages.</li>
+        <li><a href="http://ask.github.com/celery">Celery</a> &amp; <a href="http://www.rabbitmq.com">RabbitMQ</a>: Asynchronous queueing server, used to fetch and parse RSS feeds.</li>
+        <li><a href="http://www.mongodb.com">MongoDB</a>, <a href="http://www.mongodb.com/pymongo">Pymongo</a>, &amp; <a href="http://www.github.com/hmarr/mongoengine">Mongoengine</a>: Non-relational database, used to store stories, read stories, feed/page fetch histories, and proxied sites.</li>
+        <li class="last"><a href="http://www.postgresql.com">PostgreSQL</a>: Relational database, used to store feeds, subscriptions, and user accounts.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">How:</span>Client-side and design</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-client">
+        <li><a href="http://www.jquery.com">jQuery</a>: Cross-browser compliant JavaScript code. IE works without effort.</li>
+        <li><a href="http://documentcloud.github.com/underscore/">Underscore.js</a>: Functional programming for JavaScript. Indispensible.</li>
+        <li><b>Miscellaneous jQuery Plugins:</b> Everything from resizable layouts, to progress bars, sortables, date handling, colors, corners, JSON, animations. See the complete list on <a href="http://github.com/samuelclay/NewsBlur/">NewsBlur's GitHub repository</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Why:</span>What's the point of another RSS feed reader?</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-why">
+        <li>To learn how to build and scale the entire web stack: front-end JavaScript, HTML5 layout, back-end view processing, large dataset schema migrations, relational and non-relational database clusters across multiple servers, and getting multiple machines to talk to each other.</li>
+        <li>All of this just to prove that I could do it.</li>
+        <li>But most importantly, to meet future co-founders.</li>
+      </ul>
+    </div>
+  </div>
+
+{% endblock content %}

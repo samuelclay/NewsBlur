@@ -25,10 +25,6 @@ def press(request):
     return render_to_response('static/press.xhtml', {}, 
                               context_instance=RequestContext(request))
                               
-def privacy(request):
-    return render_to_response('static/privacy_policy.xhtml', {}, 
-                              context_instance=RequestContext(request))
-                              
-def tos(request):
-    return render_to_response('static/tos.xhtml', {}, 
+def publishers(request):
+    return render_to_response('static/publishers.xhtml', {}, 
                               context_instance=RequestContext(request))
