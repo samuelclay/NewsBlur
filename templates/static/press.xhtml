@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block bodyclass %}NB-static{% endblock %}
+
+{% block content %}
+
+  <div class="NB-static-title">
+    Press Kit and Recent Press
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">Press Information and Resources</h5>
+    <div class="NB-module-content">
+      Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:
+      <ul>
+        <li><a href="http://www.samuelclay.com">Samuel Clay</a>, founder, <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
+      </ul>
+      Contact Samuel for interviews, comments, and questions about NewsBlur. As another
+      ambitious New Yorker, he is happy to talk about NewsBlur.
+      
+      <h3>Icons</h3>
+      
+      <a href="{{ MEDIA_URL }}/img/logo_newsblur_512.png"><img src="{{ MEDIA_URL }}/img/logo_newsblur_512.png" width="128"></a>
+      <img src="{{ MEDIA_URL }}/img/logo_128.png">
+      <img src="{{ MEDIA_URL }}/img/logo_newsblur.png">
+      <img src="{{ MEDIA_URL }}/img/favicon.png">
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">Reviews of NewsBlur</h5>
+    <div class="NB-module-content">
+      <ul class="NB-static-press-reviews">
+        <li>
+          <a href="http://thenextweb.com/apps/2010/08/11/newsblur-intelligently-makes-sense-out-of-your-news-feeds/">NewsBlur is a slick, new RSS reader that intelligently makes sense out of your feeds.</a>
+          <span class="NB-press-publisher"><img src="http://thenextweb.com/apps/wp-content/themes/tnw_4/favicon.png"> The Next Web</span>, <span class="NB-press-author">Jeff Cormier</span>, <span class="NB-press-date">Nov 08, 2010</span>
+        </li>
+        <li>
+          <a href="http://www.pallab.net/2010/10/27/newsblur-rss-feed-reader/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+pallab+(Not+Just+Another+Blog+by+Pallab)">NewsBlur: An Impressive New RSS Feed Reader</a>
+          <span class="NB-press-publisher"><img src="http://www.pallab.net/favicon.ico"> PollabDotNet</span>, <span class="NB-press-author">Pallab De</span>, <span class="NB-press-date">Oct 27, 2010</span>
+        </li>
+        <li>
+          <a href="http://blogaliving.com/google-alternatives-newsblur-instead-of-reader/?utm_source=twitterfeed&utm_medium=twitter">
+            Google Alternatives: NewsBlur instead of Reader
+          </a>
+          <span class="NB-press-publisher">
+            <img src="http://blogaliving.com/wp-content/uploads/2011/01/blogalivingfav.png">
+            BlogALiving.com
+          </span>, 
+          <span class="NB-press-author">
+            Chris
+          </span>, 
+          <span class="NB-press-date">
+            Mar 8, 2011
+          </span>
+        </li>
+        <li>
+          <a href="">
+            
+          </a>
+          <span class="NB-press-publisher">
+            <img src="">
+            
+          </span>, 
+          <span class="NB-press-author">
+            
+          </span>, 
+          <span class="NB-press-date">
+            , 2010
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+{% endblock content %}

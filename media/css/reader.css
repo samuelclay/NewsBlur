@@ -47,9 +47,9 @@ body.NB-theme-sans-serif #story_pane {
 }
 
 body.NB-theme-serif #story_pane .NB-feed-story-content {
-  font-family: “Palatino Linotype”, Georgia, “URW Palladio L”, “Century Schoolbook L”, serif;
-  font-size: 14px;
-  line-height: 20px;
+    font-family: “Palatino Linotype”, Georgia, “URW Palladio L”, “Century Schoolbook L”, serif;
+    font-size: 14px;
+    line-height: 20px;
 }
 
 /* =================== */
@@ -2462,9 +2462,22 @@ form.opml_import_form input {
 }
 
 .NB-splash-info {
-  width: 478px;
+  width: 100%;
   height: 55px;
-  background-color: white;
+  background-color: #F3F6F9;
+  background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #E9EAEF),
+      color-stop(0.84, #F3F6F9)
+  );
+  background-image: -moz-linear-gradient(
+      center bottom,
+      #E9EAEF 10%,
+      #F3F6F9 84%
+  );
+
   bottom: 0;
   position: absolute;
   right: 0;
@@ -2473,6 +2486,10 @@ form.opml_import_form input {
 .NB-splash-info.NB-splash-top {
   top: 0;
   bottom: inherit;
+  border-bottom: 1px solid #C9CDE0;
+}
+.NB-splash-info.NB-splash-bottom {
+  border-top: 1px solid #E9ECF6;
 }
 .NB-splash-info .NB-splash-title {
     position: absolute;
@@ -3605,6 +3622,8 @@ background: transparent;
     background: transparent url(../img/icons/silk/chart_curve.png) no-repeat 50% 50%;
   }
   .NB-module-recommended .NB-recommended-favicon {
+    width: 16px;
+    height: 16px;
     float: left;
     margin: 2px 4px 0 0px;
   }
@@ -4766,7 +4785,7 @@ background: transparent;
   margin-top: 10px;
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-sans-serif {
-  font-family: "Lucida Sans Unicode", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-serif {
   font-family: “Palatino Linotype”, Georgia, “URW Palladio L”, “Century Schoolbook L”, serif;  
@@ -4832,4 +4851,74 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('../img/reader/instapaper.png') no-repeat 0 0;
+}
+
+/* ================ */
+/* = Static Pages = */
+/* ================ */
+
+.NB-static {
+  overflow: auto;
+  padding-bottom: 65px;
+  font-size: 13px;
+  color: #303030;
+  line-height: 18px;
+}
+
+.NB-static .NB-splash-info {
+  opacity: .9;
+  position: fixed;
+}
+
+.NB-static .NB-static-title {
+  position: relative;
+  display: inline;
+  height: 55px;
+  font-size: 36px;
+  line-height: 78px;
+  margin: 0 2px 12px 0;
+  text-shadow: 1px 1px 0 #F6F6F6;
+  color: #1A008D;
+  padding: 0 0 0 12px;
+  z-index: 2;
+  font-weight: 300;
+  font-family: Helvetica;
+}
+
+.NB-static .NB-module .NB-module-title {
+  margin: 0 0 12px 0;
+  padding-left: 14px;
+}
+
+.NB-static .NB-module .NB-module-content {
+  margin: 0 14px 24px;
+}
+
+.NB-static ul {
+  padding-left: 20px;
+}
+/* ============== */
+/* = Press Page = */
+/* ============== */
+
+.NB-static-press-reviews li {
+  font-size: 12px;
+  margin: 0 0 6px 0;
+  line-height: 18px;
+}
+.NB-static-press-reviews a {
+  display: block;
+  font-size: 14px;
+}
+.NB-static-press-reviews .NB-press-publisher {
+  font-style: italic;
+}
+.NB-static-press-reviews .NB-press-publisher img {
+  vertical-align: text-bottom;
+}
+.NB-static-press-reviews .NB-press-author {
+  font-weight: bold;
+} 
+.NB-static-press-reviews .NB-press-date {
+  color: #404040;
 }

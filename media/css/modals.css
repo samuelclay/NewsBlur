@@ -80,8 +80,8 @@
     color:#505050;
     font-size: 14px;
     font-family: "Gill Sans", inherit;
-    text-transform: uppercase;
     font-weight: normal;
+    text-transform: uppercase;
     overflow: hidden;
     position: relative;
 }

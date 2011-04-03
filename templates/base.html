@@ -77,13 +77,13 @@
   {% endif %}
 </head>
 
-<body>
+<body class="{% block bodyclass %}{% endblock %}">
 
   {% block header %}{% endblock %}
   
   
   <div class="NB-splash-info NB-splash-top">
-    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" />
+    <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
     <ul class="NB-splash-links">
       <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
       <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
@@ -92,7 +92,7 @@
   </div>
       
   <div class="NB-splash-info NB-splash-bottom">
-    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur.png" />
+    <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur.png" /></a>
     <ul class="NB-splash-links">
       <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">FAQ</a></li>
       <li class="NB-splash-link NB-splash-meta-about"><a href="#about">About</a></li>
