@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block bodyclass %}NB-static{% endblock %}
+{% block bodyclass %}NB-static NB-static-api{% endblock %}
 
 {% block content %}
 
@@ -11,19 +11,80 @@
   <div class="NB-module">
     <h5 class="NB-module-title">API Guidelines and Terms of Service</h5>
     <div class="NB-module-content">
-      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed statistics, and individual feed stories. No API key is required, but you are required to authenticate before using any of the API endpoints. Please be considerate, and don't hammer our servers.</p>
-
-<p>If your project or application allows users to interact with data from NewsBlur, you must cite NewsBlur as the source of your data.</p>
-
-<p>You may use the API commercially, by which we mean you may charge people money to use your project which itself uses the API. You may not, however, sell advertising against any data retrieved from NewsBlur's API. Essentially, you can charge money for your application or service, but not wrap NewsBlur in advertisements.</p>
-
-<p><i>We reserve the right to revise these guidelines. If you violate the spirit of these terms, expect to be blocked without advance warning.</i></p>
+      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
+      statistics, and individual feed stories. No API key is required, but you are required
+      to authenticate before using any of the API endpoints. Please be considerate, and don't
+      hammer our servers.</p>
+      
+       <p>If your project or application allows users to interact with data from NewsBlur,
+      you must cite NewsBlur as the source of your data.</p>
+      
+       <p>You may use the API commercially, by which we mean you may charge people money to
+      use your project which itself uses the API. You may not, however, sell advertising
+      against any data retrieved from NewsBlur's API. Essentially, you can charge money for
+      your application or service, but not wrap NewsBlur in advertisements.</p>
+      
+       <p><i>We reserve the right to revise these guidelines. If you violate the spirit of
+      these terms, expect to be blocked without advance warning.</i></p>
     </div>
   </div>
 
   <div class="NB-module">
     <h5 class="NB-module-title">Feed Management</h5>
     <div class="NB-module-content">
+      
+      
+      <h3><tt>GET /api/reader/feed_list</tt></h3>
+      
+      <p>Retrieve a user's list of feeds. Includes the 3 unread counts, as well as optional
+      favicons.</p>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>include_favicons</td>
+          <td>Option to not include favicons in the list of feeds, since they can be time
+          consuming to download. Use <tt>/api/feeds/favicons/</tt> to retrieve the favicons
+          in a separate request.</td>
+          <td>true</td>
+          <td>true/false</td>
+        </tr>
+      </table>
+
+      <h4>Example Response</h4>
+      
+      <code>
+        {
+          'feeds': []
+        }
+      </code>
+
+      <h3><tt>GET /api/feeds/favicons</tt></h3>
+      
+      <p>Retrieve a list of favicons for a list of feeds. Used when combined with
+      <tt>/api/reader/feed_list</tt> and <tt>include_favicons=false</tt>, so the feed_list
+      request contains far less data. Useful for mobile devices, but requires a second
+      request.</p>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>feeds</td>
+          <td><b>REQUIRED</b> Array of feed ids</td>
+          <td></td>
+          <td>[1, 2, 3]</td>
+        </tr>
+      </table>
       
     </div>
   </div>

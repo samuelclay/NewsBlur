@@ -42,8 +42,8 @@ class UserSubscription(models.Model):
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
     
-    def canonical(self, full=False):
-        feed               = self.feed.canonical(full=full)
+    def canonical(self, full=False, include_favicon=True):
+        feed               = self.feed.canonical(full=full, include_favicon=include_favicon)
         feed['feed_title'] = self.user_title or feed['feed_title']
         feed['ps']         = self.unread_count_positive
         feed['nt']         = self.unread_count_neutral

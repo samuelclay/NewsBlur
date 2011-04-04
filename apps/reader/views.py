@@ -128,9 +128,10 @@ def logout(request):
     
 @json.json_view
 def load_feeds(request):
-    user            = get_user(request)
-    feeds           = {}
-    not_yet_fetched = False
+    user             = get_user(request)
+    feeds            = {}
+    not_yet_fetched  = False
+    include_favicons = request.REQUEST.get('include_favicons', True)
     
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
@@ -144,7 +145,7 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related('feed', 'feed__feed_icon').filter(user=user)
     
     for sub in user_subs:
-        feeds[sub.feed.pk] = sub.canonical()
+        feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
         if feeds[sub.feed.pk].get('not_yet_fetched'):
             not_yet_fetched = True
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
@@ -463,7 +464,7 @@ def load_river_stories(request):
         # if feed_counts[feed_id] > max_feed_count:
         #     max_feed_count = feed_counts[feed_id]
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
-    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:25]
+    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:50]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids])
     feed_counts = dict(feed_counts)
