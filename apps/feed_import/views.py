@@ -108,7 +108,9 @@ def reader_callback(request):
         user_token = OAuthToken.objects.get(user=request.user)
     else:
         try:
-            user_token = OAuthToken.objects.get(uuid=request.COOKIES.get('newsblur_reader_uuid'))
+            user_uuid = request.COOKIES.get('newsblur_reader_uuid')
+            if not user_uuid: raise OAuthToken.DoesNotExist
+            user_token = OAuthToken.objects.get(uuid=user_uuid)
         except OAuthToken.DoesNotExist:
             user_token = OAuthToken.objects.get(session_id=request.session.session_key)
         except OAuthToken.DoesNotExist:
