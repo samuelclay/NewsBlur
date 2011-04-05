@@ -70,7 +70,6 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
-            'favicon': self.icon.data,
             'favicon_color': self.icon.color,
             'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
         }
