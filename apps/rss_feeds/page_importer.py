@@ -35,7 +35,7 @@ class PageImporter(object):
             self.feed.feed_link = fp.feed.get('link', "")
             self.feed.save()
         except (urllib2.HTTPError, httplib.IncompleteRead), e:
-            self.feed.save_page_history(getattr(e, 'code', 500), e.msg, e.fp.read())
+            self.feed.save_page_history(getattr(e, 'code', 500), getattr(e, 'msg', e), e.fp.read())
             return
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
