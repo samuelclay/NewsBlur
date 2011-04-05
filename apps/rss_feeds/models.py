@@ -198,10 +198,10 @@ class Feed(models.Model):
         
             if feed_address:
                 if feed_address.endswith('feedburner.com/atom.xml'):
-                    message = """
-                    %s - %s - %s
-                    """ % (feed_address, self.__dict__, pprint(self.__dict__))
-                    mail_admins('Wierdo alert', message, fail_silently=True)
+                    # message = """
+                    # %s - %s - %s
+                    # """ % (feed_address, self.__dict__, pprint(self.__dict__))
+                    # mail_admins('Wierdo alert', message, fail_silently=True)
                     return False
                 try:
                     self.feed_address = feed_address
