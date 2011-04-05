@@ -8,6 +8,12 @@
     The NewsBlur API
   </div>
 
+
+  {# ========= #}
+  {# = Feeds = #}
+  {# ========= #}
+  
+  
   <div class="NB-module">
     <h5 class="NB-module-title">API Guidelines and Terms of Service</h5>
     <div class="NB-module-content">
@@ -30,11 +36,11 @@
   </div>
 
   <div class="NB-module">
-    <h5 class="NB-module-title">Feed Management</h5>
+    <h5 class="NB-module-title">Feeds</h5>
     <div class="NB-module-content">
       
       
-      <h3><tt>GET /api/reader/feed_list</tt></h3>
+      <h3><tt>GET /api/1/reader/feeds</tt></h3>
       
       <p>Retrieve a user's list of feeds. Includes the 3 unread counts, as well as optional
       favicons.</p>
@@ -48,26 +54,35 @@
         </tr>
         <tr>
           <td>include_favicons</td>
-          <td>Option to not include favicons in the list of feeds, since they can be time
-          consuming to download. Use <tt>/api/feeds/favicons/</tt> to retrieve the favicons
+          <td><span class="optional">Optional</span> Include favicons inline. Since they can be time consuming to
+          download, you can optionally turn them off. Use <tt>/api/1/feeds/favicons/</tt> to retrieve the favicons
           in a separate request.</td>
-          <td>true</td>
-          <td>true/false</td>
+          <td><code>true</code></td>
+          <td><code>true/false</code></td>
         </tr>
       </table>
 
       <h4>Example Response</h4>
       
-      <code>
-        {
-          'feeds': []
-        }
-      </code>
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
+      
+      <h4>Tips</h4>
+      
+      <ul>
+        <li>Use <code>/api/1/reader/refresh_feeds</code> to get updated unread counts.</li>
+        <li>Turn off <code>include_favicons</code> if you can either cache favicons or can wait to fetch them.</li>
+      </ul>
 
-      <h3><tt>GET /api/feeds/favicons</tt></h3>
+
+
+      <h3><tt>GET /api/1/feeds/favicons</tt></h3>
       
       <p>Retrieve a list of favicons for a list of feeds. Used when combined with
-      <tt>/api/reader/feed_list</tt> and <tt>include_favicons=false</tt>, so the feed_list
+      <tt>/api/1/reader/feed_list</tt> and <tt>include_favicons=false</tt>, so the feed_list
       request contains far less data. Useful for mobile devices, but requires a second
       request.</p>
       
@@ -80,13 +95,145 @@
         </tr>
         <tr>
           <td>feeds</td>
-          <td><b>REQUIRED</b> Array of feed ids</td>
+          <td><span class="required">REQUIRED</span> Array of feed ids</td>
           <td></td>
-          <td>[1, 2, 3]</td>
+          <td><code>[1, 2, 3]</code></td>
         </tr>
       </table>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
+      
+      <h4>Tips</h4>
+      
+      <ul>
+        <li>To use inline data images, you can use this syntax:
+          <pre><code>
+&lt;img src="data:image/png;base64,[IMAGE_DATA_STRING]" /&gt;
+          </code></pre>
+        </li>
+      </ul>
+      
+      
+      <h3><tt>GET /api/1/reader/feed/:id</tt></h3>
+      
+      <p>Retrieve stories from a single feed.</p>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>page</td>
+          <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
+          <td><code>1</code></td>
+          <td><code>12</code></td>
+        </tr>
+      </table>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
       
     </div>
   </div>
+  
+  
+  {# =========== #}
+  {# = Stories = #}
+  {# =========== #}
 
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">Stories</h5>
+    <div class="NB-module-content">
+      
+      
+      <h3><tt>GET /api/1/reader/feeds</tt></h3>
+      
+      <p>Retrieve a user's list of feeds. Includes the 3 unread counts, as well as optional
+      favicons.</p>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>include_favicons</td>
+          <td><span class="optional">Optional</span> Include favicons inline. Since they can be time consuming to
+          download, you can optionally turn them off. Use <tt>/api/1/feeds/favicons/</tt> to retrieve the favicons
+          in a separate request.</td>
+          <td><code>true</code></td>
+          <td><code>true/false</code></td>
+        </tr>
+      </table>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
+
+    </div>
+  </div>
+  
+  
+  {# ================ #}
+  {# = Intelligence = #}
+  {# ================ #}
+  
+  <div class="NB-module">
+    <h5 class="NB-module-title">Intelligence</h5>
+    <div class="NB-module-content">
+      
+      
+      <h3><tt>GET /api/1/reader/feeds</tt></h3>
+      
+      <p>Retrieve a user's list of feeds. Includes the 3 unread counts, as well as optional
+      favicons.</p>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>include_favicons</td>
+          <td><span class="optional">Optional</span> Include favicons inline. Since they can be time consuming to
+          download, you can optionally turn them off. Use <tt>/api/1/feeds/favicons/</tt> to retrieve the favicons
+          in a separate request.</td>
+          <td><code>true</code></td>
+          <td><code>true/false</code></td>
+        </tr>
+      </table>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
+
+    </div>
+  </div>
 {% endblock content %}

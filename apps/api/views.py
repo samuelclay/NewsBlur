@@ -9,6 +9,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
 
+
 def add_site_load_script(request, token):
     code = 0
     def image_base64(image_name):

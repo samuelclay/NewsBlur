@@ -292,18 +292,13 @@ def load_single_feed(request):
         else:
             raise Http404
         
-    force_update = request.GET.get('force_update', False)
-    
     stories = feed.get_stories(offset, limit) 
         
-    if force_update:
-        feed.update(force_update)
-    
     # Get intelligence classifier for user
-    classifier_feeds = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_feeds   = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
     classifier_authors = MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id)
-    classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
-    classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_titles  = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_tags    = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
