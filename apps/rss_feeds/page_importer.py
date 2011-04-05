@@ -1,4 +1,4 @@
-import urllib2
+import urllib2, httplib
 import re
 import urlparse
 import traceback
@@ -29,13 +29,13 @@ class PageImporter(object):
             data = response.read()
             html = self.rewrite_page(data)
             self.save_page(html)
-        except (ValueError, urllib2.URLError), e:
+        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
             self.feed.feed_link = fp.feed.get('link', "")
             self.feed.save()
-        except urllib2.HTTPError, e:
-            self.feed.save_page_history(e.code, e.msg, e.fp.read())
+        except (urllib2.HTTPError, httplib.IncompleteRead), e:
+            self.feed.save_page_history(getattr(e, 'code', 500), getattr(e, 'msg', e), e.fp.read())
             return
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
