@@ -130,9 +130,11 @@ NEWSBLUR.log = function(msg) {
     
     $.extend({
       
-        favicon: function(feed_favicon) {
+        favicon: function(feed_favicon, empty_on_missing) {
+          
             if (feed_favicon && feed_favicon.indexOf('data:image/png;base64,') != -1) return feed_favicon;
             else if (feed_favicon) return 'data:image/png;base64,' + feed_favicon;
+            else if (empty_on_missing) return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
             return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/world.png';
         },
         

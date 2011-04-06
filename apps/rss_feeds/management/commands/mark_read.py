@@ -13,12 +13,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['userid']:
-            user = User.objects.filter(pk=options['userid'])
+            user = User.objects.filter(pk=options['userid'])[0]
         elif options['username']:
             user = User.objects.get(username__icontains=options['username'])
         else:
             raise Exception, "Need username or user id."
         
+        user.profile.last_seen_on = datetime.datetime.utcnow()
+        user.profile.save()
         feeds = UserSubscription.objects.filter(user=user)
         for sub in feeds:
             if options['days'] == 0:

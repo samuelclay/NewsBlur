@@ -15,7 +15,8 @@ from django.conf import settings as django_settings
 
 env.user = 'sclay'
 env.roledefs ={
-    'app': ['www.newsblur.com'],
+    'app': ['app01.newsblur.com'],
+    'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
     'task': ['task01.newsblur.com', 'task02.newsblur.com'],
 }
@@ -26,6 +27,8 @@ env.roledefs ={
 
 def app():
     env.roles = ['app']
+def web():
+    env.roles = ['web']
 def db():
     env.roles = ['db']
 def task():
@@ -35,26 +38,33 @@ def task():
 # = Deploy =
 # ==========
 
-@roles('app')
+@roles('web')
 def deploy():
     with cd('~/newsblur'):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://www.newsblur.com > /dev/null')
+        with cd('media/js'):
+            run('rm *.gz')
+            run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
+        with cd('media/css'):
+            run('rm *.gz')
+            run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
 
-@roles('app')
+@roles('web')
 def deploy_full():
     with cd('~/newsblur'):
         run('git pull')
         run('./manage.py migrate')
         run('sudo supervisorctl restart gunicorn')
 
-@roles('app')
+@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
         run('kill -HUP `cat /var/run/gunicorn/gunicorn_staging.pid`')
 
-@roles('app')
+@roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
@@ -109,6 +119,7 @@ def setup_common():
     setup_logrotate()
     setup_sudoers()
     setup_nginx()
+    configure_nginx()
 
 def setup_app():
     setup_common()
@@ -176,6 +187,7 @@ def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")
     put('config/gitconfig.txt', './.gitconfig')
+    put('config/ssh.conf', './.ssh/config')
 
 def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
@@ -250,6 +262,8 @@ def setup_nginx():
             run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
             run('make')
             sudo('make install')
+            
+def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
     sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
     sudo("mkdir -p /var/log/nginx")
@@ -257,6 +271,7 @@ def setup_nginx():
     put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
+    sudo("/etc/init.d/nginx restart")
     
 # ===============
 # = Setup - App =

@@ -22,6 +22,7 @@ from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
     session_id = models.CharField(max_length=50, null=True, blank=True)
+    uuid = models.CharField(max_length=50, null=True, blank=True)
     remote_ip = models.CharField(max_length=50, null=True, blank=True)
     request_token = models.CharField(max_length=50)
     request_token_secret = models.CharField(max_length=50)

@@ -1,7 +1,9 @@
 import datetime
+import urllib
 import urlparse
 from utils import log as logging
 import oauth2 as oauth
+import uuid
 from django.contrib.sites.models import Site
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -57,7 +59,7 @@ def opml_export(request):
     
     return response
         
-def reader_authorize(request):
+def reader_authorize(request): 
     logging.user(request.user, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
     ))
@@ -65,8 +67,8 @@ def reader_authorize(request):
     oauth_secret = settings.OAUTH_SECRET
     scope = "http://www.google.com/reader/api"
     request_token_url = ("https://www.google.com/accounts/OAuthGetRequestToken?"
-                         "scope=%s&oauth_callback=http://%s%s") % (
-                            scope,
+                         "scope=%s&secure=1&session=1&oauth_callback=http://%s%s") % (
+                            urllib.quote_plus(scope),
                             Site.objects.get_current().domain,
                             reverse('google-reader-callback'),
                          )
@@ -87,12 +89,15 @@ def reader_authorize(request):
     else:
         OAuthToken.objects.filter(session_id=request.session.session_key).delete()
         OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).delete()
+    auth_token_dict['uuid'] = str(uuid.uuid4())
     auth_token_dict['session_id'] = request.session.session_key
     auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
     OAuthToken.objects.create(**auth_token_dict)
-                              
+                 
     redirect = "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-    return HttpResponseRedirect(redirect)
+    response = HttpResponseRedirect(redirect)
+    response.set_cookie('newsblur_reader_uuid', auth_token_dict['uuid'])
+    return response
 
 def reader_callback(request):
     access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
@@ -103,6 +108,10 @@ def reader_callback(request):
         user_token = OAuthToken.objects.get(user=request.user)
     else:
         try:
+            user_uuid = request.COOKIES.get('newsblur_reader_uuid')
+            if not user_uuid: raise OAuthToken.DoesNotExist
+            user_token = OAuthToken.objects.get(uuid=user_uuid)
+        except OAuthToken.DoesNotExist:
             user_token = OAuthToken.objects.get(session_id=request.session.session_key)
         except OAuthToken.DoesNotExist:
             user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')

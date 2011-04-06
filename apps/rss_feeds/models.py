@@ -5,6 +5,7 @@ import re
 import mongoengine as mongo
 import zlib
 import urllib
+from pprint import pprint
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -13,6 +14,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
+from django.core.mail import mail_admins
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -68,7 +70,6 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
-            'favicon': self.icon.data,
             'favicon_color': self.icon.color,
             'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
         }
@@ -195,6 +196,12 @@ class Feed(models.Model):
                     feed_address = feed_address_from_link
         
             if feed_address:
+                if feed_address.endswith('feedburner.com/atom.xml'):
+                    # message = """
+                    # %s - %s - %s
+                    # """ % (feed_address, self.__dict__, pprint(self.__dict__))
+                    # mail_admins('Wierdo alert', message, fail_silently=True)
+                    return False
                 try:
                     self.feed_address = feed_address
                     self.next_scheduled_update = datetime.datetime.utcnow()
@@ -696,31 +703,32 @@ class Feed(models.Model):
             return self.min_to_decay, random_factor
             
         # Use stories per month to calculate next feed update
-        updates_per_day = self.stories_last_month / 30.0
+        updates_per_month = self.stories_last_month
         # if updates_per_day < 1 and self.num_subscribers > 2:
         #     updates_per_day = 1
         # 0 updates per day = 24 hours
         # 1 subscriber:
-        #   1 update per day = 6 hours
-        #   2 updates = 3.5 hours
-        #   4 updates = 2 hours
-        #   10 updates = 1 hour
+        #   0 updates per month = 4 hours
+        #   1 update = 2 hours
+        #   2 updates = 1.5 hours
+        #   4 updates = 1 hours
+        #   10 updates = .5 hour
         # 2 subscribers:
-        #   1 update per day = 4.5 hours
-        #   10 updates = 55 minutes
-        updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.20)
-                                                   * (updates_per_day**1.5)))
+        #   1 update per day = 1 hours
+        #   10 updates = 20 minutes
+        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
+                                                   * (updates_per_month**1.5)))
         if self.premium_subscribers > 0:
-            updates_per_day_delay /= 6
+            updates_per_day_delay /= 5
         # Lots of subscribers = lots of updates
-        # 144 hours for 0 subscribers.
-        # 24 hours for 1 subscriber.
-        # 7 hours for 2 subscribers.
-        # 3 hours for 3 subscribers.
-        # 25 min for 10 subscribers.
+        # 24 hours for 0 subscribers.
+        # 4 hours for 1 subscriber.
+        # .5 hours for 2 subscribers.
+        # .25 hours for 3 subscribers.
+        # 1 min for 10 subscribers.
         subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
-            subscriber_bonus /= 6
+            subscriber_bonus /= 5
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -730,7 +738,7 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = max(6, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
+        total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         

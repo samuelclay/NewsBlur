@@ -673,24 +673,24 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   text-shadow: none;
 }
 
-.NB-feedlist-hide-read-feeds #feed_list .feed {
+.NB-feedlist-hide-read-feeds .NB-feedlist .feed {
   display: none;
 }
-.NB-feedlist-hide-read-feeds #feed_list.unread_view_positive .unread_positive {
+.NB-feedlist-hide-read-feeds .NB-feedlist.unread_view_positive .unread_positive {
   display: block;
 }
-.NB-feedlist-hide-read-feeds #feed_list.unread_view_neutral .unread_positive,
-.NB-feedlist-hide-read-feeds #feed_list.unread_view_neutral .unread_neutral {
-  display: block;
-}
-
-.NB-feedlist-hide-read-feeds #feed_list.unread_view_negative .unread_positive,
-.NB-feedlist-hide-read-feeds #feed_list.unread_view_negative .unread_neutral,
-.NB-feedlist-hide-read-feeds #feed_list.unread_view_negative .unread_negative {
+.NB-feedlist-hide-read-feeds .NB-feedlist.unread_view_neutral .unread_positive,
+.NB-feedlist-hide-read-feeds .NB-feedlist.unread_view_neutral .unread_neutral {
   display: block;
 }
 
-.NB-feedlist-hide-read-feeds #feed_list .feed.NB-empty {
+.NB-feedlist-hide-read-feeds .NB-feedlist.unread_view_negative .unread_positive,
+.NB-feedlist-hide-read-feeds .NB-feedlist.unread_view_negative .unread_neutral,
+.NB-feedlist-hide-read-feeds .NB-feedlist.unread_view_negative .unread_negative {
+  display: block;
+}
+
+.NB-feedlist-hide-read-feeds .NB-feedlist .feed.NB-empty {
   display: block;
 }
 
@@ -1002,6 +1002,34 @@ background: transparent;
 
 #story_titles .NB-feedbar .NB-feedbar-mark-feed-read:hover {
     background-color: #00609f;
+}
+
+#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon {
+    opacity: 0;
+    display: none;
+    position: absolute;
+    left: 4px;
+    top: 0px;
+    width: 20px;
+    height: 22px;
+    cursor: pointer;
+    background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
+}
+
+#story_titles .NB-feedbar .feed:hover .NB-feedlist-manage-icon {
+  display: block;
+  opacity: 1;
+}
+
+#story_titles .NB-feedbar .feed:hover .feed_favicon {
+  display: none;
+}
+#story_titles .NB-feedbar .folder_title .NB-feedlist-manage-icon {
+    background-position: 3px 5px;
+}
+
+#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 3px 4px;
 }
 
 #story_titles .NB-feedbar .feed .feed_counts {
@@ -4256,7 +4284,7 @@ background: transparent;
   font-size: 12px;
   color: #606060;
   text-shadow: 1px 1px 0 #F0F0F0;
-  width: 685px;
+  width: 715px;
 }
 .NB-modal-feedchooser .NB-modal-subtitle b {
 /*  margin: 0 0 4px 0;*/
@@ -4270,7 +4298,7 @@ background: transparent;
 
 .NB-modal-feedchooser .NB-feedchooser-type {
   float: left;
-  width: 330px;
+  width: 345px;
   margin: 24px 24px 0 0;
   padding: 0 24px 0 0;
   border-right: 1px solid #E0E0E0;
@@ -4335,8 +4363,7 @@ background: transparent;
 }
 
 .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
-    border-radius: 20px;
-    padding: 12px;
+    border-radius: 12px;
     border: 1px solid #F6BD44;
     padding: 0 8px 4px 0px;
     background-color: #FFED68;
@@ -4368,7 +4395,6 @@ background: transparent;
     margin: 0px 0px 0px 0;
     padding: 4px 0 4px 2px;
     font-weight: bold;
-    width: 112px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value {
@@ -4434,6 +4460,9 @@ background: transparent;
     text-transform: uppercase;
 }
 
+.NB-modal-feedchooser #NB-feedchooser-feeds .feed {
+    display: block;
+}
 .NB-modal-feedchooser .feed.NB-feedchooser-approve .feed_title {
     font-weight: bold;
 }

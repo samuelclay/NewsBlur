@@ -324,6 +324,7 @@ class Dispatcher:
                 logging.error(tb)
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 ret_feed = FEED_ERREXC 
+                feed = self.refresh_feed(feed_id)
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e)

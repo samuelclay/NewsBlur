@@ -23,6 +23,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
+from apps.rss_feeds.models import FeedIcon
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
@@ -142,7 +143,7 @@ def load_feeds(request):
         UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
         folders = UserSubscriptionFolders.objects.get(user=user)
         
-    user_subs = UserSubscription.objects.select_related('feed', 'feed__feed_icon').filter(user=user)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
         feeds[sub.feed.pk] = sub.canonical()
@@ -169,6 +170,23 @@ def load_feeds(request):
     }
     return data
 
+@json.json_view
+def load_feed_favicons(request):
+    user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_ids')
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    if not request.REQUEST.get('load_all'):
+        user_subs = user_subs.filter(active=True)
+    if feed_ids:
+        user_subs = user_subs.filter(feed__in=feed_ids)
+        
+    favicons = {}
+
+    for sub in user_subs:
+        favicons[sub.feed.pk] = FeedIcon.objects.get(feed__pk=sub.feed.pk).data
+        
+    return favicons
+    
 @ajax_login_required
 @json.json_view
 def load_feeds_iphone(request):
@@ -255,10 +273,11 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['favicon'] = sub.feed.icon.data
             feeds[sub.feed.pk]['favicon_color'] = sub.feed.icon.color
             feeds[sub.feed.pk]['favicon_fetching'] = bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
-            
-    diff = datetime.datetime.utcnow()-start
-    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+    
+    if settings.DEBUG:
+        diff = datetime.datetime.utcnow()-start
+        timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+        logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
     
     return {'feeds': feeds}
 
@@ -267,7 +286,7 @@ def load_single_feed(request):
     start = datetime.datetime.utcnow()
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 30))
+    limit = int(request.REQUEST.get('limit', 12))
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
@@ -425,7 +444,7 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    limit              = 25
+    limit              = 18
     offset             = 0
     start              = datetime.datetime.utcnow()
     user               = get_user(request)
