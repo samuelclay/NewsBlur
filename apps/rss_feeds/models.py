@@ -5,7 +5,6 @@ import re
 import mongoengine as mongo
 import zlib
 import urllib
-from pprint import pprint
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
@@ -14,7 +13,6 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
-from django.core.mail import mail_admins
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -401,6 +399,51 @@ class Feed(models.Model):
             self.average_stories_per_month = total / month_count
         self.save()
         
+        
+    def save_classifiers_count(self):
+        from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+        
+        def calculate_scores(cls, facet):
+            map_f = """
+                function() {
+                    emit(this["%s"], {
+                        pos: this.score>0 ? this.score : 0, 
+                        neg: this.score<0 ? Math.abs(this.score) : 0
+                    });
+                }
+            """ % (facet)
+            reduce_f = """
+                function(key, values) {
+                    var result = {pos: 0, neg: 0};
+                    values.forEach(function(value) {
+                        result.pos += value.pos;
+                        result.neg += value.neg;
+                    });
+                    return result;
+                }
+            """
+            scores = {}
+            res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
+            for r in res:
+                scores[r.key] = dict([(k, int(v)) for k,v in r.value.iteritems()])
+            
+            return scores
+        
+        scores = {}
+        for cls, facet in [(MClassifierTitle, 'title'), 
+                           (MClassifierAuthor, 'author'), 
+                           (MClassifierTag, 'tag'), 
+                           (MClassifierFeed, 'feed_id')]:
+            scores[facet] = calculate_scores(cls, facet)
+            if facet == 'feed_id' and scores[facet].values():
+                scores['feed'] = scores[facet].values()[0]
+                del scores['feed_id']
+            elif not scores[facet]:
+                del scores[facet]
+                
+        if scores:
+            self.data.feed_classifier_counts = json.encode(scores)
+            self.data.save()
         
     def update(self, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
@@ -806,6 +849,7 @@ class FeedData(models.Model):
     feed = AutoOneToOneField(Feed, related_name='data')
     feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
     story_count_history = models.TextField(blank=True, null=True)
+    feed_classifier_counts = models.TextField(blank=True, null=True)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     
