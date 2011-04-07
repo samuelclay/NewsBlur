@@ -2966,7 +2966,7 @@
         },
         
         open_recommend_modal: function(feed_id) {
-            NEWSBLUR.recommend_feed = new NEWSBLUR.ReaderRecommendFeed({'feed_id': feed_id});
+            NEWSBLUR.recommend_feed = new NEWSBLUR.ReaderRecommendFeed(feed_id);
         },
         
         // ==========================

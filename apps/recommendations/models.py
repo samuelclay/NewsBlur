@@ -9,6 +9,8 @@ class RecommendedFeed(models.Model):
     is_public     = models.BooleanField(default=False)
     created_date  = models.DateField(auto_now_add=True)
     approved_date = models.DateField(null=True)
+    declined_date = models.DateField(null=True)
+    twitter       = models.CharField(max_length=50, null=True, blank=True)
     
     def __unicode__(self):
         return "%s (%s)" % (self.feed, self.approved_date or self.created_date)

@@ -34,7 +34,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         $.make('div', [
                             $.make('div', { className: 'NB-loading' }),
                             $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
-                            $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url }),
+                            $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-input NB-add-url', name: 'url', value: self.options.url }),
                             $.make('input', { type: 'submit', value: 'Add it', className: 'NB-modal-submit-green NB-add-url-submit' }),
                             $.make('div', { className: 'NB-error' })
                         ])
@@ -51,7 +51,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                             $.make('label', { 'for': 'NB-add-folder' }, [
                                 $.make('div', { className: 'NB-folder-icon' })
                             ]),
-                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-add-folder', name: 'url' }),
+                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder', name: 'url' }),
                             $.make('input', { type: 'submit', value: 'Add folder', className: 'NB-add-folder-submit NB-modal-submit-green' }),
                             $.make('div', { className: 'NB-error' })
                         ])

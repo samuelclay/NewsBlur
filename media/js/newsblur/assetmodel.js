@@ -710,10 +710,26 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
+    get_feed_recommendation_info: function(feed_id, callback) {
+        this.make_request('/recommendations/load_feed_info', {
+            'feed_id': feed_id
+        }, callback, callback, {
+            'ajax_group': 'statistics'
+        });
+    },
+    
     start_import_from_google_reader: function(callback) {
         this.make_request('/import/import_from_google_reader/', {}, callback);
     },
-        
+    
+    save_recommended_site: function(data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/recommendations/save_recommended_feed', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+    
     save_exception_retry: function(feed_id, callback) {
         var self = this;
         

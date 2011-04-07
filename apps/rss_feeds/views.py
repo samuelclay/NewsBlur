@@ -88,7 +88,7 @@ def load_feed_statistics(request):
     logging.user(request.user, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
     return stats
-    
+
 @ajax_login_required
 @json.json_view
 def exception_retry(request):
