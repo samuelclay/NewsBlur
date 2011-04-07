@@ -43,6 +43,7 @@ def load_feed_info(request):
         previous_recommendation = recommended_feed[0].created_date
     
     return {
+        'subscriber_count': feed.num_subscribers,
         'tagline': feed.data.feed_tagline,
         'previous_recommendation': previous_recommendation
     }

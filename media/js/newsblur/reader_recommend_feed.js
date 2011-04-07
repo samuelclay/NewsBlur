@@ -92,6 +92,14 @@ NEWSBLUR.ReaderRecommendFeed.prototype = {
         } else {
             $submit.removeClass('NB-disabled').val('Recommend Site');
         }
+        
+        var count = _.isUndefined(data['subscriber_count']) && 'Loading ' || data['subscriber_count'];
+        var $subscribers = $.make('div', { className: 'NB-modal-subtitle-right' }, [
+            $.make('span', { className: 'NB-modal-subtitle-right-count' }, ''+count),
+            $.make('span', { className: 'NB-modal-subtitle-right-label' }, 'subscriber' + (data['subscriber_count']==1?'':'s'))
+        ]);
+        $('.NB-modal-subtitle-right', this.$modal).remove();
+        $('.NB-modal-subtitle', this.$modal).prepend($subscribers);
     },
         
     initialize_feed: function(feed_id) {

@@ -4124,20 +4124,6 @@ background: transparent;
   margin: 6px 8px 0;
 }
 
-.NB-modal-statistics .NB-statistics-subscribers {
-  float: right;
-  clear: both;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #d0d0d0;
-  text-shadow: 0 1px 0 #FFF;
-}
-
-.NB-modal-statistics .NB-statistics-subscribers-count {
-  color: #A8A8A8;
-  padding-right: 4px;
-}
-
 .NB-modal-statistics .NB-statistics-history-fetch {
   overflow: hidden;
   clear: both;
