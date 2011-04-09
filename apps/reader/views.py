@@ -66,8 +66,9 @@ def index(request):
         feed_count = UserSubscription.objects.filter(user=request.user).count()
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
-        
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True).select_related('feed')
+    
+    now = datetime.datetime.now()
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')
     # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
     howitworks_page = random.randint(0, 5)

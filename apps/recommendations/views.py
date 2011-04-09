@@ -1,3 +1,4 @@
+import datetime
 from utils import log as logging
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -13,11 +14,13 @@ def load_recommended_feed(request):
     user = get_user(request)
     page = int(request.REQUEST.get('page', 0))
     usersub = None
+    refresh = request.REQUEST.get('refresh')
+    now = datetime.datetime.now
     
-    recommended_feeds = RecommendedFeed.objects.all()[page:page+2]
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now)[page:page+2]
     if recommended_feeds and request.user.is_authenticated():
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
-    if page != 0:
+    if refresh != 'true':
         logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
     recommended_feed = recommended_feeds and recommended_feeds[0]

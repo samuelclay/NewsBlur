@@ -4841,7 +4841,7 @@
         load_recommended_feeds: function() {
           // Reload recommended feeds every 10 minutes.
           setInterval(_.bind(function() {
-              this.load_recommended_feed();
+              this.load_recommended_feed(0, true);
           }, this), 10*60*1000);
         },
         
@@ -4890,13 +4890,13 @@
             this.open_add_feed_modal({url: feed_address});
         },
         
-        load_recommended_feed: function(direction) {
+        load_recommended_feed: function(direction, refresh) {
             var self = this;
             var $module = $('.NB-module-recommended');
             $module.addClass('NB-loading');
             direction = direction || 0;
             
-            this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, function(resp) {
+            this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, !!refresh, function(resp) {
                 if (!resp) return;
                 self.counts['recommended_feed_page'] += direction;
 
