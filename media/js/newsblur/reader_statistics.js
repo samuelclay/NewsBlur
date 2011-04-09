@@ -197,21 +197,22 @@ NEWSBLUR.ReaderStatistics.prototype = {
         if (!data) return;
         
         var $facets = $.make('div', { className: 'NB-statistics-facets' }, [
-            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, _.keys(data)))
+            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, _.keys(data).length))
         ]);
         
         _.each(data, function(counts, key) {
             var pos = counts.pos || 0;
             var neg = counts.neg || 0;
             var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
-                $.make('div', { className: 'NB-statistics-facet-pos' }, [
-                    $.make('div', { className: 'NB-statistics-facet-pos-image' }),
-                    counts.pos
-                ]),
-                $.make('div', { className: 'NB-statistics-facet-neg' }, [
-                    $.make('div', { className: 'NB-statistics-facet-neg-image', style: 'width: '+neg*5+'px' }),
-                    counts.neg
-                ]),
+                (pos && $.make('div', { className: 'NB-statistics-facet-pos' }, [
+                    $.make('div', { className: 'NB-statistics-facet-bar', style: 'width: '+pos*5+'px' }),
+                    $.make('div', { className: 'NB-statistics-facet-count' }, pos + Inflector.pluralize(' like', pos))
+                ])),
+                (neg && $.make('div', { className: 'NB-statistics-facet-neg' }, [
+                    $.make('div', { className: 'NB-statistics-facet-bar', style: 'width: '+neg*5+'px' }),
+                    $.make('div', { className: 'NB-statistics-facet-count' }, neg + Inflector.pluralize(' dislike', neg))
+                ])),
+                $.make('div', { className: 'NB-statistics-facet-separator' }),
                 $.make('div', { className: 'NB-statistics-facet-name' }, key)
             ]);
             $facets.append($facet);

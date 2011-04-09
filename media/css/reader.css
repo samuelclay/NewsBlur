@@ -4172,24 +4172,52 @@ background: transparent;
 .NB-modal-statistics .NB-statistics-facet {
   clear: both;
   margin: 0 0 4px;
+  position: relative;
 }
 
 .NB-modal-statistics .NB-statistics-facet-name {
-  width: 50%;
-  float: left;
+
 }
 .NB-modal-statistics .NB-statistics-facet-pos {
-  float: right;
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 25%;
-  border-left: 1px solid #606060;
   padding: 4px 0;
 }
+.NB-modal-statistics .NB-statistics-facet-separator {
+  position: absolute;
+  height: 16px;
+  width: 2px;
+  right: 25%;
+  margin-left: -2px;
+  background-color: black;
+}
 .NB-modal-statistics .NB-statistics-facet-neg {
-  float: right;
+  position: absolute;
+  top: 0;
+  right: 25%;
   width: 25%;
-  border-right: 1px solid #606060;
   padding: 4px 0;
   text-align: right;
+}
+.NB-modal-statistics .NB-statistics-facet-pos .NB-statistics-facet-bar {
+  height: 8px;
+  position: absolute;
+  left: 0;
+  top: 8px;
+  background-color: green;
+}
+.NB-modal-statistics .NB-statistics-facet-neg .NB-statistics-facet-bar {
+  height: 8px;
+  position: absolute;
+  right: 0;
+  top: 8px;
+  background-color: red;
+}
+.NB-modal-statistics .NB-statistics-facet-count {
+  font-size: 10px;
+  color: #B0B0B0;
 }
 
 /* ============================= */
