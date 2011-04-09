@@ -400,7 +400,7 @@ class Feed(models.Model):
         self.save()
         
         
-    def save_classifiers_count(self):
+    def save_classifier_counts(self):
         from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
         
         def calculate_scores(cls, facet):

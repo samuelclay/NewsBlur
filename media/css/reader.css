@@ -4153,6 +4153,44 @@ background: transparent;
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-exception {
   display: none;
 }
+.NB-modal-statistics .NB-statistics-classifiers {
+    border: 1px solid #e6e6e6;
+    clear: both;
+    margin: 24px 0 0;
+    overflow: hidden;
+    padding: 10px 12px;
+    font-size: 12px;
+}
+.NB-modal-statistics .NB-statistics-facet-title {
+    text-transform: uppercase;
+    text-align: center;
+    border-bottom: 1px solid #F0F0F0;
+    margin: 4px 0;
+    padding: 0 0 4px;
+    clear: both;
+}
+.NB-modal-statistics .NB-statistics-facet {
+  clear: both;
+  margin: 0 0 4px;
+}
+
+.NB-modal-statistics .NB-statistics-facet-name {
+  width: 50%;
+  float: left;
+}
+.NB-modal-statistics .NB-statistics-facet-pos {
+  float: right;
+  width: 25%;
+  border-left: 1px solid #606060;
+  padding: 4px 0;
+}
+.NB-modal-statistics .NB-statistics-facet-neg {
+  float: right;
+  width: 25%;
+  border-right: 1px solid #606060;
+  padding: 4px 0;
+  text-align: right;
+}
 
 /* ============================= */
 /* = Feed Recommendation Modal = */

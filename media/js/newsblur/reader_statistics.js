@@ -164,6 +164,12 @@ NEWSBLUR.ReaderStatistics.prototype = {
                 ]),
                 $.make('div', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
             ]),
+            (data.classifier_counts && $.make('div', { className: 'NB-statistics-state NB-statistics-classifiers' }, [
+                this.make_classifier_count('tag', data.classifier_counts['tag']),
+                this.make_classifier_count('author', data.classifier_counts['author']),
+                this.make_classifier_count('title', data.classifier_counts['title']),
+                this.make_classifier_count('feed', data.classifier_counts['feed'])
+            ])),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches'}, [
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Feed'),
@@ -185,6 +191,33 @@ NEWSBLUR.ReaderStatistics.prototype = {
         $('.NB-modal-subtitle', this.$modal).prepend($subscribers);
         
         return $stats;
+    },
+    
+    make_classifier_count: function(facet, data) {
+        if (!data) return;
+        
+        var $facets = $.make('div', { className: 'NB-statistics-facets' }, [
+            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, _.keys(data)))
+        ]);
+        
+        _.each(data, function(counts, key) {
+            var pos = counts.pos || 0;
+            var neg = counts.neg || 0;
+            var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
+                $.make('div', { className: 'NB-statistics-facet-pos' }, [
+                    $.make('div', { className: 'NB-statistics-facet-pos-image' }),
+                    counts.pos
+                ]),
+                $.make('div', { className: 'NB-statistics-facet-neg' }, [
+                    $.make('div', { className: 'NB-statistics-facet-neg-image', style: 'width: '+neg*5+'px' }),
+                    counts.neg
+                ]),
+                $.make('div', { className: 'NB-statistics-facet-name' }, key)
+            ]);
+            $facets.append($facet);
+        });
+        
+        return $facets;
     },
     
     make_history: function(data, fetch_type) {
