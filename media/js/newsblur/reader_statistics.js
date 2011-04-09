@@ -194,6 +194,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
     },
     
     make_classifier_count: function(facet, data) {
+        var self = this;
         if (!data) return;
         
         var $facets = $.make('div', { className: 'NB-statistics-facets' }, [
@@ -210,13 +211,20 @@ NEWSBLUR.ReaderStatistics.prototype = {
         var max_width = 100;
         var multiplier = max_width / parseFloat(max, 10);
         var calculate_width = function(count) {
-            return Math.max(1, multiplier * count);
+            return Math.max(2, multiplier * count);
         };
         
         _.each(data, function(counts) {
             var pos = counts.pos || 0;
             var neg = counts.neg || 0;
             var key = counts[facet];
+            if (facet == 'feed') {
+                key = [$.make('div', [
+                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed.favicon) }),
+                    $.make('span', { className: 'NB-modal-feed-title' }, self.feed.feed_title)
+                ])];
+            }
+            if (!key || (!pos && !neg)) return;
             var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
                 (pos && $.make('div', { className: 'NB-statistics-facet-pos' }, [
                     $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(pos)),
