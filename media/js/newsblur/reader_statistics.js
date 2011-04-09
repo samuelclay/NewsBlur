@@ -197,20 +197,34 @@ NEWSBLUR.ReaderStatistics.prototype = {
         if (!data) return;
         
         var $facets = $.make('div', { className: 'NB-statistics-facets' }, [
-            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, _.keys(data).length))
+            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, data.length))
         ]);
         
-        _.each(data, function(counts, key) {
+        var max = 10;
+        _.each(data, function(v) {
+            if (v.pos > max || v.neg > max) {
+                max = Math.max(v.pos, v.neg);
+            }
+        });
+        
+        var max_width = 100;
+        var multiplier = max_width / parseFloat(max, 10);
+        var calculate_width = function(count) {
+            return Math.max(1, multiplier * count);
+        };
+        
+        _.each(data, function(counts) {
             var pos = counts.pos || 0;
             var neg = counts.neg || 0;
+            var key = counts[facet];
             var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
                 (pos && $.make('div', { className: 'NB-statistics-facet-pos' }, [
-                    $.make('div', { className: 'NB-statistics-facet-bar', style: 'width: '+pos*5+'px' }),
-                    $.make('div', { className: 'NB-statistics-facet-count' }, pos + Inflector.pluralize(' like', pos))
+                    $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(pos)),
+                    $.make('div', { className: 'NB-statistics-facet-count' }, pos + Inflector.pluralize(' like', pos)).css('margin-left', calculate_width(pos)+5)
                 ])),
                 (neg && $.make('div', { className: 'NB-statistics-facet-neg' }, [
-                    $.make('div', { className: 'NB-statistics-facet-bar', style: 'width: '+neg*5+'px' }),
-                    $.make('div', { className: 'NB-statistics-facet-count' }, neg + Inflector.pluralize(' dislike', neg))
+                    $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(neg)),
+                    $.make('div', { className: 'NB-statistics-facet-count' }, neg + Inflector.pluralize(' dislike', neg)).css('margin-right', calculate_width(neg)+5)
                 ])),
                 $.make('div', { className: 'NB-statistics-facet-separator' }),
                 $.make('div', { className: 'NB-statistics-facet-name' }, key)

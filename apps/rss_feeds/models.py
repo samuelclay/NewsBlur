@@ -422,11 +422,14 @@ class Feed(models.Model):
                     return result;
                 }
             """
-            scores = {}
+            scores = []
             res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
             for r in res:
-                scores[r.key] = dict([(k, int(v)) for k,v in r.value.iteritems()])
-            
+                facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
+                facet_values[facet] = r.key
+                scores.append(facet_values)
+            scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
+
             return scores
         
         scores = {}
@@ -435,8 +438,8 @@ class Feed(models.Model):
                            (MClassifierTag, 'tag'), 
                            (MClassifierFeed, 'feed_id')]:
             scores[facet] = calculate_scores(cls, facet)
-            if facet == 'feed_id' and scores[facet].values():
-                scores['feed'] = scores[facet].values()[0]
+            if facet == 'feed_id' and scores[facet]:
+                scores['feed'] = scores[facet]
                 del scores['feed_id']
             elif not scores[facet]:
                 del scores[facet]

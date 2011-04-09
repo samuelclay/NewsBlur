@@ -4164,40 +4164,41 @@ background: transparent;
 .NB-modal-statistics .NB-statistics-facet-title {
     text-transform: uppercase;
     text-align: center;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid #E0E0E0;
     margin: 4px 0;
     padding: 0 0 4px;
     clear: both;
 }
 .NB-modal-statistics .NB-statistics-facet {
   clear: both;
-  margin: 0 0 4px;
+  padding: 2px 0;
   position: relative;
+  border-bottom: 1px solid #F6F6F6;
 }
 
 .NB-modal-statistics .NB-statistics-facet-name {
-
+  width: 40%;
 }
 .NB-modal-statistics .NB-statistics-facet-pos {
   position: absolute;
   top: 0;
   right: 0;
-  width: 25%;
+  width: 30%;
   padding: 4px 0;
 }
 .NB-modal-statistics .NB-statistics-facet-separator {
   position: absolute;
   height: 16px;
   width: 2px;
-  right: 25%;
+  right: 30%;
   margin-left: -2px;
   background-color: black;
 }
 .NB-modal-statistics .NB-statistics-facet-neg {
   position: absolute;
   top: 0;
-  right: 25%;
-  width: 25%;
+  right: 30%;
+  width: 30%;
   padding: 4px 0;
   text-align: right;
 }
@@ -4205,19 +4206,19 @@ background: transparent;
   height: 8px;
   position: absolute;
   left: 0;
-  top: 8px;
-  background-color: green;
+  top: 6px;
+  background-color: #559F4D;
 }
 .NB-modal-statistics .NB-statistics-facet-neg .NB-statistics-facet-bar {
   height: 8px;
   position: absolute;
   right: 0;
-  top: 8px;
-  background-color: red;
+  top: 6px;
+  background-color: #CC2A2E;
 }
 .NB-modal-statistics .NB-statistics-facet-count {
-  font-size: 10px;
-  color: #B0B0B0;
+  font-size: 9px;
+  color: #C0C0C0;
 }
 
 /* ============================= */
