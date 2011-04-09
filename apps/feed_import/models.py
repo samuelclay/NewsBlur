@@ -22,6 +22,7 @@ from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
     session_id = models.CharField(max_length=50, null=True, blank=True)
+    uuid = models.CharField(max_length=50, null=True, blank=True)
     remote_ip = models.CharField(max_length=50, null=True, blank=True)
     request_token = models.CharField(max_length=50)
     request_token_secret = models.CharField(max_length=50)
@@ -57,7 +58,7 @@ class OPMLExporter:
         
     def process_outline(self, body, folders):
         for obj in folders:
-            if isinstance(obj, int):
+            if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))

@@ -24,6 +24,7 @@ from utils import log as logging
 from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
+from utils.feed_functions import relative_timesince
 from utils.story_functions import pre_process_story
 from utils.diff import HTMLDiff
 
@@ -58,6 +59,37 @@ class Feed(models.Model):
             self.feed_title = "[Untitled]"
             self.save()
         return self.feed_title
+        
+    def canonical(self, full=False):
+        feed = {
+            'id': self.pk,
+            'feed_title': self.feed_title,
+            'feed_address': self.feed_address,
+            'feed_link': self.feed_link,
+            'updated': relative_timesince(self.last_update),
+            'subs': self.num_subscribers,
+            'favicon_color': self.icon.color,
+            'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
+        }
+        
+        if not self.fetched_once:
+            feed['not_yet_fetched'] = True
+        if self.has_page_exception or self.has_feed_exception:
+            feed['has_exception'] = True
+            feed['exception_type'] = 'feed' if self.has_feed_exception else 'page'
+            feed['exception_code'] = self.exception_code
+        elif full:
+            feed['has_exception'] = False
+            feed['exception_type'] = None
+            feed['exception_code'] = self.exception_code
+        
+        if full:
+            feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
+            feed['feed_authors'] = json.decode(self.data.popular_authors) if self.data.popular_authors else []
+
+            
+        return feed
+
 
     def save(self, *args, **kwargs):
         if not self.last_update:
@@ -162,6 +194,12 @@ class Feed(models.Model):
                     feed_address = feed_address_from_link
         
             if feed_address:
+                if feed_address.endswith('feedburner.com/atom.xml'):
+                    # message = """
+                    # %s - %s - %s
+                    # """ % (feed_address, self.__dict__, pprint(self.__dict__))
+                    # mail_admins('Wierdo alert', message, fail_silently=True)
+                    return False
                 try:
                     self.feed_address = feed_address
                     self.next_scheduled_update = datetime.datetime.utcnow()
@@ -362,6 +400,51 @@ class Feed(models.Model):
         self.save()
         
         
+    def save_classifiers_count(self):
+        from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+        
+        def calculate_scores(cls, facet):
+            map_f = """
+                function() {
+                    emit(this["%s"], {
+                        pos: this.score>0 ? this.score : 0, 
+                        neg: this.score<0 ? Math.abs(this.score) : 0
+                    });
+                }
+            """ % (facet)
+            reduce_f = """
+                function(key, values) {
+                    var result = {pos: 0, neg: 0};
+                    values.forEach(function(value) {
+                        result.pos += value.pos;
+                        result.neg += value.neg;
+                    });
+                    return result;
+                }
+            """
+            scores = {}
+            res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
+            for r in res:
+                scores[r.key] = dict([(k, int(v)) for k,v in r.value.iteritems()])
+            
+            return scores
+        
+        scores = {}
+        for cls, facet in [(MClassifierTitle, 'title'), 
+                           (MClassifierAuthor, 'author'), 
+                           (MClassifierTag, 'tag'), 
+                           (MClassifierFeed, 'feed_id')]:
+            scores[facet] = calculate_scores(cls, facet)
+            if facet == 'feed_id' and scores[facet].values():
+                scores['feed'] = scores[facet].values()[0]
+                del scores['feed_id']
+            elif not scores[facet]:
+                del scores[facet]
+                
+        if scores:
+            self.data.feed_classifier_counts = json.encode(scores)
+            self.data.save()
+        
     def update(self, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
         try:
@@ -470,7 +553,7 @@ class Feed(models.Model):
         
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
-            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
+            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies_mr('story_tags')
                 
             feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, float) and int(v) > 1], 
                                key=itemgetter(1), 
@@ -663,31 +746,32 @@ class Feed(models.Model):
             return self.min_to_decay, random_factor
             
         # Use stories per month to calculate next feed update
-        updates_per_day = self.stories_last_month / 30.0
+        updates_per_month = self.stories_last_month
         # if updates_per_day < 1 and self.num_subscribers > 2:
         #     updates_per_day = 1
         # 0 updates per day = 24 hours
         # 1 subscriber:
-        #   1 update per day = 6 hours
-        #   2 updates = 3.5 hours
-        #   4 updates = 2 hours
-        #   10 updates = 1 hour
+        #   0 updates per month = 4 hours
+        #   1 update = 2 hours
+        #   2 updates = 1.5 hours
+        #   4 updates = 1 hours
+        #   10 updates = .5 hour
         # 2 subscribers:
-        #   1 update per day = 4.5 hours
-        #   10 updates = 55 minutes
-        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.active_subscribers)**.20)
-                                                   * (updates_per_day**.7)))
+        #   1 update per day = 1 hours
+        #   10 updates = 20 minutes
+        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
+                                                   * (updates_per_month**1.5)))
         if self.premium_subscribers > 0:
-            updates_per_day_delay /= 6
+            updates_per_day_delay /= 5
         # Lots of subscribers = lots of updates
-        # 144 hours for 0 subscribers.
-        # 24 hours for 1 subscriber.
-        # 7 hours for 2 subscribers.
-        # 3 hours for 3 subscribers.
-        # 25 min for 10 subscribers.
-        subscriber_bonus = 24 * 60 / max(.167, max(0, self.active_subscribers)**2.35)
+        # 24 hours for 0 subscribers.
+        # 4 hours for 1 subscriber.
+        # .5 hours for 2 subscribers.
+        # .25 hours for 3 subscribers.
+        # 1 min for 10 subscribers.
+        subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
-            subscriber_bonus /= 6
+            subscriber_bonus /= 5
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -697,7 +781,7 @@ class Feed(models.Model):
                 slow_punishment = 2 * self.last_load_time
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
-        total = max(6, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
+        total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
@@ -765,6 +849,7 @@ class FeedData(models.Model):
     feed = AutoOneToOneField(Feed, related_name='data')
     feed_tagline = models.CharField(max_length=1024, blank=True, null=True)
     story_count_history = models.TextField(blank=True, null=True)
+    feed_classifier_counts = models.TextField(blank=True, null=True)
     popular_tags = models.CharField(max_length=1024, blank=True, null=True)
     popular_authors = models.CharField(max_length=2048, blank=True, null=True)
     

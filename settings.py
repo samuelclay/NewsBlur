@@ -126,6 +126,7 @@ COMPRESS_JS = {
             'js/newsblur/reader_statistics.js',
             'js/newsblur/reader_feed_exception.js',
             'js/newsblur/reader_keyboard.js',
+            'js/newsblur/reader_recommend_feed.js',
             'js/newsblur/about.js',
             'js/newsblur/faq.js',
         ),
@@ -302,6 +303,7 @@ CELERY_QUEUES = {
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
+BROKER_BACKEND = "amqplib"
 BROKER_HOST = "db01.newsblur.com"
 BROKER_PORT = 5672
 BROKER_USER = "newsblur"
@@ -314,8 +316,9 @@ CELERYD_LOG_LEVEL = 'ERROR'
 CELERY_IMPORTS = ("apps.rss_feeds.tasks", )
 CELERYD_CONCURRENCY = 4
 CELERY_IGNORE_RESULT = True
+CELERY_ACKS_LATE = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
-#CELERYD_TASK_TIME_LIMIT = 12 * 30
+# CELERYD_TASK_TIME_LIMIT = 12 * 30
 CELERY_DISABLE_RATE_LIMITS = True
 
 # ====================
@@ -370,4 +373,8 @@ DEBUG_TOOLBAR_CONFIG = {
 # = Mongo =
 # =========
 
-MONGODB = connect(MONGO_DB['NAME'], host=MONGO_DB['HOST'], port=MONGO_DB['PORT'])
+MONGODB = connect(MONGO_DB['NAME'], 
+                  host=MONGO_DB['HOST'], 
+                  port=MONGO_DB['PORT'], 
+                  username=MONGO_DB.get('USERNAME'), 
+                  password=MONGO_DB.get('PASSWORD'))

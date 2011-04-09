@@ -1,0 +1,6 @@
+server {
+    listen 199.15.250.228:80;
+    location ~ / {
+        proxy_pass http://173.230.136.120;
+    }
+}

@@ -25,6 +25,7 @@ NEWSBLUR.AssetModel.Reader = function() {
         }
     };
     this.feeds = {};
+    this.favicons = {};
     this.folders = [];
     this.stories = {};
     this.story_keys = {};
@@ -36,8 +37,6 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.flags = {
         'favicons_fetching': false
     };
-    
-    this.DEFAULT_VIEW = NEWSBLUR.Preferences.default_view || 'page';
 };
 
 NEWSBLUR.AssetModel.Reader.prototype = {
@@ -114,7 +113,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         var story = this.get_story(story_id);
         read = story.read_status;
-        story.read_status = true;
+        story.read_status = 1;
 
         if (!read && NEWSBLUR.Globals.is_authenticated) {
             if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
@@ -143,7 +142,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         for (s in this.stories) {
             if (this.stories[s].id == story_id) {
-                this.stories[s].read_status = false;
+                this.stories[s].read_status = 0;
                 break;
             }
         }
@@ -212,10 +211,37 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             });
             self.folders = subscriptions.folders;
             self.starred_count = subscriptions.starred_count;
+            
+            if (!_.isEqual(self.favicons, {})) {
+                _.each(self.feeds, function(feed) {
+                    feed.favicon = self.favicons[feed.id];
+                });
+            }
             callback();
         };
         
         this.make_request('/reader/load_feeds', {}, pre_callback, error_callback);
+    },
+    
+    load_feed_favicons: function(callback, loaded_once, load_all) {
+        var pre_callback = _.bind(function(favicons) {
+          this.favicons = favicons;
+          if (!_.isEqual(this.feeds, {})) {
+            _.each(this.feeds, _.bind(function(feed) {
+              feed.favicon = favicons[feed.id];
+            }, this));
+          }
+          callback();
+        }, this);
+        var data = {
+          load_all : load_all
+        };
+        if (loaded_once) {
+          data['feed_ids'] = _.compact(_.map(this.feeds, function(feed) {
+            return !feed.favicon && feed.id;
+          }));
+        }
+        this.make_request('/reader/load_feed_favicons', data, pre_callback);
     },
     
     load_feed: function(feed_id, page, first_load, callback) {
@@ -262,6 +288,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 for (var s in data.stories) {
                     this.story_keys[data.stories[s].id] = true;
                 }
+                if (data.feed_address) {
+                  this.feeds[feed_id].feed_address = data.feed_address;
+                }
             } else if (data) {
                 data.stories = _.select(data.stories, function(story) {
                     if (!self.story_keys[story.id]) {
@@ -273,6 +302,21 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }
             $.isFunction(callback) && callback(data, first_load);
         }
+    },
+    
+    load_canonical_feed: function(feed_id, callback) {
+        var pre_callback = _.bind(function(data) {
+            this.feeds[data.id] = data;
+            this.feed_tags = data.feed_tags || {};
+            this.feed_authors = data.feed_authors || {};
+            this.feed_id = feed_id;
+            this.classifiers = data.classifiers || this.defaults['classifiers'];
+            callback && callback();
+        }, this);
+        
+        this.make_request('/rss_feeds/load_single_feed', {
+            feed_id: feed_id
+        }, pre_callback, $.noop);
     },
     
     fetch_starred_stories: function(page, callback, first_load) {
@@ -446,6 +490,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return counts;
     },
     
+    set_feed: function(feed_id, feed) {
+        var self = this;
+        
+        return this.feeds[feed_id] = feed;
+    },
+    
     get_feed: function(feed_id) {
         var self = this;
         
@@ -607,7 +657,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     view_setting: function(feed_id, feed_view_setting, callback) {
         if (typeof feed_view_setting == 'undefined') {
-            return NEWSBLUR.Preferences.view_settings[feed_id+''] || this.DEFAULT_VIEW;
+            return NEWSBLUR.Preferences.view_settings[feed_id+''] || NEWSBLUR.Preferences.default_view;
         }
         
         NEWSBLUR.Preferences.view_settings[feed_id+''] = feed_view_setting;
@@ -628,9 +678,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             NEWSBLUR.Preferences.collapsed_folders = _.without(folders, folder_title);
             changed = true;
         }
-        this.make_request('/profile/set_collapsed_folders', {
-            'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
-        }, callback, null);
+        
+        if (changed) {
+            this.make_request('/profile/set_collapsed_folders', {
+                'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
+            }, callback, null);
+        }
     },
     
     save_mark_read: function(days, callback) {
@@ -639,6 +692,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     get_features_page: function(page, callback) {
         this.make_request('/reader/load_features', {'page': page}, callback);
+    },
+    
+    load_recommended_feed: function(page, refresh, callback, error_callback) {
+        this.make_request('/recommendations/load_recommended_feed', {
+            'page': page, 
+            'refresh': refresh
+        }, callback, error_callback);
     },
     
     save_feed_order: function(folders, callback) {
@@ -653,10 +713,26 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
+    get_feed_recommendation_info: function(feed_id, callback) {
+        this.make_request('/recommendations/load_feed_info', {
+            'feed_id': feed_id
+        }, callback, callback, {
+            'ajax_group': 'statistics'
+        });
+    },
+    
     start_import_from_google_reader: function(callback) {
         this.make_request('/import/import_from_google_reader/', {}, callback);
     },
-        
+    
+    save_recommended_site: function(data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/recommendations/save_recommended_feed', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+    
     save_exception_retry: function(feed_id, callback) {
         var self = this;
         

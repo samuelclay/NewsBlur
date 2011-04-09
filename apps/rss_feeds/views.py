@@ -8,11 +8,24 @@ from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
+from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
 from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
+from utils.user_functions import get_user
 
+@json.json_view
+def load_single_feed(request):
+    user = get_user(request)
+    feed = get_object_or_404(Feed, pk=request.REQUEST['feed_id'])
+    classifiers = get_classifiers_for_user(user, feed.pk)
+
+    payload = feed.canonical(full=True)
+    payload['classifiers'] = classifiers
+
+    return payload
+    
 @json.json_view
 def feed_autocomplete(request):
     query = request.GET['term']
@@ -75,7 +88,7 @@ def load_feed_statistics(request):
     logging.user(request.user, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
     return stats
-    
+
 @ajax_login_required
 @json.json_view
 def exception_retry(request):

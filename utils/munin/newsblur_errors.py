@@ -1,9 +1,6 @@
 #!/usr/bin/env python 
 
 from utils.munin.base import MuninGraph
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
-import datetime
-
 
 graph_config = {
     'graph_category' : 'NewsBlur',
@@ -15,14 +12,18 @@ graph_config = {
     'page_success.label': 'Page Success',
 }
 
-last_day = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-
-metrics = {
-    'feed_errors': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
-    'feed_success': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
-    'page_errors': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
-    'page_success': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
-}
+def calculate_metrics():
+    import datetime
+    from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
+    
+    last_day = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    
+    return {
+        'feed_errors': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
+        'feed_success': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
+        'page_errors': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
+        'page_success': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
+    }
 
 if __name__ == '__main__':
-    MuninGraph(graph_config, metrics).run()
+    MuninGraph(graph_config, calculate_metrics).run()

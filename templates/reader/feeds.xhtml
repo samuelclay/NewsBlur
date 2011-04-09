@@ -26,10 +26,10 @@ $(document).ready(function() {
     </ul>
   </div>
       
-  <div class="NB-modules-center">
-    {# {% if recommended_feed %} #}
-    {#   {% render_recommended_feed recommended_feed %} #}
-    {# {% endif %} #}
+  <div class="NB-modules-center" style="margin-left: {{ user_profile.feed_pane_size }}px">
+    {% if recommended_feeds %}
+      {% render_recommended_feed recommended_feeds %}
+    {% endif %}
   </div>
 
   <div class="NB-account">
@@ -110,8 +110,8 @@ $(document).ready(function() {
             How It Works
           </div>
           <div class="NB-module-header-right">
-            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
             <a href="#" class="NB-module-direction NB-module-next-page {% if howitworks_page == 5 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-previous-page {% if howitworks_page == 0 %}NB-disabled{% endif %}"></a>
           </div>
         </h5>
         
@@ -240,11 +240,11 @@ $(document).ready(function() {
             {% else %}
               
               <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade NB-module-account-premium">Go Premium!</div>
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade NB-module-account-premium NB-javascript">Go Premium!</div>
                 {% if feed_count == 0 %}
-                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add">Add Sites</div>
+                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add NB-javascript">Add Sites</div>
                 {% else %}
-                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade">Choose Your 64</div>
+                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade NB-javascript">Choose Your 64</div>
                 {% endif %}
               </div>
             {% endif %}
@@ -262,7 +262,7 @@ $(document).ready(function() {
           </h3>
           <div class="NB-module-account-title">
               <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train">Launch Intelligence Trainer</div>
+                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
               </div>
           </div>
         </div>
@@ -288,8 +288,9 @@ $(document).ready(function() {
             });
             </script>
           {% endif %}
+          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
           <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-          <a href="#" class="NB-module-direction NB-module-next-page"></a>
+          <div class="NB-spinner NB-left"></div>
         </div>
       </h5>
       
@@ -317,7 +318,7 @@ $(document).ready(function() {
       {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li> #}
       <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">FAQ</a></li>
       <li class="NB-splash-link NB-splash-meta-about"><a href="#about">About</a></li>
-      <li class="NB-splash-link NB-splash-link-blog"><a href="http://www.@ofbrooklyn.com">The Blog</a></li>
+      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
       {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li> #}
       {# <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li> #}
     </ul>
@@ -328,41 +329,54 @@ $(document).ready(function() {
 
 
 <div class="left-pane">
+
+    <div class="left-north">
+      <div class="NB-feeds-header-dashboard">
+        <div class="NB-feeds-header-right">
+          <div class="NB-feeds-header-sites">&nbsp;</div>
+        </div>
+        <div class="NB-feeds-header-left">
+          <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
+          <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
+          <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
+        </div>
+        <div class="NB-feeds-header-home">Dashboard</div>
+      </div>
+    </div>
     
     <div class="left-center">
 
       <div class="left-center-content NB-feedlist">
         <div id="NB-feeds-list-loader">Everything is on its way...</div>
-        <div class="NB-feeds-header-container">
-          <div class="NB-feeds-header">
-            <div class="NB-feeds-header-right">
-              <div class="NB-feeds-header-sites">&nbsp;</div>
-            </div>
-            <div class="NB-feeds-header-left">
-              <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
-              <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
-              <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
-            </div>
-            <div class="NB-feeds-header-home">Dashboard</div>
-          </div>
-          <div class="NB-feeds-header-river-container">
-            <div class="NB-feeds-header-river NB-empty">
-              <div class="NB-feeds-header-river-count unread_count"></div>
-              <div class="NB-feeds-header-river-icon"></div>
-              <div class="NB-feeds-header-river-title">
+        <div class="NB-feeds-header-wrapper">
+          
+          <div class="NB-feeds-header-container NB-feeds-header-river-container">
+            <div class="NB-feeds-header NB-feeds-header-river NB-empty">
+              <div class="NB-feeds-header-count unread_count"></div>
+              <div class="NB-feeds-header-icon"></div>
+              <div class="NB-feeds-header-title">
                 Everything
               </div>
             </div>
           </div>
-          <div class="NB-feeds-header-starred-container">
-            <div class="NB-feeds-header-starred NB-empty">
-              <div class="NB-feeds-header-starred-count unread_count"></div>
-              <div class="NB-feeds-header-starred-icon"></div>
-              <div class="NB-feeds-header-starred-title">
+          
+          <div class="NB-feeds-header-container NB-feeds-header-starred-container">
+            <div class="NB-feeds-header NB-feeds-header-starred NB-empty">
+              <div class="NB-feeds-header-count unread_count"></div>
+              <div class="NB-feeds-header-icon"></div>
+              <div class="NB-feeds-header-title">
                 Saved Stories
               </div>
             </div>
           </div>
+          
+          <div class="NB-feeds-header-container NB-feeds-header-tryfeed-container">
+            <div class="NB-feeds-header NB-feeds-header-tryfeed">
+              <img class="NB-feeds-header-icon" src="" />
+              <div class="NB-feeds-header-title"></div>
+            </div>
+          </div>
+          
         </div>
         <ul class="folder NB-feedlist" id="feed_list"></ul>
       </div>

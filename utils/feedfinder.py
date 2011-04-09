@@ -177,7 +177,6 @@ def getLinksLXML(data, baseuri):
         if link.attrib.get('type') in LinkParser.FEED_TYPES:
             href = link.attrib['href']
             if href: links.append(href)
-            print links
     return links
 
 def getALinks(data, baseuri):
@@ -186,16 +185,16 @@ def getALinks(data, baseuri):
     return p.links
 
 def getLocalLinks(links, baseuri):
+    found_links = []
+    if not baseuri: return found_links
     baseuri = baseuri.lower()
-    # urilen = len(baseuri)
-    links = []
     for l in links:
         try:
             if l.lower().startswith(baseuri):
-                links.append(l)
+                found_links.append(l)
         except (AttributeError, UnicodeDecodeError):
             pass
-    return links
+    return found_links
 
 def isFeedLink(link):
     return link[-4:].lower() in ('.rss', '.rdf', '.xml', '.atom')
@@ -277,6 +276,7 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
             links = getALinks(data, fulluri)
         except:
             links = []
+        _debuglog('no LINK tags, looking at local links')
         locallinks = getLocalLinks(links, fulluri)
         # look for obvious feed links on the same server
         outfeeds.extend(filter(isFeed, filter(isFeedLink, locallinks)))

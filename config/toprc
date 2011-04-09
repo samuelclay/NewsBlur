@@ -1,14 +1,14 @@
 RCfile for "top with windows"		# shameless braggin'
-Id:a, Mode_altscr=1, Mode_irixps=1, Delay_time=1.000, Curwin=0
-Def   fieldscur=AEhiqtoWKNbMcdfgjprsluvyzX
-      winflags=32184, sortindx=13, maxtasks=20
-      summclr=1, msgsclr=1, headclr=3, taskclr=1
-Job   fieldscur=ABcefgjlrstuvyzMKNHIWOPQDX
-      winflags=65337, sortindx=10, maxtasks=0
-      summclr=6, msgsclr=6, headclr=7, taskclr=6
-Mem   fieldscur=ANOPQRSTUVbcdefgjlMyzWHIKX
-      winflags=65337, sortindx=12, maxtasks=0
-      summclr=5, msgsclr=5, headclr=4, taskclr=5
-Usr   fieldscur=ABDECGfhijloPqrstuvyzMKNWX
-      winflags=65400, sortindx=15, maxtasks=10
-      summclr=3, msgsclr=3, headclr=2, taskclr=3
+Id:a, Mode_altscr=1, Mode_irixps=0, Delay_time=1.000, Curwin=0
+Def	fieldscur=AEhiqtoWKNbMcdfgjprsluvyzX
+	winflags=65528, sortindx=13, maxtasks=35
+	summclr=1, msgsclr=1, headclr=3, taskclr=1
+Job	fieldscur=ABcefgjlrstuvyzMKNHIWOPQDX
+	winflags=65465, sortindx=10, maxtasks=13
+	summclr=6, msgsclr=6, headclr=7, taskclr=6
+Mem	fieldscur=ANOPQRSTUVbcdefgjlMyzWHIKX
+	winflags=65465, sortindx=12, maxtasks=13
+	summclr=5, msgsclr=5, headclr=4, taskclr=5
+Usr	fieldscur=ABDECGfhijloPqrstuvyzMKNWX
+	winflags=65520, sortindx=15, maxtasks=62
+	summclr=3, msgsclr=3, headclr=2, taskclr=3

@@ -17,12 +17,13 @@ from django.core.mail import mail_admins
 from collections import defaultdict
 from operator import itemgetter
 from mongoengine.queryset import OperationError
-from apps.recommendations.models import RecommendedFeed, RecommendedFeedUserFeedback
+from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
+from apps.rss_feeds.models import FeedIcon
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
@@ -30,7 +31,6 @@ except:
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
-from utils.feed_functions import add_object_to_folder
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
@@ -66,9 +66,10 @@ def index(request):
         feed_count = UserSubscription.objects.filter(user=request.user).count()
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
-        
-    recommended_feed = RecommendedFeed.objects.filter(is_public=True)[0]
-    recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
+    
+    now = datetime.datetime.now()
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')
+    # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
     howitworks_page = random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
@@ -83,8 +84,8 @@ def index(request):
         'active_count': active_count,
         'train_count': active_count - train_count,
         'account_images': range(1, 4),
-        'recommended_feed': recommended_feed,
-        'recommended_feed_feedback': recommended_feed_feedback,
+        'recommended_feeds': recommended_feeds,
+        # 'recommended_feed_feedback': recommended_feed_feedback,
     }, context_instance=RequestContext(request))
 
 @never_cache
@@ -143,7 +144,7 @@ def load_feeds(request):
         UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
         folders = UserSubscriptionFolders.objects.get(user=user)
         
-    user_subs = UserSubscription.objects.select_related('feed', 'feed__feed_icon').filter(user=user)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
         feeds[sub.feed.pk] = sub.canonical()
@@ -170,6 +171,23 @@ def load_feeds(request):
     }
     return data
 
+@json.json_view
+def load_feed_favicons(request):
+    user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_ids')
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    if not request.REQUEST.get('load_all'):
+        user_subs = user_subs.filter(active=True)
+    if feed_ids:
+        user_subs = user_subs.filter(feed__in=feed_ids)
+        
+    favicons = {}
+
+    for sub in user_subs:
+        favicons[sub.feed.pk] = FeedIcon.objects.get(feed__pk=sub.feed.pk).data
+        
+    return favicons
+    
 @ajax_login_required
 @json.json_view
 def load_feeds_iphone(request):
@@ -256,10 +274,11 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['favicon'] = sub.feed.icon.data
             feeds[sub.feed.pk]['favicon_color'] = sub.feed.icon.color
             feeds[sub.feed.pk]['favicon_fetching'] = bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
-            
-    diff = datetime.datetime.utcnow()-start
-    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+    
+    if settings.DEBUG:
+        diff = datetime.datetime.utcnow()-start
+        timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+        logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
     
     return {'feeds': feeds}
 
@@ -268,7 +287,7 @@ def load_single_feed(request):
     start = datetime.datetime.utcnow()
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 30))
+    limit = int(request.REQUEST.get('limit', 12))
     page = int(request.REQUEST.get('page', 0))
     if page:
         offset = limit * page
@@ -307,20 +326,19 @@ def load_single_feed(request):
     classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
     usersub = UserSubscription.objects.get(user=user, feed=feed)
-    if not usersub:
-        usersub = UserSubscription.objects.create(user=user, feed=feed)
     userstories = []
-    userstories_db = MUserStory.objects(user_id=user.pk,
-                                        feed_id=feed.pk,
-                                        read_date__gte=usersub.mark_read_date)
-    starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
-    starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
+    if usersub:
+        userstories_db = MUserStory.objects(user_id=user.pk,
+                                            feed_id=feed.pk,
+                                            read_date__gte=usersub.mark_read_date)
+        starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
+        starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
 
-    for us in userstories_db:
-        if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
-            userstories.append(us.story.story_guid)
-        elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
-            userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
+        for us in userstories_db:
+            if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
+                userstories.append(us.story.story_guid)
+            elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
+                userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
             
     for story in stories:
         [x.rewind() for x in [classifier_feeds, classifier_authors, classifier_tags, classifier_titles]]
@@ -328,16 +346,19 @@ def load_single_feed(request):
         now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date'] = format_story_link_date__long(story_date, now)
-        if story['id'] in userstories:
+        if usersub:
+            if story['id'] in userstories:
+                story['read_status'] = 1
+            elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
+                story['read_status'] = 1
+            elif not story.get('read_status') and story['story_date'] > usersub.last_read_date:
+                story['read_status'] = 0
+            if story['id'] in starred_stories:
+                story['starred'] = True
+                starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
+                story['starred_date'] = format_story_link_date__long(starred_date, now)
+        else:
             story['read_status'] = 1
-        elif not story.get('read_status') and story['story_date'] < usersub.mark_read_date:
-            story['read_status'] = 1
-        elif not story.get('read_status') and story['story_date'] > usersub.last_read_date:
-            story['read_status'] = 0
-        if story['id'] in starred_stories:
-            story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
-            story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
             'feed': apply_classifier_feeds(classifier_feeds, feed),
             'author': apply_classifier_authors(classifier_authors, story),
@@ -351,8 +372,9 @@ def load_single_feed(request):
     classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
                                            classifier_authors, classifier_titles, classifier_tags)
     
-    usersub.feed_opens += 1
-    usersub.save()
+    if usersub:
+        usersub.feed_opens += 1
+        usersub.save()
     
     diff = datetime.datetime.utcnow()-start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
@@ -368,7 +390,9 @@ def load_single_feed(request):
                 feed_id=feed.pk)
     
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
-    
+    if not usersub:
+        data.update(feed.canonical())
+        
     return data
 
 def load_feed_page(request):
@@ -421,7 +445,7 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    limit              = 25
+    limit              = 18
     offset             = 0
     start              = datetime.datetime.utcnow()
     user               = get_user(request)
@@ -705,14 +729,7 @@ def add_folder(request):
         code = 1
         message = ""
         user_sub_folders_object, _ = UserSubscriptionFolders.objects.get_or_create(user=request.user)
-        if user_sub_folders_object.folders:
-            user_sub_folders = json.decode(user_sub_folders_object.folders)
-        else:
-            user_sub_folders = []
-        obj = {folder: []}
-        user_sub_folders = add_object_to_folder(obj, parent_folder, user_sub_folders)
-        user_sub_folders_object.folders = json.encode(user_sub_folders)
-        user_sub_folders_object.save()
+        user_sub_folders_object.add_folder(parent_folder, folder)
     else:
         code = -1
         message = "Gotta write in a folder name."
@@ -727,6 +744,10 @@ def delete_feed(request):
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_feed(feed_id, in_folder)
+    
+    feed = Feed.objects.filter(pk=feed_id)
+    if feed:
+        feed[0].count_subscribers()
     
     return dict(code=1)
     
@@ -793,7 +814,7 @@ def add_feature(request):
 def load_features(request):
     user = get_user(request)
     page = int(request.POST.get('page', 0))
-    logging.user(request.user, "~FBBrowse features: Page #%s" % (page+1))
+    logging.user(request.user, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
         'description': f['description'], 

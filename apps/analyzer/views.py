@@ -17,16 +17,20 @@ def index(requst):
 @json.json_view
 def save_classifier(request):
     post = request.POST
-    logging.user(request.user, "~FGSaving classifier: ~FW%s" % (post))
     feed_id = int(post['feed_id'])
     feed = get_object_or_404(Feed, pk=feed_id)
     code = 0
     message = 'OK'
     payload = {}
 
+    logging.user(request.user, "~FGSaving classifier: ~SB%s~SN ~FW%s" % (feed, post))
+    
     # Mark subscription as dirty, so unread counts can be recalculated
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
-    if not usersub.needs_unread_recalc or not usersub.is_trained:
+    try:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersub = None
+    if usersub and (not usersub.needs_unread_recalc or not usersub.is_trained):
         usersub.needs_unread_recalc = True
         usersub.is_trained = True
         usersub.save()
@@ -70,8 +74,6 @@ def save_classifier(request):
     _save_classifier(MClassifierTag, 'tag')
     _save_classifier(MClassifierTitle, 'title')
     _save_classifier(MClassifierFeed, 'feed')
-    
-    logging.user(request.user, "~FGFeed training: ~SB%s" % (feed))
 
     response = dict(code=code, message=message, payload=payload)
     return response

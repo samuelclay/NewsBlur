@@ -1,9 +1,9 @@
 import sys
 
 class MuninGraph(object):
-    def __init__(self, graph_config, metrics):
+    def __init__(self, graph_config, calculate_metrics):
         self.graph_config = graph_config
-        self.metrics = metrics
+        self.calculate_metrics = calculate_metrics
 
     def run(self):
         cmd_name = None
@@ -12,12 +12,14 @@ class MuninGraph(object):
         if cmd_name == 'config':
             self.print_config()
         else: 
-            self.print_metrics()
-
+            metrics = self.calculate_metrics()
+            self.print_metrics(metrics)
+            
     def print_config(self):
         for key,value in self.graph_config.items():
             print '%s %s' % (key, value)
 
-    def print_metrics(self):
-        for key, value in self.metrics.items():
+    def print_metrics(self, metrics):
+        for key, value in metrics.items():
             print '%s.value %s' % (key, value)
+            

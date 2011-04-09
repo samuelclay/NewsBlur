@@ -1,0 +1,13 @@
+127.0.0.1 localhost
+
+# 10.10           app01
+# 10.5.1.100      db01
+# 10.10           task01
+# 10.5.1.101      task02
+
+199.15.250.228  app01  app01.newsblur.com
+199.15.253.162  db01   db01.newsblur.com
+199.15.250.229  db02   db02.newsblur.com
+199.15.250.230  db03   db03.newsblur.com
+199.15.250.231  task01 task01.newsblur.com
+199.15.250.250  task02 task02.newsblur.com

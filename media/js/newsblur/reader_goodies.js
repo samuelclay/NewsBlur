@@ -34,11 +34,26 @@ NEWSBLUR.ReaderGoodies.prototype = {
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
+                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
+                  href: '#'
+              }, 'Add to Chrome'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chome: NewsBlur Chrome Web App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
                   className: 'NB-goodies-safari-link NB-modal-submit-button NB-modal-submit-green',
                   href: '#'
               }, 'Add to Safari'),
               $.make('div', { className: 'NB-goodies-safari' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader')
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, [
+                'To use this extension, extract and move the NewsBlur Safari Helper.app ',
+                'to your Applications folder. Then in ',
+                $.make('b', 'Safari > Settings > RSS'),
+                ' choose the new NewsBlur Safari Helper.app. Then clicking on the RSS button in ',
+                'Safari will open the feed in NewsBlur. Simple!'
+              ])
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {
@@ -106,7 +121,13 @@ NEWSBLUR.ReaderGoodies.prototype = {
         $.targetIs(e, { tagSelector: '.NB-goodies-safari-link' }, function($t, $p) {
             e.preventDefault();
 
-            window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'NewsBlur Safari Helper.app';
+            window.location.href = NEWSBLUR.Globals.MEDIA_URL + 'extensions/NewsBlur Safari Helper.app.zip';
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-goodies-chrome-link' }, function($t, $p) {
+            e.preventDefault();
+
+            window.location.href = 'https://chrome.google.com/webstore/detail/gchdledhagjbhhodjjhiclbnaioljomj';
         });
 
         $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function($t, $p) {
