@@ -4212,7 +4212,7 @@ background: transparent;
 .NB-modal-statistics .NB-statistics-facet-neg .NB-statistics-facet-bar {
   height: 8px;
   position: absolute;
-  right: 0;
+  right: 2px;
   top: 6px;
   background-color: #CC2A2E;
 }

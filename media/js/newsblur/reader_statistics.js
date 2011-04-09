@@ -211,7 +211,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
         var max_width = 100;
         var multiplier = max_width / parseFloat(max, 10);
         var calculate_width = function(count) {
-            return Math.max(2, multiplier * count);
+            return Math.max(1, multiplier * count);
         };
         
         _.each(data, function(counts) {
