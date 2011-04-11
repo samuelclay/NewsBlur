@@ -75,7 +75,9 @@ def staging_full():
 def celery():
     with cd('~/newsblur'):
         run('git pull')
-        run('sudo supervisorctl restart celery')
+        run('sudo supervisorctl stop celery')
+        run('./utils/kill_celery.sh')
+        run('sudo supervisorctl start celery')
         run('tail logs/newsblur.log')
 
 @roles('task')
