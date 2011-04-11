@@ -184,7 +184,11 @@ def load_feed_favicons(request):
     favicons = {}
 
     for sub in user_subs:
-        favicons[sub.feed.pk] = FeedIcon.objects.get(feed__pk=sub.feed.pk).data
+        try:
+            feed_icon = FeedIcon.objects.get(feed__pk=sub.feed.pk)
+            favicons[sub.feed.pk] = feed_icon.data
+        except FeedIcon.DoesNotExist:
+            continue
         
     return favicons
     
