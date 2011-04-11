@@ -68,11 +68,12 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
-            'favicon': self.icon.data if include_favicon else None,
             'favicon_color': self.icon.color,
             'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
         }
         
+        if include_favicon:
+            feed['favicon'] = self.icon.data
         if not self.fetched_once:
             feed['not_yet_fetched'] = True
         if self.has_page_exception or self.has_feed_exception:
