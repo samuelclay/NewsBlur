@@ -7,13 +7,13 @@ from mongoengine import connect
 # = Directory Declaractions =
 # ===========================
 
-CURRENT_DIR = os.path.dirname(__file__)
-NEWSBLUR_DIR = CURRENT_DIR
+CURRENT_DIR   = os.path.dirname(__file__)
+NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (''.join([CURRENT_DIR, '/templates']),)
-MEDIA_ROOT = ''.join([CURRENT_DIR, '/media'])
-UTILS_ROOT = ''.join([CURRENT_DIR, '/utils'])
-LOG_FILE = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
-IMAGE_MASK = ''.join([CURRENT_DIR, '/media/img/mask.png'])
+MEDIA_ROOT    = ''.join([CURRENT_DIR, '/media'])
+UTILS_ROOT    = ''.join([CURRENT_DIR, '/utils'])
+LOG_FILE      = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
+IMAGE_MASK    = ''.join([CURRENT_DIR, '/media/img/mask.png'])
 
 # ==============
 # = PYTHONPATH =
@@ -27,33 +27,34 @@ if '/utils' not in ' '.join(sys.path):
 # = Global Settings =
 # ===================
 
-ADMINS = (
+ADMINS                = (
     ('Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
-MANAGERS = ADMINS
+MANAGERS              = ADMINS
 PAYPAL_RECEIVER_EMAIL = 'samuel@ofbrooklyn.com'
-TIME_ZONE = 'GMT'
-LANGUAGE_CODE = 'en-us'
-SITE_ID = 1
-USE_I18N = False
-LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/reader/login'
+TIME_ZONE             = 'GMT'
+LANGUAGE_CODE         = 'en-us'
+SITE_ID               = 1
+USE_I18N              = False
+LOGIN_REDIRECT_URL    = '/'
+LOGIN_URL             = '/reader/login'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/admin/'
-SECRET_KEY = '6yx-@2u@v$)-=fqm&tc8lhk3$6d68+c7gd%p$q2@o7b4o8-*fz'
+ADMIN_MEDIA_PREFIX    = '/media/admin/'
+SECRET_KEY            = '6yx-@2u@v$)-=fqm&tc8lhk3$6d68+c7gd%p$q2@o7b4o8-*fz'
+
 
 # ===============
 # = Enviornment =
 # ===============
 
-PRODUCTION = __file__.find('/home/conesus/newsblur') == 0
-STAGING = __file__.find('/home/conesus/staging') == 0
+PRODUCTION  = __file__.find('/home/conesus/newsblur') == 0
+STAGING     = __file__.find('/home/conesus/staging') == 0
 DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
 DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
 DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
-                
+
 # ===========================
 # = Django-specific Modules =
 # ===========================
@@ -207,7 +208,7 @@ DEBUG_TOOLBAR_PANELS = (
 # ==========================
 
 DAYS_OF_UNREAD          = 14
-SUBSCRIBER_EXPIRE       = 1
+SUBSCRIBER_EXPIRE       = 7
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
@@ -265,7 +266,7 @@ elif DEVELOPMENT:
     )
 
 DEVSERVER_MODULES = (
-   'devserver.modules.sql.SQLRealTimeModule',
+    'devserver.modules.sql.SQLRealTimeModule',
     'devserver.modules.sql.SQLSummaryModule',
     'devserver.modules.profile.ProfileSummaryModule',
 
@@ -303,23 +304,22 @@ CELERY_QUEUES = {
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND = "amqplib"
-BROKER_HOST = "db01.newsblur.com"
-BROKER_PORT = 5672
-BROKER_USER = "newsblur"
-BROKER_PASSWORD = "newsblur"
-BROKER_VHOST = "newsblurvhost"
+BROKER_BACKEND       = "amqplib"
+BROKER_HOST          = "db01.newsblur.com"
+BROKER_PORT          = 5672
+BROKER_USER          = "newsblur"
+BROKER_PASSWORD      = "newsblur"
+BROKER_VHOST         = "newsblurvhost"
 
-CELERY_RESULT_BACKEND = "amqp"
-
-CELERYD_LOG_LEVEL = 'ERROR'
-CELERY_IMPORTS = ("apps.rss_feeds.tasks", )
-CELERYD_CONCURRENCY = 4
-CELERY_IGNORE_RESULT = True
-CELERY_ACKS_LATE = True # Retry if task fails
+CELERY_RESULT_BACKEND       = "amqp"
+CELERYD_LOG_LEVEL           = 'ERROR'
+CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
+CELERYD_CONCURRENCY         = 4
+CELERY_IGNORE_RESULT        = True
+CELERY_ACKS_LATE            = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
-# CELERYD_TASK_TIME_LIMIT = 12 * 30
-CELERY_DISABLE_RATE_LIMITS = True
+# CELERYD_TASK_TIME_LIMIT   = 12 * 30
+CELERY_DISABLE_RATE_LIMITS  = True
 
 # ====================
 # = Database Routers =
