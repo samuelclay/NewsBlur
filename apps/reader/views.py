@@ -22,6 +22,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
+from apps.rss_feeds.models import FeedIcon
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
@@ -64,8 +65,9 @@ def index(request):
         feed_count = UserSubscription.objects.filter(user=request.user).count()
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
-        
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True).select_related('feed')
+    
+    now = datetime.datetime.now()
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')
     # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
     howitworks_page = 0 # random.randint(0, 5)
@@ -142,7 +144,7 @@ def load_feeds(request):
         UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
         folders = UserSubscriptionFolders.objects.get(user=user)
         
-    user_subs = UserSubscription.objects.select_related('feed', 'feed__feed_icon').filter(user=user)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
         feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
@@ -169,6 +171,27 @@ def load_feeds(request):
     }
     return data
 
+@json.json_view
+def load_feed_favicons(request):
+    user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_ids')
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    if not request.REQUEST.get('load_all'):
+        user_subs = user_subs.filter(active=True)
+    if feed_ids:
+        user_subs = user_subs.filter(feed__in=feed_ids)
+        
+    favicons = {}
+
+    for sub in user_subs:
+        try:
+            feed_icon = FeedIcon.objects.get(feed__pk=sub.feed.pk)
+            favicons[sub.feed.pk] = feed_icon.data
+        except FeedIcon.DoesNotExist:
+            continue
+        
+    return favicons
+    
 @ajax_login_required
 @json.json_view
 def load_feeds_iphone(request):
@@ -255,10 +278,11 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['favicon'] = sub.feed.icon.data
             feeds[sub.feed.pk]['favicon_color'] = sub.feed.icon.color
             feeds[sub.feed.pk]['favicon_fetching'] = bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
-            
-    diff = datetime.datetime.utcnow()-start
-    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    # logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+    
+    if settings.DEBUG:
+        diff = datetime.datetime.utcnow()-start
+        timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+        logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
     
     return {'feeds': feeds}
 

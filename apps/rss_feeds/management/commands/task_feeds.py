@@ -31,7 +31,8 @@ class Command(BaseCommand):
             last_update__lte=day, 
             queued_date__lte=day,
             min_to_decay__lte=60*24,
-            active_subscribers__gte=1
+            active_subscribers__gte=1,
+            active=True
         ).order_by('?')
         if feeds: Feed.task_feeds(feeds)
         
@@ -39,6 +40,7 @@ class Command(BaseCommand):
         feeds = Feed.objects.filter(
             last_update__lte=week, 
             queued_date__lte=day,
-            active_subscribers__gte=1
+            active_subscribers__gte=1,
+            active=True
         ).order_by('?')
         if feeds: Feed.task_feeds(feeds)

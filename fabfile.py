@@ -45,10 +45,10 @@ def deploy():
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://www.newsblur.com > /dev/null')
         with cd('media/js'):
-            run('rm *.gz')
+            run('rm -f *.gz')
             run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
         with cd('media/css'):
-            run('rm *.gz')
+            run('rm -f *.gz')
             run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
 
 @roles('web')

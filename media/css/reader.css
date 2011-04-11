@@ -52,6 +52,15 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     line-height: 20px;
 }
 
+.NB-input {
+    font-size: 14px;
+    padding: 2px;
+    margin: 2px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
 /* =================== */
 /* = Resize Controls = */
 /* =================== */
@@ -2846,13 +2855,6 @@ a.NB-splash-link:hover {
 
 .NB-add input[type=text] {
     width: 340px;
-    font-size: 14px;
-    padding: 2px;
-    margin: 2px 4px 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
 }
 
 .NB-add .NB-folder-icon {
@@ -3886,6 +3888,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }
+.NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/award_star_bronze_3.png') no-repeat  0 1px;    
+}
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }
@@ -4131,20 +4136,6 @@ background: transparent;
   margin: 6px 8px 0;
 }
 
-.NB-modal-statistics .NB-statistics-subscribers {
-  float: right;
-  clear: both;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #d0d0d0;
-  text-shadow: 0 1px 0 #FFF;
-}
-
-.NB-modal-statistics .NB-statistics-subscribers-count {
-  color: #A8A8A8;
-  padding-right: 4px;
-}
-
 .NB-modal-statistics .NB-statistics-history-fetch {
   overflow: hidden;
   clear: both;
@@ -4173,6 +4164,119 @@ background: transparent;
 }
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-exception {
   display: none;
+}
+.NB-modal-statistics .NB-statistics-classifiers {
+    border: 1px solid #e6e6e6;
+    clear: both;
+    margin: 24px 0 0;
+    overflow: hidden;
+    padding: 10px 12px;
+    font-size: 12px;
+}
+.NB-modal-statistics .NB-statistics-facet-title {
+    text-transform: uppercase;
+    text-align: center;
+    border-bottom: 1px solid #E0E0E0;
+    margin: 4px 0;
+    padding: 0 0 4px;
+    clear: both;
+}
+.NB-modal-statistics .NB-statistics-facet {
+  clear: both;
+  padding: 2px 0;
+  position: relative;
+  border-bottom: 1px solid #F6F6F6;
+}
+
+.NB-modal-statistics .NB-statistics-facet-name {
+  width: 40%;
+}
+.NB-modal-statistics .NB-statistics-facet-pos {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30%;
+  padding: 4px 0;
+}
+.NB-modal-statistics .NB-statistics-facet-separator {
+  position: absolute;
+  height: 16px;
+  width: 2px;
+  right: 30%;
+  margin-left: -2px;
+  background-color: black;
+}
+.NB-modal-statistics .NB-statistics-facet-neg {
+  position: absolute;
+  top: 0;
+  right: 30%;
+  width: 30%;
+  padding: 4px 0;
+  text-align: right;
+}
+.NB-modal-statistics .NB-statistics-facet-pos .NB-statistics-facet-bar {
+  height: 8px;
+  position: absolute;
+  left: 0;
+  top: 6px;
+  background-color: #559F4D;
+}
+.NB-modal-statistics .NB-statistics-facet-neg .NB-statistics-facet-bar {
+  height: 8px;
+  position: absolute;
+  right: 2px;
+  top: 6px;
+  background-color: #CC2A2E;
+}
+.NB-modal-statistics .NB-statistics-facet-count {
+  font-size: 9px;
+  color: #C0C0C0;
+}
+
+/* ============================= */
+/* = Feed Recommendation Modal = */
+/* ============================= */
+
+.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container {
+  margin: 3px 0 12px;
+}
+.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
+  margin: 0 0 12px;
+}
+.NB-modal-recommend .NB-modal-loading {
+  margin: 6px 8px 0;
+}
+.NB-modal.NB-modal-recommend .NB-modal-recommend-tagline-container {
+  padding: 6px 0;
+  margin: 4px 0;
+  border-top: 1px solid #C0C0C0;
+  border-bottom: 1px solid #C0C0C0;
+}
+.NB-modal-recommend .NB-modal-recommend-tagline {
+  width: 558px;
+  height: 80px;
+  font-size: 14px;
+  color: #404040;
+  line-height: 20px;
+  padding: 8px;
+  margin: 0;
+  border: 1px solid #E0E0E0;
+  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+}
+.NB-modal-recommend .NB-modal-recommend-credit {
+  color: #505050;
+  font-size: 12px;
+  margin: 4px 0;
+}
+.NB-modal-recommend .NB-modal-recommend-twitter {
+  
+}
+.NB-modal-recommend .NB-modal-recommend-explanation {
+  clear: both;
+  color: #505050;
+  font-size: 12px;
+  margin: 12px 0 14px;
+  padding: 0 1px;
 }
 
 

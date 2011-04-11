@@ -60,6 +60,7 @@ def load_feed_statistics(request):
     feed_id = request.GET['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.save_feed_story_history_statistics()
+    feed.save_classifier_counts()
     
     # Dates of last and next update
     stats['last_update'] = relative_timesince(feed.last_update)
@@ -81,6 +82,9 @@ def load_feed_statistics(request):
     stats['premium_subscribers'] = feed.premium_subscribers
     stats['active_subscribers'] = feed.active_subscribers
     
+    # Classifier counts
+    stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
+    
     # Fetch histories
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
     stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
@@ -88,7 +92,7 @@ def load_feed_statistics(request):
     logging.user(request.user, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
     return stats
-    
+
 @ajax_login_required
 @json.json_view
 def exception_retry(request):
