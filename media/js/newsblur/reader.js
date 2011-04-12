@@ -3038,7 +3038,8 @@
                             (story.long_parsed_date &&
                                 $.make('span', { className: 'NB-feed-story-date' }, story.long_parsed_date)),
                             (story.starred_date &&
-                                $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date))
+                                $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date)),
+                            (!this.model.get_preference('hide_story_changes') && $.make('div', { className: 'NB-feed-story-hide-changes', title: 'Hide story modifications' }))
                         ])
                     ]),
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                

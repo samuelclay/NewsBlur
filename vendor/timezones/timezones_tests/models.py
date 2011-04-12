@@ -1,6 +1,6 @@
 from django.db import models
 
-from utils.timezones.fields import TimeZoneField
+from vendor.timezones.fields import TimeZoneField
 
 
 

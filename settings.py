@@ -12,6 +12,7 @@ NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (''.join([CURRENT_DIR, '/templates']),)
 MEDIA_ROOT    = ''.join([CURRENT_DIR, '/media'])
 UTILS_ROOT    = ''.join([CURRENT_DIR, '/utils'])
+VENDOR_ROOT   = ''.join([CURRENT_DIR, '/vendor'])
 LOG_FILE      = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
 IMAGE_MASK    = ''.join([CURRENT_DIR, '/media/img/mask.png'])
 
@@ -19,9 +20,10 @@ IMAGE_MASK    = ''.join([CURRENT_DIR, '/media/img/mask.png'])
 # = PYTHONPATH =
 # ==============
 
-UTILS_DIR = ''.join([CURRENT_DIR, '/utils'])
 if '/utils' not in ' '.join(sys.path):
-    sys.path.append(UTILS_DIR)
+    sys.path.append(UTILS_ROOT)
+if '/vendor' not in ' '.join(sys.path):
+    sys.path.append(VENDOR_ROOT)
 
 # ===================
 # = Global Settings =
@@ -252,8 +254,9 @@ INSTALLED_APPS = (
     'apps.recommendations',
     'south',
     'utils',
-    'utils.typogrify',
-    'utils.paypal.standard.ipn',
+    'vendor',
+    'vendor.typogrify',
+    'vendor.paypal.standard.ipn',
 )
 
 if not DEVELOPMENT:

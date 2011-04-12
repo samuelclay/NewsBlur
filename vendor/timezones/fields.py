@@ -5,8 +5,8 @@ from django.utils.encoding import smart_unicode, smart_str
 
 import pytz
 
-from utils.timezones import forms, zones
-from utils.timezones.utilities import coerce_timezone_value, validate_timezone_max_length
+from vendor.timezones import forms, zones
+from vendor.timezones.utilities import coerce_timezone_value, validate_timezone_max_length
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^utils\.timezones\.fields\.TimeZoneField"])

@@ -8,10 +8,10 @@ from django import forms
 from django.conf import settings
 from django.test import TestCase
 
-import utils.timezones.forms
-import utils.timezones.timezones_tests.models as test_models
+import vendor.timezones.forms
+import vendor.timezones.timezones_tests.models as test_models
 
-from utils.timezones.utilities import localtime_for_timezone, adjust_datetime_to_timezone
+from vendor.timezones.utilities import localtime_for_timezone, adjust_datetime_to_timezone
 
 
 
