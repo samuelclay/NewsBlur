@@ -1,5 +1,5 @@
 from celery.task import Task
-# from utils import log as logging
+from utils import log as logging
 
 class UpdateFeeds(Task):
     name = 'update-feeds'
@@ -12,9 +12,12 @@ class UpdateFeeds(Task):
             feed_pks = [feed_pks]
             
         for feed_pk in feed_pks:
-            feed = Feed.objects.get(pk=feed_pk)
+            try:
+                feed = Feed.objects.get(pk=feed_pk)
+                feed.update()
+            except Feed.DoesNotExist:
+                logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)
             # logging.debug(' Updating: [%s] %s' % (feed_pks, feed))
-            feed.update()
 
 class NewFeeds(Task):
     name = 'new-feeds'

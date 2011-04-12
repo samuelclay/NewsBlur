@@ -11,7 +11,7 @@ from paypal.standard.ipn.signals import subscription_signup
 from apps.rss_feeds.tasks import NewFeeds
 from celery.task import Task
 from utils import log as logging
-from utils.timezones.fields import TimeZoneField
+from vendor.timezones.fields import TimeZoneField
 from utils.user_functions import generate_secret_token
      
 class Profile(models.Model):

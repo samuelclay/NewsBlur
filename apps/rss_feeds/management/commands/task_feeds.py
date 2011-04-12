@@ -7,6 +7,7 @@ import datetime
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-f", "--feed", default=None),
+        make_option("-a", "--all", default=False, action='store_true'),
         make_option('-V', '--verbose', action='store_true',
             dest='verbose', default=False, help='Verbose output.'),
     )
@@ -23,6 +24,8 @@ class Command(BaseCommand):
         ).exclude(
             active_subscribers=0
         ).order_by('?')
+        if options['all']:
+            feeds = Feed.objects.all()
         Feed.task_feeds(feeds)
         
         # Mistakenly inactive feeds

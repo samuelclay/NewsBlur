@@ -1,6 +1,6 @@
 import logging
 from django.conf import settings
-from utils.colorama import Fore, Back, Style
+from vendor.colorama import Fore, Back, Style
 import re
 
 def getlogger():
