@@ -3007,7 +3007,7 @@
                     : '';
                 if (score > 0) score_color = 'positive';
                 if (score < 0) score_color = 'negative';
-                if (story.story_content.indexOf('<ins>') != -1) story_has_modifications = true;
+                if (story.story_content.indexOf('<ins') != -1) story_has_modifications = true;
                 
                 river_same_feed = null;
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
