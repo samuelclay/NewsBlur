@@ -2330,6 +2330,7 @@ background: transparent;
 }
 
 #story_taskbar {
+  overflow: hidden;
     display: none;
 }
 
