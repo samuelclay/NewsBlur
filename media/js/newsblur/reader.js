@@ -2190,11 +2190,13 @@
             if ((unread_view == 'positive' && feed.ps == 0) ||
                 (unread_view == 'neutral' && feed.ps == 0 && feed.nt == 0) ||
                 (unread_view == 'negative' && feed.ps == 0 && feed.nt == 0 && feed.ng == 0)) {
-                  $floater.animate({
-                    'top': $('#story_taskbar').height()
-                  }, {
-                    'duration': 500, 'easing': 'easeOutQuint'
-                  });
+                  _.delay(function() {
+                    $floater.animate({
+                      'top': $('#story_taskbar').height()
+                    }, {
+                      'duration': 500, 'easing': 'easeOutQuint'
+                    });
+                  }, 500);
             }
             
             this.update_header_counts(true);
