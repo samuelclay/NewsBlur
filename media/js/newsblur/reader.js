@@ -2194,7 +2194,9 @@
                     $floater.animate({
                       'top': $('#story_taskbar').height()
                     }, {
-                      'duration': 500, 'easing': 'easeOutQuint'
+                      'duration': 500, 
+                      'queue': false,
+                      'easing': 'easeOutQuint'
                     });
                   }, 500);
             }
