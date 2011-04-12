@@ -1817,6 +1817,18 @@ background: transparent;
     font-size: 11px;
     text-shadow: 1px 1px 0 #E6E6E6;
 }
+#story_pane .NB-feed-story-header .NB-feed-story-hide-changes {
+    width: 16px;
+    height: 16px;
+    background: transparent url('../img/reader/code_icon.png') no-repeat 0 0;
+    float: left;
+    margin: 1px 8px 0px 0px;
+    opacity: .6;
+    cursor: pointer;
+}
+#story_pane .NB-feed-story-header .NB-feed-story-hide-changes:hover {
+    opacity: 1;
+}
 
 #story_pane .NB-feed-story-header .NB-feed-story-starred-date {
     position: absolute;
