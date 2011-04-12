@@ -3,8 +3,8 @@ from django.conf import settings
 
 import pytz
 
-from utils.timezones import zones
-from utils.timezones.utilities import adjust_datetime_to_timezone, coerce_timezone_value
+from vendor.timezones import zones
+from vendor.timezones.utilities import adjust_datetime_to_timezone, coerce_timezone_value
 
 
 

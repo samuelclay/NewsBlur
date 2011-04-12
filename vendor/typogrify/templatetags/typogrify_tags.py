@@ -6,8 +6,8 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str, force_unicode
 
-import utils.typogrify.smartypants as _smartypants
-import utils.typogrify.titlecase as _titlecase
+import vendor.typogrify.smartypants as _smartypants
+import vendor.typogrify.titlecase as _titlecase
 
 register = template.Library()
 

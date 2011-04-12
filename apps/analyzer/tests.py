@@ -7,7 +7,7 @@ from django.core import management
 from pprint import pprint
 # from apps.analyzer.classifier import FisherClassifier
 from apps.analyzer.tokenizer import Tokenizer
-from utils.reverend.thomas import Bayes
+from vendor.reverend.thomas import Bayes
 from apps.analyzer.phrase_filter import PhraseFilter
 
 class ClassifierTest(TestCase):

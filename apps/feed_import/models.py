@@ -7,7 +7,7 @@ import datetime
 from StringIO import StringIO
 from lxml import etree
 from utils import json_functions as json, urlnorm
-import utils.opml as opml
+import vendor.opml as opml
 from utils import log as logging
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 # import minidom

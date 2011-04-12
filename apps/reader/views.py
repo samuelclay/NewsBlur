@@ -36,7 +36,7 @@ from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
-from utils.timezones.utilities import localtime_for_timezone
+from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
