@@ -3009,7 +3009,7 @@
                 if (score < 0) score_color = 'negative';
                 if (story.story_content.indexOf('<ins') != -1) story_has_modifications = true;
                 
-                var show_hide_mod_button = true || story_has_modifications && !this.model.preference('hide_story_changes');
+                var show_hide_mod_button = story_has_modifications && !this.model.preference('hide_story_changes');
                 
                 river_same_feed = null;
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
@@ -3223,9 +3223,12 @@
         },
         
         hide_story_changes: function($story) {
+            var $button = $('.NB-feed-story-hide-changes', $story);
+
             $('ins', $story).css({'text-decoration': 'none'});
             $('del', $story).css({'display': 'none'});
-            $('.NB-feed-story-hide-changes', $story).css('opacity', 1).fadeOut(400);
+            $button.css('opacity', 1).fadeOut(400);
+            $button.tipsy('hide').tipsy('disable');
         },
         
         prefetch_story_locations_in_feed_view: function() {
