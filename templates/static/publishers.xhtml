@@ -11,7 +11,23 @@
   <div class="NB-module">
     <h5 class="NB-module-title">Control the Original View</h5>
     <div class="NB-module-content">
-      <p>Just add the <code>post</code> to each post's class.</p>
+      <p>To control where stories begin in the Original view, you can use any of these <code>class</code> names in your HTML:</p>
+      <ul>
+        <li><code>.entry</code></li>
+        <li><code>.post</code></li>
+        <li><code>.postProp</code></li>
+        <li><code>.article</code></li>
+        <li><code>#postContent</code></li>
+      </ul>
+      <p>If NewsBlur cannot find one of these <code>class</code> names, it will check for the following, in order:</p>
+      <ul>
+        <li>Exact match in a single visible element.</li>
+        <li>Near-match by header tags: <code>h1, h2, h3, h4, h5, h6</code>.</li>
+        <li>Near-match in a <code>.post</code> or similar class name.</li>
+        <li>Near-match by font-size (largest font size wins).</li>
+        <li>Each match is ranked by similarity.</li>
+      </ul>
+      <p>To view the exact heuristics used, see <code>find_story_in_feed_iframe</code> in <a href="http://github.com/samuelclay/NewsBlur/tree/master/media/js/newsblur/reader.js">reader.js</a> on GitHub.</p>
     </div>
   </div>
 
@@ -19,6 +35,13 @@
     <h5 class="NB-module-title">Graceful iFrame Busting</h5>
     <div class="NB-module-content">
       To ensure that NewsBlur readers only use the Feed view...
+    </div>
+  </div>
+  
+  <div class="NB-module">
+    <h5 class="NB-module-title">Opt-out of the Original view</h5>
+    <div class="NB-module-content">
+      
     </div>
   </div>
 
