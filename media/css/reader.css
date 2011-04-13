@@ -4974,7 +4974,7 @@ background: transparent;
 
 .NB-static ul {
   padding-left: 20px;
-  list-style: circle;
+  list-style: square outside url('../img/icons/silk/bullet_blue.png');
   margin-left: 0;
 }
 .NB-static li {
