@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block bodyclass %}NB-static{% endblock %}
+{% block bodyclass %}NB-static NB-static-press{% endblock %}
 
 {% block content %}
 
@@ -10,10 +10,14 @@
 
   <div class="NB-module">
     <h5 class="NB-module-title">Press Information and Resources</h5>
+    
     <div class="NB-module-content">
+      
+      <h3>Contact</h3>
+      
       Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:
       <ul>
-        <li><a href="http://www.samuelclay.com">Samuel Clay</a>, founder, <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
+        <li><a href="http://www.samuelclay.com">Samuel Clay</a>, founder, <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a>, <a href="http://twitter.com/samuelclay">@samuelclay</a></li>
       </ul>
       Contact Samuel for interviews, comments, and questions about NewsBlur. As another
       ambitious New Yorker, he is happy to talk about NewsBlur.
@@ -25,6 +29,36 @@
       <img src="{{ MEDIA_URL }}/img/logo_newsblur.png">
       <img src="{{ MEDIA_URL }}/img/favicon.png">
       
+      <h3>Screenshots</h3>
+      
+      <ul class="NB-press-screenshots">
+        <li class="NB-press-screenshot">
+          <a href="{{ MEDIA_URL }}/img/static/screenshot-1.png"><img src="{{ MEDIA_URL }}/img/static/screenshot-1.png" /></a>
+          <div class="NB-press-screenshot-text">Read the original site</div>
+        </li>
+        <li class="NB-press-screenshot NB-last">
+          <a href="{{ MEDIA_URL }}/img/static/screenshot-2.png"><img src="{{ MEDIA_URL }}/img/static/screenshot-2.png" /></a>
+          <div class="NB-press-screenshot-text">Artificial Intelligence</div>
+        </li>
+        
+        <li class="NB-press-screenshot">
+          <a href="{{ MEDIA_URL }}/img/static/screenshot-3.png"><img src="{{ MEDIA_URL }}/img/static/screenshot-3.png" /></a>
+          <div class="NB-press-screenshot-text">Feed view</div>
+        </li>
+        <li class="NB-press-screenshot NB-last">
+          <a href="{{ MEDIA_URL }}/img/static/screenshot-4.png"><img src="{{ MEDIA_URL }}/img/static/screenshot-4.png" /></a>
+          <div class="NB-press-screenshot-text">Bookmarklet to easily add sites</div>
+        </li>
+        
+        <li class="NB-press-screenshot">
+          <a href="{{ MEDIA_URL }}/img/static/screenshot-5.png"><img src="{{ MEDIA_URL }}/img/static/screenshot-5.png" /></a>
+          <div class="NB-press-screenshot-text">Statistics and History</div>
+        </li>
+        <li class="NB-press-screenshot NB-last">
+          <a href="{{ MEDIA_URL }}/img/static/screenshot-6.png"><img src="{{ MEDIA_URL }}/img/static/screenshot-6.png" /></a>
+          <div class="NB-press-screenshot-text">Easily import from Google Reader</div>
+        </li>
+      </ul>
     </div>
   </div>
 

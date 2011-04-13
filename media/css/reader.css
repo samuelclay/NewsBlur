@@ -5046,6 +5046,29 @@ background: transparent;
 .NB-static-press-reviews .NB-press-date {
   color: #404040;
 }
+.NB-static-press .NB-press-screenshots {
+  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.NB-static-press .NB-press-screenshot {
+  float: left;
+  display: block;
+  width: 276px;
+  text-align: center;
+  margin: 0 24px 24px 0;
+  font-size: 16px;
+  line-height: 20px;
+}
+.NB-static-press .NB-press-screenshot.NB-last {
+  margin-right: 0;
+}
+.NB-static-press .NB-press-screenshot img {
+  width: 274px;
+  border: 1px solid #303030;
+  margin: 0 0 12px 0;
+}
 
 /* ============== */
 /* = About page = */
