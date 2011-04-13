@@ -2613,6 +2613,10 @@
                 $('.NB-feed-story-tags', $story).replaceWith(this.make_story_feed_tags(story));
                 $('.NB-feed-story-author', $story).replaceWith(this.make_story_feed_author(story));
                 $('.NB-feed-story-title', $story).replaceWith(this.make_story_feed_title(story));
+                
+                if (this.model.preference('new_window') == 1) {
+                    $('a', $story).attr('target', '_blank');
+                }
             }, this);
             
             _.each(this.cache.feed_view_stories, _.bind(function($story, story_id) { 
@@ -3126,7 +3130,7 @@
                         delayIn: 375
                     });
                 }
-                if (NEWSBLUR.Preferences.new_window == 1) {
+                if (this.model.preference('new_window') == 1) {
                     $('a', $story).attr('target', '_blank');
                 }
                 
