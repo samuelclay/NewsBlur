@@ -3083,8 +3083,6 @@
                 if (score < 0) score_color = 'negative';
                 if (story.story_content.indexOf('<ins') != -1) story_has_modifications = true;
                 
-                var show_hide_mod_button = story_has_modifications && !this.model.preference('hide_story_changes');
-                
                 river_same_feed = null;
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
                   // river_same_feed = 'NB-feed-story-river-same-feed';
@@ -3115,7 +3113,11 @@
                             ]),
                             (story.long_parsed_date &&
                                 $.make('span', { className: 'NB-feed-story-date' }, [
-                                    (show_hide_mod_button && $.make('div', { className: 'NB-feed-story-hide-changes', title: 'Hide story modifications' })),
+                                    (story_has_modifications && $.make('div', { 
+                                      className: 'NB-feed-story-hide-changes', 
+                                      title: (this.model.preference('hide_story_changes') ?
+                                             'Show' : 'Hide') + ' story modifications' 
+                                    })),
                                     story.long_parsed_date
                                 ])),
                             (story.starred_date &&
@@ -3125,10 +3127,14 @@
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
                 ]).data('story', story.id).data('story_id', story.id).data('feed_id', story.story_feed_id);
                 
-                if (show_hide_mod_button) {
+                if (story_has_modifications) {
                     $('.NB-feed-story-hide-changes', $story).tipsy({
                         delayIn: 375
                     });
+                }
+                if (story_has_modifications && this.model.preference('hide_story_changes')) {
+                    $('ins', $story).css({'text-decoration': 'none'});
+                    $('del', $story).css({'display': 'none'});
                 }
                 if (this.model.preference('new_window') == 1) {
                     $('a', $story).attr('target', '_blank');
@@ -3298,9 +3304,14 @@
         
         hide_story_changes: function($story) {
             var $button = $('.NB-feed-story-hide-changes', $story);
-
-            $('ins', $story).css({'text-decoration': 'none'});
-            $('del', $story).css({'display': 'none'});
+            
+            if (this.model.preference('hide_story_changes')) {
+                $('ins', $story).css({'text-decoration': 'underline'});
+                $('del', $story).css({'display': 'inline'});
+            } else {
+                $('ins', $story).css({'text-decoration': 'none'});
+                $('del', $story).css({'display': 'none'});
+            }
             $button.css('opacity', 1).fadeOut(400);
             $button.tipsy('hide').tipsy('disable');
         },

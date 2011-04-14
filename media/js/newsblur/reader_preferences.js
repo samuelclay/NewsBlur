@@ -198,6 +198,30 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         $.make('div', { className: 'NB-preference-sublabel' }, this.make_site_sidebar_count())
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidestorychanges-1', type: 'radio', name: 'hide_story_changes', value: 0 }),
+                            $.make('label', { 'for': 'NB-preference-hidestorychanges-1' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/code_icon.png' }),
+                                'Show ',
+                                $.make('del', 'changes'),
+                                ' ',
+                                $.make('ins', 'revisions'),
+                                ' in stories.'
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-hidestorychanges-2', type: 'radio', name: 'hide_story_changes', value: 1 }),
+                            $.make('label', { 'for': 'NB-preference-hidestorychanges-2' }, [
+                                'Hide changes and only show the final story.'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Story changes'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-singlestory' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
@@ -351,6 +375,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
         });
         $('input[name=hide_read_feeds]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_read_feeds) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=hide_story_changes]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
                 $(this).attr('checked', true);
                 return false;
             }

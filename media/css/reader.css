@@ -4934,6 +4934,10 @@ background: transparent;
   vertical-align: middle;
   margin: -4px 6px 0 2px;
 }
+.NB-modal-preferences .NB-preference-hidestorychanges label img {
+  vertical-align: middle;
+  margin: -4px 6px 0 2px;
+}
 .NB-modal-preferences .NB-preference-singlestory label img {
   vertical-align: middle;
   margin: -1px 6px 0 2px;
