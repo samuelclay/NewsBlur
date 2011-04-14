@@ -204,14 +204,19 @@ class IconImporter(object):
 
     def determine_dominant_color_in_image(self, image):
         NUM_CLUSTERS = 5
-            
+        
+        # Convert image into array of values for each point.
         ar = scipy.misc.fromimage(image)
         shape = ar.shape
+        
+        # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
             ar = ar.reshape(scipy.product(shape[:2]), shape[2])
-
+            
+        # Get NUM_CLUSTERS worth of centroids.
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
-        # print "Before: %s" % codes
+        
+        # Pare centroids, removing blacks and whites and shades of really dark and really light.
         original_codes = codes
         for low, hi in [(60, 200), (35, 230), (10, 250)]:
             codes = scipy.array([code for code in codes 
@@ -219,17 +224,23 @@ class IconImporter(object):
                                          (code[0] > hi and code[1] > hi and code[2] > hi))])
             if not len(codes): codes = original_codes
             else: break
-        # print "After: %s" % codes
     
-        vecs, _ = scipy.cluster.vq.vq(ar, codes)         # assign codes
-        counts, bins = scipy.histogram(vecs, len(codes))    # count occurrences
+        # Assign codes (vector quantization). Each vector is compared to the centroids
+        # and assigned the nearest one.
+        vecs, _ = scipy.cluster.vq.vq(ar, codes)
+        
+        # Count occurences of each clustered vector.
+        counts, bins = scipy.histogram(vecs, len(codes))
+
+        # Show colors for each code in its hex value.
         # colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
         # total = scipy.sum(counts)
         # print dict(zip(colors, [count/float(total) for count in counts]))
-        index_max = scipy.argmax(counts)                    # find most frequent
+        
+        # Find the most frequent color, based on the counts.
+        index_max = scipy.argmax(counts)
         peak = codes[index_max]
         color = ''.join(chr(c) for c in peak).encode('hex')
-        # print 'most frequent is %s (#%s)' % (peak, color)
         
         return color[:6]
 
