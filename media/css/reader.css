@@ -3573,13 +3573,14 @@ background: transparent;
 .NB-graph-value .NB-graph-label {
   width: 20px;
   height: 20px;
+  font-size: 10px;
   text-align: center;
   position: absolute;
   bottom: -25px;
   left: -8px;
   display: none;
   padding: 3px 0 0 0;
-  color: #808080;
+  color: #A0A0A0;
   text-shadow: 1px 1px 0 #F0F0F0;
   background: transparent url('../img/reader/graph_arrow_up.png') no-repeat 8px 0;
 }

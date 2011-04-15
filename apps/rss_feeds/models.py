@@ -231,7 +231,12 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.utcnow()).save()
-        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
+        day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
+        new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
+        if new_fetch_histories.count() < 5:
+            old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
+        else:
+            old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
         for history in old_fetch_histories:
             history.delete()
         if status_code not in (200, 304):
@@ -1018,6 +1023,7 @@ class MFeedFetchHistory(mongo.Document):
     meta = {
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
+        'ordering': ['-fetch_date'],
         'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
@@ -1050,6 +1056,7 @@ class MPageFetchHistory(mongo.Document):
     meta = {
         'collection': 'page_fetch_history',
         'allow_inheritance': False,
+        'ordering': ['-fetch_date'],
         'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     

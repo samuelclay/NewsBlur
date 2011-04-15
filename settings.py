@@ -252,6 +252,7 @@ INSTALLED_APPS = (
     'apps.feed_import',
     'apps.profile',
     'apps.recommendations',
+    'apps.statistics',
     'south',
     'utils',
     'vendor',

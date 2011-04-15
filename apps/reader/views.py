@@ -23,6 +23,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import FeedIcon
+from apps.statistics.models import MStatistics
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
@@ -70,6 +71,7 @@ def index(request):
     recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')
     # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
+    statistics = MStatistics.all()
     howitworks_page = 0 # random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
         'user_profile': user.profile,
@@ -84,6 +86,7 @@ def index(request):
         'train_count': active_count - train_count,
         'account_images': range(1, 4),
         'recommended_feeds': recommended_feeds,
+        'statistics': statistics,
         # 'recommended_feed_feedback': recommended_feed_feedback,
     }, context_instance=RequestContext(request))
 

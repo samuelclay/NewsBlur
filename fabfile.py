@@ -62,14 +62,14 @@ def deploy_full():
 def staging():
     with cd('~/staging'):
         run('git pull')
-        run('kill -HUP `cat /var/run/gunicorn/gunicorn_staging.pid`')
+        run('kill -HUP `cat logs/gunicorn.pid`')
 
 @roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
         run('./manage.py migrate')
-        run('kill -HUP `cat /var/run/gunicorn/gunicorn_staging.pid`')
+        run('kill -HUP `cat logs/gunicorn.pid`')
 
 @roles('task')
 def celery():
@@ -295,6 +295,14 @@ def update_gunicorn():
         run('git pull')
         sudo('python setup.py develop')
 
+@roles('web')
+def setup_staging():
+    run('git clone https://github.com/samuelclay/NewsBlur.git staging')
+    with cd('~/staging'):
+        run('cp ../newsblur/local_settings.py local_settings.py')
+        run('mkdir -p logs')
+        run('touch logs/newsblur.log')
+    
 # ==============
 # = Setup - DB =
 # ==============    
