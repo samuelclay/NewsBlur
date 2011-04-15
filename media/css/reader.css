@@ -3386,6 +3386,24 @@ background: transparent;
 .NB-module.NB-loading .NB-spinner {
     display: block;
 }
+.NB-module h3.NB-module-content-header {
+    border-bottom: 1px solid #F0F0F0;
+    padding: 4px 0 0px;
+    margin: 12px 0 4px 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #134160;
+    text-shadow: 1px 1px 0 #E0E0E0;
+    clear: both;
+}
+.NB-module .NB-module-content-subtitle {
+    float: right;
+    color: #C0C0C0;
+    text-shadow: none;
+    margin-right: 12px;
+}
+
+
 
 /* =========================== */
 /* = Right Modules - Account = */
@@ -3410,23 +3428,9 @@ background: transparent;
     margin-bottom: 0;
 }
 
-.NB-account .NB-module .NB-module-account h3 {
-    border-bottom: 1px solid #F0F0F0;
-    padding: 4px 0 0px;
-    margin: 4px 0 4px 128px;
-    font-size: 13px;
-    text-transform: uppercase;
-    color: #134160;
-    text-shadow: 1px 1px 0 #E0E0E0;
+.NB-account .NB-module .NB-module-account .NB-module-content-header {
+    margin-left: 128px;
 }
-
-.NB-account .NB-module .NB-module-account .NB-module-account-subtitle {
-    float: right;
-    color: #C0C0C0;
-    text-shadow: none;
-    margin-right: 12px;
-}
-
 .NB-account .NB-module .NB-module-account .NB-module-account-image {
     position: absolute;
     left: 0;
@@ -3519,6 +3523,70 @@ background: transparent;
     text-align: center;
 }
 
+/* ================ */
+/* = Stats Module = */
+/* ================ */
+
+.NB-module-stats .NB-module-stats-count {
+  float: left;
+  width: 33%;
+  margin: 0 0 18px 0;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.NB-module-stats .NB-module-stats-count-number {
+  clear: both;
+  font-size: 18px;
+  margin: 8px 0 0 0;
+  color: #0D003C;
+  text-shadow: 1px 1px 0 #E8E8E8;
+  font-weight: bold;
+}
+.NB-module-stats .NB-module-stats-count-description {
+  margin: 4px 0 0 0;
+  color: #808080;
+}
+
+.NB-module-stats .NB-module-stats-count-graph {
+  clear: both;
+  padding: 0 12px;
+}
+.NB-graph-value {
+  float: left;
+  height: 38px;
+  width: 4px;
+  padding: 0 1px 0 0;
+  margin: 0 0 18px 0;
+  position: relative;
+}
+
+.NB-graph-value .NB-graph-bar {
+  background-color: darkblue;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+}
+
+.NB-graph-value .NB-graph-label {
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  position: absolute;
+  bottom: -25px;
+  left: -8px;
+  display: none;
+  padding: 3px 0 0 0;
+  color: #808080;
+  text-shadow: 1px 1px 0 #F0F0F0;
+  background: transparent url('../img/reader/graph_arrow_up.png') no-repeat 8px 0;
+}
+
+.NB-graph-value:hover .NB-graph-label {
+  display: block;
+}
 /* ================== */
 /* = Center Modules = */
 /* ================== */
