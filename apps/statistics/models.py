@@ -62,6 +62,7 @@ class MStatistics(mongo.Document):
         cls.objects(key='avg_time_taken').update_one(upsert=True, key='avg_time_taken', value=json.encode(avg_time_taken))
         cls.objects(key='latest_sites_loaded').update_one(upsert=True, key='latest_sites_loaded', value=sites_loaded[-1])
         cls.objects(key='latest_avg_time_taken').update_one(upsert=True, key='latest_avg_time_taken', value=avg_time_taken[-1])
+        print sites_loaded, avg_time_taken
         print max(sites_loaded), max(avg_time_taken)
         cls.objects(key='max_sites_loaded').update_one(upsert=True, key='max_sites_loaded', value=max(sites_loaded))
         cls.objects(key='max_avg_time_taken').update_one(upsert=True, key='max_avg_time_taken', value=max(avg_time_taken))
