@@ -5047,7 +5047,7 @@ background: transparent;
 
 .NB-static ul {
   padding-left: 20px;
-  list-style: square outside url('../img/reader/static_bullet_purple.png');
+  list-style: square outside url('../img/reader/static_bullet_white.png');
   margin-left: 0;
 }
 .NB-static li {
@@ -5229,7 +5229,7 @@ background: transparent;
   text-transform: uppercase;
 }
 .NB-static-api .required {
-  background-color: #6977AF;
+  background-color: #D9900F;
 }
 .NB-static-api p {
   margin: 12px 0;
