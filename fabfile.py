@@ -44,12 +44,7 @@ def deploy():
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://www.newsblur.com > /dev/null')
-        with cd('media/js'):
-            run('rm -f *.gz')
-            run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
-        with cd('media/css'):
-            run('rm -f *.gz')
-            run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
+        compress_media()
 
 @roles('web')
 def deploy_full():
@@ -57,12 +52,16 @@ def deploy_full():
         run('git pull')
         run('./manage.py migrate')
         run('sudo supervisorctl restart gunicorn')
+        run('curl -s http://www.newsblur.com > /dev/null')
+        compress_media()
 
 @roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://dev.newsblur.com > /dev/null')
+        compress_media()
 
 @roles('web')
 def staging_full():
@@ -70,6 +69,8 @@ def staging_full():
         run('git pull')
         run('./manage.py migrate')
         run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://dev.newsblur.com > /dev/null')
+        compress_media()
 
 @roles('task')
 def celery():
@@ -88,6 +89,14 @@ def force_celery():
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
         # run('sudo supervisorctl start celery && tail logs/newsblur.log')
 
+def compress_media():
+    with cd('media/js'):
+        run('rm -f *.gz')
+        run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
+    with cd('media/css'):
+        run('rm -f *.gz')
+        run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
+        
 # ===========
 # = Backups =
 # ===========
