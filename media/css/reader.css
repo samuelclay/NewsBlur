@@ -5128,7 +5128,7 @@ background: transparent;
 .NB-static-press .NB-press-screenshot {
   float: left;
   display: block;
-  width: 276px;
+  width: 296px;
   text-align: center;
   margin: 0 24px 24px 0;
   font-size: 16px;
@@ -5218,6 +5218,9 @@ background: transparent;
 /* = API = */
 /* ======= */
 
+.NB-static-api h3 {
+  margin-top: 64px;
+}
 .NB-static-api .optional,
 .NB-static-api .required {
   padding: 2px 4px;
@@ -5247,6 +5250,9 @@ background: transparent;
   vertical-align: top;
   padding: 7px 20px 7px 10px;
   margin: 0;
+}
+.NB-static-api table td {
+  border: 1px solid #F6F6f6;
 }
 .NB-static-api table th {
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FCFCFC), to(#E0E0E0));

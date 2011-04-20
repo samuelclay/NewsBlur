@@ -137,6 +137,9 @@ def load_feeds(request):
     feeds            = {}
     not_yet_fetched  = False
     include_favicons = request.REQUEST.get('include_favicons', True)
+    flat             = request.REQUEST.get('flat', False)
+    
+    if flat: return load_feeds_flat(request)
     
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
@@ -197,7 +200,7 @@ def load_feed_favicons(request):
     
 @ajax_login_required
 @json.json_view
-def load_feeds_iphone(request):
+def load_feeds_flat(request):
     user = get_user(request)
     feeds = {}
     
@@ -258,7 +261,7 @@ def refresh_feeds(request):
     if feed_ids:
         user_subs = user_subs.filter(feed__in=feed_ids)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    favicons_fetching = [int(f) for f in request.POST.getlist('favicons_fetching') if f]
+    favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
 
     for sub in user_subs:
         if (sub.needs_unread_recalc or 
@@ -275,7 +278,7 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
             feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
-        if request.POST.get('check_fetch_status', False):
+        if request.REQUEST.get('check_fetch_status', False):
             feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
         if sub.feed.pk in favicons_fetching:
             feeds[sub.feed.pk]['favicon'] = sub.feed.icon.data
@@ -451,7 +454,7 @@ def load_river_stories(request):
     offset             = 0
     start              = datetime.datetime.utcnow()
     user               = get_user(request)
-    feed_ids           = [int(feed_id) for feed_id in request.POST.getlist('feeds') if feed_id]
+    feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     original_feed_ids  = list(feed_ids)
     page               = int(request.REQUEST.get('page', 0))+1
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
@@ -814,7 +817,7 @@ def add_feature(request):
     
 @json.json_view
 def load_features(request):
-    page = int(request.POST.get('page', 0))
+    page = int(request.REQUEST.get('page', 0))
     logging.user(request.user, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
