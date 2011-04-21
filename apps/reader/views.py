@@ -181,9 +181,7 @@ def load_feeds(request):
 def load_feed_favicons(request):
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_ids')
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
-    if not request.REQUEST.get('load_all'):
-        user_subs = user_subs.filter(active=True)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
     if feed_ids:
         user_subs = user_subs.filter(feed__in=feed_ids)
         
@@ -293,20 +291,15 @@ def refresh_feeds(request):
     return {'feeds': feeds}
 
 @json.json_view
-def load_single_feed(request):
+def load_single_feed(request, feed_id):
     start = datetime.datetime.utcnow()
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 12))
-    page = int(request.REQUEST.get('page', 0))
+    page = int(request.REQUEST.get('page', 1))
     if page:
-        offset = limit * page
-    feed_id = None
-    try:
-        feed_id = int(request.REQUEST.get('feed_id', 0))
-    except ValueError:
-        feed_id_matches = re.search(r'(\d+)', request.REQUEST['feed_id'])
-        if feed_id_matches: feed_id = int(feed_id_matches.group(1))
+        offset = limit * (page-1)
+    feed_id = int(feed_id)
     dupe_feed_id = None
     if not feed_id:
         raise Http404
@@ -384,7 +377,8 @@ def load_single_feed(request):
     diff = datetime.datetime.utcnow()-start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
     last_update = relative_timesince(feed.last_update)
-    logging.user(request.user, "~FYLoading feed: ~SB%s ~SN(%s seconds)" % (feed, timediff))
+    logging.user(request.user, "~FYLoading feed: ~SB%s%s ~SN(%s seconds)" % (
+        feed, ('~SN/p%s' % page) if page > 1 else '', timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 

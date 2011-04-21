@@ -255,15 +255,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
 
         // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback, this.feeds[feed_id].feed_address]);
         if (feed_id) {
-            this.make_request('/reader/feed',
+            this.make_request('/reader/feed/'+feed_id,
                 {
-                    feed_id: feed_id,
                     page: page,
                     feed_address: this.feeds[feed_id].feed_address
                 }, pre_callback,
                 $.noop,
                 {
-                    'ajax_group': (page ? 'feed_page' : 'feed'),
+                    'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
                     'request_type': 'GET'
                 }
             );
@@ -447,7 +446,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         callback(updated_feeds);
     },
     
-    refresh_feed: function(feed_id, callback, limit) {
+    refresh_feed: function(feed_id, callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -457,11 +456,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         // NEWSBLUR.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
         if (feed_id) {
-            this.make_request('/reader/feed',
+            this.make_request('/reader/feed/'+feed_id,
                 {
-                    feed_id: feed_id,
                     page: 0,
-                    limit: limit,
                     feed_address: this.feeds[feed_id].feed_address
                 }, pre_callback,
                 null,

@@ -1452,7 +1452,7 @@
             
             this.active_feed = null;
             this.active_story = null;
-            this.$s.$story_titles.data('page', 0);
+            this.$s.$story_titles.data('page', 1);
             this.$s.$story_titles.data('feed_id', null);
             this.$s.$feed_stories.scrollTop(0);
             this.$s.$feed_stories.empty();
@@ -1484,7 +1484,7 @@
                 this.next_feed = feed_id;
                 
                 this.show_stories_progress_bar();
-                $story_titles.data('page', 0);
+                $story_titles.data('page', 1);
                 $story_titles.data('feed_id', feed_id);
                 this.iframe_scroll = null;
                 this.set_correct_story_view_for_feed(feed_id);
@@ -1496,7 +1496,7 @@
 
                 _.delay(_.bind(function() {
                     if (!delay || feed_id == self.next_feed) {
-                        this.model.load_feed(feed_id, 0, true, $.rescope(this.post_open_feed, this));
+                        this.model.load_feed(feed_id, 1, true, $.rescope(this.post_open_feed, this));
                     }
                 }, this), delay || 0);
 
@@ -1664,7 +1664,7 @@
             this.hide_splash_page();
             this.active_feed = 'starred';
 
-            $story_titles.data('page', 0);
+            $story_titles.data('page', 1);
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
             this.mark_feed_as_selected(null, null);
@@ -1720,7 +1720,7 @@
                 $folder.addClass('NB-selected');
             }
             
-            $story_titles.data('page', 0);
+            $story_titles.data('page', 1);
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
@@ -4529,8 +4529,7 @@
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page, replace_active_feed]);
                     if (!replace_active_feed) {
-                        // var limit = $('.story', this.$s.$story_titles).length;
-                        // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this), limit);
+                        // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this));
                         // Set the unread counts to what the client thinks they are, so when
                         // the counts can be updated, they will force a refresh of the feed.
                         this.model.feeds[feed_id].ps = parseInt($('.unread_count_positive', $feed_on_page).text(), 10);

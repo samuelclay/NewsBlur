@@ -3491,7 +3491,7 @@ background: transparent;
     display: none;
     overflow: hidden;
     left: 0;
-    margin: 12px 0;
+    margin: 12px 0 0;
 }
 
 .NB-module-howitworks .NB-howitworks-page.NB-active {
@@ -3503,7 +3503,7 @@ background: transparent;
     height: 135px;
     padding: 2px;
     border: 1px solid #E0E0E0;
-    margin: 0 12px 24px;
+    margin: 0 12px 0;
     float: left;
 }
 
@@ -5252,7 +5252,11 @@ background: transparent;
   margin: 0;
 }
 .NB-static-api table td {
-  border: 1px solid #F6F6f6;
+  border-right: 1px solid #F6F6f6;
+  border-bottom: 1px solid #F6F6f6;
+}
+.NB-static-api table td:last-child {
+  border-right: none;
 }
 .NB-static-api table th {
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FCFCFC), to(#E0E0E0));
