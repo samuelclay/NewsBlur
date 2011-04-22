@@ -533,14 +533,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return null;
     },
     
-    process_opml_import: function(data, callback) {
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/import/process', data, callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
-    },
-    
     save_classifier_story: function(story_id, data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save/story/', data, callback);

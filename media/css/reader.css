@@ -5084,9 +5084,6 @@ background: transparent;
   margin-top: 36px;
   font-size: 24px;
 }
-.NB-static h3:first-child {
-  margin-top: 24px;
-}
 .NB-static h4 {
   font-size: 16px;
   margin: 24px 0 12px;
@@ -5220,11 +5217,16 @@ background: transparent;
 
 .NB-static-api .NB-anchor {
   position:relative;
-  top: -60px;
+  top: -120px;
   display: block;
 }
 .NB-static-api h3 {
   margin-top: 64px;
+}
+.NB-static-api .NB-api-endpoint {
+/*  margin-left: 12px;*/
+  padding-left: 18px;
+  border-left: 6px solid #EDCE24;
 }
 .NB-static-api .optional,
 .NB-static-api .required {

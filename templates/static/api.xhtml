@@ -16,38 +16,55 @@
   <div class="NB-module">
     <h5 class="NB-module-title">API Table of Contents</h5>
     <div class="NB-module-content">
-      <table class="toc">
-        <tr>
-          <th colspan="2">Feeds</th>
-        </tr>
-        <tr>
-          <td><a href="#feeds"><code>/reader/feeds</code></a></td>
-          <td>User's feeds, with unread counts, meta data, and optional favicons.</td>
-        </tr>
-        <tr>
-          <td><a href="#favicons"><code>/reader/favicons</code></a></td>
-          <td>Favicons for each of a user's feeds.</td>
-        </tr>
-        <tr>
-          <td><a href="#page"><code>/reader/page/:id</code></a></td>
-          <td>Original page from a single feed.</td>
-        </tr>
-        <tr>
-          <th colspan="2">Stories</th>
-        </tr>
-        <tr>
-          <td><a href="#feed"><code>/reader/feed/:id</code></a></td>
-          <td>Stories from a single feed.</td>
-        </tr>
-        <tr>
-          <td><a href="#starred_stories"><code>/reader/starred_stories</code></a></td>
-          <td>User's starred stories.</td>
-        </tr>
-        <tr>
-          <td><a href="#river_stories"><code>/reader/river_stories</code></a></td>
-          <td>Stories from multiple feeds (River of News).</td>
-        </tr>
-      </table>
+      <div class="NB-api-endpoint">
+        <table class="toc">
+          <tr>
+            <th colspan="2">Feeds</th>
+          </tr>
+          <tr>
+            <td><a href="#feeds"><code>/reader/feeds</code></a></td>
+            <td>User's feeds, with unread counts, meta data, and optional favicons.</td>
+          </tr>
+          <tr>
+            <td><a href="#favicons"><code>/reader/favicons</code></a></td>
+            <td>Favicons for each of a user's feeds.</td>
+          </tr>
+          <tr>
+            <td><a href="#feed_page"><code>/reader/page/:id</code></a></td>
+            <td>Original page from a single feed.</td>
+          </tr>
+          <tr>
+            <td><a href="#refresh_feeds"><code>/reader/refresh_feeds</code></a></td>
+            <td>Get latest unread counts for active feeds.</td>
+          </tr>
+          <tr>
+            <th colspan="2">Stories</th>
+          </tr>
+          <tr>
+            <td><a href="#feed"><code>/reader/feed/:id</code></a></td>
+            <td>Stories from a single feed.</td>
+          </tr>
+          <tr>
+            <td><a href="#starred_stories"><code>/reader/starred_stories</code></a></td>
+            <td>User's starred stories.</td>
+          </tr>
+          <tr>
+            <td><a href="#river_stories"><code>/reader/river_stories</code></a></td>
+            <td>Stories from multiple feeds (River of News).</td>
+          </tr>
+          <tr>
+            <th colspan="2">Import/Export</th>
+          </tr>
+          <tr>
+            <td><a href="#opml_upload"><code>/import/opml_upload</code></a></td>
+            <td>Upload OPML file.</td>
+          </tr>
+          <tr>
+            <td><a href="#opml_export"><code>/import/opml_export</code></a></td>
+            <td>Download backup of feeds as an OPML file.</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -55,121 +72,144 @@
     <h5 class="NB-module-title">Feeds</h5>
     <div class="NB-module-content">
       
-                                              
-      <h3><tt>GET /reader/feeds</tt></h3>   
-      <a class="NB-anchor" name="feeds"></a>  
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/feeds</tt></h3>   
+        <a class="NB-anchor" name="feeds"></a>  
       
-      <ul>
-        <li>Retrieve a user's list of feeds. Includes the 3 unread counts (positive, neutral,
-        negative), as well as optional favicons.</li>
-      </ul>
+        <ul>
+          <li>Retrieve a user's list of feeds. Includes the 3 unread counts (positive, neutral,
+          negative), as well as optional favicons.</li>
+        </ul>
       
-      <table>
-        <tr>
-          <th>Parameter</th>
-          <th>Description</th>
-          <th>Default</th>
-          <th>Example</th>
-        </tr>
-        <tr>
-          <td>include_favicons</td> 
-          <td><span class="optional">Optional</span> Include
-          favicons inline. Since they can be time consuming to download, you can optionally
-          turn them off. Use <tt>/api/v1/feeds/favicons/</tt> to retrieve the favicons in a
-          separate request.</td>
-          <td><code>true</code></td> 
-          <td><code>true/false</code></td>
-        </tr>
-        <tr>
-          <td>flat</td> 
-          <td><span class="optional">Optional</span> Returns a flat folder structure instead of nested folders. Useful when displaying all folders in a single depth without recursive descent.</td>
-          <td><code>false</code></td> 
-          <td><code>true/false</code></td>
-        </tr>
-      </table>
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td>include_favicons</td> 
+            <td><span class="optional">Optional</span> Include
+            favicons inline. Since they can be time consuming to download, you can optionally
+            turn them off. Use <tt>/api/v1/feeds/favicons/</tt> to retrieve the favicons in a
+            separate request.</td>
+            <td><code>true</code></td> 
+            <td><code>true/false</code></td>
+          </tr>
+          <tr>
+            <td>flat</td> 
+            <td><span class="optional">Optional</span> Returns a flat folder structure instead of nested folders. Useful when displaying all folders in a single depth without recursive descent.</td>
+            <td><code>false</code></td> 
+            <td><code>true/false</code></td>
+          </tr>
+        </table>
 
-      <h4>Example Response</h4>
+        <h4>Example Response</h4>
       
-      <pre><code>
+        <pre><code>
+  {
+    'feeds': []
+  }
+        </code></pre>
+      
+        <h4>Tips</h4>
+      
+        <ul>
+          <li>Use <code>/reader/refresh_feeds</code> to get updated unread counts.</li>
+          <li>Turn off <code>include_favicons</code> if you can either cache favicons or can
+          wait to fetch them.</li>
+        </ul>
+      </div>
+
+
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/favicons</tt></h3>
+        <a class="NB-anchor" name="favicons"> </a>
+      
+        <ul>
+          <li>Retrieve a list of favicons for a list of feeds. Used when combined with
+          <tt>/reader/feeds</tt> and <tt>include_favicons=false</tt>, so the
+          feeds request contains far less data. Useful for mobile devices, but requires a
+          second request.</li>
+        </ul>
+      
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td>feeds</td>
+            <td><span class="optional">OPTIONAL</span> Array of feed ids. Leave empty to retrieve all active (enabled) feeds.</td>
+            <td></td>
+            <td><code>[1, 2, 3]</code></td>
+          </tr>
+        </table>
+
+        <h4>Example Response</h4>
+      
+        <pre><code>
+  {
+    'feeds': []
+  }
+        </code></pre>
+      
+        <h4>Tips</h4>
+      
+        <ul>
+          <li>To use inline data images, you can use this syntax:
+            <pre><code>
+  &lt;img src="data:image/png;base64,[IMAGE_DATA_STRING]" /&gt;
+            </code></pre>
+          </li>
+        </ul>
+      </div>
+      
+      
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/page/:id</tt></h3>
+        <a class="NB-anchor" name="feed_page"> </a>
+      
+        <ul>
+          <li>Retrieve the original page from a single feed.</li>
+        </ul>
+
+        <h4>Example Response</h4>
+      
+        <pre><code>
+  {# <html> #}
+  {# <head> #}
+  {#   <base href="http://www.newsblur.com" /> #}
+  {#   <title>Proxied Page</title> #}
+  {# </head> #}
+  {# <body> #}
+  {#   <p>This is a proxied page. This is straight HTML.</p> #}
+  {# </body> #}
+  {# </html> #}
+        </code></pre>
+      </div>
+      
+      
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/refresh_feeds</tt></h3>
+        <a class="NB-anchor" name="refresh_feeds"> </a>
+      
+        <ul>
+          <li>Up-to-the-second unread counts for each active feed.</li>
+          <li>Poll for these counts no more than once a minute.</li>
+        </ul>
+
+        <h4>Example Response</h4>
+      
+        <pre><code>
 {
   'feeds': []
 }
-      </code></pre>
-      
-      <h4>Tips</h4>
-      
-      <ul>
-        <li>Use <code>/reader/refresh_feeds</code> to get updated unread counts.</li>
-        <li>Turn off <code>include_favicons</code> if you can either cache favicons or can
-        wait to fetch them.</li>
-      </ul>
-
-
-
-      <h3><tt>GET /reader/favicons</tt></h3>
-      <a class="NB-anchor" name="favicons"> </a>
-      
-      <ul>
-        <li>Retrieve a list of favicons for a list of feeds. Used when combined with
-        <tt>/reader/feeds</tt> and <tt>include_favicons=false</tt>, so the
-        feeds request contains far less data. Useful for mobile devices, but requires a
-        second request.</li>
-      </ul>
-      
-      <table>
-        <tr>
-          <th>Parameter</th>
-          <th>Description</th>
-          <th>Default</th>
-          <th>Example</th>
-        </tr>
-        <tr>
-          <td>feeds</td>
-          <td><span class="optional">OPTIONAL</span> Array of feed ids. Leave empty to retrieve all active (enabled) feeds.</td>
-          <td></td>
-          <td><code>[1, 2, 3]</code></td>
-        </tr>
-      </table>
-
-      <h4>Example Response</h4>
-      
-      <pre><code>
-{
-  'feeds': []
-}
-      </code></pre>
-      
-      <h4>Tips</h4>
-      
-      <ul>
-        <li>To use inline data images, you can use this syntax:
-          <pre><code>
-&lt;img src="data:image/png;base64,[IMAGE_DATA_STRING]" /&gt;
-          </code></pre>
-        </li>
-      </ul>
-      
-      
-      <h3><tt>GET /reader/page/:id</tt></h3>
-      <a class="NB-anchor" name="feed_page"> </a>
-      
-      <ul>
-        <li>Retrieve the original page from a single feed.</li>
-      </ul>
-
-      <h4>Example Response</h4>
-      
-      <pre><code>
-{# <html> #}
-{# <head> #}
-{#   <base href="http://www.newsblur.com" /> #}
-{#   <title>Proxied Page</title> #}
-{# </head> #}
-{# <body> #}
-{#   <p>This is a proxied page. This is straight HTML.</p> #}
-{# </body> #}
-{# </html> #}
-      </code></pre>
+        </code></pre>
+      </div>
       
     </div>
   </div>
@@ -185,106 +225,110 @@
     <div class="NB-module-content">
       
       
-      <h3><tt>GET /reader/feed/:id</tt></h3>
-      <a class="NB-anchor" name="feed"> </a>
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/feed/:id</tt></h3>
+        <a class="NB-anchor" name="feed"> </a>
       
-      <ul>
-        <li>Retrieve stories from a single feed.</li>
-      </ul>
+        <ul>
+          <li>Retrieve stories from a single feed.</li>
+        </ul>
       
-      <table>
-        <tr>
-          <th>Parameter</th>
-          <th>Description</th>
-          <th>Default</th>
-          <th>Example</th>
-        </tr>
-        <tr>
-          <td>page</td>
-          <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
-          <td><code>1</code></td>
-          <td><code>2</code></td>
-        </tr>
-      </table>
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td>page</td>
+            <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
+            <td><code>1</code></td>
+            <td><code>2</code></td>
+          </tr>
+        </table>
 
-      <h4>Example Response</h4>
+        <h4>Example Response</h4>
       
-      <pre><code>
-{
-  'feeds': []
-}
-      </code></pre>
+        <pre><code>
+  {
+    'feeds': []
+  }
+        </code></pre>
+      </div>
       
       
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/starred_stories</tt></h3>
+        <a class="NB-anchor" name="starred_stories"></a>
       
-      <h3><tt>GET /reader/starred_stories</tt></h3>
-      <a class="NB-anchor" name="starred_stories"></a>
+        <ul>
+          <li>Retrieve a user's starred stories.</li>
+        </ul>
       
-      <ul>
-        <li>Retrieve a user's starred stories.</li>
-      </ul>
-      
-      <table>
-        <tr>
-          <th>Parameter</th>
-          <th>Description</th>
-          <th>Default</th>
-          <th>Example</th>
-        </tr>
-        <tr>
-          <td>page</td>
-          <td><span class="optional">optional</span> Page of starred stories, starting from 1.</td>
-          <td><code>1</code></td>
-          <td><code>2</code></td>
-        </tr>
-      </table>
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td>page</td>
+            <td><span class="optional">optional</span> Page of starred stories, starting from 1.</td>
+            <td><code>1</code></td>
+            <td><code>2</code></td>
+          </tr>
+        </table>
 
-      <h4>Example Response</h4>
+        <h4>Example Response</h4>
       
-      <pre><code>
-{
-  'feeds': []
-}
-      </code></pre>
+        <pre><code>
+  {
+    'feeds': []
+  }
+        </code></pre>
+      </div>
       
       
-      <h3><tt>GET /reader/river_stories</tt></h3>
-      <a class="NB-anchor" name="river_stories"> </a>
+      <div class="NB-api-endpoint">
+        <h3><tt>GET /reader/river_stories</tt></h3>
+        <a class="NB-anchor" name="river_stories"> </a>
       
-      <ul>
-        <li>Retrieve stories from a collection of feeds. This is known as the River of News.</li>
-        <li>Stories are ordered in reverse chronological order.</li>
-      </ul>
+        <ul>
+          <li>Retrieve stories from a collection of feeds. This is known as the River of News.</li>
+          <li>Stories are ordered in reverse chronological order.</li>
+        </ul>
       
-      <table>
-        <tr>
-          <th>Parameter</th>
-          <th>Description</th>
-          <th>Default</th>
-          <th>Example</th>
-        </tr>
-        <tr>
-          <td>feeds</td>
-          <td><span class="required">required</span> List of feed ids.</td>
-          <td></td>
-          <td><code>[12, 24, 36]</code></td>
-        </tr>
-        <tr>
-          <td>page</td>
-          <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
-          <td><code>1</code></td>
-          <td><code>2</code></td>
-        </tr>
-      </table>
+        <table>
+          <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Example</th>
+          </tr>
+          <tr>
+            <td>feeds</td>
+            <td><span class="required">required</span> List of feed ids.</td>
+            <td></td>
+            <td><code>[12, 24, 36]</code></td>
+          </tr>
+          <tr>
+            <td>page</td>
+            <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
+            <td><code>1</code></td>
+            <td><code>2</code></td>
+          </tr>
+        </table>
 
-      <h4>Example Response</h4>
+        <h4>Example Response</h4>
       
-      <pre><code>
-{
-  'feeds': []
-}
-      </code></pre>
-      
+        <pre><code>
+  {
+    'feeds': []
+  }
+        </code></pre>
+      </div>
       
     </div>
   </div>
@@ -298,7 +342,8 @@
     <h5 class="NB-module-title">Intelligence</h5>
     <div class="NB-module-content">
       
-      
+      <div class="NB-api-endpoint">
+      </div>
       
     </div>
   </div>
