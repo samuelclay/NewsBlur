@@ -68,7 +68,7 @@ def index(request):
         train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
     
     now = datetime.datetime.now()
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')[:2]
     # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
 
     statistics = MStatistics.all()
@@ -299,7 +299,6 @@ def load_single_feed(request, feed_id):
     page = int(request.REQUEST.get('page', 1))
     if page:
         offset = limit * (page-1)
-    feed_id = int(feed_id)
     dupe_feed_id = None
     if not feed_id:
         raise Http404
@@ -394,13 +393,7 @@ def load_single_feed(request, feed_id):
         
     return data
 
-def load_feed_page(request):
-    feed_id = None
-    try:
-        feed_id = int(request.REQUEST.get('feed_id', 0))
-    except ValueError:
-        feed_id_matches = re.search(r'(\d+)', request.REQUEST['feed_id'])
-        if feed_id_matches: feed_id = int(feed_id_matches.group(1))
+def load_feed_page(request, feed_id):
     if not feed_id:
         raise Http404
         

@@ -13,25 +13,41 @@
   {# = Feeds = #}
   {# ========= #}
   
-  
   <div class="NB-module">
-    <h5 class="NB-module-title">API Guidelines and Terms of Service</h5>
+    <h5 class="NB-module-title">API Table of Contents</h5>
     <div class="NB-module-content">
-      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
-      statistics, and individual feed stories. No API key is required, but you are required
-      to authenticate before using any of the API endpoints. Please be considerate, and don't
-      hammer our servers.</p>
-      
-       <p>If your project or application allows users to interact with data from NewsBlur,
-      you must cite NewsBlur as the source of your data.</p>
-      
-       <p>You may use the API commercially, by which we mean you may charge people money to
-      use your project which itself uses the API. You may not, however, sell advertising
-      against any data retrieved from NewsBlur's API. Essentially, you can charge money for
-      your application or service, but not wrap NewsBlur in advertisements.</p>
-      
-       <p><i>We reserve the right to revise these guidelines. If you violate the spirit of
-      these terms, expect to be blocked without advance warning.</i></p>
+      <table class="toc">
+        <tr>
+          <th colspan="2">Feeds</th>
+        </tr>
+        <tr>
+          <td><a href="#feeds"><code>/reader/feeds</code></a></td>
+          <td>User's feeds, with unread counts, meta data, and optional favicons.</td>
+        </tr>
+        <tr>
+          <td><a href="#favicons"><code>/reader/favicons</code></a></td>
+          <td>Favicons for each of a user's feeds.</td>
+        </tr>
+        <tr>
+          <td><a href="#page"><code>/reader/page/:id</code></a></td>
+          <td>Original page from a single feed.</td>
+        </tr>
+        <tr>
+          <th colspan="2">Stories</th>
+        </tr>
+        <tr>
+          <td><a href="#feed"><code>/reader/feed/:id</code></a></td>
+          <td>Stories from a single feed.</td>
+        </tr>
+        <tr>
+          <td><a href="#starred_stories"><code>/reader/starred_stories</code></a></td>
+          <td>User's starred stories.</td>
+        </tr>
+        <tr>
+          <td><a href="#river_stories"><code>/reader/river_stories</code></a></td>
+          <td>Stories from multiple feeds (River of News).</td>
+        </tr>
+      </table>
     </div>
   </div>
 
@@ -39,8 +55,9 @@
     <h5 class="NB-module-title">Feeds</h5>
     <div class="NB-module-content">
       
-      
-      <h3><tt>GET /reader/feeds</tt></h3>
+                                              
+      <h3><tt>GET /reader/feeds</tt></h3>   
+      <a class="NB-anchor" name="feeds"></a>  
       
       <ul>
         <li>Retrieve a user's list of feeds. Includes the 3 unread counts (positive, neutral,
@@ -90,6 +107,7 @@
 
 
       <h3><tt>GET /reader/favicons</tt></h3>
+      <a class="NB-anchor" name="favicons"> </a>
       
       <ul>
         <li>Retrieve a list of favicons for a list of feeds. Used when combined with
@@ -132,7 +150,43 @@
       </ul>
       
       
-      <h3><tt>GET /api/v1/reader/feed/:id</tt></h3>
+      <h3><tt>GET /reader/page/:id</tt></h3>
+      <a class="NB-anchor" name="feed_page"> </a>
+      
+      <ul>
+        <li>Retrieve the original page from a single feed.</li>
+      </ul>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{# <html> #}
+{# <head> #}
+{#   <base href="http://www.newsblur.com" /> #}
+{#   <title>Proxied Page</title> #}
+{# </head> #}
+{# <body> #}
+{#   <p>This is a proxied page. This is straight HTML.</p> #}
+{# </body> #}
+{# </html> #}
+      </code></pre>
+      
+    </div>
+  </div>
+  
+  
+  {# =========== #}
+  {# = Stories = #}
+  {# =========== #}
+
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">Stories</h5>
+    <div class="NB-module-content">
+      
+      
+      <h3><tt>GET /reader/feed/:id</tt></h3>
+      <a class="NB-anchor" name="feed"> </a>
       
       <ul>
         <li>Retrieve stories from a single feed.</li>
@@ -149,7 +203,7 @@
           <td>page</td>
           <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
           <td><code>1</code></td>
-          <td><code>12</code></td>
+          <td><code>2</code></td>
         </tr>
       </table>
 
@@ -161,19 +215,75 @@
 }
       </code></pre>
       
-    </div>
-  </div>
-  
-  
-  {# =========== #}
-  {# = Stories = #}
-  {# =========== #}
-
-
-  <div class="NB-module">
-    <h5 class="NB-module-title">Stories</h5>
-    <div class="NB-module-content">
       
+      
+      <h3><tt>GET /reader/starred_stories</tt></h3>
+      <a class="NB-anchor" name="starred_stories"></a>
+      
+      <ul>
+        <li>Retrieve a user's starred stories.</li>
+      </ul>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>page</td>
+          <td><span class="optional">optional</span> Page of starred stories, starting from 1.</td>
+          <td><code>1</code></td>
+          <td><code>2</code></td>
+        </tr>
+      </table>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
+      
+      
+      <h3><tt>GET /reader/river_stories</tt></h3>
+      <a class="NB-anchor" name="river_stories"> </a>
+      
+      <ul>
+        <li>Retrieve stories from a collection of feeds. This is known as the River of News.</li>
+        <li>Stories are ordered in reverse chronological order.</li>
+      </ul>
+      
+      <table>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Default</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td>feeds</td>
+          <td><span class="required">required</span> List of feed ids.</td>
+          <td></td>
+          <td><code>[12, 24, 36]</code></td>
+        </tr>
+        <tr>
+          <td>page</td>
+          <td><span class="optional">optional</span> Page of stories, starting from 1.</td>
+          <td><code>1</code></td>
+          <td><code>2</code></td>
+        </tr>
+      </table>
+
+      <h4>Example Response</h4>
+      
+      <pre><code>
+{
+  'feeds': []
+}
+      </code></pre>
       
       
     </div>
@@ -192,4 +302,32 @@
       
     </div>
   </div>
+  
+  
+  {# ===================== #}
+  {# = Terms of Services = #}
+  {# ===================== #}
+  
+  
+  <div class="NB-module">
+    <h5 class="NB-module-title">API Guidelines and Terms of Service</h5>
+    <div class="NB-module-content">
+      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
+      statistics, and individual feed stories. No API key is required, but you are required
+      to authenticate before using any of the API endpoints. Please be considerate, and don't
+      hammer our servers.</p>
+      
+       <p>If your project or application allows users to interact with data from NewsBlur,
+      you must cite NewsBlur as the source of your data.</p>
+      
+       <p>You may use the API commercially, by which we mean you may charge people money to
+      use your project which itself uses the API. You may not, however, sell advertising
+      against any data retrieved from NewsBlur's API. Essentially, you can charge money for
+      your application or service, but not wrap NewsBlur in advertisements.</p>
+      
+       <p><i>We reserve the right to revise these guidelines. If you violate the spirit of
+      these terms, expect to be blocked without advance warning.</i></p>
+    </div>
+  </div>
+  
 {% endblock content %}
