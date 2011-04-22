@@ -61,6 +61,7 @@ class Feed(models.Model):
         return self.feed_title
         
     def canonical(self, full=False):
+        icon = MFeedIcon.objects(feed_id=self.pk)
         feed = {
             'id': self.pk,
             'feed_title': self.feed_title,
@@ -68,8 +69,8 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
-            'favicon_color': self.icon.color,
-            'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
+            'favicon_color': icon.color,
+            'favicon_fetching': bool(not (icon.not_found or icon.data))
         }
         
         if not self.fetched_once:
@@ -881,6 +882,28 @@ class FeedIcon(models.Model):
         except (IntegrityError, OperationError):
             # print "Error on Icon: %s" % e
             if hasattr(self, 'id'): self.delete()
+
+
+class MFeedIcon(mongo.Document):
+    feed_id   = mongo.IntField(primary_key=True)
+    color     = mongo.StringField(max_length=6)
+    data      = mongo.StringField()
+    icon_url  = mongo.StringField()
+    not_found = mongo.BooleanField(default=False)
+    
+    meta = {
+        'collection'        : 'feed_icons',
+        'allow_inheritance' : False,
+    }
+    
+    def save(self, *args, **kwargs):
+        if self.icon_url:
+            self.icon_url = unicode(self.icon_url)
+        try:    
+            super(MFeedIcon, self).save(*args, **kwargs)
+        except (IntegrityError, OperationError):
+            # print "Error on Icon: %s" % e
+            if hasattr(self, '_id'): self.delete()
 
 
 class MFeedPage(mongo.Document):

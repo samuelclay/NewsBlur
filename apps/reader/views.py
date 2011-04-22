@@ -23,7 +23,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.rss_feeds.models import FeedIcon
+from apps.rss_feeds.models import MFeedIcon
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
@@ -180,17 +180,11 @@ def load_feed_favicons(request):
         user_subs = user_subs.filter(active=True)
     if feed_ids:
         user_subs = user_subs.filter(feed__in=feed_ids)
-        
-    favicons = {}
 
-    for sub in user_subs:
-        try:
-            feed_icon = FeedIcon.objects.get(feed__pk=sub.feed.pk)
-            favicons[sub.feed.pk] = feed_icon.data
-        except FeedIcon.DoesNotExist:
-            continue
+    feed_ids   = [sub['feed__pk'] for sub in user_subs.values('feed__pk')]
+    feed_icons = dict([(i.feed_id, i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
         
-    return favicons
+    return feed_icons
     
 @ajax_login_required
 @json.json_view
@@ -256,7 +250,8 @@ def refresh_feeds(request):
         user_subs = user_subs.filter(feed__in=feed_ids)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     favicons_fetching = [int(f) for f in request.POST.getlist('favicons_fetching') if f]
-
+    feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
+    
     for sub in user_subs:
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
@@ -275,9 +270,10 @@ def refresh_feeds(request):
         if request.POST.get('check_fetch_status', False):
             feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
         if sub.feed.pk in favicons_fetching:
-            feeds[sub.feed.pk]['favicon'] = sub.feed.icon.data
-            feeds[sub.feed.pk]['favicon_color'] = sub.feed.icon.color
-            feeds[sub.feed.pk]['favicon_fetching'] = bool(not (sub.feed.icon.not_found or sub.feed.icon.data))
+            feeds[sub.feed.pk]['favicon'] = feed_icons[sub.feed.pk].data
+            feeds[sub.feed.pk]['favicon_color'] = feed_icons[sub.feed.pk].color
+            feeds[sub.feed.pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
+                                                               feed_icons[sub.feed.pk].data))
     
     if settings.DEBUG:
         diff = datetime.datetime.utcnow()-start
