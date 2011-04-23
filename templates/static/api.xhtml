@@ -2,6 +2,8 @@
 
 {% block bodyclass %}NB-static NB-static-api{% endblock %}
 
+{% block title %}The NewsBlur API{% endblock %}
+
 {% block content %}
 
   <div class="NB-static-title">
@@ -9,61 +11,139 @@
   </div>
 
 
+  <div class="NB-module">
+    <h5 class="NB-module-title">Introduction to the API</h5>
+    <div class="NB-module-content">
+      <p><a href="/">NewsBlur</a> is an RSS feed reader with intelligence.</p>
+      <p>NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed
+      statistics, and individual feed stories. No API key is required, but you are required
+      to authenticate before using any of the API endpoints. Please be considerate, and don't
+      hammer our servers.</p>
+      <p>It is a very nice thing to note that this entire API is open-source, including
+      the implementation of the endpoints. You can find the source of the 
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py">/reader/ views</a>,
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py">/rss_feeds/ views</a>,
+      as well as 
+      <a href="http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml">this page itself</a>.</p>
+    </div>
+  </div>
+  
   {# ========= #}
   {# = Feeds = #}
   {# ========= #}
   
   <div class="NB-module">
     <h5 class="NB-module-title">API Table of Contents</h5>
+    
     <div class="NB-module-content">
       <div class="NB-api-endpoint">
-        <table class="toc">
-          <tr>
-            <th colspan="2">Feeds</th>
-          </tr>
-          <tr>
-            <td><a href="#feeds"><code>/reader/feeds</code></a></td>
-            <td>User's feeds, with unread counts, meta data, and optional favicons.</td>
-          </tr>
-          <tr>
-            <td><a href="#favicons"><code>/reader/favicons</code></a></td>
-            <td>Favicons for each of a user's feeds.</td>
-          </tr>
-          <tr>
-            <td><a href="#feed_page"><code>/reader/page/:id</code></a></td>
-            <td>Original page from a single feed.</td>
-          </tr>
-          <tr>
-            <td><a href="#refresh_feeds"><code>/reader/refresh_feeds</code></a></td>
-            <td>Get latest unread counts for active feeds.</td>
-          </tr>
-          <tr>
-            <th colspan="2">Stories</th>
-          </tr>
-          <tr>
-            <td><a href="#feed"><code>/reader/feed/:id</code></a></td>
-            <td>Stories from a single feed.</td>
-          </tr>
-          <tr>
-            <td><a href="#starred_stories"><code>/reader/starred_stories</code></a></td>
-            <td>User's starred stories.</td>
-          </tr>
-          <tr>
-            <td><a href="#river_stories"><code>/reader/river_stories</code></a></td>
-            <td>Stories from multiple feeds (River of News).</td>
-          </tr>
-          <tr>
-            <th colspan="2">Import/Export</th>
-          </tr>
-          <tr>
-            <td><a href="#opml_upload"><code>/import/opml_upload</code></a></td>
-            <td>Upload OPML file.</td>
-          </tr>
-          <tr>
-            <td><a href="#opml_export"><code>/import/opml_export</code></a></td>
-            <td>Download backup of feeds as an OPML file.</td>
-          </tr>
-        </table>
+        <div class="NB-api-toc-header">Feeds</div>
+        <ul class="NB-api-toc">
+          <li>
+            <div class="NB-api-link-desc">User's feeds, with unread counts, meta data, and optional favicons.</div>
+            <a href="#feeds">GET <code>/reader/feeds</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Favicons for each of a user's feeds.</div>
+            <a href="#favicons">GET <code>/reader/favicons</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Original page from a single feed.</div>
+            <a href="#feed_page">GET <code>/reader/page/:id</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Get latest unread counts for active feeds.</div>
+            <a href="#refresh_feeds">GET <code>/reader/refresh_feeds</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Get statistics and history for a feed.</div>
+            <a href="#statistics">GET <code>/rss_feeds/statistics</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Get a list of feeds that contain a phrase.</div>
+            <a href="#feed_autocomplete">POST <code>/rss_feeds/feed_autocomplete</code></a>
+          </li>
+        </ul>          
+        
+        <div class="NB-api-toc-header">Stories</div>
+        <ul class="NB-api-toc">
+          <li>
+            <div class="NB-api-link-desc">Stories from a single feed.</div>
+            <a href="#feed"><code>/reader/feed/:id</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">User's starred stories.</div>
+            <a href="#starred_stories"><code>/reader/starred_stories</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Stories from multiple feeds (River of News).</div>
+            <a href="#river_stories"><code>/reader/river_stories</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Mark a story as read.</div>
+            <a href="#mark_story_as_read"><code>/reader/mark_story_as_read</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Mark a story as starred (saved).</div>
+            <a href="#mark_story_as_starred"><code>/reader/mark_story_as_starred</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Mark all stories in a feed as read.</div>
+            <a href="#mark_feed_as_read"><code>/reader/mark_feed_as_read</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Mark all stories from all feeds as read.</div>
+            <a href="#mark_all_as_read"><code>/reader/mark_all_as_read</code></a>
+          </li>
+        </ul>
+        
+        <div class="NB-api-toc-header">Feed Management</div>
+        <ul class="NB-api-toc">
+          <li>
+            <div class="NB-api-link-desc">Add a feed by its URL (RSS feed or website).</div>
+            <a href="#add_url"><code>/reader/add_url</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Add a folder.</div>
+            <a href="#add_folder"><code>/reader/add_folder</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Rename a feed title.</div>
+            <a href="#rename_feed"><code>/reader/rename_feed</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Unsubscribe from a feed.</div>
+            <a href="#delete_feed"><code>/reader/delete_feed</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Rename a folder.</div>
+            <a href="#rename_folder"><code>/reader/rename_folder</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Delete a folder and unsubscribe from all feeds inside.</div>
+            <a href="#delete_folder"><code>/reader/delete_folder</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Original page from a single feed.</div>
+            <a href="#mark_feed_as_read"><code>/reader/mark_feed_as_read</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Reorder feeds and move them around between folders.</div>
+            <a href="#save_feed_order"><code>/reader/save_feed_order</code></a>
+          </li>
+        </ul>
+        
+        <div class="NB-api-toc-header">Import/Export</div>
+        <ul class="NB-api-toc">
+          <li>
+            <div class="NB-api-link-desc">Upload OPML file.</div>
+            <a href="#opml_upload"><code>/import/opml_upload</code></a>
+          </li>
+          <li>
+            <div class="NB-api-link-desc">Download backup of feeds as an OPML file.</div>
+            <a href="#opml_export"><code>/import/opml_export</code></a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

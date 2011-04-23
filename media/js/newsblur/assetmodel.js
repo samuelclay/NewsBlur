@@ -403,7 +403,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             data['feed_id'] = feed_id;
         }
         
-        if (NEWSBLUR.Globals.is_authenticated) {
+        if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/refresh_feeds', data, pre_callback);
         }
     },
@@ -737,21 +737,17 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             self.post_refresh_feeds(data, callback);
         };
         
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/rss_feeds/exception_retry', {
-              'feed_id': feed_id, 
-              'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
-            }, pre_callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
+        this.make_request('/rss_feeds/exception_retry', {
+          'feed_id': feed_id, 
+          'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
+        }, pre_callback);
     },
         
     save_exception_change_feed_link: function(feed_id, feed_link, callback) {
         var self = this;
         
         var pre_callback = function(data) {
-            NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
+            // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
             self.post_refresh_feeds(data, callback);
             NEWSBLUR.reader.force_feed_refresh(feed_id);
         };
@@ -770,7 +766,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
+            // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
             self.post_refresh_feeds(data, callback);
             NEWSBLUR.reader.force_feed_refresh(feed_id);
         };

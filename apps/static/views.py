@@ -1,5 +1,6 @@
 import os
 import base64
+import yaml
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -14,12 +15,16 @@ def about(request):
                               context_instance=RequestContext(request))
                               
 def faq(request):
-    return render_to_response('static/faq.xhtml', {}, 
+    return render_to_response('static/api.xhtml', {}, 
                               context_instance=RequestContext(request))
                               
 def api(request):
-    return render_to_response('static/api.xhtml', {}, 
-                              context_instance=RequestContext(request))
+    filename = settings.TEMPLATE_DIRS[0] + '/static/api.yml'
+    api_yml_file = open(filename).read()
+    data = yaml.load(api_yml_file)
+    return render_to_response('static/api_yaml.xhtml', {
+        'data': data
+    }, context_instance=RequestContext(request))
                               
 def press(request):
     return render_to_response('static/press.xhtml', {}, 

@@ -4450,7 +4450,7 @@
             feed_id = feed_id || this.active_feed;
             var $feed = this.find_feed_in_feed_list(feed_id);
             $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
-            
+
             this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed));
         },
         
@@ -4484,7 +4484,7 @@
             var self = this;
             feed_id  = feed_id || this.active_feed;
             $feed    = $feed || this.find_feed_in_feed_list(feed_id);
-            
+
             this.force_feeds_refresh(function(feeds) {
                 var $new_feed = $(self.make_feed_title_template(feeds[feed_id], 'feed'));
                 if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');

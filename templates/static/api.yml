@@ -1,0 +1,289 @@
+- feeds:
+    - url: '/reader/feeds'
+      method: 'GET'
+      short_desc: "User's feeds, with unread counts, meta data, and optional favicons."
+      long_desc: 
+        - "Retrieve a list of feeds to which a user is actively subscribed."
+        - "Includes the 3 unread counts (positive, neutral, negative), as well as optional favicons."
+      tips:
+        - "Use <code>/reader/refresh_feeds</code> to get updated unread counts."
+        - "Turn off <code>include_favicons</code> if you can either cache favicons or can wait to fetch them."
+      params:
+        - key: 'include_favicons'
+          desc: "Include favicons inline. Since they can be time consuming to download, you can optionally turn them off. Use /api/v1/feeds/favicons/ to retrieve the favicons in a separate request."
+          optional: true
+          default: "true"
+          example: "true/false"
+        - key: 'flat'
+          desc: "Returns a flat folder structure instead of nested folders. Useful when displaying all folders in a single depth without recursive descent."
+          optional: true
+          default: "false"
+          example: "true/false"
+        
+    - url: '/reader/favicons'
+      method: 'GET'
+      short_desc: "Favicons for each of a user's feeds."
+      long_desc: 
+        - "Retrieve a list of favicons for a list of feeds. Used when combined with <code>/reader/feeds</code> and <code>include_favicons=false</code>, so the feeds request contains far less data. Useful for mobile devices, but requires a second request."
+      tips:
+        - 'To use inline data images, you can use this syntax:<pre><code>&lt;img src="data:image/png;base64,[IMAGE_DATA_STRING]" /&gt;</code></pre>'
+      params:
+        - key: 'feeds'
+          desc: " Array of feed ids. Leave empty to retrieve all active (enabled) feeds."
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/page/:id'
+      method: 'GET'
+      short_desc: "Original page from a single feed."
+      long_desc: 
+        - "Retrieve the original page from a single feed."
+
+    - url: '/reader/refresh_feeds'
+      method: 'GET'
+      short_desc: "Get latest unread counts for active feeds."
+      long_desc: 
+        - "Up-to-the-second unread counts for each active feed."
+        - "Poll for these counts no more than once a minute."
+  
+    - url: '/rss_feeds/statistics'
+      method: 'GET'
+      short_desc: "Get statistics and history for a feed."
+      long_desc: 
+        - "Statistics and history for a feed."
+        - "Includes feed update frequencies, frequency distribution of intelligence classifiers, average stories per month over the life of the feed, and the last five feed and page fetches."
+  
+    - url: '/rss_feeds/feed_autocomplete'
+      method: 'GET'
+      short_desc: "Get a list of feeds that contain a phrase."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+
+
+- stories:
+    - url: '/reader/feed/:id'
+      method: 'GET'
+      short_desc: "Stories from a single feed."
+      long_desc: 
+        - "Retrieve stories from a single feed."
+      params:
+        - key: 'page'
+          desc: "Page of stories, starting from 1."
+          optional: true
+          example: "2"
+  
+    - url: '/reader/starred_stories'
+      method: 'GET'
+      short_desc: "User's starred stories."
+      long_desc: 
+        - "Retrieve a user's starred stories."
+      params:
+        - key: 'page'
+          desc: "Page of starred stories, starting from 1."
+          optional: true
+          example: "2"
+  
+    - url: '/reader/river_stories'
+      method: 'GET'
+      short_desc: "Stories from multiple feeds (River of News)."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: 'page'
+          desc: "Page of stories, starting from 1."
+          optional: true
+          example: "2"
+  
+    - url: '/reader/mark_story_as_read'
+      method: 'POST'
+      short_desc: "Mark a story as read."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/mark_story_as_starred'
+      method: 'POST'
+      short_desc: "Mark a story as starred (saved)."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/mark_feed_as_read'
+      method: 'POST'
+      short_desc: "Mark all stories in a feed as read."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/mark_all_as_read'
+      method: 'POST'
+      short_desc: "Mark all stories from all feeds as read."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+- "feed management":
+    - url: '/reader/add_url'
+      method: 'POST'
+      short_desc: "Add a feed by its URL (RSS feed or website)."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/add_folder'
+      method: 'POST'
+      short_desc: "Add a folder."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/rename_feed'
+      method: 'POST'
+      short_desc: "Rename a feed title."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/delete_feed'
+      method: 'POST'
+      short_desc: "Unsubscribe from a feed."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/rename_folder'
+      method: 'POST'
+      short_desc: "Rename a folder."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/delete_folder'
+      method: 'POST'
+      short_desc: "Delete a folder and unsubscribe from all feeds inside."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/mark_feed_as_read'
+      method: 'POST'
+      short_desc: "Original page from a single feed."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/reader/save_feed_order'
+      method: 'POST'
+      short_desc: "Reorder feeds and move them around between folders."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+          
+          
+- "import/export":
+    - url: '/import/opml_upload'
+      method: 'POST'
+      short_desc: "Upload OPML file."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/import/opml_export'
+      method: 'GET'
+      short_desc: "Download backup of feeds as an OPML file."
+      long_desc: 
+        - ""
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"

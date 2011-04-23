@@ -93,9 +93,9 @@ def load_feed_statistics(request):
 
     return stats
 
-@ajax_login_required
 @json.json_view
 def exception_retry(request):
+    user = get_user(request)
     feed_id = request.POST['feed_id']
     reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -113,7 +113,7 @@ def exception_retry(request):
     feed.save()
     
     feed = feed.update(force=True, compute_scores=False)
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub = UserSubscription.objects.get(user=user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
     feeds = {feed.pk: usersub.canonical(full=True)}
