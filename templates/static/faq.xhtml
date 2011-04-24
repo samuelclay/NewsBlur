@@ -88,6 +88,47 @@
   </div>
 
   <div class="NB-module">
+    <h5 class="NB-module-title">Information for Publishers</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-who">
+        <li>
+          <div class="NB-faq-question">
+            How can I control how stories are found in the Original view?
+          </div>
+          <div class="NB-faq-answer">
+            <p>To control where stories begin in the Original view, you can use any of these <code>class</code> names in your HTML:</p>
+            <ul>
+              <li><code>.entry</code></li>
+              <li><code>.post</code></li>
+              <li><code>.postProp</code></li>
+              <li><code>.article</code></li>
+              <li><code>#postContent</code></li>
+            </ul>
+            <p>If NewsBlur cannot find one of these <code>class</code> names, it will check for the following, in order:</p>
+            <ul>
+              <li>Exact match in a single visible element.</li>
+              <li>Near-match by header tags: <code>h1, h2, h3, h4, h5, h6</code>.</li>
+              <li>Near-match in a <code>.post</code> or similar class name.</li>
+              <li>Near-match by font-size (largest font size wins).</li>
+              <li>Each match is ranked by similarity.</li>
+            </ul>
+            <p>To view the exact heuristics used, see <code>find_story_in_feed_iframe</code> in <a href="http://github.com/samuelclay/NewsBlur/tree/master/media/js/newsblur/reader.js">reader.js</a> on GitHub.</p>
+          </div>
+        </li>
+        <li class="last">
+          <div class="NB-faq-question">
+            How I can prevent NewsBlur from loading the Original view (without using an iFrame buster)?
+          </div>
+          <div class="NB-faq-answer last">
+            <p>If you would like to opt-out of the Original view, simply email <a href="mailto:samuel@ofbrooklyn.com">Samuel Clay</a> and let him know. He will place your site on an opt-out list.</p>
+            <p>Note that users will still be able to read the Feed view. However, consider that when in the Original view, your ads and original content are unaffected. Consider instead placing an exception rule in your iFrame buster code that looks for 'www.newsblur.com' in the URL and prevents your iFrame buster from running.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
     <h5 class="NB-module-title">What's Coming</h5>
     <div class="NB-module-content">
       <ul class="NB-about-who">

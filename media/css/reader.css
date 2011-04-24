@@ -5321,6 +5321,7 @@ background: transparent;
   font-size: 12px;
   line-height: 16px;
   margin-bottom: 12px;
+  padding-top: 4px;
 }
 .NB-static-api .NB-api-endpoint-param-desc {
   width: 100%;
