@@ -77,7 +77,8 @@
         - key: 'page'
           desc: "Page of stories, starting from 1."
           optional: true
-          example: "2"
+          default: 1
+          example: 2
   
     - url: '/reader/starred_stories'
       method: 'GET'
@@ -88,7 +89,8 @@
         - key: 'page'
           desc: "Page of starred stories, starting from 1."
           optional: true
-          example: "2"
+          default: 1
+          example: 2
   
     - url: '/reader/river_stories'
       method: 'GET'
@@ -104,11 +106,13 @@
         - key: 'page'
           desc: "Page of stories, starting from 1."
           optional: true
-          example: "2"
+          default: 1
+          example: 2
         - key: 'read_stories_count'
           desc: "An optimization used to skip a set number of stories that are guaranteed to be read. Pass in the number of stories that have been read from this series. If your page >= 2, you should probably have some read stories from the first page."
           optional: true
-          example: "12"
+          default: "0"
+          example: 12
   
     - url: '/reader/mark_story_as_read'
       method: 'POST'
@@ -169,7 +173,7 @@
         - key: 'days'
           desc: "Days back to mark as read."
           optional: true
-          default: 0
+          default: "0"
           example: "7"
   
 - "feed management":
@@ -322,19 +326,19 @@
         - key: 'like_[TYPE]'
           desc: "Positive score for TYPE <- [tag, author, title, feed]"
           optional: true
-          example: "like_author=Samuel Clay"
+          example: "like_author=<br />Samuel Clay"
         - key: 'dislike_[TYPE]'
           desc: "Negative score for TYPE <- [tag, author, title, feed]"
           optional: true
-          example: "dislike_title=New York Yankees"
+          example: "dislike_title=<br />New York Yankees"
         - key: 'remove_like_[TYPE]'
           desc: "Clear score for a classifier."
           optional: true
-          example: "remove_like_author=Samuel Clay"
+          example: "remove_like_author=<br />Samuel Clay"
         - key: 'remove_dislike_[TYPE]'
           desc: "Functionally the same as <code>remove_like_[TYPE]</code>."
           optional: true
-          example: "remove_dislike_title=New York Yankees"
+          example: "remove_dislike_title=<br />New York Yankees"
           
           
 - "import/export":
