@@ -851,7 +851,7 @@ var classifier_prototype = {
         $save.addClass('NB-disabled').attr('disabled', true);
         
         this.update_opinions();
-        this.model.save_classifier_publisher(data, function() {
+        this.model.save_classifier(data, function() {
             if (!keep_modal_open) {
                 NEWSBLUR.reader.recalculate_story_scores(feed_id);
                 NEWSBLUR.reader.force_feeds_refresh(null, true);

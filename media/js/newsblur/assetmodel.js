@@ -533,26 +533,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return null;
     },
     
-    save_classifier_story: function(story_id, data, callback) {
+    save_classifier: function(data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save/story/', data, callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
-    },
-    
-    save_classifier_publisher: function(data, callback) {
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save/publisher', data, callback);
+            this.make_request('/classifier/save', data, callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
     },
     
     get_feed_classifier: function(feed_id, callback) {
-        this.make_request('/classifier/get/publisher/', {
-            'feed_id': feed_id
-        }, callback, null, {
+        this.make_request('/classifier/'+feed_id, {}, callback, null, {
             'ajax_group': 'feed',
             'request_type': 'GET'
         });

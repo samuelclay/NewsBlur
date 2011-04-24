@@ -3250,7 +3250,7 @@
             }
             
             this.model.classifiers[type+'s'][value] = score;
-            this.model.save_classifier_publisher(data, _.bind(function(resp) {
+            this.model.save_classifier(data, _.bind(function(resp) {
                 this.force_feeds_refresh(callback, true, feed_id);
             }, this));
             this.recalculate_story_scores(feed_id);

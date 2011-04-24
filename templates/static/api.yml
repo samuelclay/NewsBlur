@@ -300,45 +300,41 @@
           
           
 - "intelligence classifiers":
-    - url: '/get/publisher'
+    - url: '/classifier/:id'
       method: 'GET'
       short_desc: "Get the intelligence classifiers for a user's site."
       long_desc: 
         - "Get the intelligence classifiers for a user's site."
         - "Includes both popular classifiers and the user's own classifiers."
       tips:
-        - ''
-      params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - 'All of this data is attached to a feed when called with <code>/reader/feed/:id</code>.'
+        - 'After loading a feed, there is no need to explicitly call this endpoint, unless the feed has not yet been fetched.'
   
-    - url: '/save/publisher'
+    - url: '/classifier/save'
       method: 'POST'
       short_desc: "Save intelligence classifiers for a feed."
       long_desc: 
         - "Save intelligence classifiers (tags, titles, authors, and the feed) for a feed."
       tips:
-        - ''
+        - 'The endpoint is far different from all other endpoints. It takes a variety of param keys.'
+        - 'You can send a list for any of the keys. <code>like_tag[]=tech&like_tag[]=mobile</code>'
       params:
-        - key: ''
-          desc: ""
+        - key: 'like_[TYPE]'
+          desc: "Positive score for TYPE <- [tag, author, title, feed]"
           optional: true
-          example: "[1, 2, 3]"
-          
-    - url: '/save/story'
-      method: 'POST'
-      short_desc: "Save intelligence classifiers from a specific story."
-      long_desc: 
-        - "Save intelligence classifiers (tags, titles, authors, and the feed) from a specific story."
-      tips:
-        - ''
-      params:
-        - key: ''
-          desc: ""
+          example: "like_author=Samuel Clay"
+        - key: 'dislike_[TYPE]'
+          desc: "Negative score for TYPE <- [tag, author, title, feed]"
           optional: true
-          example: "[1, 2, 3]"
+          example: "dislike_title=New York Yankees"
+        - key: 'remove_like_[TYPE]'
+          desc: "Clear score for a classifier."
+          optional: true
+          example: "remove_like_author=Samuel Clay"
+        - key: 'remove_dislike_[TYPE]'
+          desc: "Functionally the same as <code>remove_like_[TYPE]</code>."
+          optional: true
+          example: "remove_dislike_title=New York Yankees"
           
           
 - "import/export":
@@ -346,24 +342,15 @@
       method: 'GET'
       short_desc: "Download backup of feeds as an OPML file."
       long_desc: 
-        - ""
-      tips:
-        - ''
-      params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - "Download a backup of feeds and folders as an OPML file."
+        - "Contains folders and feeds in XML; useful for importing in another RSS reader."
 
     - url: '/import/opml_upload'
       method: 'POST'
-      short_desc: "Upload OPML file."
+      short_desc: "Upload an OPML file."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Upload an OPML file."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'file'
+          desc: "The OPML file in XML format."
+          required: true

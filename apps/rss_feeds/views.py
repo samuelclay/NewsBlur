@@ -55,9 +55,8 @@ def feed_autocomplete(request):
     return feeds
     
 @json.json_view
-def load_feed_statistics(request):
+def load_feed_statistics(request, feed_id):
     stats = dict()
-    feed_id = request.GET['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.save_feed_story_history_statistics()
     feed.save_classifier_counts()
