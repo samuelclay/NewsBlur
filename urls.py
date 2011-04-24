@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^faq/?',          static_views.faq, name='faq'),
     url(r'^api/?',          static_views.api, name='api'),
     url(r'^press/?',        static_views.press, name='press'),
-    url(r'^publishers/?',   static_views.publishers, name='publishers'),
+    url(r'^feedback/?',     static_views.feedback, name='feedback'),
 )
 
 if settings.DEVELOPMENT:

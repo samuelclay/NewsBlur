@@ -31,6 +31,6 @@ def press(request):
     return render_to_response('static/press.xhtml', {}, 
                               context_instance=RequestContext(request))
                               
-def publishers(request):
-    return render_to_response('static/publishers.xhtml', {}, 
+def feedback(request):
+    return render_to_response('static/feedback.xhtml', {}, 
                               context_instance=RequestContext(request))

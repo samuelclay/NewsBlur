@@ -2607,6 +2607,9 @@ form.opml_import_form input {
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
   background: #E9ECF6 url('../img/reader/github_icon.png') no-repeat 0 0;
 }
+.NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
+  background: #E9ECF6 url('../img/reader/getsatisfaction.png') no-repeat 0 0;
+}
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
   background: #E9ECF6 url('../img/reader/ofbrooklyn_icon.png') no-repeat 0 0;
 }

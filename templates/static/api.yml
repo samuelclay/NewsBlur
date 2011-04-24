@@ -1,3 +1,46 @@
+- authentication:
+    - url: /api/login
+      method: POST
+      short_desc: "Login as an existing user."
+      long_desc: 
+        - "Login as an existing user."
+      tips:
+        - >
+          If a user has no password set, you cannot just send any old password. 
+          This is not <a href="http://www.instapaper.com/api/full">Instapaper</a>.
+      params:
+        - key: username
+          desc: "Username"
+          required: true
+          example: "samuelclay"
+        - key: password
+          desc: "Password"
+          optional: true
+          example: "new$blur"
+    - url: /api/logout
+      method: POST
+      short_desc: "Logout the currently logged in user."
+      long_desc: 
+        - "Logout the currently logged in user."
+    - url: /api/signup
+      method: POST
+      short_desc: "Create a new user."
+      long_desc: 
+        - "Create a new user."
+      params:
+        - key: signup_username
+          desc: "Username"
+          required: true
+          example: "samuelclay"
+        - key: signup_password
+          desc: "Password"
+          optional: true
+          example: "new$blur"
+        - key: signup_email
+          desc: "Email address"
+          optional: true
+          example: "samuel@ofbrooklyn.com"
+        
 - feeds:
     - url: /reader/feeds
       method: GET
