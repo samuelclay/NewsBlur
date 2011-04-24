@@ -570,7 +570,7 @@ def load_river_stories(request):
 @json.json_view
 def mark_all_as_read(request):
     code = 1
-    days = int(request.POST['days'])
+    days = int(request.POST.get('days', 0))
     
     feeds = UserSubscription.objects.filter(user=request.user)
     for sub in feeds:
@@ -703,7 +703,7 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
-    folder = request.POST['folder']
+    folder = request.POST.get('folder', '')
 
     code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, folder=folder)
     
@@ -713,7 +713,7 @@ def add_url(request):
 @json.json_view
 def add_folder(request):
     folder = request.POST['folder']
-    parent_folder = request.POST['parent_folder']
+    parent_folder = request.POST.get('parent_folder', '')
     
     logging.user(request.user, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     

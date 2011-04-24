@@ -46,7 +46,7 @@
         - "Up-to-the-second unread counts for each active feed."
         - "Poll for these counts no more than once a minute."
   
-    - url: '/rss_feeds/statistics'
+    - url: '/rss_feeds/statistics/:id'
       method: 'GET'
       short_desc: "Get statistics and history for a feed."
       long_desc: 
@@ -57,12 +57,12 @@
       method: 'GET'
       short_desc: "Get a list of feeds that contain a phrase."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Get a list of feeds that contain a search phrase."
+        - "Searches by feed address, feed url, and feed title, in that order."
+        - "Will only show sites with 2+ subscribers."
       params:
-        - key: ''
-          desc: ""
+        - key: 'term'
+          desc: "Phrase to search for in feed address, url, and title."
           optional: true
           example: "[1, 2, 3]"
 
@@ -114,158 +114,189 @@
       method: 'POST'
       short_desc: "Mark a story as read."
       long_desc: 
-        - ""
+        - "Mark stories as read."
+        - "Multiple story ids can be sent at once."
+        - "Each story must be from the same feed."
       tips:
-        - ''
+        - "Throttle requests to mark as read. You don't need to send one request per story."
+        - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'story_id'
+          desc: "List of story ids to mark as read."
+          required: true
+          example: "[12, 24, 36]"
+        - key: 'feed_id'
+          desc: "Feed id that each story is from."
+          required: true
+          example: "42"
   
     - url: '/reader/mark_story_as_starred'
       method: 'POST'
       short_desc: "Mark a story as starred (saved)."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Mark a story as starred (saved)."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'story_id'
+          desc: "Story id to save."
+          required: true
+          example: "64"
+        - key: 'feed_id'
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
   
     - url: '/reader/mark_feed_as_read'
       method: 'POST'
       short_desc: "Mark all stories in a feed as read."
       long_desc: 
-        - ""
+        - "Mark all stories in a feed or list of feeds as read."
       tips:
-        - ''
+        - 'To mark a folder as read, send the ids of each feed inside the folder.'
       params:
-        - key: ''
-          desc: ""
+        - key: 'feed_ids'
+          desc: "List of feed ids to mark as read."
           optional: true
-          example: "[1, 2, 3]"
+          example: "[12, 24, 36]"
   
     - url: '/reader/mark_all_as_read'
       method: 'POST'
       short_desc: "Mark all stories from all feeds as read."
       long_desc: 
-        - ""
+        - "Mark all stories from all feeds as read."
       tips:
-        - ''
+        - "Use <code>0</code> days back to mark everything as read."
       params:
-        - key: ''
-          desc: ""
+        - key: 'days'
+          desc: "Days back to mark as read."
           optional: true
-          example: "[1, 2, 3]"
+          default: 0
+          example: "7"
   
 - "feed management":
     - url: '/reader/add_url'
       method: 'POST'
       short_desc: "Add a feed by its URL (RSS feed or website)."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Add a feed by its URL. Can be either the RSS feed or the website itself."
       params:
-        - key: ''
-          desc: ""
+        - key: 'url'
+          desc: "URL of website or RSS feed."
+          required: true
+          example: "http://blog.newsblur.com"
+        - key: 'folder'
+          desc: "Folder to place feed in. Omit to use top level."
           optional: true
-          example: "[1, 2, 3]"
+          default: "[Top Level]"
+          example: "Blogs"
   
     - url: '/reader/add_folder'
       method: 'POST'
-      short_desc: "Add a folder."
+      short_desc: "Add a new folder."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Add a new folder."
       params:
-        - key: ''
-          desc: ""
+        - key: 'folder'
+          desc: "Folder name"
+          required: true
+          example: "Photo-blogs Extraordinaire"
+        - key: 'parent_folder'
+          desc: "Existing folder to create new folder inside of. Omit for top level."
           optional: true
-          example: "[1, 2, 3]"
+          default: "[Top Level]"
+          example: "All Blogs"
   
     - url: '/reader/rename_feed'
       method: 'POST'
       short_desc: "Rename a feed title."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Rename a feed title. Only the current user will see the new title."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'feed_title'
+          desc: "New feed title."
+          required: true
+          example: "NYTimes"
+        - key: 'feed_id'
+          desc: "Feed id of the feed to be renamed."
+          required: true
+          example: "42"
   
     - url: '/reader/delete_feed'
       method: 'POST'
       short_desc: "Unsubscribe from a feed."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Unsubscribe from a feed. Removes it from the folder."
+        - "Set the <code>in_folder</code> parameter to remove a feed from the correct folder, in case the user is subscribed to the feed in multiple folders."
       params:
-        - key: ''
-          desc: ""
+        - key: 'feed_id'
+          desc: "Feed id of feed to remove."
+          required: true
+          example: "42"
+        - key: 'in_folder'
+          desc: "Name of folder the feed is in."
           optional: true
-          example: "[1, 2, 3]"
+          example: "News"
+
   
     - url: '/reader/rename_folder'
       method: 'POST'
       short_desc: "Rename a folder."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Rename a folder."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'folder_to_rename'
+          desc: "Original folder name."
+          required: true
+          example: "Photoblogs"
+        - key: 'new_folder_name'
+          desc: "New folder name."
+          required: true
+          example: "East Coast Photoblogs"
+        - key: 'in_folder'
+          desc: "Name of parent folder, used to find the folder."
+          required: true
+          example: "Blogs"
   
     - url: '/reader/delete_folder'
       method: 'POST'
       short_desc: "Delete a folder and unsubscribe from all feeds inside."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Delete a folder and unsubscribe from all feeds inside."
       params:
-        - key: ''
-          desc: ""
+        - key: 'folder_to_delete'
+          desc: "Name of folder to delete."
+          required: true
+          example: "Photoblogs"
+        - key: 'in_folder'
+          desc: "Name of parent folder, used to find the folder. Omit if folder is top level."
           optional: true
-          example: "[1, 2, 3]"
+          example: "Blogs"
+        - key: 'feed_id'
+          desc: "List of feed ids in the folder that's being deleted. These feeds also get removed."
+          optional: true
+          example: "[12, 24, 36]"
   
     - url: '/reader/mark_feed_as_read'
       method: 'POST'
-      short_desc: "Original page from a single feed."
+      short_desc: "Mark a list of feeds as read."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Mark a list of feeds as read."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'feed_id'
+          desc: "List of feed ids to mark as read."
+          required: true
+          example: "[12, 24, 36]"
   
     - url: '/reader/save_feed_order'
       method: 'POST'
       short_desc: "Reorder feeds and move them around between folders."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Reorder feeds and move them around between folders."
+        - "The entire folder structure needs to be serialized."
       params:
-        - key: ''
-          desc: ""
-          optional: true
-          example: "[1, 2, 3]"
+        - key: 'folders'
+          desc: "Object with folders and feed ids."
+          required: true
+          example: "[12, 24, 36, <br>{'Blogs': [56, 67, 78,<br />{'Photoblogs': [42]}]}]"
           
           
 - "intelligence classifiers":

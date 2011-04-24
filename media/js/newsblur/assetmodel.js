@@ -700,18 +700,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     get_feed_statistics: function(feed_id, callback) {
-        this.make_request('/rss_feeds/statistics', {
-            'feed_id': feed_id
-        }, callback, callback, {
+        this.make_request('/rss_feeds/statistics/'+feed_id, {}, callback, callback, {
             'ajax_group': 'statistics',
             'requesst_type': 'GET'
         });
     },
     
     get_feed_recommendation_info: function(feed_id, callback) {
-        this.make_request('/recommendations/load_feed_info', {
-            'feed_id': feed_id
-        }, callback, callback, {
+        this.make_request('/recommendations/load_feed_info/'+feed_id, {}, callback, callback, {
             'ajax_group': 'statistics',
             'request_type': 'GET'
         });

@@ -91,7 +91,7 @@
                       {{ param.desc|safe }}
                     </td>
                     <td>{% if param.default %}<code>{{ param.default }}</code>{% endif %}</td> 
-                    <td><code>{{ param.example }}</code></td>
+                    <td><code>{{ param.example|safe }}</code></td>
                   </tr>
                 {% endfor %}
               </table>
