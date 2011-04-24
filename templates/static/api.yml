@@ -94,14 +94,21 @@
       method: 'GET'
       short_desc: "Stories from multiple feeds (River of News)."
       long_desc: 
-        - ""
-      tips:
-        - ''
+        - "Retrieve stories from a collection of feeds. This is known as the River of News."
+        - "Stories are ordered in reverse chronological order."
       params:
+        - key: 'feeds'
+          desc: "Feed ids to use in the river. Usually every feed in a folder with unread stories."
+          required: true
+          example: "[12, 24, 36]"
         - key: 'page'
           desc: "Page of stories, starting from 1."
           optional: true
           example: "2"
+        - key: 'read_stories_count'
+          desc: "An optimization used to skip a set number of stories that are guaranteed to be read. Pass in the number of stories that have been read from this series. If your page >= 2, you should probably have some read stories from the first page."
+          optional: true
+          example: "12"
   
     - url: '/reader/mark_story_as_read'
       method: 'POST'
@@ -261,10 +268,52 @@
           example: "[1, 2, 3]"
           
           
-- "import/export":
-    - url: '/import/opml_upload'
+- "intelligence classifiers":
+    - url: '/get/publisher'
+      method: 'GET'
+      short_desc: "Get the intelligence classifiers for a user's site."
+      long_desc: 
+        - "Get the intelligence classifiers for a user's site."
+        - "Includes both popular classifiers and the user's own classifiers."
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+  
+    - url: '/save/publisher'
       method: 'POST'
-      short_desc: "Upload OPML file."
+      short_desc: "Save intelligence classifiers for a feed."
+      long_desc: 
+        - "Save intelligence classifiers (tags, titles, authors, and the feed) for a feed."
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+          
+    - url: '/save/story'
+      method: 'POST'
+      short_desc: "Save intelligence classifiers from a specific story."
+      long_desc: 
+        - "Save intelligence classifiers (tags, titles, authors, and the feed) from a specific story."
+      tips:
+        - ''
+      params:
+        - key: ''
+          desc: ""
+          optional: true
+          example: "[1, 2, 3]"
+          
+          
+- "import/export":
+    - url: '/import/opml_export'
+      method: 'GET'
+      short_desc: "Download backup of feeds as an OPML file."
       long_desc: 
         - ""
       tips:
@@ -274,10 +323,10 @@
           desc: ""
           optional: true
           example: "[1, 2, 3]"
-  
-    - url: '/import/opml_export'
-      method: 'GET'
-      short_desc: "Download backup of feeds as an OPML file."
+
+    - url: '/import/opml_upload'
+      method: 'POST'
+      short_desc: "Upload OPML file."
       long_desc: 
         - ""
       tips:

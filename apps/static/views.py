@@ -15,14 +15,15 @@ def about(request):
                               context_instance=RequestContext(request))
                               
 def faq(request):
-    return render_to_response('static/api.xhtml', {}, 
+    return render_to_response('static/faq.xhtml', {}, 
                               context_instance=RequestContext(request))
                               
 def api(request):
-    filename = settings.TEMPLATE_DIRS[0] + '/static/api.yml'
+    filename     = settings.TEMPLATE_DIRS[0] + '/static/api.yml'
     api_yml_file = open(filename).read()
-    data = yaml.load(api_yml_file)
-    return render_to_response('static/api_yaml.xhtml', {
+    data         = yaml.load(api_yml_file)
+
+    return render_to_response('static/api.xhtml', {
         'data': data
     }, context_instance=RequestContext(request))
                               
