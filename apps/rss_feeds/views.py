@@ -16,9 +16,9 @@ from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 
 @json.json_view
-def load_single_feed(request):
+def load_single_feed(request, feed_id):
     user = get_user(request)
-    feed = get_object_or_404(Feed, pk=request.REQUEST['feed_id'])
+    feed = get_object_or_404(Feed, pk=feed_id)
     classifiers = get_classifiers_for_user(user, feed.pk)
 
     payload = feed.canonical(full=True)

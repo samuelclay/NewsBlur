@@ -4639,11 +4639,11 @@ background: transparent;
     background: none;
 }
 .NB-modal-feedchooser .NB-feedlist .folder_title:hover {
-    background: transparent url('../img/icons/silk/folder.png') no-repeat 2px 3px;
+    background: transparent url('../img/icons/silk/folder.png') no-repeat 2px 2px;
 }
 
 .NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-river-icon {
-  display: none;
+  display: none !important;
 }
 
 .NB-modal-feedchooser .unread_count_positive {

@@ -314,9 +314,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             callback && callback();
         }, this);
         
-        this.make_request('/rss_feeds/feed', {
-            feed_id: feed_id
-        }, pre_callback, $.noop, {request_type: 'GET'});
+        this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {request_type: 'GET'});
     },
     
     fetch_starred_stories: function(page, callback, first_load) {

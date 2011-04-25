@@ -146,6 +146,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             'class': 'NB-feedlist NB-feedchooser unread_view_positive',
             'style': ''
         });
+        if ($feeds.data('sortable')) $feeds.data('sortable').disable();
         
         // Expand collapsed folders
         $('.folder', $feeds).css({
