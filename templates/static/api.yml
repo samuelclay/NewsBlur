@@ -101,6 +101,22 @@
       long_desc: 
         - "Up-to-the-second unread counts for each active feed."
         - "Poll for these counts no more than once a minute."
+        
+    - url: /reader/feeds_trainer
+      method: GET
+      short_desc: "Get all popular and known intelligence classifiers."
+      long_desc: 
+        - "Retrieves all popular and known intelligence classifiers."
+        - "Also includes user's own classifiers."
+      tips:
+        - "If you only want a user's classifiers, use <code>/classifiers/:id</code>."
+        - "Omit the feed_id to get all classifiers for all subscriptions."
+      params:
+        - key: feed_id
+          desc: >
+            Only use a single feed. Omit this to get the classifiers for all feeds at once.
+          optional: true
+          example: "42"
   
     - url: /rss_feeds/statistics/:id
       method: GET
@@ -374,7 +390,9 @@
       short_desc: "Get the intelligence classifiers for a user's site."
       long_desc: 
         - "Get the intelligence classifiers for a user's site."
-        - "Includes both popular classifiers and the user's own classifiers."
+        - >
+          Only includes the user's own classifiers. Use <code>/reader/feeds_trainer</code> 
+          for popular classifiers.
       tips:
         - >
           All of this data is attached to a feed when called with 

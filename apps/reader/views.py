@@ -829,9 +829,9 @@ def save_feed_order(request):
     return {}
 
 @json.json_view
-def get_feeds_trainer(request):
+def feeds_trainer(request):
     classifiers = []
-    feed_id = request.POST.get('feed_id')
+    feed_id = request.REQUEST.get('feed_id')
     user = get_user(request)
     usersubs = UserSubscription.objects.filter(user=user, active=True)
     if feed_id:
@@ -889,7 +889,7 @@ def retrain_all_sites(request):
         sub.is_trained = False
         sub.save()
         
-    return get_feeds_trainer(request)
+    return feeds_trainer(request)
     
 @login_required
 def activate_premium_account(request):

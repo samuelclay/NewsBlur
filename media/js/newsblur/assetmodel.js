@@ -363,7 +363,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
           params['feed_id'] = feed_id;
         }
         
-        this.make_request('/reader/get_feeds_trainer', params, callback, null, {'ajax_group': 'feed', 'request_type': 'GET'});
+        this.make_request('/reader/feeds_trainer', params, callback, null, {'ajax_group': 'feed', 'request_type': 'GET'});
     },    
     
     
