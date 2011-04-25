@@ -61,7 +61,8 @@
         };
         this.constants = {
           FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
-          FILL_OUT_PAGES: 8
+          FILL_OUT_PAGES: 8,
+          RIVER_STORIES_FOR_STANDARD_ACCOUNT: 12
         };
         
         // ==================
@@ -2424,7 +2425,7 @@
             options = options || {};
             
             for (s in stories) {
-                if (this.flags['non_premium_river_view'] && $story_titles.children(':visible').length >= 5) {
+                if (this.flags['non_premium_river_view'] && $story_titles.children(':visible').length >= this.constants.RIVER_STORIES_FOR_STANDARD_ACCOUNT) {
                     this.append_story_titles_endbar();
                     break;
                 }
@@ -3065,7 +3066,7 @@
             }
 
             for (var s in stories) {
-                if (this.flags['non_premium_river_view'] && $stories.children(':visible').length >= 5) {
+                if (this.flags['non_premium_river_view'] && $stories.children(':visible').length >= this.constants.RIVER_STORIES_FOR_STANDARD_ACCOUNT) {
                     this.append_story_titles_endbar();
                     this.append_river_premium_only_notification();
                     break;
