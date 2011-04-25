@@ -102,6 +102,7 @@
         this.apply_story_styling();
         this.apply_tipsy_titles();
         this.load_recommended_feeds();
+        this.setup_dashboard_graphs();
         this.setup_howitworks_hovers();
     };
 
@@ -5033,6 +5034,31 @@
                 if (!resp) return;
                 self.counts['recommended_feed_page'] += direction;
 
+                $module.removeClass('NB-loading');
+                $module.replaceWith(resp);
+                self.load_javascript_elements_on_page();
+            }, $.noop);
+        },
+        
+        // ====================
+        // = Dashboard Graphs =
+        // ====================
+        
+        setup_dashboard_graphs: function() {
+          // Reload dashboard graphs every 10 minutes.
+          clearInterval(this.locks.load_dashboard_graphs);
+          this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
+              this.load_dashboard_graphs();
+          }, this), 10*60*1000);
+        },
+        
+        load_dashboard_graphs: function(direction, refresh) {
+            var self = this;
+            var $module = $('.NB-module-stats');
+            $module.addClass('NB-loading');
+            
+            this.model.load_dashboard_graphs(function(resp) {
+                if (!resp) return;
                 $module.removeClass('NB-loading');
                 $module.replaceWith(resp);
                 self.load_javascript_elements_on_page();

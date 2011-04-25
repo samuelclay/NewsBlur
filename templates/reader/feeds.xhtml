@@ -239,7 +239,7 @@ $(document).ready(function() {
       
     {% else %}
       
-      <div class="NB-module NB-module-stats">
+      <div class="NB-module">
         <h5 class="NB-module-header">
           Welcome, {{ user.username }}
           <div class="NB-module-header-right">
@@ -303,70 +303,8 @@ $(document).ready(function() {
       
     {% endif %}
     
-      <div class="NB-module NB-module-stats">
-        <h5 class="NB-module-header">
-          Status and Statistics
-        </h5>
-        
-        <h3 class="NB-module-content-header">
-          Past day
-        </h3>
-        
-        <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-number">{{ statistics.premium_users }}</div>
-          <div class="NB-module-stats-count-description">Premium Users</div>
-        </div>
-        <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-number">{{ statistics.standard_users }}</div>
-          <div class="NB-module-stats-count-description">Standard Users</div>
-        </div>
-        <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-number">{{ statistics.feeds_fetched|commify }}</div>
-          <div class="NB-module-stats-count-description">Feeds fetched</div>
-        </div>
-        
-        <h3 class="NB-module-content-header">
-          Past day by hour
-        </h3>
-        
-        <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-graph">
-            {% for i in statistics.sites_loaded %}
-            <div class="NB-graph-value">
-              <div class="NB-graph-label">{{ i }}</div>
-              <div class="NB-graph-bar" style="height:{{ i|format_graph:statistics.max_sites_loaded }}px"></div>
-            </div>
-            {% endfor %}
-          </div>
-          <div class="NB-module-stats-count-number">{{ statistics.latest_sites_loaded }}</div>
-          <div class="NB-module-stats-count-description">Sites loaded</div>
-        </div>
-        <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-graph">
-            {% for i in statistics.avg_time_taken %}
-            <div class="NB-graph-value">
-              <div class="NB-graph-label">{{ i|floatformat:2 }}</div>
-              <div class="NB-graph-bar" style="height:{{ i|format_graph:statistics.max_avg_time_taken }}px"></div>
-            </div>
-            {% endfor %}
-          </div>
-          <div class="NB-module-stats-count-number">{{ statistics.latest_avg_time_taken|floatformat:2 }} <small>sec</small></div>
-          <div class="NB-module-stats-count-description">Avg. load time</div>
-        </div>
-        <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-graph">
-            {% for i in 24|get_range %}
-            <div class="NB-graph-value">
-              <div class="NB-graph-label">0</div>
-              <div class="NB-graph-bar" style="height:1px"></div>
-            </div>
-            {% endfor %}
-          </div>
-          <div class="NB-module-stats-count-number">0</div>
-          <div class="NB-module-stats-count-description">Backlog</div>
-        </div>
-        
-      </div>
+    {% render_statistics_graphs statistics %}
+
   </div>
   
 </div>
