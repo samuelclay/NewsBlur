@@ -8,7 +8,7 @@ import struct
 import operator
 import BmpImagePlugin, PngImagePlugin, Image
 from StringIO import StringIO
-from apps.rss_feeds.models import MFeedPage
+from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
 HEADERS = {
@@ -21,12 +21,13 @@ class IconImporter(object):
     def __init__(self, feed, force=False):
         self.feed = feed
         self.force = force
+        self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
     
     def save(self):
-        if not self.force and self.feed.icon.not_found:
+        if not self.force and self.feed.favicon_not_found:
             # print 'Not found, skipping...'
             return
-        if not self.force and not self.feed.icon.not_found and self.feed.icon.icon_url:
+        if not self.force and not self.feed.favicon_not_found and self.feed_icon.icon_url:
             # print 'Found, but skipping...'
             return
         image, image_file, icon_url = self.fetch_image_from_page_data()
@@ -44,17 +45,20 @@ class IconImporter(object):
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
 
-            self.feed.icon.save()
-            self.feed.icon.data      = image_str
-            self.feed.icon.icon_url  = icon_url
-            self.feed.icon.color     = color
-            self.feed.icon.not_found = False
+            self.feed_icon.data      = image_str
+            self.feed_icon.icon_url  = icon_url
+            self.feed_icon.color     = color
+            self.feed_icon.not_found = False
+            self.feed_icon.save()
+            self.feed.favicon_color     = color
+            self.feed.favicon_not_found = False
         else:
-            self.feed.icon.save()
-            self.feed.icon.not_found = True
+            self.feed_icon.not_found = True
+            self.feed.favicon_not_found = True
             
-        self.feed.icon.save()
-        return not self.feed.icon.not_found
+        self.feed_icon.save()
+        self.feed.save()
+        return not self.feed.favicon_not_found
      
     def load_icon(self, image_file, index=None):
         '''
@@ -142,7 +146,7 @@ class IconImporter(object):
         url = None
 
         if not force:
-            url = self.feed.icon.icon_url
+            url = self.feed_icon.icon_url
         if not url and self.feed.feed_link and len(self.feed.feed_link) > 6:
             url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
         if not url: return None, None, None
