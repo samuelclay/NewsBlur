@@ -913,7 +913,7 @@
               if (_.isNumber(a)) feedA = self.model.get_feed(a);
               if (_.isNumber(b)) feedB = self.model.get_feed(b);
               if (feedA && feedB) {
-                return feedA.feed_title > feedB.feed_title ? 1 : -1;
+                return feedA.feed_title.toLowerCase() > feedB.feed_title.toLowerCase() ? 1 : -1;
               } else if (feedA && !feedB) {
                 return -1;
               } else if (!feedA && feedB) {
@@ -922,7 +922,7 @@
                 // console.log(['a b 1', a, b]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
-                return folderA > folderB ? 1 : folderA < folderB ? -1 : 0;
+                return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
               }
             });
           } else if (sort_order == 'MOSTUSED') {
@@ -933,7 +933,7 @@
               if (feedA && feedB) {
                 return feedA.feed_opens < feedB.feed_opens ? 1 : 
                 (feedA.feed_opens > feedB.feed_opens ? -1 : 
-                  (feedA.feed_title > feedB.feed_title));
+                  (feedA.feed_title.toLowerCase() > feedB.feed_title.toLowerCase() ? 1 : -1));
               } else if (feedA && !feedB) {
                 return -1;
               } else if (!feedA && feedB) {
@@ -942,7 +942,7 @@
                 // console.log(['a b 2', a, b]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
-                return folderA > folderB ? 1 : folderA < folderB ? -1 : 0;
+                return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
               }
             });
           }
