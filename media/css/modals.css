@@ -59,7 +59,7 @@
 .NB-modal h5,
 .NB-module h5 {
     margin: 0;
-    padding: 8px 8px 6px;
+    padding: 8px 12px 6px;
     background-color: #D1E1FA;
     background-image: -webkit-gradient(
         linear,
@@ -80,8 +80,8 @@
     color:#505050;
     font-size: 14px;
     font-family: "Gill Sans", inherit;
-    text-transform: uppercase;
     font-weight: normal;
+    text-transform: uppercase;
     overflow: hidden;
     position: relative;
 }

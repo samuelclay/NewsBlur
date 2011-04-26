@@ -13,6 +13,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -53,6 +54,8 @@ class Feed(models.Model):
     next_scheduled_update = models.DateTimeField(db_index=True)
     queued_date = models.DateTimeField(db_index=True)
     last_load_time = models.IntegerField(default=0)
+    favicon_color = models.CharField(max_length=6, null=True, blank=True)
+    favicon_not_found = models.BooleanField(default=False)
     
     def __unicode__(self):
         if not self.feed_title:
@@ -60,8 +63,7 @@ class Feed(models.Model):
             self.save()
         return self.feed_title
         
-    def canonical(self, full=False):
-        icon = MFeedIcon.objects(feed_id=self.pk)
+    def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
             'feed_title': self.feed_title,
@@ -69,10 +71,12 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
-            'favicon_color': icon.color,
-            'favicon_fetching': bool(not (icon.not_found or icon.data))
+            'favicon_color': self.favicon_color,
+            'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
         
+        if include_favicon:
+            feed['favicon'] = self.icon.data
         if not self.fetched_once:
             feed['not_yet_fetched'] = True
         if self.has_page_exception or self.has_feed_exception:
@@ -117,37 +121,54 @@ class Feed(models.Model):
             pass
     
     @classmethod
-    def get_feed_from_url(cls, url):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, offset=0):
         feed = None
-    
+        
+        def criteria(key, value):
+            if aggressive:
+                return {'%s__icontains' % key: value}
+            else:
+                return {'%s' % key: value}
+            
         def by_url(address):
-            feed = cls.objects.filter(feed_address=address)
+            feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
-                duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=address).order_by('pk')
-                if duplicate_feed:
-                    feed = [duplicate_feed[0].feed]
+                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
+            if not feed:
+                duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
+                if duplicate_feed and len(duplicate_feed) > offset:
+                    feed = [duplicate_feed[offset].feed]
                 
             return feed
-            
-        url = urlnorm.normalize(url)
+        
+        # Normalize and check for feed_address, dupes, and feed_link
+        if not aggressive:
+            url = urlnorm.normalize(url)
         feed = by_url(url)
-
-        if feed:
-            feed = feed[0]
-        else:
+        
+        # Create if it looks good
+        if feed and len(feed) > offset:
+            feed = feed[offset]
+        elif create:
             if feedfinder.isFeed(url):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
-            else:
-                feed_finder_url = feedfinder.feed(url)
-                if feed_finder_url:
-                    feed = by_url(feed_finder_url)
-                    if not feed:
-                        feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed = feed.update()
-                    else:
-                        feed = feed[0]
-                    
+        
+        # Still nothing? Maybe the URL has some clues.
+        if not feed:
+            feed_finder_url = feedfinder.feed(url)
+            if feed_finder_url:
+                feed = by_url(feed_finder_url)
+                if not feed and create:
+                    feed = cls.objects.create(feed_address=feed_finder_url)
+                    feed = feed.update()
+                elif feed and len(feed) > offset:
+                    feed = feed[offset]
+        
+        # Not created and not within bounds, so toss results.
+        if isinstance(feed, QuerySet):
+            return
+        
         return feed
         
     @classmethod
@@ -230,7 +251,12 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.utcnow()).save()
-        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
+        day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
+        new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
+        if new_fetch_histories.count() < 5 or True:
+            old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
+        else:
+            old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
         for history in old_fetch_histories:
             history.delete()
         if status_code not in (200, 304):
@@ -766,7 +792,7 @@ class Feed(models.Model):
         updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
                                                    * (updates_per_month**1.5)))
         if self.premium_subscribers > 0:
-            updates_per_day_delay /= 5
+            updates_per_day_delay /= min(self.active_subscribers, 5)
         # Lots of subscribers = lots of updates
         # 24 hours for 0 subscribers.
         # 4 hours for 1 subscriber.
@@ -775,7 +801,7 @@ class Feed(models.Model):
         # 1 min for 10 subscribers.
         subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
-            subscriber_bonus /= 5
+            subscriber_bonus /= min(self.active_subscribers, 5)
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -1039,6 +1065,7 @@ class MFeedFetchHistory(mongo.Document):
     meta = {
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
+        'ordering': ['-fetch_date'],
         'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
@@ -1071,6 +1098,7 @@ class MPageFetchHistory(mongo.Document):
     meta = {
         'collection': 'page_fetch_history',
         'allow_inheritance': False,
+        'ordering': ['-fetch_date'],
         'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     

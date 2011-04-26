@@ -123,7 +123,10 @@ def json_view(func):
             return response
         json = json_encode(response)
         return HttpResponse(json, mimetype='application/json', status=code)
-    return wrap
+    if isinstance(func, HttpResponse):
+        return func
+    else:
+        return wrap
 
 def main():
     test = {1: True, 2: u"string", 3: 30}

@@ -18,7 +18,7 @@ env.roledefs ={
     'app': ['app01.newsblur.com'],
     'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'db03.newsblur.com'],
 }
 
 # ================
@@ -304,6 +304,14 @@ def update_gunicorn():
         run('git pull')
         sudo('python setup.py develop')
 
+@roles('web')
+def setup_staging():
+    run('git clone https://github.com/samuelclay/NewsBlur.git staging')
+    with cd('~/staging'):
+        run('cp ../newsblur/local_settings.py local_settings.py')
+        run('mkdir -p logs')
+        run('touch logs/newsblur.log')
+    
 # ==============
 # = Setup - DB =
 # ==============    

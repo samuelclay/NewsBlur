@@ -60,7 +60,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             'domSuccessTrigger': true,
             'preventDoubleRequests': false
         }, options);
-        var request_type = 'POST';
+        var request_type = options.request_type || 'POST';
         var clear_queue = false;
         
         if (options['ajax_group'] == 'feed') {
@@ -220,7 +220,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             callback();
         };
         
-        this.make_request('/reader/load_feeds', {}, pre_callback, error_callback);
+        this.make_request('/reader/feeds', {}, pre_callback, error_callback, {request_type: 'GET'});
     },
     
     load_feed_favicons: function(callback, loaded_once, load_all) {
@@ -241,7 +241,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             return !feed.favicon && feed.id;
           }));
         }
-        this.make_request('/reader/load_feed_favicons', data, pre_callback);
+        this.make_request('/reader/favicons', data, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
     load_feed: function(feed_id, page, first_load, callback) {
@@ -255,15 +255,15 @@ NEWSBLUR.AssetModel.Reader.prototype = {
 
         // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback, this.feeds[feed_id].feed_address]);
         if (feed_id) {
-            this.make_request('/reader/load_single_feed',
+            this.make_request('/reader/feed/'+feed_id,
                 {
-                    feed_id: feed_id,
                     page: page,
                     feed_address: this.feeds[feed_id].feed_address
                 }, pre_callback,
                 $.noop,
                 {
-                    'ajax_group': (page ? 'feed_page' : 'feed')
+                    'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
+                    'request_type': 'GET'
                 }
             );
         }
@@ -314,9 +314,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             callback && callback();
         }, this);
         
-        this.make_request('/rss_feeds/load_single_feed', {
-            feed_id: feed_id
-        }, pre_callback, $.noop);
+        this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {request_type: 'GET'});
     },
     
     fetch_starred_stories: function(page, callback, first_load) {
@@ -328,10 +326,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
 
         this.feed_id = 'starred';
         
-        this.make_request('/reader/load_starred_stories', {
+        this.make_request('/reader/starred_stories', {
             page: page
         }, pre_callback, $.noop, {
-            'ajax_group': (page ? 'feed_page' : 'feed')
+            'ajax_group': (page ? 'feed_page' : 'feed'),
+            'request_type': 'GET'
         });
     },
     
@@ -346,12 +345,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         this.feed_id = feed_id;
 
-        this.make_request('/reader/load_river_stories', {
+        this.make_request('/reader/river_stories', {
             feeds: feeds,
             page: page,
             read_stories_count: this.read_stories_river_count
         }, pre_callback, $.noop, {
-            'ajax_group': (page ? 'feed_page' : 'feed')
+            'ajax_group': (page ? 'feed_page' : 'feed'),
+            'request_type': 'GET'
         });
     },
     
@@ -363,7 +363,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
           params['feed_id'] = feed_id;
         }
         
-        this.make_request('/reader/get_feeds_trainer', params, callback, null, {'ajax_group': 'feed'});
+        this.make_request('/reader/feeds_trainer', params, callback, null, {'ajax_group': 'feed', 'request_type': 'GET'});
     },    
     
     
@@ -401,7 +401,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             data['feed_id'] = feed_id;
         }
         
-        if (NEWSBLUR.Globals.is_authenticated) {
+        if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/refresh_feeds', data, pre_callback);
         }
     },
@@ -444,7 +444,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         callback(updated_feeds);
     },
     
-    refresh_feed: function(feed_id, callback, limit) {
+    refresh_feed: function(feed_id, callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -454,16 +454,15 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         // NEWSBLUR.log(['refresh_feed', feed_id, page, first_load, callback, pre_callback]);
         if (feed_id) {
-            this.make_request('/reader/load_single_feed',
+            this.make_request('/reader/feed/'+feed_id,
                 {
-                    feed_id: feed_id,
                     page: 0,
-                    limit: limit,
                     feed_address: this.feeds[feed_id].feed_address
                 }, pre_callback,
                 null,
                 {
-                    'ajax_group': 'feed_page'
+                    'ajax_group': 'feed_page',
+                    'request_type': 'GET'
                 }
             );
         }
@@ -532,35 +531,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return null;
     },
     
-    process_opml_import: function(data, callback) {
+    save_classifier: function(data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/import/process', data, callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
-    },
-    
-    save_classifier_story: function(story_id, data, callback) {
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save/story/', data, callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
-    },
-    
-    save_classifier_publisher: function(data, callback) {
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save/publisher', data, callback);
+            this.make_request('/classifier/save', data, callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
     },
     
     get_feed_classifier: function(feed_id, callback) {
-        this.make_request('/classifier/get/publisher/', {
-            'feed_id': feed_id
-        }, callback, null, {
-            'ajax_group': 'feed'
+        this.make_request('/classifier/'+feed_id, {}, callback, null, {
+            'ajax_group': 'feed',
+            'request_type': 'GET'
         });
     },
     
@@ -691,14 +673,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     get_features_page: function(page, callback) {
-        this.make_request('/reader/load_features', {'page': page}, callback);
+        this.make_request('/reader/features', {'page': page}, callback, callback, {request_type: 'GET'});
     },
     
     load_recommended_feed: function(page, refresh, callback, error_callback) {
         this.make_request('/recommendations/load_recommended_feed', {
             'page': page, 
             'refresh': refresh
-        }, callback, error_callback);
+        }, callback, error_callback, {request_type: 'GET'});
+    },
+    
+    load_dashboard_graphs: function(callback, error_callback) {
+        this.make_request('/statistics/dashboard_graphs', {}, callback, error_callback, {request_type: 'GET'});
     },
     
     save_feed_order: function(folders, callback) {
@@ -706,18 +692,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     get_feed_statistics: function(feed_id, callback) {
-        this.make_request('/rss_feeds/statistics', {
-            'feed_id': feed_id
-        }, callback, callback, {
-            'ajax_group': 'statistics'
+        this.make_request('/rss_feeds/statistics/'+feed_id, {}, callback, callback, {
+            'ajax_group': 'statistics',
+            'requesst_type': 'GET'
         });
     },
     
     get_feed_recommendation_info: function(feed_id, callback) {
-        this.make_request('/recommendations/load_feed_info', {
-            'feed_id': feed_id
-        }, callback, callback, {
-            'ajax_group': 'statistics'
+        this.make_request('/recommendations/load_feed_info/'+feed_id, {}, callback, callback, {
+            'ajax_group': 'statistics',
+            'request_type': 'GET'
         });
     },
     
@@ -741,21 +725,17 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             self.post_refresh_feeds(data, callback);
         };
         
-        if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/rss_feeds/exception_retry', {
-              'feed_id': feed_id, 
-              'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
-            }, pre_callback);
-        } else {
-            if ($.isFunction(callback)) callback();
-        }
+        this.make_request('/rss_feeds/exception_retry', {
+          'feed_id': feed_id, 
+          'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
+        }, pre_callback);
     },
         
     save_exception_change_feed_link: function(feed_id, feed_link, callback) {
         var self = this;
         
         var pre_callback = function(data) {
-            NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
+            // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
             self.post_refresh_feeds(data, callback);
             NEWSBLUR.reader.force_feed_refresh(feed_id);
         };
@@ -774,7 +754,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         var pre_callback = function(data) {
-            NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
+            // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
             self.post_refresh_feeds(data, callback);
             NEWSBLUR.reader.force_feed_refresh(feed_id);
         };

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block bodyclass %}NB-static NB-static-faq{% endblock %}
+
+{% block title %}Frequently Asked Questions{% endblock %}
+
+{% block content %}
+
+  <div class="NB-static-title">
+    Frequently Asked Questions
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">The Reader</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-what">
+        <li>
+          <div class="NB-faq-question">
+            What is the difference between the three views: Original, Feed, and Story?
+          </div>
+          <div class="NB-faq-answer">
+            Original view is the original site. Feed view is the RSS feed from the site. And Story view is the original site for one story at a time. Original view is the blog site, whereas Story view is an individual blog post. It's all personal preference, really.
+          </div>
+          <div class="NB-faq-answer">
+            You can double-click a story to temporarily open it up in the Story view. The next story you open will transport you back to whichever view you were on before. Double-clicking a Feed will open up the feed in a new tab.
+          </div>
+        </li>
+        <li>
+          <div class="NB-faq-question">
+            Am I actually at the original site? Can NewsBlur see what I see?
+          </div>
+          <div class="NB-faq-answer">
+            In order to show you the original site, NewsBlur takes a snapshot of the page. You may have noticed that if you are logged into the original site, you are not logged into NewsBlur's snapshot of the page. This is because NewsBlur fetched the site for you.
+          </div>
+        </li>
+        <li class="last">
+          <div class="NB-faq-question">
+            Why doesn't NewsBlur follow me when I click on links on the page?
+          </div>
+          <div class="NB-faq-answer">
+            When you click on a link, you are technically leaving NewsBlur, although only for a portion of the page in an iframe. In order to track what you're reading, you need to read NewsBlur's snapshot of the page, or switch to the Feed view.
+          </div>
+          <div class="NB-faq-answer last">
+            This may change one day. There is a way to fix this behavior so it works like you would expect. It is not easy to do, however. One day.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">The Intelligence</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-server">
+        <li>
+          <div class="NB-faq-question">
+            What does the three-color slider do?
+          </div>
+          <div class="NB-faq-answer">
+            <img src="/media//img/reader/intelligence_slider_positive.png" class="NB-faq-image" width="114" height="29">This is called the intelligence slider. Slide it to the right to only show stories you like.
+          </div>
+          <div class="NB-faq-answer last">
+            <img src="/media//img/reader/intelligence_slider_negative.png" class="NB-faq-image" width="114" height="29">Slide it to the left to show stories you dislike. Stories all start off neutral, in the center of the slider.
+          </div>
+          <div class="NB-faq-answer">
+            <br>
+            <img class="NB-trainer-bullet" src="/media//img/icons/silk/bullet_red.png"> are stories you don't like<br>
+            <img class="NB-trainer-bullet" src="/media//img/icons/silk/bullet_yellow.png"> are stories you have not yet rated<br>
+            <img class="NB-trainer-bullet" src="/media//img/icons/silk/bullet_green.png"> are stories you like
+          </div>
+        </li>
+        <li class="last">
+          <div class="NB-faq-question">
+            How does NewsBlur know whether I like or dislike a story?
+          </div>
+          <div class="NB-faq-answer">
+            When you like or dislike a story, you mark a facet of that story by checking a tag, author, part of the title, or entire publisher. When these facets are found in future stories, the stories are then weighted with your preferences. It is a very simple, explicit process where you tell NewsBlur what you like and don't like.
+          </div>
+          <div class="NB-faq-answer">
+            The idea is that by explicitly telling NewsBlur what your story preferences are, there is increased likelihood that you will like what the intelligence slider does for you.
+          </div>
+          <div class="NB-faq-answer last">
+            Currently, there is not an automated way of detecting stories you like or dislike without having to train NewsBlur. This implicit, automatic intelligence will come in the near-term future, but it will require an evolution to the interface that has not been easy to figure out how to make in a simple, clear, and effective manner. Soon.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">Information for Publishers</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-who">
+        <li>
+          <div class="NB-faq-question">
+            How can I control how stories are found in the Original view?
+          </div>
+          <div class="NB-faq-answer">
+            <p>To control where stories begin in the Original view, you can use any of these <code>class</code> names in your HTML:</p>
+            <ul>
+              <li><code>.entry</code></li>
+              <li><code>.post</code></li>
+              <li><code>.postProp</code></li>
+              <li><code>.article</code></li>
+              <li><code>#postContent</code></li>
+            </ul>
+            <p>If NewsBlur cannot find one of these <code>class</code> names, it will check for the following, in order:</p>
+            <ul>
+              <li>Exact match in a single visible element.</li>
+              <li>Near-match by header tags: <code>h1, h2, h3, h4, h5, h6</code>.</li>
+              <li>Near-match in a <code>.post</code> or similar class name.</li>
+              <li>Near-match by font-size (largest font size wins).</li>
+              <li>Each match is ranked by similarity.</li>
+            </ul>
+            <p>To view the exact heuristics used, see <code>find_story_in_feed_iframe</code> in <a href="http://github.com/samuelclay/NewsBlur/tree/master/media/js/newsblur/reader.js">reader.js</a> on GitHub.</p>
+          </div>
+        </li>
+        <li class="last">
+          <div class="NB-faq-question">
+            How I can prevent NewsBlur from loading the Original view (without using an iFrame buster)?
+          </div>
+          <div class="NB-faq-answer last">
+            <p>If you would like to opt-out of the Original view, simply email <a href="mailto:samuel@ofbrooklyn.com">Samuel Clay</a> and let him know. He will place your site on an opt-out list.</p>
+            <p>Note that users will still be able to read the Feed view. However, consider that when in the Original view, your ads and original content are unaffected. Consider instead placing an exception rule in your iFrame buster code that looks for 'www.newsblur.com' in the URL and prevents your iFrame buster from running.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">What's Coming</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-who">
+        <li>
+          <div class="NB-faq-answer">
+            An iPhone app.
+          </div>
+        </li>
+        <li class="last">
+          <div class="NB-faq-answer last">
+            Sort sites alphabetically, by popularity, use, unread counts.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title">Something's Wrong</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-client">
+        <li>
+          <div class="NB-faq-question">
+            Help! All of the stories are several days old and new stories are not showing up.
+          </div>
+          <div class="NB-faq-answer">
+            Sites that only have a single subscriber tend to get updated much less often than popular sites. Additionally, the frequency that a site publishes stories (once per month or several per day) has an impact on how often the site is refreshed.
+          </div>
+        </li>
+        <li>
+          <div class="NB-faq-question">
+            Help! A bunch of my sites are misbehaving and they work in Google Reader.
+          </div>
+          <div class="NB-faq-answer">
+            This is a known issue that is being addressed in a number of ways. About half of these misbehaving errors are errors that you really do need to address (like 404 Not Found errors). The other half are various edge cases, parser errors, uncaught exceptions, and bad code on NewsBlur's part.
+          </div>
+          <div class="NB-faq-answer">
+            But because this problem is so severe, various measures are taken every few weeks that fix a huge swath of misbheaving sites at once. You might find that this happens and it's quite nice when it does.
+          </div>
+        </li>
+        <li class="last">
+          <div class="NB-faq-question">
+            Help! I have an issue and it's not mentioned here.
+          </div>
+          <div class="NB-faq-answer last">
+            Please, please, please e-mail <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a>. If you have an issue it is entirely possible that other people do, too.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+{% endblock content %}

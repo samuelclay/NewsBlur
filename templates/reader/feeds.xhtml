@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load typogrify_tags recommendations_tags %}
+{% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
 
 {% block content %}
 
@@ -17,19 +17,52 @@ $(document).ready(function() {
 
 <div id="NB-splash">
 
-  <div class="NB-splash-info NB-splash-blur">
-    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" />
-    <ul class="NB-splash-links">
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
-    </ul>
-  </div>
-      
   <div class="NB-modules-center" style="margin-left: {{ user_profile.feed_pane_size }}px">
+    
+    <div class="NB-module NB-module-features">
+      
+      <h5 class="NB-module-header">
+        New Features
+        <div class="NB-module-header-right">
+          {% if user.is_staff %}
+            <div class="NB-features-add">
+              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
+            </div>
+            <script>
+            $(document).ready(function() {
+              $('#add-feature-button').click(function(e) {
+                e.preventDefault();
+                $('#add-feature-form').fadeIn(500);
+              });
+            });
+            </script>
+          {% endif %}
+          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
+          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+          <div class="NB-spinner NB-left"></div>
+        </div>
+      </h5>
+      
+      <table class="" cellpadding="0" cellspacing="0">
+        {% for feature in features %}
+          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
+            <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
+            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      {% if user.is_staff %}
+        <form action="{% url add-feature %}" id="add-feature-form" method="post">
+          {{ feature_form.description }}
+          <input type="submit" value="Add feature" />
+        </form>
+      {% endif %}
+    </div>
+    
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}
     {% endif %}
+    
   </div>
 
   <div class="NB-account">
@@ -103,7 +136,7 @@ $(document).ready(function() {
           <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
         </div>
       </div>
-      
+
       <div class="NB-module NB-module-howitworks">
         <h5 class="NB-module-header">
           <div class="NB-module-header-left">
@@ -131,7 +164,7 @@ $(document).ready(function() {
           <table class="NB-howitworks-page-description">
             <tr>
               <td>
-                {% filter typogrify %}Read the <br /> original site.{% endfilter %}
+                {% filter typogrify %}Read the<br />original site.{% endfilter %}
               </td>
             </tr>
           </table>
@@ -144,7 +177,7 @@ $(document).ready(function() {
           <table class="NB-howitworks-page-description">
             <tr>
               <td>
-                {% filter typogrify %}Intelligently find good stories you will like.{% endfilter %}
+                {% filter typogrify %}Easily train NewsBlur to highlight stories you like.{% endfilter %}
               </td>
             </tr>
           </table>
@@ -157,7 +190,7 @@ $(document).ready(function() {
           <table class="NB-howitworks-page-description">
             <tr>
               <td>
-                {% filter typogrify %}Intelligently filter out stories which you may dislike.{% endfilter %}
+                {% filter typogrify %}NewsBlur will filter out stories which you don't like.{% endfilter %}
               </td>
             </tr>
           </table>
@@ -170,7 +203,7 @@ $(document).ready(function() {
           <table class="NB-howitworks-page-description">
             <tr>
               <td>
-                {% filter typogrify %}Import your feeds from Google Reader.{% endfilter %}
+                {% filter typogrify %}Quickly import your feeds from Google Reader.{% endfilter %}
               </td>
             </tr>
           </table>
@@ -206,7 +239,7 @@ $(document).ready(function() {
       
     {% else %}
       
-      <div class="NB-module NB-module-stats">
+      <div class="NB-module">
         <h5 class="NB-module-header">
           Welcome, {{ user.username }}
           <div class="NB-module-header-right">
@@ -221,14 +254,14 @@ $(document).ready(function() {
               <img src="{{ MEDIA_URL }}/img/reader/account_standard_{{ account_images|random }}.jpg" />
             {% endif %}
           </div>
-          <h3>
+          <h3 class="NB-module-content-header">
             {% if user.profile.is_premium %}
-              <span class="NB-module-account-subtitle">
+              <span class="NB-module-content-subtitle">
                 {{ active_count }} site{{ active_count|pluralize }}
               </span>
               Premium Account
             {% else %}
-              <span class="NB-module-account-subtitle">
+              <span class="NB-module-content-subtitle">
                 <span class="NB-module-account-feedcount">{{ active_count }}</span> of 64 sites
               </span>
               Standard Account
@@ -254,8 +287,8 @@ $(document).ready(function() {
           <div class="NB-module-account-image">
               <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
           </div>
-          <h3>
-              <span class="NB-module-account-subtitle">
+          <h3 class="NB-module-content-header">
+              <span class="NB-module-content-subtitle">
                 <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
               </span>
               Intelligence Trainer
@@ -270,60 +303,10 @@ $(document).ready(function() {
       
     {% endif %}
     
-    <div class="NB-module NB-module-features">
-      
-      <h5 class="NB-module-header">
-        New Features
-        <div class="NB-module-header-right">
-          {% if user.is_staff %}
-            <div class="NB-features-add">
-              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
-            </div>
-            <script>
-            $(document).ready(function() {
-              $('#add-feature-button').click(function(e) {
-                e.preventDefault();
-                $('#add-feature-form').fadeIn(500);
-              });
-            });
-            </script>
-          {% endif %}
-          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
-          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-          <div class="NB-spinner NB-left"></div>
-        </div>
-      </h5>
-      
-      <table class="" cellpadding="0" cellspacing="0">
-        {% for feature in features %}
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
-            <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
-            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-      {% if user.is_staff %}
-        <form action="{% url add-feature %}" id="add-feature-form" method="post">
-          {{ feature_form.description }}
-          <input type="submit" value="Add feature" />
-        </form>
-      {% endif %}
-    </div>
-    
-  </div>
+    {% render_statistics_graphs statistics %}
 
-  <div class="NB-splash-info">
-    <img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur.png" />
-    <ul class="NB-splash-links">
-      {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li> #}
-      <li class="NB-splash-link NB-splash-meta-faq"><a href="#faq">FAQ</a></li>
-      <li class="NB-splash-link NB-splash-meta-about"><a href="#about">About</a></li>
-      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
-      {# <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li> #}
-      {# <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li> #}
-    </ul>
   </div>
-
+  
 </div>
 
 
@@ -418,7 +401,7 @@ $(document).ready(function() {
           <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
           <div class="NB-intelligence-slider"></div>
         </div>
-        <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar"></div>
+        <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (u)"></div>
       </div>
     </div>
 

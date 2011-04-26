@@ -253,7 +253,7 @@ var classifier_prototype = {
                     ' Click on what you like and don\'t like.'
                 ]),
                 $.make('li', [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_all.png', style: 'float: right', width: 127, height: 92 }),
                     $.make('b', 'The intelligence slider filters stories.'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
                     ' are stories you like',
@@ -851,7 +851,7 @@ var classifier_prototype = {
         $save.addClass('NB-disabled').attr('disabled', true);
         
         this.update_opinions();
-        this.model.save_classifier_publisher(data, function() {
+        this.model.save_classifier(data, function() {
             if (!keep_modal_open) {
                 NEWSBLUR.reader.recalculate_story_scores(feed_id);
                 NEWSBLUR.reader.force_feeds_refresh(null, true);

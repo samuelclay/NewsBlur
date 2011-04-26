@@ -18,6 +18,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
         this.handle_cancel();
         this.handle_change();
         this.open_modal();
+        this.original_preferences = this.serialize_preferences();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -198,6 +199,27 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         $.make('div', { className: 'NB-preference-sublabel' }, this.make_site_sidebar_count())
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-feedorder' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-feedorder-1', type: 'radio', name: 'feed_order', value: 'ALPHABETICAL' }),
+                            $.make('label', { 'for': 'NB-preference-feedorder-1' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/pilcrow.png' }),
+                                'Alphabetical'
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-feedorder-2', type: 'radio', name: 'feed_order', value: 'MOSTUSED' }),
+                            $.make('label', { 'for': 'NB-preference-feedorder-2' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/report_user.png' }),
+                                'Most used at top, then alphabetical'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Site sidebar order'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
@@ -290,7 +312,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
-                        'Backup Your Sites',
+                        'Backup your sites',
                         $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup.')
                     ])
                 ]),
@@ -306,7 +328,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
-                        'Change Password',
+                        'Change password',
                         $.make('div', { className: 'NB-preference-error'})
                     ])
                 ]),
@@ -379,6 +401,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
+        $('input[name=feed_order]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.feed_order) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=hide_story_changes]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
                 $(this).attr('checked', true);
@@ -443,6 +471,9 @@ NEWSBLUR.ReaderPreferences.prototype = {
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
+            if (self.original_preferences['feed_order'] != form['feed_order']) {
+              NEWSBLUR.reader.make_feeds();
+            }
             $.modal.close();
         });
     },
