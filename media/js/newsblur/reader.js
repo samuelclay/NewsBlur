@@ -918,8 +918,8 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB && a && b) {
-                console.log(['a b 1', a, b]);
+              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b)) {
+                // console.log(['a b 1', a, b]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA > folderB ? 1 : -1;
@@ -938,8 +938,8 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB && a && b) {
-                console.log(['a b 2', a, b]);
+              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b)) {
+                // console.log(['a b 2', a, b]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA > folderB ? 1 : -1;
