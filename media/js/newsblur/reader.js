@@ -918,7 +918,7 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB) {
+              } else if (!feedA && !feedB && a && b) {
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA > folderB ? 1 : -1;
@@ -937,7 +937,7 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB) {
+              } else if (!feedA && !feedB && a && b) {
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA > folderB ? 1 : -1;
