@@ -129,13 +129,13 @@ class Feed(models.Model):
                 return {'%s' % key: value}
             
         def by_url(address):
-            feed = cls.objects.filter(**criteria('feed_address', address))
+            feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
-                duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address)).order_by('pk')
+                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
+            if not feed:
+                duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
-            if not feed:
-                feed = cls.objects.filter(**criteria('feed_link', address))
                 
             return feed
         
