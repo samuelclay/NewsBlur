@@ -251,7 +251,7 @@ class Feed(models.Model):
                           fetch_date=datetime.datetime.utcnow()).save()
         day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
         new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
-        if new_fetch_histories.count() < 5:
+        if new_fetch_histories.count() < 5 or True:
             old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
         else:
             old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
