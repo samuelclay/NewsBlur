@@ -42,6 +42,21 @@
           example: "samuel@ofbrooklyn.com"
         
 - feeds:
+    - url: /rss_feeds/search_feed
+      method: GET
+      short_desc: "Information about a feed from its address."
+      long_desc: 
+        - "Retrieve information about a feed from its website or RSS address."
+      params:
+        - key: address
+          desc: "Searches the RSS and website address and returns a feed."
+          required: true
+          example: 'techcrunch.com'
+        - key: offset
+          desc: "Try paging through feeds found by using the offset."
+          optional: true
+          example: 1
+          
     - url: /reader/feeds
       method: GET
       short_desc: "User's feeds, with unread counts, meta data, and optional favicons."

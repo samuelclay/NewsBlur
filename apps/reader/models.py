@@ -49,6 +49,7 @@ class UserSubscription(models.Model):
         feed['nt']         = self.unread_count_neutral
         feed['ng']         = self.unread_count_negative
         feed['active']     = self.active
+        feed['feed_opens'] = self.feed_opens
         if not self.active and self.user.profile.is_premium:
             feed['active'] = True
             self.active = True

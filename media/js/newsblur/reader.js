@@ -852,7 +852,7 @@
                 'opacity': 0
             });
             $feed_list.html($feeds);
-            this.sort_feeds($feed_list);
+            // this.sort_feeds($feed_list);
             this.count_collapsed_unread_stories();
             $feed_list.animate({'opacity': 1}, {'duration': 700});
             this.hover_over_feed_titles($feed_list);
@@ -903,6 +903,49 @@
           }
         },
         
+        sort_items: function(items) {
+          var self = this;
+          var sort_order = this.model.preference('feed_order');
+          
+          if (sort_order == 'ALPHABETICAL' || !sort_order) {
+            return items.sort(function(a, b) {
+              var feedA, feedB;
+              if (_.isNumber(a)) feedA = self.model.get_feed(a);
+              if (_.isNumber(b)) feedB = self.model.get_feed(b);
+              if (feedA && feedB) {
+                return feedA.feed_title > feedB.feed_title ? 1 : -1;
+              } else if (feedA && !feedB) {
+                return -1;
+              } else if (!feedA && feedB) {
+                return 1;
+              } else if (!feedA && !feedB) {
+                var folderA = _.keys(a)[0];
+                var folderB = _.keys(b)[0];
+                return folderA > folderB ? 1 : -1;
+              }
+            });
+          } else if (sort_order == 'MOSTUSED') {
+            return items.sort(function(a, b) {
+              var feedA, feedB;
+              if (_.isNumber(a)) feedA = self.model.get_feed(a);
+              if (_.isNumber(b)) feedB = self.model.get_feed(b);
+              if (feedA && feedB) {
+                return feedA.feed_opens < feedB.feed_opens ? 1 : 
+                (feedA.feed_opens > feedB.feed_opens ? -1 : 
+                  (feedA.feed_title > feedB.feed_title));
+              } else if (feedA && !feedB) {
+                return -1;
+              } else if (!feedA && feedB) {
+                return 1;
+              } else if (!feedA && !feedB) {
+                var folderA = _.keys(a)[0];
+                var folderB = _.keys(b)[0];
+                return folderA > folderB ? 1 : -1;
+              }
+            });
+          }
+        },
+        
         sort_feeds: function($feeds) {
             $('.feed', $feeds).tsort('.feed_title');
             $('.folder', $feeds).tsort('.folder_title_text');
@@ -919,6 +962,8 @@
         make_feeds_folder: function(items, depth, collapsed_parent) {
             var self = this;
             var $feeds = "";
+            
+            items = this.sort_items(items);
             
             for (var i in items) {
                 var item = items[i];
@@ -1093,8 +1138,8 @@
                     }
                 },
                 change: function(e, ui) {
-                    $('.feed', ui.placeholder.closest('ul.folder')).tsort('.feed_title');
-                    $('li.folder', ui.placeholder.closest('ul.folder')).tsort('.folder_title_text');
+                    var $feeds = ui.placeholder.closest('ul.folder');
+                    self.sort_feeds($feeds);
                 },
                 stop: function(e, ui) {
                     setTimeout(function() {
@@ -1102,8 +1147,7 @@
                     }, 100);
                     ui.item.removeClass('NB-feed-sorting');
                     self.$s.$feed_list.removeClass('NB-feed-sorting');
-                    $('.feed', e.target).tsort('.feed_title');
-                    $('li.folder', e.target).tsort('.folder_title_text');
+                    self.sort_feeds(e.target);
                     self.save_feed_order();
                     ui.item.css({'backgroundColor': '#D7DDE6'})
                            .animate({'backgroundColor': '#F0F076'}, {'duration': 800})

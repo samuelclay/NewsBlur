@@ -3,6 +3,7 @@ from apps.rss_feeds import views
 
 urlpatterns = patterns('',
     url(r'^feed_autocomplete', views.feed_autocomplete, name='feed-autocomplete'),
+    url(r'^search_feed', views.search_feed, name='search-feed'),
     url(r'^statistics/(?P<feed_id>\d+)', views.load_feed_statistics, name='feed-statistics'),
     url(r'^feed/(?P<feed_id>\d+)', views.load_single_feed, name='feed-info'),
     url(r'^exception_retry', views.exception_retry, name='exception-retry'),

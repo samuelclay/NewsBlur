@@ -15,6 +15,18 @@ from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 
+
+@json.json_view
+def search_feed(request):
+    address = request.REQUEST['address']
+    offset = int(request.REQUEST.get('offset', 0))
+    feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
+    
+    if feed:
+        return feed.canonical()
+    else:
+        return dict(code=-1, message="No feed found matching that XML or website address.")
+    
 @json.json_view
 def load_single_feed(request, feed_id):
     user = get_user(request)

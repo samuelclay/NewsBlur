@@ -13,6 +13,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -118,37 +119,54 @@ class Feed(models.Model):
             pass
     
     @classmethod
-    def get_feed_from_url(cls, url):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, offset=0):
         feed = None
-    
+        
+        def criteria(key, value):
+            if aggressive:
+                return {'%s__icontains' % key: value}
+            else:
+                return {'%s' % key: value}
+            
         def by_url(address):
-            feed = cls.objects.filter(feed_address=address)
+            feed = cls.objects.filter(**criteria('feed_address', address))
             if not feed:
-                duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=address).order_by('pk')
-                if duplicate_feed:
-                    feed = [duplicate_feed[0].feed]
+                duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address)).order_by('pk')
+                if duplicate_feed and len(duplicate_feed) > offset:
+                    feed = [duplicate_feed[offset].feed]
+            if not feed:
+                feed = cls.objects.filter(**criteria('feed_link', address))
                 
             return feed
-            
-        url = urlnorm.normalize(url)
+        
+        # Normalize and check for feed_address, dupes, and feed_link
+        if not aggressive:
+            url = urlnorm.normalize(url)
         feed = by_url(url)
-
-        if feed:
-            feed = feed[0]
-        else:
+        
+        # Create if it looks good
+        if feed and len(feed) > offset:
+            feed = feed[offset]
+        elif create:
             if feedfinder.isFeed(url):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
-            else:
-                feed_finder_url = feedfinder.feed(url)
-                if feed_finder_url:
-                    feed = by_url(feed_finder_url)
-                    if not feed:
-                        feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed = feed.update()
-                    else:
-                        feed = feed[0]
-                    
+        
+        # Still nothing? Maybe the URL has some clues.
+        if not feed:
+            feed_finder_url = feedfinder.feed(url)
+            if feed_finder_url:
+                feed = by_url(feed_finder_url)
+                if not feed and create:
+                    feed = cls.objects.create(feed_address=feed_finder_url)
+                    feed = feed.update()
+                elif feed and len(feed) > offset:
+                    feed = feed[offset]
+        
+        # Not created and not within bounds, so toss results.
+        if isinstance(feed, QuerySet):
+            return
+        
         return feed
         
     @classmethod
