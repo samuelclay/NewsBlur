@@ -255,17 +255,17 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.utcnow()).save()
-        day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
-        new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
-        if new_fetch_histories.count() < 5 or True:
-            old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
-        else:
-            old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
-        for history in old_fetch_histories:
-            history.delete()
+        # day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
+        # new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
+        # if new_fetch_histories.count() < 5 or True:
+        #     old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
+        # else:
+        #     old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
+        # for history in old_fetch_histories:
+        #     history.delete()
         if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
-                                MFeedFetchHistory.objects(feed_id=self.pk))
+                                MFeedFetchHistory.objects(feed_id=self.pk)[:10])
             self.count_errors_in_history(fetch_history, status_code, 'feed')
         elif self.has_feed_exception:
             self.has_feed_exception = False
@@ -278,13 +278,13 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.utcnow()).save()
-        old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
-        for history in old_fetch_histories:
-            history.delete()
+        # old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
+        # for history in old_fetch_histories:
+        #     history.delete()
             
         if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
-                                MPageFetchHistory.objects(feed_id=self.pk))
+                                MPageFetchHistory.objects(feed_id=self.pk)[:10])
             self.count_errors_in_history(fetch_history, status_code, 'page')
         elif self.has_page_exception:
             self.has_page_exception = False
@@ -1070,7 +1070,7 @@ class MFeedFetchHistory(mongo.Document):
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
         'ordering': ['-fetch_date'],
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', '-fetch_date')],
     }
     
     def save(self, *args, **kwargs):
@@ -1080,7 +1080,7 @@ class MFeedFetchHistory(mongo.Document):
         
     @classmethod
     def feed_history(cls, feed_id):
-        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')
+        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
         fetch_history = []
         for fetch in fetches:
             history                = {}
@@ -1113,7 +1113,7 @@ class MPageFetchHistory(mongo.Document):
 
     @classmethod
     def feed_history(cls, feed_id):
-        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')
+        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
         fetch_history = []
         for fetch in fetches:
             history                = {}

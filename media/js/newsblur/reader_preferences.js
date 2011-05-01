@@ -280,6 +280,25 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Feed view styling'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-tooltips' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-tooltips-1', type: 'radio', name: 'show_tooltips', value: 1 }),
+                            $.make('label', { 'for': 'NB-preference-tooltips-1' }, [
+                                'Show tooltips'
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-tooltips-2', type: 'radio', name: 'show_tooltips', value: 0 }),
+                            $.make('label', { 'for': 'NB-preference-tooltips-2' }, [
+                                'Don\'t bother showing tooltips.'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Tooltips'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-story-share' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', { className: 'NB-preference-option', title: 'Twitter' }, [
@@ -415,6 +434,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
         });
         $('input[name=feed_view_single_story]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.feed_view_single_story) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=show_tooltips]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.show_tooltips) {
                 $(this).attr('checked', true);
                 return false;
             }

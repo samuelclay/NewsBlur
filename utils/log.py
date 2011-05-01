@@ -18,7 +18,7 @@ def getlogger():
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
     logger.setLevel(settings.LOG_LEVEL)
-
+    
     return logger
 
 def user(u, msg):

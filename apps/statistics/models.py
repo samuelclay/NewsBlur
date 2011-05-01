@@ -1,7 +1,7 @@
 import datetime
 import mongoengine as mongo
 from django.db.models import Avg, Count
-from apps.rss_feeds.models import MFeedFetchHistory, FeedLoadtime
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, FeedLoadtime
 from apps.profile.models import Profile
 from utils import json_functions as json
 
@@ -48,6 +48,13 @@ class MStatistics(mongo.Document):
         
         feeds_fetched = MFeedFetchHistory.objects(fetch_date__gte=last_day).count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
+        
+        old_fetch_histories = MFeedFetchHistory.objects(fetch_date__lte=last_day)
+        for history in old_fetch_histories:
+            history.delete()
+        old_page_histories = MPageFetchHistory.objects(fetch_date__lte=last_day)
+        for history in old_page_histories:
+            history.delete()
         
         return feeds_fetched
         
