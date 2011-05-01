@@ -618,7 +618,7 @@
                         this.open_story(story, $next_story);
                         this.scroll_story_titles_to_show_selected_story_title($next_story);
                     }
-                } else if (this.flags['find_next_unread_on_page_of_feed_stories_load'] < this.constants.FILL_OUT_PAGES) {
+                } else if (this.counts['find_next_unread_on_page_of_feed_stories_load'] < this.constants.FILL_OUT_PAGES) {
                     // Nothing up, nothing down, but still unread. Load 1 page then find it.
                     this.counts['find_next_unread_on_page_of_feed_stories_load'] += 1;
                     this.load_page_of_feed_stories();
