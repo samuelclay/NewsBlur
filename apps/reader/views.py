@@ -136,7 +136,7 @@ def load_feeds(request):
     user             = get_user(request)
     feeds            = {}
     not_yet_fetched  = False
-    include_favicons = request.REQUEST.get('include_favicons', True)
+    include_favicons = request.REQUEST.get('include_favicons', False)
     flat             = request.REQUEST.get('flat', False)
     
     if flat: return load_feeds_flat(request)
@@ -273,7 +273,7 @@ def refresh_feeds(request):
             feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
         if request.REQUEST.get('check_fetch_status', False):
             feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
-        if sub.feed.pk in favicons_fetching:
+        if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
             feeds[sub.feed.pk]['favicon'] = feed_icons[sub.feed.pk].data
             feeds[sub.feed.pk]['favicon_color'] = feed_icons[sub.feed.pk].color
             feeds[sub.feed.pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or

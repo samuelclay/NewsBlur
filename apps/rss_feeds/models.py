@@ -76,7 +76,11 @@ class Feed(models.Model):
         }
         
         if include_favicon:
-            feed['favicon'] = self.icon.data
+            try:
+                feed_icon = MFeedIcon.objects.get(feed_id=self.pk)
+                feed['favicon'] = feed_icon.data
+            except MFeedIcon.DoesNotExist:
+                pass
         if not self.fetched_once:
             feed['not_yet_fetched'] = True
         if self.has_page_exception or self.has_feed_exception:
