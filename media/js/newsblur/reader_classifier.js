@@ -671,7 +671,7 @@ var classifier_prototype = {
                     dialog.data.fadeIn(200);
                     setTimeout(function() {
                         self.flags.modal_loaded = true;
-                        $(window).resize();
+                        $(window).trigger('resize.simplemodal');
                     });
                 });
             },

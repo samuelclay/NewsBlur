@@ -69,7 +69,7 @@
         // = Event Handlers =
         // ==================
         
-        $(window).bind('resize', _.throttle($.rescope(this.resize_window, this), 1000));
+        $(window).bind('resize.reader', _.throttle($.rescope(this.resize_window, this), 1000));
         this.$s.$body.bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
         this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
         this.$s.$body.live('contextmenu.reader', $.rescope(this.handle_rightclicks, this));
@@ -3480,9 +3480,10 @@
             if (view == 'page' && feed && feed.has_exception && feed.exception_type == 'page') {
               this.open_feed_exception_modal(this.active_feed);
               return;
-            }
-            if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
+            } else if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
                 return;
+            } else if (view == this.story_view && !this.flags['page_view_showing_feed_view'] && !this.flags['feed_view_showing_story_view']) {
+              return;
             }
             // NEWSBLUR.log(['$button', $button, this.flags['page_view_showing_feed_view'], $button.hasClass('NB-active'), skip_save_type]);
             var $taskbar_buttons = $('.NB-taskbar .task_button_view');
@@ -3497,7 +3498,6 @@
             
             $page_to_feed_arrow.hide();
             $feed_to_story_arrow.hide();
-            this.flags['page_view_showing_feed_view'] = false;
             this.flags['page_view_showing_feed_view'] = false;
             if (skip_save_type == 'page') {
                 $page_to_feed_arrow.show();
