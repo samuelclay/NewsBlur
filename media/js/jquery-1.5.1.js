@@ -4515,7 +4515,7 @@ if ( document.querySelectorAll ) {
 
 			if ( !Sizzle.isXML( node ) ) {
 				try { 
-					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
+					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !(/!=/).test( expr ) ) {
 						return matches.call( node, expr );
 					}
 				} catch(e) {}

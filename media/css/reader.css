@@ -4885,6 +4885,8 @@ background: transparent;
   margin: 12px 0 12px;
   padding: 12px;
   background-color: #F6F6F6;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
 }
 
 .NB-modal-preferences .NB-preference.NB-last {
