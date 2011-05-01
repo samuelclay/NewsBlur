@@ -5937,6 +5937,10 @@
                 e.preventDefault();
                 self.open_next_unread_story_across_feeds();
             });
+            $document.bind('keydown', 'b', function(e) {
+                e.preventDefault();
+                self.show_previous_story();
+            });
         }
         
     };
