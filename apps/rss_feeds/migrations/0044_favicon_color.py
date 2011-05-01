@@ -14,18 +14,19 @@ class Migration(DataMigration):
         i = 0
         for feed in feeds:
             i += 1
-            print "%s/%s: %s" % (i, feed_count, feed,)
-            sys.stdout.flush()
-        
-            feed_icon = FeedIcon.objects.filter(feed=feed)
-            if feed_icon:
-                try:
-                    feed.favicon_color = feed_icon[0].color
-                    feed.favicon_not_found = feed_icon[0].not_found
-                    feed.save()
-                except Exception, e:
-                    print '\n\n!!! %s\n\n' % e
-                    continue
+            if i % 1000 == 0: 
+                print "%s/%s" % (i, feed_count,)
+                sys.stdout.flush()
+            if not feed.favicon_color:
+                feed_icon = MFeedIcon.objects(feed_id=feed.pk)
+                if feed_icon:
+                    try:
+                        feed.favicon_color = feed_icon[0].color
+                        feed.favicon_not_found = feed_icon[0].not_found
+                        feed.save()
+                    except Exception, e:
+                        print '\n\n!!! %s\n\n' % e
+                        continue
 
 
     def backwards(self, orm):
