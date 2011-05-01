@@ -3482,8 +3482,6 @@
               return;
             } else if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
                 return;
-            } else if (view == this.story_view && !this.flags['page_view_showing_feed_view'] && !this.flags['feed_view_showing_story_view']) {
-              return;
             }
             // NEWSBLUR.log(['$button', $button, this.flags['page_view_showing_feed_view'], $button.hasClass('NB-active'), skip_save_type]);
             var $taskbar_buttons = $('.NB-taskbar .task_button_view');
