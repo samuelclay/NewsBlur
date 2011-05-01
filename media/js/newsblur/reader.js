@@ -5505,7 +5505,7 @@
             });         
             $.targetIs(e, { tagSelector: '.task_button_story.task_story_next_unread' }, function($t, $p){
                 e.preventDefault();
-                self.show_next_unread_story();
+                self.open_next_unread_story_across_feeds();
             }); 
             $.targetIs(e, { tagSelector: '.task_button_story.task_story_next' }, function($t, $p){
                 e.preventDefault();
