@@ -230,13 +230,13 @@ NEWSBLUR.ReaderPreferences.prototype = {
                                 $.make('del', 'changes'),
                                 ' ',
                                 $.make('ins', 'revisions'),
-                                ' in stories.'
+                                ' in stories'
                             ])
                         ]),
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-hidestorychanges-2', type: 'radio', name: 'hide_story_changes', value: 1 }),
                             $.make('label', { 'for': 'NB-preference-hidestorychanges-2' }, [
-                                'Hide changes and only show the final story.'
+                                'Hide changes and only show the final story'
                             ])
                         ])
                     ]),
@@ -291,17 +291,21 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-tooltips-2', type: 'radio', name: 'show_tooltips', value: 0 }),
                             $.make('label', { 'for': 'NB-preference-tooltips-2' }, [
-                                'Don\'t bother showing tooltips.'
+                                'Don\'t bother showing tooltips'
                             ])
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference-label', title: 'Tooltips like this' }, [
-                        'Tooltips'
-                    ]).tipsy({
-                        gravity: 'n',
-                        trigger: 'manual',
-                        offsetOpposite: -1
-                    }).tipsy('enable').tipsy('show')
+                    $.make('div', { className: 'NB-preference-label' }, [
+                        'Tooltips',
+                        $.make('div', { className: 'tipsy tipsy-n' }, [
+                            $.make('div', { className: 'tipsy-arrow' }),
+                            $.make('div', { className: 'tipsy-inner' }, 'Tooltips like this')
+                        ]).css({
+                            'display': 'block',
+                            'top': 24,
+                            'left': -5
+                        })
+                    ])
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-story-share' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
@@ -336,7 +340,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
                     ]),
                     $.make('div', { className: 'NB-preference-label'}, [
                         'Backup your sites',
-                        $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup.')
+                        $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
                     ])
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-password' }, [
@@ -499,6 +503,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
             }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
+            NEWSBLUR.reader.apply_tipsy_titles();
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
             if (self.original_preferences['feed_order'] != form['feed_order']) {
               NEWSBLUR.reader.make_feeds();

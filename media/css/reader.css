@@ -4900,6 +4900,7 @@ background: transparent;
 .NB-modal-preferences .NB-preference .NB-preference-label {
   float: left;
   width: 150px;
+  position: relative;
 }
 .NB-modal-preferences .NB-preference .NB-preference-sublabel {
   font-size: 11px;

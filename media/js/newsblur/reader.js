@@ -203,22 +203,29 @@
         },
         
         apply_tipsy_titles: function() {
-            $('.NB-taskbar-sidebar-toggle-close').tipsy({
-                gravity: 'se',
-                delayIn: 375
-            });
-            $('.NB-taskbar-sidebar-toggle-open').tipsy({
-                gravity: 'sw',
-                delayIn: 375
-            });
-            $('.NB-task-add').tipsy({
-                gravity: 'sw',
-                delayIn: 375
-            });
-            $('.NB-task-manage').tipsy({
-                gravity: 's',
-                delayIn: 375
-            });
+            if (this.model.preference('show_tooltips')) {
+                $('.NB-taskbar-sidebar-toggle-close').tipsy({
+                    gravity: 'se',
+                    delayIn: 375
+                });
+                $('.NB-taskbar-sidebar-toggle-open').tipsy({
+                    gravity: 'sw',
+                    delayIn: 375
+                });
+                $('.NB-task-add').tipsy({
+                    gravity: 'sw',
+                    delayIn: 375
+                });
+                $('.NB-task-manage').tipsy({
+                    gravity: 's',
+                    delayIn: 375
+                });
+            } else {
+                $('.NB-taskbar-sidebar-toggle-close').tipsy('disable');
+                $('.NB-taskbar-sidebar-toggle-open').tipsy('disable');
+                $('.NB-task-add').tipsy('disable');
+                $('.NB-task-manage').tipsy('disable');
+            }
         },
         
         save_feed_pane_size: function(w, pane, $pane, state, options, name) {
@@ -1434,14 +1441,16 @@
             var hide_read_feeds = parseInt(this.model.preference('hide_read_feeds'), 10);
             var $button = $('.NB-feeds-header-sites');
             
-            if (hide_read_feeds) {
-                $button.tipsy('hide');
-                $button.attr('title', 'Show only unread stories');
-                $button.tipsy('show');
-            } else {
-                $button.tipsy('hide');
-                $button.attr('title', 'Show all sites');
-                $button.tipsy('show');
+            if (this.model.preference('show_tooltips')) {
+                if (hide_read_feeds) {
+                    $button.tipsy('hide');
+                    $button.attr('title', 'Show only unread stories');
+                    $button.tipsy('show');
+                } else {
+                    $button.tipsy('hide');
+                    $button.attr('title', 'Show all sites');
+                    $button.tipsy('show');
+                }
             }
             
             this.model.preference('hide_read_feeds', hide_read_feeds ? 0 : 1);
@@ -2528,10 +2537,12 @@
                 $story_title.css({'display': 'none'});
             }
           
-            $('.NB-story-sentiment', $story_title).tipsy({
-                delayIn: 375,
-                gravity: 's'
-            });
+            if (this.model.preference('show_tooltips')) {
+                $('.NB-story-sentiment', $story_title).tipsy({
+                    delayIn: 375,
+                    gravity: 's'
+                });
+            }
             
             return $story_title;
         },
@@ -2932,10 +2943,12 @@
                 $(this).removeClass('NB-feedbar-hover');
             });
             
-            $('.NB-feedbar-train-feed, .NB-feedbar-statistics', $feedbar).tipsy({
-                gravity: 's',
-                delayIn: 375
-            });
+            if (this.model.preference('show_tooltips')) {
+                $('.NB-feedbar-train-feed, .NB-feedbar-statistics', $feedbar).tipsy({
+                    gravity: 's',
+                    delayIn: 375
+                });
+            }
             
             $story_titles.prepend($feedbar);
             $('.unread_count', $feedbar).corner('4px');
@@ -3181,7 +3194,7 @@
                     $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
                 ]).data('story', story.id).data('story_id', story.id).data('feed_id', story.story_feed_id);
                 
-                if (story_has_modifications) {
+                if (story_has_modifications && this.model.preference('show_tooltips')) {
                     $('.NB-feed-story-hide-changes', $story).tipsy({
                         delayIn: 375
                     });
@@ -4095,7 +4108,9 @@
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
             $manage_menu_container.uncorner();
-            $('.NB-task-manage').tipsy('enable');
+            if (this.model.preference('show_tooltips')) {
+                $('.NB-task-manage').tipsy('enable');
+            }
             
             $item.removeClass('NB-showing-menu');
             
@@ -4340,10 +4355,12 @@
                 $hidereadfeeds_button.attr('title', 'Show only unread stories');
                 this.$s.$body.removeClass('NB-feedlist-hide-read-feeds');
             }
-            $hidereadfeeds_button.tipsy({
-                gravity: 'n',
-                delayIn: 375
-            });
+            if (this.model.preference('show_tooltips')) {
+                $hidereadfeeds_button.tipsy({
+                    gravity: 'n',
+                    delayIn: 375
+                });
+            }
 
             $next_story_button.removeClass('task_story_next_positive')
                               .removeClass('task_story_next_neutral')
