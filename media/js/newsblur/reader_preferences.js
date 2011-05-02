@@ -295,9 +295,13 @@ NEWSBLUR.ReaderPreferences.prototype = {
                             ])
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
+                    $.make('div', { className: 'NB-preference-label', title: 'Tooltips like this' }, [
                         'Tooltips'
-                    ])
+                    ]).tipsy({
+                        gravity: 'n',
+                        trigger: 'manual',
+                        offsetOpposite: -1
+                    }).tipsy('enable').tipsy('show')
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-story-share' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
