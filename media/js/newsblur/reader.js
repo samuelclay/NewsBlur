@@ -5918,6 +5918,10 @@
                 e.preventDefault();
                 self.switch_taskbar_view_direction(1);
             });
+            $document.bind('keydown', 'r', function(e) {
+                e.preventDefault();
+                self.open_river_stories();
+            });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();
                 self.open_story_in_story_view(null, true);
