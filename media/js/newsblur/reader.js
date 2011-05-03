@@ -2445,6 +2445,11 @@
             this.mark_story_as_read(story_id);
         },
         
+        send_story_to_email: function(story_id) {
+            NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail({'story_id': story_id});
+            this.mark_story_as_read(story_id);
+        },
+        
         // =====================
         // = Story Titles Pane =
         // =====================
@@ -3907,6 +3912,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_email'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to email').parent().addClass('NB-menu-manage-highlight-email');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-email');
+                        }, this))),
                         // (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
                         //     $(e.target).siblings('.NB-menu-manage-title').text('Send to Readability').parent().addClass('NB-menu-manage-highlight-readability');
                         // }, this)).bind('mouseleave', _.bind(function(e) {
@@ -3926,6 +3936,8 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
                           this.send_story_to_readability(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-email')) {
+                          this.send_story_to_email(story.id);
                       } else {
                           this.send_story_to_instapaper(story.id);
                       }
