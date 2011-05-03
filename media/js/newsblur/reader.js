@@ -3248,7 +3248,7 @@
             }
             
             this.append_feed_view_story_endbar();
-            this.show_stories_preference_in_feed_view(true);
+            if (first_load) this.show_stories_preference_in_feed_view(true);
         },
         
         make_story_feed_title: function(story) {
@@ -3622,7 +3622,7 @@
                 // NEWSBLUR.log(['show_stories_preference_in_feed_view', is_creating, this.model.preference('feed_view_single_story'), $feed_view_stories.length + " stories"]);
                 $stories.removeClass('NB-feed-view-feed').addClass('NB-feed-view-story');
                 $feed_view_stories.css({'display': 'none'});
-                this.$s.$feed_stories.scrollTop('0px');
+                if (is_creating) this.$s.$feed_stories.scrollTop('0px');
                 var $current_story = this.get_current_story_from_story_titles($feed_view_stories);
                 if ($current_story && $current_story.length) {
                     $current_story.css({'display': 'block'});
@@ -4477,9 +4477,14 @@
                 // No need to show/hide feed view stories under single_story preference. 
                 // If the user switches to feed/page, then no animation is happening 
                 // and this will work anyway.
-                $stories_show = $stories_show.not('.NB-feed-story');
-                $stories_hide = $stories_hide.not('.NB-feed-story');
-                // NEWSBLUR.log(['show_story_titles_above_intelligence_level', $stories_show.length, $stories_hide.length]);
+                var active_story = this.active_story;
+                var $active_story = active_story && $('.NB-feed-story').filter(function() { 
+                  return $(this).data('story_id') == active_story.id; 
+                });
+                if ($active_story && $active_story.length) {
+                  $stories_show = $stories_show.not('.NB-feed-story').add($active_story);
+                  $stories_hide = $stories_hide.add('.NB-feed-story').not($stories_show);
+                }
             }
             
             if (!options['animate']) {
