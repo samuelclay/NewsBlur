@@ -265,7 +265,7 @@ class Feed(models.Model):
         #     history.delete()
         if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
-                                MFeedFetchHistory.objects(feed_id=self.pk)[:10])
+                                MFeedFetchHistory.objects(feed_id=self.pk)[:50])
             self.count_errors_in_history(fetch_history, status_code, 'feed')
         elif self.has_feed_exception:
             self.has_feed_exception = False
@@ -284,7 +284,7 @@ class Feed(models.Model):
             
         if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
-                                MPageFetchHistory.objects(feed_id=self.pk)[:10])
+                                MPageFetchHistory.objects(feed_id=self.pk)[:50])
             self.count_errors_in_history(fetch_history, status_code, 'page')
         elif self.has_page_exception:
             self.has_page_exception = False
@@ -292,8 +292,8 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, fetch_history, status_code, exception_type):
-        non_errors = [h for h in fetch_history if int(h) in (200, 304)]
-        errors = [h for h in fetch_history if int(h) not in (200, 304)]
+        non_errors = [h for h in fetch_history if int(h)     in (200, 304)]
+        errors     = [h for h in fetch_history if int(h) not in (200, 304)]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             if exception_type == 'feed':
