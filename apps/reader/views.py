@@ -190,8 +190,6 @@ def load_feed_favicons(request):
         
     return feed_icons
     
-@ajax_login_required
-@json.json_view
 def load_feeds_flat(request):
     user = get_user(request)
     feeds = {}
