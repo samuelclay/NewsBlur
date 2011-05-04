@@ -2446,7 +2446,7 @@
         },
         
         send_story_to_email: function(story_id) {
-            NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail({'story_id': story_id});
+            NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story_id);
             this.mark_story_as_read(story_id);
         },
         

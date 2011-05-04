@@ -4130,6 +4130,14 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
   opacity: 1;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-email {
+  opacity: 1;
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-image,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readability .NB-menu-manage-thirdparty-icon {
   opacity: .2;
@@ -4357,6 +4365,47 @@ background: transparent;
   
 }
 .NB-modal-recommend .NB-modal-recommend-explanation {
+  clear: both;
+  color: #505050;
+  font-size: 12px;
+  margin: 12px 0 14px;
+  padding: 0 1px;
+}
+
+
+/* ===================== */
+/* = Email Story Modal = */
+/* ===================== */
+
+.NB-modal-email .NB-modal-loading {
+  margin: 6px 8px 0;
+}
+.NB-modal.NB-modal-email .NB-modal-email-comments-container {
+  padding: 6px 0;
+  margin: 4px 0;
+  border-top: 1px solid #C0C0C0;
+  border-bottom: 1px solid #C0C0C0;
+}
+.NB-modal-email .NB-modal-email-comments {
+  width: 558px;
+  height: 80px;
+  font-size: 14px;
+  color: #404040;
+  line-height: 20px;
+  padding: 8px;
+  margin: 0;
+  border: 1px solid #E0E0E0;
+  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+}
+.NB-modal-email .NB-modal-email-name-container {
+  color: #505050;
+  font-size: 12px;
+  margin: 4px 0;
+}
+.NB-modal-email .NB-modal-email-name {
+  
+}
+.NB-modal-email .NB-modal-email-explanation {
   clear: both;
   color: #505050;
   font-size: 12px;
@@ -5004,6 +5053,9 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
     background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
+    background: transparent url('../img/reader/email.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;

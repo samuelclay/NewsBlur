@@ -8,28 +8,6 @@ NEWSBLUR.Modal = function(options) {
 
 NEWSBLUR.Modal.prototype = {
     
-    runner: function() {
-        this.make_modal();
-        this.open_modal();
-        
-        this.$modal.bind('click', $.rescope(this.handle_click, this));
-    },
-    
-    make_modal: function() {
-        var self = this;
-        
-        this.$modal = $.make('div', { className: 'NB-modal-recommend NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Recommend this Site'),
-            $.make('form', { className: 'NB-recommend-form' }, [
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Recommend Site' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
-                ])
-            ])
-        ]);
-    },
-    
     open_modal: function() {
         var self = this;
         
@@ -58,19 +36,6 @@ NEWSBLUR.Modal.prototype = {
                 });
                 $('.NB-modal-holder').empty().remove();
             }
-        });
-    },
-            
-    // ===========
-    // = Actions =
-    // ===========
-
-    handle_click: function(elem, e) {
-        var self = this;
-        
-        $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
-            e.preventDefault();
-            $.modal.close();
         });
     }
     

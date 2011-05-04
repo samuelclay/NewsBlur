@@ -1,15 +1,16 @@
-NEWSBLUR.ReaderSendEmail = function(options) {
+NEWSBLUR.ReaderSendEmail = function(story_id, options) {
     var defaults = {};
 
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
-    this.story_id = options.story_id;
+    this.story_id = story_id;
     this.story = this.model.get_story(story_id);
+    this.feed = this.model.get_feed(this.story.story_feed_id);
 
     this.runner();
 };
 
-NEWSBLUR.ReaderSendEmail.prototype = _.extend(NEWSBLUR.Modal.prototype, {
+NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
     
     runner: function() {
         this.make_modal();
@@ -21,50 +22,30 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend(NEWSBLUR.Modal.prototype, {
     make_modal: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-modal-goodies NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Goodies &amp; Extras'),
-            $.make('div', { className: 'NB-goodies-group' }, [
-              NEWSBLUR.generate_bookmarklet(),
-              $.make('div', { className: 'NB-goodies-title' }, 'Add Site Bookmarklet')
+        this.$modal = $.make('div', { className: 'NB-modal-email NB-modal' }, [
+            $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
+            $.make('h2', { className: 'NB-modal-subtitle' }, [
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
+                $.make('div', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
+                $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),
+                $.make('div', { className: 'NB-modal-email-story-permalink' }, this.story.story_permalink)
             ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
-                  href: '#'
-              }, 'Add to Firefox'),
-              $.make('div', { className: 'NB-goodies-firefox' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Firefox: Register Newsblur as an RSS reader')
+            $.make('div', { className: 'NB-modal-email-explanation' }, [
+                "Add an optional comment to send with the story. The contents of the story will be sent below this comment."
             ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
-                  href: '#'
-              }, 'Add to Chrome'),
-              $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Google Chome: NewsBlur Chrome Web App')
+            $.make('div', { className: 'NB-modal-email-comments-container' }, [
+                $.make('textarea', { className: 'NB-modal-email-comments' })
             ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-safari-link NB-modal-submit-button NB-modal-submit-green',
-                  href: '#'
-              }, 'Add to Safari'),
-              $.make('div', { className: 'NB-goodies-safari' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Register Newsblur as an RSS reader'),
-              $.make('div', { className: 'NB-goodies-subtitle' }, [
-                'To use this extension, extract and move the NewsBlur Safari Helper.app ',
-                'to your Applications folder. Then in ',
-                $.make('b', 'Safari > Settings > RSS'),
-                ' choose the new NewsBlur Safari Helper.app. Then clicking on the RSS button in ',
-                'Safari will open the feed in NewsBlur. Simple!'
-              ])
+            $.make('div', { className: 'NB-modal-email-name-container' }, [
+              '&raquo; Who is this from: ',
+              $.make('input', { className: 'NB-input NB-modal-email-name', value: NEWSBLUR.Globals.username })
             ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('input', {
-                  className: 'NB-goodies-custom-input',
-                  value: 'http://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
-              }),
-              $.make('div', { className: 'NB-goodies-custom' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
+            $.make('form', { className: 'NB-recommend-form' }, [
+                $.make('div', { className: 'NB-modal-submit' }, [
+                    $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Send this story' }),
+                    ' or ',
+                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                ])
             ])
         ]);
     },
