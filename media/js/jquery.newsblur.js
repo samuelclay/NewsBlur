@@ -130,6 +130,33 @@ NEWSBLUR.log = function(msg) {
     
     $.extend({
       
+        // Color format: {r: 1, g: .5, b: 0}
+        textColor: function(background_color) {
+            var contrast = function (color1, color2) {
+                var lum1 = luminosity(color1);
+                var lum2 = luminosity(color2);
+                if(lum1 > lum2)
+                return (lum1 + 0.05) / (lum2 + 0.05);
+                return (lum2 + 0.05) / (lum1 + 0.05);
+            };
+            
+            var luminosity = function (color) {
+                var r = color.r, g = color.g, b = color.b;
+                var red = (r <= 0.03928) ? r/12.92 : Math.pow(((r + 0.055)/1.055), 2.4);
+                var green = (g <= 0.03928) ? g/12.92 : Math.pow(((g + 0.055)/1.055), 2.4);
+                var blue = (b <= 0.03928) ? b/12.92 : Math.pow(((b + 0.055)/1.055), 2.4);
+                
+                return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+            };
+            
+            if (contrast(background_color, {r: 1, g: 1, b: 1}) > 
+                contrast(background_color, {r: .5, g: .5, b: .5})) {
+                return 'white';
+            } else {
+                return 'black';
+            }
+        },
+        
         favicon: function(feed_favicon, empty_on_missing) {
           
             if (feed_favicon && feed_favicon.indexOf('data:image/png;base64,') != -1) return feed_favicon;
