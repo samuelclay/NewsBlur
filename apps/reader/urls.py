@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url(r'^save_feed_order', views.save_feed_order, name='save-feed-order'),
     url(r'^feeds_trainer', views.feeds_trainer, name='feeds-trainer'),
     url(r'^save_feed_chooser', views.save_feed_chooser, name='save-feed-chooser'),
+    url(r'^send_story_email', views.send_story_email, name='send-story-email'),
     url(r'^retrain_all_sites', views.retrain_all_sites, name='retrain-all-sites'),
     url(r'^buster', views.iframe_buster, name='iframe-buster'),
 )

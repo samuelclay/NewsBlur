@@ -955,4 +955,18 @@ def mark_story_as_unstarred(request):
         code = -1
     
     return {'code': code}
+
+@ajax_login_required
+@json.json_view
+def send_story_email(request):
+    code       = 1
+    story_id   = request.POST['story_id']
+    feed_id    = request.POST['feed_id']
+    to_address = request.POST['to']
+    from_name  = request.POST['from']
+    comments   = request.POST['comments']
     
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
+    print story
+    
+    return {'code': code}

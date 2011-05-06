@@ -4102,6 +4102,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readability {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
+    background: transparent url('../img/icons/silk/email_open.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
     background: transparent url('../img/reader/twitter_icon_2.png') no-repeat 0 0;
 }
@@ -4380,11 +4383,20 @@ background: transparent;
 .NB-modal-email .NB-modal-loading {
   margin: 6px 8px 0;
 }
+.NB-modal-email .NB-input {
+  width: 300px;
+}
+.NB-modal-email .NB-modal-email-feed {
+  font-size: 13px;
+  margin: 4px 0; 
+}
+.NB-modal-email .NB-modal-email-story-permalink {
+  color: #808080;
+  font-size: 11px;
+}
 .NB-modal.NB-modal-email .NB-modal-email-comments-container {
-  padding: 6px 0;
+  padding: 6px 0 0;
   margin: 4px 0;
-  border-top: 1px solid #C0C0C0;
-  border-bottom: 1px solid #C0C0C0;
 }
 .NB-modal-email .NB-modal-email-comments {
   width: 558px;
@@ -4397,20 +4409,24 @@ background: transparent;
   border: 1px solid #E0E0E0;
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
-.NB-modal-email .NB-modal-email-name-container {
+.NB-modal-email .NB-modal-email-to-container,
+.NB-modal-email .NB-modal-email-from-container {
   color: #505050;
   font-size: 12px;
   margin: 4px 0;
+  border-top: 1px solid #F0F0F0;
+  padding: 6px 0 6px;
 }
-.NB-modal-email .NB-modal-email-name {
+.NB-modal-email .NB-modal-email-from {
   
 }
 .NB-modal-email .NB-modal-email-explanation {
   clear: both;
   color: #505050;
   font-size: 12px;
-  margin: 12px 0 14px;
-  padding: 0 1px;
+  margin: 0;
+  padding: 14px 1px 0;
+  border-top: 1px solid #F0F0F0;
 }
 
 

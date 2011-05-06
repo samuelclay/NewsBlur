@@ -37,6 +37,10 @@ NEWSBLUR.Modal.prototype = {
                 $('.NB-modal-holder').empty().remove();
             }
         });
+    },
+    
+    close: function() {
+        $.modal.close();
     }
     
 };
