@@ -2555,7 +2555,7 @@
             var r = parseInt(color.substr(0, 2), 16) / 255.0;
             var g = parseInt(color.substr(2, 2), 16) / 255.0;
             var b = parseInt(color.substr(4, 2), 16) / 255.0;
-            console.log(['is_feed_floater_gradient_light', r, g, b, $.textColor({r: r, g: g, b: b})]);
+
             return $.textColor({r: r, g: g, b: b}) != 'white';
         },
         
