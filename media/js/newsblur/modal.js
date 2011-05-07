@@ -40,6 +40,7 @@ NEWSBLUR.Modal.prototype = {
     },
     
     close: function() {
+        $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         $.modal.close();
     }
     

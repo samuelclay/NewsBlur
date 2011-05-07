@@ -4,6 +4,7 @@ import re
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.db import IntegrityError
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
@@ -13,6 +14,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.conf import settings
 from django.core.mail import mail_admins
+from django.core.validators import email_re
+from django.core.mail import EmailMultiAlternatives
 from collections import defaultdict
 from operator import itemgetter
 from mongoengine.queryset import OperationError
@@ -960,13 +963,25 @@ def mark_story_as_unstarred(request):
 @json.json_view
 def send_story_email(request):
     code       = 1
+    message    = 'OK'
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
     to_address = request.POST['to']
     from_name  = request.POST['from']
     comments   = request.POST['comments']
-    
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-    print story
-    
-    return {'code': code}
+    from_email = 'share@newsblur.com'
+
+    if not email_re.match(to_address):
+        code = -1
+        message = 'You need to send the email to a valid email address.'
+    else:
+        story   = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
+        feed    = Feed.objects.get(pk=story.story_feed_id)
+        text    = render_to_string('mail/email_story_text.xhtml', locals())
+        html    = render_to_string('mail/email_story_html.xhtml', locals())
+        subject = "%s is sharing a story with you: \"%s\"" % (from_name, story.story_title)
+        msg     = EmailMultiAlternatives(subject, text, from_email, [to_address])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+    return {'code': code, 'message': message}

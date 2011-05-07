@@ -26,6 +26,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-email NB-modal' }, [
+            $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),
@@ -60,12 +61,14 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
     },
     
     save: function(e) {
+        var self     = this;
         var from     = $('input[name=from]', this.$modal).val();
         var to       = $('input[name=to]', this.$modal).val();
         var comments = $('textarea', this.$modal).val();
         var $save    = $('input[type=submit]', this.$modal);
         
         $save.addClass('NB-disabled').val('Sending...');
+        $('.NB-modal-loading', this.$modal).addClass('NB-active');
         
         this.model.send_story_email({
           story_id : this.story_id,
@@ -74,7 +77,8 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
           to       : to,
           comments : comments
         }, this.close, function(error) {
-            $save.removeClass('NB-disabled').val('Send Email');
+            $('.NB-modal-loading', self.$modal).removeClass('NB-active');
+            $save.removeClass('NB-disabled').val('Send this story');
         });
     },
     
