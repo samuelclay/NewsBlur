@@ -134,8 +134,9 @@ class MFeedback(mongo.Document):
         if len(data):
             cls.objects.delete()
             for feedback in data:
-                if 'about' in feedback['date']:
-                    feedback['date'] = feedback['date'].replace('about', '')
+                for removal in ['about', 'less than']:
+                    if removal in feedback['date']:
+                        feedback['date'] = feedback['date'].replace(removal, '')
             [MFeedback.objects.create(**feedback) for feedback in data]
     
     @classmethod
