@@ -3399,6 +3399,10 @@ background: transparent;
     text-shadow: 1px 1px 0 #E0E0E0;
     clear: both;
 }
+
+.NB-modules-center .NB-module h3.NB-module-content-header {
+    margin-right: 12px;
+}
 .NB-module .NB-module-content-subtitle {
     float: right;
     color: #C0C0C0;
