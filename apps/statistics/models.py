@@ -1,5 +1,6 @@
 import datetime
 import mongoengine as mongo
+import urllib2
 from django.db.models import Avg, Count
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, FeedLoadtime
 from apps.profile.models import Profile
@@ -109,4 +110,36 @@ class MStatistics(mongo.Document):
         )
         for key, value in values:
             cls.objects(key=key).update_one(upsert=True, key=key, value=value)
+
+class MFeedback(mongo.Document):
+    date    = mongo.StringField()
+    summary = mongo.StringField()
+    subject = mongo.StringField()
+    url     = mongo.StringField()
+    style   = mongo.StringField()
+    
+    meta = {
+        'collection': 'feedback',
+        'allow_inheritance': False,
+        'indexes': ['style'],
+    }
+    
+    def __unicode__(self):
+        return "%s: (%s) %s" % (self.style, self.date, self.subject)
         
+    @classmethod
+    def collect_feedback(cls):
+        data = urllib2.urlopen('https://getsatisfaction.com/newsblur/topics.widget').read()
+        data = json.decode(data[1:-1])
+        if len(data):
+            cls.objects.delete()
+            for feedback in data:
+                if 'about' in feedback['date']:
+                    feedback['date'] = feedback['date'].replace('about', '')
+            [MFeedback.objects.create(**feedback) for feedback in data]
+    
+    @classmethod
+    def all(cls):
+        feedbacks = cls.objects.all()[:5]
+
+        return feedbacks

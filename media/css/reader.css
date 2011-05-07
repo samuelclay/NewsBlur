@@ -3689,6 +3689,31 @@ background: transparent;
     height: 16px;
 }
 
+.NB-module-features .NB-module-feature .NB-module-feature-tag {
+    font-size: 8px;
+    padding: 0 4px;
+    background-color: #DC8A13;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 4px;
+    display: inline-block;
+    vertical-align: text-bottom;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-problem {
+    background-color: #DC5C25;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-praise {
+    background-color: #F4B156;
+    color: white;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-idea {
+    background-color: #9DDC5F;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
+    background-color: #6DAEDC;
+}
+
 #add-feature-form {
     display: none;
 }
