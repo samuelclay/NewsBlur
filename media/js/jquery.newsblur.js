@@ -270,6 +270,10 @@ NEWSBLUR.log = function(msg) {
                     children = args[1];
                 } else {
                     props = args[1];
+                    if (props.className) {
+                      props['class'] = props.className;
+                      delete props.className;
+                    }
                 }
             }
             

@@ -90,7 +90,7 @@ MIDDLEWARE_CLASSES = (
 COMPRESS_JS = {
     'all': {
         'source_filenames': (
-            'js/jquery-1.5.1.js',
+            'js/jquery-1.6.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',

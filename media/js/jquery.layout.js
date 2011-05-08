@@ -1370,7 +1370,7 @@ $.fn.layout = function (opts) {
 	var initContainer = function () {
 		var
 			$C		= $Container // alias
-		,	tag		= sC.tagName = $C.attr("tagName")
+		,	tag		= sC.tagName = $.prop?$C.prop("tagName"):$C.attr("tagName") 
 		,	fullPage= (tag == "BODY")
 		,	props	= "position,margin,padding,border"
 		,	CSS		= {}
@@ -1745,7 +1745,7 @@ $.fn.layout = function (opts) {
 			s.isHidden	= false; // true = pane is hidden - no spacing, resizer or toggler is visible!
 		}
 			// state for all panes
-			s.tagName	= $P.attr("tagName");
+			s.tagName	= $.prop?$P.prop("tagName"):$P.attr("tagName"); 
 			s.edge		= pane   // useful if pane is (or about to be) 'swapped' - easy find out where it is (or is going)
 			s.noRoom	= false; // true = pane 'automatically' hidden due to insufficient room - will unhide automatically
 			s.isVisible	= true;  // false = pane is invisible - closed OR hidden - simplify logic
