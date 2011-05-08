@@ -32,6 +32,7 @@ if '/vendor' not in ' '.join(sys.path):
 ADMINS                = (
     ('Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
+SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
 PAYPAL_RECEIVER_EMAIL = 'samuel@ofbrooklyn.com'
 TIME_ZONE             = 'GMT'
@@ -63,7 +64,7 @@ DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.app_directories.Loader',
     'django.template.loaders.eggs.load_template_source',
 
 )
@@ -80,8 +81,72 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
+    'apps.profile.middleware.SQLLogToConsoleMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+# ===========
+# = Logging =
+# ===========
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)-12s] %(message)s', 
+            'datefmt': '%b %d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'log_file':{
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_FILE,
+            'maxBytes': '16777216', # 16megabytes
+            'formatter': 'verbose'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['null'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'newsblur': {
+            'handlers': ['console', 'log_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    'apps': { # I keep all my apps here, but you can also add them one by one
+            'handlers': ['log_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    }
+}
 
 # =====================
 # = Media Compression =
@@ -191,23 +256,6 @@ COMPRESS_CSS_FILTERS = []
 # COMPRESS_YUI_BINARY = 'java -jar ' + YUI_DIR
 # COMPRESS_YUI_JS_ARGUMENTS = '--preserve-semi --nomunge --disable-optimizations'
 
-# ========================
-# = Django Debug Toolbar =
-# ========================
-
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.cache.CacheDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
-    'debug_toolbar.panels.logger.LoggingPanel',
-)
-
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -273,7 +321,7 @@ elif DEVELOPMENT:
     )
 
 DEVSERVER_MODULES = (
-    'devserver.modules.sql.SQLRealTimeModule',
+    # 'devserver.modules.sql.SQLRealTimeModule',
     'devserver.modules.sql.SQLSummaryModule',
     'devserver.modules.profile.ProfileSummaryModule',
 
