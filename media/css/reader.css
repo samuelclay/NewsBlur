@@ -3399,6 +3399,10 @@ background: transparent;
     text-shadow: 1px 1px 0 #E0E0E0;
     clear: both;
 }
+
+.NB-modules-center .NB-module h3.NB-module-content-header {
+    margin-right: 12px;
+}
 .NB-module .NB-module-content-subtitle {
     float: right;
     color: #C0C0C0;
@@ -3683,6 +3687,31 @@ background: transparent;
     vertical-align: text-bottom;
     width: 16px;
     height: 16px;
+}
+
+.NB-module-features .NB-module-feature .NB-module-feature-tag {
+    font-size: 8px;
+    padding: 0 4px;
+    background-color: #DC8A13;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 4px;
+    display: inline-block;
+    vertical-align: text-bottom;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-problem {
+    background-color: #DC5C25;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-praise {
+    background-color: #F4B156;
+    color: white;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-idea {
+    background-color: #9DDC5F;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
+    background-color: #6DAEDC;
 }
 
 #add-feature-form {

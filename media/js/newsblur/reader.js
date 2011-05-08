@@ -2560,7 +2560,7 @@
             var r = parseInt(color.substr(0, 2), 16) / 255.0;
             var g = parseInt(color.substr(2, 2), 16) / 255.0;
             var b = parseInt(color.substr(4, 2), 16) / 255.0;
-            console.log(['is_feed_floater_gradient_light', r, g, b, $.textColor({r: r, g: g, b: b})]);
+
             return $.textColor({r: r, g: g, b: b}) != 'white';
         },
         
@@ -4838,7 +4838,7 @@
                 $module.removeClass('NB-loading');
                 self.counts['feature_page'] += direction;
                 
-                var $table = $.make('table', { cellSpacing: 0, cellPadding: 0 });
+                var $table = $.make('table', { className: 'NB-features', cellSpacing: 0, cellPadding: 0 });
                 for (var f in features) {
                     if (f == 3) break;
                     var feature = features[f];
@@ -4849,7 +4849,7 @@
                     $table.append($tr);
                 }
                 
-                $('.NB-module-features table').replaceWith($table);
+                $('.NB-module-features .NB-features').replaceWith($table);
                 
                 var features_count = features.length;
                 if (features_count < 4) {

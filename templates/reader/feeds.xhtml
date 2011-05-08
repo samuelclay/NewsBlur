@@ -22,7 +22,7 @@ $(document).ready(function() {
     <div class="NB-module NB-module-features">
       
       <h5 class="NB-module-header">
-        New Features
+        What's New
         <div class="NB-module-header-right">
           {% if user.is_staff %}
             <div class="NB-features-add">
@@ -37,13 +37,17 @@ $(document).ready(function() {
             });
             </script>
           {% endif %}
-          <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
-          <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
           <div class="NB-spinner NB-left"></div>
+        <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
+        <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
         </div>
       </h5>
       
-      <table class="" cellpadding="0" cellspacing="0">
+      <h3 class="NB-module-content-header">
+        New Features
+      </h3>
+          
+      <table class="NB-features" cellpadding="0" cellspacing="0">
         {% for feature in features %}
           <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
             <td class="NB-module-feature-date">{{ feature.date|date:"M d, Y" }}</td>
@@ -57,12 +61,30 @@ $(document).ready(function() {
           <input type="submit" value="Add feature" />
         </form>
       {% endif %}
+    
+      <h3 class="NB-module-content-header">
+        Community Feedback
+      </h3>
+
+      <table class="" cellpadding="0" cellspacing="0">
+        {% for feedback in feedbacks %}
+          <tr class="NB-module-feature {% if forloop.last %}last{% endif %}">
+            <td class="NB-module-feature-date">{{ feedback.date }}</td>
+            <td class="NB-module-feature-description">
+              <span class="NB-module-feature-tag NB-tag-{{ feedback.style }}">{{ feedback.style }}</span>
+              <a href="{{ feedback.url }}">{{ feedback.subject|typogrify }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+
     </div>
     
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}
     {% endif %}
-    
+
+
   </div>
 
   <div class="NB-account">
