@@ -23,19 +23,19 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-add NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Add feeds and folders'),
+            $.make('h2', { className: 'NB-modal-title' }, 'Add sites and folders'),
             $.make('div', { className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-fieldset NB-add-add-url NB-modal-submit' }, [
                     $.make('h5', [
                         $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
-                        'Add a new feed'
+                        'Add a new site'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
                         $.make('div', [
                             $.make('div', { className: 'NB-loading' }),
-                            $.make('label', { 'for': 'NB-add-url' }, 'RSS or URL: '),
+                            $.make('label', { 'for': 'NB-add-url' }, 'Website or RSS: '),
                             $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-input NB-add-url', name: 'url', value: self.options.url }),
-                            $.make('input', { type: 'submit', value: 'Add it', className: 'NB-modal-submit-green NB-add-url-submit' }),
+                            $.make('input', { type: 'submit', value: 'Add site', className: 'NB-modal-submit-green NB-add-url-submit' }),
                             $.make('div', { className: 'NB-error' })
                         ])
                     ])
@@ -285,6 +285,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     },
     
     save_add_url: function() {
+        var $submit = $('.NB-add-add-url input[type=submit]', this.$modal);
         var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
         
@@ -293,28 +294,34 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             
         $error.slideUp(300);
         $loading.addClass('NB-active');
-
+        $submit.addClass('NB-disabled').val('Adding...');
+        
         this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this));
     },
     
     post_save_add_url: function(e, data) {
         NEWSBLUR.log(['Data', data]);
+        var $submit = $('.NB-add-add-url input[type=submit]', this.$modal);
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-url');
         $loading.removeClass('NB-active');
+        $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
             NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
+            $submit.val('Added!');
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
             $error.text(data.message);
             $error.slideDown(300);
+            $submit.val('Add Site');
         }
     },
     
     save_add_folder: function() {
+        var $submit = $('.NB-add-add-folder input[type=submit]', this.$modal);
         var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
         
@@ -323,24 +330,28 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             
         $error.slideUp(300);
         $loading.addClass('NB-active');
+        $submit.addClass('NB-disabled').val('Adding...');
 
         this.model.save_add_folder(folder, parent_folder, $.rescope(this.post_save_add_folder, this));
     },
     
     post_save_add_folder: function(e, data) {
-        NEWSBLUR.log(['Data', data]);
+        var $submit = $('.NB-add-add-folder input[type=submit]', this.$modal);
         var $loading = $('.NB-loading', '.NB-fieldset.NB-add-add-folder');
         $loading.removeClass('NB-active');
+        $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
             NEWSBLUR.reader.load_feeds();
             _.defer(function() {
               NEWSBLUR.reader.open_add_feed_modal();
             });
+            $submit.val('Added!');
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');
             $error.text(data.message);
             $error.slideDown(300);
+            $submit.val('Add Folder');
         }
     }
     

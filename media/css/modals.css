@@ -112,6 +112,13 @@
     float: left;
 }
 
+.NB-modal .NB-error {
+    display: none;
+    font-weight: bold;
+    font-size: 14px;
+    color: #7E0418;
+    padding: 0 0 12px 0;
+}
 .NB-modal .NB-modal-title {
     font-weight: bold;
     color: #303030;
@@ -124,6 +131,7 @@
     font-size: 14px;
     position: relative;
     background-color: #F6F6F6;
+    overflow: hidden;
 }
 .NB-modal .NB-modal-feed-title {
     display: block;

@@ -700,9 +700,12 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
-    folder = request.POST.get('folder', '')
-
-    code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, folder=folder)
+    if not url:
+        code = -1
+        message = 'Enter in the website address or the feed URL.'
+    else:
+        folder = request.POST.get('folder', '')
+        code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, folder=folder)
     
     return dict(code=code, message=message)
 
@@ -967,7 +970,8 @@ def send_story_email(request):
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
     to_address = request.POST['to']
-    from_name  = request.POST['from']
+    from_name  = request.POST['from_name']
+    from_email = request.POST['from_email']
     comments   = request.POST['comments']
     from_email = 'share@newsblur.com'
 

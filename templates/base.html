@@ -14,6 +14,7 @@
       'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
+      'email'                   : "{{ user.email|safe }}",
       'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
       'MEDIA_URL'               : "{{ MEDIA_URL }}"
     };

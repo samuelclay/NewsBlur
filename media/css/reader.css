@@ -33,6 +33,10 @@ a img {
 .NB-right {
   float: right;
 }
+.NB-raquo {
+  font-size: 18px;
+  vertical-align: baseline;
+}
 
 /* ==================== */
 /* = Styling & Themes = */
@@ -2830,7 +2834,7 @@ a.NB-splash-link:hover {
 /* ===================== */
 
 .NB-modal.NB-add .NB-fieldset-fields {
-    margin: 14px 0 14px 16px;
+    margin: 14px 0 0 16px;
 }
 
 .NB-add .NB-add-danger {
@@ -2839,7 +2843,7 @@ a.NB-splash-link:hover {
     font-size: 12px;
     color: #535558;
     font-weight: bold;
-    margin: 8px 0 0;
+    margin: 8px 0 12px;
     float: left;
 }
 
@@ -2870,7 +2874,11 @@ a.NB-splash-link:hover {
 }
 
 .NB-add input[type=text] {
-    width: 340px;
+    width: 308px;
+    margin-bottom: 16px;
+}
+.NB-add .NB-add-add-folder input[type=text] {
+    width: 380px;
 }
 
 .NB-add .NB-folder-icon {
@@ -2883,14 +2891,6 @@ a.NB-splash-link:hover {
 
 .NB-add input.NB-add-folder {
     margin-left: 6px;
-}
-
-.NB-add .NB-error {
-    display: none;
-    font-weight: bold;
-    font-size: 14px;
-    color: #7E0418;
-    margin: 10px 0 0 0;
 }
 
 .NB-add .NB-add-google-reader-arrow {
@@ -4383,12 +4383,27 @@ background: transparent;
 .NB-modal-email .NB-modal-loading {
   margin: 6px 8px 0;
 }
+.NB-modal-email label {
+  float: left;
+}
+
 .NB-modal-email .NB-input {
-  width: 300px;
+  width: 430px;
+  margin-left: 120px;
+  display: block;
 }
 .NB-modal-email .NB-modal-email-feed {
-  font-size: 13px;
-  margin: 4px 0; 
+  font-size: 11px;
+  margin: 0 0 6px;
+  line-height: 10px; 
+}
+.NB-modal-email .NB-modal-email-feed .NB-modal-feed-image {
+  height: 12px;
+  width: 12px;
+}
+.NB-modal-email .NB-modal-email-feed .NB-modal-feed-title {
+  margin-left: 0;
+  overflow: visible;
 }
 .NB-modal-email .NB-modal-email-story-permalink {
   color: #808080;
@@ -4396,29 +4411,32 @@ background: transparent;
 }
 .NB-modal.NB-modal-email .NB-modal-email-comments-container {
   padding: 6px 0 0;
-  margin: 4px 0;
+  margin: 0;
 }
 .NB-modal-email .NB-modal-email-comments {
-  width: 558px;
+  width: 550px;
   height: 80px;
   font-size: 14px;
   color: #404040;
   line-height: 20px;
-  padding: 8px;
+  padding: 8px 0 0 8px;
   margin: 0;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #F0F0F0;
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-email .NB-modal-email-to-container,
 .NB-modal-email .NB-modal-email-from-container {
   color: #505050;
   font-size: 12px;
+  padding: 12px 0 0;
+}
+.NB-modal-email .NB-modal-email-to-container {
   margin: 4px 0;
-  border-top: 1px solid #F0F0F0;
-  padding: 6px 0 6px;
+  border-top: 1px solid #D0D0D0;
+}
+.NB-modal-email .NB-modal-email-from-container {
 }
 .NB-modal-email .NB-modal-email-from {
-  
 }
 .NB-modal-email .NB-modal-email-explanation {
   clear: both;
@@ -4426,9 +4444,12 @@ background: transparent;
   font-size: 12px;
   margin: 0;
   padding: 14px 1px 0;
-  border-top: 1px solid #F0F0F0;
 }
-
+.NB-modal.NB-modal-email .NB-error {
+  float: right;
+  font-size: 12px;
+  margin-top: 8px;
+}
 
 /* ========================= */
 /* = Feed Exceptions Modal = */
