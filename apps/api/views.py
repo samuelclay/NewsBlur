@@ -45,6 +45,7 @@ def logout(request):
 
 def add_site_load_script(request, token):
     code = 0
+    usf = None
     def image_base64(image_name):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/%s.png' % image_name))
         return base64.b64encode(image_file.read())
@@ -67,7 +68,7 @@ def add_site_load_script(request, token):
     return render_to_response('api/bookmarklet_subscribe.js', {
         'code': code,
         'token': token,
-        'folders': usf.folders,
+        'folders': usf and usf.folders,
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,

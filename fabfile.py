@@ -44,6 +44,7 @@ def deploy():
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://www.newsblur.com > /dev/null')
+        run('curl -s http://www.newsblur.com/api/add_site_load_script/ABCDEF > /dev/null')
         compress_media()
 
 @roles('web')
