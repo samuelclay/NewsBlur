@@ -982,10 +982,11 @@ def send_story_email(request):
         message = 'You need to send the email to a valid email address.'
     else:
         story   = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-        feed    = Feed.objects.get(pk=story.story_feed_id)
+        story   = Feed.format_story(story, feed_id, text=True)
+        feed    = Feed.objects.get(pk=story['story_feed_id'])
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
-        subject = "%s is sharing a story with you: \"%s\"" % (from_name, story.story_title)
+        subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
         msg     = EmailMultiAlternatives(subject, text, from_email, [to_address])
         msg.attach_alternative(html, "text/html")
         msg.send()

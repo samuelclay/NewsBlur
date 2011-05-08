@@ -668,22 +668,35 @@ class Feed(models.Model):
         stories = []
 
         for story_db in stories_db:
-            story = {}
-            story['story_tags'] = story_db.story_tags or []
-            story['story_date'] = story_db.story_date
-            story['story_authors'] = story_db.story_author_name
-            story['story_title'] = story_db.story_title
-            story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
-            story['story_permalink'] = urllib.unquote(urllib.unquote(story_db.story_permalink))
-            story['story_feed_id'] = feed_id or story_db.story_feed_id
-            story['id'] = story_db.story_guid
-            if hasattr(story_db, 'starred_date'):
-                story['starred_date'] = story_db.starred_date
-            
+            story = cls.format_story(story_db, feed_id)
             stories.append(story)
             
         return stories
-        
+    
+    @classmethod
+    def format_story(cls, story_db, feed_id=None, text=False):
+        story                     = {}
+        story['story_tags']       = story_db.story_tags or []
+        story['story_date']       = story_db.story_date
+        story['story_authors']    = story_db.story_author_name
+        story['story_title']      = story_db.story_title
+        story['story_content']    = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
+        story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
+        story['story_feed_id']    = feed_id or story_db.story_feed_id
+        story['id']               = story_db.story_guid
+        if hasattr(story_db, 'starred_date'):
+            story['starred_date'] = story_db.starred_date
+        if text:
+            from BeautifulSoup import BeautifulSoup
+            soup = BeautifulSoup(story['story_content'])
+            text = ''.join(soup.findAll(text=True))
+            text = re.sub(r'\n+', '\n', text)
+            text = re.sub(r'\t+', '\t', text)
+            story['text'] = text
+            
+
+        return story
+                
     def get_tags(self, entry):
         fcat = []
         if entry.has_key('tags'):

@@ -9,9 +9,9 @@
 
 <h2>{{ story.story_title }}</h2>
 
-<a href="{{ story.story_permalink }}">{{ story.story_permalink }}</a>
+<a href="{{ story.story_permalink|safe }}">{{ story.story_permalink|safe }}</a>
 
-<p>{{ story.story_content }}</p>
+<p>{{ story.story_content|safe }}</p>
 
 <p>--</p>
 
