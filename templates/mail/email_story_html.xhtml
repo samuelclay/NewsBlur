@@ -1,8 +1,8 @@
-<p>{{ from_name }} is sharing a story with you entitled "{{ story.story_title }}". This story is from {{ feed.feed_title }}.</p>
+<p>Hello there! {{ from_name }} is sharing a story with you entitled "{{ story.story_title }}" from {{ feed.feed_title }}.</p>
 
 {% if comments %}
 <p>{{ from_name }} writes:<br />
-"{{ comments }}"</p>
+{{ comments }}</p>
 {% endif %}
 
 <p>--</p>

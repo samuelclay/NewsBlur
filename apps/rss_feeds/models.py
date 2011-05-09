@@ -690,7 +690,7 @@ class Feed(models.Model):
             from BeautifulSoup import BeautifulSoup
             soup = BeautifulSoup(story['story_content'])
             text = ''.join(soup.findAll(text=True))
-            text = re.sub(r'\n+', '\n', text)
+            text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)
             story['text'] = text
             

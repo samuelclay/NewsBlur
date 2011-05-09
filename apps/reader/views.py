@@ -1,6 +1,5 @@
 import datetime
 import time
-import re
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -987,7 +986,9 @@ def send_story_email(request):
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
-        msg     = EmailMultiAlternatives(subject, text, from_email, [to_address])
+        msg     = EmailMultiAlternatives(subject, text, from_email, [to_address], 
+                                         cc=['%s <%s>' % (from_name, from_email)],
+                                         headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
         msg.send()
         

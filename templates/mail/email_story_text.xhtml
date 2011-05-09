@@ -1,10 +1,9 @@
-{{ from_name }} is sharing a story with you entitled "{{ story.story_title }}". This story is from {{ feed.feed_title }}.
+Hello there! {{ from_name }} is sharing a story with you entitled "{{ story.story_title }}" from {{ feed.feed_title }}.
 
 {% if comments %}
 {{ from_name }} writes:
 "{{ comments }}"
 {% endif %}
-
 --
 
 {{ story.story_title }}

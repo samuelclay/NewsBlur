@@ -2,7 +2,9 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 import os
 import sys
-sys.path.append("/home/conesus/newsblur")
+
+if '/home/sclay/newsblur' not in ' '.join(sys.path):
+    sys.path.append("/home/sclay/newsblur")
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django.conf import settings
