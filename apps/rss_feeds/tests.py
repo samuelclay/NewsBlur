@@ -31,7 +31,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 38)
         
-        response = self.client.post('/reader/load_single_feed', { "feed_id": 1 })
+        response = self.client.post('/reader/feed', { "feed_id": 1 })
         feed = json.decode(response.content)        
         self.assertEquals(len(feed['stories']), 30)
         
@@ -48,7 +48,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 42)
         
-        response = self.client.post('/reader/load_single_feed', { "feed_id": 4 })
+        response = self.client.post('/reader/feed', { "feed_id": 4 })
         content = json.decode(response.content)
         self.assertEquals(len(content['stories']), 30)
         
@@ -58,7 +58,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 42)
         
-        response = self.client.get('/reader/load_single_feed', { "feed_id": 4 })
+        response = self.client.get('/reader/feed', { "feed_id": 4 })
         # print [c['story_title'] for c in json.decode(response.content)]
         content = json.decode(response.content)
         # Test: 1 changed char in title
@@ -84,7 +84,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 38)
         
-        response = self.client.post('/reader/load_single_feed', { "feed_id": 5 })
+        response = self.client.post('/reader/feed', { "feed_id": 5 })
         
         # pprint([c['story_title'] for c in json.decode(response.content)])
         feed = json.decode(response.content)
@@ -98,7 +98,7 @@ class FeedTest(TestCase):
         management.call_command('loaddata', 'brokelyn.json', verbosity=0)
         management.call_command('refresh_feed', force=1, feed=6, single_threaded=True, daemonize=False)
         
-        response = self.client.post('/reader/load_single_feed', { "feed_id": 6 })
+        response = self.client.post('/reader/feed', { "feed_id": 6 })
         
         # pprint([c['story_title'] for c in json.decode(response.content)])
         feed = json.decode(response.content)

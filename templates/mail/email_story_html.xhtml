@@ -1,0 +1,18 @@
+<p>Hello there! {{ from_name }} is sharing a story with you entitled "{{ story.story_title }}" from {{ feed.feed_title }}.</p>
+
+{% if comments %}
+<p>{{ from_name }} writes:<br />
+{{ comments }}</p>
+{% endif %}
+
+<p>--</p>
+
+<h2>{{ story.story_title }}</h2>
+
+<a href="{{ story.story_permalink|safe }}">{{ story.story_permalink|safe }}</a>
+
+<p>{{ story.story_content|safe }}</p>
+
+<p>--</p>
+
+<p>Sent from NewsBlur - <a href="http://www.newsblur.com">www.newsblur.com</a> - a visual feed reader with intelligence.</p>

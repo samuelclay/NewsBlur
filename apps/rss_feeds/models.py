@@ -13,6 +13,7 @@ from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -53,6 +54,8 @@ class Feed(models.Model):
     next_scheduled_update = models.DateTimeField(db_index=True)
     queued_date = models.DateTimeField(db_index=True)
     last_load_time = models.IntegerField(default=0)
+    favicon_color = models.CharField(max_length=6, null=True, blank=True)
+    favicon_not_found = models.BooleanField(default=False)
     
     def __unicode__(self):
         if not self.feed_title:
@@ -60,7 +63,7 @@ class Feed(models.Model):
             self.save()
         return self.feed_title
         
-    def canonical(self, full=False):
+    def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
             'feed_title': self.feed_title,
@@ -68,10 +71,16 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
-            'favicon_color': self.icon.color,
-            'favicon_fetching': bool(not (self.icon.not_found or self.icon.data))
+            'favicon_color': self.favicon_color,
+            'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
         
+        if include_favicon:
+            try:
+                feed_icon = MFeedIcon.objects.get(feed_id=self.pk)
+                feed['favicon'] = feed_icon.data
+            except MFeedIcon.DoesNotExist:
+                pass
         if not self.fetched_once:
             feed['not_yet_fetched'] = True
         if self.has_page_exception or self.has_feed_exception:
@@ -116,37 +125,54 @@ class Feed(models.Model):
             pass
     
     @classmethod
-    def get_feed_from_url(cls, url):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, offset=0):
         feed = None
-    
+        
+        def criteria(key, value):
+            if aggressive:
+                return {'%s__icontains' % key: value}
+            else:
+                return {'%s' % key: value}
+            
         def by_url(address):
-            feed = cls.objects.filter(feed_address=address)
+            feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
-                duplicate_feed = DuplicateFeed.objects.filter(duplicate_address=address).order_by('pk')
-                if duplicate_feed:
-                    feed = [duplicate_feed[0].feed]
+                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
+            if not feed:
+                duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
+                if duplicate_feed and len(duplicate_feed) > offset:
+                    feed = [duplicate_feed[offset].feed]
                 
             return feed
-            
-        url = urlnorm.normalize(url)
+        
+        # Normalize and check for feed_address, dupes, and feed_link
+        if not aggressive:
+            url = urlnorm.normalize(url)
         feed = by_url(url)
-
-        if feed:
-            feed = feed[0]
-        else:
+        
+        # Create if it looks good
+        if feed and len(feed) > offset:
+            feed = feed[offset]
+        elif create:
             if feedfinder.isFeed(url):
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
-            else:
-                feed_finder_url = feedfinder.feed(url)
-                if feed_finder_url:
-                    feed = by_url(feed_finder_url)
-                    if not feed:
-                        feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed = feed.update()
-                    else:
-                        feed = feed[0]
-                    
+        
+        # Still nothing? Maybe the URL has some clues.
+        if not feed:
+            feed_finder_url = feedfinder.feed(url)
+            if feed_finder_url:
+                feed = by_url(feed_finder_url)
+                if not feed and create:
+                    feed = cls.objects.create(feed_address=feed_finder_url)
+                    feed = feed.update()
+                elif feed and len(feed) > offset:
+                    feed = feed[offset]
+        
+        # Not created and not within bounds, so toss results.
+        if isinstance(feed, QuerySet):
+            return
+        
         return feed
         
     @classmethod
@@ -229,12 +255,17 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.utcnow()).save()
-        old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
-        for history in old_fetch_histories:
-            history.delete()
+        # day_ago = datetime.datetime.now() - datetime.timedelta(hours=24)
+        # new_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__gte=day_ago)
+        # if new_fetch_histories.count() < 5 or True:
+        #     old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk)[5:]
+        # else:
+        #     old_fetch_histories = MFeedFetchHistory.objects(feed_id=self.pk, fetch_date__lte=day_ago)
+        # for history in old_fetch_histories:
+        #     history.delete()
         if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
-                                MFeedFetchHistory.objects(feed_id=self.pk))
+                                MFeedFetchHistory.objects(feed_id=self.pk)[:50])
             self.count_errors_in_history(fetch_history, status_code, 'feed')
         elif self.has_feed_exception:
             self.has_feed_exception = False
@@ -247,13 +278,13 @@ class Feed(models.Model):
                           message=message,
                           exception=exception,
                           fetch_date=datetime.datetime.utcnow()).save()
-        old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
-        for history in old_fetch_histories:
-            history.delete()
+        # old_fetch_histories = MPageFetchHistory.objects(feed_id=self.pk).order_by('-fetch_date')[5:]
+        # for history in old_fetch_histories:
+        #     history.delete()
             
         if status_code not in (200, 304):
             fetch_history = map(lambda h: h.status_code, 
-                                MPageFetchHistory.objects(feed_id=self.pk))
+                                MPageFetchHistory.objects(feed_id=self.pk)[:50])
             self.count_errors_in_history(fetch_history, status_code, 'page')
         elif self.has_page_exception:
             self.has_page_exception = False
@@ -261,8 +292,8 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, fetch_history, status_code, exception_type):
-        non_errors = [h for h in fetch_history if int(h) in (200, 304)]
-        errors = [h for h in fetch_history if int(h) not in (200, 304)]
+        non_errors = [h for h in fetch_history if int(h)     in (200, 304)]
+        errors     = [h for h in fetch_history if int(h) not in (200, 304)]
 
         if len(non_errors) == 0 and len(errors) >= 1:
             if exception_type == 'feed':
@@ -400,7 +431,7 @@ class Feed(models.Model):
         self.save()
         
         
-    def save_classifiers_count(self):
+    def save_classifier_counts(self):
         from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
         
         def calculate_scores(cls, facet):
@@ -422,11 +453,14 @@ class Feed(models.Model):
                     return result;
                 }
             """
-            scores = {}
+            scores = []
             res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
             for r in res:
-                scores[r.key] = dict([(k, int(v)) for k,v in r.value.iteritems()])
-            
+                facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
+                facet_values[facet] = r.key
+                scores.append(facet_values)
+            scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
+
             return scores
         
         scores = {}
@@ -435,8 +469,8 @@ class Feed(models.Model):
                            (MClassifierTag, 'tag'), 
                            (MClassifierFeed, 'feed_id')]:
             scores[facet] = calculate_scores(cls, facet)
-            if facet == 'feed_id' and scores[facet].values():
-                scores['feed'] = scores[facet].values()[0]
+            if facet == 'feed_id' and scores[facet]:
+                scores['feed'] = scores[facet]
                 del scores['feed_id']
             elif not scores[facet]:
                 del scores[facet]
@@ -634,22 +668,35 @@ class Feed(models.Model):
         stories = []
 
         for story_db in stories_db:
-            story = {}
-            story['story_tags'] = story_db.story_tags or []
-            story['story_date'] = story_db.story_date
-            story['story_authors'] = story_db.story_author_name
-            story['story_title'] = story_db.story_title
-            story['story_content'] = story_db.story_content_z and zlib.decompress(story_db.story_content_z)
-            story['story_permalink'] = urllib.unquote(urllib.unquote(story_db.story_permalink))
-            story['story_feed_id'] = feed_id or story_db.story_feed_id
-            story['id'] = story_db.story_guid
-            if hasattr(story_db, 'starred_date'):
-                story['starred_date'] = story_db.starred_date
-            
+            story = cls.format_story(story_db, feed_id)
             stories.append(story)
             
         return stories
-        
+    
+    @classmethod
+    def format_story(cls, story_db, feed_id=None, text=False):
+        story                     = {}
+        story['story_tags']       = story_db.story_tags or []
+        story['story_date']       = story_db.story_date
+        story['story_authors']    = story_db.story_author_name
+        story['story_title']      = story_db.story_title
+        story['story_content']    = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
+        story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
+        story['story_feed_id']    = feed_id or story_db.story_feed_id
+        story['id']               = story_db.story_guid
+        if hasattr(story_db, 'starred_date'):
+            story['starred_date'] = story_db.starred_date
+        if text:
+            from BeautifulSoup import BeautifulSoup
+            soup = BeautifulSoup(story['story_content'])
+            text = ''.join(soup.findAll(text=True))
+            text = re.sub(r'\n+', '\n\n', text)
+            text = re.sub(r'\t+', '\t', text)
+            story['text'] = text
+            
+
+        return story
+                
     def get_tags(self, entry):
         fcat = []
         if entry.has_key('tags'):
@@ -762,7 +809,7 @@ class Feed(models.Model):
         updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
                                                    * (updates_per_month**1.5)))
         if self.premium_subscribers > 0:
-            updates_per_day_delay /= 5
+            updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates
         # 24 hours for 0 subscribers.
         # 4 hours for 1 subscriber.
@@ -771,7 +818,7 @@ class Feed(models.Model):
         # 1 min for 10 subscribers.
         subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
-            subscriber_bonus /= 5
+            subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         
         slow_punishment = 0
         if self.num_subscribers <= 1:
@@ -878,6 +925,28 @@ class FeedIcon(models.Model):
         except (IntegrityError, OperationError):
             # print "Error on Icon: %s" % e
             if hasattr(self, 'id'): self.delete()
+
+
+class MFeedIcon(mongo.Document):
+    feed_id   = mongo.IntField(primary_key=True)
+    color     = mongo.StringField(max_length=6)
+    data      = mongo.StringField()
+    icon_url  = mongo.StringField()
+    not_found = mongo.BooleanField(default=False)
+    
+    meta = {
+        'collection'        : 'feed_icons',
+        'allow_inheritance' : False,
+    }
+    
+    def save(self, *args, **kwargs):
+        if self.icon_url:
+            self.icon_url = unicode(self.icon_url)
+        try:    
+            super(MFeedIcon, self).save(*args, **kwargs)
+        except (IntegrityError, OperationError):
+            # print "Error on Icon: %s" % e
+            if hasattr(self, '_id'): self.delete()
 
 
 class MFeedPage(mongo.Document):
@@ -1013,7 +1082,8 @@ class MFeedFetchHistory(mongo.Document):
     meta = {
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
+        'ordering': ['-fetch_date'],
+        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', '-fetch_date')],
     }
     
     def save(self, *args, **kwargs):
@@ -1023,7 +1093,7 @@ class MFeedFetchHistory(mongo.Document):
         
     @classmethod
     def feed_history(cls, feed_id):
-        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')
+        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
         fetch_history = []
         for fetch in fetches:
             history                = {}
@@ -1045,6 +1115,7 @@ class MPageFetchHistory(mongo.Document):
     meta = {
         'collection': 'page_fetch_history',
         'allow_inheritance': False,
+        'ordering': ['-fetch_date'],
         'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', 'fetch_date')],
     }
     
@@ -1055,7 +1126,7 @@ class MPageFetchHistory(mongo.Document):
 
     @classmethod
     def feed_history(cls, feed_id):
-        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')
+        fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
         fetch_history = []
         for fetch in fetches:
             history                = {}

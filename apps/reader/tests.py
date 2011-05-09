@@ -10,7 +10,13 @@ class ReaderTest(TestCase):
     
     def setUp(self):
         self.client = Client()
-
+    
+    def test_api_feeds(self):
+        self.client.login(username='conesus', password='test')
+        
+        response = self.client.get(reverse('load-feeds'))
+        pprint(json.decode(response.content))
+        
     def test_delete_feed(self):
         self.client.login(username='conesus', password='test')
         

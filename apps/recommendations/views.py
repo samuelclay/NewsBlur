@@ -37,13 +37,13 @@ def load_recommended_feed(request):
         return HttpResponse("")
         
 @json.json_view
-def load_feed_info(request):
-    feed_id = request.GET['feed_id']
+def load_feed_info(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     previous_recommendation = None
-    recommended_feed = RecommendedFeed.objects.filter(user=request.user, feed=feed)
-    if recommended_feed:
-        previous_recommendation = recommended_feed[0].created_date
+    if request.user.is_authenticated():
+        recommended_feed = RecommendedFeed.objects.filter(user=request.user, feed=feed)
+        if recommended_feed:
+            previous_recommendation = recommended_feed[0].created_date
     
     return {
         'subscriber_count': feed.num_subscribers,

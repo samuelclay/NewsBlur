@@ -1,13 +1,13 @@
 from utils import json_functions as json
 from django.test.client import Client
 from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed, Story
+from apps.rss_feeds.models import Feed, MStory
 from django.test import TestCase
 from django.core import management
 from pprint import pprint
 # from apps.analyzer.classifier import FisherClassifier
 from apps.analyzer.tokenizer import Tokenizer
-from utils.reverend.thomas import Bayes
+from vendor.reverend.thomas import Bayes
 from apps.analyzer.phrase_filter import PhraseFilter
 
 class ClassifierTest(TestCase):
@@ -49,7 +49,7 @@ class ClassifierTest(TestCase):
         management.call_command('loaddata', 'brownstoner2.json', verbosity=0)
         management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False)
         
-        stories = Story.objects.filter(story_feed=1)[:53]
+        stories = MStory.objects(story_feed_id=1)[:53]
         
         phrasefilter = PhraseFilter()
         for story in stories:

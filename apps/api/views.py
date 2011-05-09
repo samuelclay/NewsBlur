@@ -4,13 +4,48 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib.auth import login as login_user
+from django.contrib.auth import logout as logout_user
+from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
 
+@json.json_view
+def login(request):
+    code = -1
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            login_user(request, form.get_user())
+            logging.user(form.get_user(), "~FG~BB~SKAPI Login~FW")
+            code = 1
+
+    return dict(code=code)
+    
+def signup(request):
+    code = -1
+    if request.method == "POST":
+        form = SignupForm(data=request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            login_user(request, new_user)
+            logging.user(new_user, "~FG~SB~BBAPI NEW SIGNUP~FW")
+            code = 1
+
+    return dict(code=code)
+        
+def logout(request):
+    code = 1
+    logging.user(request.user, "~FG~BBAPI Logout~FW")
+    logout_user(request)
+    
+    return dict(code=code)
+
 def add_site_load_script(request, token):
     code = 0
+    usf = None
     def image_base64(image_name):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/icons/silk/%s.png' % image_name))
         return base64.b64encode(image_file.read())
@@ -33,7 +68,7 @@ def add_site_load_script(request, token):
     return render_to_response('api/bookmarklet_subscribe.js', {
         'code': code,
         'token': token,
-        'folders': usf.folders,
+        'folders': usf and usf.folders,
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,

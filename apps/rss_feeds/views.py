@@ -15,10 +15,22 @@ from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 
+
 @json.json_view
-def load_single_feed(request):
+def search_feed(request):
+    address = request.REQUEST['address']
+    offset = int(request.REQUEST.get('offset', 0))
+    feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
+    
+    if feed:
+        return feed.canonical()
+    else:
+        return dict(code=-1, message="No feed found matching that XML or website address.")
+    
+@json.json_view
+def load_single_feed(request, feed_id):
     user = get_user(request)
-    feed = get_object_or_404(Feed, pk=request.REQUEST['feed_id'])
+    feed = get_object_or_404(Feed, pk=feed_id)
     classifiers = get_classifiers_for_user(user, feed.pk)
 
     payload = feed.canonical(full=True)
@@ -55,11 +67,11 @@ def feed_autocomplete(request):
     return feeds
     
 @json.json_view
-def load_feed_statistics(request):
+def load_feed_statistics(request, feed_id):
     stats = dict()
-    feed_id = request.GET['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.save_feed_story_history_statistics()
+    feed.save_classifier_counts()
     
     # Dates of last and next update
     stats['last_update'] = relative_timesince(feed.last_update)
@@ -81,6 +93,9 @@ def load_feed_statistics(request):
     stats['premium_subscribers'] = feed.premium_subscribers
     stats['active_subscribers'] = feed.active_subscribers
     
+    # Classifier counts
+    stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
+    
     # Fetch histories
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
     stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
@@ -89,9 +104,9 @@ def load_feed_statistics(request):
 
     return stats
 
-@ajax_login_required
 @json.json_view
 def exception_retry(request):
+    user = get_user(request)
     feed_id = request.POST['feed_id']
     reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -109,7 +124,7 @@ def exception_retry(request):
     feed.save()
     
     feed = feed.update(force=True, compute_scores=False)
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub = UserSubscription.objects.get(user=user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
     feeds = {feed.pk: usersub.canonical(full=True)}

@@ -8,7 +8,7 @@ import struct
 import operator
 import BmpImagePlugin, PngImagePlugin, Image
 from StringIO import StringIO
-from apps.rss_feeds.models import MFeedPage
+from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
 HEADERS = {
@@ -21,12 +21,13 @@ class IconImporter(object):
     def __init__(self, feed, force=False):
         self.feed = feed
         self.force = force
+        self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
     
     def save(self):
-        if not self.force and self.feed.icon.not_found:
+        if not self.force and self.feed.favicon_not_found:
             # print 'Not found, skipping...'
             return
-        if not self.force and not self.feed.icon.not_found and self.feed.icon.icon_url:
+        if not self.force and not self.feed.favicon_not_found and self.feed_icon.icon_url:
             # print 'Found, but skipping...'
             return
         image, image_file, icon_url = self.fetch_image_from_page_data()
@@ -44,17 +45,20 @@ class IconImporter(object):
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
 
-            self.feed.icon.save()
-            self.feed.icon.data      = image_str
-            self.feed.icon.icon_url  = icon_url
-            self.feed.icon.color     = color
-            self.feed.icon.not_found = False
+            self.feed_icon.data      = image_str
+            self.feed_icon.icon_url  = icon_url
+            self.feed_icon.color     = color
+            self.feed_icon.not_found = False
+            self.feed_icon.save()
+            self.feed.favicon_color     = color
+            self.feed.favicon_not_found = False
         else:
-            self.feed.icon.save()
-            self.feed.icon.not_found = True
+            self.feed_icon.not_found = True
+            self.feed.favicon_not_found = True
             
-        self.feed.icon.save()
-        return not self.feed.icon.not_found
+        self.feed_icon.save()
+        self.feed.save()
+        return not self.feed.favicon_not_found
      
     def load_icon(self, image_file, index=None):
         '''
@@ -142,7 +146,7 @@ class IconImporter(object):
         url = None
 
         if not force:
-            url = self.feed.icon.icon_url
+            url = self.feed_icon.icon_url
         if not url and self.feed.feed_link and len(self.feed.feed_link) > 6:
             url = urlparse.urljoin(self.feed.feed_link, 'favicon.ico')
         if not url: return None, None, None
@@ -204,14 +208,19 @@ class IconImporter(object):
 
     def determine_dominant_color_in_image(self, image):
         NUM_CLUSTERS = 5
-            
+        
+        # Convert image into array of values for each point.
         ar = scipy.misc.fromimage(image)
         shape = ar.shape
+        
+        # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
             ar = ar.reshape(scipy.product(shape[:2]), shape[2])
-
+            
+        # Get NUM_CLUSTERS worth of centroids.
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
-        # print "Before: %s" % codes
+        
+        # Pare centroids, removing blacks and whites and shades of really dark and really light.
         original_codes = codes
         for low, hi in [(60, 200), (35, 230), (10, 250)]:
             codes = scipy.array([code for code in codes 
@@ -219,17 +228,23 @@ class IconImporter(object):
                                          (code[0] > hi and code[1] > hi and code[2] > hi))])
             if not len(codes): codes = original_codes
             else: break
-        # print "After: %s" % codes
     
-        vecs, _ = scipy.cluster.vq.vq(ar, codes)         # assign codes
-        counts, bins = scipy.histogram(vecs, len(codes))    # count occurrences
+        # Assign codes (vector quantization). Each vector is compared to the centroids
+        # and assigned the nearest one.
+        vecs, _ = scipy.cluster.vq.vq(ar, codes)
+        
+        # Count occurences of each clustered vector.
+        counts, bins = scipy.histogram(vecs, len(codes))
+
+        # Show colors for each code in its hex value.
         # colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
         # total = scipy.sum(counts)
         # print dict(zip(colors, [count/float(total) for count in counts]))
-        index_max = scipy.argmax(counts)                    # find most frequent
+        
+        # Find the most frequent color, based on the counts.
+        index_max = scipy.argmax(counts)
         peak = codes[index_max]
         color = ''.join(chr(c) for c in peak).encode('hex')
-        # print 'most frequent is %s (#%s)' % (peak, color)
         
         return color[:6]
 

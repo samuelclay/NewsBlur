@@ -59,7 +59,7 @@
 .NB-modal h5,
 .NB-module h5 {
     margin: 0;
-    padding: 8px 8px 6px;
+    padding: 8px 12px 6px;
     background-color: #D1E1FA;
     background-image: -webkit-gradient(
         linear,
@@ -80,8 +80,8 @@
     color:#505050;
     font-size: 14px;
     font-family: "Gill Sans", inherit;
-    text-transform: uppercase;
     font-weight: normal;
+    text-transform: uppercase;
     overflow: hidden;
     position: relative;
 }
@@ -112,6 +112,13 @@
     float: left;
 }
 
+.NB-modal .NB-error {
+    display: none;
+    font-weight: bold;
+    font-size: 14px;
+    color: #7E0418;
+    padding: 0 0 12px 0;
+}
 .NB-modal .NB-modal-title {
     font-weight: bold;
     color: #303030;
@@ -124,6 +131,8 @@
     font-size: 14px;
     position: relative;
     background-color: #F6F6F6;
+    overflow: hidden;
+    clear: both;
 }
 .NB-modal .NB-modal-feed-title {
     display: block;

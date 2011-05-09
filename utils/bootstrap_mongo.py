@@ -1,9 +1,9 @@
 from pprint import pprint
 from django.conf import settings
-from apps.reader.models import MUserStory, UserStory
-from apps.rss_feeds.models import Feed, Story, MStory, StoryAuthor, Tag, MFeedPage, FeedPage
+from apps.reader.models import MUserStory
+from apps.rss_feeds.models import Feed, MStory, MFeedPage
+from apps.rss_feeds.models import MFeedIcon, FeedIcon
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-from apps.analyzer.models import ClassifierTitle, ClassifierAuthor, ClassifierFeed, ClassifierTag
 import mongoengine, pymongo
 import sys
 from mongoengine.queryset import OperationError
@@ -138,6 +138,34 @@ def bootstrap_feedpages():
 
     print "\nMongo DB feed_pages: %s" % MFeedPage.objects().count()
 
+def bootstrap_feedicons():
+    print "Mongo DB feed_icons: %s" % MFeedIcon.objects().count()
+    db.feed_icons.drop()
+    print "Dropped! Mongo DB feed_icons: %s" % MFeedIcon.objects().count()
+
+    print "FeedIcons: %s" % FeedIcon.objects.count()
+    pprint(db.feed_icons.index_information())
+
+    feeds = Feed.objects.all().order_by('-average_stories_per_month')
+    feed_count = feeds.count()
+    i = 0
+    for feed in feeds:
+        i += 1
+        print "%s/%s: %s" % (i, feed_count, feed,)
+        sys.stdout.flush()
+        
+        if not MFeedIcon.objects(feed_id=feed.pk):
+            feed_icon = FeedIcon.objects.filter(feed=feed).values()
+            if feed_icon:
+                try:
+                    MFeedIcon(**feed_icon[0]).save()
+                except:
+                    print '\n\n!\n\n'
+                    continue
+        
+
+    print "\nMongo DB feed_icons: %s" % MFeedIcon.objects().count()
+
 def compress_stories():
     count = MStory.objects().count()
     print "Mongo DB stories: %s" % count
@@ -195,4 +223,5 @@ if __name__ == '__main__':
     # bootstrap_classifiers()
     # bootstrap_feedpages()
     # compress_stories()
-    reindex_stories()
+    # reindex_stories()
+    bootstrap_feedicons()

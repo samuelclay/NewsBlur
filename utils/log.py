@@ -1,24 +1,14 @@
 import logging
 from django.conf import settings
-from utils.colorama import Fore, Back, Style
+from vendor.colorama import Fore, Back, Style
 import re
 
-def getlogger():
-    root_logger = logging.getLogger('newsblur')
-    if len(root_logger.handlers) >= 1:
-        return root_logger
-    
-    logger = logging.getLogger('newsblur')
-    if settings.LOG_TO_STREAM:
-        hdlr = logging.StreamHandler()
-    else:
-        hdlr = logging.FileHandler(settings.LOG_FILE)
-    formatter = logging.Formatter('[%(asctime)-12s] %(message)s','%b %d %H:%M:%S')
-    
-    hdlr.setFormatter(formatter)
-    logger.addHandler(hdlr)
-    logger.setLevel(settings.LOG_LEVEL)
+class NullHandler(logging.Handler): #exists in python 3.1
+    def emit(self, record):
+        pass
 
+def getlogger():
+    logger = logging.getLogger('newsblur')
     return logger
 
 def user(u, msg):

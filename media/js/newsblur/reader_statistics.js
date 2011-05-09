@@ -164,6 +164,12 @@ NEWSBLUR.ReaderStatistics.prototype = {
                 ]),
                 $.make('div', { id: 'NB-statistics-history-chart', className: 'NB-statistics-history-chart' })
             ]),
+            (data.classifier_counts && $.make('div', { className: 'NB-statistics-state NB-statistics-classifiers' }, [
+                this.make_classifier_count('tag', data.classifier_counts['tag']),
+                this.make_classifier_count('author', data.classifier_counts['author']),
+                this.make_classifier_count('title', data.classifier_counts['title']),
+                this.make_classifier_count('feed', data.classifier_counts['feed'])
+            ])),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches'}, [
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Feed'),
@@ -185,6 +191,56 @@ NEWSBLUR.ReaderStatistics.prototype = {
         $('.NB-modal-subtitle', this.$modal).prepend($subscribers);
         
         return $stats;
+    },
+    
+    make_classifier_count: function(facet, data) {
+        var self = this;
+        if (!data) return;
+        
+        var $facets = $.make('div', { className: 'NB-statistics-facets' }, [
+            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, data.length))
+        ]);
+        
+        var max = 10;
+        _.each(data, function(v) {
+            if (v.pos > max || v.neg > max) {
+                max = Math.max(v.pos, v.neg);
+            }
+        });
+        
+        var max_width = 100;
+        var multiplier = max_width / parseFloat(max, 10);
+        var calculate_width = function(count) {
+            return Math.max(1, multiplier * count);
+        };
+        
+        _.each(data, function(counts) {
+            var pos = counts.pos || 0;
+            var neg = counts.neg || 0;
+            var key = counts[facet];
+            if (facet == 'feed') {
+                key = [$.make('div', [
+                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed.favicon) }),
+                    $.make('span', { className: 'NB-modal-feed-title' }, self.feed.feed_title)
+                ])];
+            }
+            if (!key || (!pos && !neg)) return;
+            var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
+                (pos && $.make('div', { className: 'NB-statistics-facet-pos' }, [
+                    $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(pos)),
+                    $.make('div', { className: 'NB-statistics-facet-count' }, pos + Inflector.pluralize(' like', pos)).css('margin-left', calculate_width(pos)+5)
+                ])),
+                (neg && $.make('div', { className: 'NB-statistics-facet-neg' }, [
+                    $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(neg)),
+                    $.make('div', { className: 'NB-statistics-facet-count' }, neg + Inflector.pluralize(' dislike', neg)).css('margin-right', calculate_width(neg)+5)
+                ])),
+                $.make('div', { className: 'NB-statistics-facet-separator' }),
+                $.make('div', { className: 'NB-statistics-facet-name' }, key)
+            ]);
+            $facets.append($facet);
+        });
+        
+        return $facets;
     },
     
     make_history: function(data, fetch_type) {
