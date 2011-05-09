@@ -231,7 +231,7 @@
         save_feed_pane_size: function(w, pane, $pane, state, options, name) {
             var feed_pane_size = state.size;
             
-            $('.NB-modules-center').css('margin-left', feed_pane_size);
+            $('#NB-splash').css('left', feed_pane_size);
             this.model.preference('feed_pane_size', feed_pane_size);
         },
         

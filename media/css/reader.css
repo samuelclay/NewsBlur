@@ -88,7 +88,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-account {
     position: absolute;
     right: 0px;
-    top: 55px;
+    top: 0;
     width: 478px;
     z-index: 1;
     overflow: hidden;
@@ -2507,12 +2507,14 @@ form.opml_import_form input {
 /* =============== */
 
 #NB-splash {
-    height: 100%;
-    width: 100%;
     z-index: 0;
     position: absolute;
     top: 0;
     left: 0;
+    bottom: 0;
+    right: 0;
+    overflow-y: auto;
+    margin: 56px 0;
 }
 
 .NB-splash-info {
@@ -3600,7 +3602,7 @@ background: transparent;
 /* ================== */
 
 .NB-modules-center {
-    margin: 79px 478px 0 284px;
+    margin: 24px 478px 0 0px;
     padding: 0 24px;
 }
 
