@@ -975,15 +975,16 @@ def send_story_email(request):
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
+    comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
 
     if not email_re.match(to_address):
         code = -1
         message = 'You need to send the email to a valid email address.'
-    if not email_re.match(from_email):
+    elif not email_re.match(from_email):
         code = -1
         message = 'You need to provide your email address.'
-    if not from_name:
+    elif not from_name:
         code = -1
         message = 'You need to provide your name.'
     else:
@@ -1000,5 +1001,7 @@ def send_story_email(request):
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
         msg.send()
+        logging.user(request.user, '~BMSending story email: ~SB%s~SN~BM/~SB%s' % 
+                                   (story['story_title'][:50], feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
