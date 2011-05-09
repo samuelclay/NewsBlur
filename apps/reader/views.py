@@ -974,7 +974,7 @@ def send_story_email(request):
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
-    from_email = 'share@newsblur.com'
+    from_address = 'share@newsblur.com'
 
     if not email_re.match(to_address):
         code = -1
@@ -986,7 +986,9 @@ def send_story_email(request):
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
-        msg     = EmailMultiAlternatives(subject, text, from_email, [to_address], 
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email=['NewsBlur <%s>' % from_address],
+                                         to=[to_address], 
                                          cc=['%s <%s>' % (from_name, from_email)],
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
