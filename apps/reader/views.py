@@ -979,6 +979,12 @@ def send_story_email(request):
     if not email_re.match(to_address):
         code = -1
         message = 'You need to send the email to a valid email address.'
+    if not email_re.match(from_email):
+        code = -1
+        message = 'You need to provide your email address.'
+    if not from_name:
+        code = -1
+        message = 'You need to provide your name.'
     else:
         story   = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
         story   = Feed.format_story(story, feed_id, text=True)
@@ -987,7 +993,7 @@ def send_story_email(request):
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
         msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email=['NewsBlur <%s>' % from_address],
+                                         from_email='NewsBlur <%s>' % from_address,
                                          to=[to_address], 
                                          cc=['%s <%s>' % (from_name, from_email)],
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
