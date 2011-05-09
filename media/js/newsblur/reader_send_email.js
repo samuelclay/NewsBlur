@@ -19,6 +19,10 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
         this.make_modal();
         this.open_modal();
         
+        if (!NEWSBLUR.Globals.is_authenticated) {
+          this.save_callback({'code': -1, 'message': 'You must be logged in to send a story over email.'});
+        }
+        
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
     
@@ -77,7 +81,6 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
     },
     
     save: function(e) {
-        var self       = this;
         var from_name  = $('input[name=from_name]', this.$modal).val();
         var from_email = $('input[name=from_email]', this.$modal).val();
         var to         = $('input[name=to]', this.$modal).val();
@@ -97,16 +100,19 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
           from_email : from_email,
           to         : to,
           comments   : comments
-        }, _.bind(function(data) {
-            if (!data || data.code < 0) {
-              $('.NB-error', this.$modal).html(data.message).fadeIn(500); 
-              $('.NB-modal-loading', this.$modal).removeClass('NB-active');
-              $save.removeClass('NB-disabled').val('Send this story');
-            } else {
-              $save.val('Sent!');
-              this.close();
-            }
-        }, this));
+        }, _.bind(this.save_callback, this));
+    },
+    
+    save_callback: function(data) {
+        var $save = $('input[type=submit]', this.$modal);
+        if (!data || data.code < 0) {
+          $('.NB-error', this.$modal).html(data.message).fadeIn(500); 
+          $('.NB-modal-loading', this.$modal).removeClass('NB-active');
+          $save.removeClass('NB-disabled').val('Send this story');
+        } else {
+          $save.val('Sent!');
+          this.close();
+        }
     },
     
     // ===========

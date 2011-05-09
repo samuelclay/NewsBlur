@@ -1001,7 +1001,7 @@ def send_story_email(request):
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
         msg.send()
-        logging.user(request.user, '~BMSending story email: ~SB%s~SN~BM/~SB%s' % 
+        logging.user(request.user, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], feed.feed_title[:50]))
         
     return {'code': code, 'message': message}

@@ -910,23 +910,6 @@ class FeedData(models.Model):
             if hasattr(self, 'id') and self.id: self.delete()
 
 
-class FeedIcon(models.Model):
-    feed = AutoOneToOneField(Feed, primary_key=True, related_name='icon')
-    color = models.CharField(max_length=6, blank=True, null=True)
-    data = models.TextField(blank=True, null=True)
-    icon_url = models.CharField(max_length=2000, blank=True, null=True)
-    not_found = models.BooleanField(default=False)
-    
-    def save(self, *args, **kwargs):
-        if self.icon_url:
-            self.icon_url = unicode(self.icon_url)
-        try:    
-            super(FeedIcon, self).save(*args, **kwargs)
-        except (IntegrityError, OperationError):
-            # print "Error on Icon: %s" % e
-            if hasattr(self, 'id'): self.delete()
-
-
 class MFeedIcon(mongo.Document):
     feed_id   = mongo.IntField(primary_key=True)
     color     = mongo.StringField(max_length=6)

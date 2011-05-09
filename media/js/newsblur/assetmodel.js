@@ -788,11 +788,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    send_story_email: function(data, callback, error_callback) {
+    send_story_email: function(data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-          this.make_request('/reader/send_story_email', data, callback, error_callback);
+          this.make_request('/reader/send_story_email', data, callback);
         } else {
-          error_callback('You must be logged in to send a story over email. Just log in or create an account.');
+          callback({'code': -1, 'message': 'You must be logged in to send a story over email.'});
         }
     },
     

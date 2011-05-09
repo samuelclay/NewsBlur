@@ -1,40 +1,28 @@
 # encoding: utf-8
-import sys
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
-from apps.rss_feeds.models import Feed
-try:
-    from apps.rss_feeds.models import FeedIcon
-except ImportError:
-    pass
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        feeds = Feed.objects.all().order_by('-average_stories_per_month')
-        feed_count = feeds.count()
-        i = 0
-        for feed in feeds:
-            i += 1
-            if i % 1000 == 0: 
-                print "%s/%s" % (i, feed_count,)
-                sys.stdout.flush()
-            if not feed.favicon_color:
-                feed_icon = MFeedIcon.objects(feed_id=feed.pk)
-                if feed_icon:
-                    try:
-                        feed.favicon_color = feed_icon[0].color
-                        feed.favicon_not_found = feed_icon[0].not_found
-                        feed.save()
-                    except Exception, e:
-                        print '\n\n!!! %s\n\n' % e
-                        continue
+        
+        # Deleting model 'FeedIcon'
+        db.delete_table('rss_feeds_feedicon')
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        
+        # Adding model 'FeedIcon'
+        db.create_table('rss_feeds_feedicon', (
+            ('feed', self.gf('utils.fields.AutoOneToOneField')(related_name='icon', unique=True, primary_key=True, to=orm['rss_feeds.Feed'])),
+            ('color', self.gf('django.db.models.fields.CharField')(max_length=6, null=True, blank=True)),
+            ('icon_url', self.gf('django.db.models.fields.CharField')(max_length=2000, null=True, blank=True)),
+            ('not_found', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('data', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+        ))
+        db.send_create_signal('rss_feeds', ['FeedIcon'])
 
 
     models = {
@@ -82,14 +70,6 @@ class Migration(DataMigration):
             'popular_authors': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'null': 'True', 'blank': 'True'}),
             'popular_tags': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'null': 'True', 'blank': 'True'}),
             'story_count_history': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'rss_feeds.feedicon': {
-            'Meta': {'object_name': 'FeedIcon'},
-            'color': ('django.db.models.fields.CharField', [], {'max_length': '6', 'null': 'True', 'blank': 'True'}),
-            'data': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'feed': ('utils.fields.AutoOneToOneField', [], {'related_name': "'icon'", 'unique': 'True', 'primary_key': 'True', 'to': "orm['rss_feeds.Feed']"}),
-            'icon_url': ('django.db.models.fields.CharField', [], {'max_length': '2000', 'null': 'True', 'blank': 'True'}),
-            'not_found': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'rss_feeds.feedloadtime': {
             'Meta': {'object_name': 'FeedLoadtime'},
