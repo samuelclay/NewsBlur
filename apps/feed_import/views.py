@@ -112,7 +112,10 @@ def reader_callback(request):
             if not user_uuid: raise OAuthToken.DoesNotExist
             user_token = OAuthToken.objects.get(uuid=user_uuid)
         except OAuthToken.DoesNotExist:
-            user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+            session = request.session
+            if session.session_key:
+                user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+            else: raise OAuthToken.DoesNotExist
         except OAuthToken.DoesNotExist:
             user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
             # logging.info("Found ip user_tokens: %s" % user_tokens)
