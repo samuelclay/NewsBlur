@@ -103,26 +103,26 @@ def reader_callback(request):
     access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
     consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
     user_token = None
-
-    if request.user.is_authenticated():
-        user_token = OAuthToken.objects.get(user=request.user)
-    else:
-        try:
-            user_uuid = request.COOKIES.get('newsblur_reader_uuid')
-            if not user_uuid: raise OAuthToken.DoesNotExist
-            user_token = OAuthToken.objects.get(uuid=user_uuid)
-        except OAuthToken.DoesNotExist:
-            session = request.session
-            if session.session_key:
-                user_token = OAuthToken.objects.get(session_id=request.session.session_key)
-            else: raise OAuthToken.DoesNotExist
-        except OAuthToken.DoesNotExist:
-            user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
-            # logging.info("Found ip user_tokens: %s" % user_tokens)
-            if user_tokens:
-                user_token = user_tokens[0]
-                user_token.session_id = request.session.session_key
-                user_token.save()
+    try:
+        if request.user.is_authenticated():
+            user_token = OAuthToken.objects.get(user=request.user)
+        else: raise OAuthToken.DoesNotExist
+    except OAuthToken.DoesNotExist:
+        user_uuid = request.COOKIES.get('newsblur_reader_uuid')
+        if not user_uuid: raise OAuthToken.DoesNotExist
+        user_token = OAuthToken.objects.get(uuid=user_uuid)
+    except OAuthToken.DoesNotExist:
+        session = request.session
+        if session.session_key:
+            user_token = OAuthToken.objects.get(session_id=request.session.session_key)
+        else: raise OAuthToken.DoesNotExist
+    except OAuthToken.DoesNotExist:
+        user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
+        # logging.info("Found ip user_tokens: %s" % user_tokens)
+        if user_tokens:
+            user_token = user_tokens[0]
+            user_token.session_id = request.session.session_key
+            user_token.save()
     
     if user_token and request.GET.get('oauth_verifier'):
         # logging.info("Google Reader request.GET: %s" % request.GET)
