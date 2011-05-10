@@ -3110,6 +3110,10 @@
             NEWSBLUR.recommend_feed = new NEWSBLUR.ReaderRecommendFeed(feed_id);
         },
         
+        open_tutorial_modal: function() {
+            NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
+        },
+        
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
@@ -5386,6 +5390,12 @@
                     self.open_trainer_modal();
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-tutorial' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_tutorial_modal();
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -5511,6 +5521,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_trainer_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-launch-tutorial' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_tutorial_modal();
                 }
             });  
             
