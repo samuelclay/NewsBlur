@@ -7,6 +7,8 @@ NEWSBLUR.Modal = function(options) {
 };
 
 NEWSBLUR.Modal.prototype = {
+  
+    runner: function() {},
     
     open_modal: function() {
         var self = this;

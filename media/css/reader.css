@@ -36,6 +36,7 @@ a img {
 .NB-raquo {
   font-size: 18px;
   vertical-align: baseline;
+  line-height: 12px;
 }
 
 /* ==================== */
@@ -2880,7 +2881,7 @@ a.NB-splash-link:hover {
     margin-bottom: 16px;
 }
 .NB-add .NB-add-add-folder input[type=text] {
-    width: 380px;
+    width: 376px;
 }
 
 .NB-add .NB-folder-icon {
@@ -4483,6 +4484,14 @@ background: transparent;
   float: right;
   font-size: 12px;
   margin-top: 8px;
+}
+
+/* ================== */
+/* = Tutorial Modal = */
+/* ================== */
+
+.NB-modal-tutorial .NB-modal-submit .NB-modal-submit-button {
+  float: right;
 }
 
 /* ========================= */
