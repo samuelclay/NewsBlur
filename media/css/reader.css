@@ -4490,6 +4490,16 @@ background: transparent;
 /* = Tutorial Modal = */
 /* ================== */
 
+.NB-modal-tutorial .NB-page {
+  display: none;
+}
+.NB-modal-tutorial .NB-modal-page {
+  float: right;
+  margin-top: 7px;
+}
+.NB-modal-tutorial .NB-page.NB-page-1 {
+  display: block;
+}
 .NB-modal-tutorial .NB-modal-submit .NB-modal-submit-button {
   float: right;
 }
