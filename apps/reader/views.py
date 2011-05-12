@@ -46,52 +46,40 @@ SINGLE_DAY = 60*60*24
 def index(request):
     if request.method == "POST":
         if request.POST['submit'] == 'login':
-            login_form = LoginForm(request.POST, prefix='login')
+            login_form  = LoginForm(request.POST, prefix='login')
             signup_form = SignupForm(prefix='signup')
         else:
-            login_form = LoginForm(prefix='login')
+            login_form  = LoginForm(prefix='login')
             signup_form = SignupForm(request.POST, prefix='signup')
     else:
-        login_form = LoginForm(prefix='login')
+        login_form  = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
     
-    user = get_user(request)
-    features = Feature.objects.all()[:3]
-    feature_form = None
-    if request.user.is_staff:
-        feature_form = FeatureForm()
+    user         = get_user(request)
+    authed       = request.user.is_authenticated()
+    features     = Feature.objects.all()[:3]
+    feature_form = FeatureForm() if request.user.is_staff else None
+    feed_count   = UserSubscription.objects.filter(user=request.user).count() if authed else 0
+    active_count = UserSubscription.objects.filter(user=request.user, active=True).count() if authed else 0
+    train_count  = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count() if authed else 0
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=datetime.datetime.now()).select_related('feed')[:2]
+    statistics   = MStatistics.all()
+    feedbacks    = MFeedback.all()
 
-    feed_count = 0
-    active_count = 0
-    train_count = 0
-    if request.user.is_authenticated():
-        feed_count = UserSubscription.objects.filter(user=request.user).count()
-        active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
-        train_count = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count()
-    
-    now = datetime.datetime.now()
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now).select_related('feed')[:2]
-    # recommended_feed_feedback = RecommendedFeedUserFeedback.objects.filter(recommendation=recommended_feed)
-
-    statistics = MStatistics.all()
-    feedbacks = MFeedback.all()
-    howitworks_page = 0 # random.randint(0, 5)
     return render_to_response('reader/feeds.xhtml', {
-        'user_profile': user.profile,
-        'login_form': login_form,
-        'signup_form': signup_form,
-        'feature_form': feature_form,
-        'features': features,
+        'user_profile'      : user.profile,
+        'login_form'        : login_form,
+        'signup_form'       : signup_form,
+        'feature_form'      : feature_form,
+        'features'          : features,
+        'feed_count'        : feed_count,
+        'active_count'      : active_count,
+        'train_count'       : active_count - train_count,
+        'account_images'    : range(1, 4),
+        'recommended_feeds' : recommended_feeds,
+        'statistics'        : statistics,
+        'feedbacks'         : feedbacks,
         'start_import_from_google_reader': request.session.get('import_from_google_reader', False),
-        'howitworks_page': howitworks_page,
-        'feed_count': feed_count,
-        'active_count': active_count,
-        'train_count': active_count - train_count,
-        'account_images': range(1, 4),
-        'recommended_feeds': recommended_feeds,
-        'statistics': statistics,
-        'feedbacks': feedbacks,
-        # 'recommended_feed_feedback': recommended_feed_feedback,
     }, context_instance=RequestContext(request))
 
 @never_cache
