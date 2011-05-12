@@ -24,6 +24,7 @@ def login(request):
 
     return dict(code=code)
     
+@json.json_view
 def signup(request):
     code = -1
     if request.method == "POST":
@@ -36,6 +37,7 @@ def signup(request):
 
     return dict(code=code)
         
+@json.json_view
 def logout(request):
     code = 1
     logging.user(request.user, "~FG~BBAPI Logout~FW")
