@@ -15,16 +15,17 @@ from vendor.timezones.fields import TimeZoneField
 from utils.user_functions import generate_secret_token
      
 class Profile(models.Model):
-    user = models.OneToOneField(User, unique=True, related_name="profile")
-    is_premium = models.BooleanField(default=False)
-    preferences = models.TextField(default="{}")
-    view_settings = models.TextField(default="{}")
+    user              = models.OneToOneField(User, unique=True, related_name="profile")
+    is_premium        = models.BooleanField(default=False)
+    preferences       = models.TextField(default="{}")
+    view_settings     = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
-    feed_pane_size = models.IntegerField(default=240)
-    last_seen_on = models.DateTimeField(default=datetime.datetime.now)
-    last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
-    timezone = TimeZoneField(default="America/New_York")
-    secret_token = models.CharField(max_length=12, blank=True, null=True)
+    feed_pane_size    = models.IntegerField(default=240)
+    tutorial_finished = models.BooleanField(default=False)
+    last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
+    last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
+    timezone          = TimeZoneField(default="America/New_York")
+    secret_token      = models.CharField(max_length=12, blank=True, null=True)
     
     def __unicode__(self):
         return "%s" % self.user

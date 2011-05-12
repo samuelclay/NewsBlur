@@ -9,7 +9,7 @@ from vendor.timezones import forms, zones
 from vendor.timezones.utilities import coerce_timezone_value, validate_timezone_max_length
 
 from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^utils\.timezones\.fields\.TimeZoneField"])
+add_introspection_rules([], ["^vendor\.timezones\.fields\.TimeZoneField"])
 
 MAX_TIMEZONE_LENGTH = getattr(settings, "MAX_TIMEZONE_LENGTH", 100)
 default_tz = pytz.timezone(getattr(settings, "TIME_ZONE", "UTC"))
