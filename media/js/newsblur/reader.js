@@ -3111,7 +3111,22 @@
         },
         
         open_tutorial_modal: function() {
+          this.model.preference('tutorial_finished', false);
             NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
+        },
+        
+        hide_tutorial: function() {
+          var $tutorial = $('.NB-module-tutorial');
+          
+          this.model.preference('tutorial_finished', true);
+          $tutorial.animate({
+            'opacity': 0
+          }, {
+            'duration': 500,
+            'complete': function() {
+              $tutorial.slideUp(350);
+            }
+          });
         },
         
         // ==========================
@@ -5527,6 +5542,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_tutorial_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-tutorial-hide' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.hide_tutorial();
                 }
             });  
             

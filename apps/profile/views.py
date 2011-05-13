@@ -25,6 +25,7 @@ def set_preference(request):
     
     preferences = json.decode(request.user.profile.preferences)
     for preference_name, preference_value in new_preferences.items():
+        if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
         elif preference_name in SPECIAL_PREFERENCES:

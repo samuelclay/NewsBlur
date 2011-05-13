@@ -323,30 +323,32 @@ $(document).ready(function() {
         </div>
       </div>
       
-      <div class="NB-module">
-        <h5 class="NB-module-header">
-          Tutorial
-          <div class="NB-module-header-right">
-            <a href="#" class="NB-splash-link">Hide</a>
-          </div>
-        </h5>
-        <div class="NB-module-tutorial NB-module-account NB-last {% if user_profile.hide_tutorial %}NB-hidden{% endif %}">
-          <div class="NB-module-account-image">
-              <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
-          </div>
-          <h3 class="NB-module-content-header">
-              <span class="NB-module-content-subtitle">
-                Takes <span class="NB-module-account-trainer-count">5</span> minutes
-              </span>
-              Learn to use NewsBlur
-          </h3>
-          <div class="NB-module-account-title">
-              <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-tutorial NB-javascript">Launch the 5 step tutorial</div>
-              </div>
+      {% if not user_profile.tutorial_finished %}
+        <div class="NB-module NB-module-tutorial">
+          <h5 class="NB-module-header">
+            Tutorial
+            <div class="NB-module-header-right">
+              <a href="#" class="NB-splash-link NB-module-tutorial-hide">Hide</a>
+            </div>
+          </h5>
+          <div class="NB-module-account NB-last {% if user_profile.hide_tutorial %}NB-hidden{% endif %}">
+            <div class="NB-module-account-image">
+                <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
+            </div>
+            <h3 class="NB-module-content-header">
+                <span class="NB-module-content-subtitle">
+                  Takes <span class="NB-module-account-trainer-count">5</span> minutes
+                </span>
+                Learn to use NewsBlur
+            </h3>
+            <div class="NB-module-account-title">
+                <div class="NB-modal-submit">
+                  <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-tutorial NB-javascript">Launch the 5 step tutorial</div>
+                </div>
+            </div>
           </div>
         </div>
-      </div>
+      {% endif %}
       
     {% endif %}
     
