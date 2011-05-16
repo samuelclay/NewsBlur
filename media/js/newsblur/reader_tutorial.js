@@ -17,6 +17,14 @@ NEWSBLUR.ReaderTutorial.prototype.constructor = NEWSBLUR.ReaderTutorial;
 
 _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     
+    TITLES: [
+      'Learn to use NewsBlur',
+      'The Three Feed Views',
+      'Training the Intelligence',
+      'Tips and Tricks',
+      'Feedback and Open Source'
+    ],
+    
     runner: function() {
         this.make_modal();
         this.open_modal();
@@ -31,12 +39,21 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-tutorial NB-modal' }, [
             $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('div', { className: 'NB-modal-page' }),
-            $.make('h2', { className: 'NB-modal-title' }, 'Learn to use NewsBlur'),
+            $.make('h2', { className: 'NB-modal-title' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
               'Page 1'
             ]),
             $.make('div', { className: 'NB-page NB-page-2' }, [
               'Page 2'
+            ]),
+            $.make('div', { className: 'NB-page NB-page-3' }, [
+              'Page 3'
+            ]),
+            $.make('div', { className: 'NB-page NB-page-4' }, [
+              'Page 4'
+            ]),
+            $.make('div', { className: 'NB-page NB-page-5' }, [
+              'Page 5'
             ]),
             $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
@@ -49,6 +66,10 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               ])
             ])
         ]);
+    },
+    
+    set_title: function() {
+      $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
     },
     
     // ==========
@@ -86,6 +107,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         ' of ',
         $.make('b', page_count)
       ]));
+      this.set_title();
     },
     
     close: function() {

@@ -437,6 +437,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     left: 2px;
     top: 2px;
 }
+.NB-feedlist li.folder.NB-folder-collapsed .NB-folder-icon{
+    background: transparent url('../img/icons/silk/folder_feed.png') no-repeat 0 0;
+}
 
 .NB-feedlist li.folder .folder_title.NB-toplevel:hover .NB-folder-icon {
     display: none;
@@ -4496,6 +4499,9 @@ background: transparent;
 .NB-modal-tutorial .NB-modal-page {
   float: right;
   margin-top: 7px;
+}
+.NB-modal-tutorial .NB-page {
+  min-height: 300px;
 }
 .NB-modal-tutorial .NB-page.NB-page-1 {
   display: block;

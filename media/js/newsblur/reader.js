@@ -1219,7 +1219,7 @@
                  $children.eq(0).is(':visible') && 
                  !$folder.data('collapsed'))) {
                 this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), true);
-                $folder.data('collapsed', true);
+                $folder.data('collapsed', true).addClass('NB-folder-collapsed');
                 $children.animate({'opacity': 0}, {
                     'queue': false,
                     'duration': force_collapse ? 0 : 200,
@@ -1236,7 +1236,7 @@
             else if ($children.length && 
                        ($folder.data('collapsed') || !$children.eq(0).is(':visible'))) {
                 this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), false);
-                $folder.data('collapsed', false);
+                $folder.data('collapsed', false).removeClass('NB-folder-collapsed');
                 this.hide_collapsed_folder_count($folder_title);
                 $children.css({'opacity': 0}).slideDown({
                     'duration': 240,
@@ -4120,7 +4120,7 @@
             if (type == 'feed') {
                 $scroll = this.$s.$feed_list.parent();
             } else if (type == 'story') {
-                $scroll = this.$s.$story_titles.add(this.$s.$feed_view);
+                $scroll = this.$s.$story_titles.add(this.$s.$feed_stories);
             }
             $scroll && $scroll.unbind('scroll.manage_menu').bind('scroll.manage_menu', function(e) {
                 if (self.flags['feed_list_showing_manage_menu']) {
