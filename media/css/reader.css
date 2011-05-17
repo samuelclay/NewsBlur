@@ -4501,13 +4501,49 @@ background: transparent;
   margin-top: 7px;
 }
 .NB-modal-tutorial .NB-page {
-  min-height: 300px;
+  min-height: 350px;
+  overflow: hidden;
 }
 .NB-modal-tutorial .NB-page.NB-page-1 {
   display: block;
 }
 .NB-modal-tutorial .NB-modal-submit .NB-modal-submit-button {
   float: right;
+}
+.NB-modal-tutorial ul {
+  clear: both;
+  list-style: disc outside url('../img/reader/static_bullet_white.png');
+  padding-left: 20px;
+}
+.NB-modal-tutorial ul li {
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.NB-modal-tutorial .NB-tutorial-view {
+  float: left;
+  width: 33%;
+  text-align: center;
+  margin: 18px 0;
+}
+.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 2px 0;
+  padding-right: 16px;
+}
+.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title img {
+  vertical-align: middle;
+  margin: -2px 4px 0 0;
+}
+.NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-image {
+  border: 1px solid #303030;
+  width: 180px;
+  height: 150px;
+}
+.NB-modal-tutorial .NB-tutorial-view span {
+  font-size: 11px;
+  color: #808080;
 }
 
 /* ========================= */

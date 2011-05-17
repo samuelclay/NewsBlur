@@ -1240,6 +1240,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         dupe_feed.save()
         
     duplicate_feed.delete()
+    original_feed.count_subscribers()
     
                     
 def rewrite_folders(folders, original_feed, duplicate_feed):

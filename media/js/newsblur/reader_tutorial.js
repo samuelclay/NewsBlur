@@ -19,7 +19,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     
     TITLES: [
       'Learn to use NewsBlur',
-      'The Three Feed Views',
+      'Three Feed Views',
       'Training the Intelligence',
       'Tips and Tricks',
       'Feedback and Open Source'
@@ -44,16 +44,74 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               'Page 1'
             ]),
             $.make('div', { className: 'NB-page NB-page-2' }, [
-              'Page 2'
+              $.make('div', { className: 'NB-tutorial-view' }, [
+                $.make('div', { className: 'NB-tutorial-view-title' }, [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_view_tile.png' }),
+                  'Original'
+                ]),
+                $.make('img', { className: 'NB-tutorial-view-image', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_view_original.png' }),
+                $.make('span', 'The site itself.')
+              ]),
+              $.make('div', { className: 'NB-tutorial-view' }, [
+                $.make('div', { className: 'NB-tutorial-view-title' }, [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_view_list.png' }),
+                  'Feed'
+                ]),
+                $.make('img', { className: 'NB-tutorial-view-image', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_view_feed.png' }),
+                $.make('span', 'All feed stories.')
+              ]),
+              $.make('div', { className: 'NB-tutorial-view' }, [
+                $.make('div', { className: 'NB-tutorial-view-title' }, [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_view_gallery.png' }),
+                  'Story'
+                ]),
+                $.make('img', { className: 'NB-tutorial-view-image', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_view_story.png' }),
+                $.make('span', 'Story click-through.')
+              ]),
+              $.make('ul', [
+                $.make('li', [
+                  'Instantly refresh a site by right-clicking on it and selecting '
+                ]),
+                $.make('li', [
+                  'Instantly refresh a site by right-clicking on it and selecting '
+                ]),
+                $.make('li', [
+                  'Instantly refresh a site by right-clicking on it and selecting '
+                ])
+              ])
             ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
               'Page 3'
             ]),
             $.make('div', { className: 'NB-page NB-page-4' }, [
-              'Page 4'
+              $.make('h4', 'Here are a few tricks that may enhance your experience:'),
+              $.make('ul', [
+                $.make('li', [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
+                  'Instantly refresh a site by right-clicking on it and selecting ',
+                  $.make('b', 'Insta-Fetch Stories.')
+                ]),
+                $.make('li', [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_train.png' }),
+                  'Train sites in the Feed view by clicking directly on the tags and authors. The tags will rotate color between like and dislike.'
+                ]),
+                $.make('li', [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_folders.png' }),
+                  'Folders can be nested inside folders.'
+                ]),
+                $.make('li', [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
+                  'Click on ',
+                  $.make('span', { className: 'NB-tutorial-sites-count' }),
+                  ' at the top of the sidebar to hide sites with no unread stories.'
+                ]),
+                $.make('li', [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
+                  'There are more than a dozen keyboard shortcuts you can use:'
+                ])
+              ])
             ]),
             $.make('div', { className: 'NB-page NB-page-5' }, [
-              'Page 5'
             ]),
             $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
