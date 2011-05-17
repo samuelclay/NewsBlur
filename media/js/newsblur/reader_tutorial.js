@@ -89,24 +89,25 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
                   'Instantly refresh a site by right-clicking on it and selecting ',
-                  $.make('b', 'Insta-Fetch Stories.')
+                  $.make('b', 'Insta-fetch stories.')
                 ]),
-                $.make('li', [
+                $.make('li', { className: 'NB-tutorial-tips-train' }, [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_train.png' }),
-                  'Train sites in the Feed view by clicking directly on the tags and authors. The tags will rotate color between like and dislike.'
+                  $.make('div', 'Train sites in the Feed view by clicking directly on the tags and authors. The tags will rotate color between like and dislike.')
                 ]),
                 $.make('li', [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_folders.png' }),
                   'Folders can be nested inside folders.'
                 ]),
-                $.make('li', [
-                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
-                  'Click on ',
-                  $.make('span', { className: 'NB-tutorial-sites-count' }),
-                  ' at the top of the sidebar to hide sites with no unread stories.'
+                $.make('li', { className: 'NB-tutorial-tips-sites' }, [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_sites.png' }),
+                  $.make('div', [
+                    'Click on ',
+                    $.make('span', { className: 'NB-tutorial-sites-count' }),
+                    ' at the top of the sidebar to hide sites with no unread stories.'
+                  ])
                 ]),
                 $.make('li', [
-                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
                   'There are more than a dozen keyboard shortcuts you can use:'
                 ])
               ])

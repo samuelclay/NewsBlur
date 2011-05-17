@@ -4545,7 +4545,19 @@ background: transparent;
   font-size: 11px;
   color: #808080;
 }
-
+.NB-modal-tutorial .NB-page-4 img {
+  border: 1px solid #303030;
+  float: right;
+  margin: 0 0 4px 8px;
+}
+.NB-modal-tutorial .NB-page-4 .NB-tutorial-tips-train img {
+  float: none;
+  margin: 0 0 4px 0;
+}
+.NB-modal-tutorial .NB-page-4 .NB-tutorial-tips-sites img {
+  float: none;
+  margin: 0 0 4px 0;
+}
 /* ========================= */
 /* = Feed Exceptions Modal = */
 /* ========================= */
