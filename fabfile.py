@@ -257,6 +257,13 @@ def setup_forked_mongoengine():
         run('git remote add github http://github.com/samuelclay/mongoengine')
         run('git checkout dev')
         run('git pull github dev')
+
+def switch_forked_mongoengine():
+    with cd('~/code/mongoengine'):
+        run('git checkout .')
+        run('git checkout master')
+        run('get branch -D dev')
+        run('git checkout -b dev origin/dev')
         
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)

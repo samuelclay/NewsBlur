@@ -392,7 +392,7 @@ class Feed(models.Model):
             }
         """
         dates = {}
-        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
+        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, 'inline', keep_temp=False)
         for r in res:
             dates[r.key] = r.value
             year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
@@ -454,7 +454,7 @@ class Feed(models.Model):
                 }
             """
             scores = []
-            res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, keep_temp=False)
+            res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, 'inline', keep_temp=False)
             for r in res:
                 facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
                 facet_values[facet] = r.key

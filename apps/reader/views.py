@@ -482,6 +482,7 @@ def load_river_stories(request):
         """function(key, values) {
             return values[0];
         }""",
+        output='inline',
         scope={
             'feed_last_reads': feed_last_reads
         }
