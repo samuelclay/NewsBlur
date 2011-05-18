@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from apps.recommendations.models import RecommendedFeed
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MFeedIcon
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 
@@ -24,12 +24,14 @@ def load_recommended_feed(request):
         logging.user(request.user, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
     recommended_feed = recommended_feeds and recommended_feeds[0]
+    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed.pk)
     
     if recommended_feed:
         return render_to_response('recommendations/render_recommended_feed.xhtml', {
             'recommended_feed'  : recommended_feed,
             'description'       : recommended_feed.description or recommended_feed.feed.data.feed_tagline,
             'usersub'           : usersub,
+            'feed_icon'         : feed_icon and feed_icon[0],
             'has_next_page'     : len(recommended_feeds) > 1,
             'has_previous_page' : page != 0,
         }, context_instance=RequestContext(request))
