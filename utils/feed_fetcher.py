@@ -1,4 +1,3 @@
-from apps.rss_feeds.models import FeedUpdateHistory
 # from apps.rss_feeds.models import FeedXML
 from django.core.cache import cache
 from django.conf import settings
@@ -387,11 +386,6 @@ class Dispatcher:
                 self.entry_stats[key] += val
         
         time_taken = datetime.datetime.utcnow() - self.time_start
-        history = FeedUpdateHistory(
-            number_of_feeds=len(feed_queue),
-            seconds_taken=time_taken.seconds
-        )
-        history.save()
     
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):

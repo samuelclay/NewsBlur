@@ -1037,24 +1037,6 @@ class MStarredStory(mongo.Document):
         super(MStarredStory, self).save(*args, **kwargs)
     
     
-class FeedUpdateHistory(models.Model):
-    fetch_date = models.DateTimeField(auto_now=True)
-    number_of_feeds = models.IntegerField()
-    seconds_taken = models.IntegerField()
-    average_per_feed = models.DecimalField(decimal_places=1, max_digits=4)
-    
-    def __unicode__(self):
-        return "[%s] %s feeds: %s seconds" % (
-            self.fetch_date.strftime('%F %d'),
-            self.number_of_feeds,
-            self.seconds_taken,
-        )
-    
-    def save(self, *args, **kwargs):
-        self.average_per_feed = str(self.seconds_taken / float(max(1.0,self.number_of_feeds)))
-        super(FeedUpdateHistory, self).save(*args, **kwargs)
-
-
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
     status_code = mongo.IntField()
