@@ -4501,8 +4501,9 @@ background: transparent;
   margin-top: 7px;
 }
 .NB-modal-tutorial .NB-page {
-  min-height: 350px;
-  overflow: hidden;
+  height: 420px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .NB-modal-tutorial .NB-page.NB-page-1 {
   display: block;
@@ -4512,7 +4513,7 @@ background: transparent;
 }
 .NB-modal-tutorial ul {
   clear: both;
-  list-style: disc outside url('../img/reader/static_bullet_white.png');
+  list-style: disc outside url('../img/icons/silk/bullet_blue.png');
   padding-left: 20px;
 }
 .NB-modal-tutorial ul li {
@@ -4545,18 +4546,27 @@ background: transparent;
   font-size: 11px;
   color: #808080;
 }
+.NB-modal-tutorial .NB-page-2 ul {
+  margin-bottom: 0;
+}
+.NB-modal-tutorial .NB-page-4 ul li {
+  clear: both;
+  padding: 0 224px 0 0;
+  margin: 0 0 18px 0;
+}
 .NB-modal-tutorial .NB-page-4 img {
   border: 1px solid #303030;
   float: right;
-  margin: 0 0 4px 8px;
+  clear: right;
+  margin: 0 -212px 18px 12px;
 }
 .NB-modal-tutorial .NB-page-4 .NB-tutorial-tips-train img {
-  float: none;
-  margin: 0 0 4px 0;
+/*  float: none;*/
+/*  margin: 0 0 4px 0;*/
 }
 .NB-modal-tutorial .NB-page-4 .NB-tutorial-tips-sites img {
-  float: none;
-  margin: 0 0 4px 0;
+/*  float: none;*/
+/*  margin: 0 0 4px 0;*/
 }
 /* ========================= */
 /* = Feed Exceptions Modal = */

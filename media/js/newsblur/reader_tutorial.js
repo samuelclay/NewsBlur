@@ -70,13 +70,16 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               ]),
               $.make('ul', [
                 $.make('li', [
-                  'Instantly refresh a site by right-clicking on it and selecting '
+                  'Double-click on story titles to temporarily open them up in the Story view.'
                 ]),
                 $.make('li', [
-                  'Instantly refresh a site by right-clicking on it and selecting '
+                  'You can train stories directly in the Feed view.'
                 ]),
                 $.make('li', [
-                  'Instantly refresh a site by right-clicking on it and selecting '
+                  'In the Original view, if a story is not found, it will temporarily open in the Feed view.'
+                ]),
+                $.make('li', [
+                  'Much of these views can be customized under Preferences.'
                 ])
               ])
             ]),
@@ -86,6 +89,14 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             $.make('div', { className: 'NB-page NB-page-4' }, [
               $.make('h4', 'Here are a few tricks that may enhance your experience:'),
               $.make('ul', [
+                $.make('li', { className: 'NB-tutorial-tips-sites' }, [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_sites.png' }),
+                  $.make('div', [
+                    'Click on ',
+                    $.make('span', { className: 'NB-tutorial-sites-count' }),
+                    ' at the top of the sidebar to hide sites with no unread stories.'
+                  ])
+                ]),
                 $.make('li', [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_instafetch.png' }),
                   'Instantly refresh a site by right-clicking on it and selecting ',
@@ -98,14 +109,6 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_folders.png' }),
                   'Folders can be nested inside folders.'
-                ]),
-                $.make('li', { className: 'NB-tutorial-tips-sites' }, [
-                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_sites.png' }),
-                  $.make('div', [
-                    'Click on ',
-                    $.make('span', { className: 'NB-tutorial-sites-count' }),
-                    ' at the top of the sidebar to hide sites with no unread stories.'
-                  ])
                 ]),
                 $.make('li', [
                   'There are more than a dozen keyboard shortcuts you can use:'
