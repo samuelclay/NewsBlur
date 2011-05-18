@@ -1,7 +1,7 @@
 from django.contrib.sites.models import Site
 from django import template
 from utils.user_functions import get_user
-from utils.timezones.utilities import localtime_for_timezone
+from vendor.timezones.utilities import localtime_for_timezone
 
 register = template.Library()
 

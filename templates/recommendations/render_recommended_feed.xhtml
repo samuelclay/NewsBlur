@@ -18,7 +18,7 @@
   <div class="NB-recommended" data-feed-id="{{ recommended_feed.feed.pk }}">
     <div class="NB-recommended-statistics NB-javascript"></div>
     <div class="NB-recommended-intelligence NB-javascript"></div>
-    <img class="NB-recommended-favicon" src="data:image/png;base64,{{ recommended_feed.feed.icon.data }}" />
+    <img class="NB-recommended-favicon" src="data:image/png;base64,{{ feed_icon.data }}" />
     <div class="NB-recommended-title">{{ recommended_feed.feed.feed_title }}</div>
     {# <div class="NB-recommended-link">{{ recommended_feed.feed.feed_link }}</div> #}
     <div class="NB-recommended-description">{{ description|safe }}</div>
