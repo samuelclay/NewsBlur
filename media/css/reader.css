@@ -4493,6 +4493,9 @@ background: transparent;
 /* = Tutorial Modal = */
 /* ================== */
 
+.NB-modal-tutorial h4 {
+  clear: both;
+}
 .NB-modal-tutorial .NB-page {
   display: none;
 }
@@ -4513,12 +4516,14 @@ background: transparent;
 }
 .NB-modal-tutorial ul {
   clear: both;
-  list-style: disc outside url('../img/icons/silk/bullet_blue.png');
-  padding-left: 20px;
+  list-style: none;
+  padding: 0;
 }
 .NB-modal-tutorial ul li {
   margin: 0 0 12px;
   padding: 0;
+  padding-left: 20px;
+  background: transparent url('../img/icons/silk/bullet_blue.png') no-repeat 0 2px;
 }
 
 .NB-modal-tutorial .NB-tutorial-view {
@@ -4551,7 +4556,7 @@ background: transparent;
 }
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
-  padding: 0 224px 0 0;
+  padding: 0 224px 0 20px;
   margin: 0 0 18px 0;
 }
 .NB-modal-tutorial .NB-page-4 img {
@@ -4560,13 +4565,31 @@ background: transparent;
   clear: right;
   margin: 0 -212px 18px 12px;
 }
-.NB-modal-tutorial .NB-page-4 .NB-tutorial-tips-train img {
-/*  float: none;*/
-/*  margin: 0 0 4px 0;*/
+.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter {
+  overflow: hidden;
 }
-.NB-modal-tutorial .NB-page-4 .NB-tutorial-tips-sites img {
-/*  float: none;*/
-/*  margin: 0 0 4px 0;*/
+.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter a {
+  background-color: #E9F4FD;
+  float: left;
+  font-size: 20px;
+  margin: 0px 16px;
+  padding: 12px;
+  text-align: center;
+  width: 40%;
+}
+.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter a:hover {
+  background-color: #FAE3DB;
+}
+.NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter img {
+  margin: 0 12px 0 0;
+  vertical-align: middle;
+}
+.NB-modal-tutorial .NB-page-5 h4.NB-tutorial-feedback-header {
+  margin: 24px 0px 12px;
+}
+.NB-modal-tutorial .NB-page-5 ul,
+.NB-modal-tutorial .NB-page-5 h4 {
+  clear: none;
 }
 /* ========================= */
 /* = Feed Exceptions Modal = */

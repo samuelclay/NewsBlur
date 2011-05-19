@@ -5078,13 +5078,14 @@
           }, this), 10*60*1000);
         },
         
-        load_feed_in_tryfeed_view: function(feed_id) {
+        load_feed_in_tryfeed_view: function(feed_id, feed) {
+            feed = feed || {};
             var $recommended_feeds = $('.NB-module-recommended');
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             var feed = {
                 feed_id     : feed_id,
-                feed_title  : $('.NB-recommended-title', $recommended_feeds).text(),
-                favicon     : $('.NB-recommended-favicon', $recommended_feeds).attr('src')
+                feed_title  : feed.feed_title || $('.NB-recommended-title', $recommended_feeds).text(),
+                favicon     : feed.favicon ? $.favicon(feed.favicon) : $('.NB-recommended-favicon', $recommended_feeds).attr('src')
             };
 
             this.reset_feed();

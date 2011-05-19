@@ -163,7 +163,7 @@
 
 
 .NB-modal-submit input[type=submit],
-.NB-modal-submit .NB-modal-submit-button {
+.NB-modal-submit-button {
     border: 1px solid #606060;
     font-size: 12px;
     padding: 4px 12px;
@@ -179,24 +179,24 @@
     text-decoration: none;
 }
 
-.NB-modal-submit .NB-modal-submit-back,
-.NB-modal-submit .NB-modal-submit-reset {
+.NB-modal-submit-back,
+.NB-modal-submit-reset {
     background-color: #d5d4dB;
     color: #909090;
     
 }
-.NB-modal-submit .NB-modal-submit-close {
+.NB-modal-submit-close {
     background-color: #d5d4dB;
     color: #909090;
     font-weight: bold;
 }
-.NB-modal-submit .NB-modal-submit-green {
+.NB-modal-submit-green {
     background-color: #217412;
     font-weight: bold;
     color: #FCFCFC;
 }
 
-.NB-modal-submit .NB-modal-submit-delete {
+.NB-modal-submit-delete {
     background-color: #7E020D;
     font-weight: bold;
     color: #FCFCFC;

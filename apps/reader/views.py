@@ -994,3 +994,13 @@ def send_story_email(request):
                                    (story['story_title'][:50], feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
+
+@json.json_view
+def load_tutorial(request):
+    newsblur_feed = Feed.objects.filter(feed_address__icontains='blog.newsblur.com').order_by('-pk')[0]
+
+    logging.user(request.user, '~BB~FYLoading Tutorial')
+    
+    return {
+        'newsblur_feed': newsblur_feed.canonical()
+    }
