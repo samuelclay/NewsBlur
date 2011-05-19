@@ -4554,6 +4554,18 @@ background: transparent;
 .NB-modal-tutorial .NB-page-2 ul {
   margin-bottom: 0;
 }
+.NB-modal-tutorial .NB-page-3 b {
+  display: block;
+  margin: 0 0 8px 0;
+}
+.NB-modal-tutorial .NB-tutorial-slider-demo {
+  position: relative;
+}
+.NB-modal-tutorial .NB-taskbar-intelligence {
+  left: auto;
+  right: 48px;
+  top: 0px;
+}
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
   padding: 0 224px 0 20px;

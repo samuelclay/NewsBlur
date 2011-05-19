@@ -30,6 +30,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.open_modal();
         this.page(1);
         this.load_newsblur_blog_info();
+        this.load_intelligence_slider();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -93,10 +94,21 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
               $.make('h4', 'NewsBlur works best when you use intelligence classifiers.'),
+              $.make('div', { className: 'NB-tutorial-slider-demo' }, [
+                $.make('div', { className: 'NB-tutorial-slider' }, [
+                  $.make('div', { className: 'NB-taskbar-intelligence' }, [
+                    $.make('div', { className: 'NB-tutorial-slider' }),
+                    $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative' }),
+                    $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral' }),
+                    $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive' }),
+                    $.make('div', { className: 'NB-intelligence-slider' }),
+                    $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' })
+                  ])
+                ])
+              ]),
               $.make('ul', [
                 $.make('li', 'Something'),
                 $.make('li', [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_all.png', style: 'float: right', width: 127, height: 92 }),
                     $.make('b', 'The intelligence slider filters stories.'),
                     $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
                     ' are stories you like',
@@ -201,6 +213,65 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     
     set_title: function() {
       $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
+    },
+
+    make_story_titles: function() {
+      var $story_titles = $('.NB-tutorial-stories', this.$modal);
+      
+      var stories = [
+        'Title', 'Author', 'tag', 0
+      ];
+      
+      _.each(stories, function(story) {
+        var $story =                       $.make('div', { className: 'story NB-story-' + score_color }, [
+                        $.make('div', { className: 'NB-storytitles-sentiment'}),
+                        $.make('a', { href: story.story_permalink, className: 'story_title' }, [
+                          (options['river_stories'] && feed &&
+                          $.make('div', { className: 'NB-story-feed' }, [
+                            $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
+                            $.make('span', { className: 'feed_title' }, feed.feed_title)
+                          ])),
+                          $.make('div', { className: 'NB-storytitles-star'}),
+                          $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
+                          $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
+                          $story_tags
+                        ]),
+                        $.make('span', { className: 'story_date' }, story.short_parsed_date),
+                        $.make('span', { className: 'story_id' }, ''+story.id),
+                        $.make('div', { className: 'NB-story-manage-icon' })
+                      ])
+                      $story_titles.append($story);
+      })
+    },
+    
+    load_intelligence_slider: function() {
+      var self = this;
+      var $slider = $('.NB-intelligence-slider', this.$modal);
+      var unread_view = this.model.preference('unread_view');
+
+      $slider.slider({
+        range: 'max',
+        min: -1,
+        max: 1,
+        step: 1,
+        value: unread_view,
+        slide: function(e, ui) {
+        },
+        stop: function(e, ui) {
+          self.show_story_titles_above_intelligence_level(ui.value);
+        }
+      });
+    },
+    
+    set_slider_value: function(value) {
+      var $slider = $('.NB-intelligence-slider', this.$modal);
+      
+      $slider.slider(value);
+    },
+    
+    show_story_titles_above_intelligence_level: function(level) {
+      level = level || 0;
+      
     },
     
     // ==========
