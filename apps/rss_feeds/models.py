@@ -499,7 +499,14 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
         
-        return Feed.objects.get(pk=self.pk)
+        try:
+            feed = Feed.objects.get(pk=self.pk)
+        except Feed.DoesNotExist:
+            # Feed has been merged after updating. Find the right feed.
+            duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=self.pk)
+            feed = duplicate_feed.feed
+            
+        return feed
 
     def add_update_stories(self, stories, existing_stories):
         ret_values = {

@@ -27,4 +27,5 @@ class Command(BaseCommand):
                 sub.mark_feed_read()
             else:
                 sub.mark_read_date = datetime.datetime.utcnow() - datetime.timedelta(days=int(options['days']))
+                sub.needs_unread_recalc = True
                 sub.save()
