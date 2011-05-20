@@ -997,10 +997,12 @@ def send_story_email(request):
 
 @json.json_view
 def load_tutorial(request):
-    newsblur_feed = Feed.objects.filter(feed_address__icontains='blog.newsblur.com').order_by('-pk')[0]
-
-    logging.user(request.user, '~BB~FYLoading Tutorial')
-    
-    return {
-        'newsblur_feed': newsblur_feed.canonical()
-    }
+    if request.REQUEST.get('finished'):
+        logging.user(request.user, '~BY~FW~SBFinishing Tutorial')
+        return {}
+    else:
+        newsblur_feed = Feed.objects.filter(feed_address__icontains='blog.newsblur.com').order_by('-pk')[0]
+        logging.user(request.user, '~BY~FW~SBLoading Tutorial')
+        return {
+            'newsblur_feed': newsblur_feed.canonical()
+        }

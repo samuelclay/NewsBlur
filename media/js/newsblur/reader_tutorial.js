@@ -20,7 +20,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     
     TITLES: [
       'Learn to use NewsBlur',
-      'Three Feed Views',
+      'Three Site Views',
       'Training the Intelligence',
       'Tips and Tricks',
       'Feedback and Open Source'
@@ -39,7 +39,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     },
     
     load_newsblur_blog_info: function() {
-      this.model.load_tutorial(_.bind(function(data) {
+      this.model.load_tutorial({}, _.bind(function(data) {
         this.newsblur_feed = data.newsblur_feed;
         $('.NB-javascript', this.$modal).removeClass('NB-javascript');
       }, this));
@@ -53,9 +53,42 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             $.make('div', { className: 'NB-modal-page' }),
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
-              ''
+              $.make('h4', 'NewsBlur is a visual feed reader with intelligence.'),
+              $.make('div', 'You\'ll figure out much of NewsBlur by playing around and trying things out. This tutorial is here to quickly offer a foundation.'),
+              $.make('h4', 'This tutorial covers:'),
+              $.make('ul', [
+                $.make('li', [
+                  $.make('div', { className: 'NB-right' }, 'Page 2'),
+                  'Using the three views (Original, Feed, and Story)'
+                ]),
+                $.make('li', [
+                  $.make('div', { className: 'NB-right' }, 'Page 3'),
+                  'Training and filtering stories'
+                ]),
+                $.make('li', [
+                  $.make('div', { className: 'NB-right' }, 'Page 4'),
+                  'Tips and tricks that may not be obvious'
+                ]),
+                $.make('li', [
+                  $.make('div', { className: 'NB-right' }, 'Page 5'),
+                  'Feedback, open source, the blog, and twitter'
+                ])
+              ]),
+              $.make('h4', 'Why you should use NewsBlur:'),
+              $.make('ul', [
+                $.make('li', [
+                  'This is a free service that is always getting better.'
+                ]),
+                $.make('li', [
+                  'See the original site and read stories as the author intended.'
+                ]),
+                $.make('li', [
+                  'Spend less time as NewsBlur filters the stories for you.'
+                ])
+              ])
             ]),
             $.make('div', { className: 'NB-page NB-page-2' }, [
+              $.make('h4', 'Read your sites with three different views:'),
               $.make('div', { className: 'NB-tutorial-view' }, [
                 $.make('div', { className: 'NB-tutorial-view-title' }, [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_view_tile.png' }),
@@ -82,16 +115,16 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               ]),
               $.make('ul', [
                 $.make('li', [
-                  'Double-click on story titles to temporarily open them up in the Story view.'
+                  'The view you choose is saved per-site, so you can mix-and-match.'
                 ]),
                 $.make('li', [
-                  'You can train stories directly in the Feed view.'
+                  'Double-click story titles to temporarily open a story in the Story view.'
                 ]),
                 $.make('li', [
                   'In the Original view, if a story is not found, it will temporarily open in the Feed view.'
                 ]),
                 $.make('li', [
-                  'Much of these views can be customized under Preferences.'
+                  'Much about these views can be customized under Preferences.'
                 ])
               ])
             ]),
@@ -99,7 +132,8 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('h4', 'NewsBlur works best when you use intelligence classifiers.'),
               $.make('ul', [
                 $.make('li', [
-                  $.make('b', 'Train stories and sites.')
+                  $.make('b', 'Train stories and sites.'),
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_story.png' })
                 ]),
                 $.make('li', [
                   $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' }),
@@ -138,6 +172,10 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                   'Instantly refresh a site by right-clicking on it and selecting ',
                   $.make('b', 'Insta-fetch stories.')
                 ]),
+                $.make('li', [
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_stories.png' }),
+                  'Click the arrow next to sites and stories to open up a menu.'
+                ]),
                 $.make('li', { className: 'NB-tutorial-tips-train' }, [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_train.png' }),
                   $.make('div', 'Train sites in the Feed view by clicking directly on the tags and authors. The tags will rotate color between like and dislike.')
@@ -147,7 +185,80 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                   'Folders can be nested inside folders.'
                 ]),
                 $.make('li', [
-                  'There are more than a dozen keyboard shortcuts you can use:'
+                  'There are more than a dozen keyboard shortcuts you can use:',
+                  $.make('div', { className: 'NB-modal-keyboard' }, [
+                    $.make('div', { className: 'NB-keyboard-group' }, [
+                      $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next story'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            '&#x2193;'
+                        ]),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'j'
+                        ])
+                      ]),
+                      $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Previous story'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            '&#x2191;'
+                        ]),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'k'
+                        ])
+                      ])
+                    ]),
+                    $.make('div', { className: 'NB-keyboard-group' }, [
+                      $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Next site'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'shift',
+                            $.make('span', '+'),
+                            '&#x2193;'
+                        ])
+                      ]),
+                      $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Prev. site'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'shift',
+                            $.make('span', '+'),
+                            '&#x2191;'
+                        ])
+                      ])
+                    ]),
+                    $.make('div', { className: 'NB-keyboard-group' }, [              
+                      $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Switch views'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            '&#x2190;'
+                        ]),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            '&#x2192;'
+                        ])
+                      ]),        
+                      $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open Site'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'enter'
+                        ])
+                      ])
+                    ]),
+                    $.make('div', { className: 'NB-keyboard-group' }, [
+                      $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Page down'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'space'
+                        ])
+                      ]),
+                      $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                        $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Page up'),
+                        $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                            'shift',
+                            $.make('span', '+'),
+                            'space'
+                        ])
+                      ])
+                    ])
+                  ])
                 ])
               ])
             ]),
@@ -337,6 +448,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     },
     
     close: function() {
+      this.model.load_tutorial({'finished': true});
       _.delay(function() {
         NEWSBLUR.reader.hide_tutorial();
       }, 500);

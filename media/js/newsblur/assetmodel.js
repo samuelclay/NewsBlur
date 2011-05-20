@@ -796,8 +796,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    load_tutorial: function(callback) {
-      this.make_request('/reader/load_tutorial', {}, callback);
+    load_tutorial: function(data, callback) {
+      this.make_request('/reader/load_tutorial', data, callback);
     },
     
     recalculate_story_scores: function(feed_id) {

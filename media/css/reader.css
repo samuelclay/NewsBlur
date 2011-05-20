@@ -4504,7 +4504,7 @@ background: transparent;
   margin-top: 7px;
 }
 .NB-modal-tutorial .NB-page {
-  height: 420px;
+  height: 446px;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -4525,12 +4525,14 @@ background: transparent;
   padding-left: 20px;
   background: transparent url('../img/icons/silk/bullet_blue.png') no-repeat 0 2px;
 }
-
+.NB-modal-tutorial .NB-page-1 .NB-right {
+  padding-right: 12px;
+}
 .NB-modal-tutorial .NB-tutorial-view {
   float: left;
   width: 33%;
   text-align: center;
-  margin: 18px 0;
+  margin: 0 0 18px 0;
 }
 .NB-modal-tutorial .NB-tutorial-view .NB-tutorial-view-title {
   font-size: 18px;
@@ -4594,6 +4596,16 @@ background: transparent;
   float: right;
   clear: right;
   margin: 0 -212px 18px 12px;
+}
+.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-group {
+  width: 510px;
+}
+.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut {
+  margin: 0 20px 12px 0;
+  width: 235px;
+}
+.NB-modal-tutorial .NB-page-4 .NB-modal-keyboard .NB-keyboard-shortcut.NB-last {
+  margin-bottom: 0;
 }
 .NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter {
   overflow: hidden;
