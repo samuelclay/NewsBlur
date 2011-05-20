@@ -5084,7 +5084,8 @@
             var feed = {
                 feed_id     : feed_id,
                 feed_title  : feed.feed_title || $('.NB-recommended-title', $recommended_feeds).text(),
-                favicon     : feed.favicon ? $.favicon(feed.favicon) : $('.NB-recommended-favicon', $recommended_feeds).attr('src')
+                favicon     : feed.favicon ? $.favicon(feed.favicon) : $('.NB-recommended-favicon', $recommended_feeds).attr('src'),
+                feed_address : feed.feed_address
             };
 
             this.reset_feed();

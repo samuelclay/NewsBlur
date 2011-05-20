@@ -154,6 +154,7 @@ def setup_task():
     enable_celery_supervisor()
     setup_gunicorn(supervisor=False)
     update_gunicorn()
+    config_monit()
 
 # ==================
 # = Setup - Common =
@@ -169,7 +170,7 @@ def setup_installs():
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
-    run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
+    run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh', warn_only=True)
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh sclay -s /bin/zsh')
@@ -218,7 +219,7 @@ def setup_libxml_code():
         
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk lxml oauth2 pytz boto')
+    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
     sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
     put('config/pystartup.py', '.pystartup')
     
