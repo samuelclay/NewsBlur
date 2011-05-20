@@ -31,6 +31,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.page(1);
         this.load_newsblur_blog_info();
         this.load_intelligence_slider();
+        this.make_story_titles();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -50,7 +51,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             $.make('div', { className: 'NB-modal-page' }),
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
-              'Page 1'
+              ''
             ]),
             $.make('div', { className: 'NB-page NB-page-2' }, [
               $.make('div', { className: 'NB-tutorial-view' }, [
@@ -94,30 +95,28 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
               $.make('h4', 'NewsBlur works best when you use intelligence classifiers.'),
-              $.make('div', { className: 'NB-tutorial-slider-demo' }, [
-                $.make('div', { className: 'NB-tutorial-slider' }, [
+              $.make('ul', [
+                $.make('li', [
+                  $.make('b', 'Train stories and sites.')
+                ]),
+                $.make('li', [
+                  $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' }),
+                  $.make('b', 'The intelligence slider filters stories.'),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
+                  ' are stories you like',
+                  $.make('br'),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
+                  ' are stories you have not yet rated',
+                  $.make('br'),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
+                  ' are stories you don\'t like',
                   $.make('div', { className: 'NB-taskbar-intelligence' }, [
                     $.make('div', { className: 'NB-tutorial-slider' }),
                     $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative' }),
                     $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral' }),
                     $.make('div', { className: 'NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive' }),
-                    $.make('div', { className: 'NB-intelligence-slider' }),
-                    $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' })
+                    $.make('div', { className: 'NB-intelligence-slider' })
                   ])
-                ])
-              ]),
-              $.make('ul', [
-                $.make('li', 'Something'),
-                $.make('li', [
-                    $.make('b', 'The intelligence slider filters stories.'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
-                    ' are stories you like',
-                    $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_yellow.png'}),
-                    ' are stories you have not yet rated',
-                    $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_red.png'}),
-                    ' are stories you don\'t like'
                 ])
               ])
             ]),
@@ -154,7 +153,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('h4', 'Stay connected to NewsBlur on Twitter'),
               $.make('div', { className: 'NB-tutorial-twitter' }, [
                 $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/samuelclay', target: '_blank' }, [
-                  $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border: 1px solid #505050;' }),
+                  $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border-color: #505050;' }),
                   $.make('span', '@samuelclay')
                 ]),
                 $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/newsblur', target: '_blank' }, [
@@ -219,29 +218,28 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
       var $story_titles = $('.NB-tutorial-stories', this.$modal);
       
       var stories = [
-        'Title', 'Author', 'tag', 0
+        ['Story about space travel',        '',         'space',  'neutral'],
+        ['NewsBlur becomes #1 feed reader', '',         '',       'positive'],
+        ['Everyday news',                   'Sam Clay', 'news',   'neutral'],
+        ['Another top 10 list',             'RSC',      'top 10', 'negative'],
+        ['New Strokes album!',              'P. Smith', 'music',  'positive'],
+        ['Boring story about sports',       'Godzilla', '',       'negative']
       ];
       
       _.each(stories, function(story) {
-        var $story =                       $.make('div', { className: 'story NB-story-' + score_color }, [
-                        $.make('div', { className: 'NB-storytitles-sentiment'}),
-                        $.make('a', { href: story.story_permalink, className: 'story_title' }, [
-                          (options['river_stories'] && feed &&
-                          $.make('div', { className: 'NB-story-feed' }, [
-                            $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
-                            $.make('span', { className: 'feed_title' }, feed.feed_title)
-                          ])),
-                          $.make('div', { className: 'NB-storytitles-star'}),
-                          $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
-                          $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
-                          $story_tags
-                        ]),
-                        $.make('span', { className: 'story_date' }, story.short_parsed_date),
-                        $.make('span', { className: 'story_id' }, ''+story.id),
-                        $.make('div', { className: 'NB-story-manage-icon' })
-                      ])
-                      $story_titles.append($story);
-      })
+        var $story = $.make('div', { className: 'story NB-story-' + story[3] }, [
+          $.make('div', { className: 'NB-storytitles-sentiment'}),
+          $.make('a', { href: '#', className: 'story_title' }, [
+            $.make('span', { className: 'NB-storytitles-title' }, story[0]),
+            (story[1] && $.make('span', { className: 'NB-storytitles-author' }, story[1])),
+            (story[2] && $.make('span', { className: 'NB-storytitles-tags'}, [
+              $.make('span', { className: 'NB-storytitles-tag'}, story[2]).corner('4px')
+            ]))
+          ]),
+          $.make('div', { className: 'NB-story-manage-icon' })
+        ]);
+        $story_titles.append($story);
+      });
     },
     
     load_intelligence_slider: function() {

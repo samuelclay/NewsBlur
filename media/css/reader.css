@@ -4562,9 +4562,27 @@ background: transparent;
   position: relative;
 }
 .NB-modal-tutorial .NB-taskbar-intelligence {
-  left: auto;
-  right: 48px;
-  top: 0px;
+  left: 64px;
+  right: auto;
+  top: 24px;
+  position: relative;
+}
+.NB-modal-tutorial .NB-page-3 #story_titles {
+  position: static;
+  float: right;
+  display: block;
+  overflow: hidden;
+  width: 240px;
+  height: auto;
+}
+.NB-modal-tutorial .NB-page-3 #story_titles .story {
+  padding-right: 0;
+}
+.NB-modal-tutorial .NB-page-3 #story_titles .story:last-child {
+  border-bottom: 1px solid #E7EDF6;
+}
+.NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
+  vertical-align: middle;
 }
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
@@ -4595,6 +4613,7 @@ background: transparent;
 .NB-modal-tutorial .NB-page-5 .NB-tutorial-twitter img {
   margin: 0 12px 0 0;
   vertical-align: middle;
+  border: 1px solid transparent;
 }
 .NB-modal-tutorial .NB-page-5 h4.NB-tutorial-feedback-header {
   margin: 24px 0px 12px;
