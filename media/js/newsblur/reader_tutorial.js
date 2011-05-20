@@ -133,8 +133,8 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('ul', [
                 $.make('li', { className: 'NB-tutorial-train-1' }, [
                   $.make('b', 'First: Train stories and sites.'),
-                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_story.png' }),
-                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_feed.png' })
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_feed.png' }),
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_story.png' })
                 ]),
                 $.make('li', [
                   $.make('b', 'Second: The intelligence slider filters stories based on training.'),

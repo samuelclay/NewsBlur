@@ -3111,7 +3111,6 @@
         },
         
         open_tutorial_modal: function() {
-          this.model.preference('tutorial_finished', false);
             NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
         },
         
