@@ -17,8 +17,8 @@ env.user = 'sclay'
 env.roledefs ={
     'app': ['app01.newsblur.com'],
     'web': ['www.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'db03.newsblur.com'],
+    'db': ['db01.newsblur.com', 'db02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com'],
 }
 
 # ================
@@ -260,10 +260,12 @@ def setup_forked_mongoengine():
 
 def switch_forked_mongoengine():
     with cd('~/code/mongoengine'):
-        run('git checkout .')
-        run('git checkout master')
-        run('get branch -D dev')
-        run('git checkout -b dev origin/dev')
+        run('git co dev')
+        run('git pull github dev --force')
+        # run('git checkout .')
+        # run('git checkout master')
+        # run('get branch -D dev')
+        # run('git checkout -b dev origin/dev')
         
 def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)

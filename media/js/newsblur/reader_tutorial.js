@@ -131,13 +131,14 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             $.make('div', { className: 'NB-page NB-page-3' }, [
               $.make('h4', 'NewsBlur works best when you use intelligence classifiers.'),
               $.make('ul', [
-                $.make('li', [
-                  $.make('b', 'Train stories and sites.'),
-                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_story.png' })
+                $.make('li', { className: 'NB-tutorial-train-1' }, [
+                  $.make('b', 'First: Train stories and sites.'),
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_story.png' }),
+                  $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_train_feed.png' })
                 ]),
                 $.make('li', [
+                  $.make('b', 'Second: The intelligence slider filters stories based on training.'),
                   $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' }),
-                  $.make('b', 'The intelligence slider filters stories.'),
                   $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/bullet_green.png'}),
                   ' are stories you like',
                   $.make('br'),
@@ -481,6 +482,10 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             e.preventDefault();
             
             self.close_and_load_newsblur_blog();
+        });
+        $.targetIs(e, { tagSelector: '.NB-story-manage-icon' }, function($t, $p) {
+            e.preventDefault();
+            e.stopPropagation();
         });
     }
     

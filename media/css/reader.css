@@ -4586,6 +4586,13 @@ background: transparent;
 .NB-modal-tutorial .NB-page-3 ul img.NB-trainer-bullet {
   vertical-align: middle;
 }
+.NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 {
+  margin-bottom: 12px;
+}
+.NB-modal-tutorial .NB-page-3 .NB-tutorial-train-1 img {
+  margin-right: 24px;
+  border: 1px solid #505050;
+}
 .NB-modal-tutorial .NB-page-4 ul li {
   clear: both;
   padding: 0 224px 0 20px;
