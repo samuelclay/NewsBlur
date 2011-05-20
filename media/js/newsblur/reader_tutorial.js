@@ -9,6 +9,7 @@ NEWSBLUR.ReaderTutorial = function(options) {
     this.model   = NEWSBLUR.AssetModel.reader();
 
     this.page_number = this.options.page_number;
+    this.intervals = {};
     this.runner();
 };
 
@@ -32,6 +33,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.load_newsblur_blog_info();
         this.load_intelligence_slider();
         this.make_story_titles();
+        this.rotate_slider();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -222,8 +224,8 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         ['NewsBlur becomes #1 feed reader', '',         '',       'positive'],
         ['Everyday news',                   'Sam Clay', 'news',   'neutral'],
         ['Another top 10 list',             'RSC',      'top 10', 'negative'],
-        ['New Strokes album!',              'P. Smith', 'music',  'positive'],
-        ['Boring story about sports',       'Godzilla', '',       'negative']
+        ['Boring story about sports',       'Godzilla', '',       'negative'],
+        ['New Strokes album!',              'P. Smith', 'music',  'positive']
       ];
       
       _.each(stories, function(story) {
@@ -256,20 +258,44 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         slide: function(e, ui) {
         },
         stop: function(e, ui) {
+          clearInterval(self.intervals.slider);
           self.show_story_titles_above_intelligence_level(ui.value);
         }
       });
     },
     
+    rotate_slider: function() {
+      clearInterval(this.intervals.slider);
+      this.slider_value = 0;
+      this.intervals.slider = setInterval(_.bind(function() {
+        this.slider_value = (this.slider_value + 1) % 3;
+        this.set_slider_value(this.slider_value - 1);
+        this.show_story_titles_above_intelligence_level(this.slider_value - 1);
+      }, this), 2000);
+    },
+    
     set_slider_value: function(value) {
       var $slider = $('.NB-intelligence-slider', this.$modal);
       
-      $slider.slider(value);
+      $slider.slider('value', value);
     },
     
     show_story_titles_above_intelligence_level: function(level) {
       level = level || 0;
+      var $stories_show, $stories_hide;
+      if (level > 0) {
+        $stories_show = $('.NB-story-positive', this.$modal);
+        $stories_hide = $('.NB-story-neutral,.NB-story-negative', this.$modal);
+      } else if (level == 0) {
+        $stories_show = $('.NB-story-positive,.NB-story-neutral', this.$modal);
+        $stories_hide = $('.NB-story-negative', this.$modal);
+      } else if (level < 0) {
+        $stories_show = $('.NB-story-positive,.NB-story-neutral,.NB-story-negative', this.$modal);
+        $stories_hide = $('.NB-story-nothing', this.$modal);
+      }
       
+      $stories_show.slideDown(500);
+      $stories_hide.slideUp(500);
     },
     
     // ==========
