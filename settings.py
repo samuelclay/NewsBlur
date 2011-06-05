@@ -155,7 +155,7 @@ LOGGING = {
 COMPRESS_JS = {
     'all': {
         'source_filenames': (
-            'js/jquery-1.6.js',
+            'js/jquery-1.6.1.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
@@ -204,6 +204,19 @@ COMPRESS_JS = {
         ),
         'output_filename': 'js/all-compressed-?.js'
     },
+    'mobile': {
+        'source_filenames': (
+            'js/jquery-1.6.1.js',
+            'js/mobile/jquery.mobile-1.0a4.js',
+            'js/inflector.js',
+            'js/jquery.json.js',
+            'js/jquery.easing.js',
+            'js/jquery.newsblur.js',
+            'js/newsblur/assetmodel.js',
+            'js/mobile/newsblur/mobile_workspace.js',
+        ),
+        'output_filename': 'js/mobile-compressed-?.js',
+    },
     'paypal': {
         'source_filenames': (
             'js/newsblur/paypal_return.js',
@@ -233,6 +246,13 @@ COMPRESS_CSS = {
             'css/jquery.tipsy.css',
         ),
         'output_filename': 'css/all-compressed-?.css'
+    },
+    'mobile': {
+        'source_filenames': (
+            'css/mobile/jquery.mobile-1.0a4.css',
+            'css/mobile/mobile.css',
+        ),
+        'output_filename': 'css/mobile-compressed-?.css',
     },
     'paypal': {
         'source_filenames': (
@@ -305,6 +325,8 @@ INSTALLED_APPS = (
     'apps.profile',
     'apps.recommendations',
     'apps.statistics',
+    'apps.static',
+    'apps.mobile',
     'south',
     'utils',
     'vendor',

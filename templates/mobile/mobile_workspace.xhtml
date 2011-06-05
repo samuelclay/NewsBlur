@@ -1,0 +1,71 @@
+{% load compressed utils_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}NewsBlur{% endblock %}</title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" HREF="/media/img/favicon.png">
+
+  <script type="text/javascript" charset="utf-8">
+    var NEWSBLUR = {};
+  </script>
+    
+  {% compressed_css 'mobile' %}
+  {% block head_js %}
+    {% compressed_js 'mobile' %}
+  {% endblock head_js %}
+  {% block extra_head_js %}
+  {% endblock extra_head_js %}
+  
+  {% if not debug %}
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8371683-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+  {% endif %}
+  
+</head>
+<body>
+  
+  
+  <div data-role="page" id="NB-feeds"> 
+    <div data-role="header"> 
+      <h1>{{ request.user.username }}</h1>
+    </div>
+    <div data-role="content"> 
+      		<ul data-role="listview">
+			<li><a href="index.html"><img src="images/gf.png" alt="France" class="ui-li-icon">France <span class="ui-li-count">4</span></a></li>
+			<li><a href="index.html"><img src="images/de.png" alt="Germany" class="ui-li-icon">Germany <span class="ui-li-count">4</span></a></li>
+			<li><a href="index.html"><img src="images/gb.png" alt="Great Britain" class="ui-li-icon">Great Britain <span class="ui-li-count">0</span></a></li>
+			<li><a href="index.html"><img src="images/fi.png" alt="Finland" class="ui-li-icon">Finland <span class="ui-li-count">12</span><span class="ui-li-count">12</span></a></li>
+			
+			
+
+			<li><a href="index.html"><img src="images/sj.png" alt="Norway" class="ui-li-icon">Norway <span class="ui-li-count">328</span></a></li>
+			<li><a href="index.html"><img src="images/us.png" alt="United States" class="ui-li-icon">United States <span class="ui-li-count">62</span></a></li>
+		</ul>
+
+    </div>
+    <div data-role="footer"> 1
+      <div class="NB-footer-site-count ui-li-count">12 sites</div>
+    </div>
+  </div>
+  
+  
+  <script>
+    $(document).ready(function() {
+        NEWSBLUR.mobile_reader = new NEWSBLUR.MobileReader();
+    });
+  </script>
+  
+</body>
+</html>
