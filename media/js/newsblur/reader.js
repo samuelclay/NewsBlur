@@ -1603,7 +1603,7 @@
                     this.flags.iframe_story_locations_fetched = false;
                     var $iframe = this.$s.$feed_iframe.contents();
                     this.fetch_story_locations_in_story_frame(stories_count, false, $iframe);
-                    if (this.story_view == 'feed') {
+                    if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                         this.prefetch_story_locations_in_feed_view();
                     }
                 } else {
