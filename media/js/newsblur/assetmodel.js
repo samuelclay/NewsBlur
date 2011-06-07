@@ -238,7 +238,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         };
         
         var pre_callback = function(subscriptions) {
-            NEWSBLUR.log(['subscriptions', subscriptions.flat_folders]);
+            // NEWSBLUR.log(['subscriptions', subscriptions.flat_folders]);
             var flat_feeds = function(feeds) {
                 var flattened = _.flatten(_.map(feeds, _.values));
                 return _.flatten(_.map(flattened, function(feed) {

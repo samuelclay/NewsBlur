@@ -6,6 +6,12 @@
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <link rel="shortcut icon" HREF="/media/img/favicon.png">
 
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon" href="/media/img/logo_128.png"/>
+
   <script type="text/javascript" charset="utf-8">
     var NEWSBLUR = {};
     NEWSBLUR.Globals = {
@@ -53,7 +59,7 @@
 <body>
   
   
-  <div data-role="page" id="NB-page-feeds"> 
+  <div data-role="page" data-url="feeds" id="NB-page-feeds"> 
     <div data-role="header"> 
       <h1>{{ request.user.username }}</h1>
     </div>
@@ -65,8 +71,23 @@
     </div>
   </div>
   
+  <div data-role="page" data-url="stories" id="NB-page-stories"> 
+    <div data-role="header"> 
+      <h1>Stories</h1>
+    </div>
+    <div data-role="content">
+      <div id="NB-story-list"></div>
+    </div>
+    <div data-role="footer"> 1
+      <div class="NB-footer-site-count ui-li-count">12 sites</div>
+    </div>
+  </div>
+  
   
   <script>
+    $(document).bind('mobileinit', function() {
+        $.mobile.ajaxEnabled = false;
+    });
     $(document).bind('ready', function() {
         NEWSBLUR.mobile_reader = new NEWSBLUR.MobileReader();
     });
