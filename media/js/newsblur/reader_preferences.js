@@ -265,6 +265,27 @@ NEWSBLUR.ReaderPreferences.prototype = {
                         'Feed view'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-animations' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-animations-1', type: 'radio', name: 'animations', value: 'true' }),
+                            $.make('label', { 'for': 'NB-preference-animations-1' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/arrow_in.png' }),
+                                'Show all animations'
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-animations-2', type: 'radio', name: 'animations', value: 'false' }),
+                            $.make('label', { 'for': 'NB-preference-animations-2' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/arrow_right.png' }),
+                                'Jump immediately with no animations'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Animations'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
@@ -446,6 +467,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
                 return false;
             }
         });
+        $('input[name=animations]', this.$modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=show_tooltips]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_tooltips) {
                 $(this).attr('checked', true);
@@ -481,7 +508,10 @@ NEWSBLUR.ReaderPreferences.prototype = {
         var preferences = {};
 
         $('input[type=radio]:checked, select, input[type=password]', this.$modal).each(function() {
-            preferences[$(this).attr('name')] = $(this).val();
+            var name       = $(this).attr('name');
+            var preference = preferences[name] = $(this).val();
+            if (preference == 'true')       preferences[name] = true;
+            else if (preference == 'false') preferences[name] = false;
         });
         $('input[type=checkbox]', this.$modal).each(function() {
             preferences[$(this).attr('name')] = $(this).is(':checked');

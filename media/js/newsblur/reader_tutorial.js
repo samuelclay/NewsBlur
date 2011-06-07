@@ -32,6 +32,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         this.page(1);
         this.load_newsblur_blog_info();
         this.load_intelligence_slider();
+        this.load_tips();
         this.make_story_titles();
         this.rotate_slider();
         
@@ -163,9 +164,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', { className: 'NB-tutorial-tips-sites' }, [
                   $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tutorial_tips_sites.png' }),
                   $.make('div', [
-                    'Click on ',
-                    $.make('span', { className: 'NB-tutorial-sites-count' }),
-                    ' at the top of the sidebar to hide sites with no unread stories.'
+                    'Click on the sites count at the top of the sidebar to hide sites with no unread stories.'
                   ])
                 ]),
                 $.make('li', [
@@ -342,6 +341,10 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
       $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
     },
 
+    load_tips: function() {
+      
+    },
+    
     make_story_titles: function() {
       var $story_titles = $('.NB-tutorial-stories', this.$modal);
       
