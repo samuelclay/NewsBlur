@@ -8,6 +8,22 @@
 
   <script type="text/javascript" charset="utf-8">
     var NEWSBLUR = {};
+    NEWSBLUR.Globals = {
+      'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
+      'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
+      'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
+      'secret_token'            : "{{ user.profile.secret_token }}",
+      'username'                : "{{ user.username|safe }}",
+      'email'                   : "{{ user.email|safe }}",
+      'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
+      'MEDIA_URL'               : "{{ MEDIA_URL }}"
+    };
+    NEWSBLUR.Flags = {
+      'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}
+    };
+    NEWSBLUR.URLs = {
+      'domain'                  : "{% current_domain %}"
+    };
   </script>
     
   {% compressed_css 'mobile' %}
@@ -37,23 +53,12 @@
 <body>
   
   
-  <div data-role="page" id="NB-feeds"> 
+  <div data-role="page" id="NB-page-feeds"> 
     <div data-role="header"> 
       <h1>{{ request.user.username }}</h1>
     </div>
-    <div data-role="content"> 
-      		<ul data-role="listview">
-			<li><a href="index.html"><img src="images/gf.png" alt="France" class="ui-li-icon">France <span class="ui-li-count">4</span></a></li>
-			<li><a href="index.html"><img src="images/de.png" alt="Germany" class="ui-li-icon">Germany <span class="ui-li-count">4</span></a></li>
-			<li><a href="index.html"><img src="images/gb.png" alt="Great Britain" class="ui-li-icon">Great Britain <span class="ui-li-count">0</span></a></li>
-			<li><a href="index.html"><img src="images/fi.png" alt="Finland" class="ui-li-icon">Finland <span class="ui-li-count">12</span><span class="ui-li-count">12</span></a></li>
-			
-			
-
-			<li><a href="index.html"><img src="images/sj.png" alt="Norway" class="ui-li-icon">Norway <span class="ui-li-count">328</span></a></li>
-			<li><a href="index.html"><img src="images/us.png" alt="United States" class="ui-li-icon">United States <span class="ui-li-count">62</span></a></li>
-		</ul>
-
+    <div data-role="content">
+      <div id="NB-feed-list"></div>
     </div>
     <div data-role="footer"> 1
       <div class="NB-footer-site-count ui-li-count">12 sites</div>
@@ -62,7 +67,7 @@
   
   
   <script>
-    $(document).ready(function() {
+    $(document).bind('ready', function() {
         NEWSBLUR.mobile_reader = new NEWSBLUR.MobileReader();
     });
   </script>

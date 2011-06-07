@@ -184,6 +184,7 @@ def load_feed_favicons(request):
     
 def load_feeds_flat(request):
     user = get_user(request)
+    include_favicons = request.REQUEST.get('include_favicons', False)
     feeds = {}
     
     try:
@@ -197,14 +198,7 @@ def load_feeds_flat(request):
     for sub in user_subs:
         if sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
-        feeds[sub.feed.pk] = {
-            'id': sub.feed.pk,
-            'feed_title': sub.user_title or sub.feed.feed_title,
-            'feed_link': sub.feed.feed_link,
-            'ps': sub.unread_count_positive,
-            'nt': sub.unread_count_neutral,
-            'ng': sub.unread_count_negative,
-        }
+        feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
     
     folders = json.decode(folders.folders)
     flat_folders = {}
@@ -212,25 +206,24 @@ def load_feeds_flat(request):
     def make_feeds_folder(items, parent_folder="", depth=0):
         for item in items:
             if isinstance(item, int) and item in feeds:
-                feed = feeds[item]
                 if not parent_folder:
                     parent_folder = ' '
                 if parent_folder in flat_folders:
-                    flat_folders[parent_folder].append(feed)
+                    flat_folders[parent_folder].append(item)
                 else:
-                    flat_folders[parent_folder] = [feed]
+                    flat_folders[parent_folder] = [item]
             elif isinstance(item, dict):
                 for folder_name in item:
                     folder = item[folder_name]
                     flat_folder_name = "%s%s%s" % (
                         parent_folder,
-                        " - " if parent_folder else "",
+                        " - " if parent_folder and parent_folder != ' ' else "",
                         folder_name
                     )
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders, user=user.username)
+    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username)
     return data
 
 @json.json_view

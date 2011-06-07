@@ -208,6 +208,8 @@ COMPRESS_JS = {
         'source_filenames': (
             'js/jquery-1.6.1.js',
             'js/mobile/jquery.mobile-1.0a4.js',
+            'js/jquery.ajaxmanager.3.js',
+            'js/underscore.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
