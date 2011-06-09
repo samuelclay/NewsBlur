@@ -302,10 +302,10 @@ def load_single_feed(request, feed_id):
     stories = feed.get_stories(offset, limit) 
         
     # Get intelligence classifier for user
-    classifier_feeds   = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
-    classifier_authors = MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id)
-    classifier_titles  = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
-    classifier_tags    = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
     
     checkpoint1 = time.time()
     
@@ -327,7 +327,6 @@ def load_single_feed(request, feed_id):
     checkpoint2 = time.time()
     
     for story in stories:
-        [x.rewind() for x in [classifier_feeds, classifier_authors, classifier_tags, classifier_titles]]
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
