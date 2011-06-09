@@ -278,16 +278,15 @@ def refresh_feeds(request):
 
 @json.json_view
 def load_single_feed(request, feed_id):
-    start = datetime.datetime.utcnow()
-    user = get_user(request)
-    offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 12))
-    page = int(request.REQUEST.get('page', 1))
-    if page:
-        offset = limit * (page-1)
+    start        = time.time()
+    user         = get_user(request)
+    offset       = int(request.REQUEST.get('offset', 0))
+    limit        = int(request.REQUEST.get('limit', 12))
+    page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
-    if not feed_id:
-        raise Http404
+    
+    if page: offset = limit * (page-1)
+    if not feed_id: raise Http404
         
     try:
         feed = Feed.objects.get(id=feed_id)
@@ -308,6 +307,8 @@ def load_single_feed(request, feed_id):
     classifier_titles  = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
     classifier_tags    = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
     
+    checkpoint1 = time.time()
+    
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
     if usersub:
@@ -323,6 +324,8 @@ def load_single_feed(request, feed_id):
             elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
                 userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
             
+    checkpoint2 = time.time()
+    
     for story in stories:
         [x.rewind() for x in [classifier_feeds, classifier_authors, classifier_tags, classifier_titles]]
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -349,6 +352,8 @@ def load_single_feed(request, feed_id):
             'title': apply_classifier_titles(classifier_titles, story),
         }
     
+    checkpoint3 = time.time()
+    
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
@@ -358,13 +363,18 @@ def load_single_feed(request, feed_id):
     if usersub:
         usersub.feed_opens += 1
         usersub.save()
-    
-    diff = datetime.datetime.utcnow()-start
-    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+    timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    logging.user(request.user, "~FYLoading feed: ~SB%s%s ~SN(%s seconds)" % (
+    logging.user(request.user, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds)" % (
         feed, ('~SN/p%s' % page) if page > 1 else '', timediff))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
+    
+    if timediff >= 1:
+        diff1 = checkpoint1-start
+        diff2 = checkpoint2-start
+        diff3 = checkpoint3-start
+        logging.user(request.user, "~FYSlow feed load: ~SB%.4s/%.4s/%.4s" % (
+            diff1, diff2, diff3))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
