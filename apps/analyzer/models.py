@@ -32,7 +32,7 @@ class MClassifierTitle(mongo.Document):
     
     meta = {
         'collection': 'classifier_title',
-        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
+        'indexes': [('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
             
@@ -45,7 +45,7 @@ class MClassifierAuthor(mongo.Document):
     
     meta = {
         'collection': 'classifier_author',
-        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
+        'indexes': [('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
@@ -58,7 +58,7 @@ class MClassifierFeed(mongo.Document):
     
     meta = {
         'collection': 'classifier_feed',
-        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
+        'indexes': [('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
@@ -72,7 +72,7 @@ class MClassifierTag(mongo.Document):
     
     meta = {
         'collection': 'classifier_tag',
-        'indexes': ['feed_id', 'user_id', ('user_id', 'feed_id')],
+        'indexes': [('user_id', 'feed_id')],
         'allow_inheritance': False,
     }
     
@@ -114,17 +114,13 @@ def apply_classifier_tags(classifiers, story):
     
 def get_classifiers_for_user(user, feed_id, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
     if classifier_feeds is None:
-        classifier_feeds = MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id)
-    else: classifier_feeds.rewind()
+        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
     if classifier_authors is None:
-        classifier_authors = MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id)
-    else: classifier_authors.rewind()
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
     if classifier_titles is None:
-        classifier_titles = MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id)
-    else: classifier_titles.rewind()
+        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
     if classifier_tags is None:
-        classifier_tags = MClassifierTag.objects(user_id=user.pk, feed_id=feed_id)
-    else: classifier_tags.rewind()
+        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
 
     payload = {
         'feeds': dict([(f.feed_id, f.score) for f in classifier_feeds]),

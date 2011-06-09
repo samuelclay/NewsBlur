@@ -367,6 +367,10 @@
         },
         
         find_feed_in_feed_list: function(feed_id) {
+            if (_.contains(this.cache.$feed_in_feed_list, feed_id)) {
+                return this.cache.$feed_in_feed_list[feed_id];
+            }
+            
             var $feed_list = this.$s.$feed_list;
             var $feeds = $([]);
             
@@ -375,6 +379,8 @@
                     $feeds.push($(this).get(0));
                 }
             });
+            
+            this.cache.$feed_in_feed_list[feed_id] = $feeds;
             
             return $feeds;
         },
@@ -1584,7 +1590,7 @@
             }
             
             if (this.active_feed != feed_id) return;
-        
+            
             // NEWSBLUR.log(['post_open_feed', data.stories, this.flags]);
             this.flags['opening_feed'] = false;
             this.flags['feed_view_positions_calculated'] = false;
@@ -1604,7 +1610,7 @@
                 this.flags.iframe_story_locations_fetched = false;
                 var $iframe = this.$s.$feed_iframe.contents();
                 this.fetch_story_locations_in_story_frame(stories_count, false, $iframe);
-                if (this.story_view == 'feed') {
+                if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                     this.prefetch_story_locations_in_feed_view();
                 }
             } else {
@@ -2181,14 +2187,13 @@
             
             var feed                  = this.model.get_feed(feed_id);
             var $feed_list            = this.$s.$feed_list;
-            var $feed                 = this.cache.$feed_in_feed_list[feed_id] || this.find_feed_in_feed_list(feed_id);
+            var $feed                 = this.find_feed_in_feed_list(feed_id);
             var $feed_counts          = this.cache.$feed_counts_in_feed_list[feed_id] || $('.feed_counts_floater', $feed);
             var $story_title          = this.find_story_in_story_titles(story_id);
             var $content_pane         = this.$s.$content_pane;
             var $floater              = $('.feed_counts_floater', $content_pane);
             var unread_view           = this.get_unread_view_name();
             
-            this.cache.$feed_in_feed_list[feed_id] = $feed;
             this.cache.$feed_counts_in_feed_list[feed_id] = $feed_counts;
 
             $story_title.toggleClass('read', !unread);
@@ -2977,6 +2982,7 @@
                 if ($indicator.length) {
                     var $counts = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng);
                     $('.feed_counts_floater', $indicator).replaceWith($counts);
+                    this.cache.$feed_counts_in_feed_list[feed_id] = null;
                     $indicator.css({'opacity': 1});
                 } else if (feed) {
                     $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
@@ -4589,6 +4595,7 @@
                 var $new_feed = $(self.make_feed_title_template(feeds[feed_id], 'feed'));
                 if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
                 $feed.replaceWith($new_feed);
+                self.cache.$feed_in_feed_list[feed_id] = null;
                 self.hover_over_feed_titles($new_feed);
                 if (self.active_feed == feed_id) {
                     self.open_feed(feed_id, true, $new_feed);
@@ -4623,8 +4630,7 @@
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) continue;
                 var $feed = $(this.make_feed_title_template(feed, 'feed'));
-                var $feed_on_page = this.cache.$feed_in_feed_list[feed_id] ||
-                                    this.find_feed_in_feed_list(feed_id);
+                var $feed_on_page = this.find_feed_in_feed_list(feed_id);
                 
                 if (feed_id == this.active_feed) {
                     NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page, replace_active_feed]);
@@ -4638,6 +4644,7 @@
                     } else {
                         if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                         $feed_on_page.replaceWith($feed);
+                        this.cache.$feed_in_feed_list[feed_id] = null;
                         this.mark_feed_as_selected(this.active_feed, $feed);
                         if (!single_feed_id) this.recalculate_story_scores(feed_id);
                         this.show_feed_hidden_story_title_indicator();
@@ -4649,6 +4656,7 @@
                     }
                     if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                     $feed_on_page.replaceWith($feed);
+                    this.cache.$feed_in_feed_list[feed_id] = null;
                     (function($feed) {
                       $feed.css({'backgroundColor': '#D7DDE6'});
                       $feed.animate({

@@ -7,7 +7,9 @@ class UserSubscriptionManager(models.Manager):
         try:
             return super(UserSubscriptionManager, self).get(*args, **kwargs)
         except:
-            if 'feed' in kwargs:
+            if isinstance(kwargs.get('feed'), int):
+                feed_id = kwargs.get('feed')
+            elif 'feed' in kwargs:
                 feed_id = kwargs['feed'].pk
             elif 'feed__pk' in kwargs:
                 feed_id = kwargs['feed__pk']
