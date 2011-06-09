@@ -350,7 +350,7 @@ def load_single_feed(request, feed_id):
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
         }
-    
+
     checkpoint3 = time.time()
     
     # Intelligence
@@ -372,8 +372,8 @@ def load_single_feed(request, feed_id):
         diff1 = checkpoint1-start
         diff2 = checkpoint2-start
         diff3 = checkpoint3-start
-        logging.user(request.user, "~FYSlow feed load: ~SB%.4s/%.4s/%.4s" % (
-            diff1, diff2, diff3))
+        logging.user(request.user, "~FYSlow feed load: ~SB%.4s/%.4s(%s)/%.4s" % (
+            diff1, diff2, userstories_db.count(), diff3))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
