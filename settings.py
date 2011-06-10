@@ -219,7 +219,7 @@ COMPRESS_JS = {
             'js/newsblur/assetmodel.js',
             'js/mobile/newsblur/mobile_workspace.js',
         ),
-        'output_filename': 'js/mobile/mobile-compressed-?.js',
+        'output_filename': 'js/mobile-compressed-?.js',
     },
     'paypal': {
         'source_filenames': (
@@ -256,7 +256,7 @@ COMPRESS_CSS = {
             'css/mobile/jquery.mobile-1.0a4.css',
             'css/mobile.css',
         ),
-        'output_filename': 'css/mobile-compressed-?.css',
+        'output_filename': 'css/mobile/mobile-compressed-?.css',
     },
     'paypal': {
         'source_filenames': (
