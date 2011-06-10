@@ -124,16 +124,19 @@
         // ===========
         
         load_stories: function(feed_id) {
+            this.active_feed = feed_id;
             this.model.load_feed(feed_id, 1, true, _.bind(this.build_stories, this));
         },
         
         build_stories: function(data, first_load) {
-            if (this.active_feed != feed_id) return;
+            NEWSBLUR.log(['build_stories', data]);
 
             var self = this;
             var $story_list = this.$s.$story_list;
             var $stories = "";
             var feed_id = data.feed_id;
+            
+            if (this.active_feed != feed_id) return;
             
             $stories += '<ul data-role="listview" data-inset="false" data-theme="c" data-dividertheme="b">';
             _.each(data.stories, function(story) {
@@ -148,8 +151,36 @@
         },
         
         make_story_title: function(story) {
-            return _.template("<li><%= story.story_title %></li>", {
-                story : story
+            var feed  = this.model.get_feed(this.active_feed);
+            var score = NEWSBLUR.utils.compute_story_score(story);
+            var score_color = 'neutral';
+            if (score > 0) score_color = 'positive';
+            if (score < 0) score_color = 'negative';
+            
+            return _.template('<li class="NB-story <%= story.read_status?"NB-read":"" %> NB-score-<%= score_color %>">\
+                <div class="ui-li-icon NB-icon-score"></div>\
+                <a href="#story">\
+                    <div class="NB-story-date"><%= story.long_parsed_date %></div>\
+                    <% if (story.story_authors) { %>\
+                        <div class="NB-story-author"><%= story.story_authors %></div>\
+                    <% } %>\
+                    <% if (story.story_tags && story.story_tags.length) { %>\
+                        <div class="NB-story-tags">\
+                            <% _.each(story.story_tags, function(tag) { %>\
+                                <div class="NB-story-tag"><%= tag %></div>\
+                            <% }); %>\
+                        </div>\
+                    <% } %>\
+                    <div class="NB-story-title"><%= story.story_title %></div>\
+                    <div class="NB-story-feed">\
+                        <div class="NB-story-feed-icon"><img src="<%= $.favicon(feed.favicon) %>"></div>\
+                        <div class="NB-story-feed-title"><%= feed.feed_title %></div>\
+                    </div>\
+                </a>\
+            </li>', {
+                story : story,
+                feed  : feed,
+                score_color : score_color
             });
         },
         
