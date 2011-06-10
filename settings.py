@@ -208,6 +208,7 @@ COMPRESS_JS = {
     'mobile': {
         'source_filenames': (
             'js/jquery-1.6.1.js',
+            'js/mobile/jquery.mobile-1.0a4.js',
             'js/jquery.ajaxmanager.3.js',
             'js/underscore.js',
             'js/inflector.js',
@@ -217,7 +218,6 @@ COMPRESS_JS = {
             'js/newsblur/reader_utils.js',
             'js/newsblur/assetmodel.js',
             'js/mobile/newsblur/mobile_workspace.js',
-            'js/mobile/jquery.mobile-1.0a4.js',
         ),
         'output_filename': 'js/mobile-compressed-?.js',
     },
