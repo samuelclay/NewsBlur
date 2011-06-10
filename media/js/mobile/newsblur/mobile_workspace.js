@@ -99,17 +99,17 @@
             var $feed = _.template('\
             <li class="<%= unread_class %> <%= exception_class %>">\
                 <a href="#stories" data-feed-id="<%= feed.id %>">\
-                    <img src="<%= $.favicon(feed.favicon) %>" class="ui-li-icon">\
-                    <%= feed.feed_title %>\
                     <% if (feed.ps) { %>\
                         <span class="ui-li-count ui-li-count-positive"><%= feed.ps %></span>\
                     <% } %>\
                     <% if (feed.nt) { %>\
-                        <span class="ui-li-count ui-li-count-positive"><%= feed.nt %></span>\
+                        <span class="ui-li-count ui-li-count-neutral"><%= feed.nt %></span>\
                     <% } %>\
                     <% if (feed.ng) { %>\
-                        <span class="ui-li-count ui-li-count-positive"><%= feed.ng %></span>\
+                        <span class="ui-li-count ui-li-count-negative"><%= feed.ng %></span>\
                     <% } %>\
+                    <img src="<%= $.favicon(feed.favicon) %>" class="ui-li-icon">\
+                    <%= feed.feed_title %>\
                 </a>\
             </li>', {
                 feed            : feed,

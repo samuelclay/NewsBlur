@@ -3,3 +3,27 @@
     height: 16px;
     margin-top: -2px;
 }
+
+#NB-feed-list a {
+  padding-right: 32px;
+}
+#NB-feed-list .ui-li-count {
+  position: static;
+  float: right;
+  margin: 2px 2px 0 0;
+  white-space: nowrap;
+  border: none;
+  border-radius: 5px;
+  text-shadow: none;
+}
+#NB-feed-list .ui-li-count.ui-li-count-positive {
+  color: white;
+  background: #559F4D -webkit-gradient(linear, 0% 0%, 0% 100%, from(#559F4D), to(#3B7613));
+}
+#NB-feed-list .ui-li-count.ui-li-count-neutral {
+  background: #F9C72A -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9C72A), to(#E4AB00));
+}
+#NB-feed-list .ui-li-count.ui-li-count-negative {
+  color: white;
+  background: #CC2A2E -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));
+}

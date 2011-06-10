@@ -1623,7 +1623,7 @@
                       // NEWSBLUR.log(['Titles loaded, iframe NOT loaded -- prefetching now']);
                       _.delay(_.bind(function() {
                           this.prefetch_story_locations_in_story_frame();
-                      }, this), 500);
+                      }, this), 250);
                   }
                 } else if (this.story_view == 'feed') {
                     this.prefetch_story_locations_in_feed_view();
@@ -2080,7 +2080,7 @@
                         !$story.length || 
                         this.flags['iframe_fetching_story_locations'] ||
                         this.flags['iframe_story_locations_fetched'] ||
-                        parseInt($story.offset().top, 10) > this.cache['prefetch_iteration']*4000) {
+                        parseInt($story.offset().top, 10) > this.cache['prefetch_iteration']*2000) {
                         if ($story && $story.length) {
                             // NEWSBLUR.log(['Prefetch break on position too far', parseInt($story.offset().top, 10), this.cache['prefetch_iteration']*4000]);
                             break;
@@ -2101,7 +2101,7 @@
                         && !self.flags['iframe_story_locations_fetched']) {
                         self.prefetch_story_locations_in_story_frame();
                     }
-                }, 2000);
+                }, 1000);
             }
         },
         
