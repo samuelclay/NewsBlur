@@ -98,6 +98,9 @@ def compress_media():
     with cd('media/js'):
         run('rm -f *.gz')
         run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
+    with cd('media/js/mobile'):
+        run('rm -f *.gz')
+        run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
     with cd('media/css'):
         run('rm -f *.gz')
         run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
