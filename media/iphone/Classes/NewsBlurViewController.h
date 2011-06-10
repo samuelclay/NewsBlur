@@ -19,6 +19,7 @@
 	NSMutableData *responseData;
 	NSMutableArray * feedTitleList;
 	NSDictionary * dictFolders;
+    NSDictionary * dictFeeds;
     NSMutableArray * dictFoldersArray;
     
 	IBOutlet UITableView * viewTableFeedTitles;
@@ -40,6 +41,7 @@
 @property (nonatomic, retain) NSMutableArray *feedTitleList;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSDictionary *dictFolders;
+@property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableData *responseData;
 
 @end

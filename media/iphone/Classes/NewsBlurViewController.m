@@ -22,6 +22,7 @@
 
 @synthesize feedTitleList;
 @synthesize dictFolders;
+@synthesize dictFeeds;
 @synthesize dictFoldersArray;
 
 #pragma mark -
@@ -38,6 +39,7 @@
 - (void)viewDidLoad {
 	self.feedTitleList = [[NSMutableArray alloc] init];
 	self.dictFolders = [[NSDictionary alloc] init];
+	self.dictFeeds = [[NSDictionary alloc] init];
 	self.dictFoldersArray = [[NSMutableArray alloc] init];
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)];
 	[appDelegate showNavigationBar:NO];
@@ -84,6 +86,7 @@
 - (void)dealloc {
 	[feedTitleList release];
 	[dictFolders release];
+	[dictFeeds release];
 	[dictFoldersArray release];
 	[appDelegate release];
     [super dealloc];
@@ -129,6 +132,7 @@
 		appDelegate.activeUsername = [results objectForKey:@"user"];
 		[appDelegate setTitle:[results objectForKey:@"user"]];
 		self.dictFolders = [results objectForKey:@"flat_folders"];
+		self.dictFeeds = [results objectForKey:@"feeds"];
 		//NSLog(@"Received Feeds: %@", dictFolders);
 		NSSortDescriptor *sortDescriptor;
 		sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
@@ -139,19 +143,21 @@
 		
 		for (id f in self.dictFolders) {
 			[self.dictFoldersArray addObject:f];
-			
-			sortedArray = [[self.dictFolders objectForKey:f] sortedArrayUsingDescriptors:sortDescriptors];
-			[sortedFolders setValue:sortedArray forKey:f];
+//			NSArray *folder = [self.dictFolders objectForKey:f];
+//			NSLog(@"F: %@", f);
+//			NSLog(@"F: %@", folder);
+//			NSLog(@"F: %@", sortDescriptors);
+//			sortedArray = [folder sortedArrayUsingDescriptors:sortDescriptors];
+//			[sortedFolders setValue:sortedArray forKey:f];
 		}
 		
-		self.dictFolders = sortedFolders;
+//		self.dictFolders = sortedFolders;
 		[self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 		
 		[[self viewTableFeedTitles] reloadData];
 		
 		[sortedFolders release];
 		[results release];
-		[jsonString release];
 	}
 	[jsonString release];
 }
@@ -219,8 +225,9 @@
 		// NSLog(@"Cell: %i: %@", section_index, f);
 		if (section_index == indexPath.section) {
 			NSArray *feeds = [self.dictFolders objectForKey:f];
-			// NSLog(@"Cell: %i: %@: %@", section_index, f, [feeds objectAtIndex:indexPath.row]);
-			cell.textLabel.text = [[feeds objectAtIndex:indexPath.row] 
+			id feed_id = [feeds objectAtIndex:indexPath.row];
+			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
+			cell.textLabel.text = [[self.dictFeeds objectForKey:feed_id_str] 
 								   objectForKey:@"feed_title"];
 			return cell;
 		}
@@ -233,10 +240,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	int section_index = 0;
 	for (id f in self.dictFoldersArray) {
-		// NSLog(@"Cell: %i: %@", section_index, f);
+		//NSLog(@"Cell: %i: %@", section_index, f);
 		if (section_index == indexPath.section) {
 			NSArray *feeds = [[NSArray alloc] initWithArray:[self.dictFolders objectForKey:f]];
-			[appDelegate setActiveFeed:[feeds objectAtIndex:indexPath.row]];
+			id feed_id = [feeds objectAtIndex:indexPath.row];
+			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
+			[appDelegate setActiveFeed:[self.dictFeeds 
+										objectForKey:feed_id_str]];
 			[feeds release];
 			//NSLog(@"Active feed: %@", [appDelegate activeFeed]);
 			break;
