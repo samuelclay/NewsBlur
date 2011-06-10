@@ -254,7 +254,7 @@ COMPRESS_CSS = {
     'mobile': {
         'source_filenames': (
             'css/mobile/jquery.mobile-1.0a4.css',
-            'css/mobile.css',
+            'css/mobile/mobile.css',
         ),
         'output_filename': 'css/mobile/mobile-compressed-?.css',
     },
