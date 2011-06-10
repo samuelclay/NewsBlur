@@ -2008,7 +2008,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			// test if a given url (string) is a path
 			// NOTE might be exceptionally naive
 			isPath: function( url ){
-				return /\//.test(url);
+				return /(\/)/.test(url);
 			},
 
 			//return a url path with the window's location protocol/hostname/pathname removed
