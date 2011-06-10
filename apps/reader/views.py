@@ -277,6 +277,7 @@ def load_single_feed(request, feed_id):
     limit        = int(request.REQUEST.get('limit', 12))
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
+    userstories_db = None
     
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
@@ -366,7 +367,7 @@ def load_single_feed(request, feed_id):
         diff2 = checkpoint2-start
         diff3 = checkpoint3-start
         logging.user(request.user, "~FYSlow feed load: ~SB%.4s/%.4s(%s)/%.4s" % (
-            diff1, diff2, userstories_db.count(), diff3))
+            diff1, diff2, userstories_db and userstories_db.count(), diff3))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
