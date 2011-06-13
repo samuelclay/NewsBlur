@@ -1807,7 +1807,7 @@
             var feeds = this.list_feeds_with_unreads_in_folder($folder, false, true);
             this.cache['river_feeds_with_unreads'] = feeds;
             this.show_stories_progress_bar(feeds.length);
-            this.model.fetch_river_stories(this.active_feed, feeds, 0, 
+            this.model.fetch_river_stories(this.active_feed, feeds, 1, 
                 _.bind(this.post_open_river_stories, this), true);
         },
         
@@ -1846,7 +1846,9 @@
             var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
                 var feed_id = parseInt($(o).attr('data-id'), 10);
                 var feed = model.get_feed(feed_id);
-                if (counts_only && !visible_only) {
+                if (!feed) {
+                    return;
+                } else if (counts_only && !visible_only) {
                     return feed.ps + feed.nt + feed.ng;
                 } else if (counts_only && visible_only) {
                     if (unread_view == 'positive') return feed.ps;

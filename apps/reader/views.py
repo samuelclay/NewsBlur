@@ -432,7 +432,7 @@ def load_river_stories(request):
     user               = get_user(request)
     feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     original_feed_ids  = list(feed_ids)
-    page               = int(request.REQUEST.get('page', 0))+1
+    page               = int(request.REQUEST.get('page', 1))
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
