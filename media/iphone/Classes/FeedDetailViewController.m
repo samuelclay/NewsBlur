@@ -150,12 +150,12 @@
     
     NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:indexPath.row];
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor.text = [story objectForKey:@"story_authors"];
+        cell.storyAuthor.text = [[story objectForKey:@"story_authors"] uppercaseString];
     } else {
         cell.storyAuthor.text = @"";
     }
     cell.storyTitle.text = [story objectForKey:@"story_title"];
-    cell.storyDate.text = [story objectForKey:@"long_parsed_date"];
+    cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     
     if ([[story objectForKey:@"read_status"] intValue] != 1) {
         // Unread story

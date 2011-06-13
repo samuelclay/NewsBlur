@@ -16,7 +16,6 @@
 
 @synthesize appDelegate;
 @synthesize webView;
-@synthesize scrollView;
 @synthesize toolbar;
 @synthesize buttonNext;
 @synthesize buttonPrevious;
@@ -109,10 +108,70 @@
                               ".NB-story {"
                               "  margin: 12px;"
                               "}"
+                              ".NB-story-author {"
+                              "    color: #969696;"
+                              "    font-size: 10px;"
+                              "    text-transform: uppercase;"
+                              "    margin: 0 16px 4px 0;"
+                              "    text-shadow: 0 1px 0 #F9F9F9;"
+                              "    float: left;"
+                              "}"
+                              ".NB-story-tags {"
+                              "  clear: both;"
+                              "  overflow: hidden;"
+                              "  line-height: 12px;"
+                              "  height: 14px;"
+                              "  margin: 6px 0 0 0;"
+                              "  text-transform: uppercase;"
+                              "}"
+                              ".NB-story-tag {"
+                              "    float: left;"
+                              "    font-weight: normal;"
+                              "    font-size: 9px;"
+                              "    padding: 0px 4px 1px;"
+                              "    margin: 0 2px 2px;"
+                              "    background-color: #656DAC;"
+                              "    color: #F0F0F0;"
+                              "    text-shadow: 0 1px 0 #303030;"
+                              "    border-radius: 4px;"
+                              "    -moz-border-radius: 4px;"
+                              "    -webkit-border-radius: 4px;"
+                              "}"
+                              ".NB-story-date {"
+                              "  float: right;"
+                              "  font-size: 11px;"
+                              "  color: #252D6C;"
+                              "}"
+                              ".NB-story-title {"
+                              "  clear: left;"
+                              "}"
                               "</style>"];
+    NSString *story_author      = @"";
+    if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
+        story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",[appDelegate.activeStory objectForKey:@"story_authors"]];
+    }
+    NSString *story_tags      = @"";
+    if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
+        NSArray *tag_array = [appDelegate.activeStory objectForKey:@"story_tags"];
+        if ([tag_array count] > 0) {
+            for (NSString *tag in tag_array) {
+                
+            }
+            story_tags = [NSString stringWithFormat:@"<div class=\"NB-story-tags\">"
+                          "<div class=\"NB-story-tag\">%@</div>"
+                          "</div>",[appDelegate.activeStory objectForKey:@"story_tags"]];
+        }
+    }
     NSString *storyHeader = [NSString stringWithFormat:@"<div class=\"NB-header\">"
+                             "<div class=\"NB-story-date\">%@</div>"
                              "%@"
-                             "</div>", [appDelegate.activeStory objectForKey:@"story_title"]];
+                             "<div class=\"NB-story-title\">%@</div>"
+                             "%@"
+                             "</div>", 
+                             [appDelegate.activeStory objectForKey:@"long_parsed_date"], 
+                             story_author,
+                             [appDelegate.activeStory objectForKey:@"story_title"],
+                             story_tags];
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ <div class=\"NB-story\">%@</div>",
                             imgCssString, storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"]];
@@ -157,28 +216,10 @@
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
-    [self resizeWebView];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self resizeWebView];
 }
-
-- (void)resizeWebView {
-    
-    CGRect frame = webView.frame;
-    frame.size.height = 1;
-    webView.frame = frame;
-    CGSize fittingSize = [webView sizeThatFits:CGSizeZero];
-    frame.size = fittingSize;
-    webView.frame = frame;
-    NSLog(@"heights: %f / %f", frame.size.width, frame.size.height, toolbar.frame.size.height);
-    toolbar.frame = CGRectMake(0, webView.frame.size.height, toolbar.frame.size.width, toolbar.frame.size.height);
-    
-    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    scrollView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-}
-
 
 - (void)dealloc {
     [appDelegate release];

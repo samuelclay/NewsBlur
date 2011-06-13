@@ -14,7 +14,6 @@
 <UIScrollViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 
-    UIScrollView *scrollView;
     UIWebView *webView;
     UIToolbar *toolbar;
     UIBarButtonItem *buttonPrevious;
@@ -22,7 +21,6 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
-@property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonPrevious;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
