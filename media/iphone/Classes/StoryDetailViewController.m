@@ -77,7 +77,7 @@
 
 
 - (void)showStory {
-    NSLog(@"Loaded Story view: %@", [appDelegate.activeStory objectForKey:@"story_title"]);
+    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
     NSString *imgCssString = [NSString stringWithFormat:@"<style>"
                               "body {"
                               "  line-height: 18px;"
@@ -102,7 +102,7 @@
                               "  font-weight: bold;"
                               "  background-color: #E0E0E0;"
                               "  border-bottom: 1px solid #A0A0A0;"
-                              "  padding: 12px 12px;"
+                              "  padding: 12px 12px 8px;"
                               "  text-shadow: 1px 1px 0 #EFEFEF;"
                               "}"
                               ".NB-story {"
@@ -128,11 +128,11 @@
                               "    float: left;"
                               "    font-weight: normal;"
                               "    font-size: 9px;"
-                              "    padding: 0px 4px 1px;"
-                              "    margin: 0 2px 2px;"
-                              "    background-color: #656DAC;"
-                              "    color: #F0F0F0;"
-                              "    text-shadow: 0 1px 0 #303030;"
+                              "    padding: 0px 4px 0px;"
+                              "    margin: 0 4px 2px 0;"
+                              "    background-color: #C6CBC3;"
+                              "    color: #505050;"
+                              "    text-shadow: 0 1px 0 #E7E7E7;"
                               "    border-radius: 4px;"
                               "    -moz-border-radius: 4px;"
                               "    -webkit-border-radius: 4px;"
@@ -148,18 +148,18 @@
                               "</style>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
-        story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",[appDelegate.activeStory objectForKey:@"story_authors"]];
+        NSString *author = [NSString stringWithFormat:@"%@",[appDelegate.activeStory objectForKey:@"story_authors"]];
+        if (author && ![author isEqualToString:@"<null>"]) {
+            NSLog(@"Author: %@ Length: %d",author, [author length]);
+            story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
+        }
     }
     NSString *story_tags      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
         NSArray *tag_array = [appDelegate.activeStory objectForKey:@"story_tags"];
         if ([tag_array count] > 0) {
-            for (NSString *tag in tag_array) {
-                
-            }
-            story_tags = [NSString stringWithFormat:@"<div class=\"NB-story-tags\">"
-                          "<div class=\"NB-story-tag\">%@</div>"
-                          "</div>",[appDelegate.activeStory objectForKey:@"story_tags"]];
+            story_tags = [NSString stringWithFormat:@"<div class=\"NB-story-tags\"><div class=\"NB-story-tag\">%@</div></div>",
+                          [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
         }
     }
     NSString *storyHeader = [NSString stringWithFormat:@"<div class=\"NB-header\">"
@@ -168,7 +168,7 @@
                              "<div class=\"NB-story-title\">%@</div>"
                              "%@"
                              "</div>", 
-                             [appDelegate.activeStory objectForKey:@"long_parsed_date"], 
+                             [story_tags length] ? [appDelegate.activeStory objectForKey:@"long_parsed_date"] : [appDelegate.activeStory objectForKey:@"short_parsed_date"], 
                              story_author,
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_tags];
@@ -180,6 +180,18 @@
                                                   objectForKey:@"feed_link"]]];
     
     
+}
+
+- (IBAction)doNextUnreadStory {
+    NSInteger nextIndex = [appDelegate indexOfNextStoryInDirection:1];
+    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+    [self showStory];
+}
+
+- (IBAction)doPreviousStory {
+    NSInteger nextIndex = [appDelegate indexOfNextStoryInDirection:-1];
+    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+    [self showStory];
 }
 
 - (void)showOriginalSubview:(id)sender {

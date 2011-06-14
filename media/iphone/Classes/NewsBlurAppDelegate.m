@@ -119,6 +119,14 @@
     [originalStoryViewController dismissModalViewControllerAnimated:YES];
 }
 
+- (int)indexOfNextStoryInDirection:(NSInteger)direction {
+    for (int i=0; i < [activeFeedStories count]; i++) {
+        if ([activeStory objectForKey:@"id"] == [[activeFeedStories objectAtIndex:i] objectForKey:@"id"]) {
+            return i + direction;
+        }
+    }
+}
+
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
 //    int score_max = 0;
