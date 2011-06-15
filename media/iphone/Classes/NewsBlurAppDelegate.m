@@ -119,12 +119,39 @@
     [originalStoryViewController dismissModalViewControllerAnimated:YES];
 }
 
-- (int)indexOfNextStoryInDirection:(NSInteger)direction {
-    for (int i=0; i < [activeFeedStories count]; i++) {
-        if ([activeStory objectForKey:@"id"] == [[activeFeedStories objectAtIndex:i] objectForKey:@"id"]) {
-            return i + direction;
+- (int)indexOfNextStory {
+    int activeIndex = [self indexOfActiveStory];
+    int activeFeedStoriesCount = [activeFeedStories count];
+    NSLog(@"ActiveStory: %@: %@", activeIndex, activeFeedStoriesCount);
+    for (int i=activeIndex+1; i < activeFeedStoriesCount; i++) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        if ([story objectForKey:@"read_status"] == 1) {
+            NSLog(@"NextStory: %@", i);
+            return i;
         }
     }
+    return -1;
+}
+
+- (int)indexOfPreviousStory {
+    NSInteger activeIndex = [self indexOfActiveStory];
+    for (int i=activeIndex-1; i >= 0; i--) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        if ([story objectForKey:@"read_status"] == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+- (int)indexOfActiveStory {
+    for (int i=0; i < [activeFeedStories count]; i++) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        if ([activeStory objectForKey:@"id"] == [story objectForKey:@"id"]) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {

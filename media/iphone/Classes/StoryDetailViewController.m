@@ -77,7 +77,7 @@
 
 
 - (void)showStory {
-    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
+//    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
     NSString *imgCssString = [NSString stringWithFormat:@"<style>"
                               "body {"
                               "  line-height: 18px;"
@@ -150,7 +150,6 @@
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",[appDelegate.activeStory objectForKey:@"story_authors"]];
         if (author && ![author isEqualToString:@"<null>"]) {
-            NSLog(@"Author: %@ Length: %d",author, [author length]);
             story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
         }
     }
@@ -183,15 +182,35 @@
 }
 
 - (IBAction)doNextUnreadStory {
-    NSInteger nextIndex = [appDelegate indexOfNextStoryInDirection:1];
-    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
-    [self showStory];
+    int nextIndex = [appDelegate indexOfNextStory];
+    if (nextIndex == -1) {
+        
+    } else {
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+        [self showStory];
+
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:.5];
+        [UIView setAnimationBeginsFromCurrentState:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:NO];
+        [UIView commitAnimations];
+    }
 }
 
 - (IBAction)doPreviousStory {
-    NSInteger nextIndex = [appDelegate indexOfNextStoryInDirection:-1];
-    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
-    [self showStory];
+    NSInteger nextIndex = [appDelegate indexOfPreviousStory];
+    if (nextIndex == -1) {
+        
+    } else {
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+        [self showStory];
+        
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:.5];
+        [UIView setAnimationBeginsFromCurrentState:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:NO];
+        [UIView commitAnimations];
+    }
 }
 
 - (void)showOriginalSubview:(id)sender {

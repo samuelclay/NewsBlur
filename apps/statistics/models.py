@@ -117,11 +117,13 @@ class MFeedback(mongo.Document):
     subject = mongo.StringField()
     url     = mongo.StringField()
     style   = mongo.StringField()
+    order   = mongo.IntField()
     
     meta = {
         'collection': 'feedback',
         'allow_inheritance': False,
         'indexes': ['style'],
+        'ordering': ['order'],
     }
     
     def __unicode__(self):
@@ -131,9 +133,12 @@ class MFeedback(mongo.Document):
     def collect_feedback(cls):
         data = urllib2.urlopen('https://getsatisfaction.com/newsblur/topics.widget').read()
         data = json.decode(data[1:-1])
+        i    = 0
         if len(data):
             cls.objects.delete()
             for feedback in data:
+                feedback['order'] = i
+                i += 1
                 for removal in ['about', 'less than']:
                     if removal in feedback['date']:
                         feedback['date'] = feedback['date'].replace(removal, '')
