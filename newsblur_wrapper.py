@@ -2,7 +2,7 @@
 
 """newsblur.py - An API wrapper library for newsblur.com"""
 
-import urllib
+import urllib,sys,httplib
 
 __author__ = 'Dananjaya Ramanayake <dananjaya86@gmail.com>'
 __version__ = "0.1"
@@ -330,9 +330,18 @@ def opml_upload(opml_file):
 	
 	'''
 	url = 'http://www.newsblur.com/import/opml_upload'
-	f = open(opml_file)
-	params = urllib.urlencode({'file':f})
-	f.close()
-	return urllib.urlopen(url,params).read()
-	
+	host = 'http://www.newsblur.com'
 
+	# HTTP XML Post request, Credit: http://www.forceflow.be/
+	request = open(opml_file,"r").read()
+	webservice = httplib.HTTP(host)
+	webservice.putrequest("POST", url)
+	webservice.putheader("Host", host)
+	webservice.putheader("User-Agent","Python post")
+	webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
+	webservice.putheader("Content-length", "%d" % len(request))
+	webservice.endheaders()
+	webservice.send(request)
+	statuscode, statusmessage, header = webservice.getreply()
+	result = webservice.getfile().read()
+	return result
