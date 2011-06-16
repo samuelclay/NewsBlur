@@ -142,7 +142,7 @@ class MFeedback(mongo.Document):
                 for removal in ['about', 'less than']:
                     if removal in feedback['date']:
                         feedback['date'] = feedback['date'].replace(removal, '')
-            [MFeedback.objects.create(**feedback) for feedback in data]
+            [cls.objects.create(**feedback) for feedback in data]
     
     @classmethod
     def all(cls):

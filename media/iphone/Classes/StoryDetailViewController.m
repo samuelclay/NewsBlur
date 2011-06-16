@@ -51,11 +51,11 @@
     
     NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
     NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:self];
-    [request startAsynchronous];
+//    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+//    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
+//    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+//    [request setDelegate:self];
+//    [request startAsynchronous];
 }
 
 

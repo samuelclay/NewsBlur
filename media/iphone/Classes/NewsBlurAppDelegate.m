@@ -121,12 +121,15 @@
 
 - (int)indexOfNextStory {
     int activeIndex = [self indexOfActiveStory];
-    int activeFeedStoriesCount = [activeFeedStories count];
-    NSLog(@"ActiveStory: %@: %@", activeIndex, activeFeedStoriesCount);
+    NSUInteger activeFeedStoriesCount = [activeFeedStories count];
+    NSLog(@"ActiveStory: %d", activeIndex);
+    NSLog(@"ActiveStory: %d", activeFeedStoriesCount);
     for (int i=activeIndex+1; i < activeFeedStoriesCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"read_status"] == 1) {
-            NSLog(@"NextStory: %@", i);
+        NSDecimalNumber *readStatus = [story objectForKey:@"read_status"];
+        NSLog(@"readStatus: %@", readStatus);
+        if (readStatus == 0) {
+            NSLog(@"NextStory: %d", i);
             return i;
         }
     }
