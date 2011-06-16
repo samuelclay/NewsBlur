@@ -22,14 +22,20 @@
 }
 #NB-feed-list .ui-li-count.ui-li-count-positive {
   color: white;
-  background: #559F4D -webkit-gradient(linear, 0% 0%, 0% 100%, from(#559F4D), to(#3B7613));
+  background-color: #559F4D;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#559F4D), to(#3B7613));
+  background-image: -moz-linear-gradient(center bottom, #3B7613, #559F4D);
 }
 #NB-feed-list .ui-li-count.ui-li-count-neutral {
-  background: #F9C72A -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9C72A), to(#E4AB00));
+  background-color: #F9C72A;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9C72A), to(#E4AB00));
+  background-image: -moz-linear-gradient(center bottom, #E4AB00, #F9C72A);
 }
 #NB-feed-list .ui-li-count.ui-li-count-negative {
   color: white;
-  background: #CC2A2E -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));
+  background-color: #CC2A2E;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));
+  background-image: -moz-linear-gradient(center bottom, #9B181B, #CC2A2E);
 }
 
 /* ============== */
