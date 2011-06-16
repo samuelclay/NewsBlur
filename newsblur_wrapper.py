@@ -331,7 +331,7 @@ def opml_upload(opml_file):
 	'''
 	url = 'http://www.newsblur.com/import/opml_upload'
 	f = open(opml_file)
-	params = urllib.urlencode({'file':opml_file})
+	params = urllib.urlencode({'file':f})
 	f.close()
 	return urllib.urlopen(url,params).read()
 	
