@@ -131,7 +131,10 @@
   color: #525252;
 }
 #NB-story-list .NB-read .NB-story-feed .NB-story-feed-title {
-  color: #7C7C7C;
+  color: #8D8D8D;
+}
+#NB-story-list .NB-read .NB-story-feed img {
+  opacity: .6;
 }
 #NB-story-list .NB-story .NB-story-title {
   text-shadow: 0 1px 0 #F3F3F3;
@@ -140,10 +143,17 @@
 }
 #NB-story-list .NB-read .NB-story-title {
   font-weight: normal;
+  color: #808080;
 }
 #NB-story-list .NB-read .NB-story-date {
   color: #6D6D6D;
   font-weight: normal;
+}
+#NB-story-list .NB-read .NB-story-author {
+  color: #B0B0B0;
+}
+#NB-story-list .NB-read .NB-story-tags {
+  opacity: .7;
 }
 
 
@@ -151,6 +161,9 @@
 /* = Story Detail = */
 /* ================ */
 
+#NB-page-story .NB-story-feed-header {
+  margin: 8px 0;
+}
 #NB-page-story .ui-content {
   padding: 0;
 }
@@ -167,16 +180,17 @@
 #NB-page-story .ui-title {
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin: 0 120px 0 106px;
 }
 #NB-page-story .ui-title .feed_title {
 }
 #NB-page-story .NB-favicon {
   margin-right: 4px;
 }
-#NB-story {
+#NB-story-detail {
   background-color: white;
 }
-#NB-story .NB-story-header {
+#NB-story-detail .NB-story-header {
     font-weight: bold;
     font-size: 16px;
     padding: 8px 24px 8px 24px;
@@ -193,13 +207,13 @@
     position: relative;
     overflow: hidden;
 }
-#NB-story .NB-story-header a {
+#NB-story-detail .NB-story-header a {
   text-decoration: none;
 }
-#NB-story .NB-story-title {
+#NB-story-detail .NB-story-title {
   color: #303030;
 }
-#NB-story .NB-story-content {
+#NB-story-detail .NB-story-content {
   text-shadow: none;
   padding: 12px 24px;
   color: #2b2b2b;
@@ -207,16 +221,16 @@
   font-size: 12px;
   line-height: 1.5em;
 }
-#NB-story .NB-story-content p {
+#NB-story-detail .NB-story-content p {
     clear: both;
 }
-#NB-story .NB-story-content blockquote {
+#NB-story-detail .NB-story-content blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #9B9B9B;
     padding: .5em 2em;
     margin: 0px;
 }
-#NB-story .NB-story-content img {
+#NB-story-detail .NB-story-content img {
   max-width: 100%;
 }
 

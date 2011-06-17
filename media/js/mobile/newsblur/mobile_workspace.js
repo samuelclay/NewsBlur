@@ -17,7 +17,7 @@
             $body: $('body'),
             $feed_list: $('#NB-feed-list'),
             $story_list: $('#NB-story-list'),
-            $story_detail: $('#NB-story')
+            $story_detail: $('#NB-story-detail')
         };
         this.flags      = {
             'feeds_loaded'      : false
@@ -126,13 +126,12 @@
         // ===========
         
         load_stories: function(feed_id) {
+            $.mobile.pageLoading();
             this.active_feed = feed_id;
             this.model.load_feed(feed_id, 1, true, _.bind(this.build_stories, this));
         },
         
         build_stories: function(data, first_load) {
-            NEWSBLUR.log(['build_stories', data]);
-
             var self = this;
             var $story_list = this.$s.$story_list;
             var $stories = "";
@@ -149,7 +148,6 @@
             $story_list.html($stories);
             $('ul', $story_list).listview();
             $.mobile.pageLoading(true);
-            NEWSBLUR.log(['stories', data]);
         },
         
         make_story_title: function(story) {
@@ -197,7 +195,6 @@
             $('.ul-li-right', this.pages.story).jqmData('icon', 'NB-'+score_color);
             $story_detail_view.html($story);
             $.mobile.pageLoading(true);
-            NEWSBLUR.log(['load_story_detail', story_id, story, this.pages.story, $('.ul-li-right', this.pages.story), score_color]);
         },
         
         make_story_detail: function(story) {
@@ -243,7 +240,7 @@
                 .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed));
                 
             var $feed = _.template('<div class="NB-story-feed-header">\
-                <img class="NB-favicon" src="<%= $.favicon(feed.favicon, true) %>" />\
+                <img class="NB-favicon" src="<%= $.favicon(feed.favicon) %>" />\
                 <span class="feed_title">\
                     <%= feed.feed_title %>\
                 </span>\
@@ -274,17 +271,23 @@
         bind_clicks: function() {
             var self = this;
             
-            $('#NB-feed-list').delegate('li a', 'tap', function(e) {
+            this.$s.$feed_list.delegate('li a', 'tap', function(e) {
                 e.preventDefault();
                 var feed_id = $(e.currentTarget).jqmData('feed-id');
-                $.mobile.pageLoading();
                 $.mobile.changePage('stories');
                 self.load_stories(feed_id);
             });
             
-            $('#NB-story-list').delegate('li a', 'tap', function(e) {
+            this.$s.$story_list.delegate('li a', 'tap', function(e) {
                 e.preventDefault();
-                NEWSBLUR.log(['story tap', e, e.target]);
+                var story_id = $(e.currentTarget).jqmData('story-id');
+                $.mobile.pageLoading();
+                $.mobile.changePage('story');
+                self.load_story_detail(story_id);
+            });
+            
+            this.$s.$story_detail.delegate('li a', 'tap', function(e) {
+                e.preventDefault();
                 var story_id = $(e.currentTarget).jqmData('story-id');
                 $.mobile.pageLoading();
                 $.mobile.changePage('story');
