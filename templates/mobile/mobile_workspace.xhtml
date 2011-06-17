@@ -60,39 +60,42 @@
   
   
   <div data-role="page" data-url="feeds" id="NB-page-feeds"> 
-    <div data-role="header"> 
+    <div data-role="header" data-backbtn="false"> 
       <h1>{{ request.user.username }}</h1>
     </div>
     <div data-role="content">
       <div id="NB-feed-list"></div>
     </div>
-    <div data-role="footer"> 1
+    <div data-role="footer">
       <div class="NB-footer-site-count ui-li-count">12 sites</div>
     </div>
   </div>
   
   <div data-role="page" data-url="stories" id="NB-page-stories"> 
     <div data-role="header"> 
+      <a href="#" data-icon="arrow-l" data-back-btn-text="Sites" data-rel="back">Sites</a>
       <h1>Stories</h1>
     </div>
     <div data-role="content">
       <div id="NB-story-list"></div>
     </div>
-    <div data-role="footer"> 1
+    <div data-role="footer" class="ui-header"> 1
       <div class="NB-footer-site-count ui-li-count">12 sites</div>
     </div>
   </div>
   
   <div data-role="page" data-url="story" id="NB-page-story"> 
     <div data-role="header"> 
+      <a href="#" data-icon="arrow-l" data-back-btn-text="Stories" data-rel="back">Stories</a>
       <h1>Story</h1>
     </div>
     <div data-role="content">
       <div id="NB-story"></div>
     </div>
-    <div data-role="footer"> 1
-      <div data-role="button" class="ui-li-left">Previous</div>
-      <div data-role="button" class="ui-li-right">Next Unread</div>
+    <div data-role="footer" class="ui-header">
+      <a href="#" data-icon="arrow-u">Previous</a>
+      <h1>...</h1>
+      <a href="#" data-icon="arrow-d" class="ui-btn-right">Next Unread</a>
     </div>
   </div>
   

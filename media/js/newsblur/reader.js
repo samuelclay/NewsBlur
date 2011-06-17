@@ -2559,82 +2559,6 @@
             return $story_title;
         },
         
-        is_feed_floater_gradient_light: function(feed) {
-            if (!feed) return false;
-            var color = feed.favicon_color;
-            if (!color) return false;
-            
-            var r = parseInt(color.substr(0, 2), 16) / 255.0;
-            var g = parseInt(color.substr(2, 2), 16) / 255.0;
-            var b = parseInt(color.substr(4, 2), 16) / 255.0;
-
-            return $.textColor({r: r, g: g, b: b}) != 'white';
-        },
-        
-        generate_gradient: function(feed, type) {
-            if (!feed) return '';
-            var color = feed.favicon_color;
-            if (!color) return '';
-            
-            var r = parseInt(color.substr(0, 2), 16);
-            var g = parseInt(color.substr(2, 2), 16);
-            var b = parseInt(color.substr(4, 2), 16);
-            
-            if (type == 'border') {
-                return [
-                    '1px solid rgb(',
-                    [
-                        parseInt(r*(6/8), 10),
-                        parseInt(g*(6/8), 10),
-                        parseInt(b*(6/8), 10)
-                    ].join(','),
-                    ')'
-                ].join('');
-            } else if (type == 'webkit') {
-                return [
-                    '-webkit-gradient(',
-                    'linear,',
-                    'left bottom,',
-                    'left top,',
-                    'color-stop(0.06, rgba(',
-                    [
-                        r,
-                        g,
-                        b,
-                        255
-                    ].join(','),
-                    ')),',
-                    'color-stop(0.84, rgba(',
-                    [
-                        r+35,
-                        g+35,
-                        b+35,
-                        255
-                    ].join(','),
-                    ')))'
-                ].join('');
-            } else if (type == 'moz') {
-                return [
-                    '-moz-linear-gradient(',
-                    'center bottom,',
-                    'rgb(',
-                    [
-                        r,
-                        g,
-                        b
-                    ].join(','),
-                    ') 6%,',
-                    'rgb(',
-                    [
-                        r+35,
-                        g+35,
-                        b+35
-                    ].join(','),
-                    ') 84%)'
-                ].join('');
-            }
-        },
-        
         story_titles_clear_loading_endbar: function() {
             var $story_titles = this.$s.$story_titles;
             
@@ -3176,11 +3100,11 @@
                                    $.make('span', { className: 'feed_title' }, feed.feed_title)
                                 ])
                             )
-                        ]).css('background-image', this.generate_gradient(feed, 'webkit'))
-                          .css('background-image', this.generate_gradient(feed, 'moz'))
-                          .css('borderBottom', this.generate_gradient(feed, 'border'))
-                          .css('borderTop', this.generate_gradient(feed, 'border'))
-                          .toggleClass('NB-inverse', this.is_feed_floater_gradient_light(feed)),
+                        ]).css('background-image', NEWSBLUR.utils.generate_gradient(feed, 'webkit'))
+                          .css('background-image', NEWSBLUR.utils.generate_gradient(feed, 'moz'))
+                          .css('borderBottom', NEWSBLUR.utils.generate_gradient(feed, 'border'))
+                          .css('borderTop', NEWSBLUR.utils.generate_gradient(feed, 'border'))
+                          .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
                                 this.make_story_feed_author(story)),

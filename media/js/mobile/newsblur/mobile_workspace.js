@@ -100,7 +100,7 @@
             
             var $feed = _.template('\
             <li class="<%= unread_class %> <%= exception_class %>">\
-                <a href="#stories" data-feed-id="<%= feed.id %>">\
+                <a href="#" data-feed-id="<%= feed.id %>">\
                     <% if (feed.ps) { %>\
                         <span class="ui-li-count ui-li-count-positive"><%= feed.ps %></span>\
                     <% } %>\
@@ -158,7 +158,7 @@
             
             return _.template('<li class="NB-story <%= story.read_status?"NB-read":"" %> NB-score-<%= score_color %>">\
                 <div class="ui-li-icon NB-icon-score"></div>\
-                <a href="#story" data-story-id="<%= story.id %>">\
+                <a href="#" data-story-id="<%= story.id %>">\
                     <div class="NB-story-date"><%= story.long_parsed_date %></div>\
                     <% if (story.story_authors) { %>\
                         <div class="NB-story-author"><%= story.story_authors %></div>\
@@ -191,21 +191,67 @@
             $.mobile.pageLoading();
             var $story_detail_view = this.$s.$story_detail;
             var story = this.model.get_story(story_id);
+            var score_color = this.story_color(story);
             var $story = this.make_story_detail(story);
-            
+            this.colorize_story_title(story);
+            $('.ul-li-right', this.pages.story).jqmData('icon', 'NB-'+score_color);
             $story_detail_view.html($story);
             $.mobile.pageLoading(true);
+            NEWSBLUR.log(['load_story_detail', story_id, story, this.pages.story, $('.ul-li-right', this.pages.story), score_color]);
         },
         
         make_story_detail: function(story) {
             var feed  = this.model.get_feed(this.active_feed);
             var score_color = this.story_color(story);
             
-            return _.template('<div class="NB-story-title"><%= story.story_title %></div>', {
-              story : story,
-              feed : feed,
-              score_color : score_color
+            var $story = _.template('<div class="NB-story <%= story.read_status?"NB-read":"" %> NB-score-<%= score_color %>">\
+                <div class="NB-story-header">\
+                    <div class="NB-story-header-feed-gradient"></div>\
+                    <div class="ui-li-icon NB-icon-score"></div>\
+                    <div class="NB-story-date"><%= story.long_parsed_date %></div>\
+                    <% if (story.story_authors) { %>\
+                        <div class="NB-story-author"><%= story.story_authors %></div>\
+                    <% } %>\
+                    <% if (story.story_tags && story.story_tags.length) { %>\
+                        <div class="NB-story-tags">\
+                            <% _.each(story.story_tags, function(tag) { %>\
+                                <div class="NB-story-tag"><%= tag %></div>\
+                            <% }); %>\
+                        </div>\
+                    <% } %>\
+                    <a href="<%= story.story_permalink %>" data-story-id="<%= story.id %>">\
+                        <div class="NB-story-title"><%= story.story_title %></div>\
+                    </a>\
+                </div>\
+                <div class="NB-story-content"><%= story.story_content %></div>\
+            </div>', {
+                story : story,
+                feed : feed,
+                score_color : score_color
             });
+
+            return $story;
+        },
+        
+        colorize_story_title: function() {
+            var feed  = this.model.get_feed(this.active_feed);
+            $('.ui-header', this.pages.story)
+                .css('background-image',   NEWSBLUR.utils.generate_gradient(feed, 'webkit'))
+                .css('background-image',   NEWSBLUR.utils.generate_gradient(feed, 'moz'))
+                .css('borderBottom',       NEWSBLUR.utils.generate_gradient(feed, 'border'))
+                .css('borderTop',          NEWSBLUR.utils.generate_gradient(feed, 'border'))
+                .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed));
+                
+            var $feed = _.template('<div class="NB-story-feed-header">\
+                <img class="NB-favicon" src="<%= $.favicon(feed.favicon, true) %>" />\
+                <span class="feed_title">\
+                    <%= feed.feed_title %>\
+                </span>\
+            </div>', {
+                feed : feed
+            });
+            
+            $('.ui-title', this.pages.story).html($feed);
         },
         
         // =====================
@@ -228,15 +274,18 @@
         bind_clicks: function() {
             var self = this;
             
-            $('#NB-feed-list').delegate('li', 'tap', function(e) {
-                var feed_id = $(e.target).jqmData('feed-id');
+            $('#NB-feed-list').delegate('li a', 'tap', function(e) {
+                e.preventDefault();
+                var feed_id = $(e.currentTarget).jqmData('feed-id');
                 $.mobile.pageLoading();
                 $.mobile.changePage('stories');
                 self.load_stories(feed_id);
             });
             
-            $('#NB-stories-list').delegate('li', 'tap', function(e) {
-                var story_id = $(e.target).jqmData('story-id');
+            $('#NB-story-list').delegate('li a', 'tap', function(e) {
+                e.preventDefault();
+                NEWSBLUR.log(['story tap', e, e.target]);
+                var story_id = $(e.currentTarget).jqmData('story-id');
                 $.mobile.pageLoading();
                 $.mobile.changePage('story');
                 self.load_story_detail(story_id);
