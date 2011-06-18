@@ -39,6 +39,7 @@
         runner: function() {
             this.load_feeds();
             this.bind_clicks();
+            this.bind_scroll();
         },
         
         // =============
@@ -48,13 +49,13 @@
         load_feeds: function() {
             $.mobile.pageLoading();
             
-            this.model.load_feeds_flat($.rescope(this.build_feed_list, this));
-            this.pages.feeds.bind('pagebeforeshow', _.bind(function(e) {
+            this.pages.feeds.unbind('pagebeforeshow').bind('pagebeforeshow', _.bind(function(e) {
                 $('ul', this.$s.$feed_list).listview('refresh');
             }, this));
-            this.pages.feeds.bind('pageshow', _.bind(function(e) {
+            this.pages.feeds.unbind('pageshow').bind('pageshow', _.bind(function(e) {
                 $('ul', this.$s.$story_list).remove();
             }, this));
+            this.model.load_feeds_flat($.rescope(this.build_feed_list, this));
         },
         
         build_feed_list: function() {
@@ -125,10 +126,14 @@
         // = Stories =
         // ===========
         
+        reset_feed: function() {
+            this.page = 1;
+        },
+        
         load_stories: function(feed_id) {
             $.mobile.pageLoading();
             this.active_feed = feed_id;
-            this.model.load_feed(feed_id, 1, true, _.bind(this.build_stories, this));
+            this.model.load_feed(feed_id, this.page, this.page == 1, _.bind(this.build_stories, this));
         },
         
         build_stories: function(data, first_load) {
@@ -139,15 +144,26 @@
             
             if (this.active_feed != feed_id) return;
             
-            $stories += '<ul data-role="listview" data-inset="false" data-theme="c" data-dividertheme="b">';
             _.each(data.stories, function(story) {
                 $stories += self.make_story_title(story);
             });
-            $stories += '</ul>';
+            if (first_load) {
+                $stories = '<ul data-role="listview" data-inset="false" data-theme="c" data-dividertheme="b">' +
+                           $stories +
+                           '</ul>';
+                $story_list.html($stories);
+            } else {
+                $('ul', $story_list).append($stories);
+                $('ul', $story_list).listview('refresh');
+            }
             
-            $story_list.html($stories);
             $('ul', $story_list).listview();
             $.mobile.pageLoading(true);
+        },
+        
+        load_next_page_of_stories: function() {
+            this.page += 1;
+            this.load_stories(this.active_feed);
         },
         
         make_story_title: function(story) {
@@ -275,6 +291,7 @@
                 e.preventDefault();
                 var feed_id = $(e.currentTarget).jqmData('feed-id');
                 $.mobile.changePage('stories');
+                self.reset_feed();
                 self.load_stories(feed_id);
             });
             
@@ -293,6 +310,26 @@
                 $.mobile.changePage('story');
                 self.load_story_detail(story_id);
             });
+            
+            this.pages.story.delegate('.NB-next', 'tap', function(e) {
+                
+            });
+            
+            this.pages.story.delegate('.NB-previous', 'tap', function(e) {
+                
+            });
+        },
+        
+        bind_scroll: function() {
+            $(window).bind('scroll', _.throttle(_.bind(function(e) {
+                var window_height = $(window).height();
+                var window_offset = $(window).scrollTop();
+                var story_list_height = this.$s.$story_list.height();
+                NEWSBLUR.log(['scroll', window_height + window_offset, story_list_height]);
+                if (window_height + window_offset > story_list_height) {
+                    this.load_next_page_of_stories();
+                }
+            }, this), 500));
         }
     };
     
