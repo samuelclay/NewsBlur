@@ -20,7 +20,8 @@
             $story_detail: $('#NB-story-detail')
         };
         this.flags      = {
-            'feeds_loaded'      : false
+            'feeds_loaded'      : false,
+            'active_view'       : null
         };
         this.locks      = {};
         this.counts     = {};
@@ -47,6 +48,7 @@
         // =============
         
         load_feeds: function() {
+            this.flags.active_view = 'feeds';
             $.mobile.pageLoading();
             
             this.pages.feeds.unbind('pagebeforeshow').bind('pagebeforeshow', _.bind(function(e) {
@@ -59,6 +61,7 @@
         },
         
         build_feed_list: function() {
+            this.flags.active_view = 'feeds';
             var self       = this;
             var folders    = this.model.folders;
             var feeds      = this.model.feeds;
@@ -131,12 +134,14 @@
         },
         
         load_stories: function(feed_id) {
+            this.flags.active_view = 'stories';
             $.mobile.pageLoading();
             this.active_feed = feed_id;
             this.model.load_feed(feed_id, this.page, this.page == 1, _.bind(this.build_stories, this));
         },
         
         build_stories: function(data, first_load) {
+            this.flags.active_view = 'stories';
             var self = this;
             var $story_list = this.$s.$story_list;
             var $stories = "";
@@ -197,20 +202,35 @@
             });
         },
         
+        scroll_story_list: function() {
+            var window_height     = $(window).height();
+            var window_offset     = $(window).scrollTop();
+            var story_list_height = this.pages.stories.height();
+            var fudge_factor      = 18;
+
+            if (window_height + window_offset > story_list_height - fudge_factor) {
+                this.load_next_page_of_stories();
+            }
+        },
+        
         // ================
         // = Story Detail =
         // ================
         
         load_story_detail: function(story_id) {
+            this.flags.active_view = 'story_detail';
             $.mobile.pageLoading();
+            
             var $story_detail_view = this.$s.$story_detail;
-            var story = this.model.get_story(story_id);
-            var score_color = this.story_color(story);
-            var $story = this.make_story_detail(story);
+            var story              = this.model.get_story(story_id);
+            var score_color        = this.story_color(story);
+            var $story             = this.make_story_detail(story);
+            
             this.colorize_story_title(story);
             $('.ul-li-right', this.pages.story).jqmData('icon', 'NB-'+score_color);
             $story_detail_view.html($story);
             $.mobile.pageLoading(true);
+            this.mark_story_as_read(story);
         },
         
         make_story_detail: function(story) {
@@ -280,6 +300,15 @@
             return score_color;
         },
         
+        mark_story_as_read: function(story) {
+          var story_id = story.id;
+          var feed_id = story.story_feed_id;
+          
+          this.model.mark_story_as_read(story_id, feed_id, _.bind(function(read) {
+              this.update_read_count(story_id, feed_id, false, read);
+          }, this));
+        },
+        
         // ==========
         // = Events =
         // ==========
@@ -322,12 +351,8 @@
         
         bind_scroll: function() {
             $(window).bind('scroll', _.throttle(_.bind(function(e) {
-                var window_height = $(window).height();
-                var window_offset = $(window).scrollTop();
-                var story_list_height = this.$s.$story_list.height();
-                NEWSBLUR.log(['scroll', window_height + window_offset, story_list_height]);
-                if (window_height + window_offset > story_list_height) {
-                    this.load_next_page_of_stories();
+                if (this.flags.active_view == 'stories') {
+                    this.scroll_story_list();
                 }
             }, this), 500));
         }

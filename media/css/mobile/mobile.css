@@ -61,6 +61,23 @@
 .NB-story .NB-story-title {
   clear: left;
 }
+.ui-btn-up-c,
+.ui-btn-hover-c {
+  border: 1px solid #E4E4E4;
+  color: #111;
+  background-color: #E0E0E0;
+  background-image: -moz-linear-gradient(top, #FCFCFC, #F3F3F3); /* FF3.6 */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#FCFCFC), to(#F3F3F3)); /* Saf4+, Chrome */
+  background-image: linear-gradient(top, #FCFCFC, #F3F3F3);
+}
+.ui-btn-active {
+  text-shadow: 0 -1px 1px #145072;
+  border: 1px solid #155678;
+  background-color: #4596ce;
+  background-image: -moz-linear-gradient(top, #85bae4, #5393c5); /* FF3.6 */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#85bae4), to(#5393c5)); /* Saf4+, Chrome */
+  background-image: linear-gradient(top, #85bae4, #5393c5);
+}
 
 /* ============= */
 /* = Feed List = */
@@ -79,6 +96,7 @@
   position: static;
   float: right;
   margin: 1px 2px 0 0;
+  padding: 3px 4px 2px;
   white-space: normal;
   border: none;
   border-radius: 5px;
@@ -141,6 +159,22 @@
   white-space: normal;
   font-weight: bold;
 }
+#NB-story-list .NB-story.ui-btn-active .NB-story-title,
+#NB-story-list .NB-story.ui-btn-active .NB-story-tags,
+#NB-story-list .NB-story.ui-btn-active .NB-story-author,
+#NB-story-list .NB-story.ui-btn-active .NB-story-date,
+#NB-story-list .NB-story.ui-btn-active .NB-story-feed  .NB-story-feed-title,
+#NB-story-list .NB-read.ui-btn-active .NB-story-author,
+#NB-story-list .NB-read.ui-btn-active .NB-story-date,
+#NB-story-list .NB-read.ui-btn-active .NB-story-title,
+#NB-story-list .NB-read.ui-btn-active .NB-story-feed .NB-story-feed-title {
+  text-shadow: inherit;
+  color: inherit;
+}
+#NB-story-list .NB-story.ui-btn-active .NB-story-feed  .NB-story-feed-title,
+#NB-story-list .NB-read.ui-btn-active .NB-story-feed .NB-story-feed-title {
+  text-shadow: 0 1px 0 #000;
+}
 #NB-story-list .NB-read .NB-story-title {
   font-weight: normal;
   color: #808080;
@@ -154,6 +188,15 @@
 }
 #NB-story-list .NB-read .NB-story-tags {
   opacity: .7;
+}
+#NB-story-list .NB-read.ui-btn-up-c,
+#NB-story-list .NB-read.ui-btn-hover-c {
+  border: 1px solid #E4E4E4;
+  color: #111;
+  background-color: #E0E0E0;
+  background-image: -moz-linear-gradient(top, #FCFCFC, #F9F9F9); /* FF3.6 */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#FCFCFC), to(#F9F9F9)); /* Saf4+, Chrome */
+  background-image: linear-gradient(top, #FCFCFC, #F9F9F9);
 }
 
 
