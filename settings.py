@@ -208,7 +208,7 @@ COMPRESS_JS = {
     'mobile': {
         'source_filenames': (
             'js/jquery-1.6.1.js',
-            'js/mobile/jquery.mobile-1.0a4.js',
+            'js/mobile/jquery.mobile-1.0b1.js',
             'js/jquery.ajaxmanager.3.js',
             'js/underscore.js',
             'js/inflector.js',
@@ -253,7 +253,7 @@ COMPRESS_CSS = {
     },
     'mobile': {
         'source_filenames': (
-            'css/mobile/jquery.mobile-1.0a4.css',
+            'css/mobile/jquery.mobile-1.0b1.css',
             'css/mobile/mobile.css',
         ),
         'output_filename': 'css/mobile/mobile-compressed-?.css',

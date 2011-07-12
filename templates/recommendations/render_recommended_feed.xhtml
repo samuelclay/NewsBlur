@@ -1,6 +1,10 @@
-<div class="NB-module-recommended NB-module">
+<div class="NB-module-recommended NB-module {% if unmoderated %}NB-recommended-unmoderated{% endif %}">
   <h5 class="NB-module-header">
-    Recommended Site
+    {% if unmoderated %}
+      Moderation Queue
+    {% else %}
+      Recommended Site
+    {% endif %}
     <div class="NB-module-header-right">
       {% if has_next_page or has_previous_page %}
         <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
@@ -8,9 +12,15 @@
       {% endif %}
       <div class="NB-spinner NB-left"></div>
       <div class="NB-module-recommended-date">
-        {{ recommended_feed.approved_date|date:"M j" }}
-        <span>{{ recommended_feed.approved_date|date:"S" }}</span>,
-        {{ recommended_feed.approved_date|date:"Y" }}
+        {% if unmoderated %}
+          {{ recommended_feed.created_date|date:"M j" }}
+          <span>{{ recommended_feed.created_date|date:"S" }}</span>,
+          {{ recommended_feed.created_date|date:"Y" }}
+        {% else %}
+          {{ recommended_feed.approved_date|date:"M j" }}
+          <span>{{ recommended_feed.approved_date|date:"S" }}</span>,
+          {{ recommended_feed.approved_date|date:"Y" }}
+        {% endif %}
       </div>
     </div>
   </h5>
@@ -33,6 +43,10 @@
       {% else %}
         <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">Try</div>
         <div class="NB-recommended-add NB-modal-submit-close NB-modal-submit-button NB-javascript">Add</div>
+      {% endif %}
+      {% if unmoderated %}
+        <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">Approve</div>
+        <div class="NB-recommended-decline NB-modal-submit-close NB-modal-submit-button NB-javascript">Decline</div>
       {% endif %}
     </div>
   </div>

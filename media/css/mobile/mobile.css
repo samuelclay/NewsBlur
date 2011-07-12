@@ -1,7 +1,9 @@
 /* ========== */
 /* = Global = */
 /* ========== */
-
+body {
+  overflow-y: scroll !important;
+}
 .NB-favicon {
   width: 16px;
   height: 16px;

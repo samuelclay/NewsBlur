@@ -725,11 +725,26 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/features', {'page': page}, callback, callback, {request_type: 'GET'});
     },
     
-    load_recommended_feed: function(page, refresh, callback, error_callback) {
+    load_recommended_feed: function(page, refresh, unmoderated, callback, error_callback) {
         this.make_request('/recommendations/load_recommended_feed', {
-            'page': page, 
-            'refresh': refresh
+            'page'         : page, 
+            'refresh'      : refresh,
+            'unmoderated'  : unmoderated
         }, callback, error_callback, {request_type: 'GET'});
+    },
+    
+    approve_feed_in_moderation_queue: function(feed_id, callback) {
+        this.make_request('/recommendations/approve_feed', {
+            'feed_id'     : feed_id,
+            'unmoderated' : true
+        }, callback, {request_type: 'GET'});
+    },
+    
+    decline_feed_in_moderation_queue: function(feed_id, callback) {
+        this.make_request('/recommendations/decline_feed', {
+            'feed_id'     : feed_id,
+            'unmoderated' : true
+        }, callback, {request_type: 'GET'});
     },
     
     load_dashboard_graphs: function(callback, error_callback) {

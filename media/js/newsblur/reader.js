@@ -5042,13 +5042,43 @@
             this.open_add_feed_modal({url: feed_address});
         },
         
-        load_recommended_feed: function(direction, refresh) {
+        approve_feed_in_moderation_queue: function(feed_id) {
             var self = this;
-            var $module = $('.NB-module-recommended');
+            var $module = $('.NB-module-recommended.NB-recommended-unmoderated');
+            $module.addClass('NB-loading');
+            
+            this.model.approve_feed_in_moderation_queue(feed_id, function(resp) {
+                if (!resp) return;
+                $module.removeClass('NB-loading');
+                $module.replaceWith(resp);
+                self.load_javascript_elements_on_page();
+            });
+        },
+        
+        decline_feed_in_moderation_queue: function(feed_id) {
+            var self = this;
+            var $module = $('.NB-module-recommended.NB-recommended-unmoderated');
+            $module.addClass('NB-loading');
+            
+            this.model.decline_feed_in_moderation_queue(feed_id, function(resp) {
+                if (!resp) return;
+                $module.removeClass('NB-loading');
+                $module.replaceWith(resp);
+                self.load_javascript_elements_on_page();
+            });
+        },
+        
+        load_recommended_feed: function(direction, refresh, unmoderated) {
+            var self = this;
+            var $module = unmoderated ? 
+                          $('.NB-module-recommended.NB-recommended-unmoderated') :
+                          $('.NB-module-recommended:not(.NB-recommended-unmoderated)');
+            
             $module.addClass('NB-loading');
             direction = direction || 0;
             
-            this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, !!refresh, function(resp) {
+            this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, 
+                                             !!refresh, unmoderated, function(resp) {
                 if (!resp) return;
                 self.counts['recommended_feed_page'] += direction;
 
@@ -5561,17 +5591,33 @@
                 });
             }); 
             
+            $.targetIs(e, { tagSelector: '.NB-recommended-decline' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                self.decline_feed_in_moderation_queue(feed_id);
+            }); 
+            
+            $.targetIs(e, { tagSelector: '.NB-recommended-approve' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-recommended').attr('data-feed-id');
+                self.approve_feed_in_moderation_queue(feed_id);
+            }); 
+            
             $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-next-page' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.load_recommended_feed(1);
+                    console.log(['parent', $t.closest('.NB-module-recommended'), $t.closest('.NB-module-recommended').hasClass('NB-recommended-unmoderated')]);
+                    var unmoderated = $t.closest('.NB-module-recommended').hasClass('NB-recommended-unmoderated');
+                    self.load_recommended_feed(1, false, unmoderated);
                 }
             }); 
             
             $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-previous-page' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                  self.load_recommended_feed(-1);
+                    var unmoderated = $t.closest('.NB-module-recommended').hasClass('NB-recommended-unmoderated');
+                    console.log(['parent', $t.closest('.NB-module-recommended')]);
+                    self.load_recommended_feed(-1, false, unmoderated);
                 }
             }); 
             

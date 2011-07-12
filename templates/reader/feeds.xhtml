@@ -83,6 +83,11 @@ $(document).ready(function() {
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}
     {% endif %}
+    
+    {% if user.is_staff and unmoderated_feeds %}
+      {% render_recommended_feed unmoderated_feeds 1 %}
+    {% endif %}
+          
 
 
   </div>

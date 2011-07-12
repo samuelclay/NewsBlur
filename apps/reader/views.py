@@ -63,6 +63,7 @@ def index(request):
     active_count = UserSubscription.objects.filter(user=request.user, active=True).count() if authed else 0
     train_count  = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count() if authed else 0
     recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=datetime.datetime.now()).select_related('feed')[:2]
+    unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True).select_related('feed')[:2]
     statistics   = MStatistics.all()
     feedbacks    = MFeedback.all()
 
@@ -77,6 +78,7 @@ def index(request):
         'train_count'       : active_count - train_count,
         'account_images'    : range(1, 4),
         'recommended_feeds' : recommended_feeds,
+        'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
         'feedbacks'         : feedbacks,
         'start_import_from_google_reader': request.session.get('import_from_google_reader', False),

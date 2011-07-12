@@ -7,17 +7,21 @@ from apps.recommendations.models import RecommendedFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon
 from utils import json_functions as json
-from utils.user_functions import get_user, ajax_login_required
+from utils.user_functions import get_user, ajax_login_required, admin_only
 
 
 def load_recommended_feed(request):
-    user = get_user(request)
-    page = int(request.REQUEST.get('page', 0))
-    usersub = None
-    refresh = request.REQUEST.get('refresh')
-    now = datetime.datetime.now
+    user        = get_user(request)
+    page        = int(request.REQUEST.get('page', 0))
+    usersub     = None
+    refresh     = request.REQUEST.get('refresh')
+    now         = datetime.datetime.now
+    unmoderated = request.REQUEST.get('unmoderated', False) == 'true'
     
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now)[page:page+2]
+    if unmoderated:
+        recommended_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True)[page:page+2]
+    else:
+        recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=now)[page:page+2]
     if recommended_feeds and request.user.is_authenticated():
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     if refresh != 'true' and page > 0:
@@ -34,6 +38,7 @@ def load_recommended_feed(request):
             'feed_icon'         : feed_icon and feed_icon[0],
             'has_next_page'     : len(recommended_feeds) > 1,
             'has_previous_page' : page != 0,
+            'unmoderated'       : unmoderated,
         }, context_instance=RequestContext(request))
     else:
         return HttpResponse("")
@@ -72,3 +77,30 @@ def save_recommended_feed(request):
     )
 
     return dict(code=code if created else -1)
+    
+@admin_only
+@ajax_login_required
+def approve_feed(request):
+    feed_id = request.POST['feed_id']
+    feed    = get_object_or_404(Feed, pk=int(feed_id))
+    recommended_feed = RecommendedFeed.objects.filter(feed=feed)[0]
+    
+    recommended_feed.is_public = True
+    recommended_feed.approved_date = datetime.datetime.now()
+    recommended_feed.save()
+    
+    return load_recommended_feed(request)
+
+@admin_only
+@ajax_login_required
+def decline_feed(request):
+    feed_id = request.POST['feed_id']
+    feed    = get_object_or_404(Feed, pk=int(feed_id))
+    recommended_feeds = RecommendedFeed.objects.filter(feed=feed)
+    
+    for recommended_feed in recommended_feeds:
+        recommended_feed.is_public = False
+        recommended_feed.declined_date = datetime.datetime.now()
+        recommended_feed.save()
+        
+    return load_recommended_feed(request)

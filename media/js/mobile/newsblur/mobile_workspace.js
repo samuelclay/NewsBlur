@@ -49,7 +49,7 @@
         
         load_feeds: function() {
             this.flags.active_view = 'feeds';
-            $.mobile.pageLoading();
+            $.mobile.showPageLoadingMsg();
             
             this.pages.feeds.unbind('pagebeforeshow').bind('pagebeforeshow', _.bind(function(e) {
                 $('ul', this.$s.$feed_list).listview('refresh');
@@ -84,7 +84,7 @@
             this.flags.feeds_loaded = true;
             $feed_list.html($feeds);
             $('ul', $feed_list).listview();
-            $.mobile.pageLoading(true);
+            $.mobile.hidePageLoadingMsg();
         },
         
         make_feed_title: function(feed_id) {
@@ -135,7 +135,7 @@
         
         load_stories: function(feed_id) {
             this.flags.active_view = 'stories';
-            $.mobile.pageLoading();
+            $.mobile.showPageLoadingMsg();
             this.active_feed = feed_id;
             this.model.load_feed(feed_id, this.page, this.page == 1, _.bind(this.build_stories, this));
         },
@@ -163,7 +163,7 @@
             }
             
             $('ul', $story_list).listview();
-            $.mobile.pageLoading(true);
+            $.mobile.hidePageLoadingMsg();
         },
         
         load_next_page_of_stories: function() {
@@ -219,7 +219,7 @@
         
         load_story_detail: function(story_id) {
             this.flags.active_view = 'story_detail';
-            $.mobile.pageLoading();
+            $.mobile.showPageLoadingMsg();
             
             var $story_detail_view = this.$s.$story_detail;
             var story              = this.model.get_story(story_id);
@@ -229,7 +229,7 @@
             this.colorize_story_title(story);
             $('.ul-li-right', this.pages.story).jqmData('icon', 'NB-'+score_color);
             $story_detail_view.html($story);
-            $.mobile.pageLoading(true);
+            $.mobile.hidePageLoadingMsg();
             this.mark_story_as_read(story);
         },
         
@@ -301,12 +301,16 @@
         },
         
         mark_story_as_read: function(story) {
-          var story_id = story.id;
-          var feed_id = story.story_feed_id;
+            var story_id = story.id;
+            var feed_id = story.story_feed_id;
           
-          this.model.mark_story_as_read(story_id, feed_id, _.bind(function(read) {
-              this.update_read_count(story_id, feed_id, false, read);
-          }, this));
+            this.model.mark_story_as_read(story_id, feed_id, _.bind(function(read) {
+                this.update_read_count(story_id, feed_id);
+            }, this));
+        },
+        
+        update_read_count: function(story_id, feed_id) {
+            
         },
         
         // ==========
@@ -319,7 +323,7 @@
             this.$s.$feed_list.delegate('li a', 'tap', function(e) {
                 e.preventDefault();
                 var feed_id = $(e.currentTarget).jqmData('feed-id');
-                $.mobile.changePage('stories');
+                $.mobile.changePage(self.pages.stories);
                 self.reset_feed();
                 self.load_stories(feed_id);
             });
@@ -327,16 +331,16 @@
             this.$s.$story_list.delegate('li a', 'tap', function(e) {
                 e.preventDefault();
                 var story_id = $(e.currentTarget).jqmData('story-id');
-                $.mobile.pageLoading();
-                $.mobile.changePage('story');
+                $.mobile.showPageLoadingMsg();
+                $.mobile.changePage(self.pages.story);
                 self.load_story_detail(story_id);
             });
             
             this.$s.$story_detail.delegate('li a', 'tap', function(e) {
                 e.preventDefault();
                 var story_id = $(e.currentTarget).jqmData('story-id');
-                $.mobile.pageLoading();
-                $.mobile.changePage('story');
+                $.mobile.showPageLoadingMsg();
+                $.mobile.changePage(self.pages.story);
                 self.load_story_detail(story_id);
             });
             
