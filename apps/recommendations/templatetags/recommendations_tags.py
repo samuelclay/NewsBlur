@@ -1,3 +1,4 @@
+import datetime
 from django import template
 from apps.reader.models import UserSubscription
 from utils.user_functions import get_user
@@ -24,6 +25,7 @@ def render_recommended_feed(context, recommended_feeds, unmoderated=False):
             'feed_icon'         : feed_icon and feed_icon[0],
             'user'              : context['user'],
             'has_next_page'     : len(recommended_feeds) > 1,
-            'unmoderated'       : unmoderated
+            'unmoderated'       : unmoderated,
+            'today'             : datetime.datetime.now(),
         }
     

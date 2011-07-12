@@ -5046,8 +5046,9 @@
             var self = this;
             var $module = $('.NB-module-recommended.NB-recommended-unmoderated');
             $module.addClass('NB-loading');
+            var date = $('.NB-recommended-moderation-date').val();
             
-            this.model.approve_feed_in_moderation_queue(feed_id, function(resp) {
+            this.model.approve_feed_in_moderation_queue(feed_id, date, function(resp) {
                 if (!resp) return;
                 $module.removeClass('NB-loading');
                 $module.replaceWith(resp);

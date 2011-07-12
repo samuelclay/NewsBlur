@@ -45,6 +45,7 @@
         <div class="NB-recommended-add NB-modal-submit-close NB-modal-submit-button NB-javascript">Add</div>
       {% endif %}
       {% if unmoderated %}
+        <input type="text" class="NB-recommended-moderation-date" name="date" value="{{ today|date:"Y-m-d" }}" />
         <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">Approve</div>
         <div class="NB-recommended-decline NB-modal-submit-close NB-modal-submit-button NB-javascript">Decline</div>
       {% endif %}

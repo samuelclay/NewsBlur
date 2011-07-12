@@ -733,9 +733,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback, error_callback, {request_type: 'GET'});
     },
     
-    approve_feed_in_moderation_queue: function(feed_id, callback) {
+    approve_feed_in_moderation_queue: function(feed_id, date, callback) {
         this.make_request('/recommendations/approve_feed', {
             'feed_id'     : feed_id,
+            'date'        : date,
             'unmoderated' : true
         }, callback, {request_type: 'GET'});
     },

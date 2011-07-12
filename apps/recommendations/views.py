@@ -1,3 +1,4 @@
+import re
 import datetime
 from utils import log as logging
 from django.http import HttpResponse
@@ -39,6 +40,7 @@ def load_recommended_feed(request):
             'has_next_page'     : len(recommended_feeds) > 1,
             'has_previous_page' : page != 0,
             'unmoderated'       : unmoderated,
+            'today'             : datetime.datetime.now(),
         }, context_instance=RequestContext(request))
     else:
         return HttpResponse("")
@@ -83,10 +85,12 @@ def save_recommended_feed(request):
 def approve_feed(request):
     feed_id = request.POST['feed_id']
     feed    = get_object_or_404(Feed, pk=int(feed_id))
+    date    = request.POST['date']
     recommended_feed = RecommendedFeed.objects.filter(feed=feed)[0]
     
+    year, month, day = re.search(r'(\d{4})-(\d{1,2})-(\d{1,2})', date).groups()
     recommended_feed.is_public = True
-    recommended_feed.approved_date = datetime.datetime.now()
+    recommended_feed.approved_date = datetime.date(int(year), int(month), int(day))
     recommended_feed.save()
     
     return load_recommended_feed(request)
