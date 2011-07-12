@@ -1,0 +1,116 @@
+{% load compressed utils_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}NewsBlur{% endblock %}</title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" HREF="/media/img/favicon.png">
+
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon" href="/media/img/logo_128.png"/>
+
+  <script type="text/javascript" charset="utf-8">
+    var NEWSBLUR = {};
+    NEWSBLUR.Globals = {
+      'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
+      'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
+      'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
+      'secret_token'            : "{{ user.profile.secret_token }}",
+      'username'                : "{{ user.username|safe }}",
+      'email'                   : "{{ user.email|safe }}",
+      'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
+      'MEDIA_URL'               : "{{ MEDIA_URL }}"
+    };
+    NEWSBLUR.Flags = {
+      'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}
+    };
+    NEWSBLUR.URLs = {
+      'domain'                  : "{% current_domain %}"
+    };
+  </script>
+    
+  {% compressed_css 'mobile' %}
+  {% block head_js %}
+    {% compressed_js 'mobile' %}
+  {% endblock head_js %}
+  {% block extra_head_js %}
+  {% endblock extra_head_js %}
+  
+  {% if not debug %}
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8371683-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+  {% endif %}
+  
+</head>
+<body>
+  
+  
+  <div data-role="page" data-url="feeds" id="NB-page-feeds"> 
+    <div data-role="header" data-backbtn="false"> 
+      <h1>{{ request.user.username }}</h1>
+    </div>
+    <div data-role="content">
+      <div id="NB-feed-list"></div>
+    </div>
+    <div data-role="footer">
+      <div class="NB-footer-site-count ui-li-count">12 sites</div>
+    </div>
+  </div>
+  
+  <div data-role="page" data-url="stories" id="NB-page-stories"> 
+    <div data-role="header"> 
+      <a href="#" data-icon="arrow-l" data-back-btn-text="Sites" data-rel="back">Sites</a>
+      <h1>Stories</h1>
+    </div>
+    <div data-role="content">
+      <div id="NB-story-list"></div>
+    </div>
+    <div data-role="footer" class="ui-header"> 1
+      <div class="NB-footer-site-count ui-li-count">12 sites</div>
+    </div>
+  </div>
+  
+  <div data-role="page" data-url="story" id="NB-page-story"> 
+    <div data-role="header"> 
+      <a href="#" data-icon="arrow-l" data-back-btn-text="Stories" data-rel="back">Stories</a>
+      <h1>Story</h1>
+      <a href="#" data-icon="arrow-d" class="ui-btn-right NB-next">Next Unread</a>
+    </div>
+    <div data-role="content">
+      <div id="NB-story-detail">
+        
+      </div>
+    </div>
+    <div data-role="footer" class="ui-header">
+      <a href="#" data-icon="arrow-u" class="NB-previous">Previous</a>
+      <h1>...</h1>
+      <a href="#" data-icon="arrow-d" class="ui-btn-right NB-next">Next Unread</a>
+    </div>
+  </div>
+  
+  
+  <script>
+    $(document).bind('mobileinit', function() {
+        $.mobile.ajaxEnabled = false;
+    });
+    $(document).bind('ready', function() {
+        NEWSBLUR.mobile_reader = new NEWSBLUR.MobileReader();
+    });
+  </script>
+  
+</body>
+</html>

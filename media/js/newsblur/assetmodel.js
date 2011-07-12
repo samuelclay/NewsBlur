@@ -230,6 +230,46 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/feeds', data, pre_callback, error_callback, {request_type: 'GET'});
     },
     
+    load_feeds_flat: function(callback, error_callback) {
+        var self = this;
+        var data = {
+            flat: true,
+            include_favicons: true
+        };
+        
+        var pre_callback = function(subscriptions) {
+            // NEWSBLUR.log(['subscriptions', subscriptions.flat_folders]);
+            var flat_feeds = function(feeds) {
+                var flattened = _.flatten(_.map(feeds, _.values));
+                return _.flatten(_.map(flattened, function(feed) {
+                    if (!_.isNumber(feed) && feed) return flat_feeds(feed);
+                    else return feed;
+                }));
+            };
+            var valid_feeds = flat_feeds({'root': subscriptions.flat_folders});
+
+            _.each(subscriptions.feeds, function(feed, feed_id) {
+                if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
+                    self.feeds[feed_id] = feed;
+                    if (feed.favicon_fetching) self.flags['favicons_fetching'] = true;
+                }
+            });
+            self.folders = subscriptions.flat_folders;
+            self.starred_count = subscriptions.starred_count;
+            
+            if (!_.isEqual(self.favicons, {})) {
+                _.each(self.feeds, function(feed) {
+                    if (self.favicons[feed.id]) {
+                        feed.favicon = self.favicons[feed.id];
+                    }
+                });
+            }
+            callback();
+        };
+        
+        this.make_request('/reader/feeds', data, pre_callback, error_callback, {request_type: 'GET'});
+    },
+    
     load_feed_favicons: function(callback, loaded_once, load_all) {
         var pre_callback = _.bind(function(favicons) {
           this.favicons = favicons;
@@ -685,11 +725,27 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/features', {'page': page}, callback, callback, {request_type: 'GET'});
     },
     
-    load_recommended_feed: function(page, refresh, callback, error_callback) {
+    load_recommended_feed: function(page, refresh, unmoderated, callback, error_callback) {
         this.make_request('/recommendations/load_recommended_feed', {
-            'page': page, 
-            'refresh': refresh
+            'page'         : page, 
+            'refresh'      : refresh,
+            'unmoderated'  : unmoderated
         }, callback, error_callback, {request_type: 'GET'});
+    },
+    
+    approve_feed_in_moderation_queue: function(feed_id, date, callback) {
+        this.make_request('/recommendations/approve_feed', {
+            'feed_id'     : feed_id,
+            'date'        : date,
+            'unmoderated' : true
+        }, callback, {request_type: 'GET'});
+    },
+    
+    decline_feed_in_moderation_queue: function(feed_id, callback) {
+        this.make_request('/recommendations/decline_feed', {
+            'feed_id'     : feed_id,
+            'unmoderated' : true
+        }, callback, {request_type: 'GET'});
     },
     
     load_dashboard_graphs: function(callback, error_callback) {

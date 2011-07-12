@@ -1,0 +1,297 @@
+/* ========== */
+/* = Global = */
+/* ========== */
+body {
+  overflow-y: scroll !important;
+}
+.NB-favicon {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-top;
+}
+.NB-story-tags {
+  overflow: hidden;
+  line-height: 12px;
+  height: 14px;
+  margin: 0 0 6px 0;
+}
+.NB-story-tag {
+    float: left;
+    font-weight: normal;
+    font-size: 9px;
+    padding: 0px 4px 1px;
+    margin: 0 2px 2px;
+    background-color: #E3DFD4;
+    color: #878787;
+    text-shadow: 0 1px 0 #E9E9E9;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+.NB-story-author {
+    color: #969696;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin: 0 16px 8px 0;
+    text-shadow: 0 1px 0 #F9F9F9;
+    float: left;
+}
+.NB-story-date {
+  float: right;
+  font-size: 11px;
+  color: #252D6C;
+}
+.NB-story .NB-icon-score {
+  margin-top: 12px;
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  top: 17px;
+}
+.NB-story.NB-read .NB-icon-score {
+  opacity: .2;
+}
+.NB-story.NB-score-positive .NB-icon-score {
+    background: transparent url('../../img/icons/silk/bullet_green.png') no-repeat 0 0;
+}
+.NB-story.NB-score-neutral .NB-icon-score {
+    background: transparent url('../../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+}
+.NB-story.NB-score-negative .NB-icon-score {
+    background: transparent url('../../img/icons/silk/bullet_red.png') no-repeat 0 0;
+}
+.NB-story .NB-story-title {
+  clear: left;
+}
+.ui-btn-up-c,
+.ui-btn-hover-c {
+  border: 1px solid #E4E4E4;
+  color: #111;
+  background-color: #E0E0E0;
+  background-image: -moz-linear-gradient(top, #FCFCFC, #F3F3F3); /* FF3.6 */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#FCFCFC), to(#F3F3F3)); /* Saf4+, Chrome */
+  background-image: linear-gradient(top, #FCFCFC, #F3F3F3);
+}
+.ui-btn-active {
+  text-shadow: 0 -1px 1px #145072;
+  border: 1px solid #155678;
+  background-color: #4596ce;
+  background-image: -moz-linear-gradient(top, #85bae4, #5393c5); /* FF3.6 */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#85bae4), to(#5393c5)); /* Saf4+, Chrome */
+  background-image: linear-gradient(top, #85bae4, #5393c5);
+}
+
+/* ============= */
+/* = Feed List = */
+/* ============= */
+
+#NB-feed-list a {
+  padding-left: 36px;
+  padding-right: 36px;
+}
+#NB-feed-list .ui-li-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: -2px;
+}
+#NB-feed-list .ui-li-count {
+  position: static;
+  float: right;
+  margin: 1px 2px 0 0;
+  padding: 3px 4px 2px;
+  white-space: normal;
+  border: none;
+  border-radius: 5px;
+  text-shadow: none;
+}
+#NB-feed-list .ui-li-count.ui-li-count-positive {
+  color: white;
+  background-color: #559F4D;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#559F4D), to(#3B7613));
+  background-image: -moz-linear-gradient(center bottom, #3B7613, #559F4D);
+}
+#NB-feed-list .ui-li-count.ui-li-count-neutral {
+  background-color: #F9C72A;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9C72A), to(#E4AB00));
+  background-image: -moz-linear-gradient(center bottom, #E4AB00, #F9C72A);
+}
+#NB-feed-list .ui-li-count.ui-li-count-negative {
+  color: white;
+  background-color: #CC2A2E;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));
+  background-image: -moz-linear-gradient(center bottom, #9B181B, #CC2A2E);
+}
+
+/* ============== */
+/* = Story List = */
+/* ============== */
+
+#NB-story-list .NB-story a {
+  padding-left: 24px;
+  padding-right: 36px;
+}
+#NB-story-list .NB-story-feed {
+  overflow: hidden;
+  text-shadow: 0 1px 0 #E9E9E9;
+  margin: 4px 0 0 0;
+  white-space: normal;
+}
+#NB-story-list .NB-story-feed .NB-story-feed-icon {
+  float: left;
+  margin: 0 4px 0 0;
+}
+#NB-story-list .NB-story-feed .NB-story-feed-icon img {
+  width: 16px;
+  height: 16px;
+}
+#NB-story-list .NB-story-feed .NB-story-feed-title {
+  float: left;
+  font-size: 12px;
+  margin: 2px 0 0 0;
+  color: #525252;
+}
+#NB-story-list .NB-read .NB-story-feed .NB-story-feed-title {
+  color: #8D8D8D;
+}
+#NB-story-list .NB-read .NB-story-feed img {
+  opacity: .6;
+}
+#NB-story-list .NB-story .NB-story-title {
+  text-shadow: 0 1px 0 #F3F3F3;
+  white-space: normal;
+  font-weight: bold;
+}
+#NB-story-list .NB-story.ui-btn-active .NB-story-title,
+#NB-story-list .NB-story.ui-btn-active .NB-story-tags,
+#NB-story-list .NB-story.ui-btn-active .NB-story-author,
+#NB-story-list .NB-story.ui-btn-active .NB-story-date,
+#NB-story-list .NB-story.ui-btn-active .NB-story-feed  .NB-story-feed-title,
+#NB-story-list .NB-read.ui-btn-active .NB-story-author,
+#NB-story-list .NB-read.ui-btn-active .NB-story-date,
+#NB-story-list .NB-read.ui-btn-active .NB-story-title,
+#NB-story-list .NB-read.ui-btn-active .NB-story-feed .NB-story-feed-title {
+  text-shadow: inherit;
+  color: inherit;
+}
+#NB-story-list .NB-story.ui-btn-active .NB-story-feed  .NB-story-feed-title,
+#NB-story-list .NB-read.ui-btn-active .NB-story-feed .NB-story-feed-title {
+  text-shadow: 0 1px 0 #000;
+}
+#NB-story-list .NB-read .NB-story-title {
+  font-weight: normal;
+  color: #808080;
+}
+#NB-story-list .NB-read .NB-story-date {
+  color: #6D6D6D;
+  font-weight: normal;
+}
+#NB-story-list .NB-read .NB-story-author {
+  color: #B0B0B0;
+}
+#NB-story-list .NB-read .NB-story-tags {
+  opacity: .7;
+}
+#NB-story-list .NB-read.ui-btn-up-c,
+#NB-story-list .NB-read.ui-btn-hover-c {
+  border: 1px solid #E4E4E4;
+  color: #111;
+  background-color: #E0E0E0;
+  background-image: -moz-linear-gradient(top, #FCFCFC, #F9F9F9); /* FF3.6 */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#FCFCFC), to(#F9F9F9)); /* Saf4+, Chrome */
+  background-image: linear-gradient(top, #FCFCFC, #F9F9F9);
+}
+
+
+/* ================ */
+/* = Story Detail = */
+/* ================ */
+
+#NB-page-story .NB-story-feed-header {
+  margin: 8px 0;
+}
+#NB-page-story .ui-content {
+  padding: 0;
+}
+#NB-page-story .ui-header {
+    padding: 2px 0;
+    color: white;
+    font-size: 13px;
+    text-shadow: 1px 1px 0 #000;
+}
+#NB-page-story .ui-header.NB-inverse {
+    color: black;
+    text-shadow: 1px 1px 0 #E0E0E0;
+}
+#NB-page-story .ui-title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0 120px 0 106px;
+}
+#NB-page-story .ui-title .feed_title {
+}
+#NB-page-story .NB-favicon {
+  margin-right: 4px;
+}
+#NB-story-detail {
+  background-color: white;
+}
+#NB-story-detail .NB-story-header {
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 24px 8px 24px;
+    background-color: #dadada;
+    background-image: -moz-linear-gradient(top, #EBEBEB, #CFCFCF); /* FF3.6 */
+    background-image: -ms-linear-gradient(top, #EBEBEB, #CFCFCF); /* IE10 */
+    background-image: -o-linear-gradient(top, #EBEBEB, #CFCFCF); /* Opera 11.10+ */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#EBEBEB), to(#CFCFCF)); /* Saf4+, Chrome */
+    background-image: -webkit-linear-gradient(top, #EBEBEB, #CFCFCF); /* Chrome 10+, Saf5.1+ */
+    background-image: linear-gradient(top, #EBEBEB, #CFCFCF);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#EBEBEB', EndColorStr='#CFCFCF'); /* IE6–IE9 */
+
+    border-bottom: 1px solid #ADADAD;
+    position: relative;
+    overflow: hidden;
+}
+#NB-story-detail .NB-story-header a {
+  text-decoration: none;
+}
+#NB-story-detail .NB-story-title {
+  color: #303030;
+}
+#NB-story-detail .NB-story-content {
+  text-shadow: none;
+  padding: 12px 24px;
+  color: #2b2b2b;
+  font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 1.5em;
+}
+#NB-story-detail .NB-story-content p {
+    clear: both;
+}
+#NB-story-detail .NB-story-content blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: .5em 2em;
+    margin: 0px;
+}
+#NB-story-detail .NB-story-content img {
+  max-width: 100%;
+}
+
+#NB-page-story .NB-icon-score {
+  margin-top: 12px;
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  top: 17px;
+}
+#NB-page-story.NB-score-positive .NB-icon-score {
+    background: transparent url('../../img/icons/silk/bullet_green.png') no-repeat 0 0;
+}
+#NB-page-story.NB-score-neutral .NB-icon-score {
+    background: transparent url('../../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+}
+#NB-page-story.NB-score-negative .NB-icon-score {
+    background: transparent url('../../img/icons/silk/bullet_red.png') no-repeat 0 0;
+}

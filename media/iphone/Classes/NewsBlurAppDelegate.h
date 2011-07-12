@@ -57,6 +57,9 @@
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;
+- (int)indexOfNextStory;
+- (int)indexOfPreviousStory;
+- (int)indexOfActiveStory;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 
 @end

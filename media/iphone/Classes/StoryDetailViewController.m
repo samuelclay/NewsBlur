@@ -16,7 +16,6 @@
 
 @synthesize appDelegate;
 @synthesize webView;
-@synthesize scrollView;
 @synthesize toolbar;
 @synthesize buttonNext;
 @synthesize buttonPrevious;
@@ -52,11 +51,11 @@
     
     NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
     NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:self];
-    [request startAsynchronous];
+//    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+//    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
+//    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+//    [request setDelegate:self];
+//    [request startAsynchronous];
 }
 
 
@@ -78,7 +77,7 @@
 
 
 - (void)showStory {
-    NSLog(@"Loaded Story view: %@", [appDelegate.activeStory objectForKey:@"story_title"]);
+//    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
     NSString *imgCssString = [NSString stringWithFormat:@"<style>"
                               "body {"
                               "  line-height: 18px;"
@@ -103,16 +102,75 @@
                               "  font-weight: bold;"
                               "  background-color: #E0E0E0;"
                               "  border-bottom: 1px solid #A0A0A0;"
-                              "  padding: 12px 12px;"
+                              "  padding: 12px 12px 8px;"
                               "  text-shadow: 1px 1px 0 #EFEFEF;"
                               "}"
                               ".NB-story {"
                               "  margin: 12px;"
                               "}"
+                              ".NB-story-author {"
+                              "    color: #969696;"
+                              "    font-size: 10px;"
+                              "    text-transform: uppercase;"
+                              "    margin: 0 16px 4px 0;"
+                              "    text-shadow: 0 1px 0 #F9F9F9;"
+                              "    float: left;"
+                              "}"
+                              ".NB-story-tags {"
+                              "  clear: both;"
+                              "  overflow: hidden;"
+                              "  line-height: 12px;"
+                              "  height: 14px;"
+                              "  margin: 6px 0 0 0;"
+                              "  text-transform: uppercase;"
+                              "}"
+                              ".NB-story-tag {"
+                              "    float: left;"
+                              "    font-weight: normal;"
+                              "    font-size: 9px;"
+                              "    padding: 0px 4px 0px;"
+                              "    margin: 0 4px 2px 0;"
+                              "    background-color: #C6CBC3;"
+                              "    color: #505050;"
+                              "    text-shadow: 0 1px 0 #E7E7E7;"
+                              "    border-radius: 4px;"
+                              "    -moz-border-radius: 4px;"
+                              "    -webkit-border-radius: 4px;"
+                              "}"
+                              ".NB-story-date {"
+                              "  float: right;"
+                              "  font-size: 11px;"
+                              "  color: #252D6C;"
+                              "}"
+                              ".NB-story-title {"
+                              "  clear: left;"
+                              "}"
                               "</style>"];
+    NSString *story_author      = @"";
+    if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
+        NSString *author = [NSString stringWithFormat:@"%@",[appDelegate.activeStory objectForKey:@"story_authors"]];
+        if (author && ![author isEqualToString:@"<null>"]) {
+            story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
+        }
+    }
+    NSString *story_tags      = @"";
+    if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
+        NSArray *tag_array = [appDelegate.activeStory objectForKey:@"story_tags"];
+        if ([tag_array count] > 0) {
+            story_tags = [NSString stringWithFormat:@"<div class=\"NB-story-tags\"><div class=\"NB-story-tag\">%@</div></div>",
+                          [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
+        }
+    }
     NSString *storyHeader = [NSString stringWithFormat:@"<div class=\"NB-header\">"
+                             "<div class=\"NB-story-date\">%@</div>"
                              "%@"
-                             "</div>", [appDelegate.activeStory objectForKey:@"story_title"]];
+                             "<div class=\"NB-story-title\">%@</div>"
+                             "%@"
+                             "</div>", 
+                             [story_tags length] ? [appDelegate.activeStory objectForKey:@"long_parsed_date"] : [appDelegate.activeStory objectForKey:@"short_parsed_date"], 
+                             story_author,
+                             [appDelegate.activeStory objectForKey:@"story_title"],
+                             story_tags];
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ <div class=\"NB-story\">%@</div>",
                             imgCssString, storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"]];
@@ -121,6 +179,38 @@
                                                   objectForKey:@"feed_link"]]];
     
     
+}
+
+- (IBAction)doNextUnreadStory {
+    int nextIndex = [appDelegate indexOfNextStory];
+    if (nextIndex == -1) {
+        
+    } else {
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+        [self showStory];
+
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:.5];
+        [UIView setAnimationBeginsFromCurrentState:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:NO];
+        [UIView commitAnimations];
+    }
+}
+
+- (IBAction)doPreviousStory {
+    NSInteger nextIndex = [appDelegate indexOfPreviousStory];
+    if (nextIndex == -1) {
+        
+    } else {
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+        [self showStory];
+        
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:.5];
+        [UIView setAnimationBeginsFromCurrentState:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:NO];
+        [UIView commitAnimations];
+    }
 }
 
 - (void)showOriginalSubview:(id)sender {
@@ -157,28 +247,10 @@
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
-    [self resizeWebView];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self resizeWebView];
 }
-
-- (void)resizeWebView {
-    
-    CGRect frame = webView.frame;
-    frame.size.height = 1;
-    webView.frame = frame;
-    CGSize fittingSize = [webView sizeThatFits:CGSizeZero];
-    frame.size = fittingSize;
-    webView.frame = frame;
-    NSLog(@"heights: %f / %f", frame.size.width, frame.size.height, toolbar.frame.size.height);
-    toolbar.frame = CGRectMake(0, webView.frame.size.height, toolbar.frame.size.width, toolbar.frame.size.height);
-    
-    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    scrollView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-}
-
 
 - (void)dealloc {
     [appDelegate release];

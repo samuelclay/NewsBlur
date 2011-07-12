@@ -69,7 +69,7 @@
 - (void)fetchFeedDetail {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil) {
         NSString *theFeedDetailURL = [[NSString alloc] 
-                                      initWithFormat:@"http://nb.local.host:8000/reader/load_single_feed/?feed_id=%@", 
+                                      initWithFormat:@"http://nb.local.host:8000/reader/feed/%@", 
                                       [appDelegate.activeFeed objectForKey:@"id"]];
         //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
@@ -150,12 +150,12 @@
     
     NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:indexPath.row];
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor.text = [story objectForKey:@"story_authors"];
+        cell.storyAuthor.text = [[story objectForKey:@"story_authors"] uppercaseString];
     } else {
         cell.storyAuthor.text = @"";
     }
     cell.storyTitle.text = [story objectForKey:@"story_title"];
-    cell.storyDate.text = [story objectForKey:@"long_parsed_date"];
+    cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     
     if ([[story objectForKey:@"read_status"] intValue] != 1) {
         // Unread story

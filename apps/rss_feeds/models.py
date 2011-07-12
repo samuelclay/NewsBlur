@@ -737,7 +737,6 @@ class Feed(models.Model):
         story_published_now = story.get('published_now', False)
         start_date = story_pub_date - datetime.timedelta(hours=8)
         end_date = story_pub_date + datetime.timedelta(hours=8)
-        existing_stories.rewind()
         
         for existing_story in existing_stories:
             content_ratio = 0

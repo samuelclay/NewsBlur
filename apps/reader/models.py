@@ -191,11 +191,11 @@ class UserSubscription(models.Model):
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
-        classifier_feeds = MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk)
-        classifier_authors = MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk)
-        classifier_titles = MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk)
-        classifier_tags = MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk)
-        
+        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        classifier_tags    = list(MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+
         # if not silent:
         #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
             
@@ -204,13 +204,10 @@ class UserSubscription(models.Model):
         }
         
         for story in stories:
-            classifier_authors.rewind()
-            classifier_tags.rewind()
-            classifier_titles.rewind()
             scores.update({
-                'author': apply_classifier_authors(classifier_authors, story),
-                'tags': apply_classifier_tags(classifier_tags, story),
-                'title': apply_classifier_titles(classifier_titles, story),
+                'author' : apply_classifier_authors(classifier_authors, story),
+                'tags'   : apply_classifier_tags(classifier_tags, story),
+                'title'  : apply_classifier_titles(classifier_titles, story),
             })
             
             max_score = max(scores['author'], scores['tags'], scores['title'])

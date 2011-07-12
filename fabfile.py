@@ -44,6 +44,7 @@ def deploy():
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://www.newsblur.com > /dev/null')
+        run('curl -s http://www.newsblur.com/m/ > /dev/null')
         run('curl -s http://www.newsblur.com/api/add_site_load_script/ABCDEF > /dev/null')
         compress_media()
 
@@ -54,6 +55,7 @@ def deploy_full():
         run('./manage.py migrate')
         run('sudo supervisorctl restart gunicorn')
         run('curl -s http://www.newsblur.com > /dev/null')
+        run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
 
 @roles('web')
@@ -62,6 +64,7 @@ def staging():
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://dev.newsblur.com > /dev/null')
+        run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
 @roles('web')
@@ -71,6 +74,7 @@ def staging_full():
         run('./manage.py migrate')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://dev.newsblur.com > /dev/null')
+        run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
 @roles('task')
@@ -94,6 +98,9 @@ def compress_media():
     with cd('media/js'):
         run('rm -f *.gz')
         run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
+    with cd('media/css/mobile'):
+        run('rm -f *.gz')
+        run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
     with cd('media/css'):
         run('rm -f *.gz')
         run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')

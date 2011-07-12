@@ -119,6 +119,44 @@
     [originalStoryViewController dismissModalViewControllerAnimated:YES];
 }
 
+- (int)indexOfNextStory {
+    int activeIndex = [self indexOfActiveStory];
+    NSUInteger activeFeedStoriesCount = [activeFeedStories count];
+    NSLog(@"ActiveStory: %d", activeIndex);
+    NSLog(@"ActiveStory: %d", activeFeedStoriesCount);
+    for (int i=activeIndex+1; i < activeFeedStoriesCount; i++) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        NSDecimalNumber *readStatus = [story objectForKey:@"read_status"];
+        NSLog(@"readStatus: %@", readStatus);
+        if (readStatus == 0) {
+            NSLog(@"NextStory: %d", i);
+            return i;
+        }
+    }
+    return -1;
+}
+
+- (int)indexOfPreviousStory {
+    NSInteger activeIndex = [self indexOfActiveStory];
+    for (int i=activeIndex-1; i >= 0; i--) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        if ([story objectForKey:@"read_status"] == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+- (int)indexOfActiveStory {
+    for (int i=0; i < [activeFeedStories count]; i++) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        if ([activeStory objectForKey:@"id"] == [story objectForKey:@"id"]) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
 //    int score_max = 0;

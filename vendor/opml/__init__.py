@@ -59,8 +59,8 @@ class Opml(object):
         return self._outlines[index]
 
 def from_string(opml_text):
-
-    return Opml(lxml.etree.fromstring(opml_text))
+    parser = lxml.etree.XMLParser(recover=True)
+    return Opml(lxml.etree.fromstring(opml_text, parser))
 
 def parse(opml_url):
 
