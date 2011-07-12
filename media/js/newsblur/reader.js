@@ -1949,7 +1949,7 @@
         },
         
         switch_to_correct_view: function(found_story_in_page) {
-            // NEWSBLUR.log(['Found story', this.story_view, found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
+            NEWSBLUR.log(['Found story', this.story_view, found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
             if (found_story_in_page === false) {
                 // Story not found, show in feed view with link to page view
                 if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
@@ -1989,7 +1989,7 @@
             
             if (!this.model.preference('animations')) skip_scroll = true;
             
-            // NEWSBLUR.log(['scroll_to_story_in_story_feed', story, $story]);
+            NEWSBLUR.log(['scroll_to_story_in_story_feed', skip_scroll]);
 
             if ($story && $story.length) {
                 if (skip_scroll || 
@@ -2001,11 +2001,17 @@
                     $feed_stories.scrollTo($story, 0, { axis: 'y', offset: 0 }); // Do this at view switch instead.
                 } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                     $feed_stories.scrollable().stop();
-                    $feed_stories.scrollTo($story, 340, { axis: 'y', easing: 'easeInOutQuint', offset: 0, queue: false, onAfter: function() {
-                        self.locks.scrolling = setTimeout(function() {
-                            self.flags.scrolling_by_selecting_story_title = false;
-                        }, 100);
-                    } });
+                    $feed_stories.scrollTo($story, 340, { 
+                        axis: 'y', 
+                        easing: 'easeInOutQuint', 
+                        offset: 0, 
+                        queue: false, 
+                        onAfter: function() {
+                            self.locks.scrolling = setTimeout(function() {
+                                self.flags.scrolling_by_selecting_story_title = false;
+                            }, 100);
+                        }
+                    });
                 } 
             }
             
@@ -2019,7 +2025,6 @@
             var $iframe = this.$s.$feed_iframe;
             
             if (!this.model.preference('animations')) skip_scroll = true;
-
             if ($story && $story.length) {
                 if (skip_scroll
                     || this.story_view == 'feed'
@@ -2027,16 +2032,26 @@
                     || this.flags['page_view_showing_feed_view']) {
                     this.flags.scrolling_by_selecting_story_title = false;
                     $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 }); // Do this at story_view switch
+                    self.locks.scrolling = setTimeout(function() {
+                        self.flags.scrolling_by_selecting_story_title = false;
+                    }, 100);
                 } else if (this.story_view == 'page') {
                     $iframe.scrollable().stop();
-                    $iframe.scrollTo($story, 380, { axis: 'y', easing: 'easeInOutQuint', offset: -24, queue: false, onAfter: function() {
-                        self.locks.scrolling = setTimeout(function() {
-                            self.flags.scrolling_by_selecting_story_title = false;
-                        }, 100);
-                    } });
+                    $iframe.scrollTo($story, 380, { 
+                        axis: 'y', 
+                        easing: 'easeInOutQuint', 
+                        offset: -24, 
+                        queue: false, 
+                        onAfter: function() {
+                            self.locks.scrolling = setTimeout(function() {
+                                self.flags.scrolling_by_selecting_story_title = false;
+                            }, 100);
+                        }
+                    });
                 }
                 var parent_scroll = $story.parents('.NB-feed-story-view').scrollTop();
                 var story_offset = $story.offset().top;
+                console.log(['scroll_to_story_in_iframe', skip_scroll, story_offset + parent_scroll]);
                 return story_offset + parent_scroll;
             }
 
@@ -4454,6 +4469,7 @@
                     $stories_show.css({'display': 'block'});
                 }
                 setTimeout(function() {
+                    console.log(['show_story_titles_above_intelligence_level', self.active_story.id]);
                     if (!self.active_story) return;
                     var $story = self.find_story_in_story_titles(self.active_story.id);
                     // NEWSBLUR.log(['$story', $story]);
