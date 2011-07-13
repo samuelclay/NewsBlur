@@ -1909,7 +1909,7 @@
             var self = this;
             var feed_position;
             var iframe_position;
-            // NEWSBLUR.log(['Story', this.story_view, story]);
+            // NEWSBLUR.log(['open_story', this.story_view, story]);
             
             if (this.active_story != story) {
                 this.active_story = story;
@@ -1949,7 +1949,7 @@
         },
         
         switch_to_correct_view: function(found_story_in_page) {
-            NEWSBLUR.log(['Found story', this.story_view, found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
+            // NEWSBLUR.log(['Found story', this.story_view, found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
             if (found_story_in_page === false) {
                 // Story not found, show in feed view with link to page view
                 if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
@@ -1997,11 +1997,14 @@
                      this.model.preference('feed_view_single_story')) ||
                     (this.story_view == 'page' && 
                      !this.flags['page_view_showing_feed_view'])) {
-                    this.flags.scrolling_by_selecting_story_title = false;
-                    $feed_stories.scrollTo($story, 0, { axis: 'y', offset: 0 }); // Do this at view switch instead.
+                    this.locks.scrolling = setTimeout(function() {
+                        self.flags.scrolling_by_selecting_story_title = false;
+                    }, 100);
+                    $feed_stories.scrollTo($story, { duration: 0, axis: 'y', offset: 0 }); // Do this at view switch instead.
                 } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
                     $feed_stories.scrollable().stop();
-                    $feed_stories.scrollTo($story, 340, { 
+                    $feed_stories.scrollTo($story, { 
+                        duration: 340,
                         axis: 'y', 
                         easing: 'easeInOutQuint', 
                         offset: 0, 
@@ -2025,19 +2028,20 @@
             var $iframe = this.$s.$feed_iframe;
             
             if (!this.model.preference('animations')) skip_scroll = true;
+            
             if ($story && $story.length) {
                 if (skip_scroll
                     || this.story_view == 'feed'
                     || this.story_view == 'story'
                     || this.flags['page_view_showing_feed_view']) {
-                    this.flags.scrolling_by_selecting_story_title = false;
-                    $iframe.scrollTo($story, 0, { axis: 'y', offset: -24 }); // Do this at story_view switch
+                    $iframe.scrollTo($story, { duration: 0, axis: 'y', offset: -24 }); // Do this at story_view switch
                     self.locks.scrolling = setTimeout(function() {
                         self.flags.scrolling_by_selecting_story_title = false;
                     }, 100);
                 } else if (this.story_view == 'page') {
                     $iframe.scrollable().stop();
-                    $iframe.scrollTo($story, 380, { 
+                    $iframe.scrollTo($story, { 
+                        duration: 380,
                         axis: 'y', 
                         easing: 'easeInOutQuint', 
                         offset: -24, 
@@ -2051,7 +2055,7 @@
                 }
                 var parent_scroll = $story.parents('.NB-feed-story-view').scrollTop();
                 var story_offset = $story.offset().top;
-                console.log(['scroll_to_story_in_iframe', skip_scroll, story_offset + parent_scroll]);
+
                 return story_offset + parent_scroll;
             }
 
@@ -2757,7 +2761,8 @@
                             var $footnote = $('a[name='+href.substr(1)+'], [id='+href.substr(1)+']',
                                               $iframe_contents);
                             // NEWSBLUR.log(['Footnote', $footnote, href, href.substr(1)]);
-                            $iframe_contents.scrollTo($footnote, 600, { 
+                            $iframe_contents.scrollTo($footnote, { 
+                                duration: 600,
                                 axis: 'y', 
                                 easing: 'easeInOutQuint', 
                                 offset: 0, 
