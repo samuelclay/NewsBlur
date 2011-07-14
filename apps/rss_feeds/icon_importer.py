@@ -66,6 +66,8 @@ class IconImporter(object):
 
         See http://en.wikipedia.org/w/index.php?oldid=264332061 for file format
         description.
+        
+        Cribbed and modified from http://djangosnippets.org/snippets/1287/
         '''
         try:
             image_file.seek(0)
