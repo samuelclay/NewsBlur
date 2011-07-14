@@ -63,7 +63,6 @@ class OPMLExporter:
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
             elif isinstance(obj, dict):
-                print obj
                 for folder_title, folder_objs in obj.items():
                     folder_element = Element('outline', {'text': folder_title, 'title': folder_title})
                     body.append(self.process_outline(folder_element, folder_objs))
@@ -173,7 +172,7 @@ class GoogleReaderImporter(Importer):
         folders = defaultdict(list)
         for item in self.feeds:
             folders = self.process_item(item, folders)
-        # print dict(folders)
+
         self.rearrange_folders(folders)
         logging.user(self.user, "~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.subscription_folders))
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(

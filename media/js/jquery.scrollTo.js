@@ -101,6 +101,7 @@
 		settings = $.extend( {}, $scrollTo.defaults, settings );
 		// Speed is still recognized for backwards compatibility
 		duration = duration || settings.speed || settings.duration;
+		console.log(['duration', duration]);
 		// Make sure the settings are given right
 		settings.queue = settings.queue && settings.axis.length > 1;
 		

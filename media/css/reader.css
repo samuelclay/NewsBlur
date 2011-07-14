@@ -5234,7 +5234,11 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-singlestory label img {
   vertical-align: middle;
-  margin: -1px 6px 0 2px;
+  margin: -5px 6px 0 2px;
+}
+.NB-modal-preferences .NB-preference-animations label img {
+  vertical-align: middle;
+  margin: -5px 6px 0 2px;
 }
 .NB-modal-preferences .NB-preference-feedorder label img {
   vertical-align: middle;
