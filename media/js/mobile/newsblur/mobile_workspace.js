@@ -242,6 +242,9 @@
                     <div class="NB-story-header-feed-gradient"></div>\
                     <div class="ui-li-icon NB-icon-score"></div>\
                     <div class="NB-story-date"><%= story.long_parsed_date %></div>\
+                    <a href="<%= story.story_permalink %>" data-story-id="<%= story.id %>">\
+                        <div class="NB-story-title"><%= story.story_title %></div>\
+                    </a>\
                     <% if (story.story_authors) { %>\
                         <div class="NB-story-author"><%= story.story_authors %></div>\
                     <% } %>\
@@ -252,9 +255,6 @@
                             <% }); %>\
                         </div>\
                     <% } %>\
-                    <a href="<%= story.story_permalink %>" data-story-id="<%= story.id %>">\
-                        <div class="NB-story-title"><%= story.story_title %></div>\
-                    </a>\
                 </div>\
                 <div class="NB-story-content"><%= story.story_content %></div>\
             </div>', {

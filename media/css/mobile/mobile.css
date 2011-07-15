@@ -13,14 +13,14 @@ body {
   overflow: hidden;
   line-height: 12px;
   height: 14px;
-  margin: 0 0 6px 0;
+  margin: 4px 0 0 0;
 }
 .NB-story-tag {
     float: left;
     font-weight: normal;
     font-size: 9px;
     padding: 0px 4px 1px;
-    margin: 0 2px 2px;
+    margin: 0 2px 0;
     background-color: #E3DFD4;
     color: #878787;
     text-shadow: 0 1px 0 #E9E9E9;
@@ -32,14 +32,14 @@ body {
     color: #969696;
     font-size: 10px;
     text-transform: uppercase;
-    margin: 0 16px 8px 0;
+    margin: 4px 16px 0 0;
     text-shadow: 0 1px 0 #F9F9F9;
     float: left;
 }
 .NB-story-date {
-  float: right;
   font-size: 11px;
   color: #252D6C;
+  margin: 0 0 4px;
 }
 .NB-story .NB-icon-score {
   margin-top: 12px;
@@ -238,7 +238,7 @@ body {
 #NB-story-detail .NB-story-header {
     font-weight: bold;
     font-size: 16px;
-    padding: 8px 24px 8px 24px;
+    padding: 8px 24px 6px 24px;
     background-color: #dadada;
     background-image: -moz-linear-gradient(top, #EBEBEB, #CFCFCF); /* FF3.6 */
     background-image: -ms-linear-gradient(top, #EBEBEB, #CFCFCF); /* IE10 */
