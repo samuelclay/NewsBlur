@@ -15,6 +15,10 @@
 @synthesize appDelegate;
 @synthesize closeButton;
 @synthesize webView;
+@synthesize back;
+@synthesize forward;
+@synthesize refresh;
+@synthesize pageAction;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -42,6 +46,10 @@
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
     self.webView = nil;
+    self.back = nil;
+    self.forward = nil;
+    self.refresh = nil;
+    self.pageAction = nil;
 }
 
 
@@ -49,6 +57,10 @@
     [super dealloc];
     [closeButton release];
     [webView release];
+    [back release];
+    [forward release];
+    [refresh release];
+    [pageAction release];
 }
 
 

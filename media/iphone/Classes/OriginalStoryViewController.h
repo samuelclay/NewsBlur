@@ -16,12 +16,23 @@
     
     IBOutlet UIBarButtonItem * closeButton;
     UIWebView *webView;
+    
+    UIBarButtonItem* back;
+    UIBarButtonItem* forward;
+    UIBarButtonItem* refresh;
+    UIBarButtonItem* pageAction;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem* back;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem* forward;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem* refresh;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem* pageAction;
 
 - (IBAction) doCloseOriginalStoryViewController;
+
+- (void)updateButtons;
 
 @end
