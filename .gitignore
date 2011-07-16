@@ -12,4 +12,4 @@ build/
 data/
 logs
 mongo/
-*.xcuserstate
+**/*.xcuserstate
