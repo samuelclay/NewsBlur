@@ -16,11 +16,14 @@ MONGO_DB = {
     'PORT': 27017
 }
 
-MEDIA_URL = '/media/'
 DEBUG = True
-# CACHE_BACKEND = 'locmem:///'
+
+MEDIA_URL = '/media/'
+
 CACHE_BACKEND = 'dummy:///'
+# CACHE_BACKEND = 'locmem:///'
 # CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Google Reader OAuth API Keys
@@ -32,6 +35,7 @@ BROKER_HOST = "127.0.0.1"
 
 # Logging (setup for development)
 LOG_TO_STREAM = True
+
 if len(logging._handlerList) < 1:
     LOG_FILE = '~/newsblur/logs/development.log'
     logging.basicConfig(level=logging.DEBUG,

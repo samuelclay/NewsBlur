@@ -42,15 +42,19 @@
 
 ### Prerequisites
 
-#### RDBMS (mySQL, PostgreSQL)
+#### RDBMS (MySQL, PostgreSQL)
 
 You will want to have your database setup before you begin installation. Fabric can install
 both PostgreSQL and MongoDB for you, but only on Ubuntu. Mac OS X users will want to have
-mySQL or PostgreSQL already installed. You can [download mySQL](http://dev.mysql.com/downloads/mysql/)
+MySQL or PostgreSQL already installed. You can [download MySQL](http://dev.mysql.com/downloads/mysql/)
 or [download PostgreSQL](http://www.postgresql.org/download/). Additionally,
-if running as a development machine on Mac OS X, I would recommend using mySQL with 
+if running as a development machine on Mac OS X, I would recommend using MySQL with 
 [Sequel Pro](http://www.sequelpro.com/) as a GUI.
 
+If you are installing MySQL, you will also need the MySQLDB python library:
+
+    sudo easy_install mysql-python
+    
 #### Fabric 
 
 Both Mac OS X and Linux require [Fabric](http://docs.fabfile.org/) to be installed. 
@@ -72,19 +76,30 @@ Sym-linking the ppc architecture comes from this StackOverflow answer on
 
 #### MongoDB
 
-On top of mySQL/PostgreSQL, NewsBlur uses MongoDB to store non-relational data. You will want to 
+On top of MySQL/PostgreSQL, NewsBlur uses MongoDB to store non-relational data. You will want to 
 [download MongoDB](http://www.mongodb.org/downloads). If you are on Ubuntu, the `setup_mongo` Fabric 
 command will automatically do this for you, but Mac OS X needs to have it installed manually.
+
+### Configure paths
+
+In `fabfile.py` there are two paths that need to be configured. 
+
+ * `env.paths.NEWSBLUR` is the relative path to the NewsBlur repository.
+ * `env.paths.VENDOR` is the relative path to where all downloaded code should go.
+ 
+In `local_settings.py` there are a few paths that need to be configured. Configure 
+these after the installation below.
 
 ### Installing on Mac OS X
 
 Using Mac OS X as a development environment, you can run all three servers (app, db, task) 
 on the same system. You should have [Fabric](http://docs.fabfile.org/) installed to run 
-the `fabfile.py`. You should also have mySQL/PostgreSQL and MongoDB already installed.
+the `fabfile.py`. You should also have MySQL/PostgreSQL and MongoDB already installed.
 
     fab -R local setup_python
     fab -R local setup_mongoengine
     fab -R local setup_forked_mongoengine
+    fab -R local setup_repo_local_settings
     
 If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` 
 and check if there is a function that can be used to circumvent broken easy_install 
@@ -100,6 +115,25 @@ NewsBlur and its many components. NewsBlur is designed to run on three separate 
 an app server, a db server, and assorted task servers. To install everything on a single 
 machine, read through `fabfile.py` and setup all three servers without repeating the 
 `setup_common` steps.
+
+### Finishing Installation
+
+You must perform a few tasks to tie all of the various systems together.
+
+ 1. First, copy local_settings.py and fill in your OAuth keys, S3 keys, database names (if not `newsblur`),
+task server/broker address (RabbitMQ), and paths:
+
+    cp local_settings.py.template local_settings.py
+
+ 2. Create the `newsblur` database in both MongoDB and MySQL/PostgreSQL
+
+    #### MySQL/PostgreSQL
+    
+        ./manage.py syncdb
+        
+    #### MongoDB
+    
+        
 
 #### App server
 
