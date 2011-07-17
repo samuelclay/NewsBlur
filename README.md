@@ -18,18 +18,21 @@
 
 ### Server-side
 
- * Django: Web framework written in Python, used to serve all pages.
- * Celery & RabbitMQ: Asynchronous queueing server, used to fetch and parse 
-   RSS feeds.
- * MongoDB, Pymongo, & Mongoengine: Non-relational database, used to store 
-   stories, read stories, feed/page fetch histories, and proxied sites.
- * PostgreSQL: Relational database, used to store feeds, subscriptions, and 
-   user accounts.
+ * [Django](http://www.djangoproject.com): Web framework written in Python, used 
+   to serve all pages.
+ * [Celery](http://ask.github.com/celery) & [RabbitMQ](http://www.rabbitmq.com): 
+   Asynchronous queueing server, used to fetch and parse RSS feeds.
+ * [MongoDB](http://www.mongodb.com), [Pymongo](http://www.mongodb.com/pymongo), & 
+   [Mongoengine](http://www.github.com/hmarr/mongoengine): Non-relational database, 
+   used to store stories, read stories, feed/page fetch histories, and proxied sites.
+ * [PostgreSQL](http://www.postgresql.com): Relational database, used to store feeds, 
+   subscriptions, and user accounts.
 
 ### Client-side and design
 
- * jQuery: Cross-browser compliant JavaScript code. IE works without effort.
- * Underscore.js: Functional programming for JavaScript. Indispensible.
+ * [jQuery](http://www.jquery.com): Cross-browser compliant JavaScript code. IE works without effort.
+ * [Underscore.js](http://documentcloud.github.com/underscore/): Functional programming for JavaScript. 
+   Indispensible.
  * Miscellaneous jQuery Plugins: Everything from resizable layouts, to progress 
    bars, sortables, date handling, colors, corners, JSON, animations. 
    [See the complete list](https://github.com/samuelclay/NewsBlur/tree/master/media/js).
@@ -71,12 +74,15 @@ machine, read through `fabfile.py` and setup all three servers without repeating
 `setup_common` steps.
 
 #### App server
+
    fab setup_app
    
 #### Database server
+
    fab setup_db
    
 #### Task server
+
    fab setup_task
 
 
