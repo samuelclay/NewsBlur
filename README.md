@@ -8,9 +8,9 @@
 
 ## Features
 
- 1) Shows the original site (you have to see it to believe it)
- 2) Hides stories you don't want to read based on tags, keywords, authors, etc.
- 3) Highlights stories you want to read, based on the same criteria.
+ 1. Shows the original site (you have to see it to believe it)
+ 2. Hides stories you don't want to read based on tags, keywords, authors, etc.
+ 3. Highlights stories you want to read, based on the same criteria.
 
 ## Technologies
 
