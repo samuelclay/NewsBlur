@@ -1,16 +1,36 @@
-========
-NewsBlur
-========
-:Info: RSS feed reader with intelligence.
-:Author: Samuel Clay (http://www.samuelclay.com)
-:Twitter: [@samuelclay](http://twitter.com/samuelclay) and [@newsblur](http://twitter.com/newsblur)
+# NewsBlur
 
-Features
-========
+ * Live at [www.newsblur.com](http://www.newsblur.com).
+ * A visual feed reader with intelligence.
+ * Created by [Samuel Clay](http://www.samuelclay.com). 
+ * Twitter: [@samuelclay](http://twitter.com/samuelclay) and 
+   [@newsblur](http://twitter.com/newsblur).
 
-1) Shows the original site (you have to see it to believe it)
-2) Hides stories you don't want to read based on tags, keywords, authors, etc.
-3) Highlights stories you want to read, based on the same criteria.
+## Features
+
+ 1) Shows the original site (you have to see it to believe it)
+ 2) Hides stories you don't want to read based on tags, keywords, authors, etc.
+ 3) Highlights stories you want to read, based on the same criteria.
+
+## Technologies
+
+### Server-side
+
+ * Django: Web framework written in Python, used to serve all pages.
+ * Celery & RabbitMQ: Asynchronous queueing server, used to fetch and parse 
+   RSS feeds.
+ * MongoDB, Pymongo, & Mongoengine: Non-relational database, used to store 
+   stories, read stories, feed/page fetch histories, and proxied sites.
+ * PostgreSQL: Relational database, used to store feeds, subscriptions, and 
+   user accounts.
+
+### Client-side and design
+
+ * jQuery: Cross-browser compliant JavaScript code. IE works without effort.
+ * Underscore.js: Functional programming for JavaScript. Indispensible.
+ * Miscellaneous jQuery Plugins: Everything from resizable layouts, to progress 
+   bars, sortables, date handling, colors, corners, JSON, animations. 
+   [See the complete list](https://github.com/samuelclay/NewsBlur/tree/master/media/js).
 
 Roadmap
 -------
