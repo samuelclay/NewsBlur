@@ -1,13 +1,21 @@
 from fabric.api import abort, cd, env, get, hide, hosts, local, prompt
 from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
 from fabric.colors import red, green, blue, cyan, magenta, white, yellow
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
+try:
+    from boto.s3.connection import S3Connection
+    from boto.s3.key import Key
+except ImportError:
+    print " ---> Boto not installed yet. No S3 connections available."
 from fabric.contrib import django
 import os, sys
 
 django.settings_module('settings')
-from django.conf import settings as django_settings
+try:
+    from django.conf import settings as django_settings
+except ImportError:
+    print " ---> Django not installed yet."
+django_settings = None
+
 
 # =========
 # = Roles =
@@ -15,6 +23,7 @@ from django.conf import settings as django_settings
 
 env.user = 'sclay'
 env.roledefs ={
+    'local': ['localhost'],
     'app': ['app01.newsblur.com'],
     'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com'],
@@ -379,9 +388,10 @@ def enable_celery_supervisor():
 # = S3 =
 # ======
 
-ACCESS_KEY  = django_settings.S3_ACCESS_KEY
-SECRET      = django_settings.S3_SECRET
-BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
+if django_settings:
+    ACCESS_KEY  = django_settings.S3_ACCESS_KEY
+    SECRET      = django_settings.S3_SECRET
+    BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
 
 def save_file_in_s3(filename):
     conn   = S3Connection(ACCESS_KEY, SECRET)
