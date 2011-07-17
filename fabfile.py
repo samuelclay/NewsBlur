@@ -139,6 +139,7 @@ def setup_common():
     setup_local_files()
     setup_libxml()
     setup_python()
+    setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -232,12 +233,15 @@ def setup_libxml_code():
         
     with cd('~/code/libxslt'):
         run('./configure && make && sudo make install')
-        
+
+def setup_psycopg():
+    sudo('easy-install psycopg2')
+    
 def setup_python():
     sudo('easy_install pip')
     sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
     sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
-    put('config/pystartup.py', '.pystartup')
+    put('config/pystartup.py', '~/.pystartup')
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')

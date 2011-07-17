@@ -1,7 +1,7 @@
 # NewsBlur
 
- * Live at [www.newsblur.com](http://www.newsblur.com).
  * A visual feed reader with intelligence.
+ * Live at [www.newsblur.com](http://www.newsblur.com).
  * Created by [Samuel Clay](http://www.samuelclay.com). 
  * Twitter: [@samuelclay](http://twitter.com/samuelclay) and 
    [@newsblur](http://twitter.com/newsblur).
@@ -63,7 +63,11 @@ Using Mac OS X as a development environment, you can run all three servers (app,
 on the same system. You should have [Fabric](http://docs.fabfile.org/) installed to run 
 the `fabfile.py`.
 
-    fab setup_python
+    fab -R local setup_python
+    
+If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` and check if there is a function that can be used to circumvent broken easy_install processes.
+
+    fab -R local setup_libxml_code
     
 ### Linux / Ubuntu
 
@@ -75,15 +79,15 @@ machine, read through `fabfile.py` and setup all three servers without repeating
 
 #### App server
 
-   fab setup_app
+   fab -R local setup_app
    
 #### Database server
 
-   fab setup_db
+   fab -R local setup_db
    
 #### Task server
 
-   fab setup_task
+   fab -R local setup_task
 
 
 Roadmap
