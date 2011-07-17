@@ -21,8 +21,8 @@ except ImportError:
 # = DEFAULTS =
 # ============
 
-env.paths.NEWSBLUR = "~/projects/newsblur"
-env.paths.VENDOR   = "~/projects/code"
+env.NEWSBLUR_PATH = "~/projects/newsblur"
+env.VENDOR_PATH   = "~/projects/code"
 
 # =========
 # = Roles =
@@ -42,8 +42,8 @@ env.roledefs ={
 # ================
 
 def server_paths():
-    env.paths.NEWSBLUR = "~/newsblur"
-    env.paths.VENDOR   = "~/code"
+    env.NEWSBLUR_PATH = "~/newsblur"
+    env.VENDOR_PATH   = "~/code"
     
 def app():
     server_paths()
@@ -67,7 +67,7 @@ def task():
 
 @roles('web')
 def deploy():
-    with cd(env.paths.NEWSBLUR):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://www.newsblur.com > /dev/null')
@@ -77,7 +77,7 @@ def deploy():
 
 @roles('web')
 def deploy_full():
-    with cd(env.paths.NEWSBLUR):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('./manage.py migrate')
         run('sudo supervisorctl restart gunicorn')
@@ -106,7 +106,7 @@ def staging_full():
 
 @roles('task')
 def celery():
-    with cd(env.paths.NEWSBLUR):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
@@ -116,7 +116,7 @@ def celery():
 
 @roles('task')
 def force_celery():
-    with cd(env.paths.NEWSBLUR):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
         # run('sudo supervisorctl start celery && tail logs/newsblur.log')
@@ -138,12 +138,12 @@ def compress_media():
 
 @roles('app')
 def backup_mongo():
-    with cd(os.path.join(env.paths.NEWSBLUR, '/utils/backups')):
+    with cd(os.path.join(env.NEWSBLUR_PATH, '/utils/backups')):
         run('./mongo_backup.sh')
 
 @roles('db')
 def backup_postgresql():
-    with cd(os.path.join(env.paths.NEWSBLUR, '/utils/backups')):
+    with cd(os.path.join(env.NEWSBLUR_PATH, '/utils/backups')):
         run('./postgresql_backup.sh')
 
 # =============
@@ -229,7 +229,7 @@ def setup_repo():
     run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
 
 def setup_repo_local_settings():
-    with cd(env.paths.NEWSBLUR):
+    with cd(env.NEWSBLUR_PATH):
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
@@ -244,14 +244,14 @@ def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
 
 def setup_libxml_code():
-    with cd(env.paths.VENDOR):
+    with cd(env.VENDOR_PATH):
         run('git clone git://git.gnome.org/libxml2')
         run('git clone git://git.gnome.org/libxslt')
     
-    with cd(os.path.join(env.paths.VENDOR, '/libxml2')):
+    with cd(os.path.join(env.VENDOR_PATH, '/libxml2')):
         run('./configure && make && sudo make install')
         
-    with cd(os.path.join(env.paths.VENDOR, '/libxslt')):
+    with cd(os.path.join(env.VENDOR_PATH, '/libxslt')):
         run('./configure && make && sudo make install')
 
 def setup_psycopg():
@@ -287,7 +287,7 @@ def config_monit():
 def setup_mongoengine():
     with cd('~/projects/code'):
         run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % os.path.join(env.paths.VENDOR, '/mongoengine/mongoengine'))
+        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % os.path.join(env.VENDOR_PATH, '/mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
     with cd('~/projects/code'):
@@ -317,7 +317,7 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
 
 def setup_nginx():
-    with cd(env.paths.VENDOR):
+    with cd(env.VENDOR_PATH):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
         run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
