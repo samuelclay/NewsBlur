@@ -42,6 +42,17 @@
 
 ### Preface
 
+#### RDBMS (mySQL, PostgreSQL)
+
+You will want to have your database setup before you begin installation. Fabric can install
+both PostgreSQL and MongoDB for you, but only on Ubuntu. Mac OS X users will want to have
+mySQL or PostgreSQL already installed. You can [download mySQL](http://dev.mysql.com/downloads/mysql/)
+or [download PostgreSQL](http://www.postgresql.org/download/). Additionally,
+if running as a development machine on Mac OS X, I would recommend using mySQL with 
+[Sequel Pro](http://www.sequelpro.com/) as a GUI.
+
+#### Fabric 
+
 Both Mac OS X and Linux require [Fabric](http://docs.fabfile.org/) to be installed. 
 Many common tasks, such as installing dependencies, deploying servers, migrations,
 and configurations are in `fabfile.py`.
@@ -79,15 +90,15 @@ machine, read through `fabfile.py` and setup all three servers without repeating
 
 #### App server
 
-   fab -R local setup_app
+    fab -R local setup_app
    
 #### Database server
 
-   fab -R local setup_db
+    fab -R local setup_db
    
 #### Task server
 
-   fab -R local setup_task
+    fab -R local setup_task
 
 
 Roadmap
