@@ -40,7 +40,7 @@
 
 ## Installation Instructions
 
-### Preface
+### Prerequisites
 
 #### RDBMS (mySQL, PostgreSQL)
 
@@ -62,25 +62,38 @@ and configurations are in `fabfile.py`.
 On recent installations of Mac OS X using XCode 4, you may run into issues around the 
 `ppc` architecture. To fix this, simply run:
 
-    sudo ln -s /Developer/Platforms/iPhoneOS.platform/Developer/usr/libexec/gcc/darwin/ppc /Developer/usr/libexec/gcc/darwin
-    sudo ln -s /Developer/Platforms/iPhoneOS.platform/Developer/usr/libexec/gcc/darwin/ppc /usr/libexec/gcc/darwin
+    sudo ln -s /Developer/Platforms/iPhoneOS.platform/Developer/usr/libexec/gcc/darwin/ppc \
+    /Developer/usr/libexec/gcc/darwin
+    sudo ln -s /Developer/Platforms/iPhoneOS.platform/Developer/usr/libexec/gcc/darwin/ppc \
+    /usr/libexec/gcc/darwin
 
 Sym-linking the ppc architecture comes from this StackOverflow answer on 
-"[assembler for architecture ppc not installed on Mac OS](http://stackoverflow.com/questions/5256397/python-easy-install-fails-with-assembler-for-architecture-ppc-not-installed-on)".
+"[assembler for architecture ppc not installed on Mac OS](http://stackoverflow.com/questions/5256397/)".
 
-### Mac OS X
+#### MongoDB
+
+On top of mySQL/PostgreSQL, NewsBlur uses MongoDB to store non-relational data. You will want to 
+[download MongoDB](http://www.mongodb.org/downloads). If you are on Ubuntu, the `setup_mongo` Fabric 
+command will automatically do this for you, but Mac OS X needs to have it installed manually.
+
+### Installing on Mac OS X
 
 Using Mac OS X as a development environment, you can run all three servers (app, db, task) 
 on the same system. You should have [Fabric](http://docs.fabfile.org/) installed to run 
-the `fabfile.py`.
+the `fabfile.py`. You should also have mySQL/PostgreSQL and MongoDB already installed.
 
     fab -R local setup_python
+    fab -R local setup_mongoengine
+    fab -R local setup_forked_mongoengine
     
-If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` and check if there is a function that can be used to circumvent broken easy_install processes.
+If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` 
+and check if there is a function that can be used to circumvent broken easy_install 
+processes. For example, lxml may need libxslt and libxml2 to be installed. This is 
+automated with the following Fabric command:
 
     fab -R local setup_libxml_code
     
-### Linux / Ubuntu
+### Installing on Linux / Ubuntu
 
 If you are on Ubuntu, you can simple use [Fabric](http://docs.fabfile.org/) to install 
 NewsBlur and its many components. NewsBlur is designed to run on three separate servers: 

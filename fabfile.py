@@ -14,7 +14,7 @@ try:
     from django.conf import settings as django_settings
 except ImportError:
     print " ---> Django not installed yet."
-django_settings = None
+    django_settings = None
 
 
 # =========
@@ -239,9 +239,11 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
-    sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
-    put('config/pystartup.py', '~/.pystartup')
+    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
+    
+    put('config/pystartup.py', '.pystartup')
+    with settings(warn_only=True):
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
@@ -263,24 +265,24 @@ def config_monit():
     sudo('/etc/init.d/monit restart')
     
 def setup_mongoengine():
-    with cd('~/code'):
+    with cd('~/projects/code'):
         run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
+        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/site-packages/mongoengine')
         
 def setup_pymongo_repo():
-    with cd('~/code'):
+    with cd('~/projects/code'):
         run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
-    with cd('~/code/pymongo'):
+    with cd('~/projects/code/pymongo'):
         sudo('python setup.py install')
         
 def setup_forked_mongoengine():
-    with cd('~/code/mongoengine'):
+    with cd('~/projects/code/mongoengine'):
         run('git remote add github http://github.com/samuelclay/mongoengine')
         run('git checkout dev')
         run('git pull github dev')
 
 def switch_forked_mongoengine():
-    with cd('~/code/mongoengine'):
+    with cd('~/projects/code/mongoengine'):
         run('git co dev')
         run('git pull github dev --force')
         # run('git checkout .')
@@ -393,9 +395,12 @@ def enable_celery_supervisor():
 # ======
 
 if django_settings:
-    ACCESS_KEY  = django_settings.S3_ACCESS_KEY
-    SECRET      = django_settings.S3_SECRET
-    BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
+    try:
+        ACCESS_KEY  = django_settings.S3_ACCESS_KEY
+        SECRET      = django_settings.S3_SECRET
+        BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
+    except:
+        print " ---> You need to fix django's settings. Enter python and type `import settings`."
 
 def save_file_in_s3(filename):
     conn   = S3Connection(ACCESS_KEY, SECRET)
