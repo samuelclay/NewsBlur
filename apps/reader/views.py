@@ -68,7 +68,7 @@ def index(request):
     feedbacks    = MFeedback.all()
 
     return render_to_response('reader/feeds.xhtml', {
-        'user_profile'      : user.profile,
+        'user_profile'      : hasattr(user, 'profile') and user.profile,
         'login_form'        : login_form,
         'signup_form'       : signup_form,
         'feature_form'      : feature_form,

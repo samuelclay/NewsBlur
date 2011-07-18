@@ -15,7 +15,7 @@ $(document).ready(function() {
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- A visual feed reader with intelligence.</h2>
 
-<div id="NB-splash" style="left: {{ user_profile.feed_pane_size }}px">
+<div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 240 %}px">
 
   <div class="NB-modules-center">
     

@@ -92,21 +92,39 @@ these after the installation below.
 
 ### Installing on Mac OS X
 
-Using Mac OS X as a development environment, you can run all three servers (app, db, task) 
-on the same system. You should have [Fabric](http://docs.fabfile.org/) installed to run 
-the `fabfile.py`. You should also have MySQL/PostgreSQL and MongoDB already installed.
+ 1. Using Mac OS X as a development environment, you can run all three servers (app, db, task) 
+    on the same system. You should have [Fabric](http://docs.fabfile.org/) installed to run 
+    the `fabfile.py`. You should also have MySQL/PostgreSQL and MongoDB already installed.
 
-    fab -R local setup_python
-    fab -R local setup_mongoengine
-    fab -R local setup_forked_mongoengine
-    fab -R local setup_repo_local_settings
+        fab -R local setup_python
+        fab -R local setup_mongoengine
+        fab -R local setup_forked_mongoengine
+        fab -R local setup_repo_local_settings
     
-If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` 
-and check if there is a function that can be used to circumvent broken easy_install 
-processes. For example, lxml may need libxslt and libxml2 to be installed. This is 
-automated with the following Fabric command:
+    If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` 
+    and check if there is a function that can be used to circumvent broken easy_install 
+    processes. For example, lxml may need libxslt and libxml2 to be installed. This is 
+    automated with the following Fabric command:
 
-    fab -R local setup_libxml_code
+        fab -R local setup_libxml_code
+        
+ 2. Configure MySQL/PostgreSQL by adding in a `newsblur` user and a `newsblur` database.
+    Then load up the database with empty NewsBlur tables and bootstrap the database:
+    
+        ./manage.py syncdb --all
+        ./manage.py migrate --fake
+        ./manage.py loaddata config/fixtures/bootstrap.json
+        
+    If you don't create a user during `syncdb`, the `bootstrap.json` file will create a 
+    newsblur user with no password.
+
+ 3. Run the development server. At this point, all dependencies should be installed and no
+    additional configuration is needed. If you find that something is not working at this
+    point, please email the resulting output to Samuel Clay at 
+    [samuel@ofbrooklyn.com](samuel@ofbrooklyn.com).
+ 
+        ./manage.py runserver
+ 
     
 ### Installing on Linux / Ubuntu
 

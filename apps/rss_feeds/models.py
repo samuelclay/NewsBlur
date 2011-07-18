@@ -635,15 +635,15 @@ class Feed(models.Model):
     def trim_feed(self, verbose=False):
         from apps.reader.models import MUserStory
         trim_cutoff = 500
-        if self.active_subscribers <= 1:
+        if self.active_subscribers <= 1 and self.premium_subscribers < 1:
             trim_cutoff = 50
-        elif self.active_subscribers <= 3:
+        elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
             trim_cutoff = 100
-        elif self.active_subscribers <= 5:
+        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
             trim_cutoff = 150
-        elif self.active_subscribers <= 10:
+        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
             trim_cutoff = 250
-        elif self.active_subscribers <= 25:
+        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
             trim_cutoff = 350
         stories = MStory.objects(
             story_feed_id=self.pk,

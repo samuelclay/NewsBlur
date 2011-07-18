@@ -26,6 +26,9 @@ CACHE_BACKEND = 'dummy:///'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Set this to the username that is shown on the homepage to unauthenticated users.
+HOMEPAGE_USERNAME = 'conesus'
+
 # Google Reader OAuth API Keys
 OAUTH_KEY = 'www.example.com'
 OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'

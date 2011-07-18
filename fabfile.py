@@ -138,12 +138,12 @@ def compress_media():
 
 @roles('app')
 def backup_mongo():
-    with cd(os.path.join(env.NEWSBLUR_PATH, '/utils/backups')):
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./mongo_backup.sh')
 
 @roles('db')
 def backup_postgresql():
-    with cd(os.path.join(env.NEWSBLUR_PATH, '/utils/backups')):
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./postgresql_backup.sh')
 
 # =============
@@ -173,7 +173,7 @@ def setup_common():
 def setup_app():
     setup_common()
     setup_app_motd()
-    setup_gunicorn()
+    setup_gunicorn(supervisor=True)
     update_gunicorn()
 
 def setup_db():
@@ -248,10 +248,10 @@ def setup_libxml_code():
         run('git clone git://git.gnome.org/libxml2')
         run('git clone git://git.gnome.org/libxslt')
     
-    with cd(os.path.join(env.VENDOR_PATH, '/libxml2')):
+    with cd(os.path.join(env.VENDOR_PATH, 'libxml2')):
         run('./configure && make && sudo make install')
         
-    with cd(os.path.join(env.VENDOR_PATH, '/libxslt')):
+    with cd(os.path.join(env.VENDOR_PATH, 'libxslt')):
         run('./configure && make && sudo make install')
 
 def setup_psycopg():
@@ -285,24 +285,24 @@ def config_monit():
     sudo('/etc/init.d/monit restart')
     
 def setup_mongoengine():
-    with cd('~/projects/code'):
+    with cd(env.VENDOR_PATH):
         run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % os.path.join(env.VENDOR_PATH, '/mongoengine/mongoengine'))
+        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
-    with cd('~/projects/code'):
+    with cd(env.VENDOR_PATH):
         run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
-    with cd('~/projects/code/pymongo'):
+    with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
         sudo('python setup.py install')
         
 def setup_forked_mongoengine():
-    with cd('~/projects/code/mongoengine'):
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git remote add github http://github.com/samuelclay/mongoengine')
         run('git checkout dev')
         run('git pull github dev')
 
 def switch_forked_mongoengine():
-    with cd('~/projects/code/mongoengine'):
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git co dev')
         run('git pull github dev --force')
         # run('git checkout .')
@@ -345,15 +345,19 @@ def configure_nginx():
 def setup_app_motd():
     put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
 
-def setup_gunicorn(supervisor=True):
+def setup_gunicorn(supervisor=False):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
-    with cd('~/projects/code'):
+    with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
         run('git clone git://github.com/benoitc/gunicorn.git')
+    with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
+        run('git pull')
+        sudo('python setup.py develop')
+        
 
 def update_gunicorn():
-    with cd('~/projects/code/gunicorn'):
+    with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
         run('git pull')
         sudo('python setup.py develop')
 
