@@ -197,30 +197,31 @@ command every few minutes:
     ./manage.py collect_stats
 
 
-Roadmap
--------
+## Roadmap
 
-### Winter 2011 ###
+### Recently completed ###
 
- * River of News
- * Starred stories
+ * River of News - completed
+ * Starred stories - completed
 
 ### Summer 2011 ###
  
  * iPhone app
- * Implicit sorting in River of News
+ * Mobile web app - [http://www.newsblur.com/m](http://www.newsblur.com/m)
  
 ### Fall 2011 ###
 
  * Social features
+ * Implicit sorting in River of News
 
-Author
-------
 
- * [Samuel Clay](http://www.samuelclay.com) <samuel@ofbrooklyn.com>
- * [@samuelclay](http://twitter.com/samuelclay) on Twitter
+## Author
+
+ * Created by [Samuel Clay](http://www.samuelclay.com).
+ * Email address: <samuel@ofbrooklyn.com>
+ * [@samuelclay](http://twitter.com/samuelclay) on Twitter.
  
-License
--------
+
+## License
 
 NewsBlur is licensed under the MIT License. (See LICENSE)
