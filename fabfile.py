@@ -264,6 +264,10 @@ def setup_python():
     put('config/pystartup.py', '.pystartup')
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+
+# PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
+def setup_imaging():
+    sudo('easy_install pil')
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
@@ -287,7 +291,8 @@ def config_monit():
 def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
+             os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
@@ -297,9 +302,10 @@ def setup_pymongo_repo():
         
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
-        run('git remote add github http://github.com/samuelclay/mongoengine')
-        run('git checkout dev')
-        run('git pull github dev')
+        with settings(warn_only=True):
+            run('git remote add github http://github.com/samuelclay/mongoengine')
+            run('git checkout dev')
+            run('git pull github dev')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):

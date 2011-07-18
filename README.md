@@ -80,6 +80,14 @@ On top of MySQL/PostgreSQL, NewsBlur uses MongoDB to store non-relational data. 
 [download MongoDB](http://www.mongodb.org/downloads). If you are on Ubuntu, the `setup_mongo` Fabric 
 command will automatically do this for you, but Mac OS X needs to have it installed manually.
 
+#### Numpy and Scipy
+
+Not the easiest to get installed. If you are running Mac OS X, you have a few options:
+
+ * Use the [Superpack by Chris Fonnesbeck](http://stronginference.com/scipy-superpack/)
+ * Use MacPorts: `sudo port install py26-numpy py26-scipy`
+ * Install from source (grueling): [http://www.scipy.org/Download](http://www.scipy.org/Download)
+ 
 ### Configure paths
 
 In `fabfile.py` there are two paths that need to be configured. 
@@ -97,6 +105,7 @@ these after the installation below.
     the `fabfile.py`. You should also have MySQL/PostgreSQL and MongoDB already installed.
 
         fab -R local setup_python
+        fab -R local setup_imaging
         fab -R local setup_mongoengine
         fab -R local setup_forked_mongoengine
         fab -R local setup_repo_local_settings
