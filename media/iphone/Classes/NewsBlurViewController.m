@@ -8,6 +8,7 @@
 
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "FeedTableCell.h"
 #import "JSON.h"
 
 @implementation NewsBlurViewController
@@ -97,7 +98,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://nb.local.host:8000/reader/feeds?flat=true"]];
+											   stringWithFormat:@"http://nb.local.host:8000/reader/feeds?flat=true&favicons=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -211,13 +212,18 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
+	static NSString *FeedCellIdentifier = @"FeedCellIdentifier";
 	
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
+	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];
 	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] 
-				 initWithStyle:UITableViewCellStyleDefault
-				 reuseIdentifier:SimpleTableIdentifier] autorelease];
+		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedTableCell"
+                                                     owner:self
+                                                   options:nil];
+        for (id oneObject in nib) {
+            if ([oneObject isKindOfClass:[FeedTableCell class]]) {
+                cell = (FeedTableCell *)oneObject;
+            }
+        }
 	}
 	
 	int section_index = 0;
@@ -227,8 +233,14 @@
 			NSArray *feeds = [self.dictFolders objectForKey:f];
 			id feed_id = [feeds objectAtIndex:indexPath.row];
 			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
-			cell.textLabel.text = [[self.dictFeeds objectForKey:feed_id_str] 
-								   objectForKey:@"feed_title"];
+			NSDictionary *feed = [self.dictFeeds objectForKey:feed_id_str];
+			cell.feedTitle.text = [feed objectForKey:@"feed_title"];
+//			NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
+//			if (url) {
+//				NSLog(@"URL: %@", url);
+//				NSData *imageData = [NSData dataWithContentsOfURL:url];
+//				cell.feedFavicon.image = [UIImage imageWithData:imageData];
+//			}
 			return cell;
 		}
 		section_index++;
