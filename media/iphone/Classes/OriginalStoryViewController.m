@@ -62,6 +62,7 @@
     address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     address.borderStyle = UITextBorderStyleRoundedRect;
     address.font = [UIFont systemFontOfSize:15];
+    [address setAdjustsFontSizeToFitWidth:YES];
     address.keyboardType = UIKeyboardTypeURL;
     address.autocapitalizationType = UITextAutocapitalizationTypeNone;
     address.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -80,7 +81,6 @@
                                          addressFrame.size.height);
     UIButton *close = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [close setFrame:closeButtonFrame];
-    [close setFont:[UIFont systemFontOfSize:12]];
     [close setTitle:@"Close" forState:UIControlStateNormal];
     [close addTarget:self action:@selector(doCloseOriginalStoryViewController) forControlEvents:UIControlEventTouchUpInside];
     [navBar addSubview:close];
