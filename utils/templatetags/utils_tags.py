@@ -7,7 +7,8 @@ register = template.Library()
 
 @register.simple_tag
 def current_domain():
-    return Site.objects.get_current().domain
+    current_site = Site.objects.get_current()
+    return current_site and current_site.domain
 
 @register.simple_tag(takes_context=True)
 def localdatetime(context, date, date_format):

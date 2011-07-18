@@ -1,13 +1,28 @@
 from fabric.api import abort, cd, env, get, hide, hosts, local, prompt
 from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
 from fabric.colors import red, green, blue, cyan, magenta, white, yellow
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
+try:
+    from boto.s3.connection import S3Connection
+    from boto.s3.key import Key
+except ImportError:
+    print " ---> Boto not installed yet. No S3 connections available."
 from fabric.contrib import django
 import os, sys
 
 django.settings_module('settings')
-from django.conf import settings as django_settings
+try:
+    from django.conf import settings as django_settings
+except ImportError:
+    print " ---> Django not installed yet."
+    django_settings = None
+
+
+# ============
+# = DEFAULTS =
+# ============
+
+env.NEWSBLUR_PATH = "~/projects/newsblur"
+env.VENDOR_PATH   = "~/projects/code"
 
 # =========
 # = Roles =
@@ -15,6 +30,7 @@ from django.conf import settings as django_settings
 
 env.user = 'sclay'
 env.roledefs ={
+    'local': ['localhost'],
     'app': ['app01.newsblur.com'],
     'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com'],
@@ -25,13 +41,24 @@ env.roledefs ={
 # = Environments =
 # ================
 
+def server_paths():
+    env.NEWSBLUR_PATH = "~/newsblur"
+    env.VENDOR_PATH   = "~/code"
+    
 def app():
+    server_paths()
     env.roles = ['app']
+
 def web():
+    server_paths()
     env.roles = ['web']
+
 def db():
+    server_paths()
     env.roles = ['db']
+    
 def task():
+    server_paths()
     env.roles = ['task']
 
 # ==========
@@ -40,7 +67,7 @@ def task():
 
 @roles('web')
 def deploy():
-    with cd('~/newsblur'):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://www.newsblur.com > /dev/null')
@@ -50,7 +77,7 @@ def deploy():
 
 @roles('web')
 def deploy_full():
-    with cd('~/newsblur'):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('./manage.py migrate')
         run('sudo supervisorctl restart gunicorn')
@@ -79,7 +106,7 @@ def staging_full():
 
 @roles('task')
 def celery():
-    with cd('~/newsblur'):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
@@ -89,7 +116,7 @@ def celery():
 
 @roles('task')
 def force_celery():
-    with cd('~/newsblur'):
+    with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
         # run('sudo supervisorctl start celery && tail logs/newsblur.log')
@@ -111,12 +138,12 @@ def compress_media():
 
 @roles('app')
 def backup_mongo():
-    with cd('~/newsblur/utils/backups'):
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./mongo_backup.sh')
 
 @roles('db')
 def backup_postgresql():
-    with cd('~/newsblur/utils/backups'):
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./postgresql_backup.sh')
 
 # =============
@@ -127,9 +154,11 @@ def setup_common():
     setup_installs()
     setup_user()
     setup_repo()
+    setup_repo_local_settings()
     setup_local_files()
     setup_libxml()
     setup_python()
+    setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -144,7 +173,7 @@ def setup_common():
 def setup_app():
     setup_common()
     setup_app_motd()
-    setup_gunicorn()
+    setup_gunicorn(supervisor=True)
     update_gunicorn()
 
 def setup_db():
@@ -197,9 +226,10 @@ def add_machine_to_ssh():
     run("echo `cat local_keys` >> .ssh/authorized_keys")
     
 def setup_repo():
-    run('mkdir -p ~/code')
     run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
-    with cd('~/newsblur'):
+
+def setup_repo_local_settings():
+    with cd(env.NEWSBLUR_PATH):
         run('cp local_settings.py.template local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
@@ -214,21 +244,30 @@ def setup_libxml():
     sudo('apt-get -y install libxml2-dev libxslt1-dev python-lxml')
 
 def setup_libxml_code():
-    with cd('~/code'):
+    with cd(env.VENDOR_PATH):
         run('git clone git://git.gnome.org/libxml2')
         run('git clone git://git.gnome.org/libxslt')
     
-    with cd('~/code/libxml2'):
+    with cd(os.path.join(env.VENDOR_PATH, 'libxml2')):
         run('./configure && make && sudo make install')
         
-    with cd('~/code/libxslt'):
+    with cd(os.path.join(env.VENDOR_PATH, 'libxslt')):
         run('./configure && make && sudo make install')
-        
+
+def setup_psycopg():
+    sudo('easy-install psycopg2')
+    
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy psycopg2 pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
-    sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
+    
     put('config/pystartup.py', '.pystartup')
+    with settings(warn_only=True):
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+
+# PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
+def setup_imaging():
+    sudo('easy_install pil')
     
 def setup_supervisor():
     sudo('apt-get -y install supervisor')
@@ -250,24 +289,26 @@ def config_monit():
     sudo('/etc/init.d/monit restart')
     
 def setup_mongoengine():
-    with cd('~/code'):
+    with cd(env.VENDOR_PATH):
         run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s ~/code/mongoengine/mongoengine /usr/local/lib/python2.6/dist-packages/mongoengine')
+        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
+             os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
-    with cd('~/code'):
+    with cd(env.VENDOR_PATH):
         run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
-    with cd('~/code/pymongo'):
+    with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
         sudo('python setup.py install')
         
 def setup_forked_mongoengine():
-    with cd('~/code/mongoengine'):
-        run('git remote add github http://github.com/samuelclay/mongoengine')
-        run('git checkout dev')
-        run('git pull github dev')
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
+        with settings(warn_only=True):
+            run('git remote add github http://github.com/samuelclay/mongoengine')
+            run('git checkout dev')
+            run('git pull github dev')
 
 def switch_forked_mongoengine():
-    with cd('~/code/mongoengine'):
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git co dev')
         run('git pull github dev --force')
         # run('git checkout .')
@@ -282,7 +323,7 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
 
 def setup_nginx():
-    with cd('~/code'):
+    with cd(env.VENDOR_PATH):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
         run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
@@ -310,15 +351,19 @@ def configure_nginx():
 def setup_app_motd():
     put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
 
-def setup_gunicorn(supervisor=True):
+def setup_gunicorn(supervisor=False):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
-    with cd('~/code'):
+    with cd(env.VENDOR_PATH):
         sudo('rm -fr gunicorn')
         run('git clone git://github.com/benoitc/gunicorn.git')
+    with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
+        run('git pull')
+        sudo('python setup.py develop')
+        
 
 def update_gunicorn():
-    with cd('~/code/gunicorn'):
+    with cd(os.path.join(env.VENDOR_PATH, 'gunicorn')):
         run('git pull')
         sudo('python setup.py develop')
 
@@ -379,9 +424,13 @@ def enable_celery_supervisor():
 # = S3 =
 # ======
 
-ACCESS_KEY  = django_settings.S3_ACCESS_KEY
-SECRET      = django_settings.S3_SECRET
-BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
+if django_settings:
+    try:
+        ACCESS_KEY  = django_settings.S3_ACCESS_KEY
+        SECRET      = django_settings.S3_SECRET
+        BUCKET_NAME = django_settings.S3_BACKUP_BUCKET  # Note that you need to create this bucket first
+    except:
+        print " ---> You need to fix django's settings. Enter python and type `import settings`."
 
 def save_file_in_s3(filename):
     conn   = S3Connection(ACCESS_KEY, SECRET)

@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.db import IntegrityError
+from django.db.utils import DatabaseError
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.core.mail import mail_admins
@@ -33,7 +34,10 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         if not self.secret_token:
             self.secret_token = generate_secret_token(self.user.username, 12)
-        super(Profile, self).save(*args, **kwargs)
+        try:
+            super(Profile, self).save(*args, **kwargs)
+        except DatabaseError:
+            print " ---> Profile not saved. Table isn't there yet."
     
     def activate_premium(self):
         self.is_premium = True

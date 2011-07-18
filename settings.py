@@ -9,12 +9,12 @@ from mongoengine import connect
 
 CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
-TEMPLATE_DIRS = (''.join([CURRENT_DIR, '/templates']),)
-MEDIA_ROOT    = ''.join([CURRENT_DIR, '/media'])
-UTILS_ROOT    = ''.join([CURRENT_DIR, '/utils'])
-VENDOR_ROOT   = ''.join([CURRENT_DIR, '/vendor'])
-LOG_FILE      = ''.join([CURRENT_DIR, '/logs/newsblur.log'])
-IMAGE_MASK    = ''.join([CURRENT_DIR, '/media/img/mask.png'])
+TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
+MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
+UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
+VENDOR_ROOT   = os.path.join(CURRENT_DIR, 'vendor')
+LOG_FILE      = os.path.join(CURRENT_DIR, 'logs/newsblur.log')
+IMAGE_MASK    = os.path.join(CURRENT_DIR, 'media/img/mask.png')
 
 # ==============
 # = PYTHONPATH =
@@ -52,11 +52,9 @@ SECRET_KEY            = '6yx-@2u@v$)-=fqm&tc8lhk3$6d68+c7gd%p$q2@o7b4o8-*fz'
 # = Enviornment =
 # ===============
 
-PRODUCTION  = __file__.find('/home/conesus/newsblur') == 0
-STAGING     = __file__.find('/home/conesus/staging') == 0
-DEV_SERVER1 = __file__.find('/Users/conesus/Projects/newsblur') == 0
-DEV_SERVER2 = __file__.find('/Users/conesus/newsblur') == 0
-DEVELOPMENT = DEV_SERVER1 or DEV_SERVER2
+PRODUCTION  = NEWSBLUR_DIR.find('/home/conesus/newsblur') == 0
+STAGING     = NEWSBLUR_DIR.find('/home/conesus/staging') == 0
+DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 
 # ===========================
 # = Django-specific Modules =
@@ -140,7 +138,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-    'apps': { # I keep all my apps here, but you can also add them one by one
+    'apps': {
             'handlers': ['log_file'],
             'level': 'INFO',
             'propagate': True,
@@ -342,10 +340,10 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
-elif DEVELOPMENT:
-    INSTALLED_APPS += (
-        'devserver',
-    )
+# elif DEVELOPMENT:
+#     INSTALLED_APPS += (
+#         'devserver',
+#     )
 
 DEVSERVER_MODULES = (
     # 'devserver.modules.sql.SQLRealTimeModule',

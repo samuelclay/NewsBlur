@@ -6,8 +6,6 @@ from django.utils.http import urlquote
 from django.http import HttpResponseForbidden
 from django.conf import settings
 
-DEFAULT_USER = 'conesus'
-
 def ajax_login_required(function=None):
     def _dec(view_func):
         def _view(request, *args, **kwargs):
@@ -53,10 +51,15 @@ def get_user(request):
         user = request.user
         
     if user.is_anonymous():
-        user = cache.get('user:%s' % DEFAULT_USER, None)
+        user = cache.get('user:%s' % settings.HOMEPAGE_USERNAME, None)
         if not user:
-            user = User.objects.get(username=DEFAULT_USER)
-            cache.set('user:%s' % user, user)
+            try:
+                user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+                cache.set('user:%s' % user, user)
+            except User.DoesNotExist:
+                user = User.objects.create(username=settings.HOMEPAGE_USERNAME)
+                user.set_password('')
+                user.save()
     return user
     
 def invalidate_template_cache(fragment_name, *variables):

@@ -142,7 +142,10 @@ class MFeedback(mongo.Document):
                 for removal in ['about', 'less than']:
                     if removal in feedback['date']:
                         feedback['date'] = feedback['date'].replace(removal, '')
-            [cls.objects.create(**feedback) for feedback in data]
+            for feedback in data:
+                # Convert unicode to strings.
+                fb = dict([(str(k), v) for k, v in feedback.items()])
+                cls.objects.create(**fb)
     
     @classmethod
     def all(cls):
