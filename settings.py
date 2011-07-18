@@ -340,10 +340,10 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
-elif DEVELOPMENT:
-    INSTALLED_APPS += (
-        'devserver',
-    )
+# elif DEVELOPMENT:
+#     INSTALLED_APPS += (
+#         'devserver',
+#     )
 
 DEVSERVER_MODULES = (
     # 'devserver.modules.sql.SQLRealTimeModule',

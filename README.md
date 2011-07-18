@@ -42,7 +42,7 @@
 
 ### Prerequisites
 
-#### RDBMS (MySQL, PostgreSQL)
+#### Relational Database (MySQL, PostgreSQL)
 
 You will want to have your database setup before you begin installation. Fabric can install
 both PostgreSQL and MongoDB for you, but only on Ubuntu. Mac OS X users will want to have
@@ -150,17 +150,16 @@ You must perform a few tasks to tie all of the various systems together.
  1. First, copy local_settings.py and fill in your OAuth keys, S3 keys, database names (if not `newsblur`),
 task server/broker address (RabbitMQ), and paths:
 
-    cp local_settings.py.template local_settings.py
+        cp local_settings.py.template local_settings.py
+    
+    Edit local_settings.py to change any keys that you have.
 
- 2. Create the `newsblur` database in both MongoDB and MySQL/PostgreSQL
+ 2. Create the `newsblur` database in MySQL/PostgreSQL
 
     #### MySQL/PostgreSQL
     
         ./manage.py syncdb
-        
-    #### MongoDB
-    
-        
+
 
 #### App server
 
@@ -185,7 +184,7 @@ the `refresh_feeds` command regularly so you have new stories to test with and r
 
 If you just want to fetch feeds once, you can use the `refresh_feeds` management command:
 
-    ./manage.py refresh_feeds --all
+    ./manage.py refresh_feeds --force
     
 You can also fetch the feeds for a specific user:
 

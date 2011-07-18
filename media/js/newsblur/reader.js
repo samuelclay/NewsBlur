@@ -4482,7 +4482,7 @@
             }
             
             if (new_feeds) {
-                refresh_interval = (1000 * 60) * 1/4;
+                refresh_interval = (1000 * 60) * 1/10;
             }
             
             clearInterval(this.flags.feed_refresh);
