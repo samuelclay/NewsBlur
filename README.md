@@ -166,6 +166,37 @@ task server/broker address (RabbitMQ), and paths:
     fab -R local setup_task
 
 
+## Keeping NewsBlur Running
+
+These commands keep NewsBlur fresh and updated. While on a development server, these 
+commands do not need to be run more than once. However, you will probably want to run
+the `refresh_feeds` command regularly so you have new stories to test with and read.
+
+### Fetching feeds
+
+If you just want to fetch feeds once, you can use the `refresh_feeds` management command:
+
+    ./manage.py refresh_feeds --all
+    
+You can also fetch the feeds for a specific user:
+
+    ./manage.py refresh_feeds --user=newsblur --force
+
+### Feedback
+
+To populate the feedback table on the homepage, use the `collect_feedback` management 
+command every few minutes:
+
+    ./manage.py collect_feedback
+
+### Statistics
+
+To populate the statistics graphs on the homepage, use the `collect_stats` management 
+command every few minutes:
+
+    ./manage.py collect_stats
+
+
 Roadmap
 -------
 
