@@ -1,0 +1,45 @@
+[
+    {
+        "pk": 1,
+        "model": "sites.site",
+        "fields": {
+            "domain": "localhost",
+            "name": "NewsBlur"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "profile.profile",
+        "fields": {
+            "secret_token": "4a700381ea08",
+            "feed_pane_size": 240,
+            "last_seen_ip": null,
+            "view_settings": "{}",
+            "tutorial_finished": false,
+            "is_premium": false,
+            "user": 1,
+            "collapsed_folders": "[]",
+            "timezone": "America/New_York",
+            "last_seen_on": "2011-07-18 02:30:37",
+            "preferences": "{}"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "newsblur",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-07-18 00:23:49",
+            "groups": [],
+            "user_permissions": [],
+            "password": "sha1$d5473$d07ce4495b088ff0f41a62d5113d0189ce8f0096",
+            "email": "samuel@ofbrooklyn.com",
+            "date_joined": "2011-07-18 00:23:49"
+        }
+    }
+]
