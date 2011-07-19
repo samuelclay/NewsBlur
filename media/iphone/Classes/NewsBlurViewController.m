@@ -11,6 +11,8 @@
 #import "FeedTableCell.h"
 #import "JSON.h"
 
+#define kTableViewRowHeight 40;
+
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
@@ -214,33 +216,33 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *FeedCellIdentifier = @"FeedCellIdentifier";
 	
-	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];
+	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];	
 	if (cell == nil) {
 		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedTableCell"
-                                                     owner:self
+                                                     owner:nil
                                                    options:nil];
         for (id oneObject in nib) {
             if ([oneObject isKindOfClass:[FeedTableCell class]]) {
                 cell = (FeedTableCell *)oneObject;
+				break;
             }
         }
 	}
 	
 	int section_index = 0;
 	for (id f in self.dictFoldersArray) {
-		// NSLog(@"Cell: %i: %@", section_index, f);
 		if (section_index == indexPath.section) {
 			NSArray *feeds = [self.dictFolders objectForKey:f];
 			id feed_id = [feeds objectAtIndex:indexPath.row];
 			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
 			NSDictionary *feed = [self.dictFeeds objectForKey:feed_id_str];
 			cell.feedTitle.text = [feed objectForKey:@"feed_title"];
-//			NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
-//			if (url) {
-//				NSLog(@"URL: %@", url);
-//				NSData *imageData = [NSData dataWithContentsOfURL:url];
-//				cell.feedFavicon.image = [UIImage imageWithData:imageData];
-//			}
+			NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
+			if (url) {
+				NSData *imageData = [NSData dataWithContentsOfURL:url];
+				cell.feedFavicon.image = [UIImage imageWithData:imageData];
+			}
+			[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
 			return cell;
 		}
 		section_index++;
@@ -268,6 +270,63 @@
 	//NSLog(@"App Delegate: %@", self.appDelegate);
 	
 	[appDelegate loadFeedDetailView];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return kTableViewRowHeight;
+}
+
+- (NSString *)showUnreadCount:(NSDictionary *)feed {
+	NSString *imgCssString = [NSString stringWithFormat:@"<style>"
+                              "body {"
+                              "  line-height: 18px;"
+                              "  font-size: 13px;"
+                              "  font-family: 'Lucida Grande',Helvetica, Arial;"
+                              "  text-rendering: optimizeLegibility;"
+                              "  margin: 0;"
+							  "  background-color: white"
+                              "}"
+							  ".NB-count {"
+							  "  float: right;"
+							  "  margin: 1px 2px 0 0;"
+							  "  padding: 3px 4px 2px;"
+							  "  border: none;"
+							  "  border-radius: 5px;"
+							  "}"
+							  ".NB-positive {"
+							  "  color: white;"
+							  "  background-color: #559F4D;"
+							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#559F4D), to(#3B7613));"
+							  "}"
+							  ".NB-neutral {"
+							  "  background-color: #F9C72A;"
+							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9C72A), to(#E4AB00));"
+							  "}"
+							  ".NB-negative {"
+							  "  color: white;"
+							  "  background-color: #CC2A2E;"
+							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));"
+							  "}"
+                              "</style>"];
+	
+	int negativeCount = (int)[feed objectForKey:@"ng"];
+	int neutralCount = (int)[feed objectForKey:@"nt"];
+	int positiveCount = (int)[feed objectForKey:@"ps"];
+	
+	NSString *negativeCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-negative\">%@</div>",
+									 [feed objectForKey:@"ng"]];
+	NSString *neutralCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-neutral\">%@</div>",
+									 [feed objectForKey:@"nt"]];
+	NSString *positiveCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-positive\">%@</div>",
+									 [feed objectForKey:@"ps"]];
+	NSLog(@"%@", [[feed objectForKey:@"ps"] class]);
+    NSString *htmlString = [NSString stringWithFormat:@"%@ %@ %@ %@",
+                            imgCssString, 
+							positiveCount ? positiveCountString : @"", 
+							neutralCount ? neutralCountString : @"", 
+							negativeCount ? negativeCountString : @""];
+
+    return htmlString;
 }
 
 @end

@@ -32,6 +32,7 @@
 
 - (void)fetchFeedList;
 - (IBAction)doLogoutButton;
+- (NSString *)showUnreadCount:(NSDictionary *)feed;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *viewTableFeedTitles;

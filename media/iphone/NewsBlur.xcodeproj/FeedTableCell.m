@@ -31,6 +31,12 @@
 }
 
 
+- (void)viewDidUnload {
+    self.feedTitle = nil;
+    self.feedFavicon = nil;
+    self.feedUnreadView = nil;
+}
+
 - (void)dealloc {
     [feedTitle dealloc];
     [feedFavicon dealloc];
