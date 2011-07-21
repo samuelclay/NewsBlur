@@ -111,7 +111,9 @@
         [appDelegate addActiveFeedStories:[results objectForKey:@"stories"]];
     }
     NSLog(@"Stories: %d on page %d", [appDelegate.activeFeedStories count], self.feedPage);
-	[[self storyTitlesTable] reloadData];
+    
+//    NSArray *indexPaths = [NSArray alloc] 
+//    [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:NO];
     self.pageFetching = NO;
     [results release];
     [jsonS release];

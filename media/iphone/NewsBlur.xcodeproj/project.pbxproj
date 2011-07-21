@@ -48,6 +48,8 @@
 		78FC34FA11CA94900055C312 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F211CA94900055C312 /* SBJsonBase.m */; };
 		78FC34FB11CA94900055C312 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F411CA94900055C312 /* SBJsonParser.m */; };
 		78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F611CA94900055C312 /* SBJsonWriter.m */; };
+		FF38679B13D88EEC00F8AB3A /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */; };
+		FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */; };
 		FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCE7AE613D49165009A98F6 /* FeedTableCell.m */; };
 		FFCE7AE913D49165009A98F6 /* FeedTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFCE7AE713D49165009A98F6 /* FeedTableCell.xib */; };
 /* End PBXBuildFile section */
@@ -122,6 +124,11 @@
 		78FC34F511CA94900055C312 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		78FC34F611CA94900055C312 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* NewsBlur-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		FF38679913D88EEC00F8AB3A /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTML.h"; sourceTree = "<group>"; };
+		FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTML.m"; sourceTree = "<group>"; };
+		FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNString+HTML.h"; sourceTree = "<group>"; };
+		FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNString+HTML.m"; sourceTree = "<group>"; };
+		FF38679F13D8916E00F8AB3A /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
 		FFCE7AE513D49165009A98F6 /* FeedTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedTableCell.h; path = ../NewsBlur.xcodeproj/FeedTableCell.h; sourceTree = "<group>"; };
 		FFCE7AE613D49165009A98F6 /* FeedTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FeedTableCell.m; path = ../NewsBlur.xcodeproj/FeedTableCell.m; sourceTree = "<group>"; };
 		FFCE7AE713D49165009A98F6 /* FeedTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedTableCell.xib; path = ../NewsBlur.xcodeproj/FeedTableCell.xib; sourceTree = "<group>"; };
@@ -202,6 +209,11 @@
 			children = (
 				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
+				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
+				FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */,
+				FF38679F13D8916E00F8AB3A /* GTMDefines.h */,
+				FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */,
+				FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -387,6 +399,8 @@
 				78095E3D128EF32200230C8E /* Reachability.m in Sources */,
 				78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */,
 				FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */,
+				FF38679B13D88EEC00F8AB3A /* NSString+HTML.m in Sources */,
+				FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
