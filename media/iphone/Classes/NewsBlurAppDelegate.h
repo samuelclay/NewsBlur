@@ -60,6 +60,7 @@
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;
 - (int)indexOfActiveStory;
+- (void)addActiveFeedStories:(NSArray *)stories;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 
 @end

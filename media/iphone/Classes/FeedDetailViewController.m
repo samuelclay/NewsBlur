@@ -19,6 +19,8 @@
 @synthesize stories;
 @synthesize appDelegate;
 @synthesize jsonString;
+@synthesize feedPage;
+@synthesize pageFetching;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -65,14 +67,16 @@
 #pragma mark -
 #pragma mark Initialization
 
-- (void)fetchFeedDetail {
-    if ([appDelegate.activeFeed objectForKey:@"id"] != nil) {
-        
+- (void)fetchFeedDetail:(int)page {
+    if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching) {
+        self.feedPage = page;
+        self.pageFetching = YES;
         [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         
         NSString *theFeedDetailURL = [[NSString alloc] 
-                                      initWithFormat:@"http://nb.local.host:8000/reader/feed/%@", 
-                                      [appDelegate.activeFeed objectForKey:@"id"]];
+                                      initWithFormat:@"http://nb.local.host:8000/reader/feed/%@?page=%d", 
+                                      [appDelegate.activeFeed objectForKey:@"id"],
+                                      self.feedPage];
         //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         [theFeedDetailURL release];
@@ -101,13 +105,14 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[jsonS JSONValue]];
 	
-    NSArray *storiesArray = [[NSArray alloc] 
-                             initWithArray:[results objectForKey:@"stories"]];
-    [appDelegate setActiveFeedStories:storiesArray];
-    //NSLog(@"Stories: %d -- %@", [appDelegate.activeFeedStories count], [self storyTitlesTable]);
+    if (self.feedPage == 1) {
+        [appDelegate setActiveFeedStories:[results objectForKey:@"stories"]];
+    } else {
+        [appDelegate addActiveFeedStories:[results objectForKey:@"stories"]];
+    }
+    NSLog(@"Stories: %d on page %d", [appDelegate.activeFeedStories count], self.feedPage);
 	[[self storyTitlesTable] reloadData];
-    
-    [storiesArray release];
+    self.pageFetching = NO;
     [results release];
     [jsonS release];
 	[jsonString release];
@@ -124,6 +129,8 @@
     // inform the user
     NSLog(@"Connection failed! Error - %@",
           [error localizedDescription]);
+    
+    self.pageFetching = NO;
 }
 
 
@@ -197,6 +204,17 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kTableViewRowHeight;
+}
+
+- (void)scrollViewDidScroll: (UIScrollView *)scroll {
+    // UITableView only moves in one direction, y axis
+    NSInteger currentOffset = scroll.contentOffset.y;
+    NSInteger maximumOffset = scroll.contentSize.height - scroll.frame.size.height;
+    
+    // Change 10.0 to adjust the distance from bottom
+    if (maximumOffset - currentOffset <= 10.0) {
+        [self fetchFeedDetail:self.feedPage+1];
+    }
 }
 
 @end

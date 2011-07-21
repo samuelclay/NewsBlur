@@ -87,7 +87,7 @@
     navController.navigationItem.backBarButtonItem = backButton;
     [backButton release];
     [navController pushViewController:feedDetailViewController animated:YES];
-    [feedDetailViewController fetchFeedDetail];
+    [feedDetailViewController fetchFeedDetail:1];
     [self showNavigationBar:YES];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
 }
@@ -155,6 +155,11 @@
         }
     }
     return -1;
+}
+
+- (void)addActiveFeedStories:(NSArray *)stories {
+    NSLog(@"Adding: %d to %@", [stories count], stories);
+    self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
 }
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {

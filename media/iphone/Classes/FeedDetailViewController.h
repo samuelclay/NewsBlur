@@ -16,6 +16,8 @@
     
     NSArray * stories;
     NSMutableData * jsonString;
+    int feedPage;
+    BOOL pageFetching;
                
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
@@ -23,7 +25,8 @@
     UIBarButtonItem * feedMarkReadButton;
 }
 
-- (void)fetchFeedDetail;
+- (void)fetchFeedDetail:(int)page;
+- (void)scrollViewDidScroll:(UIScrollView *)scroll;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
@@ -33,5 +36,7 @@
 
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, retain) NSMutableData * jsonString;
+@property (nonatomic, readwrite) int feedPage;
+@property (nonatomic, readwrite) BOOL pageFetching;
 
 @end
