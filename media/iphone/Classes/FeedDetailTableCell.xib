@@ -51,7 +51,7 @@
 							<object class="IBUILabel" id="750430533">
 								<reference key="NSNextResponder" ref="994014136"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{153, 33}, {145, 15}}</string>
+								<string key="NSFrame">{{172, 39}, {119, 15}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
 								<object class="NSColor" key="IBUIBackgroundColor" id="932003208">
@@ -63,20 +63,21 @@
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<string key="IBUIText">Date</string>
-								<object class="NSFont" key="IBUIFont">
-									<string key="NSName">Helvetica-BoldOblique</string>
+								<object class="NSFont" key="IBUIFont" id="624386242">
+									<string key="NSName">Helvetica-Bold</string>
 									<double key="NSSize">10</double>
 									<int key="NSfFlags">16</int>
 								</object>
 								<object class="NSColor" key="IBUITextColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC44NzUgMC4zOTY5MzEwOTM3IDAuMDAwNTMzNjE3OTc5MgA</bytes>
+									<int key="NSColorSpace">2</int>
+									<bytes key="NSRGB">MC4xNDUwOTgwNDU1IDAuMTc2NDcwNTkyNiAwLjQyMzUyOTQ0NjEAA</bytes>
 								</object>
 								<nil key="IBUIHighlightedColor"/>
-								<object class="NSColor" key="IBUIShadowColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MSAxIDEgMAA</bytes>
+								<object class="NSColor" key="IBUIShadowColor" id="878586146">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MQA</bytes>
 								</object>
+								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<float key="IBUIMinimumFontSize">10</float>
@@ -86,7 +87,7 @@
 							<object class="IBUILabel" id="417683225">
 								<reference key="NSNextResponder" ref="994014136"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 0}, {280, 31}}</string>
+								<string key="NSFrame">{{20, 5}, {271, 31}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
 								<reference key="IBUIBackgroundColor" ref="932003208"/>
@@ -117,39 +118,30 @@
 							<object class="IBUILabel" id="194816084">
 								<reference key="NSNextResponder" ref="994014136"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 33}, {131, 15}}</string>
+								<string key="NSFrame">{{20, 39}, {150, 15}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
-								<object class="NSColor" key="IBUIBackgroundColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MSAxIDEgMAA</bytes>
-								</object>
+								<reference key="IBUIBackgroundColor" ref="878586146"/>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<string key="IBUIText">Author</string>
-								<object class="NSFont" key="IBUIFont">
-									<string key="NSName">Helvetica-Bold</string>
-									<double key="NSSize">10</double>
-									<int key="NSfFlags">16</int>
-								</object>
+								<reference key="IBUIFont" ref="624386242"/>
 								<object class="NSColor" key="IBUITextColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC4xOTE2MjY0MDkgMC4zMDI0ODI2ODcyIDAuMzY5NTY1MjE3NAA</bytes>
+									<int key="NSColorSpace">2</int>
+									<bytes key="NSRGB">MC41ODgyMzUzMTg3IDAuNTg4MjM1MzE4NyAwLjU4ODIzNTMxODcAA</bytes>
 								</object>
 								<nil key="IBUIHighlightedColor"/>
-								<object class="NSColor" key="IBUIShadowColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MSAxIDEgMAA</bytes>
-								</object>
+								<reference key="IBUIShadowColor" ref="878586146"/>
+								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">10</float>
 							</object>
 							<object class="IBUIImageView" id="523799572">
 								<reference key="NSNextResponder" ref="994014136"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{2, 8}, {16, 16}}</string>
+								<string key="NSFrame">{{2, 13}, {16, 16}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
 								<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -157,7 +149,7 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 							</object>
 						</object>
-						<string key="NSFrameSize">{300, 51}</string>
+						<string key="NSFrameSize">{300, 59}</string>
 						<reference key="NSSuperview" ref="749780469"/>
 						<reference key="NSWindow"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
@@ -171,7 +163,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</object>
-				<string key="NSFrameSize">{320, 51}</string>
+				<string key="NSFrameSize">{320, 59}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="IBUIBackgroundColor" ref="932003208"/>

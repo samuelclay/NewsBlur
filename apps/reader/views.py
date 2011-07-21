@@ -183,11 +183,14 @@ def load_feed_favicons(request):
     feed_icons = dict([(i.feed_id, i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
         
     return feed_icons
-    
+
 def load_feeds_flat(request):
-    user = get_user(request)
+    user = request.user
     include_favicons = request.REQUEST.get('include_favicons', False)
     feeds = {}
+    
+    if not user.is_authenticated():
+        return HttpResponseForbidden()
     
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)

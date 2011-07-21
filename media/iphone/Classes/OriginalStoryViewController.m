@@ -21,6 +21,7 @@
 @synthesize pageAction;
 @synthesize pageTitle;
 @synthesize pageUrl;
+@synthesize toolbar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -32,6 +33,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
     [appDelegate showNavigationBar:NO];
+    toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     NSURLRequest *request = [[[NSURLRequest alloc] initWithURL:[appDelegate activeOriginalStoryURL]] autorelease];
     [webView loadRequest:request];
 }
@@ -50,6 +52,9 @@
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont systemFontOfSize:12];
+    label.textColor = [UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:1.0f];
+    label.shadowColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:1.0f];
+    label.shadowOffset = CGSizeMake(0.0f, 1.0f);
     label.textAlignment = UITextAlignmentCenter;
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [navBar addSubview:label];
@@ -84,6 +89,8 @@
     [close setTitle:@"Close" forState:UIControlStateNormal];
     [close addTarget:self action:@selector(doCloseOriginalStoryViewController) forControlEvents:UIControlEventTouchUpInside];
     [navBar addSubview:close];
+    
+    navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     [navBar release];
     [address release];
@@ -178,6 +185,7 @@
     self.pageAction = nil;
     self.pageTitle = nil;
     self.pageUrl = nil;
+    self.toolbar = nil;
 }
 
 
@@ -191,6 +199,7 @@
     [pageAction release];
     [pageTitle release];
     [pageUrl release];
+    [toolbar release];
 }
 
 

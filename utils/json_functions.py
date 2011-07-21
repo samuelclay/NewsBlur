@@ -118,7 +118,7 @@ def json_view(func):
             response = {'result': 'error',
                         'text': unicode(e)}
             code = 500
-        
+
         if isinstance(response, HttpResponseForbidden):
             return response
         json = json_encode(response)

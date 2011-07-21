@@ -288,10 +288,11 @@
                               "}"
 							  ".NB-count {"
 							  "  float: right;"
-							  "  margin: 1px 2px 0 0;"
-							  "  padding: 3px 4px 2px;"
+							  "  margin: 0px 2px 0 0;"
+							  "  padding: 2px 4px 2px;"
 							  "  border: none;"
 							  "  border-radius: 5px;"
+							  "  font-weight: bold;"
 							  "}"
 							  ".NB-positive {"
 							  "  color: white;"
@@ -308,10 +309,9 @@
 							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));"
 							  "}"
                               "</style>"];
-	
-	int negativeCount = (int)[feed objectForKey:@"ng"];
-	int neutralCount = (int)[feed objectForKey:@"nt"];
-	int positiveCount = (int)[feed objectForKey:@"ps"];
+	int negativeCount = [[feed objectForKey:@"ng"] intValue];
+	int neutralCount = [[feed objectForKey:@"nt"] intValue];
+	int positiveCount = [[feed objectForKey:@"ps"] intValue];
 	
 	NSString *negativeCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-negative\">%@</div>",
 									 [feed objectForKey:@"ng"]];
@@ -319,12 +319,12 @@
 									 [feed objectForKey:@"nt"]];
 	NSString *positiveCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-positive\">%@</div>",
 									 [feed objectForKey:@"ps"]];
-	NSLog(@"%@", [[feed objectForKey:@"ps"] class]);
+	NSLog(@"%@ %d -", [feed objectForKey:@"ps"], positiveCount);
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ %@ %@",
                             imgCssString, 
-							positiveCount ? positiveCountString : @"", 
-							neutralCount ? neutralCountString : @"", 
-							negativeCount ? negativeCountString : @""];
+							!!positiveCount ? positiveCountString : @"", 
+							!!neutralCount ? neutralCountString : @"", 
+							!!negativeCount ? negativeCountString : @""];
 
     return htmlString;
 }

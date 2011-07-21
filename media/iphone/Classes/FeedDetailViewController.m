@@ -11,7 +11,7 @@
 #import "FeedDetailTableCell.h"
 #import "JSON.h"
 
-#define kTableViewRowHeight 55;
+#define kTableViewRowHeight 60;
 
 @implementation FeedDetailViewController
 
@@ -31,7 +31,6 @@
     NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     
     self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
-    
 	[super viewWillAppear:animated];
 }
 
@@ -68,6 +67,9 @@
 
 - (void)fetchFeedDetail {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil) {
+        
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        
         NSString *theFeedDetailURL = [[NSString alloc] 
                                       initWithFormat:@"http://nb.local.host:8000/reader/feed/%@", 
                                       [appDelegate.activeFeed objectForKey:@"id"]];
@@ -159,9 +161,12 @@
     
     if ([[story objectForKey:@"read_status"] intValue] != 1) {
         // Unread story
-        cell.storyTitle.textColor = [UIColor colorWithRed:0.05f green:0.05f blue:0.05f alpha:0.9];
-        cell.storyAuthor.textColor = [UIColor colorWithRed:0.86f green:0.66f blue:0.36 alpha:0.9];
-        cell.storyDate.textColor = [UIColor colorWithRed:0.26f green:0.36f blue:0.36 alpha:0.9];
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
+        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
+        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
+        cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         if (score > 0) {
             cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
@@ -172,10 +177,12 @@
         }
     } else {
         // Read story
-        //cell.storyTitle.font = 
-        cell.storyTitle.textColor = [UIColor colorWithRed:0.26f green:0.36f blue:0.36 alpha:0.4];
-        cell.storyAuthor.textColor = [UIColor colorWithRed:0.76f green:0.56f blue:0.36 alpha:0.4];
-        cell.storyDate.textColor = [UIColor colorWithRed:0.26f green:0.36f blue:0.36 alpha:0.4];
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
+        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
+        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
+        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
+        cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.image = nil;
     }
 

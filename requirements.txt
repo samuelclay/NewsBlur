@@ -3,9 +3,7 @@ mongoengine
 django-celery
 django-compress
 South
-django-devserver
 django-extensions
-guppy
 psycopg2
 BeautifulSoup
 pyyaml

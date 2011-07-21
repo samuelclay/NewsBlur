@@ -51,11 +51,11 @@
     
     NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
     NSURL *url = [NSURL URLWithString:urlString];
-//    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-//    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
-//    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-//    [request setDelegate:self];
-//    [request startAsynchronous];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
+    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 
@@ -102,8 +102,9 @@
                               "  font-weight: bold;"
                               "  background-color: #E0E0E0;"
                               "  border-bottom: 1px solid #A0A0A0;"
-                              "  padding: 8px 8px 8px;"
+                              "  padding: 8px 8px 6px;"
                               "  text-shadow: 1px 1px 0 #EFEFEF;"
+                              "  overflow: hidden;"
                               "}"
                               ".NB-story {"
                               "  margin: 12px 8px;"
@@ -112,16 +113,15 @@
                               "    color: #969696;"
                               "    font-size: 10px;"
                               "    text-transform: uppercase;"
-                              "    margin: 0 16px 2px 0;"
+                              "    margin: 2px 8px 0px 0;"
                               "    text-shadow: 0 1px 0 #F9F9F9;"
                               "    float: left;"
                               "}"
                               ".NB-story-tags {"
-                              "  clear: both;"
                               "  overflow: hidden;"
                               "  line-height: 12px;"
                               "  height: 14px;"
-                              "  margin: 6px 0 0 0;"
+                              "  padding: 5px 0 0 0;"
                               "  text-transform: uppercase;"
                               "}"
                               ".NB-story-tag {"
@@ -138,12 +138,12 @@
                               "    -webkit-border-radius: 4px;"
                               "}"
                               ".NB-story-date {"
-                              "  float: right;"
                               "  font-size: 11px;"
                               "  color: #252D6C;"
                               "}"
                               ".NB-story-title {"
                               "  clear: left;"
+                              "  margin: 4px 0 4px;"
                               "}"
                               "</style>"];
     NSString *story_author      = @"";
@@ -163,13 +163,13 @@
     }
     NSString *storyHeader = [NSString stringWithFormat:@"<div class=\"NB-header\">"
                              "<div class=\"NB-story-date\">%@</div>"
-                             "%@"
                              "<div class=\"NB-story-title\">%@</div>"
                              "%@"
+                             "%@"
                              "</div>", 
-                             [story_tags length] ? [appDelegate.activeStory objectForKey:@"long_parsed_date"] : [appDelegate.activeStory objectForKey:@"short_parsed_date"], 
-                             story_author,
+                             [story_tags length] ? [appDelegate.activeStory objectForKey:@"long_parsed_date"] : [appDelegate.activeStory objectForKey:@"short_parsed_date"],
                              [appDelegate.activeStory objectForKey:@"story_title"],
+                             story_author,
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ <div class=\"NB-story\">%@</div>",
                             imgCssString, storyHeader, 

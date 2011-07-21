@@ -30,6 +30,7 @@ static const CGFloat kAddressHeight = 22.0f;
     UIBarButtonItem* pageAction;
     UILabel *pageTitle;
     UITextField *pageUrl;
+    UIToolbar *toolbar;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -41,6 +42,7 @@ static const CGFloat kAddressHeight = 22.0f;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem* pageAction;
 @property (nonatomic, retain) IBOutlet UILabel *pageTitle;
 @property (nonatomic, retain) IBOutlet UITextField *pageUrl;
+@property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 
 - (IBAction) doCloseOriginalStoryViewController;
 - (void)loadAddress:(id)sender event:(UIEvent*)event;

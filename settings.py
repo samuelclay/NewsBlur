@@ -340,20 +340,6 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
-# elif DEVELOPMENT:
-#     INSTALLED_APPS += (
-#         'devserver',
-#     )
-
-DEVSERVER_MODULES = (
-    # 'devserver.modules.sql.SQLRealTimeModule',
-    'devserver.modules.sql.SQLSummaryModule',
-    'devserver.modules.profile.ProfileSummaryModule',
-
-    # Modules not enabled by default
-    'devserver.modules.profile.MemoryUseModule',
-    'devserver.modules.cache.CacheSummaryModule',
-)
 
 # ==========
 # = Celery =

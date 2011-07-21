@@ -259,7 +259,7 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-devserver django-extensions guppy pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
+    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
     
     put('config/pystartup.py', '.pystartup')
     with settings(warn_only=True):
