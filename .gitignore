@@ -14,3 +14,7 @@ logs
 mongo/
 **/*.xcuserstate
 media/iphone/NewsBlur.xcodeproj/project.xcworkspace/xcuserdata/conesus.xcuserdatad/UserInterfaceState.xcuserstate
+UserInterfaceState.xcuserstate
+UserInterfaceState\.xcuserstate
+*.xcuserstate
+xcuserdata

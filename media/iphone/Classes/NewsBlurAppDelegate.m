@@ -158,7 +158,7 @@
 }
 
 - (void)addActiveFeedStories:(NSArray *)stories {
-    NSLog(@"Adding: %d to %@", [stories count], stories);
+//    NSLog(@"Adding: %d to %@", [stories count], stories);
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
 }
 

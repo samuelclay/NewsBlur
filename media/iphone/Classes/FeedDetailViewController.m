@@ -30,7 +30,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
+//    NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     
     self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
 	[super viewWillAppear:animated];
@@ -71,7 +71,9 @@
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching) {
         self.feedPage = page;
         self.pageFetching = YES;
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        if ([appDelegate.activeFeedStories count] == 0) {
+            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        }
         
         NSString *theFeedDetailURL = [[NSString alloc] 
                                       initWithFormat:@"http://nb.local.host:8000/reader/feed/%@?page=%d", 
@@ -104,16 +106,27 @@
                        encoding:NSUTF8StringEncoding];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[jsonS JSONValue]];
-	
-    if (self.feedPage == 1) {
-        [appDelegate setActiveFeedStories:[results objectForKey:@"stories"]];
-    } else {
-        [appDelegate addActiveFeedStories:[results objectForKey:@"stories"]];
-    }
-    NSLog(@"Stories: %d on page %d", [appDelegate.activeFeedStories count], self.feedPage);
+	NSArray *newStories = [results objectForKey:@"stories"];
+    NSUInteger existingStoriesCount = [stories count];
     
-//    NSArray *indexPaths = [NSArray alloc] 
-//    [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:NO];
+    if (self.feedPage == 1) {
+        [appDelegate setActiveFeedStories:newStories];
+    } else {
+        [appDelegate addActiveFeedStories:newStories];
+    }
+    NSLog(@"Stories: %d on page %d. %d stories already.", [appDelegate.activeFeedStories count], self.feedPage, existingStoriesCount);
+    if (existingStoriesCount > 0) {
+        int endPosition = [newStories count]+existingStoriesCount;
+        NSMutableArray *indexPaths = [NSMutableArray alloc];
+        for (int i=0; i < [newStories count]; i++) {
+            int row = existingStoriesCount+i;
+            [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
+        }
+        [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        [indexPaths release];
+    } else {
+        [self.storyTitlesTable reloadData];
+    }
     self.pageFetching = NO;
     [results release];
     [jsonS release];
