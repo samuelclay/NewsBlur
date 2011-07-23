@@ -18,3 +18,4 @@ UserInterfaceState.xcuserstate
 UserInterfaceState\.xcuserstate
 *.xcuserstate
 xcuserdata
+.xcodeproj/ push.xcodeproj/project.pbxproj
