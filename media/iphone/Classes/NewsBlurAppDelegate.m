@@ -28,6 +28,7 @@
 @synthesize activeFeed;
 @synthesize activeFeedStories;
 @synthesize activeStory;
+@synthesize storyCount;
 @synthesize activeOriginalStoryURL;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
@@ -52,6 +53,7 @@
     [activeUsername release];
     [activeFeed release];
     [activeFeedStories release];
+    [storyCount release];
     [activeStory release];
     [activeOriginalStoryURL release];
     [super dealloc];
@@ -84,6 +86,7 @@
 - (void)loadFeedDetailView {
     UINavigationController *navController = self.navigationController;
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"All" style:UIBarButtonItemStylePlain target:nil action:nil];
+    [self setStories:nil];
     navController.navigationItem.backBarButtonItem = backButton;
     [backButton release];
     [navController pushViewController:feedDetailViewController animated:YES];
@@ -121,10 +124,9 @@
 
 - (int)indexOfNextStory {
     int activeIndex = [self indexOfActiveStory];
-    NSUInteger activeFeedStoriesCount = [activeFeedStories count];
     NSLog(@"ActiveStory: %d", activeIndex);
-    NSLog(@"ActiveStory: %d", activeFeedStoriesCount);
-    for (int i=activeIndex+1; i < activeFeedStoriesCount; i++) {
+    NSLog(@"ActiveStory: %d", self.storyCount);
+    for (int i=activeIndex+1; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
         NSDecimalNumber *readStatus = [story objectForKey:@"read_status"];
         NSLog(@"readStatus: %@", readStatus);
@@ -148,7 +150,7 @@
 }
 
 - (int)indexOfActiveStory {
-    for (int i=0; i < [activeFeedStories count]; i++) {
+    for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
         if ([activeStory objectForKey:@"id"] == [story objectForKey:@"id"]) {
             return i;
@@ -157,9 +159,15 @@
     return -1;
 }
 
-- (void)addActiveFeedStories:(NSArray *)stories {
+- (void)addStories:(NSArray *)stories {
 //    NSLog(@"Adding: %d to %@", [stories count], stories);
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
+    self.storyCount = [self.activeFeedStories count];
+}
+
+- (void)setStories:(NSArray *)activeFeedStoriesValue {
+    self.activeFeedStories = activeFeedStoriesValue;
+    self.storyCount = [self.activeFeedStories count];
 }
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {

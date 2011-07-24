@@ -284,6 +284,7 @@ def load_single_feed(request, feed_id):
     dupe_feed_id = None
     userstories_db = None
     
+    time.sleep(1)
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         

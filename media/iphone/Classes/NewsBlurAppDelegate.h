@@ -30,6 +30,7 @@
     NSArray * activeFeedStories;
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
+    NSUInteger storyCount;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -47,6 +48,7 @@
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
+@property (readwrite) NSUInteger storyCount;
 
 - (void)showLogin;
 - (void)loadFeedDetailView;
@@ -60,7 +62,8 @@
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;
 - (int)indexOfActiveStory;
-- (void)addActiveFeedStories:(NSArray *)stories;
+- (void)setStories:(NSArray *)activeFeedStoriesValue;
+- (void)addStories:(NSArray *)stories;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 
 @end

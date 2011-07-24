@@ -18,6 +18,7 @@
     NSMutableData * jsonString;
     int feedPage;
     BOOL pageFetching;
+    BOOL pageFinished;
                
     UITableView * storyTitlesTable;
     UIToolbar * feedViewToolbar;
@@ -38,5 +39,6 @@
 @property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
+@property (nonatomic, readwrite) BOOL pageFinished;
 
 @end
