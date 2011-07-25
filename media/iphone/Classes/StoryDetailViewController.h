@@ -26,6 +26,7 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 
+- (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
 - (void)showStory;
 - (void)showOriginalSubview:(id)sender;

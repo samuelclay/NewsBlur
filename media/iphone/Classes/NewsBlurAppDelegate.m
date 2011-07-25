@@ -152,13 +152,7 @@
 
 - (int)indexOfPreviousStory {
     NSInteger activeIndex = [self indexOfActiveStory];
-    for (int i=activeIndex-1; i >= 0; i--) {
-        NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([[story objectForKey:@"read_status"] intValue] == 1) {
-            return i;
-        }
-    }
-    return -1;
+    return MAX(-1, activeIndex-1);
 }
 
 - (int)indexOfActiveStory {
