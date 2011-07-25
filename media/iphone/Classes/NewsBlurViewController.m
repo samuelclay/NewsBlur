@@ -51,7 +51,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[viewTableFeedTitles deselectRowAtIndexPath:[viewTableFeedTitles indexPathForSelectedRow] animated:animated];
-	
+	if (appDelegate.activeFeedIndexPath) {
+//		NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
+        [self.viewTableFeedTitles beginUpdates];
+        [self.viewTableFeedTitles reloadRowsAtIndexPaths:[NSArray arrayWithObject:appDelegate.activeFeedIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+        [self.viewTableFeedTitles endUpdates];
+	}
     [appDelegate showNavigationBar:animated];
 }
 
@@ -236,6 +241,7 @@
 			id feed_id = [feeds objectAtIndex:indexPath.row];
 			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
 			NSDictionary *feed = [self.dictFeeds objectForKey:feed_id_str];
+//			NSLog(@"Loading feed: %@", feed);
 			cell.feedTitle.text = [feed objectForKey:@"feed_title"];
 			NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
 			if (url) {
@@ -261,6 +267,7 @@
 			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
 			[appDelegate setActiveFeed:[self.dictFeeds 
 										objectForKey:feed_id_str]];
+			[appDelegate setActiveFeedIndexPath:indexPath];
 			[feeds release];
 			//NSLog(@"Active feed: %@", [appDelegate activeFeed]);
 			break;

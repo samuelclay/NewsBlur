@@ -32,6 +32,7 @@
     NSURL * activeOriginalStoryURL;
     int storyCount;
     NSMutableArray * recentlyReadStories;
+    NSIndexPath * activeFeedIndexPath;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -51,6 +52,7 @@
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
+@property (readwrite, retain) NSIndexPath * activeFeedIndexPath;
 
 - (void)showLogin;
 - (void)loadFeedDetailView;

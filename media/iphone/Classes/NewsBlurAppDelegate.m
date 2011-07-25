@@ -31,6 +31,7 @@
 @synthesize storyCount;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
+@synthesize activeFeedIndexPath;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
@@ -57,6 +58,7 @@
     [activeStory release];
     [activeOriginalStoryURL release];
     [recentlyReadStories release];
+    [activeFeedIndexPath release];
     [super dealloc];
 }
 
@@ -184,9 +186,21 @@
 - (void)markActiveStoryRead {
     int activeIndex = [self indexOfActiveStory];
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
-    [story setValue:[NSDecimalNumber numberWithInt:1] forKey:@"read_status"];
+    [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeIndex]];
-    NSLog(@"Marked read %d: %@", activeIndex, self.recentlyReadStories);
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        int unreads = [[activeFeed objectForKey:@"ps"] intValue] - 1;
+        [self.activeFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+    } else if (score == 0) {
+        int unreads = [[activeFeed objectForKey:@"nt"] intValue] - 1;
+        NSLog(@"Neutral story: %@ -- %d", [activeFeed objectForKey:@"nt"], unreads);
+        [self.activeFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+    } else if (score < 0) {
+        int unreads = [[activeFeed objectForKey:@"ng"] intValue] - 1;
+        [self.activeFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+    }
+    NSLog(@"Marked read %d: %@: %d", activeIndex, self.recentlyReadStories, score);
 }
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {
