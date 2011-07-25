@@ -31,6 +31,7 @@
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
     int storyCount;
+    NSMutableArray * recentlyReadStories;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -49,6 +50,7 @@
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
+@property (readwrite, retain) NSMutableArray * recentlyReadStories;
 
 - (void)showLogin;
 - (void)loadFeedDetailView;

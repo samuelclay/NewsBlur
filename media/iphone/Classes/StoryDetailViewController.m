@@ -30,9 +30,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self showStory];
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
-        [self markStoryAsRead];   
-    }
+    [self markStoryAsRead];   
 	[super viewWillAppear:animated];
 }
 
@@ -47,26 +45,28 @@
 }
 
 - (void)markStoryAsRead {
-    [appDelegate markActiveStoryRead];
-    
-    NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:self];
-    [request startAsynchronous];
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+        [appDelegate markActiveStoryRead];
+        
+        NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
+        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setDelegate:self];
+        [request startAsynchronous];
+    }
 }
 
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    int code = [[results valueForKey:@"code"] intValue];
-    NSLog(@"Read Story: %@", code);
+//    NSString *responseString = [request responseString];
+//    NSDictionary *results = [[NSDictionary alloc] 
+//                             initWithDictionary:[responseString JSONValue]];
+//    int code = [[results valueForKey:@"code"] intValue];
+//    NSLog(@"Read Story: %@", code);
     
-    [results release];
+//    [results release];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
@@ -184,11 +184,12 @@
 - (IBAction)doNextUnreadStory {
     int nextIndex = [appDelegate indexOfNextStory];
     if (nextIndex == -1) {
-        
+        [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]  animated:YES];
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
         [self showStory];
-
+        [self markStoryAsRead];
+        
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
@@ -198,12 +199,13 @@
 }
 
 - (IBAction)doPreviousStory {
-    NSInteger nextIndex = [appDelegate indexOfPreviousStory];
+    int nextIndex = [appDelegate indexOfPreviousStory];
     if (nextIndex == -1) {
-        
+        [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]  animated:YES];
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
         [self showStory];
+        [self markStoryAsRead];
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];

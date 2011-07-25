@@ -34,6 +34,21 @@
 //    NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     self.pageFinished = NO;
     self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
+    
+    NSMutableArray *indexPaths = [NSMutableArray array];
+    for (id i in appDelegate.recentlyReadStories) {
+        NSLog(@"Read story %d: %@", [i intValue], appDelegate.recentlyReadStories);
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
+                                                inSection:0];
+        [indexPaths addObject:indexPath];
+    }
+    [appDelegate.recentlyReadStories removeAllObjects];
+    if ([indexPaths count] > 0) {
+        NSLog(@"Having read %d stories: %@", [appDelegate.recentlyReadStories count], appDelegate.recentlyReadStories);
+        [self.storyTitlesTable beginUpdates];
+        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        [self.storyTitlesTable endUpdates];
+    }
 	[super viewWillAppear:animated];
 }
 
@@ -206,12 +221,9 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    // The + 1 is for the finished/loading bar.
     int storyCount = appDelegate.storyCount;
-    if (self.pageFetching) {
-        return storyCount + 1;
-    } else {
-        return storyCount;
-    }
+    return storyCount + 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

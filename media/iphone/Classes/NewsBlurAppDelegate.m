@@ -30,6 +30,7 @@
 @synthesize activeStory;
 @synthesize storyCount;
 @synthesize activeOriginalStoryURL;
+@synthesize recentlyReadStories;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
@@ -55,6 +56,7 @@
     [activeFeedStories release];
     [activeStory release];
     [activeOriginalStoryURL release];
+    [recentlyReadStories release];
     [super dealloc];
 }
 
@@ -123,12 +125,21 @@
 
 - (int)indexOfNextStory {
     int activeIndex = [self indexOfActiveStory];
-    NSLog(@"ActiveStory: %d", activeIndex);
-    NSLog(@"ActiveStory: %d", self.storyCount);
+    int readStatus = -1;
+    NSLog(@"ActiveStory: %d/%d", activeIndex, self.storyCount);
     for (int i=activeIndex+1; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        int readStatus = [[story objectForKey:@"read_status"] intValue];
-        NSLog(@"readStatus: %@", readStatus);
+        readStatus = [[story objectForKey:@"read_status"] intValue];
+        NSLog(@"readStatus at %d: %d", i, readStatus);
+        if (readStatus == 0) {
+            NSLog(@"NextStory: %d", i);
+            return i;
+        }
+    }
+    for (int i=activeIndex; i >= 0; i--) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        readStatus = [[story objectForKey:@"read_status"] intValue];
+        NSLog(@"readStatus at %d: %d", i, readStatus);
         if (readStatus == 0) {
             NSLog(@"NextStory: %d", i);
             return i;
@@ -167,12 +178,15 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
+    self.recentlyReadStories = [[NSMutableArray alloc] init];
 }
 
 - (void)markActiveStoryRead {
     int activeIndex = [self indexOfActiveStory];
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     [story setValue:[NSDecimalNumber numberWithInt:1] forKey:@"read_status"];
+    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeIndex]];
+    NSLog(@"Marked read %d: %@", activeIndex, self.recentlyReadStories);
 }
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {
