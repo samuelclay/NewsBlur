@@ -138,10 +138,12 @@
     } else if (newStoriesCount == 0) {
         NSLog(@"End of feed stories.");
         self.pageFinished = YES;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:existingStoriesCount+1 
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:existingStoriesCount 
                                                     inSection:0];
-        UITableViewCell *cell = [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
-        [cell setNeedsLayout];
+        NSArray *indexPaths = [NSArray arrayWithObject:indexPath];
+        [self.storyTitlesTable beginUpdates];
+        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        [self.storyTitlesTable endUpdates];
     }
     
     self.pageFetching = NO;
@@ -169,8 +171,17 @@
 - (UITableViewCell *)makeLoadingCell {
     UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"NoReuse"] autorelease];
     
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     if (self.pageFinished) {
-        cell.backgroundColor = [UIColor colorWithRed:.7f green:0.7f blue:0.7f alpha:1.0f];
+        UIView * blue = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 321, 17)];
+        [cell.contentView addSubview:blue];
+        blue.backgroundColor = [UIColor whiteColor];
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:0.5f];
+        blue.backgroundColor = [UIColor colorWithRed:.7f green:0.7f blue:0.7f alpha:1.0f];
+        [UIView commitAnimations];
+        [blue release];
     } else {
         cell.textLabel.text = @"Loading...";
         
@@ -274,7 +285,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"Height for row: %d of %d stories. (Finished: %d)", indexPath.row, appDelegate.storyCount, self.pageFinished);
     if (indexPath.row >= appDelegate.storyCount && self.pageFinished) {
-        return 20;
+        return 16;
     } else {
         return kTableViewRowHeight;
     }
