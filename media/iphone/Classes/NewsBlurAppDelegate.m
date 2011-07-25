@@ -172,19 +172,19 @@
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
-//    int score_max = 0;
-//    [intelligence objectForKey:@"title"]
-//    var score_max = Math.max(story.intelligence['title'],
-//                             story.intelligence['author'],
-//                             story.intelligence['tags']);
-//    var score_min = Math.min(story.intelligence['title'],
-//                             story.intelligence['author'],
-//                             story.intelligence['tags']);
-//    if (score_max > 0) score = score_max;
-//    else if (score_min < 0) score = score_min;
-//    
-//    if (score == 0) score = story.intelligence['feed'];
+    int score_max = [MAX([intelligence objectForKey:@"title"],
+                        MAX([intelligence objectForKey:@"author"],
+                            [intelligence objectForKey:@"tags"])) integerValue];
+    int score_min = [MIN([intelligence objectForKey:@"title"],
+                        MIN([intelligence objectForKey:@"author"],
+                            [intelligence objectForKey:@"tags"])) integerValue];
+
+    if (score_max > 0)      score = score_max;
+    else if (score_min < 0) score = score_min;
     
+    if (score == 0) score = [[intelligence objectForKey:@"feed"] integerValue];
+
+    // NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
     return score;
 }
 

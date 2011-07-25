@@ -319,7 +319,6 @@
 									 [feed objectForKey:@"nt"]];
 	NSString *positiveCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-positive\">%@</div>",
 									 [feed objectForKey:@"ps"]];
-	NSLog(@"%@ %d -", [feed objectForKey:@"ps"], positiveCount);
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ %@ %@",
                             imgCssString, 
 							!!positiveCount ? positiveCountString : @"", 

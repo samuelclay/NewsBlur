@@ -120,10 +120,10 @@
         [appDelegate addStories:newStories];
     }
     
-    NSLog(@"Stories: %d stories, page %d. %d new stories.", existingStoriesCount, self.feedPage, newStoriesCount);
+//    NSLog(@"Stories: %d stories, page %d. %d new stories.", existingStoriesCount, self.feedPage, newStoriesCount);
     
     if (existingStoriesCount > 0 && newStoriesCount > 0) {
-        NSLog(@"Loading new stories on top of existing stories.");
+//        NSLog(@"Loading new stories on top of existing stories.");
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
         for (int i=0; i < newStoriesCount; i++) {
             int row = existingStoriesCount+i;
@@ -133,10 +133,10 @@
                                      withRowAnimation:UITableViewRowAnimationNone];
         [indexPaths release];
     } else if (newStoriesCount > 0) {
-        NSLog(@"Loading first page of new stories.");
+//        NSLog(@"Loading first page of new stories.");
         [self.storyTitlesTable reloadData];
     } else if (newStoriesCount == 0) {
-        NSLog(@"End of feed stories.");
+//        NSLog(@"End of feed stories.");
         self.pageFinished = YES;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:existingStoriesCount 
                                                     inSection:0];
@@ -283,7 +283,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"Height for row: %d of %d stories. (Finished: %d)", indexPath.row, appDelegate.storyCount, self.pageFinished);
+//    NSLog(@"Height for row: %d of %d stories. (Finished: %d)", indexPath.row, appDelegate.storyCount, self.pageFinished);
     if (indexPath.row >= appDelegate.storyCount && self.pageFinished) {
         return 16;
     } else {
