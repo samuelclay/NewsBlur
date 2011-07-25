@@ -83,7 +83,7 @@
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
     NSError *error = [request error];
-    [error release];
+    NSLog(@"Error: %@", error);
 }
 
 - (void)didReceiveMemoryWarning {

@@ -47,7 +47,7 @@
 }
 
 - (void)markStoryAsRead {
-    [appDelegate.activeStory setValue:[NSDecimalNumber numberWithInt:1] forKey:@"read_status"];
+    [appDelegate markActiveStoryRead];
     
     NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
     NSURL *url = [NSURL URLWithString:urlString];

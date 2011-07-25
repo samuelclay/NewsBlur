@@ -40,11 +40,11 @@
 }
 
 - (void)viewDidLoad {
-	self.feedTitleList = [[NSMutableArray alloc] init];
-	self.dictFolders = [[NSDictionary alloc] init];
-	self.dictFeeds = [[NSDictionary alloc] init];
-	self.dictFoldersArray = [[NSMutableArray alloc] init];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)];
+	self.feedTitleList = [[[NSMutableArray alloc] init] autorelease];
+	self.dictFolders = [[[NSDictionary alloc] init] autorelease];
+	self.dictFeeds = [[[NSDictionary alloc] init] autorelease];
+	self.dictFoldersArray = [[[NSMutableArray alloc] init] autorelease];
+	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)] autorelease];
 	[appDelegate showNavigationBar:NO];
     [super viewDidLoad];
 }

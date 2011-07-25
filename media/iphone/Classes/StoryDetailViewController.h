@@ -29,7 +29,6 @@
 - (void)markStoryAsRead;
 - (void)showStory;
 - (void)showOriginalSubview:(id)sender;
-- (void)resizeWebView;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
 

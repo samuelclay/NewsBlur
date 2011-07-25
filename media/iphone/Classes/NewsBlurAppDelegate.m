@@ -53,7 +53,6 @@
     [activeUsername release];
     [activeFeed release];
     [activeFeedStories release];
-    [storyCount release];
     [activeStory release];
     [activeOriginalStoryURL release];
     [super dealloc];
@@ -128,7 +127,7 @@
     NSLog(@"ActiveStory: %d", self.storyCount);
     for (int i=activeIndex+1; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        NSDecimalNumber *readStatus = [story objectForKey:@"read_status"];
+        int readStatus = [[story objectForKey:@"read_status"] intValue];
         NSLog(@"readStatus: %@", readStatus);
         if (readStatus == 0) {
             NSLog(@"NextStory: %d", i);
@@ -142,7 +141,7 @@
     NSInteger activeIndex = [self indexOfActiveStory];
     for (int i=activeIndex-1; i >= 0; i--) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"read_status"] == 1) {
+        if ([[story objectForKey:@"read_status"] intValue] == 1) {
             return i;
         }
     }
@@ -168,6 +167,12 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
+}
+
+- (void)markActiveStoryRead {
+    int activeIndex = [self indexOfActiveStory];
+    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+    [story setValue:[NSDecimalNumber numberWithInt:1] forKey:@"read_status"];
 }
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {

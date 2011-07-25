@@ -140,13 +140,13 @@
 }
 - (void)updateTitle:(UIWebView*)aWebView
 {
-    NSString* pageTitle = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
-    self.pageTitle.text = pageTitle;
+    NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
+    self.pageTitle.text = pageTitleValue;
 }
 - (void)updateAddress:(NSURLRequest*)request
 {
-    NSURL* url = [request mainDocumentURL];
-    NSString* absoluteString = [url absoluteString];
+    NSURL *url = [request mainDocumentURL];
+    NSString *absoluteString = [url absoluteString];
     self.pageUrl.text = absoluteString;
 }
 - (void)updateButtons

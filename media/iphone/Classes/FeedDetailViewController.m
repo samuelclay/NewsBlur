@@ -123,7 +123,6 @@
 //    NSLog(@"Stories: %d stories, page %d. %d new stories.", existingStoriesCount, self.feedPage, newStoriesCount);
     
     if (existingStoriesCount > 0 && newStoriesCount > 0) {
-//        NSLog(@"Loading new stories on top of existing stories.");
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
         for (int i=0; i < newStoriesCount; i++) {
             int row = existingStoriesCount+i;
@@ -133,10 +132,8 @@
                                      withRowAnimation:UITableViewRowAnimationNone];
         [indexPaths release];
     } else if (newStoriesCount > 0) {
-//        NSLog(@"Loading first page of new stories.");
         [self.storyTitlesTable reloadData];
     } else if (newStoriesCount == 0) {
-//        NSLog(@"End of feed stories.");
         self.pageFinished = YES;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:existingStoriesCount 
                                                     inSection:0];
@@ -153,9 +150,7 @@
 	[jsonString release];
 }
 
-- (void)connection:(NSURLConnection *)connection
-  didFailWithError:(NSError *)error
-{
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // release the connection, and the data object
     [connection release];
     // receivedData is declared as a method instance elsewhere
@@ -169,7 +164,9 @@
 }
 
 - (UITableViewCell *)makeLoadingCell {
-    UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"NoReuse"] autorelease];
+    UITableViewCell *cell = [[[UITableViewCell alloc] 
+                              initWithStyle:UITableViewCellStyleSubtitle 
+                              reuseIdentifier:@"NoReuse"] autorelease];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
@@ -244,6 +241,14 @@
     }
     cell.storyTitle.text = [story objectForKey:@"story_title"];
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
+    } else if (score == 0) {
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_yellow.png"];
+    } else if (score < 0) {
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
+    }
     
     if ([[story objectForKey:@"read_status"] intValue] != 1) {
         // Unread story
@@ -253,14 +258,8 @@
         cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        if (score > 0) {
-            cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
-        } else if (score == 0) {
-            cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_orange.png"];
-        } else if (score < 0) {
-            cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
-        }
+        cell.storyUnreadIndicator.alpha = 1;
+
     } else {
         // Read story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
@@ -269,7 +268,7 @@
         cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
-        cell.storyUnreadIndicator.image = nil;
+        cell.storyUnreadIndicator.alpha = 0.15f;
     }
 
 	return cell;
@@ -295,7 +294,7 @@
     NSInteger currentOffset = scroll.contentOffset.y;
     NSInteger maximumOffset = scroll.contentSize.height - scroll.frame.size.height;
     
-    if (maximumOffset - currentOffset <= 10.0) {
+    if (maximumOffset - currentOffset <= 60.0) {
         [self fetchFeedDetail:self.feedPage+1];
     }
 }
