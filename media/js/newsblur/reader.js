@@ -3387,6 +3387,11 @@
             var stories = this.model.stories;
             if (!stories || !stories.length) return;
 
+            $.extend(this.cache, {
+                'feed_view_story_positions': {},
+                'feed_view_story_positions_keys': []
+            });
+
             for (var s in stories) {
                 var story = stories[s];
                 var $story = this.cache.feed_view_stories[story.id];
