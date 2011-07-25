@@ -9,6 +9,7 @@
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
+#import "ASIFormDataRequest.h"
 #import "JSON.h"
 
 #define kTableViewRowHeight 60;
@@ -309,6 +310,17 @@
     if (maximumOffset - currentOffset <= 60.0) {
         [self fetchFeedDetail:self.feedPage+1];
     }
+}
+
+- (IBAction)markAllRead {
+    NSString *urlString = @"http://nb.local.host:8000/reader/mark_feed_as_read";
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+    [request setDelegate:nil];
+    [request startAsynchronous];
+    [appDelegate markActiveFeedAllRead];
+    [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]  animated:YES];
 }
 
 @end

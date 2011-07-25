@@ -28,6 +28,7 @@
 
 - (void)fetchFeedDetail:(int)page;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
+- (IBAction)markAllRead;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

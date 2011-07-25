@@ -203,6 +203,12 @@
     NSLog(@"Marked read %d: %@: %d", activeIndex, self.recentlyReadStories, score);
 }
 
+- (void)markActiveFeedAllRead {    
+    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
+    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
+    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
+}
+
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
     int score_max = [MAX([intelligence objectForKey:@"title"],
