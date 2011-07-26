@@ -165,6 +165,13 @@
     return -1;
 }
 
+- (int)unreadCount {
+    int ps = [[self.activeFeed objectForKey:@"ps"] intValue];
+    int nt = [[self.activeFeed objectForKey:@"nt"] intValue];
+    int ng = [[self.activeFeed objectForKey:@"ng"] intValue];
+    return ps + nt + ng;
+}
+
 - (void)addStories:(NSArray *)stories {
 //    NSLog(@"Adding: %d to %@", [stories count], stories);
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
@@ -205,19 +212,19 @@
 
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
-    int score_max = [MAX([intelligence objectForKey:@"title"],
-                        MAX([intelligence objectForKey:@"author"],
-                            [intelligence objectForKey:@"tags"])) integerValue];
-    int score_min = [MIN([intelligence objectForKey:@"title"],
-                        MIN([intelligence objectForKey:@"author"],
-                            [intelligence objectForKey:@"tags"])) integerValue];
+    int title = [[intelligence objectForKey:@"title"] intValue];
+    int author = [[intelligence objectForKey:@"author"] intValue];
+    int tags = [[intelligence objectForKey:@"tags"] intValue];
+
+    int score_max = MAX(title, MAX(author, tags));
+    int score_min = MIN(title, MIN(author, tags));
 
     if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
     
     if (score == 0) score = [[intelligence objectForKey:@"feed"] integerValue];
 
-    // NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
+    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
     return score;
 }
 

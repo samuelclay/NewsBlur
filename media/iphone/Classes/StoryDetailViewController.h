@@ -14,17 +14,22 @@
 <UIScrollViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 
+    UIProgressView *progressView;
     UIWebView *webView;
     UIToolbar *toolbar;
     UIBarButtonItem *buttonPrevious;
     UIBarButtonItem *buttonNext;
+    
+    int originalUnreadCount;
 }
 
+@property (nonatomic, retain) IBOutlet UIProgressView *progressView;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonPrevious;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (readwrite) int originalunreadCount;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;

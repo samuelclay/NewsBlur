@@ -68,6 +68,7 @@
 - (int)indexOfActiveStory;
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)addStories:(NSArray *)stories;
+- (int)unreadCount;
 - (void)markActiveStoryRead;
 - (void)markActiveFeedAllRead;
 + (int)computeStoryScore:(NSDictionary *)intelligence;

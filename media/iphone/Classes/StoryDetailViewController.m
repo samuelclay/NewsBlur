@@ -15,6 +15,7 @@
 @implementation StoryDetailViewController
 
 @synthesize appDelegate;
+@synthesize progressView;
 @synthesize webView;
 @synthesize toolbar;
 @synthesize buttonNext;
@@ -60,6 +61,12 @@
     } else {
         [buttonPrevious setTitle:@"Previous"];
     }
+    
+    float unreads = [appDelegate unreadCount];
+    float total = [appDelegate storyCount];
+    float progress = (total - unreads) / total;
+    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
+    [progressView setProgress:progress];
 }
 
 - (void)markStoryAsRead {
@@ -252,6 +259,7 @@
 	// e.g. self.myOutlet = nil;
     self.webView = nil;
     self.appDelegate = nil;
+    self.progressView = nil;
 }
 
 
