@@ -4118,6 +4118,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 2px;
 }
+.NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/weather_sun.png') no-repeat  0 1px;
+}
 .NB-menu-manage .NB-menu-manage-feedchooser .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_swatch.png') no-repeat  0 2px;
 }
@@ -5294,6 +5297,28 @@ background: transparent;
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('../img/reader/instapaper.png') no-repeat 0 0;
 }
+
+/* ================== */
+/* = Account Dialog = */
+/* ================== */
+
+.NB-modal-account .NB-preference-username input,
+.NB-modal-account .NB-preference-email input {
+    width: 306px;
+    font-size: 14px;
+    padding: 2px;
+    margin: 0px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
+.NB-modal-preferences .NB-link-account-preferences {
+  float: right;
+  line-height: 30px;
+  text-decoration: none;
+}
+
 
 /* ================ */
 /* = Static Pages = */

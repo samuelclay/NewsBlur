@@ -29,12 +29,12 @@ NEWSBLUR.Modal.prototype = {
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
             },
-            'onClose': function(dialog) {
+            'onClose': function(dialog, callback) {
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
                     dialog.overlay.empty().remove();
-                    $.modal.close();
+                    $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
             }
@@ -45,9 +45,9 @@ NEWSBLUR.Modal.prototype = {
       $(window).trigger('resize.simplemodal');
     },
     
-    close: function() {
+    close: function(callback) {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
-        $.modal.close();
+        $.modal.close(callback);
     }
     
 };

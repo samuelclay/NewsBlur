@@ -687,7 +687,6 @@
 
 					// reset the dialog object
 					s.d = {};
-					
 					$.isFunction(callback) && callback();
 				}, 10);
 			}

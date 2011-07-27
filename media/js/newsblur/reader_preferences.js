@@ -10,8 +10,11 @@ NEWSBLUR.ReaderPreferences = function(options) {
     this.runner();
 };
 
-NEWSBLUR.ReaderPreferences.prototype = {
-    
+NEWSBLUR.ReaderPreferences.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
+
+_.extend(NEWSBLUR.ReaderPreferences.prototype, {
+
     runner: function() {
         this.make_modal();
         this.select_preferences();
@@ -27,6 +30,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
+            $.make('a', { href: '#preferences', className: 'NB-link-account-preferences NB-splash-link' }, 'Switch to Account'),
             $.make('h2', { className: 'NB-modal-title' }, 'Preferences'),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-preference' }, [
@@ -392,35 +396,7 @@ NEWSBLUR.ReaderPreferences.prototype = {
             })
         ]);
     },
-    
-    open_modal: function() {
-        var self = this;
         
-        this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
-            'overlayClose': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
-    },
-    
     select_preferences: function() {
         if (NEWSBLUR.Preferences.timezone) {
             $('select[name=timezone] option', this.$modal).each(function() {
@@ -559,6 +535,12 @@ NEWSBLUR.ReaderPreferences.prototype = {
         return message;
     },
     
+    close_and_load_account: function() {
+      this.close(function() {
+          NEWSBLUR.reader.open_account_modal();
+      });
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -570,6 +552,11 @@ NEWSBLUR.ReaderPreferences.prototype = {
             e.preventDefault();
             
             self.save_preferences();
+        });
+        $.targetIs(e, { tagSelector: '.NB-link-account-preferences' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close_and_load_account();
         });
     },
     
@@ -587,4 +574,4 @@ NEWSBLUR.ReaderPreferences.prototype = {
         $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
     }
     
-};
+});

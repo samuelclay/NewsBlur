@@ -27,12 +27,10 @@
   
   <div class="NB-module-stats-count">
     <div class="NB-module-stats-count-graph">
-      {% for i in statistics.sites_loaded %}
-      <div class="NB-graph-value">
+      {% for i in statistics.sites_loaded %}<div class="NB-graph-value">
         <div class="NB-graph-label">{{ i }}</div>
         <div class="NB-graph-bar" style="height:{{ i|format_graph:statistics.max_sites_loaded }}px"></div>
-      </div>
-      {% endfor %}
+      </div>{% endfor %}
     </div>
     <div class="NB-module-stats-count-number">{{ statistics.latest_sites_loaded }}</div>
     <div class="NB-module-stats-count-description">Sites loaded</div>

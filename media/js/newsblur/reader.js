@@ -3669,6 +3669,10 @@
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },
+                        
+        open_account_modal: function() {
+            NEWSBLUR.account = new NEWSBLUR.ReaderAccount();
+        },
         
         open_feedchooser_modal: function() {
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser();
@@ -3721,6 +3725,10 @@
                         $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
                     ]).corner('tl tr 8px'),
                     $.make('li', { className: 'NB-menu-separator' }), 
+                    $.make('li', { className: 'NB-menu-manage-account' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'My Account')
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-keyboard' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
@@ -4479,7 +4487,6 @@
                     $stories_show.css({'display': 'block'});
                 }
                 setTimeout(function() {
-                    console.log(['show_story_titles_above_intelligence_level', self.active_story.id]);
                     if (!self.active_story) return;
                     var $story = self.find_story_in_story_titles(self.active_story.id);
                     // NEWSBLUR.log(['$story', $story]);
@@ -5504,6 +5511,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_preferences_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-account' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_account_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feedchooser' }, function($t, $p){
