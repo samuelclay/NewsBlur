@@ -1989,8 +1989,6 @@
             
             if (!this.model.preference('animations')) skip_scroll = true;
             
-            NEWSBLUR.log(['scroll_to_story_in_story_feed', skip_scroll]);
-
             if ($story && $story.length) {
                 if (skip_scroll || 
                     (this.story_view == 'feed'  &&
@@ -3729,6 +3727,11 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'My Account')
                     ]),
+                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-keyboard' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
@@ -3752,11 +3755,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Extensions and extras.')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

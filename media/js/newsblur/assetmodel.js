@@ -686,6 +686,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/profile/set_preference', preferences, callback, null);
     },
     
+    save_account_settings: function(settings, callback) {
+        this.make_request('/profile/set_account_settings', settings, callback, null);
+    },
+    
     view_setting: function(feed_id, feed_view_setting, callback) {
         if (typeof feed_view_setting == 'undefined') {
             return NEWSBLUR.Preferences.view_settings[feed_id+''] || NEWSBLUR.Preferences.default_view;

@@ -18,7 +18,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     runner: function() {
         this.make_modal();
         this.select_preferences();
-        this.handle_cancel();
         this.handle_change();
         this.open_modal();
         this.original_preferences = this.serialize_preferences();
@@ -368,22 +367,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
                     ])
                 ]),
-                $.make('div', { className: 'NB-preference NB-preference-password' }, [
-                    $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('div', { className: 'NB-preference-option' }, [
-                            $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
-                            $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
-                        ]),
-                        $.make('div', { className: 'NB-preference-option' }, [
-                            $.make('label', { 'for': 'NB-preference-password-new' }, 'New password'),
-                            $.make('input', { id: 'NB-preference-password-new', type: 'password', name: 'new_password', value: '' })
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference-label'}, [
-                        'Change password',
-                        $.make('div', { className: 'NB-preference-error'})
-                    ])
-                ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
                     ' or ',
@@ -471,19 +454,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         }, this));
     },
     
-    handle_cancel: function() {
-        var $cancel = $('.NB-modal-cancel', this.$modal);
-        
-        $cancel.click(function(e) {
-            e.preventDefault();
-            $.modal.close();
-        });
-    },
-        
     serialize_preferences: function() {
         var preferences = {};
 
-        $('input[type=radio]:checked, select, input[type=password]', this.$modal).each(function() {
+        $('input[type=radio]:checked, select', this.$modal).each(function() {
             var name       = $(this).attr('name');
             var preference = preferences[name] = $(this).val();
             if (preference == 'true')       preferences[name] = true;
@@ -503,10 +477,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
         this.model.save_preferences(form, function(data) {
-            if (data.code == -1) {
-                $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
-                return self.disable_save();
-            }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
@@ -514,7 +484,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             if (self.original_preferences['feed_order'] != form['feed_order']) {
               NEWSBLUR.reader.make_feeds();
             }
-            $.modal.close();
+            self.close();
         });
     },
     
@@ -558,12 +528,16 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             
             self.close_and_load_account();
         });
+        $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close();
+        });
     },
     
     handle_change: function() {
         
-        $('input[type=radio],input[type=checkbox],select,input[type=password]', this.$modal).bind('change', _.bind(this.enable_save, this));
-        $('input[type=password]', this.$modal).bind('keydown', _.bind(this.enable_save, this));
+        $('input[type=radio],input[type=checkbox],select', this.$modal).bind('change', _.bind(this.enable_save, this));
     },
     
     enable_save: function() {

@@ -17,6 +17,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.open_modal();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        this.handle_change();
     },
     
     make_modal: function() {
@@ -93,7 +94,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ' or ',
                     $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
                 ])
-            ])
+            ]).bind('submit', function(e) {
+                e.preventDefault();
+                self.save_account_settings();
+                return false;
+            })
         ]);
     },
     
@@ -107,6 +112,56 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
       this.close(function() {
           NEWSBLUR.reader.open_feedchooser_modal();
       });
+    },
+    
+    handle_cancel: function() {
+        var $cancel = $('.NB-modal-cancel', this.$modal);
+        
+        $cancel.click(function(e) {
+            e.preventDefault();
+            $.modal.close();
+        });
+    },
+        
+    serialize_preferences: function() {
+        var preferences = {};
+
+        $('input[type=radio]:checked, select, input', this.$modal).each(function() {
+            var name       = $(this).attr('name');
+            var preference = preferences[name] = $(this).val();
+            if (preference == 'true')       preferences[name] = true;
+            else if (preference == 'false') preferences[name] = false;
+        });
+        $('input[type=checkbox]', this.$modal).each(function() {
+            preferences[$(this).attr('name')] = $(this).is(':checked');
+        });
+
+        return preferences;
+    },
+    
+    save_account_settings: function() {
+        var self = this;
+        var form = this.serialize_preferences();
+        $('.NB-preference-error', this.$modal).text('');
+        $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
+        
+        this.model.save_account_settings(form, function(data) {
+            if (data.code == -1) {
+                $('.NB-preference-username .NB-preference-error', this.$modal).text(data.message);
+                return self.disable_save();
+            } else if (data.code == -2) {
+                $('.NB-preference-email .NB-preference-error', this.$modal).text(data.message);
+                return self.disable_save();
+            } else if (data.code == -3) {
+                $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
+                return self.disable_save();
+            }
+            
+            NEWSBLUR.Globals.username = data.payload.username;
+            NEWSBLUR.Globals.email = data.payload.email;
+            $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
+            self.close();
+        });
     },
     
     // ===========
@@ -126,6 +181,25 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             
             self.close_and_load_preferences();
         });
+        $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close();
+        });
+    },
+    
+    handle_change: function() {
+        $('input[type=radio],input[type=checkbox],select,input', this.$modal).bind('change', _.bind(this.enable_save, this));
+        $('input', this.$modal).bind('keydown', _.bind(this.enable_save, this));
+    },
+    
+    enable_save: function() {
+        $('input[type=submit]', this.$modal).removeAttr('disabled').removeClass('NB-disabled').val('Save My Account');
+    },
+    
+    disable_save: function() {
+        this.resize();
+        $('input[type=submit]', this.$modal).attr('disabled', true).addClass('NB-disabled').val('Change what you like above...');
     }
     
 });

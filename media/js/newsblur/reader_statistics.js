@@ -35,7 +35,10 @@ NEWSBLUR.ReaderStatistics.prototype = {
             $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
-                $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
+                $.make('div', { className: 'NB-modal-feed-heading' }, [
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                ])
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
         ]);
@@ -53,6 +56,7 @@ NEWSBLUR.ReaderStatistics.prototype = {
         
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed.favicon));
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
+        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers));
     },
     
     open_modal: function() {
@@ -181,14 +185,6 @@ NEWSBLUR.ReaderStatistics.prototype = {
                 ])
             ])
         ]);
-        
-        var count = _.isUndefined(data['subscriber_count']) && 'Loading ' || data['subscriber_count'];
-        var $subscribers = $.make('div', { className: 'NB-modal-subtitle-right' }, [
-            $.make('span', { className: 'NB-modal-subtitle-right-count' }, ''+count),
-            $.make('span', { className: 'NB-modal-subtitle-right-label' }, 'subscriber' + (data['subscriber_count']==1?'':'s'))
-        ]);
-        $('.NB-modal-subtitle-right', this.$modal).remove();
-        $('.NB-modal-subtitle', this.$modal).prepend($subscribers);
         
         return $stats;
     },

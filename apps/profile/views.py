@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -28,14 +29,6 @@ def set_preference(request):
         if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
-        elif preference_name in SPECIAL_PREFERENCES:
-            if (preference_name == 'old_password' and
-                (new_preferences['old_password'] or
-                 new_preferences['new_password'])):
-                code = change_password(request.user, new_preferences['old_password'],
-                                       new_preferences['new_password'])
-                if code == -1:
-                    message = "Your old password is incorrect."
         else:
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False
@@ -51,11 +44,52 @@ def set_preference(request):
 @json.json_view
 def get_preference(request):
     code = 1
-    preference_name = request.POST['preference']
+    preference_name = request.POST.get('preference')
     preferences = json.decode(request.user.profile.preferences)
     
-    response = dict(code=code, payload=preferences.get(preference_name))
+    payload = preferences
+    if preference_name:
+        payload = preferences.get(preference_name)
+        
+    response = dict(code=code, payload=payload)
     return response
+    
+@ajax_login_required
+@require_POST
+@json.json_view
+def set_account_settings(request):
+    code = 1
+    message = ''
+    settings = request.POST
+    
+    if settings['username'] and request.user.username != settings['username']:
+        try:
+            User.objects.get(username__iexact=settings['username'])
+        except User.DoesNotExist:
+            request.user.username = settings['username']
+            request.user.save()
+        else:
+            code = -1
+            message = "This username is already taken. Try something different."
+    
+    if request.user.email != settings['email']:
+        if not User.objects.filter(email=settings['email']).count():
+            request.user.email = settings['email']
+            request.user.save()
+        else:
+            code = -2
+            message = "This email is already being used by another account. Try something different."
+        
+    if code != -1 and (settings['old_password'] or settings['new_password']):
+        code = change_password(request.user, settings['old_password'], settings['new_password'])
+        if code == -3:
+            message = "Your old password is incorrect."
+    
+    payload = {
+        "username": request.user.username,
+        "email": request.user.email,
+    }
+    return dict(code=code, message=message, payload=payload)
     
 @ajax_login_required
 @require_POST

@@ -844,6 +844,7 @@ def feeds_trainer(request):
             classifier['classifiers'] = get_classifiers_for_user(user, us.feed.pk)
             classifier['feed_id'] = us.feed.pk
             classifier['stories_last_month'] = us.feed.stories_last_month
+            classifier['num_subscribers'] = us.feed.num_subscribers
             classifier['feed_tags'] = json.decode(us.feed.data.popular_tags) if us.feed.data.popular_tags else []
             classifier['feed_authors'] = json.decode(us.feed.data.popular_authors) if us.feed.data.popular_authors else []
             classifiers.append(classifier)
