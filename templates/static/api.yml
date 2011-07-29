@@ -9,11 +9,11 @@
           If a user has no password set, you cannot just send any old password. 
           This is not <a href="http://www.instapaper.com/api/full">Instapaper</a>.
       params:
-        - key: username
+        - key: login_username
           desc: "Username"
           required: true
           example: "samuelclay"
-        - key: password
+        - key: login_password
           desc: "Password"
           optional: true
           example: "new$blur"

@@ -4308,15 +4308,26 @@
                     self.switch_feed_view_unread_view(ui.value);
                 },
                 stop: function(e, ui) {
-                    if (self.model.preference('unread_view') != ui.value) {
-                        self.model.preference('unread_view', ui.value);
-                    }
-                    self.flags['feed_view_positions_calculated'] = false;
-                    self.switch_feed_view_unread_view(ui.value);
-                    self.show_feed_hidden_story_title_indicator();
-                    self.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+                    self.slide_intelligence_slider(ui.value);
                 }
             });
+        },
+        
+        slide_intelligence_slider: function(value) {
+            if (this.model.preference('unread_view') != value) {
+                this.model.preference('unread_view', value);
+            }
+            this.flags['feed_view_positions_calculated'] = false;
+            this.switch_feed_view_unread_view(value);
+            this.show_feed_hidden_story_title_indicator();
+            this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+        },
+        
+        move_intelligence_slider: function(direction) {
+            var $slider = this.$s.$intelligence_slider;
+            var value = this.model.preference('unread_view') + direction;
+            $slider.slider({value: value});
+            this.slide_intelligence_slider(value);
         },
         
         switch_feed_view_unread_view: function(unread_view) {
@@ -6030,6 +6041,26 @@
             $document.bind('keydown', 'b', function(e) {
                 e.preventDefault();
                 self.show_previous_story();
+            });
+            $document.bind('keydown', 's', function(e) {
+                e.preventDefault();
+                if (self.active_story) {
+                    var story_id = self.active_story.id;
+                    var $story = self.find_story_in_story_titles(story_id);
+                    if ($story.hasClass('NB-story-starred')) {
+                      self.mark_story_as_unstarred(story_id, $story);
+                    } else {
+                      self.mark_story_as_starred(story_id, $story);
+                    }
+                }
+            });
+            $document.bind('keypress', '+', function(e) {
+                e.preventDefault();
+                self.move_intelligence_slider(1);
+            });
+            $document.bind('keypress', '-', function(e) {
+                e.preventDefault();
+                self.move_intelligence_slider(-1);
             });
         }
         
