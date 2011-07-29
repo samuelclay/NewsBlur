@@ -6062,6 +6062,10 @@
                 e.preventDefault();
                 self.move_intelligence_slider(-1);
             });
+            $document.bind('keypress', 'd', function(e) {
+                e.preventDefault();
+                self.show_splash_page();
+            });
         }
         
     };
