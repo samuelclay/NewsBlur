@@ -29,6 +29,7 @@
 @synthesize activeFeedStories;
 @synthesize activeStory;
 @synthesize storyCount;
+@synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
 @synthesize activeFeedIndexPath;
@@ -42,6 +43,11 @@
     [feedsViewController fetchFeedList];
     
 	return YES;
+}
+
+- (void)viewDidLoad {
+    self.selectedIntelligence = 1;
+    self.recentlyReadStories = [[NSMutableArray alloc] init];
 }
 
 - (void)dealloc {
@@ -224,7 +230,7 @@
     
     if (score == 0) score = [[intelligence objectForKey:@"feed"] integerValue];
 
-    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
+//    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
     return score;
 }
 
