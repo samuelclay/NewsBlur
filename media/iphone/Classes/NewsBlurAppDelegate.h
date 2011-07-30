@@ -28,6 +28,7 @@
     NSString * activeUsername;
     NSDictionary * activeFeed;
     NSArray * activeFeedStories;
+    NSMutableArray * activeFeedStoryLocations;
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
     int storyCount;
@@ -49,6 +50,7 @@
 @property (readwrite, retain) NSString * activeUsername;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSArray * activeFeedStories;
+@property (readwrite, retain) NSMutableArray * activeFeedStoryLocations;
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
@@ -73,6 +75,7 @@
 - (int)unreadCount;
 - (void)markActiveStoryRead;
 - (void)markActiveFeedAllRead;
+- (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 
 @end

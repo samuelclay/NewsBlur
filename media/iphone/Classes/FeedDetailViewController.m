@@ -137,41 +137,22 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[jsonS JSONValue]];
     NSArray *newStories = [results objectForKey:@"stories"];
-    NSInteger newStoriesCount = [newStories count];
-    NSInteger existingStoriesCount = appDelegate.storyCount;
-    int storyCount = 0;
+    NSInteger existingStoriesCount = [[appDelegate activeFeedStoryLocations] count];
     
     if (self.feedPage == 1) {
         [appDelegate setStories:newStories];
-    } else if (newStoriesCount > 0) {
-        for (int i=0; i < [appDelegate storyCount]; i++) {
-            NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:i];
-            int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-            int intelligenceLevel = [appDelegate selectedIntelligence];
-            if (score >= intelligenceLevel) {
-                storyCount += 1;
-            }
-        }
-        
+    } else if ([newStories count] > 0) {        
         [appDelegate addStories:newStories];
     }
+    
+    NSInteger newStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
     
 //    NSLog(@"Stories: %d stories, page %d. %d new stories.", existingStoriesCount, self.feedPage, newStoriesCount);
     
     if (existingStoriesCount > 0 && newStoriesCount > 0) {
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
-        int visibleRows = 0;
-        int intelligenceLevel = [appDelegate selectedIntelligence];
-        
         for (int i=0; i < newStoriesCount; i++) {
-            NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:existingStoriesCount+i];
-            int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-            if (score >= intelligenceLevel) {
-                visibleRows += 1;
-                
-                int row = storyCount+visibleRows;
-                [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
-            }
+            [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
         }
         [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths 
                                      withRowAnimation:UITableViewRowAnimationNone];
@@ -253,17 +234,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // The + 1 is for the finished/loading bar.
     NSLog(@"Current intelligence: %d", [appDelegate selectedIntelligence]);
-    int storyCount = 0;
-    for (int i=0; i < [appDelegate storyCount]; i++) {
-        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:i];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        int intelligenceLevel = [appDelegate selectedIntelligence];
-        if (score >= intelligenceLevel) {
-            storyCount += 1;
-        } else {
-            NSLog(@"Skipping %@", [story objectForKey:@"story_title"]);
-        }
-    }
+    int storyCount = [[appDelegate activeFeedStoryLocations] count];
 
     return storyCount + 1;
 }
@@ -283,11 +254,10 @@
         }
 	}
     
-    if (indexPath.row >= appDelegate.storyCount) {
+    if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         return [self makeLoadingCell];
     }
     
-
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor.text = [[story objectForKey:@"story_authors"] uppercaseString];
@@ -338,20 +308,11 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 //    NSLog(@"Height for row: %d of %d stories. (Finished: %d)", indexPath.row, appDelegate.storyCount, self.pageFinished);
-    if (indexPath.row >= appDelegate.storyCount) {
+    if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         if (self.pageFinished) return 16;
         else return kTableViewRowHeight;
     } else {
-        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:indexPath.row];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        int intelligenceLevel = [appDelegate selectedIntelligence];
-        if (score >= intelligenceLevel) {
-//            NSLog(@"Score: %d on %d %@ - %@", score, intelligenceLevel-1, score >= (intelligenceLevel-1) ? @"SHOW" : @"HIDE",
-//                  [story objectForKey:@"story_title"]);
-            return kTableViewRowHeight;
-        } else {
-            return 0.0f;
-        }
+        return kTableViewRowHeight;
     }
 }
 
@@ -384,11 +345,15 @@
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
     
-    [appDelegate setSelectedIntelligence:newLevel];
-    
-    for (int i=0; i < [appDelegate storyCount]; i++) {
+    if (newLevel < previousLevel) {
+        [appDelegate setSelectedIntelligence:newLevel];
+        [appDelegate calculateStoryLocations];
+    }
+
+    for (int i=0; i < [[appDelegate activeFeedStoryLocations] count]; i++) {
+        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:i];
+        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:location];
         int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         
         if (previousLevel == -1) {
@@ -401,6 +366,7 @@
             if (newLevel == -1 && score == -1) {
                 [insertIndexPaths addObject:indexPath];
             } else if (newLevel == 1 && score == 0) {
+                NSLog(@"Deleting: %d", i);
                 [deleteIndexPaths addObject:indexPath];
             }
         } else if (previousLevel == 1) {
@@ -412,31 +378,27 @@
         }
     }
     NSLog(@"Select: %d deleted, %d inserted. Pre: %d, post: %d", [deleteIndexPaths count], [insertIndexPaths count], previousLevel, newLevel);
-    [self.storyTitlesTable beginUpdates];
-    [self.storyTitlesTable deleteRowsAtIndexPaths:deleteIndexPaths 
-                                 withRowAnimation:UITableViewRowAnimationNone];
-    [self.storyTitlesTable insertRowsAtIndexPaths:insertIndexPaths 
-                                 withRowAnimation:UITableViewRowAnimationNone];
-    [self.storyTitlesTable endUpdates];
     
+    if (newLevel > previousLevel) {
+        [appDelegate setSelectedIntelligence:newLevel];
+        [appDelegate calculateStoryLocations];
+    }
+    
+    [self.storyTitlesTable beginUpdates];
+    if ([deleteIndexPaths count] > 0) {
+        [self.storyTitlesTable deleteRowsAtIndexPaths:deleteIndexPaths 
+                                     withRowAnimation:UITableViewRowAnimationNone];
+    }
+    if ([insertIndexPaths count] > 0) {
+        [self.storyTitlesTable insertRowsAtIndexPaths:insertIndexPaths 
+                                     withRowAnimation:UITableViewRowAnimationNone];
+    }
+    [self.storyTitlesTable endUpdates];
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
-    int row = 0;
-    int intelligenceLevel = [appDelegate selectedIntelligence];
-    for (int i=0; i < [appDelegate storyCount]; i++) {
-        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:i];
-        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        if (score >= intelligenceLevel) {
-            if (row == indexPathRow) {
-                row = i;
-                break;
-            } else {
-                row++;   
-            }
-        }
-    }
-    NSLog(@"i: %d, %d, %d", row, indexPathRow, intelligenceLevel);
+    
+    int row = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
 
