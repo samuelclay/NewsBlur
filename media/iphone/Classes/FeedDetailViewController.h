@@ -32,6 +32,7 @@
 - (IBAction)markAllRead;
 - (IBAction)selectIntelligence;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
+- (void)checkScroll;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

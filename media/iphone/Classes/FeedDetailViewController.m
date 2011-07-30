@@ -33,20 +33,17 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-//    NSLog(@"Loaded Feed view: %@", appDelegate.activeFeed);
     self.pageFinished = NO;
     self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
     
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (id i in appDelegate.recentlyReadStories) {
-        NSLog(@"Read story %d: %@", [i intValue], appDelegate.recentlyReadStories);
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                 inSection:0];
         [indexPaths addObject:indexPath];
     }
     [appDelegate.recentlyReadStories removeAllObjects];
     if ([indexPaths count] > 0) {
-        NSLog(@"Having read %d stories: %@", [appDelegate.recentlyReadStories count], appDelegate.recentlyReadStories);
         [self.storyTitlesTable beginUpdates];
         [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
@@ -75,9 +72,6 @@
 }
 
 - (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-    //NSLog(@"Unloading detail view: %@", self);
     self.appDelegate = nil;
     self.jsonString = nil;
     self.intelligenceControl = nil;
@@ -95,7 +89,6 @@
 #pragma mark Initialization
 
 - (void)fetchFeedDetail:(int)page {
-//    NSLog(@"fetching page %d. %d fetching, %d finished.", self.feedPage, self.pageFetching, self.pageFinished);
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -109,7 +102,6 @@
                                       initWithFormat:@"http://nb.local.host:8000/reader/feed/%@?page=%d", 
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
-        //NSLog(@"Url: %@", theFeedDetailURL);
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         [theFeedDetailURL release];
         jsonString = [[NSMutableData data] retain];
@@ -147,15 +139,16 @@
     
     NSInteger newStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
     
-//    NSLog(@"Stories: %d stories, page %d. %d new stories.", existingStoriesCount, self.feedPage, newStoriesCount);
-    
     if (existingStoriesCount > 0 && newStoriesCount > 0) {
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
         for (int i=0; i < newStoriesCount; i++) {
-            [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+            [indexPaths addObject:[NSIndexPath indexPathForRow:(existingStoriesCount+i) 
+                                                     inSection:0]];
         }
+        [self.storyTitlesTable beginUpdates];
         [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths 
                                      withRowAnimation:UITableViewRowAnimationNone];
+        [self.storyTitlesTable endUpdates];
         [indexPaths release];
     } else if (newStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
@@ -165,11 +158,16 @@
                                                     inSection:0];
         NSArray *indexPaths = [NSArray arrayWithObject:indexPath];
         [self.storyTitlesTable beginUpdates];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths 
+                                     withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
     }
     
     self.pageFetching = NO;
+    
+    [self performSelector:@selector(checkScroll)
+               withObject:nil
+               afterDelay:1.0];
     
     [results release];
     [jsonS release];
@@ -177,9 +175,7 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    // release the connection, and the data object
     [connection release];
-    // receivedData is declared as a method instance elsewhere
     [jsonString release];
     
     // inform the user
@@ -210,15 +206,10 @@
         
         UIActivityIndicatorView *spinner = [[[UIActivityIndicatorView alloc] 
                                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
-        
-        // Spacer is a 1x1 transparent png
         UIImage *spacer = [UIImage imageNamed:@"spacer"];
-        
-        UIGraphicsBeginImageContext(spinner.frame.size);
-        
+        UIGraphicsBeginImageContext(spinner.frame.size);        
         [spacer drawInRect:CGRectMake(0,0,spinner.frame.size.width,spinner.frame.size.height)];
         UIImage* resizedSpacer = UIGraphicsGetImageFromCurrentImageContext();
-        
         UIGraphicsEndImageContext();
         cell.imageView.image = resizedSpacer;
         [cell.imageView addSubview:spinner];
@@ -232,10 +223,9 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    // The + 1 is for the finished/loading bar.
-    NSLog(@"Current intelligence: %d", [appDelegate selectedIntelligence]);
     int storyCount = [[appDelegate activeFeedStoryLocations] count];
 
+    // The + 1 is for the finished/loading bar.
     return storyCount + 1;
 }
 
@@ -301,13 +291,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < appDelegate.storyCount) {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:indexPath.row]];
+        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
         [appDelegate loadStoryDetailView];
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-//    NSLog(@"Height for row: %d of %d stories. (Finished: %d)", indexPath.row, appDelegate.storyCount, self.pageFinished);
     if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         if (self.pageFinished) return 16;
         else return kTableViewRowHeight;
@@ -317,8 +307,12 @@
 }
 
 - (void)scrollViewDidScroll: (UIScrollView *)scroll {
-    NSInteger currentOffset = scroll.contentOffset.y;
-    NSInteger maximumOffset = scroll.contentSize.height - scroll.frame.size.height;
+    [self checkScroll];
+}
+
+- (void)checkScroll {
+    NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
+    NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
     if (maximumOffset - currentOffset <= 60.0) {
         [self fetchFeedDetail:self.feedPage+1];
@@ -366,7 +360,6 @@
             if (newLevel == -1 && score == -1) {
                 [insertIndexPaths addObject:indexPath];
             } else if (newLevel == 1 && score == 0) {
-                NSLog(@"Deleting: %d", i);
                 [deleteIndexPaths addObject:indexPath];
             }
         } else if (previousLevel == 1) {
@@ -377,7 +370,6 @@
             }
         }
     }
-    NSLog(@"Select: %d deleted, %d inserted. Pre: %d, post: %d", [deleteIndexPaths count], [insertIndexPaths count], previousLevel, newLevel);
     
     if (newLevel > previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
@@ -394,10 +386,13 @@
                                      withRowAnimation:UITableViewRowAnimationNone];
     }
     [self.storyTitlesTable endUpdates];
+    
+    [self performSelector:@selector(checkScroll)
+                withObject:nil
+                afterDelay:1.0];
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
-    
     int row = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
