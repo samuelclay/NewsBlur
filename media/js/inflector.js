@@ -125,6 +125,18 @@ window.Inflector = {
     });
     return words.join('');
   },
+  
+  commas : function(number) {
+    var numberMatcher = /(\d+)(\d{3})/;
+    number += '';
+    var fragments = number.split('.');
+    whole = fragments[0];
+    decimal = fragments.length > 1 ? '.' + fragments[1] : '';
+    while (numberMatcher.test(whole)) {
+      whole = whole.replace(numberMatcher, '$1,$2');
+    }
+    return whole + decimal;
+  },
 
   // Convert bytes into KB or MB
   bytesToMB : function(bytes) {

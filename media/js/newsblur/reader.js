@@ -1989,8 +1989,6 @@
             
             if (!this.model.preference('animations')) skip_scroll = true;
             
-            NEWSBLUR.log(['scroll_to_story_in_story_feed', skip_scroll]);
-
             if ($story && $story.length) {
                 if (skip_scroll || 
                     (this.story_view == 'feed'  &&
@@ -3669,6 +3667,10 @@
         open_preferences_modal: function() {
             NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
         },
+                        
+        open_account_modal: function() {
+            NEWSBLUR.account = new NEWSBLUR.ReaderAccount();
+        },
         
         open_feedchooser_modal: function() {
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser();
@@ -3721,6 +3723,15 @@
                         $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
                     ]).corner('tl tr 8px'),
                     $.make('li', { className: 'NB-menu-separator' }), 
+                    $.make('li', { className: 'NB-menu-manage-account' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'My Account')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-keyboard' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
@@ -3744,11 +3755,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Extensions and extras.')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Defaults and options.')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4302,15 +4308,26 @@
                     self.switch_feed_view_unread_view(ui.value);
                 },
                 stop: function(e, ui) {
-                    if (self.model.preference('unread_view') != ui.value) {
-                        self.model.preference('unread_view', ui.value);
-                    }
-                    self.flags['feed_view_positions_calculated'] = false;
-                    self.switch_feed_view_unread_view(ui.value);
-                    self.show_feed_hidden_story_title_indicator();
-                    self.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+                    self.slide_intelligence_slider(ui.value);
                 }
             });
+        },
+        
+        slide_intelligence_slider: function(value) {
+            if (this.model.preference('unread_view') != value) {
+                this.model.preference('unread_view', value);
+            }
+            this.flags['feed_view_positions_calculated'] = false;
+            this.switch_feed_view_unread_view(value);
+            this.show_feed_hidden_story_title_indicator();
+            this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+        },
+        
+        move_intelligence_slider: function(direction) {
+            var $slider = this.$s.$intelligence_slider;
+            var value = this.model.preference('unread_view') + direction;
+            $slider.slider({value: value});
+            this.slide_intelligence_slider(value);
         },
         
         switch_feed_view_unread_view: function(unread_view) {
@@ -4479,7 +4496,6 @@
                     $stories_show.css({'display': 'block'});
                 }
                 setTimeout(function() {
-                    console.log(['show_story_titles_above_intelligence_level', self.active_story.id]);
                     if (!self.active_story) return;
                     var $story = self.find_story_in_story_titles(self.active_story.id);
                     // NEWSBLUR.log(['$story', $story]);
@@ -5506,6 +5522,12 @@
                     self.open_preferences_modal();
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-account' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_account_modal();
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feedchooser' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -6019,6 +6041,30 @@
             $document.bind('keydown', 'b', function(e) {
                 e.preventDefault();
                 self.show_previous_story();
+            });
+            $document.bind('keydown', 's', function(e) {
+                e.preventDefault();
+                if (self.active_story) {
+                    var story_id = self.active_story.id;
+                    var $story = self.find_story_in_story_titles(story_id);
+                    if ($story.hasClass('NB-story-starred')) {
+                      self.mark_story_as_unstarred(story_id, $story);
+                    } else {
+                      self.mark_story_as_starred(story_id, $story);
+                    }
+                }
+            });
+            $document.bind('keypress', '+', function(e) {
+                e.preventDefault();
+                self.move_intelligence_slider(1);
+            });
+            $document.bind('keypress', '-', function(e) {
+                e.preventDefault();
+                self.move_intelligence_slider(-1);
+            });
+            $document.bind('keypress', 'd', function(e) {
+                e.preventDefault();
+                self.show_splash_page();
             });
         }
         

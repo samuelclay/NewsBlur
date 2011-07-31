@@ -132,6 +132,23 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                     'u'
                 ])
               ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Save/Unsave Story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    's'
+                ])
+              ]),
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Change Intelligence'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    '+'
+                ]),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    '-'
+                ])
+              ])
             ])
         ]);
     },

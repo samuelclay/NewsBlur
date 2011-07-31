@@ -151,6 +151,7 @@ var classifier_prototype = {
         this.feed_tags = trainer_data['feed_tags'];
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
+        this.feed.num_subscribers = trainer_data['num_subscribers'];
         this.options.feed_loaded = true;
         if (this.feed_id in this.cache) {
             this.$modal = this.cache[this.feed_id];
@@ -223,6 +224,7 @@ var classifier_prototype = {
           this.feed_authors = this.model.get_feed_authors();
           $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed.favicon));
           $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
+          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed['num_subscribers']*4852) + ' subscribers');
         }
     },
     
@@ -250,7 +252,7 @@ var classifier_prototype = {
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right;margin-top: 4px;', width: 155, height: 17 }),
                     $.make('b', 'You will see a bunch of tags and authors.'),
-                    ' Click on what you like and don\'t like.'
+                    ' Sites will be ordered by popularity. Click on what you like and don\'t like.'
                 ]),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_all.png', style: 'float: right', width: 127, height: 92 }),
@@ -266,14 +268,12 @@ var classifier_prototype = {
                 ]),
                 $.make('li', [
                     // $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_menu.png', style: 'float: right', width: 176, height: 118 }),
-                    $.make('b', 'Stop at any time you like.'),
-                    ' You can always come back to this.'
+                    $.make('b', 'Stop any time you like.'),
+                    ' You can always come back to this trainer.'
                 ]),
                 $.make('li', [
                     $.make('b', 'Don\'t worry if you don\'t know what you like right now.'),
-                    ' Just skip the site. You can click the ',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_up.png', style: 'vertical-align: middle;padding: 0 2px', width: 14, height: 20 }),
-                    ' button as you read stories.'
+                    ' Just skip the site. You can train directly in the Feed view.'
                 ])
             ]),
             (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
@@ -338,7 +338,10 @@ var classifier_prototype = {
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
-                $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
+                $.make('div', { className: 'NB-modal-feed-heading' }, [
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                ])
             ]),
             (this.options['feed_loaded'] &&
               $.make('form', { method: 'post', className: 'NB-publisher' }, [

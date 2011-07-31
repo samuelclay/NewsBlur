@@ -2,8 +2,9 @@ from django.conf.urls.defaults import *
 from apps.profile import views
 
 urlpatterns = patterns('',
-    url(r'^get_preference/?', views.get_preference),
+    url(r'^get_preferences?/?', views.get_preference),
     url(r'^set_preference/?', views.set_preference),
+    url(r'^set_account_settings/?', views.set_account_settings),
     url(r'^get_view_setting/?', views.get_view_setting),
     url(r'^set_view_setting/?', views.set_view_setting),
     url(r'^set_collapsed_folders/?', views.set_collapsed_folders),

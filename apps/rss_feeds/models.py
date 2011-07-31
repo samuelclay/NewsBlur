@@ -69,6 +69,7 @@ class Feed(models.Model):
             'feed_title': self.feed_title,
             'feed_address': self.feed_address,
             'feed_link': self.feed_link,
+            'num_subscribers': self.num_subscribers,
             'updated': relative_timesince(self.last_update),
             'subs': self.num_subscribers,
             'favicon_color': self.favicon_color,

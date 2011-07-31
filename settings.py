@@ -191,6 +191,7 @@ COMPRESS_JS = {
             'js/newsblur/reader_mark_read.js',
             'js/newsblur/reader_goodies.js',
             'js/newsblur/reader_preferences.js',
+            'js/newsblur/reader_account.js',
             'js/newsblur/reader_feedchooser.js',
             'js/newsblur/reader_statistics.js',
             'js/newsblur/reader_feed_exception.js',

@@ -27,8 +27,10 @@
 @synthesize activeUsername;
 @synthesize activeFeed;
 @synthesize activeFeedStories;
+@synthesize activeFeedStoryLocations;
 @synthesize activeStory;
 @synthesize storyCount;
+@synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
 @synthesize activeFeedIndexPath;
@@ -44,6 +46,11 @@
 	return YES;
 }
 
+- (void)viewDidLoad {
+    self.selectedIntelligence = 1;
+    self.recentlyReadStories = [[NSMutableArray alloc] init];
+}
+
 - (void)dealloc {
     [feedsViewController release];
     [feedDetailViewController release];
@@ -55,6 +62,7 @@
     [activeUsername release];
     [activeFeed release];
     [activeFeedStories release];
+    [activeFeedStoryLocations release];
     [activeStory release];
     [activeOriginalStoryURL release];
     [recentlyReadStories release];
@@ -152,13 +160,7 @@
 
 - (int)indexOfPreviousStory {
     NSInteger activeIndex = [self indexOfActiveStory];
-    for (int i=activeIndex-1; i >= 0; i--) {
-        NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([[story objectForKey:@"read_status"] intValue] == 1) {
-            return i;
-        }
-    }
-    return -1;
+    return MAX(-1, activeIndex-1);
 }
 
 - (int)indexOfActiveStory {
@@ -171,16 +173,25 @@
     return -1;
 }
 
+- (int)unreadCount {
+    int ps = [[self.activeFeed objectForKey:@"ps"] intValue];
+    int nt = [[self.activeFeed objectForKey:@"nt"] intValue];
+    int ng = [[self.activeFeed objectForKey:@"ng"] intValue];
+    return ps + nt + ng;
+}
+
 - (void)addStories:(NSArray *)stories {
 //    NSLog(@"Adding: %d to %@", [stories count], stories);
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = [self.activeFeedStories count];
+    [self calculateStoryLocations];
 }
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
     self.recentlyReadStories = [[NSMutableArray alloc] init];
+    [self calculateStoryLocations];
 }
 
 - (void)markActiveStoryRead {
@@ -203,21 +214,40 @@
     NSLog(@"Marked read %d: %@: %d", activeIndex, self.recentlyReadStories, score);
 }
 
+- (void)markActiveFeedAllRead {    
+    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
+    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
+    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
+}
+
+- (void)calculateStoryLocations {
+    self.activeFeedStoryLocations = [[NSMutableArray alloc] init];
+    for (int i=0; i < self.storyCount; i++) {
+        NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
+        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+        int intelligenceLevel = self.selectedIntelligence;
+        if (score >= intelligenceLevel) {
+            NSNumber *location = [NSNumber numberWithInt:i];
+            [self.activeFeedStoryLocations addObject:location];
+        }
+    }
+}
+
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
-    int score_max = [MAX([intelligence objectForKey:@"title"],
-                        MAX([intelligence objectForKey:@"author"],
-                            [intelligence objectForKey:@"tags"])) integerValue];
-    int score_min = [MIN([intelligence objectForKey:@"title"],
-                        MIN([intelligence objectForKey:@"author"],
-                            [intelligence objectForKey:@"tags"])) integerValue];
+    int title = [[intelligence objectForKey:@"title"] intValue];
+    int author = [[intelligence objectForKey:@"author"] intValue];
+    int tags = [[intelligence objectForKey:@"tags"] intValue];
+
+    int score_max = MAX(title, MAX(author, tags));
+    int score_min = MIN(title, MIN(author, tags));
 
     if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
     
     if (score == 0) score = [[intelligence objectForKey:@"feed"] integerValue];
 
-    // NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
+//    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
     return score;
 }
 

@@ -142,12 +142,12 @@
 		self.dictFolders = [results objectForKey:@"flat_folders"];
 		self.dictFeeds = [results objectForKey:@"feeds"];
 		//NSLog(@"Received Feeds: %@", dictFolders);
-		NSSortDescriptor *sortDescriptor;
-		sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
-													  ascending:YES] autorelease];
-		NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+//		NSSortDescriptor *sortDescriptor;
+//		sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
+//													  ascending:YES] autorelease];
+//		NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
 		NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
-		NSArray *sortedArray;
+//		NSArray *sortedArray;
 		
 		for (id f in self.dictFolders) {
 			[self.dictFoldersArray addObject:f];

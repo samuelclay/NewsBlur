@@ -24,16 +24,22 @@
     UIToolbar * feedViewToolbar;
     UISlider * feedScoreSlider;
     UIBarButtonItem * feedMarkReadButton;
+    UISegmentedControl * intelligenceControl;
 }
 
 - (void)fetchFeedDetail:(int)page;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
+- (IBAction)markAllRead;
+- (IBAction)selectIntelligence;
+- (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
+- (void)checkScroll;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
+@property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, retain) NSMutableData * jsonString;

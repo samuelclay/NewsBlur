@@ -15,6 +15,7 @@
 @implementation StoryDetailViewController
 
 @synthesize appDelegate;
+@synthesize progressView;
 @synthesize webView;
 @synthesize toolbar;
 @synthesize buttonNext;
@@ -31,6 +32,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self showStory];
     [self markStoryAsRead];   
+    [self setNextPreviousButtons];
+    
 	[super viewWillAppear:animated];
 }
 
@@ -42,6 +45,28 @@
                                                action:@selector(showOriginalSubview:)
                                               ] autorelease];
 	[super viewDidAppear:animated];
+}
+
+- (void)setNextPreviousButtons {
+    int nextIndex = [appDelegate indexOfNextStory];
+    if (nextIndex == -1) {
+        [buttonNext setTitle:@"Done"];
+    } else {
+        [buttonNext setTitle:@"Next Unread"];
+    }
+    
+    int previousIndex = [appDelegate indexOfPreviousStory];
+    if (previousIndex == -1) {
+        [buttonPrevious setTitle:@"Done"];
+    } else {
+        [buttonPrevious setTitle:@"Previous"];
+    }
+    
+    float unreads = [appDelegate unreadCount];
+    float total = [appDelegate storyCount];
+    float progress = (total - unreads) / total;
+    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
+    [progressView setProgress:progress];
 }
 
 - (void)markStoryAsRead {
@@ -178,7 +203,6 @@
                     baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
                                                   objectForKey:@"feed_link"]]];
     
-    
 }
 
 - (IBAction)doNextUnreadStory {
@@ -189,6 +213,7 @@
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
         [self showStory];
         [self markStoryAsRead];
+        [self setNextPreviousButtons];
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
@@ -199,13 +224,14 @@
 }
 
 - (IBAction)doPreviousStory {
-    int nextIndex = [appDelegate indexOfPreviousStory];
-    if (nextIndex == -1) {
+    int previousIndex = [appDelegate indexOfPreviousStory];
+    if (previousIndex == -1) {
         [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]  animated:YES];
     } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:previousIndex]];
         [self showStory];
         [self markStoryAsRead];
+        [self setNextPreviousButtons];
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
@@ -233,6 +259,7 @@
 	// e.g. self.myOutlet = nil;
     self.webView = nil;
     self.appDelegate = nil;
+    self.progressView = nil;
 }
 
 

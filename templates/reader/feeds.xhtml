@@ -268,7 +268,7 @@ $(document).ready(function() {
       
       <div class="NB-module">
         <h5 class="NB-module-header">
-          Welcome, {{ user.username }}
+          Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
           <div class="NB-module-header-right">
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
