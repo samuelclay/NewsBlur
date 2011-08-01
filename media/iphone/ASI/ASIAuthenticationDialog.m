@@ -37,6 +37,10 @@ static const NSUInteger kDomainSection = 1;
 - (void)show;
 - (NSArray *)requestsRequiringTheseCredentials;
 - (void)presentNextDialog;
+- (void)keyboardWillShow:(NSNotification *)notification;
+- (void)orientationChanged:(NSNotification *)notification;
+- (void)cancelAuthenticationFromDialog:(id)sender;
+- (void)loginWithCredentialsFromDialog:(id)sender;
 @property (retain) UITableView *tableView;
 @end
 
@@ -51,20 +55,20 @@ static const NSUInteger kDomainSection = 1;
 	}
 }
 
-+ (void)presentAuthenticationDialogForRequest:(ASIHTTPRequest *)request
++ (void)presentAuthenticationDialogForRequest:(ASIHTTPRequest *)theRequest
 {
 	// No need for a lock here, this will always be called on the main thread
 	if (!sharedDialog) {
 		sharedDialog = [[self alloc] init];
-		[sharedDialog setRequest:request];
-		if ([request authenticationNeeded] == ASIProxyAuthenticationNeeded) {
+		[sharedDialog setRequest:theRequest];
+		if ([theRequest authenticationNeeded] == ASIProxyAuthenticationNeeded) {
 			[sharedDialog setType:ASIProxyAuthenticationType];
 		} else {
 			[sharedDialog setType:ASIStandardAuthenticationType];
 		}
 		[sharedDialog show];
 	} else {
-		[requestsNeedingAuthentication addObject:request];
+		[requestsNeedingAuthentication addObject:theRequest];
 	}
 }
 
@@ -129,7 +133,7 @@ static const NSUInteger kDomainSection = 1;
 {
 	[self showTitle];
 	
-	UIDeviceOrientation o = [[UIApplication sharedApplication] statusBarOrientation];
+	UIInterfaceOrientation o = [[UIApplication sharedApplication] statusBarOrientation];
 	CGFloat angle = 0;
 	switch (o) {
 		case UIDeviceOrientationLandscapeLeft: angle = 90; break;
@@ -149,11 +153,11 @@ static const NSUInteger kDomainSection = 1;
 	}
 
 	CGAffineTransform previousTransform = self.view.layer.affineTransform;
-	CGAffineTransform newTransform = CGAffineTransformMakeRotation(angle * M_PI / 180.0);
+	CGAffineTransform newTransform = CGAffineTransformMakeRotation((CGFloat)(angle * M_PI / 180.0));
 
 	// Reset the transform so we can set the size
 	self.view.layer.affineTransform = CGAffineTransformIdentity;
-	self.view.frame = (CGRect){0,0,f.size};
+	self.view.frame = (CGRect){ { 0, 0 }, f.size};
 
 	// Revert to the previous transform for correct animation
 	self.view.layer.affineTransform = previousTransform;
@@ -165,7 +169,7 @@ static const NSUInteger kDomainSection = 1;
 	self.view.layer.affineTransform = newTransform;
 
 	// Fix the view origin
-	self.view.frame = (CGRect){f.origin.x,f.origin.y,self.view.frame.size};
+	self.view.frame = (CGRect){ { f.origin.x, f.origin.y },self.view.frame.size};
     [UIView commitAnimations];
 }
 		 
@@ -220,7 +224,7 @@ static const NSUInteger kDomainSection = 1;
 	[self retain];
 	[sharedDialog release];
 	sharedDialog = nil;
-	[self presentNextDialog];
+	[self performSelector:@selector(presentNextDialog) withObject:nil afterDelay:0];
 	[self release];
 }
 
@@ -450,7 +454,7 @@ static const NSUInteger kDomainSection = 1;
 	return cell;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)aTableView numberOfRowsInSection:(NSInteger)section
 {
 	if (section == 0) {
 		return 2;

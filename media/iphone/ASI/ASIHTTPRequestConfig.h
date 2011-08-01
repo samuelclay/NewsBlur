@@ -30,3 +30,8 @@
 #ifndef DEBUG_PERSISTENT_CONNECTIONS
 	#define DEBUG_PERSISTENT_CONNECTIONS 0
 #endif
+
+// When set to 1, ASIHTTPRequests will print information about HTTP authentication (Basic, Digest or NTLM) to the console
+#ifndef DEBUG_HTTP_AUTHENTICATION
+#define DEBUG_HTTP_AUTHENTICATION 0
+#endif

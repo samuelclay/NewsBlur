@@ -96,18 +96,18 @@
 	SEL selector = @selector(setMaxValue:);
 	if ([*progressDelegate respondsToSelector:selector]) {
 		double max = 1.0;
-		[ASIHTTPRequest performSelector:selector onTarget:progressDelegate withObject:nil amount:&max];
+		[ASIHTTPRequest performSelector:selector onTarget:progressDelegate withObject:nil amount:&max callerToRetain:nil];
 	}
 	selector = @selector(setDoubleValue:);
 	if ([*progressDelegate respondsToSelector:selector]) {
 		double value = 0.0;
-		[ASIHTTPRequest performSelector:selector onTarget:progressDelegate withObject:nil amount:&value];
+		[ASIHTTPRequest performSelector:selector onTarget:progressDelegate withObject:nil amount:&value callerToRetain:nil];
 	}
 #else
 	SEL selector = @selector(setProgress:);
 	if ([*progressDelegate respondsToSelector:selector]) {
 		float value = 0.0f;
-		[ASIHTTPRequest performSelector:selector onTarget:progressDelegate withObject:nil amount:&value];
+		[ASIHTTPRequest performSelector:selector onTarget:progressDelegate withObject:nil amount:&value callerToRetain:nil];
 	}
 #endif
 }
@@ -186,13 +186,19 @@
 	}
 }
 
-- (void)requestReceivedResponseHeaders:(ASIHTTPRequest *)request
+- (void)request:(ASIHTTPRequest *)request didReceiveResponseHeaders:(NSDictionary *)responseHeaders
 {
 	if ([self requestDidReceiveResponseHeadersSelector]) {
-		[[self delegate] performSelector:[self requestDidReceiveResponseHeadersSelector] withObject:request];
-	}	
+		[[self delegate] performSelector:[self requestDidReceiveResponseHeadersSelector] withObject:request withObject:responseHeaders];
+	}
 }
 
+- (void)request:(ASIHTTPRequest *)request willRedirectToURL:(NSURL *)newURL
+{
+	if ([self requestWillRedirectSelector]) {
+		[[self delegate] performSelector:[self requestWillRedirectSelector] withObject:request withObject:newURL];
+	}
+}
 
 - (void)requestFinished:(ASIHTTPRequest *)request
 {
@@ -270,13 +276,25 @@
 
 - (BOOL)respondsToSelector:(SEL)selector
 {
+	// We handle certain methods differently because whether our delegate implements them or not can affect how the request should behave
+
+	// If the delegate implements this, the request will stop to wait for credentials
 	if (selector == @selector(authenticationNeededForRequest:)) {
 		if ([[self delegate] respondsToSelector:@selector(authenticationNeededForRequest:)]) {
 			return YES;
 		}
 		return NO;
+
+	// If the delegate implements this, the request will to wait for credentials
 	} else if (selector == @selector(proxyAuthenticationNeededForRequest:)) {
 		if ([[self delegate] respondsToSelector:@selector(proxyAuthenticationNeededForRequest:)]) {
+			return YES;
+		}
+		return NO;
+
+	// If the delegate implements requestWillRedirectSelector, the request will stop to allow the delegate to change the url
+	} else if (selector == @selector(request:willRedirectToURL:)) {
+		if ([self requestWillRedirectSelector] && [[self delegate] respondsToSelector:[self requestWillRedirectSelector]]) {
 			return YES;
 		}
 		return NO;
@@ -291,6 +309,8 @@
 	ASINetworkQueue *newQueue = [[[self class] alloc] init];
 	[newQueue setDelegate:[self delegate]];
 	[newQueue setRequestDidStartSelector:[self requestDidStartSelector]];
+	[newQueue setRequestWillRedirectSelector:[self requestWillRedirectSelector]];
+	[newQueue setRequestDidReceiveResponseHeadersSelector:[self requestDidReceiveResponseHeadersSelector]];
 	[newQueue setRequestDidFinishSelector:[self requestDidFinishSelector]];
 	[newQueue setRequestDidFailSelector:[self requestDidFailSelector]];
 	[newQueue setQueueDidFinishSelector:[self queueDidFinishSelector]];
@@ -313,6 +333,7 @@
 @synthesize downloadProgressDelegate;
 @synthesize requestDidStartSelector;
 @synthesize requestDidReceiveResponseHeadersSelector;
+@synthesize requestWillRedirectSelector;
 @synthesize requestDidFinishSelector;
 @synthesize requestDidFailSelector;
 @synthesize queueDidFinishSelector;
