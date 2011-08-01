@@ -48,6 +48,10 @@
 		78FC34FA11CA94900055C312 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F211CA94900055C312 /* SBJsonBase.m */; };
 		78FC34FB11CA94900055C312 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F411CA94900055C312 /* SBJsonParser.m */; };
 		78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F611CA94900055C312 /* SBJsonWriter.m */; };
+		FF1C46BC13E5E9BB00E7609E /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46BB13E5E9BB00E7609E /* Default.png */; };
+		FF1C46BE13E5E9BD00E7609E /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46BD13E5E9BD00E7609E /* Default@2x.png */; };
+		FF1C46C013E6002300E7609E /* logo_57.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46BF13E6002300E7609E /* logo_57.png */; };
+		FF1C46C213E6003300E7609E /* logo_114.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46C113E6003300E7609E /* logo_114.png */; };
 		FF38679B13D88EEC00F8AB3A /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */; };
 		FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */; };
 		FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCE7AE613D49165009A98F6 /* FeedTableCell.m */; };
@@ -124,6 +128,10 @@
 		78FC34F511CA94900055C312 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		78FC34F611CA94900055C312 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* NewsBlur-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		FF1C46BB13E5E9BB00E7609E /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		FF1C46BD13E5E9BD00E7609E /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		FF1C46BF13E6002300E7609E /* logo_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_57.png; sourceTree = "<group>"; };
+		FF1C46C113E6003300E7609E /* logo_114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_114.png; sourceTree = "<group>"; };
 		FF38679913D88EEC00F8AB3A /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTML.h"; sourceTree = "<group>"; };
 		FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+HTML.m"; sourceTree = "<group>"; };
 		FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNString+HTML.h"; sourceTree = "<group>"; };
@@ -221,6 +229,10 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FF1C46C113E6003300E7609E /* logo_114.png */,
+				FF1C46BF13E6002300E7609E /* logo_57.png */,
+				FF1C46BD13E5E9BD00E7609E /* Default@2x.png */,
+				FF1C46BB13E5E9BB00E7609E /* Default.png */,
 				7843F50B11EEB4EE00675F64 /* bullet_blue.png */,
 				787B782E129356FC0025F214 /* bullet_green.png */,
 				7843F50C11EEB4EE00675F64 /* bullet_orange.png */,
@@ -368,6 +380,10 @@
 				78095ECA128F30B500230C8E /* OriginalStoryViewController.xib in Resources */,
 				787B782F129356FC0025F214 /* bullet_green.png in Resources */,
 				FFCE7AE913D49165009A98F6 /* FeedTableCell.xib in Resources */,
+				FF1C46BC13E5E9BB00E7609E /* Default.png in Resources */,
+				FF1C46BE13E5E9BD00E7609E /* Default@2x.png in Resources */,
+				FF1C46C013E6002300E7609E /* logo_57.png in Resources */,
+				FF1C46C213E6003300E7609E /* logo_114.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,17 +30,10 @@
     // Configure the view for the selected state
 }
 
-
-- (void)viewDidUnload {
-    self.feedTitle = nil;
-    self.feedFavicon = nil;
-    self.feedUnreadView = nil;
-}
-
 - (void)dealloc {
-    [feedTitle dealloc];
-    [feedFavicon dealloc];
-    [feedUnreadView dealloc];
+    [feedTitle release];
+    [feedFavicon release];
+    [feedUnreadView release];
     [super dealloc];
 }
 

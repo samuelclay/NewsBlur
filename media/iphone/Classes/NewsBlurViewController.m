@@ -23,7 +23,6 @@
 @synthesize feedScoreSlider;
 @synthesize logoutButton;
 
-@synthesize feedTitleList;
 @synthesize dictFolders;
 @synthesize dictFeeds;
 @synthesize dictFoldersArray;
@@ -40,10 +39,6 @@
 }
 
 - (void)viewDidLoad {
-	self.feedTitleList = [[[NSMutableArray alloc] init] autorelease];
-	self.dictFolders = [[[NSDictionary alloc] init] autorelease];
-	self.dictFeeds = [[[NSDictionary alloc] init] autorelease];
-	self.dictFoldersArray = [[[NSMutableArray alloc] init] autorelease];
 	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)] autorelease];
 	[appDelegate showNavigationBar:NO];
     [super viewDidLoad];
@@ -91,12 +86,17 @@
 }
 
 
-- (void)dealloc {
-	[feedTitleList release];
+- (void)dealloc {	
+	[appDelegate release];
+	
+	[viewTableFeedTitles release];
+	[feedViewToolbar release];
+	[feedScoreSlider release];
+	[logoutButton release];
+	
 	[dictFolders release];
 	[dictFeeds release];
 	[dictFoldersArray release];
-	[appDelegate release];
     [super dealloc];
 }
 
@@ -105,7 +105,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://nb.local.host:8000/reader/feeds?flat=true&favicons=true"]];
+											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true&favicons=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -141,7 +141,7 @@
 		[appDelegate setTitle:[results objectForKey:@"user"]];
 		self.dictFolders = [results objectForKey:@"flat_folders"];
 		self.dictFeeds = [results objectForKey:@"feeds"];
-		//NSLog(@"Received Feeds: %@", dictFolders);
+//		NSLog(@"Received Feeds: %@", dictFolders);
 //		NSSortDescriptor *sortDescriptor;
 //		sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
 //													  ascending:YES] autorelease];
@@ -149,6 +149,7 @@
 		NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
 //		NSArray *sortedArray;
 		
+		self.dictFoldersArray = [NSMutableArray array];
 		for (id f in self.dictFolders) {
 			[self.dictFoldersArray addObject:f];
 //			NSArray *folder = [self.dictFolders objectForKey:f];
@@ -173,7 +174,7 @@
 
 - (IBAction)doLogoutButton {
 	NSLog(@"Logging out...");
-	NSString *urlS = @"http://nb.local.host:8000/reader/logout?api=1";
+	NSString *urlS = @"http://www.newsblur.com/reader/logout?api=1";
 	NSURL *url = [NSURL URLWithString:urlS];
 	NSURLRequest *urlR=[[[NSURLRequest alloc] initWithURL:url] autorelease];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]

@@ -42,7 +42,7 @@
                                                 inSection:0];
         [indexPaths addObject:indexPath];
     }
-    [appDelegate.recentlyReadStories removeAllObjects];
+    [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     if ([indexPaths count] > 0) {
         [self.storyTitlesTable beginUpdates];
         [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
@@ -71,15 +71,13 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
-    self.appDelegate = nil;
-    self.jsonString = nil;
-    self.intelligenceControl = nil;
-}
-
 - (void)dealloc {
-    [appDelegate release];
+    [storyTitlesTable release];
+    [feedViewToolbar release];
+    [feedScoreSlider release];
+    [feedMarkReadButton release];
     [stories release];
+    [appDelegate release];
     [jsonString release];
     [intelligenceControl release];
     [super dealloc];
@@ -99,7 +97,7 @@
         }
         
         NSString *theFeedDetailURL = [[NSString alloc] 
-                                      initWithFormat:@"http://nb.local.host:8000/reader/feed/%@?page=%d", 
+                                      initWithFormat:@"http://www.newsblur.com/reader/feed/%@?page=%d", 
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
@@ -171,12 +169,10 @@
     
     [results release];
     [jsonS release];
-	[jsonString release];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     [connection release];
-    [jsonString release];
     
     // inform the user
     NSLog(@"Connection failed! Error - %@",
@@ -320,17 +316,23 @@
 }
 
 - (IBAction)markAllRead {
-    NSString *urlString = @"http://nb.local.host:8000/reader/mark_feed_as_read";
+    NSString *urlString = @"http://www.newsblur.com/reader/mark_feed_as_read";
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
     [request setDelegate:nil];
+    [request setDidFinishSelector:@selector(markedAsRead)];
+    [request setDidFailSelector:@selector(markedAsRead)];
     [request startAsynchronous];
     [appDelegate markActiveFeedAllRead];
     [appDelegate.navigationController 
      popToViewController:[appDelegate.navigationController.viewControllers 
                           objectAtIndex:0]  
      animated:YES];
+}
+
+- (void)markedAsRead {
+    
 }
 
 - (IBAction)selectIntelligence {

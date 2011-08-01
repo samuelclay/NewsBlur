@@ -49,7 +49,7 @@
 
 - (void)checkPassword {
     NSLog(@"appdelegate:: %@", [self appDelegate]);
-    NSString *urlString = @"http://nb.local.host:8000/reader/login";
+    NSString *urlString = @"http://www.newsblur.com/reader/login";
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
@@ -93,14 +93,8 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-    self.jsonString = nil;
-}
-
-
 - (void)dealloc {
+    [appDelegate release];
     [usernameTextField release];
     [passwordTextField release];
     [jsonString release];

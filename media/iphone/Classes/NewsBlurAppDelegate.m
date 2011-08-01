@@ -48,10 +48,11 @@
 
 - (void)viewDidLoad {
     self.selectedIntelligence = 1;
-    self.recentlyReadStories = [[NSMutableArray alloc] init];
+    [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
 - (void)dealloc {
+    NSLog(@"Dealloc on AppDelegate");
     [feedsViewController release];
     [feedDetailViewController release];
     [storyDetailViewController release];
@@ -87,7 +88,6 @@
 }
 
 - (void)reloadFeedsView {
-    NSLog(@"Reloading feeds list");
     [self setTitle:@"NewsBlur"];
     [feedsViewController fetchFeedList];
     [loginViewController dismissModalViewControllerAnimated:YES];
@@ -181,7 +181,6 @@
 }
 
 - (void)addStories:(NSArray *)stories {
-//    NSLog(@"Adding: %d to %@", [stories count], stories);
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = [self.activeFeedStories count];
     [self calculateStoryLocations];
@@ -190,7 +189,7 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
-    self.recentlyReadStories = [[NSMutableArray alloc] init];
+    [self setRecentlyReadStories:[NSMutableArray array]];
     [self calculateStoryLocations];
 }
 
@@ -221,12 +220,11 @@
 }
 
 - (void)calculateStoryLocations {
-    self.activeFeedStoryLocations = [[NSMutableArray alloc] init];
+    self.activeFeedStoryLocations = [NSMutableArray array];
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        int intelligenceLevel = self.selectedIntelligence;
-        if (score >= intelligenceLevel) {
+        if (score >= self.selectedIntelligence) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
         }

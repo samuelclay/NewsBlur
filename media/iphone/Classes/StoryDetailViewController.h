@@ -20,7 +20,6 @@
     UIBarButtonItem *buttonPrevious;
     UIBarButtonItem *buttonNext;
     
-    int originalUnreadCount;
 }
 
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
@@ -29,7 +28,6 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonPrevious;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (readwrite) int originalunreadCount;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
@@ -37,5 +35,6 @@
 - (void)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
+- (void)markedAsRead;
 
 @end

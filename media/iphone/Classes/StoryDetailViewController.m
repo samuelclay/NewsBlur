@@ -73,33 +73,21 @@
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
         [appDelegate markActiveStoryRead];
         
-        NSString *urlString = @"http://nb.local.host:8000/reader/mark_story_as_read";
+        NSString *urlString = @"http://www.newsblur.com/reader/mark_story_as_read";
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
         [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setDidFinishSelector:@selector(markedAsRead)];
+        [request setDidFailSelector:@selector(markedAsRead)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
 }
 
-
-- (void)requestFinished:(ASIHTTPRequest *)request {
-//    NSString *responseString = [request responseString];
-//    NSDictionary *results = [[NSDictionary alloc] 
-//                             initWithDictionary:[responseString JSONValue]];
-//    int code = [[results valueForKey:@"code"] intValue];
-//    NSLog(@"Read Story: %@", code);
+- (void)markedAsRead {
     
-//    [results release];
 }
-
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
-//    NSError *error = [request error];
-//    [error release];
-}
-
 
 - (void)showStory {
 //    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
@@ -284,6 +272,10 @@
 - (void)dealloc {
     [appDelegate release];
     [webView release];
+    [progressView release];
+    [toolbar release];
+    [buttonNext release];
+    [buttonPrevious release];
     [super dealloc];
 }
 

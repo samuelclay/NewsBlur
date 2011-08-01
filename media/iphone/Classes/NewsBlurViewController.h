@@ -17,7 +17,6 @@
     NewsBlurAppDelegate *appDelegate;
     
 	NSMutableData *responseData;
-	NSMutableArray * feedTitleList;
 	NSDictionary * dictFolders;
     NSDictionary * dictFeeds;
     NSMutableArray * dictFoldersArray;
@@ -39,7 +38,6 @@
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
-@property (nonatomic, retain) NSMutableArray *feedTitleList;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;

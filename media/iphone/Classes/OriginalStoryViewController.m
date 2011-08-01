@@ -190,7 +190,7 @@
 
 
 - (void)dealloc {
-    [super dealloc];
+    [appDelegate release];
     [closeButton release];
     [webView release];
     [back release];
@@ -200,8 +200,8 @@
     [pageTitle release];
     [pageUrl release];
     [toolbar release];
+    [super dealloc];
 }
-
 
 - (IBAction)doCloseOriginalStoryViewController {
     NSLog(@"Close Original Story: %@", appDelegate);
