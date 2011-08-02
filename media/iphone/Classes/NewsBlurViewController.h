@@ -20,6 +20,7 @@
 	NSDictionary * dictFolders;
     NSDictionary * dictFeeds;
     NSMutableArray * dictFoldersArray;
+    NSMutableDictionary * activeFeedLocations;
     
 	IBOutlet UITableView * feedTitlesTable;
 	IBOutlet UIToolbar * feedViewToolbar;
@@ -32,6 +33,7 @@
 - (IBAction)doLogoutButton;
 - (NSString *)showUnreadCount:(NSDictionary *)feed;
 - (IBAction)selectIntelligence;
+- (void)calculateFeedLocations;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;
@@ -39,6 +41,7 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
+@property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableData *responseData;
