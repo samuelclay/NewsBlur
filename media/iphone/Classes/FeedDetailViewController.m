@@ -341,6 +341,8 @@
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
     
+    if (newLevel == previousLevel) return;
+    
     if (newLevel < previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
         [appDelegate calculateStoryLocations];

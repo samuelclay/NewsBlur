@@ -78,7 +78,6 @@
 								<string key="NSFrame">{{153, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="929039419"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
@@ -204,14 +203,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">view</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="191373211"/>
-					</object>
-					<int key="connectionID">43</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">feedMarkReadButton</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="625055884"/>
@@ -241,6 +232,14 @@
 						<reference key="destination" ref="122945842"/>
 					</object>
 					<int key="connectionID">56</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">view</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="191373211"/>
+					</object>
+					<int key="connectionID">58</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -361,7 +360,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">56</int>
+			<int key="maxID">58</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -618,14 +617,35 @@
 					<string key="className">NewsBlurViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">doLogoutButton</string>
-						<string key="NS.object.0">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doLogoutButton</string>
+							<string>selectIntelligence</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
 					</object>
 					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">doLogoutButton</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">doLogoutButton</string>
-							<string key="candidateClassName">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doLogoutButton</string>
+							<string>selectIntelligence</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">doLogoutButton</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">selectIntelligence</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
@@ -635,6 +655,7 @@
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
 							<string>feedViewToolbar</string>
+							<string>intelligenceControl</string>
 							<string>logoutButton</string>
 							<string>viewTableFeedTitles</string>
 						</object>
@@ -643,6 +664,7 @@
 							<string>NewsBlurAppDelegate</string>
 							<string>UISlider</string>
 							<string>UIToolbar</string>
+							<string>UISegmentedControl</string>
 							<string>UIBarButtonItem</string>
 							<string>UITableView</string>
 						</object>
@@ -654,6 +676,7 @@
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
 							<string>feedViewToolbar</string>
+							<string>intelligenceControl</string>
 							<string>logoutButton</string>
 							<string>viewTableFeedTitles</string>
 						</object>
@@ -670,6 +693,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedViewToolbar</string>
 								<string key="candidateClassName">UIToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">intelligenceControl</string>
+								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">logoutButton</string>

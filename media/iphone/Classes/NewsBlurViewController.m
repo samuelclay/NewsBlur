@@ -18,10 +18,11 @@
 @synthesize appDelegate;
 
 @synthesize responseData;
-@synthesize viewTableFeedTitles;
+@synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
 @synthesize logoutButton;
+@synthesize intelligenceControl;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -45,13 +46,23 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	[viewTableFeedTitles deselectRowAtIndexPath:[viewTableFeedTitles indexPathForSelectedRow] animated:animated];
+	[self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] animated:animated];
 	if (appDelegate.activeFeedIndexPath) {
 //		NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
-        [self.viewTableFeedTitles beginUpdates];
-        [self.viewTableFeedTitles reloadRowsAtIndexPaths:[NSArray arrayWithObject:appDelegate.activeFeedIndexPath] withRowAnimation:UITableViewRowAnimationNone];
-        [self.viewTableFeedTitles endUpdates];
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable 
+		 reloadRowsAtIndexPaths:[NSArray 
+								 arrayWithObject:appDelegate.activeFeedIndexPath] 
+		 withRowAnimation:UITableViewRowAnimationNone];
+        [self.feedTitlesTable endUpdates];
 	}
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] forSegmentAtIndex:0];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
+    [self.intelligenceControl addTarget:self
+								 action:@selector(selectIntelligence)
+					   forControlEvents:UIControlEventValueChanged];
+    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     [appDelegate showNavigationBar:animated];
 }
 
@@ -89,10 +100,11 @@
 - (void)dealloc {	
 	[appDelegate release];
 	
-	[viewTableFeedTitles release];
+	[feedTitlesTable release];
 	[feedViewToolbar release];
 	[feedScoreSlider release];
 	[logoutButton release];
+    [intelligenceControl release];
 	
 	[dictFolders release];
 	[dictFeeds release];
@@ -163,7 +175,7 @@
 //		self.dictFolders = sortedFolders;
 		[self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 		
-		[[self viewTableFeedTitles] reloadData];
+		[self.feedTitlesTable reloadData];
 		
 		[sortedFolders release];
 		[results release];
@@ -334,6 +346,64 @@
 							!!negativeCount ? negativeCountString : @""];
 
     return htmlString;
+}
+
+
+- (IBAction)selectIntelligence {
+	NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
+    NSInteger previousLevel = [appDelegate selectedIntelligence];
+    NSMutableArray *insertIndexPaths = [NSMutableArray array];
+    NSMutableArray *deleteIndexPaths = [NSMutableArray array];
+    
+    if (newLevel < previousLevel) {
+        [appDelegate setSelectedIntelligence:newLevel];
+    }
+	
+//    for (int i=0; i < [[appDelegate activeFeedStoryLocations] count]; i++) {
+//        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
+//        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+//        NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:location];
+//        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+//        
+//        if (previousLevel == -1) {
+//            if (newLevel == 0 && score == -1) {
+//                [deleteIndexPaths addObject:indexPath];
+//            } else if (newLevel == 1 && score < 1) {
+//                [deleteIndexPaths addObject:indexPath];
+//            }
+//        } else if (previousLevel == 0) {
+//            if (newLevel == -1 && score == -1) {
+//                [insertIndexPaths addObject:indexPath];
+//            } else if (newLevel == 1 && score == 0) {
+//                [deleteIndexPaths addObject:indexPath];
+//            }
+//        } else if (previousLevel == 1) {
+//            if (newLevel == 0 && score == 0) {
+//                [insertIndexPaths addObject:indexPath];
+//            } else if (newLevel == -1 && score < 1) {
+//                [insertIndexPaths addObject:indexPath];
+//            }
+//        }
+//    }
+    
+    if (newLevel > previousLevel) {
+        [appDelegate setSelectedIntelligence:newLevel];
+    }
+    
+    [self.feedTitlesTable beginUpdates];
+    if ([deleteIndexPaths count] > 0) {
+        [self.feedTitlesTable deleteRowsAtIndexPaths:deleteIndexPaths 
+									withRowAnimation:UITableViewRowAnimationNone];
+    }
+    if ([insertIndexPaths count] > 0) {
+        [self.feedTitlesTable insertRowsAtIndexPaths:insertIndexPaths 
+                                    withRowAnimation:UITableViewRowAnimationNone];
+    }
+    [self.feedTitlesTable endUpdates];
+	
+	NSLog(@"dictFolders: %@", self.dictFolders);
+	NSLog(@"dictFeeds: %@", self.dictFeeds);
+	NSLog(@"dictFoldersArray: %@", self.dictFoldersArray);
 }
 
 @end
