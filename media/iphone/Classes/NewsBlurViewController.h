@@ -33,6 +33,7 @@
 - (IBAction)doLogoutButton;
 - (NSString *)showUnreadCount:(NSDictionary *)feed;
 - (IBAction)selectIntelligence;
+- (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 

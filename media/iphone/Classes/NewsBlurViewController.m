@@ -56,6 +56,10 @@
 								 arrayWithObject:appDelegate.activeFeedIndexPath] 
 		 withRowAnimation:UITableViewRowAnimationNone];
         [self.feedTitlesTable endUpdates];
+		
+		NSInteger previousLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
+		NSInteger newLevel = [appDelegate selectedIntelligence];
+		[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
 	}
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
@@ -254,21 +258,16 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	int section_index = 0;
-	for (id f in self.dictFoldersArray) {
-		if (section_index == indexPath.section) {
-			NSArray *feeds = [[NSArray alloc] initWithArray:[self.dictFolders objectForKey:f]];
-			id feedId = [feeds objectAtIndex:indexPath.row];
-			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-			[appDelegate setActiveFeed:[self.dictFeeds 
-										objectForKey:feedIdStr]];
-			[appDelegate setActiveFeedIndexPath:indexPath];
-			[feeds release];
-			break;
-		}
-		section_index++;
-	}
-	//NSLog(@"App Delegate: %@", self.appDelegate);
+	NSString *folderName = [self.dictFoldersArray objectAtIndex:indexPath.section];
+	NSArray *feeds = [self.dictFolders objectForKey:folderName];
+	NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+	int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
+	id feedId = [feeds objectAtIndex:location];
+	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+
+	[appDelegate setActiveFeed:feed];
+	[appDelegate setActiveFeedIndexPath:indexPath];
 	
 	[appDelegate loadFeedDetailView];
 }
@@ -333,9 +332,13 @@
 - (IBAction)selectIntelligence {
 	NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
     NSInteger previousLevel = [appDelegate selectedIntelligence];
+	[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+}
+
+- (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
-    
+    NSLog(@"selectIntelligence: from %d to %d", previousLevel, newLevel);
     if (newLevel < previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
 		[self calculateFeedLocations];
@@ -390,10 +393,6 @@
                                     withRowAnimation:UITableViewRowAnimationNone];
     }
     [self.feedTitlesTable endUpdates];
-	
-//	NSLog(@"dictFolders: %@", self.dictFolders);
-//	NSLog(@"dictFeeds: %@", self.dictFeeds);
-//	NSLog(@"dictFoldersArray: %@", self.dictFoldersArray);
 }
 
 - (void)calculateFeedLocations {
