@@ -27,6 +27,7 @@
     IBOutlet UISlider * feedScoreSlider;
     IBOutlet UIBarButtonItem * logoutButton;
     IBOutlet UISegmentedControl * intelligenceControl;
+    IBOutlet UIBarButtonItem * sitesButton;
 }
 
 - (void)fetchFeedList;
@@ -36,12 +37,14 @@
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
+- (IBAction)switchSitesUnread;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSDictionary *dictFolders;

@@ -9,6 +9,7 @@
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedTableCell.h"
+#import "Base64.h"
 #import "JSON.h"
 
 #define kTableViewRowHeight 40;
@@ -24,6 +25,7 @@
 @synthesize logoutButton;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
+@synthesize sitesButton;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -111,6 +113,7 @@
 	[logoutButton release];
     [intelligenceControl release];
 	[activeFeedLocations release];
+	[sitesButton release];
 	
 	[dictFolders release];
 	[dictFeeds release];
@@ -123,7 +126,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true&favicons=true"]];
+											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true&include_favicons=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -206,6 +209,10 @@
 	[ld release];
 }
 
+- (IBAction)switchSitesUnread {
+	
+}
+
 #pragma mark -
 #pragma mark Table View - Feed List
 
@@ -247,11 +254,16 @@
 	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 	cell.feedTitle.text = [feed objectForKey:@"feed_title"];
-	NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
-	if (url) {
-		NSData *imageData = [NSData dataWithContentsOfURL:url];
+	
+	NSString *favicon = [feed objectForKey:@"favicon"];
+	NSLog(@"Favicon for %@: %d", [feed objectForKey:@"feed_title"], [favicon length]);
+	if ([favicon length] > 0) {
+		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
 		cell.feedFavicon.image = [UIImage imageWithData:imageData];
+	} else {
+		cell.feedFavicon.image = [UIImage imageNamed:@"world.png"];
 	}
+
 	[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
 	
 	return cell;
@@ -371,7 +383,7 @@
 			} else if (previousLevel == 1) {
 				if (newLevel == 0 && maxScore == 0) {
 					[insertIndexPaths addObject:indexPath];
-				} else if (newLevel == -1 && maxScore > -1) {
+				} else if (newLevel == -1 && (maxScore == -1 || maxScore == 0)) {
 					[insertIndexPaths addObject:indexPath];
 				}
 			}

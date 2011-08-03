@@ -10,9 +10,10 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
+#import "GTMNString+HTML.h"
 #import "JSON.h"
 
-#define kTableViewRowHeight 60;
+#define kTableViewRowHeight 65;
 
 @implementation FeedDetailViewController
 
@@ -250,7 +251,9 @@
     } else {
         cell.storyAuthor.text = @"";
     }
-    cell.storyTitle.text = [story objectForKey:@"story_title"];
+    NSString *title = [story objectForKey:@"story_title"];
+//    cell.storyTitle.text = [title stringByDecodingHTMLEntities];
+    cell.storyTitle.text = title;
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
@@ -264,7 +267,7 @@
     if ([[story objectForKey:@"read_status"] intValue] != 1) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
-        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:13];
         cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
         cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
