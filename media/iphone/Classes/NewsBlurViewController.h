@@ -34,6 +34,7 @@
 - (NSString *)showUnreadCount:(NSDictionary *)feed;
 - (IBAction)selectIntelligence;
 - (void)calculateFeedLocations;
++ (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;

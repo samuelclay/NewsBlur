@@ -210,33 +210,16 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	int index = 0;
-	for (id f in self.dictFoldersArray) {
-		if (index == section) {
-			// NSLog(@"Computing Table view header: %i: %@", index, f);
-			return f;
-		}
-		index++;
-	}
-	return nil;
+	return [self.dictFoldersArray objectAtIndex:section];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	int index = 0;
-	for (id f in self.dictFoldersArray) {
-		if (index == section) {
-			// NSLog(@"Computing Table view rows: %i: %@", index, f);	
-			NSArray *feeds = [self.dictFolders objectForKey:f];
-			//NSLog(@"Table view items: %i: %@", [feeds count], f);
-			return [feeds count];
-		}
-		index++;
-	}
-	
-	return 0;
+	NSString *folderName = [self.dictFoldersArray objectAtIndex:section];
+	return [[self.activeFeedLocations objectForKey:folderName] count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView 
+		 cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *FeedCellIdentifier = @"FeedCellIdentifier";
 	
 	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];	
@@ -252,24 +235,20 @@
         }
 	}
 	
-	int section_index = 0;
-	for (id f in self.dictFoldersArray) {
-		if (section_index == indexPath.section) {
-			NSArray *feeds = [self.dictFolders objectForKey:f];
-			id feed_id = [feeds objectAtIndex:indexPath.row];
-			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
-			NSDictionary *feed = [self.dictFeeds objectForKey:feed_id_str];
-			cell.feedTitle.text = [feed objectForKey:@"feed_title"];
-			NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
-			if (url) {
-				NSData *imageData = [NSData dataWithContentsOfURL:url];
-				cell.feedFavicon.image = [UIImage imageWithData:imageData];
-			}
-			[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
-			return cell;
-		}
-		section_index++;
+	NSString *folderName = [self.dictFoldersArray objectAtIndex:indexPath.section];
+	NSArray *feeds = [self.dictFolders objectForKey:folderName];
+	NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+	int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
+	id feedId = [feeds objectAtIndex:location];
+	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+	cell.feedTitle.text = [feed objectForKey:@"feed_title"];
+	NSURL *url = [NSURL URLWithString:[feed objectForKey:@"favicon"]];
+	if (url) {
+		NSData *imageData = [NSData dataWithContentsOfURL:url];
+		cell.feedFavicon.image = [UIImage imageWithData:imageData];
 	}
+	[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
 	
 	return cell;
 }
@@ -279,10 +258,10 @@
 	for (id f in self.dictFoldersArray) {
 		if (section_index == indexPath.section) {
 			NSArray *feeds = [[NSArray alloc] initWithArray:[self.dictFolders objectForKey:f]];
-			id feed_id = [feeds objectAtIndex:indexPath.row];
-			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
+			id feedId = [feeds objectAtIndex:indexPath.row];
+			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 			[appDelegate setActiveFeed:[self.dictFeeds 
-										objectForKey:feed_id_str]];
+										objectForKey:feedIdStr]];
 			[appDelegate setActiveFeedIndexPath:indexPath];
 			[feeds release];
 			break;
@@ -363,45 +342,38 @@
     }
 	
 	for (int s=0; s < [self.dictFoldersArray count]; s++) {
-		NSString *folder_name = [self.dictFoldersArray objectAtIndex:s];
-		NSArray *active_folder = [self.activeFeedLocations objectForKey:folder_name];
-		NSArray *original_folder = [self.dictFolders objectForKey:folder_name];
-		for (int f=0; f < [active_folder count]; f++) {
-			int location = [[active_folder objectAtIndex:f] intValue];
+		NSString *folderName = [self.dictFoldersArray objectAtIndex:s];
+		NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+		NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+		for (int f=0; f < [activeFolderFeeds count]; f++) {
+			int location = [[activeFolderFeeds objectAtIndex:f] intValue];
+			id feedId = [originalFolder objectAtIndex:location];
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
-			id feed_id = [original_folder objectAtIndex:location];
-			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
-			NSDictionary *feed = [self.dictFeeds objectForKey:feed_id_str];
+			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
 			
-			// compute min_score
-			
-//	for (int i=0; i < [[appDelegate activeFeedStoryLocations] count]; i++) {
-//		int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
-//		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-//		NSDictionary *story = [appDelegate.activeFeedStories objectAtIndex:location];
-//		int score = [NewsBlurAppDelegate computeStoryScore:[story 
-//															objectForKey:@"intelligence"]];
-//
-//		if (previousLevel == -1) {
-//			if (newLevel == 0 && score == -1) {
-//				[deleteIndexPaths addObject:indexPath];
-//			} else if (newLevel == 1 && score < 1) {
-//				[deleteIndexPaths addObject:indexPath];
-//			}
-//		} else if (previousLevel == 0) {
-//			if (newLevel == -1 && score == -1) {
-//				[insertIndexPaths addObject:indexPath];
-//			} else if (newLevel == 1 && score == 0) {
-//				[deleteIndexPaths addObject:indexPath];
-//			}
-//		} else if (previousLevel == 1) {
-//			if (newLevel == 0 && score == 0) {
-//				[insertIndexPaths addObject:indexPath];
-//			} else if (newLevel == -1 && score < 1) {
-//				[insertIndexPaths addObject:indexPath];
-//			}
-//		}
-//	}
+			if (previousLevel == -1) {
+				if (newLevel == 0 && maxScore == -1) {
+					[deleteIndexPaths addObject:indexPath];
+				} else if (newLevel == 1 && maxScore < 1) {
+					[deleteIndexPaths addObject:indexPath];
+				}
+			} else if (previousLevel == 0) {
+				if (newLevel == -1 && maxScore == -1) {
+					[insertIndexPaths addObject:indexPath];
+				} else if (newLevel == 1 && maxScore == 0) {
+					[deleteIndexPaths addObject:indexPath];
+				}
+			} else if (previousLevel == 1) {
+				if (newLevel == 0 && maxScore == 0) {
+					[insertIndexPaths addObject:indexPath];
+				} else if (newLevel == -1 && maxScore > -1) {
+					[insertIndexPaths addObject:indexPath];
+				}
+			}
+		}
+	}
     
     if (newLevel > previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
@@ -426,24 +398,29 @@
 
 - (void)calculateFeedLocations {
     self.activeFeedLocations = [NSMutableDictionary dictionary];
-	for (NSString *folder_name in self.dictFoldersArray) {
-		NSArray *folder = [self.dictFolders objectForKey:folder_name];
+	for (NSString *folderName in self.dictFoldersArray) {
+		NSArray *folder = [self.dictFolders objectForKey:folderName];
 		NSMutableArray *feedLocations = [NSMutableArray array];
 		for (int f=0; f < [folder count]; f++) {
-			id feed_id = [folder objectAtIndex:f];
-			NSString *feed_id_str = [NSString stringWithFormat:@"%@",feed_id];
-			NSDictionary *feed = [self.dictFeeds objectForKey:feed_id_str];
-			int max_score = -2;
-			if ([[feed objectForKey:@"ng"] intValue] > 0) max_score = -1;
-			if ([[feed objectForKey:@"nt"] intValue] > 0) max_score = 0;
-			if ([[feed objectForKey:@"ps"] intValue] > 0) max_score = 1;
-			if (max_score >= appDelegate.selectedIntelligence) {
+			id feedId = [folder objectAtIndex:f];
+			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+			if (maxScore >= appDelegate.selectedIntelligence) {
 				NSNumber *location = [NSNumber numberWithInt:f];
 				[feedLocations addObject:location];
 			}
 		}
-		[self.activeFeedLocations setObject:feedLocations forKey:folder_name];
+		[self.activeFeedLocations setObject:feedLocations forKey:folderName];
 	}
+}
+
++ (int)computeMaxScoreForFeed:(NSDictionary *)feed {
+	int maxScore = -2;
+	if ([[feed objectForKey:@"ng"] intValue] > 0) maxScore = -1;
+	if ([[feed objectForKey:@"nt"] intValue] > 0) maxScore = 0;
+	if ([[feed objectForKey:@"ps"] intValue] > 0) maxScore = 1;
+	return maxScore;
 }
 
 @end
