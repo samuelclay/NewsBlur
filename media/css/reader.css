@@ -3417,6 +3417,48 @@ background: transparent;
 }
 
 
+.NB-module .NB-module-item {
+    position: relative;
+    min-height: 77px;
+    margin: 12px 0;
+    padding-bottom: 1px;
+    clear: both;
+}
+
+.NB-module .NB-module-item.NB-last {
+    margin-bottom: 0;
+}
+.NB-module .NB-module-item .NB-module-content-header {
+    margin-left: 128px;
+}
+.NB-module .NB-module-item .NB-module-item-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.NB-module .NB-module-item .NB-module-item-image img {
+    width: 100px;
+    height: 75px;
+    overflow: hidden;
+    margin: 0 8px 2px 12px;
+    border: 1px solid #606060;
+    -moz-box-shadow: 1px 1px 0 #D0D0D0;
+    -webkit-box-shadow: 1px 1px 0 #D0D0D0;
+    box-shadow: 1px 1px 0 #D0D0D0;
+}
+
+.NB-module .NB-modal-submit-close {
+  color: #505050;
+}
+.NB-module .NB-module-item .NB-module-item-title {
+    margin: 0 0 4px 128px;
+}
+
+.NB-module .NB-module-item .NB-modal-submit-button {
+    float: left;
+    margin: 4px 0 0 0;
+}
 
 /* =========================== */
 /* = Right Modules - Account = */
@@ -3430,52 +3472,11 @@ background: transparent;
     overflow: hidden;
 }
 
-.NB-account .NB-module .NB-module-account {
-    position: relative;
-    min-height: 77px;
-    margin: 12px 0;
-    padding-bottom: 1px;
-}
-
-.NB-account .NB-module .NB-module-account.NB-last {
-    margin-bottom: 0;
-}
-
-.NB-account .NB-module .NB-module-account .NB-module-content-header {
-    margin-left: 128px;
-}
-.NB-account .NB-module .NB-module-account .NB-module-account-image {
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
-.NB-account .NB-module .NB-module-account .NB-module-account-image img {
-    width: 100px;
-    height: 75px;
-    overflow: hidden;
-    margin: 0 8px 2px 12px;
-    border: 1px solid #606060;
-    -moz-box-shadow: 1px 1px 0 #D0D0D0;
-    -webkit-box-shadow: 1px 1px 0 #D0D0D0;
-    box-shadow: 1px 1px 0 #D0D0D0;
-}
-
-.NB-account .NB-module .NB-modal-submit-close {
-  color: #505050;
-}
-.NB-account .NB-module .NB-module-account .NB-module-account-title {
-    margin: 0 0 4px 128px;
-}
-.NB-account .NB-module .NB-module-account .NB-modal-submit-button {
-    float: left;
-    margin: 4px 0 0 0;
-}
-.NB-account .NB-module .NB-module-account .NB-module-account-premium {
+.NB-account .NB-module .NB-module-item .NB-module-account-premium {
     float: right;
     margin-right: 12px;
 }
-.NB-account .NB-module .NB-module-account .NB-modal-submit-button.NB-javascript {
+.NB-account .NB-module .NB-module-item .NB-modal-submit-button.NB-javascript {
   opacity: .2;
 }
 
@@ -3534,6 +3535,53 @@ background: transparent;
     margin: 0;
     vertical-align: middle;
     text-align: center;
+}
+
+/* ================= */
+/* = Mobile Module = */
+/* ================= */
+
+.NB-module-mobile .NB-module-item {
+    min-height: 60px;
+}
+
+.NB-module-mobile .NB-module-mobile-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.NB-module-mobile .NB-module-mobile-image img {
+    width: 57px;
+    height: 57px;
+    overflow: hidden;
+    margin: 0 8px 2px 12px;
+}
+
+.NB-module-mobile .NB-module-content-header {
+    overflow: hidden;
+}
+
+.NB-module-mobile .NB-module-mobile-title {
+    float: left;
+    padding-right: 8px;
+}
+
+.NB-module-mobile .NB-module-mobile-device {
+    background-color: #2F4372;
+    color: #F0F0F0;
+    font-weight: bold;
+    font-size: 8px;
+    line-height: 8px;
+    margin-top: 2px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    float: left;
+    text-shadow: 1px 1px 0 #303030;
+}
+
+.NB-module-mobile .NB-module-item-title {
+    font-size: 12px;
 }
 
 /* ================ */

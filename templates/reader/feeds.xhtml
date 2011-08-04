@@ -273,8 +273,8 @@ $(document).ready(function() {
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
         </h5>
-        <div class="NB-module-account {% if train_count == active_count %}NB-last{% endif %}">
-          <div class="NB-module-account-image">
+        <div class="NB-module-item {% if train_count == active_count %}NB-last{% endif %}">
+          <div class="NB-module-item-image">
             {% if user.profile.is_premium %}
               <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
             {% else %}
@@ -294,7 +294,7 @@ $(document).ready(function() {
               Standard Account
             {% endif %}
           </h3>
-          <div class="NB-module-account-title">
+          <div class="NB-module-item-title">
             {% if user.profile.is_premium %}
               
             {% else %}
@@ -310,8 +310,8 @@ $(document).ready(function() {
             {% endif %}
           </div>
         </div>
-        <div class="NB-module-account NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
-          <div class="NB-module-account-image">
+        <div class="NB-module-item NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
+          <div class="NB-module-item-image">
               <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
           </div>
           <h3 class="NB-module-content-header">
@@ -320,7 +320,7 @@ $(document).ready(function() {
               </span>
               Intelligence Trainer
           </h3>
-          <div class="NB-module-account-title">
+          <div class="NB-module-item-title">
               <div class="NB-modal-submit">
                 <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
               </div>
@@ -336,8 +336,8 @@ $(document).ready(function() {
               <a href="#" class="NB-splash-link NB-module-tutorial-hide">Hide</a>
             </div>
           </h5>
-          <div class="NB-module-account NB-last {% if user_profile.hide_tutorial %}NB-hidden{% endif %}">
-            <div class="NB-module-account-image">
+          <div class="NB-module-item NB-last {% if user_profile.hide_tutorial %}NB-hidden{% endif %}">
+            <div class="NB-module-item-image">
                 <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
             </div>
             <h3 class="NB-module-content-header">
@@ -346,10 +346,53 @@ $(document).ready(function() {
                 </span>
                 Learn to use NewsBlur
             </h3>
-            <div class="NB-module-account-title">
+            <div class="NB-module-item-title">
                 <div class="NB-modal-submit">
                   <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-tutorial NB-javascript">Launch the 5 step tutorial</div>
                 </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+      {% if not user_profile.hide_mobile %}
+        <div class="NB-module NB-module-mobile">
+          <h5 class="NB-module-header">
+            Mobile Apps
+            <div class="NB-module-header-right">
+              <a href="#" class="NB-splash-link NB-module-mobile-hide">Hide</a>
+            </div>
+          </h5>
+          <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
+            <div class="NB-module-mobile-image">
+                <img src="{{ MEDIA_URL }}/img/mobile/blar-icon-57.png" />
+            </div>
+            <h3 class="NB-module-content-header">
+                <span class="NB-module-content-subtitle">
+                  Official Client
+                </span>
+                <div class="NB-module-mobile-title">NewsBlur</div>
+                <div class="NB-module-mobile-device">iPhone</div>
+            </h3>
+            <div class="NB-module-item-title">
+                <span class="NB-raquo">&raquo;</span>
+                <a href="#" class="NB-splash-link">Download NewsBlur on the App Store</a>
+            </div>
+          </div>
+          <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
+            <div class="NB-module-mobile-image">
+                <img src="{{ MEDIA_URL }}/img/mobile/blar-icon-57.png" />
+            </div>
+            <h3 class="NB-module-content-header">
+                <span class="NB-module-content-subtitle">
+                  User-Built Client
+                </span>
+                <div class="NB-module-mobile-title">Blar</div>
+                <div class="NB-module-mobile-device">Android</div>
+            </h3>
+            <div class="NB-module-item-title">
+                <span class="NB-raquo">&raquo;</span>
+                <a href="https://market.android.com/details?id=bitwrit.Blar" class="NB-splash-link">Download Blar on the Android Market</a>
             </div>
           </div>
         </div>
