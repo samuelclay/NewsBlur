@@ -26,6 +26,7 @@
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
 @synthesize sitesButton;
+@synthesize viewShowingAllFeeds;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -45,6 +46,7 @@
 - (void)viewDidLoad {
 	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)] autorelease];
 	[appDelegate showNavigationBar:NO];
+	self.viewShowingAllFeeds = NO;
     [super viewDidLoad];
 }
 
@@ -210,7 +212,54 @@
 }
 
 - (IBAction)switchSitesUnread {
+	self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
 	
+	if (self.viewShowingAllFeeds) {
+		[self.sitesButton setTitle:@"Unreads"];
+	} else {
+		[self.sitesButton setTitle:@"All Sites"];
+	}
+	
+	NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
+	NSMutableArray *indexPaths = [NSMutableArray array];
+
+	if (self.viewShowingAllFeeds) {
+		[self calculateFeedLocations];
+	}
+	
+	for (int s=0; s < [self.dictFoldersArray count]; s++) {
+		NSString *folderName = [self.dictFoldersArray objectAtIndex:s];
+		NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+		NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+		for (int f=0; f < [activeFolderFeeds count]; f++) {
+			int location = [[activeFolderFeeds objectAtIndex:f] intValue];
+			id feedId = [originalFolder objectAtIndex:location];
+			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
+			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+			
+			if (maxScore < intelligenceLevel) {
+				[indexPaths addObject:indexPath];
+			}
+		}
+	}
+	
+	if (!self.viewShowingAllFeeds) {
+		[self calculateFeedLocations];
+	}
+    
+    [self.feedTitlesTable beginUpdates];
+    if ([indexPaths count] > 0) {
+		if (self.viewShowingAllFeeds) {
+			[self.feedTitlesTable insertRowsAtIndexPaths:indexPaths 
+										withRowAnimation:UITableViewRowAnimationNone];
+		} else {
+			[self.feedTitlesTable deleteRowsAtIndexPaths:indexPaths 
+									withRowAnimation:UITableViewRowAnimationNone];
+		}
+    }
+    [self.feedTitlesTable endUpdates];
 }
 
 #pragma mark -
@@ -256,8 +305,7 @@
 	cell.feedTitle.text = [feed objectForKey:@"feed_title"];
 	
 	NSString *favicon = [feed objectForKey:@"favicon"];
-	NSLog(@"Favicon for %@: %d", [feed objectForKey:@"feed_title"], [favicon length]);
-	if ([favicon length] > 0) {
+	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
 		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
 		cell.feedFavicon.image = [UIImage imageWithData:imageData];
 	} else {
@@ -342,15 +390,18 @@
 
 
 - (IBAction)selectIntelligence {
-	NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
-    NSInteger previousLevel = [appDelegate selectedIntelligence];
-	[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+	if (!self.viewShowingAllFeeds) {
+		NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
+		NSInteger previousLevel = [appDelegate selectedIntelligence];
+		[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+	}
+	// TODO: Refresh cells on screen to show correct unread pills.
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
-    NSLog(@"selectIntelligence: from %d to %d", previousLevel, newLevel);
+
     if (newLevel < previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
 		[self calculateFeedLocations];
@@ -416,10 +467,16 @@
 			id feedId = [folder objectAtIndex:f];
 			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-			if (maxScore >= appDelegate.selectedIntelligence) {
+			
+			if (self.viewShowingAllFeeds) {
 				NSNumber *location = [NSNumber numberWithInt:f];
 				[feedLocations addObject:location];
+			} else {
+				int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+				if (maxScore >= appDelegate.selectedIntelligence) {
+					NSNumber *location = [NSNumber numberWithInt:f];
+					[feedLocations addObject:location];
+				}
 			}
 		}
 		[self.activeFeedLocations setObject:feedLocations forKey:folderName];

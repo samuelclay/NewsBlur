@@ -21,6 +21,7 @@
     NSDictionary * dictFeeds;
     NSMutableArray * dictFoldersArray;
     NSMutableDictionary * activeFeedLocations;
+    BOOL viewShowingAllFeeds;
     
 	IBOutlet UITableView * feedTitlesTable;
 	IBOutlet UIToolbar * feedViewToolbar;
@@ -50,6 +51,7 @@
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableData *responseData;
+@property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 
 @end
