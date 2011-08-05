@@ -168,6 +168,7 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	//[connection release];
 	[pull finishedLoading];
+	[self loadFavicons];
 	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 	[responseData release];
 	if ([jsonString length] > 0) {
@@ -511,8 +512,9 @@
 	NSString *urlString = @"http://www.newsblur.com/reader/favicons";
 	NSURL *url = [NSURL URLWithString:urlString];
 	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-	[request setDidFinishSelector:@selector(saveAndDrawFavicons)];
-	[request setDidFailSelector:@selector(requestFailed)];
+	
+	[request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
+	[request setDidFailSelector:@selector(requestFailed:)];
 	[request setDelegate:self];
 	[request startAsynchronous];
 }
@@ -521,17 +523,14 @@
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    // int statusCode = [request responseStatusCode];
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code == -1) {
-        NSLog(@"Bad login");
-        [appDelegate showLogin];
-    } else {
-        NSLog(@"Good login");
-        [appDelegate reloadFeedsView];
-    }
-    
-    [results release];
+
+	for (id feed_id in results) {
+		NSDictionary *feed = [self.dictFeeds objectForKey:feed_id];
+		[feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
+		[self.dictFeeds setValue:feed forKey:feed_id];
+	}
+	
+	[self.feedTitlesTable reloadData];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
