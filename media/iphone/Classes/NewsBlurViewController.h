@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "ASIHTTPRequest.h"
+#import "PullToRefreshView.h"
 
 @class NewsBlurAppDelegate;
 
@@ -22,6 +24,8 @@
     NSMutableArray * dictFoldersArray;
     NSMutableDictionary * activeFeedLocations;
     BOOL viewShowingAllFeeds;
+    PullToRefreshView *pull;
+    NSDate *lastUpdate;
     
 	IBOutlet UITableView * feedTitlesTable;
 	IBOutlet UIToolbar * feedViewToolbar;
@@ -39,6 +43,11 @@
 - (void)calculateFeedLocations;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)switchSitesUnread;
+- (void)loadFavicons;
+- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
+- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;
@@ -52,6 +61,8 @@
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableData *responseData;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
+@property (nonatomic, retain) PullToRefreshView *pull;
+@property (nonatomic, retain) NSDate *lastUpdate;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 
 @end

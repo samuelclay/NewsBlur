@@ -56,6 +56,9 @@
 		FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */; };
 		FF435EDB13E9AF4A0083043F /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = FF435EDA13E9AF4A0083043F /* Base64.m */; };
 		FF435EDE13E9B04E0083043F /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = FF435EDD13E9B04E0083043F /* world.png */; };
+		FF79E11D13EB756A0095C852 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11913EB756A0095C852 /* arrow.png */; };
+		FF79E11E13EB756A0095C852 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11A13EB756A0095C852 /* arrow@2x.png */; };
+		FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF79E11C13EB756A0095C852 /* PullToRefreshView.m */; };
 		FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCE7AE613D49165009A98F6 /* FeedTableCell.m */; };
 		FFCE7AE913D49165009A98F6 /* FeedTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFCE7AE713D49165009A98F6 /* FeedTableCell.xib */; };
 /* End PBXBuildFile section */
@@ -142,6 +145,10 @@
 		FF435ED913E9AF4A0083043F /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		FF435EDA13E9AF4A0083043F /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		FF435EDD13E9B04E0083043F /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
+		FF79E11913EB756A0095C852 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
+		FF79E11A13EB756A0095C852 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
+		FF79E11B13EB756A0095C852 /* PullToRefreshView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullToRefreshView.h; sourceTree = "<group>"; };
+		FF79E11C13EB756A0095C852 /* PullToRefreshView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PullToRefreshView.m; sourceTree = "<group>"; };
 		FFCE7AE513D49165009A98F6 /* FeedTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedTableCell.h; path = ../NewsBlur.xcodeproj/FeedTableCell.h; sourceTree = "<group>"; };
 		FFCE7AE613D49165009A98F6 /* FeedTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FeedTableCell.m; path = ../NewsBlur.xcodeproj/FeedTableCell.m; sourceTree = "<group>"; };
 		FFCE7AE713D49165009A98F6 /* FeedTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedTableCell.xib; path = ../NewsBlur.xcodeproj/FeedTableCell.xib; sourceTree = "<group>"; };
@@ -220,6 +227,8 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FF79E11B13EB756A0095C852 /* PullToRefreshView.h */,
+				FF79E11C13EB756A0095C852 /* PullToRefreshView.m */,
 				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
@@ -236,6 +245,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FF79E11913EB756A0095C852 /* arrow.png */,
+				FF79E11A13EB756A0095C852 /* arrow@2x.png */,
 				FF435EDD13E9B04E0083043F /* world.png */,
 				FF1C46C113E6003300E7609E /* logo_114.png */,
 				FF1C46BF13E6002300E7609E /* logo_57.png */,
@@ -393,6 +404,8 @@
 				FF1C46C013E6002300E7609E /* logo_57.png in Resources */,
 				FF1C46C213E6003300E7609E /* logo_114.png in Resources */,
 				FF435EDE13E9B04E0083043F /* world.png in Resources */,
+				FF79E11D13EB756A0095C852 /* arrow.png in Resources */,
+				FF79E11E13EB756A0095C852 /* arrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +441,7 @@
 				FF38679B13D88EEC00F8AB3A /* NSString+HTML.m in Sources */,
 				FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */,
 				FF435EDB13E9AF4A0083043F /* Base64.m in Sources */,
+				FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
