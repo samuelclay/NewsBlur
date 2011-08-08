@@ -365,7 +365,7 @@ $(document).ready(function() {
           </h5>
           <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
             <div class="NB-module-mobile-image">
-                <img src="{{ MEDIA_URL }}/img/mobile/blar-icon-57.png" />
+                <img src="{{ MEDIA_URL }}/img/mobile/iphone-icon-newsblur.png" />
             </div>
             <h3 class="NB-module-content-header">
                 <span class="NB-module-content-subtitle">
@@ -376,12 +376,14 @@ $(document).ready(function() {
             </h3>
             <div class="NB-module-item-title">
                 <span class="NB-raquo">&raquo;</span>
-                <a href="#" class="NB-splash-link">Download NewsBlur on the App Store</a>
+                <!-- <a href="#" class="NB-splash-link">Download NewsBlur on the App Store</a> -->
+                <a href="mailto:samuel@ofbrooklyn.com?subject=iPhone Beta! Yeah!&amp;body=My username is: {{ user.username }}, and my iTunes/iPhone UUID is: [http://www.ispeeddial.com/how-to-find-your-iphone-uuid/]" class="NB-splash-link">Request access to the beta</a> 
+                <span class="NB-module-mobile-freeforpremium">(free for premiums)</span>
             </div>
           </div>
           <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
             <div class="NB-module-mobile-image">
-                <img src="{{ MEDIA_URL }}/img/mobile/blar-icon-57.png" />
+                <img src="{{ MEDIA_URL }}/img/mobile/android-icon-blar.png" />
             </div>
             <h3 class="NB-module-content-header">
                 <span class="NB-module-content-subtitle">

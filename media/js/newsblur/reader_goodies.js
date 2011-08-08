@@ -62,6 +62,23 @@ NEWSBLUR.ReaderGoodies.prototype = {
               }),
               $.make('div', { className: 'NB-goodies-custom' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
+            ]),
+            
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'mailto:samuel@ofbrooklyn.com?subject=iPhone Beta! Yeah!&body=My username is: '+NEWSBLUR.Globals.username+', and my iTunes/iPhone UUID is: [http://www.ispeeddial.com/how-to-find-your-iphone-uuid/]'
+              }, 'Request Beta'),
+              $.make('div', { className: 'NB-goodies-iphone' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://market.android.com/details?id=bitwrit.Blar'
+              }, 'View in Android Market'),
+              $.make('div', { className: 'NB-goodies-android' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Blar: User-Created Android App')
             ])
         ]);
     },

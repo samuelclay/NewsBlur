@@ -26,6 +26,7 @@
       'lock_mouse_indicator'    : 0,
       'feed_pane_size'          : {% firstof user_profile.feed_pane_size 240 %},
       'tutorial_finished'       : {{ user_profile.tutorial_finished|yesno:"true,false" }},
+      'hide_mobile'             : {{ user_profile.hide_mobile|yesno:"true,false" }},
       'story_titles_pane_size'  : 168,
       'new_window'              : 1,
       'default_view'            : 'page',

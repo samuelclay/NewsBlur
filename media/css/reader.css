@@ -3552,8 +3552,8 @@ background: transparent;
 }
 
 .NB-module-mobile .NB-module-mobile-image img {
-    width: 57px;
-    height: 57px;
+    width: 100px;
+    height: 50px;
     overflow: hidden;
     margin: 0 8px 2px 12px;
 }
@@ -3582,6 +3582,11 @@ background: transparent;
 
 .NB-module-mobile .NB-module-item-title {
     font-size: 12px;
+}
+
+.NB-module-mobile .NB-module-mobile-freeforpremium {
+    font-size: 11px;
+    color: #606060;
 }
 
 /* ================ */
@@ -5139,6 +5144,23 @@ background: transparent;
   border: 1px solid #909090;
   padding: 4px;
   margin: 6px 0 0 0;
+}
+.NB-modal-goodies .NB-goodies-mobile-link {
+  float: right;
+}
+.NB-modal-goodies .NB-goodies-iphone {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('../img/mobile/iphone.png') no-repeat 0 0;
+}
+.NB-modal-goodies .NB-goodies-android {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('../img/mobile/android.png') no-repeat 0 0;
 }
 
 /* ============================ */

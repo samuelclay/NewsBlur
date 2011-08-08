@@ -13,7 +13,7 @@ from utils.user_functions import ajax_login_required
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 
-SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished')
+SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished','hide_mobile')
 SPECIAL_PREFERENCES = ('old_password', 'new_password',)
 
 @ajax_login_required
