@@ -9,6 +9,8 @@
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedTableCell.h"
+#import "ASIHTTPRequest.h"
+#import "PullToRefreshView.h"
 #import "Base64.h"
 #import "JSON.h"
 
@@ -26,6 +28,9 @@
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
 @synthesize sitesButton;
+@synthesize viewShowingAllFeeds;
+@synthesize pull;
+@synthesize lastUpdate;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -45,6 +50,10 @@
 - (void)viewDidLoad {
 	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)] autorelease];
 	[appDelegate showNavigationBar:NO];
+	self.viewShowingAllFeeds = NO;
+	pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
+    [pull setDelegate:self];
+    [self.feedTitlesTable addSubview:pull];
     [super viewDidLoad];
 }
 
@@ -114,6 +123,8 @@
     [intelligenceControl release];
 	[activeFeedLocations release];
 	[sitesButton release];
+	[pull release];
+	[lastUpdate release];
 	
 	[dictFolders release];
 	[dictFeeds release];
@@ -126,12 +137,14 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true&include_favicons=true"]];
+											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	[connection release];
 	[request release];
+	
+	self.lastUpdate = [NSDate date];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -154,6 +167,8 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	//[connection release];
+	[pull finishedLoading];
+	[self loadFavicons];
 	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 	[responseData release];
 	if ([jsonString length] > 0) {
@@ -210,7 +225,54 @@
 }
 
 - (IBAction)switchSitesUnread {
+	self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
 	
+	if (self.viewShowingAllFeeds) {
+		[self.sitesButton setTitle:@"Unreads"];
+	} else {
+		[self.sitesButton setTitle:@"All Sites"];
+	}
+	
+	NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
+	NSMutableArray *indexPaths = [NSMutableArray array];
+
+	if (self.viewShowingAllFeeds) {
+		[self calculateFeedLocations];
+	}
+	
+	for (int s=0; s < [self.dictFoldersArray count]; s++) {
+		NSString *folderName = [self.dictFoldersArray objectAtIndex:s];
+		NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+		NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
+		for (int f=0; f < [activeFolderFeeds count]; f++) {
+			int location = [[activeFolderFeeds objectAtIndex:f] intValue];
+			id feedId = [originalFolder objectAtIndex:location];
+			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
+			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+			
+			if (maxScore < intelligenceLevel) {
+				[indexPaths addObject:indexPath];
+			}
+		}
+	}
+	
+	if (!self.viewShowingAllFeeds) {
+		[self calculateFeedLocations];
+	}
+    
+    [self.feedTitlesTable beginUpdates];
+    if ([indexPaths count] > 0) {
+		if (self.viewShowingAllFeeds) {
+			[self.feedTitlesTable insertRowsAtIndexPaths:indexPaths 
+										withRowAnimation:UITableViewRowAnimationNone];
+		} else {
+			[self.feedTitlesTable deleteRowsAtIndexPaths:indexPaths 
+									withRowAnimation:UITableViewRowAnimationNone];
+		}
+    }
+    [self.feedTitlesTable endUpdates];
 }
 
 #pragma mark -
@@ -256,8 +318,7 @@
 	cell.feedTitle.text = [feed objectForKey:@"feed_title"];
 	
 	NSString *favicon = [feed objectForKey:@"favicon"];
-	NSLog(@"Favicon for %@: %d", [feed objectForKey:@"feed_title"], [favicon length]);
-	if ([favicon length] > 0) {
+	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
 		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
 		cell.feedFavicon.image = [UIImage imageWithData:imageData];
 	} else {
@@ -342,15 +403,18 @@
 
 
 - (IBAction)selectIntelligence {
-	NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
-    NSInteger previousLevel = [appDelegate selectedIntelligence];
-	[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+	if (!self.viewShowingAllFeeds) {
+		NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
+		NSInteger previousLevel = [appDelegate selectedIntelligence];
+		[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+	}
+	// TODO: Refresh cells on screen to show correct unread pills.
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
-    NSLog(@"selectIntelligence: from %d to %d", previousLevel, newLevel);
+
     if (newLevel < previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
 		[self calculateFeedLocations];
@@ -416,10 +480,16 @@
 			id feedId = [folder objectAtIndex:f];
 			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-			if (maxScore >= appDelegate.selectedIntelligence) {
+			
+			if (self.viewShowingAllFeeds) {
 				NSNumber *location = [NSNumber numberWithInt:f];
 				[feedLocations addObject:location];
+			} else {
+				int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+				if (maxScore >= appDelegate.selectedIntelligence) {
+					NSNumber *location = [NSNumber numberWithInt:f];
+					[feedLocations addObject:location];
+				}
 			}
 		}
 		[self.activeFeedLocations setObject:feedLocations forKey:folderName];
@@ -432,6 +502,54 @@
 	if ([[feed objectForKey:@"nt"] intValue] > 0) maxScore = 0;
 	if ([[feed objectForKey:@"ps"] intValue] > 0) maxScore = 1;
 	return maxScore;
+}
+
+#pragma mark -
+#pragma mark Favicons
+
+
+- (void)loadFavicons {
+	NSString *urlString = @"http://www.newsblur.com/reader/favicons";
+	NSURL *url = [NSURL URLWithString:urlString];
+	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+	
+	[request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
+	[request setDidFailSelector:@selector(requestFailed:)];
+	[request setDelegate:self];
+	[request startAsynchronous];
+}
+
+- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+
+	for (id feed_id in results) {
+		NSDictionary *feed = [self.dictFeeds objectForKey:feed_id];
+		[feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
+		[self.dictFeeds setValue:feed forKey:feed_id];
+	}
+	
+	[self.feedTitlesTable reloadData];
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+}
+
+
+#pragma mark -
+#pragma mark PullToRefresh
+
+// called when the user pulls-to-refresh
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+	[self fetchFeedList];
+}
+
+// called when the date shown needs to be updated, optional
+- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
+	return self.lastUpdate;
 }
 
 @end
