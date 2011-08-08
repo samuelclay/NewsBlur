@@ -10,7 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
-#import "GTMNString+HTML.h"
+#import "NSString+HTML.h"
 #import "JSON.h"
 
 #define kTableViewRowHeight 65;
@@ -41,14 +41,15 @@
     for (id i in appDelegate.recentlyReadStories) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                 inSection:0];
+        NSLog(@"Read story: %d", [i intValue]);
         [indexPaths addObject:indexPath];
     }
-    [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     if ([indexPaths count] > 0) {
         [self.storyTitlesTable beginUpdates];
         [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
     }
+    [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
@@ -252,8 +253,8 @@
         cell.storyAuthor.text = @"";
     }
     NSString *title = [story objectForKey:@"story_title"];
-//    cell.storyTitle.text = [title stringByDecodingHTMLEntities];
-    cell.storyTitle.text = title;
+//    cell.storyTitle.text = title;
+    cell.storyTitle.text = [title stringByDecodingHTMLEntities];
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {

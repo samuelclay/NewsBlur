@@ -29,6 +29,7 @@
     NSDictionary * activeFeed;
     NSArray * activeFeedStories;
     NSMutableArray * activeFeedStoryLocations;
+    NSMutableArray * activeFeedStoryLocationIds;
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
     int storyCount;
@@ -51,6 +52,7 @@
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocations;
+@property (readwrite, retain) NSMutableArray * activeFeedStoryLocationIds;
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
@@ -70,6 +72,7 @@
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;
 - (int)indexOfActiveStory;
+- (int)locationOfActiveStory;
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)addStories:(NSArray *)stories;
 - (int)unreadCount;

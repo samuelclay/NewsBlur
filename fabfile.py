@@ -65,7 +65,6 @@ def task():
 # = Deploy =
 # ==========
 
-@roles('web')
 def deploy():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
