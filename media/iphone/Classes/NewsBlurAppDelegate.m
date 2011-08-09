@@ -139,25 +139,27 @@
     int activeLocation = [self locationOfActiveStory];
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     int readStatus = -1;
-    NSLog(@"ActiveStory: %d/%d", activeIndex, self.storyCount);
+//    NSLog(@"ActiveStory: %d (%d)/%d", activeLocation, activeIndex, self.storyCount);
     for (int i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
         int location = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
         NSDictionary *story = [activeFeedStories objectAtIndex:location];
         readStatus = [[story objectForKey:@"read_status"] intValue];
-        NSLog(@"readStatus at %d: %d", i, readStatus);
+//        NSLog(@"+1 readStatus at %d (%d): %d", location, i, readStatus);
         if (readStatus == 0) {
-            NSLog(@"NextStory: %d", i);
-            return i;
+//            NSLog(@"NextStory after: %d", i);
+            return location;
         }
     }
-    for (int i=activeLocation; i >= 0; i--) {
-        int location = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
-        NSDictionary *story = [activeFeedStories objectAtIndex:location];
-        readStatus = [[story objectForKey:@"read_status"] intValue];
-        NSLog(@"readStatus at %d: %d", i, readStatus);
-        if (readStatus == 0) {
-            NSLog(@"NextStory: %d", i);
-            return i;
+    if (activeLocation > 0) {
+        for (int i=activeLocation-1; i >= 0; i--) {
+            int location = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
+            NSDictionary *story = [activeFeedStories objectAtIndex:location];
+            readStatus = [[story objectForKey:@"read_status"] intValue];
+//            NSLog(@"-1 readStatus at %d (%d): %d", location, i, readStatus);
+            if (readStatus == 0) {
+//                NSLog(@"NextStory before: %d", i);
+                return location;
+            }
         }
     }
     return -1;
