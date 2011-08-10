@@ -8,6 +8,7 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "OriginalStoryViewController.h"
+#import "NSString+HTML.h"
 
 
 @implementation OriginalStoryViewController
@@ -141,7 +142,7 @@
 - (void)updateTitle:(UIWebView*)aWebView
 {
     NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
-    self.pageTitle.text = pageTitleValue;
+    self.pageTitle.text = [pageTitleValue stringByDecodingHTMLEntities];
 }
 - (void)updateAddress:(NSURLRequest*)request
 {

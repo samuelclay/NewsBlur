@@ -130,18 +130,21 @@
                              initWithDictionary:[jsonS JSONValue]];
     NSArray *newStories = [results objectForKey:@"stories"];
     NSInteger existingStoriesCount = [[appDelegate activeFeedStoryLocations] count];
+    NSInteger newStoriesCount = [newStories count];
     
     if (self.feedPage == 1) {
         [appDelegate setStories:newStories];
-    } else if ([newStories count] > 0) {        
+    } else if (newStoriesCount > 0) {        
         [appDelegate addStories:newStories];
     }
     
-    NSInteger newStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
+    NSInteger newVisibleStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
     
-    if (existingStoriesCount > 0 && newStoriesCount > 0) {
+    NSLog(@"Paging: %d/%d", existingStoriesCount, [appDelegate unreadCount]);
+    
+    if (existingStoriesCount > 0 && newVisibleStoriesCount > 0) {
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
-        for (int i=0; i < newStoriesCount; i++) {
+        for (int i=0; i < newVisibleStoriesCount; i++) {
             [indexPaths addObject:[NSIndexPath indexPathForRow:(existingStoriesCount+i) 
                                                      inSection:0]];
         }
@@ -150,9 +153,11 @@
                                      withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
         [indexPaths release];
-    } else if (newStoriesCount > 0) {
+    } else if (newVisibleStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
-    } else if (newStoriesCount == 0) {
+    } else if (newStoriesCount == 0 || 
+               (self.feedPage > 15 && 
+                existingStoriesCount >= [appDelegate unreadCount])) {
         self.pageFinished = YES;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:existingStoriesCount 
                                                     inSection:0];
@@ -293,6 +298,7 @@
     if (indexPath.row < appDelegate.storyCount) {
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
+        [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
         [appDelegate loadStoryDetailView];
     }
 }

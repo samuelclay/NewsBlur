@@ -33,6 +33,7 @@
     [self showStory];
     [self markStoryAsRead];   
     [self setNextPreviousButtons];
+    self.webView.scalesPageToFit = YES;
     
 	[super viewWillAppear:animated];
 }
@@ -63,7 +64,7 @@
     }
     
     float unreads = [appDelegate unreadCount];
-    float total = [appDelegate storyCount];
+    float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
     NSLog(@"Total: %f / %f = %f", unreads, total, progress);
     [progressView setProgress:progress];
@@ -99,6 +100,9 @@
                               "  text-rendering: optimizeLegibility;"
                               "  margin: 0;"
                               "}"
+                              "h1, h2, h3, h4, h5, h6, div, table, span, pre, code {"
+                              "  max-width: 300px;"
+                              "}"
                               "img {"
                               "  max-width: 300px;"
                               "  width: auto;"
@@ -118,6 +122,7 @@
                               "  padding: 8px 8px 6px;"
                               "  text-shadow: 1px 1px 0 #EFEFEF;"
                               "  overflow: hidden;"
+                              "  max-width: none;"
                               "}"
                               ".NB-story {"
                               "  margin: 12px 8px;"
@@ -152,13 +157,20 @@
                               "}"
                               ".NB-story-date {"
                               "  font-size: 11px;"
-                              "  color: #252D6C;"
+                              "  color: #454D6C;"
                               "}"
                               ".NB-story-title {"
                               "  clear: left;"
                               "  margin: 4px 0 4px;"
                               "}"
-                              "</style>"];
+                              "ins {"
+                              "  text-decoration: none;"
+                              "}"
+                              "del {"
+                              "  display: none;"
+                              "}"
+                              "</style>"
+                              "<meta name=\"viewport\" content=\"width=320\"/>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",[appDelegate.activeStory objectForKey:@"story_authors"]];

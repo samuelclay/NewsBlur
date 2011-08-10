@@ -56,6 +56,8 @@
 		FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */; };
 		FF435EDB13E9AF4A0083043F /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = FF435EDA13E9AF4A0083043F /* Base64.m */; };
 		FF435EDE13E9B04E0083043F /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = FF435EDD13E9B04E0083043F /* world.png */; };
+		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; };
+		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; };
 		FF79E11D13EB756A0095C852 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11913EB756A0095C852 /* arrow.png */; };
 		FF79E11E13EB756A0095C852 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11A13EB756A0095C852 /* arrow@2x.png */; };
 		FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF79E11C13EB756A0095C852 /* PullToRefreshView.m */; };
@@ -145,6 +147,10 @@
 		FF435ED913E9AF4A0083043F /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		FF435EDA13E9AF4A0083043F /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		FF435EDD13E9B04E0083043F /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
+		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
+		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
+		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
+		FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataDecompressor.m; sourceTree = "<group>"; };
 		FF79E11913EB756A0095C852 /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		FF79E11A13EB756A0095C852 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
 		FF79E11B13EB756A0095C852 /* PullToRefreshView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullToRefreshView.h; sourceTree = "<group>"; };
@@ -285,6 +291,10 @@
 			children = (
 				78095E24128EF30C00230C8E /* ASIAuthenticationDialog.h */,
 				78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */,
+				FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */,
+				FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */,
+				FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */,
+				FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */,
 				78095E26128EF30C00230C8E /* ASICacheDelegate.h */,
 				78095E27128EF30C00230C8E /* ASIDownloadCache.h */,
 				78095E28128EF30C00230C8E /* ASIDownloadCache.m */,
@@ -442,6 +452,8 @@
 				FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */,
 				FF435EDB13E9AF4A0083043F /* Base64.m in Sources */,
 				FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */,
+				FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */,
+				FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -31,6 +31,7 @@
 @synthesize activeFeedStoryLocationIds;
 @synthesize activeStory;
 @synthesize storyCount;
+@synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
@@ -137,7 +138,7 @@
 
 - (int)indexOfNextStory {
     int activeLocation = [self locationOfActiveStory];
-    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
+//    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     int readStatus = -1;
 //    NSLog(@"ActiveStory: %d (%d)/%d", activeLocation, activeIndex, self.storyCount);
     for (int i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
@@ -191,10 +192,19 @@
 }
 
 - (int)unreadCount {
-    int ps = [[self.activeFeed objectForKey:@"ps"] intValue];
-    int nt = [[self.activeFeed objectForKey:@"nt"] intValue];
-    int ng = [[self.activeFeed objectForKey:@"ng"] intValue];
-    return ps + nt + ng;
+    int total = 0;
+    total += [[self.activeFeed objectForKey:@"ps"] intValue];
+    if ([self selectedIntelligence] <= 0) {
+        total += [[self.activeFeed objectForKey:@"nt"] intValue];
+    }
+    if ([self selectedIntelligence] <= -1) {
+        total += [[self.activeFeed objectForKey:@"ng"] intValue];
+    }
+    return total;
+}
+
+- (int)visibleUnreadCount {
+    
 }
 
 - (void)addStories:(NSArray *)stories {

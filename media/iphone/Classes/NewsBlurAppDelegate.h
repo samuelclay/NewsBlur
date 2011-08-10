@@ -33,6 +33,7 @@
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
     int storyCount;
+    int originalStoryCount;
     NSInteger selectedIntelligence;
     NSMutableArray * recentlyReadStories;
     NSIndexPath * activeFeedIndexPath;
@@ -56,6 +57,7 @@
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
+@property (readwrite) int originalStoryCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
 @property (readwrite, retain) NSIndexPath * activeFeedIndexPath;
@@ -76,6 +78,7 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)addStories:(NSArray *)stories;
 - (int)unreadCount;
+- (int)visibleUnreadCount;
 - (void)markActiveStoryRead;
 - (void)markActiveFeedAllRead;
 - (void)calculateStoryLocations;
