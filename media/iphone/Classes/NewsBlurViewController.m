@@ -137,7 +137,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
+											   stringWithFormat:@"http://nb.local.host:8000/reader/feeds?flat=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -297,15 +297,16 @@
 	
 	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];	
 	if (cell == nil) {
-		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedTableCell"
-                                                     owner:nil
-                                                   options:nil];
-        for (id oneObject in nib) {
-            if ([oneObject isKindOfClass:[FeedTableCell class]]) {
-                cell = (FeedTableCell *)oneObject;
-				break;
-            }
-        }
+		cell = [[[FeedTableCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"FeedCellIdentifier"] autorelease];
+//		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedTableCell"
+//                                                     owner:nil
+//                                                   options:nil];
+//        for (id oneObject in nib) {
+//            if ([oneObject isKindOfClass:[FeedTableCell class]]) {
+//                cell = (FeedTableCell *)oneObject;
+//				break;
+//            }
+//        }
 	}
 	
 	NSString *folderName = [self.dictFoldersArray objectAtIndex:indexPath.section];
@@ -324,8 +325,11 @@
 	} else {
 		cell.feedFavicon.image = [UIImage imageNamed:@"world.png"];
 	}
-
-	[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
+	
+	cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
+	cell.neutralCount = [[feed objectForKey:@"nt"] intValue];
+	cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
+//	[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
 	
 	return cell;
 }
@@ -509,7 +513,7 @@
 
 
 - (void)loadFavicons {
-	NSString *urlString = @"http://www.newsblur.com/reader/favicons";
+	NSString *urlString = @"http://nb.local.host:8000/reader/favicons";
 	NSURL *url = [NSURL URLWithString:urlString];
 	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
 	

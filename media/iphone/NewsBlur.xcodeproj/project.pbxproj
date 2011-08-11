@@ -54,6 +54,9 @@
 		FF1C46C213E6003300E7609E /* logo_114.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46C113E6003300E7609E /* logo_114.png */; };
 		FF38679B13D88EEC00F8AB3A /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */; };
 		FF38679E13D8914A00F8AB3A /* GTMNString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */; };
+		FF38DB1313F2112D00251891 /* UIView+TKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38DB1213F2112D00251891 /* UIView+TKCategory.m */; };
+		FF38DB1713F211DC00251891 /* UIImage+TKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38DB1613F211DC00251891 /* UIImage+TKCategory.m */; };
+		FF38DB1A13F21B2C00251891 /* ABTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38DB1913F21B2C00251891 /* ABTableViewCell.m */; };
 		FF435EDB13E9AF4A0083043F /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = FF435EDA13E9AF4A0083043F /* Base64.m */; };
 		FF435EDE13E9B04E0083043F /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = FF435EDD13E9B04E0083043F /* world.png */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; };
@@ -144,6 +147,12 @@
 		FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNString+HTML.h"; sourceTree = "<group>"; };
 		FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNString+HTML.m"; sourceTree = "<group>"; };
 		FF38679F13D8916E00F8AB3A /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		FF38DB1113F2112D00251891 /* UIView+TKCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+TKCategory.h"; sourceTree = "<group>"; };
+		FF38DB1213F2112D00251891 /* UIView+TKCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+TKCategory.m"; sourceTree = "<group>"; };
+		FF38DB1513F211DC00251891 /* UIImage+TKCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+TKCategory.h"; sourceTree = "<group>"; };
+		FF38DB1613F211DC00251891 /* UIImage+TKCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+TKCategory.m"; sourceTree = "<group>"; };
+		FF38DB1813F21B2C00251891 /* ABTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABTableViewCell.h; sourceTree = "<group>"; };
+		FF38DB1913F21B2C00251891 /* ABTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABTableViewCell.m; sourceTree = "<group>"; };
 		FF435ED913E9AF4A0083043F /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		FF435EDA13E9AF4A0083043F /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		FF435EDD13E9B04E0083043F /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
@@ -244,6 +253,12 @@
 				FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */,
 				FF435ED913E9AF4A0083043F /* Base64.h */,
 				FF435EDA13E9AF4A0083043F /* Base64.m */,
+				FF38DB1113F2112D00251891 /* UIView+TKCategory.h */,
+				FF38DB1213F2112D00251891 /* UIView+TKCategory.m */,
+				FF38DB1513F211DC00251891 /* UIImage+TKCategory.h */,
+				FF38DB1613F211DC00251891 /* UIImage+TKCategory.m */,
+				FF38DB1813F21B2C00251891 /* ABTableViewCell.h */,
+				FF38DB1913F21B2C00251891 /* ABTableViewCell.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -454,6 +469,9 @@
 				FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */,
 				FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */,
 				FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */,
+				FF38DB1313F2112D00251891 /* UIView+TKCategory.m in Sources */,
+				FF38DB1713F211DC00251891 /* UIImage+TKCategory.m in Sources */,
+				FF38DB1A13F21B2C00251891 /* ABTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
