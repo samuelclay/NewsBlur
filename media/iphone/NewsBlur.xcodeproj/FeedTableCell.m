@@ -23,6 +23,7 @@ static UIColor *positiveBackgroundColor = nil;
 static UIColor *neutralBackgroundColor = nil;
 static UIColor *negativeBackgroundColor = nil;
 static CGFloat *psColors = nil;
+
 @implementation FeedTableCell
 
 @synthesize feedTitle;
@@ -48,16 +49,16 @@ static CGFloat *psColors = nil;
 		positiveBackgroundColor = [ps retain];
 		neutralBackgroundColor = [nt retain];
 		negativeBackgroundColor = [ng retain];
-        UIColor *psGrad = UIColorFromRGB(0x559F4D);
+//        UIColor *psGrad = UIColorFromRGB(0x559F4D);
 //        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
 //        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
-        const CGFloat* psTop = CGColorGetComponents(ps.CGColor);
-        const CGFloat* psBot = CGColorGetComponents(psGrad.CGColor);
-        CGFloat psGradient[] = {
-            psTop[0], psTop[1], psTop[2], psTop[3],
-            psBot[0], psBot[1], psBot[2], psBot[3]
-        };
-        psColors = psGradient;
+//        const CGFloat* psTop = CGColorGetComponents(ps.CGColor);
+//        const CGFloat* psBot = CGColorGetComponents(psGrad.CGColor);
+//        CGFloat psGradient[] = {
+//            psTop[0], psTop[1], psTop[2], psTop[3],
+//            psBot[0], psBot[1], psBot[2], psBot[3]
+//        };
+//        psColors = psGradient;
         
 	}
 }
@@ -118,8 +119,7 @@ static CGFloat *psColors = nil;
     
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
-	UIColor *backgroundColor = self.selected || self.highlighted ? [UIColor clearColor] : [UIColor whiteColor];
-	UIColor *textColor = self.selected || self.highlighted ? [UIColor whiteColor] : [UIColor blackColor];
+	UIColor *backgroundColor = self.selected || self.highlighted ? [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 	
 	[backgroundColor set];
 	CGContextFillRect(context, r);
@@ -129,25 +129,25 @@ static CGFloat *psColors = nil;
 	rect.size.width -= 25;
 	
     int psWidth = _positiveCount == 0 ? 0 : _positiveCount < 10 ? 
-                    14 : _positiveCount < 100 ? 20 : 26;
+                    12 : _positiveCount < 100 ? 20 : 26;
     int ntWidth = _neutralCount  == 0 ? 0 : _neutralCount < 10 ? 
-                    14 : _neutralCount  < 100 ? 20 : 26;
+                    12 : _neutralCount  < 100 ? 20 : 26;
     int ngWidth = _negativeCount == 0 ? 0 : _negativeCount < 10 ? 
-                    14 : _negativeCount < 100 ? 20 : 26;
+                    12 : _negativeCount < 100 ? 20 : 26;
     
     int psOffset = _positiveCount == 0 ? 0 : _positiveCount < 10 ? 
-                    -6 : _positiveCount < 100 ? 0 : 6;
+                    -8 : _positiveCount < 100 ? 0 : 6;
     int ntOffset = _neutralCount  == 0 ? 0 : _neutralCount < 10 ? 
-                    -6 : _neutralCount  < 100 ? 0 : 6;
+                    -8 : _neutralCount  < 100 ? 0 : 6;
     int ngOffset = _negativeCount == 0 ? 0 : _negativeCount < 10 ? 
-                    -6 : _negativeCount < 100 ? 0 : 6;
+                    -8 : _negativeCount < 100 ? 0 : 6;
     
     int psPadding = _positiveCount == 0 ? 0 : 2;
     int ntPadding = _neutralCount  == 0 ? 0 : 2;
     
 	if(_positiveCount > 0){		
 		[positiveBackgroundColor set];
-		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 8, psWidth, 18);
+		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 18);
         [UIView drawLinearGradientInRect:rr colors:psColors];
 		[UIView drawRoundRectangleInRect:rr withRadius:5];
 		
@@ -155,35 +155,42 @@ static CGFloat *psColors = nil;
         
         CGSize size = [_positiveCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
-        float y_pos = (rr.size.height - size.height) /2; 
+        float y_pos = (rr.size.height - size.height) / 2; 
         [_positiveCountStr drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) withFont:indicatorFont];
     }
 	if(_neutralCount > 0){		
 		[neutralBackgroundColor set];
-		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 8, ntWidth, 18);
+		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 18);
 		[UIView drawRoundRectangleInRect:rr withRadius:5];
 //        [UIView drawLinearGradientInRect:rr colors:ntColors];
 		
 		[indicatorBlackColor set];
         CGSize size = [_neutralCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
-        float y_pos = (rr.size.height - size.height) /2; 
+        float y_pos = (rr.size.height - size.height) / 2; 
         [_neutralCountStr drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) withFont:indicatorFont];     
 	}
 	if(_negativeCount > 0){		
 		[negativeBackgroundColor set];
-		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, 8, ngWidth, 18);
+		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, 10, ngWidth, 18);
 		[UIView drawRoundRectangleInRect:rr withRadius:5];
 //        [UIView drawLinearGradientInRect:rr colors:ngColors];
 		
 		[indicatorWhiteColor set];
         CGSize size = [_negativeCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
-        float y_pos = (rr.size.height - size.height) /2; 
+        float y_pos = (rr.size.height - size.height) / 2; 
         [_negativeCountStr drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) withFont:indicatorFont];    
 	}
+    
+    
 	
-	
+    UIColor *textColor = self.selected || self.highlighted ? [UIColor whiteColor] : [UIColor blackColor];
+    [textColor set];
+    [feedTitle drawInRect:CGRectMake(36.0, 12.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) withFont:[UIFont boldSystemFontOfSize:13.0] lineBreakMode:UILineBreakModeTailTruncation alignment:UITextAlignmentLeft];
+    
+    [self.feedFavicon drawInRect:CGRectMake(14.0, 12.0, 16.0, 16.0)];
+    
 }
 
 

@@ -64,6 +64,7 @@
 		FF79E11D13EB756A0095C852 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11913EB756A0095C852 /* arrow.png */; };
 		FF79E11E13EB756A0095C852 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11A13EB756A0095C852 /* arrow@2x.png */; };
 		FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF79E11C13EB756A0095C852 /* PullToRefreshView.m */; };
+		FF7DB4C413F58486008176BF /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = FF7DB4C313F58486008176BF /* folder.png */; };
 		FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCE7AE613D49165009A98F6 /* FeedTableCell.m */; };
 		FFCE7AE913D49165009A98F6 /* FeedTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFCE7AE713D49165009A98F6 /* FeedTableCell.xib */; };
 /* End PBXBuildFile section */
@@ -164,6 +165,7 @@
 		FF79E11A13EB756A0095C852 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
 		FF79E11B13EB756A0095C852 /* PullToRefreshView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullToRefreshView.h; sourceTree = "<group>"; };
 		FF79E11C13EB756A0095C852 /* PullToRefreshView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PullToRefreshView.m; sourceTree = "<group>"; };
+		FF7DB4C313F58486008176BF /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
 		FFCE7AE513D49165009A98F6 /* FeedTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedTableCell.h; path = ../NewsBlur.xcodeproj/FeedTableCell.h; sourceTree = "<group>"; };
 		FFCE7AE613D49165009A98F6 /* FeedTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FeedTableCell.m; path = ../NewsBlur.xcodeproj/FeedTableCell.m; sourceTree = "<group>"; };
 		FFCE7AE713D49165009A98F6 /* FeedTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedTableCell.xib; path = ../NewsBlur.xcodeproj/FeedTableCell.xib; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FF7DB4C313F58486008176BF /* folder.png */,
 				FF79E11913EB756A0095C852 /* arrow.png */,
 				FF79E11A13EB756A0095C852 /* arrow@2x.png */,
 				FF435EDD13E9B04E0083043F /* world.png */,
@@ -431,6 +434,7 @@
 				FF435EDE13E9B04E0083043F /* world.png in Resources */,
 				FF79E11D13EB756A0095C852 /* arrow.png in Resources */,
 				FF79E11E13EB756A0095C852 /* arrow@2x.png in Resources */,
+				FF7DB4C413F58486008176BF /* folder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

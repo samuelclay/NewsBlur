@@ -16,6 +16,11 @@
 
 #define kTableViewRowHeight 40;
 
+#define UIColorFromRGB(rgbValue) [UIColor \
+colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
@@ -137,7 +142,7 @@
 
 - (void)fetchFeedList {
 	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://nb.local.host:8000/reader/feeds?flat=true"]];
+											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -316,14 +321,14 @@
 	id feedId = [feeds objectAtIndex:location];
 	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-	cell.feedTitle.text = [feed objectForKey:@"feed_title"];
+	cell.feedTitle = [feed objectForKey:@"feed_title"];
 	
 	NSString *favicon = [feed objectForKey:@"favicon"];
 	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
 		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-		cell.feedFavicon.image = [UIImage imageWithData:imageData];
+		cell.feedFavicon = [UIImage imageWithData:imageData];
 	} else {
-		cell.feedFavicon.image = [UIImage imageNamed:@"world.png"];
+		cell.feedFavicon = [UIImage imageNamed:@"world.png"];
 	}
 	
 	cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
@@ -334,7 +339,8 @@
 	return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView 
+	didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *folderName = [self.dictFoldersArray objectAtIndex:indexPath.section];
 	NSArray *feeds = [self.dictFolders objectForKey:folderName];
 	NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
@@ -349,8 +355,55 @@
 	[appDelegate loadFeedDetailView];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView 
+	heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kTableViewRowHeight;
+}
+
+- (UIView *)tableView:(UITableView *)tableView 
+	viewForHeaderInSection:(NSInteger)section {
+	// create the parent view that will hold header Label
+	UIView* customView = [[[UIView alloc] 
+						   initWithFrame:CGRectMake(0.0, 0.0, 
+													tableView.bounds.size.width, 21.0)] 
+						  autorelease];
+	
+
+	UIView *borderBottom = [[[UIView alloc] 
+						initWithFrame:CGRectMake(0.0, 20.0, 
+												 tableView.bounds.size.width, 1.0)]
+					   autorelease];
+	borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
+	borderBottom.opaque = NO;
+	[customView addSubview:borderBottom];
+	
+	UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+	customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+								  colorWithAlphaComponent:0.8];
+	customView.opaque = NO;
+	headerLabel.backgroundColor = [UIColor clearColor];
+	headerLabel.opaque = NO;
+	headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+	headerLabel.highlightedTextColor = [UIColor whiteColor];
+	headerLabel.font = [UIFont boldSystemFontOfSize:11];
+	headerLabel.frame = CGRectMake(26.0, 1.0, 286.0, 20.0);
+	headerLabel.text = [[self.dictFoldersArray objectAtIndex:section] uppercaseString];
+	headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
+	headerLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+	[customView addSubview:headerLabel];
+	[headerLabel release];
+	
+	UIImage *folderImage = [UIImage imageNamed:@"folder.png"];
+	UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
+	folderImageView.frame = CGRectMake(10.0, 2.0, 16.0, 16.0);
+	[customView addSubview:folderImageView];
+	[folderImageView release];
+	
+	return customView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return 21;
 }
 
 - (NSString *)showUnreadCount:(NSDictionary *)feed {
@@ -513,7 +566,7 @@
 
 
 - (void)loadFavicons {
-	NSString *urlString = @"http://nb.local.host:8000/reader/favicons";
+	NSString *urlString = @"http://www.newsblur.com/reader/favicons";
 	NSURL *url = [NSURL URLWithString:urlString];
 	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
 	
@@ -534,6 +587,7 @@
 		[self.dictFeeds setValue:feed forKey:feed_id];
 	}
 	
+	[results release];
 	[self.feedTitlesTable reloadData];
 }
 

@@ -11,8 +11,8 @@
 
 
 @interface FeedTableCell : ABTableViewCell {    
-    UILabel *feedTitle;
-    UIImageView *feedFavicon;
+    NSString *feedTitle;
+    UIImage *feedFavicon;
     int _positiveCount;
     int _neutralCount;
     int _negativeCount;
@@ -21,8 +21,8 @@
     NSString *_negativeCountStr;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel *feedTitle;
-@property (nonatomic, retain) IBOutlet UIImageView *feedFavicon;
+@property (nonatomic, retain) NSString *feedTitle;
+@property (nonatomic, retain) UIImage *feedFavicon;
 @property (assign, nonatomic) int positiveCount;
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;

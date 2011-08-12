@@ -313,7 +313,7 @@ def load_single_feed(request, feed_id):
     if usersub:
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
-                                            read_date__gte=usersub.mark_read_date)
+                                            read_date__gte=usersub.mark_read_date).only('story')
         starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
 

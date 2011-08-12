@@ -204,7 +204,7 @@
 }
 
 - (int)visibleUnreadCount {
-    
+    return 0;
 }
 
 - (void)addStories:(NSArray *)stories {
