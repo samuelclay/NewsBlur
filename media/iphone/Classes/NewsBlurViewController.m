@@ -303,15 +303,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];	
 	if (cell == nil) {
 		cell = [[[FeedTableCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"FeedCellIdentifier"] autorelease];
-//		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedTableCell"
-//                                                     owner:nil
-//                                                   options:nil];
-//        for (id oneObject in nib) {
-//            if ([oneObject isKindOfClass:[FeedTableCell class]]) {
-//                cell = (FeedTableCell *)oneObject;
-//				break;
-//            }
-//        }
 	}
 	
 	NSString *folderName = [self.dictFoldersArray objectAtIndex:indexPath.section];
@@ -334,7 +325,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
 	cell.neutralCount = [[feed objectForKey:@"nt"] intValue];
 	cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
-//	[cell.feedUnreadView loadHTMLString:[self showUnreadCount:feed] baseURL:nil];
 	
 	return cell;
 }
@@ -405,59 +395,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	return 21;
 }
-
-- (NSString *)showUnreadCount:(NSDictionary *)feed {
-	NSString *imgCssString = [NSString stringWithFormat:@"<style>"
-                              "body {"
-                              "  line-height: 18px;"
-                              "  font-size: 13px;"
-                              "  font-family: 'Lucida Grande',Helvetica, Arial;"
-                              "  text-rendering: optimizeLegibility;"
-                              "  margin: 0;"
-							  "  background-color: white"
-                              "}"
-							  ".NB-count {"
-							  "  float: right;"
-							  "  margin: 0px 2px 0 0;"
-							  "  padding: 2px 4px 2px;"
-							  "  border: none;"
-							  "  border-radius: 5px;"
-							  "  font-weight: bold;"
-							  "}"
-							  ".NB-positive {"
-							  "  color: white;"
-							  "  background-color: #559F4D;"
-							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#559F4D), to(#3B7613));"
-							  "}"
-							  ".NB-neutral {"
-							  "  background-color: #F9C72A;"
-							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9C72A), to(#E4AB00));"
-							  "}"
-							  ".NB-negative {"
-							  "  color: white;"
-							  "  background-color: #CC2A2E;"
-							  "  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CC2A2E), to(#9B181B));"
-							  "}"
-                              "</style>"];
-	int negativeCount = [[feed objectForKey:@"ng"] intValue];
-	int neutralCount = [[feed objectForKey:@"nt"] intValue];
-	int positiveCount = [[feed objectForKey:@"ps"] intValue];
-	
-	NSString *negativeCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-negative\">%@</div>",
-									 [feed objectForKey:@"ng"]];
-	NSString *neutralCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-neutral\">%@</div>",
-									 [feed objectForKey:@"nt"]];
-	NSString *positiveCountString = [NSString stringWithFormat:@"<div class=\"NB-count NB-positive\">%@</div>",
-									 [feed objectForKey:@"ps"]];
-    NSString *htmlString = [NSString stringWithFormat:@"%@ %@ %@ %@",
-                            imgCssString, 
-							!!positiveCount ? positiveCountString : @"", 
-							!!neutralCount ? neutralCountString : @"", 
-							!!negativeCount ? negativeCountString : @""];
-
-    return htmlString;
-}
-
 
 - (IBAction)selectIntelligence {
 	if (!self.viewShowingAllFeeds) {
