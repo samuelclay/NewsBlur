@@ -87,6 +87,7 @@ def index(request):
 @never_cache
 def login(request):
     code = -1
+    message = ""
     if request.method == "POST":
         form = LoginForm(request.POST, prefix='login')
         if form.is_valid():
@@ -97,9 +98,11 @@ def login(request):
             else:
                 logging.user(form.get_user(), "~FG~BBLogin~FW")
                 return HttpResponseRedirect(reverse('index'))
+        else:
+            message = form.errors.items()[0][1][0]
 
     if request.POST.get('api'):
-        return HttpResponse(json.encode(dict(code=code)), mimetype='application/json')
+        return HttpResponse(json.encode(dict(code=code, message=message)), mimetype='application/json')
     else:
         return index(request)
     

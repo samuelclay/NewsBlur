@@ -35,7 +35,7 @@
     IBOutlet UIBarButtonItem * sitesButton;
 }
 
-- (void)fetchFeedList;
+- (void)fetchFeedList:(BOOL)showLoader;
 - (IBAction)doLogoutButton;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;

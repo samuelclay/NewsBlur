@@ -54,8 +54,8 @@
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont systemFontOfSize:12];
-    label.textColor = [UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:1.0f];
-    label.shadowColor = [UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:1.0f];
+    label.textColor = [UIColor colorWithRed:0.01f green:0.02f blue:0.05 alpha:0.95];
+    label.shadowColor = [UIColor colorWithRed:0.76f green:0.86f blue:0.96f alpha:0.4f];
     label.shadowOffset = CGSizeMake(0.0f, 1.0f);
     label.textAlignment = UITextAlignmentCenter;
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
@@ -64,11 +64,11 @@
     [label release];
     
     CGRect addressFrame = CGRectMake(kMargin, kSpacer*2.0 + kLabelHeight,
-                                     labelFrame.size.width - 60, kAddressHeight);
+                                     labelFrame.size.width - kButtonWidth - kMargin, kAddressHeight);
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
     address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     address.borderStyle = UITextBorderStyleRoundedRect;
-    address.font = [UIFont systemFontOfSize:14];
+    address.font = [UIFont systemFontOfSize:18];
     [address setAdjustsFontSizeToFitWidth:YES];
     address.keyboardType = UIKeyboardTypeURL;
     address.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -78,24 +78,29 @@
     
     [self.view addSubview:navBar];
     
-    CGRect webViewFrame = self.webView.frame;
-    webViewFrame.origin.y = navBarFrame.origin.y + navBarFrame.size.height;
+    CGRect webViewFrame = CGRectMake(0, 
+                                     navBarFrame.origin.y + 
+                                     navBarFrame.size.height, 
+                                     self.view.frame.size.width, 
+                                     self.view.frame.size.height - kNavBarHeight - 44);
     self.webView.frame = webViewFrame;
     
-    UIBarButtonItem *close = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleBordered target:self action:@selector(doCloseOriginalStoryViewController)];
-
-    CGRect closeButtonFrame = CGRectMake(addressFrame.size.width + kMargin*2, 
+    UIBarButtonItem *close = [[UIBarButtonItem alloc] 
+                              initWithTitle:@"Close" 
+                              style:UIBarButtonItemStyleBordered 
+                              target:self 
+                              action:@selector(doCloseOriginalStoryViewController)];
+    close.width = kButtonWidth;
+    CGRect closeButtonFrame = CGRectMake(addressFrame.origin.x + 
+                                         addressFrame.size.width + kMargin, 
                                          addressFrame.origin.y, 
-                                         navBarFrame.size.width - addressFrame.size.width - kMargin*3,
-                                         addressFrame.size.height - 1);    
-    TransparentToolbar* tools = [[TransparentToolbar alloc] initWithFrame:closeButtonFrame];
-    NSMutableArray* buttons = [[NSMutableArray alloc] initWithCapacity:1];
-    
-    [buttons addObject:close];
+                                         kButtonWidth - kMargin,
+                                         kAddressHeight - 1);    
+    TransparentToolbar* tools = [[TransparentToolbar alloc] 
+                                 initWithFrame:closeButtonFrame];
+    NSArray* buttons = [[NSArray alloc] initWithObjects:close, nil];
     [tools setItems:buttons animated:NO];
-//    [tools setBarStyle:UIBarStyleBlack];
     [tools setTintColor:[UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9]];
-//    [tools setTranslucent:YES];
     [navBar addSubview:tools];
     [close release];
     [buttons release];

@@ -18,6 +18,9 @@
 @synthesize usernameTextField;
 @synthesize passwordTextField;
 @synthesize jsonString;
+@synthesize activityIndicator;
+@synthesize authenticatingLabel;
+@synthesize errorLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -35,6 +38,18 @@
     [super viewDidLoad];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [self.errorLabel setHidden:YES];
+    [self.authenticatingLabel setHidden:YES];
+    [self.activityIndicator stopAnimating];
+    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [self.activityIndicator stopAnimating];
+    [super viewDidAppear:animated];
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
 	if(textField == usernameTextField) {
@@ -48,6 +63,8 @@
 }
 
 - (void)checkPassword {
+    [self.authenticatingLabel setHidden:NO];
+    [self.activityIndicator startAnimating];
     NSLog(@"appdelegate:: %@", [self appDelegate]);
     NSString *urlString = @"http://www.newsblur.com/reader/login";
     NSURL *url = [NSURL URLWithString:urlString];
@@ -64,14 +81,18 @@
 
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
+    [self.authenticatingLabel setHidden:YES];
+    [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSLog(@"Bad login");
+        NSLog(@"Bad login: %@", results);
         [appDelegate showLogin];
+        [self.errorLabel setText:[results valueForKey:@"message"]];
+        [self.errorLabel setHidden:NO];
     } else {
         NSLog(@"Good login");
         [appDelegate reloadFeedsView];

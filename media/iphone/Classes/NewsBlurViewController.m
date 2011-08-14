@@ -11,6 +11,7 @@
 #import "FeedTableCell.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
+#import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
 
@@ -141,7 +142,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark -
 #pragma mark Initialization
 
-- (void)fetchFeedList {
+- (void)fetchFeedList:(BOOL)showLoader {
+	if (showLoader) {
+		MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		HUD.labelText = @"On its way...";
+	}
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	NSURL *urlFeedList = [NSURL URLWithString:
 						  [NSString stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
 	responseData = [[NSMutableData data] retain];
@@ -174,8 +180,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	//[connection release];
+	
+	[MBProgressHUD hideHUDForView:self.view animated:YES];
 	[pull finishedLoading];
 	[self loadFavicons];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 	[responseData release];
 	if ([jsonString length] > 0) {
@@ -549,7 +558,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
-	[self fetchFeedList];
+	[self fetchFeedList:NO];
 }
 
 // called when the date shown needs to be updated, optional

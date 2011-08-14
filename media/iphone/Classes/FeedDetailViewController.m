@@ -90,6 +90,7 @@
 
 - (void)fetchFeedDetail:(int)page {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.feedPage = page;
         self.pageFetching = YES;
         int storyCount = appDelegate.storyCount;
@@ -172,10 +173,11 @@
     
     [self performSelector:@selector(checkScroll)
                withObject:nil
-               afterDelay:1.0];
+               afterDelay:0.2];
     
     [results release];
     [jsonS release];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

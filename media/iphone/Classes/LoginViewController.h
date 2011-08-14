@@ -16,6 +16,10 @@
     UITextField *usernameTextField;
     UITextField *passwordTextField;
     NSMutableData * jsonString;
+    
+    UIActivityIndicatorView *activityIndicator;
+    UILabel *authenticatingLabel;
+    UILabel *errorLabel;
 }
 
 - (void)checkPassword;
@@ -24,5 +28,8 @@
 @property (nonatomic, retain) IBOutlet UITextField *usernameTextField;
 @property (nonatomic, retain) IBOutlet UITextField *passwordTextField;
 @property (nonatomic, retain) NSMutableData * jsonString;
+@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (nonatomic, retain) IBOutlet UILabel *authenticatingLabel;
+@property (nonatomic, retain) IBOutlet UILabel *errorLabel;
 
 @end

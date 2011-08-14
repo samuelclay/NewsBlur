@@ -10,12 +10,13 @@
 
 @class NewsBlurAppDelegate;
 
-static const CGFloat kNavBarHeight  = 52.0f;
+static const CGFloat kNavBarHeight  = 60.0f;
 static const CGFloat kLabelHeight   = 18.0f;
 static const CGFloat kMargin        = 10.0f;
 static const CGFloat kSpacer        = 2.0f;
 static const CGFloat kLabelFontSize = 12.0f;
-static const CGFloat kAddressHeight = 22.0f;
+static const CGFloat kAddressHeight = 28.0f;
+static const CGFloat kButtonWidth   = 48.0f;
 
 @interface OriginalStoryViewController : UIViewController {
     
