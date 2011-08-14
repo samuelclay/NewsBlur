@@ -66,6 +66,15 @@
 	[super viewDidAppear:animated];
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    Class viewClass = [appDelegate.navigationController.visibleViewController class];
+    if (viewClass == [appDelegate.feedDetailViewController class] ||
+        viewClass == [appDelegate.feedsViewController class]) {
+        self.activeStoryId = nil;
+        [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
+    }
+}
+
 - (void)setNextPreviousButtons {
     int nextIndex = [appDelegate indexOfNextStory];
     if (nextIndex == -1) {

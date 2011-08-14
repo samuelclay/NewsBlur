@@ -299,7 +299,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < appDelegate.storyCount) {
+    if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];

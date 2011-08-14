@@ -11,6 +11,10 @@
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
 
+#define UIColorFromRGB(rgbValue) [UIColor \
+colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @implementation OriginalStoryViewController
 
@@ -35,7 +39,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
     [appDelegate showNavigationBar:NO];
-    toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    toolbar.tintColor = UIColorFromRGB(0x183353);
     NSURLRequest *request = [[[NSURLRequest alloc] initWithURL:[appDelegate activeOriginalStoryURL]] autorelease];
     [webView loadRequest:request];
 }
@@ -54,8 +58,8 @@
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont systemFontOfSize:12];
-    label.textColor = [UIColor colorWithRed:0.01f green:0.02f blue:0.05 alpha:0.95];
-    label.shadowColor = [UIColor colorWithRed:0.76f green:0.86f blue:0.96f alpha:0.4f];
+    label.textColor = [UIColor colorWithRed:0.97f green:0.98f blue:0.99 alpha:0.95];
+    label.shadowColor = [UIColor colorWithRed:0.06f green:0.12f blue:0.16f alpha:0.4f];
     label.shadowOffset = CGSizeMake(0.0f, 1.0f);
     label.textAlignment = UITextAlignmentCenter;
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
@@ -64,15 +68,17 @@
     [label release];
     
     CGRect addressFrame = CGRectMake(kMargin, kSpacer*2.0 + kLabelHeight,
-                                     labelFrame.size.width - kButtonWidth - kMargin, kAddressHeight);
+                                     labelFrame.size.width - kButtonWidth - kMargin, 
+                                     kAddressHeight);
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
     address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     address.borderStyle = UITextBorderStyleRoundedRect;
     address.font = [UIFont systemFontOfSize:18];
-    [address setAdjustsFontSizeToFitWidth:YES];
+    address.adjustsFontSizeToFitWidth = YES;
     address.keyboardType = UIKeyboardTypeURL;
     address.autocapitalizationType = UITextAutocapitalizationTypeNone;
     address.clearButtonMode = UITextFieldViewModeWhileEditing;
+    address.enablesReturnKeyAutomatically = YES;
     [navBar addSubview:address];
     self.pageUrl = address;
     
@@ -99,12 +105,12 @@
     TransparentToolbar* tools = [[TransparentToolbar alloc] 
                                  initWithFrame:closeButtonFrame];
     [tools setItems:[NSArray arrayWithObject:close] animated:NO];
-    [tools setTintColor:[UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9]];
+    [tools setTintColor:UIColorFromRGB(0x183353)];
     [navBar addSubview:tools];
     [close release];
     [tools release];
     
-    navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    navBar.tintColor = UIColorFromRGB(0x183353);
     
     [navBar release];
     [address release];
@@ -190,21 +196,6 @@
     
     // Release any cached data, images, etc that aren't in use.
 }
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-    self.webView = nil;
-    self.back = nil;
-    self.forward = nil;
-    self.refresh = nil;
-    self.pageAction = nil;
-    self.pageTitle = nil;
-    self.pageUrl = nil;
-    self.toolbar = nil;
-}
-
 
 - (void)dealloc {
     [appDelegate release];
