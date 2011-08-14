@@ -9,6 +9,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
+#import "TransparentToolbar.h"
 
 
 @implementation OriginalStoryViewController
@@ -67,7 +68,7 @@
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
     address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     address.borderStyle = UITextBorderStyleRoundedRect;
-    address.font = [UIFont systemFontOfSize:15];
+    address.font = [UIFont systemFontOfSize:14];
     [address setAdjustsFontSizeToFitWidth:YES];
     address.keyboardType = UIKeyboardTypeURL;
     address.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -79,17 +80,26 @@
     
     CGRect webViewFrame = self.webView.frame;
     webViewFrame.origin.y = navBarFrame.origin.y + navBarFrame.size.height;
-//    webViewFrame.size.height = self.toolbar.frame.origin.y - webViewFrame.origin.y;
     self.webView.frame = webViewFrame;
     
+    UIBarButtonItem *close = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleBordered target:self action:@selector(doCloseOriginalStoryViewController)];
+
     CGRect closeButtonFrame = CGRectMake(addressFrame.size.width + kMargin*2, 
-                                         addressFrame.origin.y, 48,
-                                         addressFrame.size.height);
-    UIButton *close = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [close setFrame:closeButtonFrame];
-    [close setTitle:@"Close" forState:UIControlStateNormal];
-    [close addTarget:self action:@selector(doCloseOriginalStoryViewController) forControlEvents:UIControlEventTouchUpInside];
-    [navBar addSubview:close];
+                                         addressFrame.origin.y, 
+                                         navBarFrame.size.width - addressFrame.size.width - kMargin*3,
+                                         addressFrame.size.height - 1);    
+    TransparentToolbar* tools = [[TransparentToolbar alloc] initWithFrame:closeButtonFrame];
+    NSMutableArray* buttons = [[NSMutableArray alloc] initWithCapacity:1];
+    
+    [buttons addObject:close];
+    [tools setItems:buttons animated:NO];
+//    [tools setBarStyle:UIBarStyleBlack];
+    [tools setTintColor:[UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9]];
+//    [tools setTranslucent:YES];
+    [navBar addSubview:tools];
+    [close release];
+    [buttons release];
+    [tools release];
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     

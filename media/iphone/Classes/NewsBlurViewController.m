@@ -83,7 +83,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.intelligenceControl addTarget:self
 								 action:@selector(selectIntelligence)
 					   forControlEvents:UIControlEventValueChanged];
-    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
+    [self.intelligenceControl 
+	 setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     [appDelegate showNavigationBar:animated];
 }
 
@@ -141,11 +142,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark Initialization
 
 - (void)fetchFeedList {
-	NSURL *urlFeedList = [NSURL URLWithString:[NSString 
-											   stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
+	NSURL *urlFeedList = [NSURL URLWithString:
+						  [NSString stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
-	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+	NSURLConnection *connection = [[NSURLConnection alloc] 
+								   initWithRequest:request delegate:self];
 	[connection release];
 	[request release];
 	
@@ -177,7 +179,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 	[responseData release];
 	if ([jsonString length] > 0) {
-		NSDictionary *results = [[NSDictionary alloc] initWithDictionary:[jsonString JSONValue]];
+		NSDictionary *results = [[NSDictionary alloc] 
+								 initWithDictionary:[jsonString JSONValue]];
 		appDelegate.activeUsername = [results objectForKey:@"user"];
 		[appDelegate setTitle:[results objectForKey:@"user"]];
 		self.dictFolders = [results objectForKey:@"flat_folders"];
@@ -192,6 +195,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		
 		self.dictFoldersArray = [NSMutableArray array];
 		for (id f in self.dictFolders) {
+			NSString *folderTitle = [f 
+									 stringByTrimmingCharactersInSet:
+									 [NSCharacterSet whitespaceCharacterSet]];
 			[self.dictFoldersArray addObject:f];
 //			NSArray *folder = [self.dictFolders objectForKey:f];
 //			NSLog(@"F: %@", f);
@@ -323,7 +329,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	}
 	
 	cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
-	cell.neutralCount = [[feed objectForKey:@"nt"] intValue];
+	cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
 	cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
 	
 	return cell;
@@ -376,7 +382,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
 	headerLabel.highlightedTextColor = [UIColor whiteColor];
 	headerLabel.font = [UIFont boldSystemFontOfSize:11];
-	headerLabel.frame = CGRectMake(26.0, 1.0, 286.0, 20.0);
+	headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, 20.0);
 	headerLabel.text = [[self.dictFoldersArray objectAtIndex:section] uppercaseString];
 	headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
 	headerLabel.shadowOffset = CGSizeMake(1.0, 1.0);
@@ -385,7 +391,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	
 	UIImage *folderImage = [UIImage imageNamed:@"folder.png"];
 	UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-	folderImageView.frame = CGRectMake(10.0, 2.0, 16.0, 16.0);
+	folderImageView.frame = CGRectMake(14.0, 2.0, 16.0, 16.0);
 	[customView addSubview:folderImageView];
 	[folderImageView release];
 	
@@ -393,6 +399,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	NSString *folder = [self.dictFoldersArray objectAtIndex:section];
+	if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+		return 0;
+	}
 	return 21;
 }
 

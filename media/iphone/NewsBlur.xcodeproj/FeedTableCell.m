@@ -72,13 +72,6 @@ static CGFloat *psColors = nil;
 - (void) setPositiveCount:(int)ps {    
 	if (ps == _positiveCount) return;
     
-	if (ps > 99 && _positiveCount < 100) {
-		[indicatorFont release];
-		indicatorFont = [[UIFont boldSystemFontOfSize:10.0] retain];
-	} else if (ps < 100 && _positiveCount > 99) {
-		[indicatorFont release];
-		indicatorFont = [[UIFont boldSystemFontOfSize:12.0] retain];
-	}
 	_positiveCount = ps;
 	_positiveCountStr = [[NSString stringWithFormat:@"%d", ps] retain];
 	[self setNeedsDisplay];
@@ -87,13 +80,6 @@ static CGFloat *psColors = nil;
 - (void) setNeutralCount:(int)nt {    
 	if (nt == _neutralCount) return;
     
-	if (nt > 99 && _neutralCount < 100) {
-		[indicatorFont release];
-		indicatorFont = [[UIFont boldSystemFontOfSize:10.0] retain];
-	} else if (nt < 100 && _neutralCount > 99) {
-		[indicatorFont release];
-		indicatorFont = [[UIFont boldSystemFontOfSize:12.0] retain];
-	}
 	_neutralCount = nt;
 	_neutralCountStr = [[NSString stringWithFormat:@"%d", nt] retain];
 	[self setNeedsDisplay];
@@ -102,13 +88,6 @@ static CGFloat *psColors = nil;
 - (void) setNegativeCount:(int)ng {    
 	if (ng == _negativeCount) return;
     
-	if (ng > 99 && _negativeCount < 100) {
-		[indicatorFont release];
-		indicatorFont = [[UIFont boldSystemFontOfSize:10.0] retain];
-	} else if (ng < 100 && _negativeCount > 99) {
-		[indicatorFont release];
-		indicatorFont = [[UIFont boldSystemFontOfSize:12.0] retain];
-	}
 	_negativeCount = ng;
 	_negativeCountStr = [[NSString stringWithFormat:@"%d", ng] retain];
 	[self setNeedsDisplay];
@@ -119,28 +98,27 @@ static CGFloat *psColors = nil;
     
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
-	UIColor *backgroundColor = self.selected || self.highlighted ? [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+	UIColor *backgroundColor = self.selected || self.highlighted ? 
+                        [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
+                        [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 	
 	[backgroundColor set];
 	CGContextFillRect(context, r);
 	
 	
 	CGRect rect = CGRectInset(r, 12, 12);
-	rect.size.width -= 25;
+	rect.size.width -= 18; // Scrollbar padding
 	
     int psWidth = _positiveCount == 0 ? 0 : _positiveCount < 10 ? 
-                    12 : _positiveCount < 100 ? 20 : 26;
+                    14 : _positiveCount < 100 ? 20 : 26;
     int ntWidth = _neutralCount  == 0 ? 0 : _neutralCount < 10 ? 
-                    12 : _neutralCount  < 100 ? 20 : 26;
+                    14 : _neutralCount  < 100 ? 20 : 26;
     int ngWidth = _negativeCount == 0 ? 0 : _negativeCount < 10 ? 
-                    12 : _negativeCount < 100 ? 20 : 26;
+                    14 : _negativeCount < 100 ? 20 : 26;
     
-    int psOffset = _positiveCount == 0 ? 0 : _positiveCount < 10 ? 
-                    -8 : _positiveCount < 100 ? 0 : 6;
-    int ntOffset = _neutralCount  == 0 ? 0 : _neutralCount < 10 ? 
-                    -8 : _neutralCount  < 100 ? 0 : 6;
-    int ngOffset = _negativeCount == 0 ? 0 : _negativeCount < 10 ? 
-                    -8 : _negativeCount < 100 ? 0 : 6;
+    int psOffset = _positiveCount == 0 ? 0 : psWidth - 20;
+    int ntOffset = _neutralCount  == 0 ? 0 : ntWidth - 20;
+    int ngOffset = _negativeCount == 0 ? 0 : ngWidth - 20;
     
     int psPadding = _positiveCount == 0 ? 0 : 2;
     int ntPadding = _neutralCount  == 0 ? 0 : 2;
@@ -156,7 +134,9 @@ static CGFloat *psColors = nil;
         CGSize size = [_positiveCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
         float y_pos = (rr.size.height - size.height) / 2; 
-        [_positiveCountStr drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) withFont:indicatorFont];
+        [_positiveCountStr 
+         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
+         withFont:indicatorFont];
     }
 	if(_neutralCount > 0){		
 		[neutralBackgroundColor set];
@@ -168,7 +148,9 @@ static CGFloat *psColors = nil;
         CGSize size = [_neutralCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
         float y_pos = (rr.size.height - size.height) / 2; 
-        [_neutralCountStr drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) withFont:indicatorFont];     
+        [_neutralCountStr 
+         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
+         withFont:indicatorFont];     
 	}
 	if(_negativeCount > 0){		
 		[negativeBackgroundColor set];
@@ -180,14 +162,22 @@ static CGFloat *psColors = nil;
         CGSize size = [_negativeCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
         float y_pos = (rr.size.height - size.height) / 2; 
-        [_negativeCountStr drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) withFont:indicatorFont];    
+        [_negativeCountStr 
+         drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
+         withFont:indicatorFont];    
 	}
     
     
 	
-    UIColor *textColor = self.selected || self.highlighted ? [UIColor whiteColor] : [UIColor blackColor];
+    UIColor *textColor = self.selected || self.highlighted ? 
+                         [UIColor whiteColor] : 
+                         [UIColor blackColor];
     [textColor set];
-    [feedTitle drawInRect:CGRectMake(36.0, 12.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) withFont:[UIFont boldSystemFontOfSize:13.0] lineBreakMode:UILineBreakModeTailTruncation alignment:UITextAlignmentLeft];
+    [feedTitle 
+     drawInRect:CGRectMake(36.0, 12.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+     withFont:[UIFont boldSystemFontOfSize:13.0] 
+     lineBreakMode:UILineBreakModeTailTruncation 
+     alignment:UITextAlignmentLeft];
     
     [self.feedFavicon drawInRect:CGRectMake(14.0, 12.0, 16.0, 16.0)];
     

@@ -228,11 +228,12 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     int storyCount = [[appDelegate activeFeedStoryLocations] count];
 
-    // The + 1 is for the finished/loading bar.
+    // The +1 is for the finished/loading bar.
     return storyCount + 1;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView 
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *FeedDetailCellIdentifier = @"FeedDetailCellIdentifier";
 	    
 	FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedDetailCellIdentifier];
@@ -253,12 +254,13 @@
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor.text = [[story objectForKey:@"story_authors"] uppercaseString];
+        cell.storyAuthor.text = [[story objectForKey:@"story_authors"] 
+                                 uppercaseString];
     } else {
         cell.storyAuthor.text = @"";
     }
+    
     NSString *title = [story objectForKey:@"story_title"];
-//    cell.storyTitle.text = title;
     cell.storyTitle.text = [title stringByDecodingHTMLEntities];
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];

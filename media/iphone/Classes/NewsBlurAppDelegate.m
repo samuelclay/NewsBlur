@@ -80,6 +80,7 @@
 
 - (void)showNavigationBar:(BOOL)animated {
     [[self navigationController] setNavigationBarHidden:NO animated:animated];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 #pragma mark -
@@ -94,7 +95,7 @@
     [self setTitle:@"NewsBlur"];
     [feedsViewController fetchFeedList];
     [loginViewController dismissModalViewControllerAnimated:YES];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.6];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
    
 - (void)loadFeedDetailView {
@@ -106,7 +107,7 @@
     [navController pushViewController:feedDetailViewController animated:YES];
     [feedDetailViewController fetchFeedDetail:1];
     [self showNavigationBar:YES];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.8];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)loadStoryDetailView {
