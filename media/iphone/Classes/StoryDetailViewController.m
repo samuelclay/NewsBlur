@@ -14,6 +14,7 @@
 
 @implementation StoryDetailViewController
 
+@synthesize activeStoryId;
 @synthesize appDelegate;
 @synthesize progressView;
 @synthesize webView;
@@ -29,22 +30,39 @@
     return self;
 }
 
+- (void)dealloc {
+    [activeStoryId release];
+    [appDelegate release];
+    [progressView release];
+    [webView release];
+    [toolbar release];
+    [buttonNext release];
+    [buttonPrevious release];
+    [super dealloc];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
-    [self showStory];
-    [self markStoryAsRead];   
-    [self setNextPreviousButtons];
-    self.webView.scalesPageToFit = YES;
+    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);
+    if (self.activeStoryId != [appDelegate.activeStory objectForKey:@"id"]) {
+        [self setActiveStory];
+        [self showStory];
+        [self markStoryAsRead];   
+        [self setNextPreviousButtons];
+        self.webView.scalesPageToFit = YES;
+    }
     
 	[super viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
-                                               initWithTitle:@"Original" 
-                                               style:UIBarButtonItemStyleBordered 
-                                               target:self 
-                                               action:@selector(showOriginalSubview:)
-                                              ] autorelease];
+    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
+                                       initWithTitle:@"Original" 
+                                       style:UIBarButtonItemStyleBordered 
+                                       target:self 
+                                       action:@selector(showOriginalSubview:)
+                                       ];
+    self.navigationItem.rightBarButtonItem = originalButton;
+    [originalButton release];
 	[super viewDidAppear:animated];
 }
 
@@ -66,7 +84,7 @@
     float unreads = [appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
+//    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
     [progressView setProgress:progress];
 }
 
@@ -77,12 +95,17 @@
         NSString *urlString = @"http://www.newsblur.com/reader/mark_story_as_read";
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeStory objectForKey:@"id"] forKey:@"story_id"]; 
-        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setPostValue:[appDelegate.activeStory 
+                               objectForKey:@"id"] 
+                       forKey:@"story_id"]; 
+        [request setPostValue:[appDelegate.activeFeed 
+                               objectForKey:@"id"] 
+                       forKey:@"feed_id"]; 
         [request setDidFinishSelector:@selector(markedAsRead)];
         [request setDidFailSelector:@selector(markedAsRead)];
         [request setDelegate:self];
         [request startAsynchronous];
+        [urlString release];
     }
 }
 
@@ -173,7 +196,8 @@
                               "<meta name=\"viewport\" content=\"width=320\"/>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
-        NSString *author = [NSString stringWithFormat:@"%@",[appDelegate.activeStory objectForKey:@"story_authors"]];
+        NSString *author = [NSString stringWithFormat:@"%@",
+                            [appDelegate.activeStory objectForKey:@"story_authors"]];
         if (author && ![author isEqualToString:@"<null>"]) {
             story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
         }
@@ -182,7 +206,10 @@
     if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
         NSArray *tag_array = [appDelegate.activeStory objectForKey:@"story_tags"];
         if ([tag_array count] > 0) {
-            story_tags = [NSString stringWithFormat:@"<div class=\"NB-story-tags\"><div class=\"NB-story-tag\">%@</div></div>",
+            story_tags = [NSString 
+                          stringWithFormat:@"<div class=\"NB-story-tags\">"
+                                            "<div class=\"NB-story-tag\">"
+                                            "%@</div></div>",
                           [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
         }
     }
@@ -192,7 +219,11 @@
                              "%@"
                              "%@"
                              "</div>", 
-                             [story_tags length] ? [appDelegate.activeStory objectForKey:@"long_parsed_date"] : [appDelegate.activeStory objectForKey:@"short_parsed_date"],
+                             [story_tags length] ? 
+                             [appDelegate.activeStory 
+                              objectForKey:@"long_parsed_date"] : 
+                             [appDelegate.activeStory 
+                              objectForKey:@"short_parsed_date"],
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
@@ -208,9 +239,14 @@
 - (IBAction)doNextUnreadStory {
     int nextIndex = [appDelegate indexOfNextStory];
     if (nextIndex == -1) {
-        [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]  animated:YES];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
     } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:nextIndex]];
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
+                                     objectAtIndex:nextIndex]];
+        [self setActiveStory];
         [self showStory];
         [self markStoryAsRead];
         [self setNextPreviousButtons];
@@ -218,7 +254,9 @@
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
-        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
+                               forView:self.view 
+                                 cache:NO];
         [UIView commitAnimations];
     }
 }
@@ -226,9 +264,14 @@
 - (IBAction)doPreviousStory {
     int previousIndex = [appDelegate indexOfPreviousStory];
     if (previousIndex == -1) {
-        [appDelegate.navigationController popToViewController:[appDelegate.navigationController.viewControllers objectAtIndex:0]  animated:YES];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
     } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:previousIndex]];
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
+                                     objectAtIndex:previousIndex]];
+        [self setActiveStory];
         [self showStory];
         [self markStoryAsRead];
         [self setNextPreviousButtons];
@@ -236,7 +279,9 @@
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
-        [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown 
+                               forView:self.view 
+                                 cache:NO];
         [UIView commitAnimations];
     }
 }
@@ -247,6 +292,10 @@
     [appDelegate showOriginalStory:url];
 }
 
+- (void)setActiveStory {
+    self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];    
+}
+
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -254,21 +303,12 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-    self.webView = nil;
-    self.appDelegate = nil;
-    self.progressView = nil;
-}
-
-
-
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+- (BOOL)webView:(UIWebView *)webView 
+    shouldStartLoadWithRequest:(NSURLRequest *)request 
+    navigationType:(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         NSURL *url = [request URL];
         [appDelegate showOriginalStory:url];
-        //[url release];
         return NO;
     }
     
@@ -280,16 +320,5 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 }
-
-- (void)dealloc {
-    [appDelegate release];
-    [webView release];
-    [progressView release];
-    [toolbar release];
-    [buttonNext release];
-    [buttonPrevious release];
-    [super dealloc];
-}
-
 
 @end

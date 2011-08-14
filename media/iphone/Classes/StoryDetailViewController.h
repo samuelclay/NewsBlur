@@ -13,7 +13,8 @@
 @interface StoryDetailViewController : UIViewController 
 <UIScrollViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
-
+    
+    NSString *activeStoryId;
     UIProgressView *progressView;
     UIWebView *webView;
     UIToolbar *toolbar;
@@ -22,6 +23,7 @@
     
 }
 
+@property (nonatomic, retain) NSString *activeStoryId;
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
@@ -36,5 +38,6 @@
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
 - (void)markedAsRead;
+- (void)setActiveStory;
 
 @end

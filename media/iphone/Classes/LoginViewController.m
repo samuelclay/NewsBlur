@@ -64,6 +64,7 @@
 
 - (void)checkPassword {
     [self.authenticatingLabel setHidden:NO];
+    [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSLog(@"appdelegate:: %@", [self appDelegate]);
     NSString *urlString = @"http://www.newsblur.com/reader/login";

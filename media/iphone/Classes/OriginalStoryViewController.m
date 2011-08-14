@@ -92,18 +92,16 @@
                               action:@selector(doCloseOriginalStoryViewController)];
     close.width = kButtonWidth;
     CGRect closeButtonFrame = CGRectMake(addressFrame.origin.x + 
-                                         addressFrame.size.width + kMargin, 
-                                         addressFrame.origin.y, 
-                                         kButtonWidth - kMargin,
-                                         kAddressHeight - 1);    
+                                         addressFrame.size.width, 
+                                         addressFrame.origin.y - 7.0f, 
+                                         kButtonWidth + kMargin,
+                                         44.0);
     TransparentToolbar* tools = [[TransparentToolbar alloc] 
                                  initWithFrame:closeButtonFrame];
-    NSArray* buttons = [[NSArray alloc] initWithObjects:close, nil];
-    [tools setItems:buttons animated:NO];
+    [tools setItems:[NSArray arrayWithObject:close] animated:NO];
     [tools setTintColor:[UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9]];
     [navBar addSubview:tools];
     [close release];
-    [buttons release];
     [tools release];
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
@@ -127,9 +125,12 @@
     [self.webView loadRequest:request];
 }
 
-// MARK: -
-// MARK: UIWebViewDelegate protocol
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+# pragma mark: -
+# pragma mark: UIWebViewDelegate protocol
+
+- (BOOL)webView:(UIWebView *)webView 
+    shouldStartLoadWithRequest:(NSURLRequest *)request 
+    navigationType:(UIWebViewNavigationType)navigationType
 {
     [self updateAddress:request];
     return YES;
