@@ -216,5 +216,42 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [appDelegate closeOriginalStory];
 }
 
+- (IBAction)doOpenActionSheet {
+   UIActionSheet *options = [[UIActionSheet alloc] 
+                             initWithTitle:[appDelegate.activeStory objectForKey:@"story_title"]
+                             delegate:self
+                             cancelButtonTitle:nil
+                             destructiveButtonTitle:nil
+                             otherButtonTitles:nil];
+
+   NSArray *buttonTitles;
+   if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
+      buttonTitles = [NSArray arrayWithObjects:@"Open story in Safari", nil];
+   } else {
+      buttonTitles = [NSArray arrayWithObjects:@"Open this page in Safari", @"Open original in Safari", nil];
+   }
+   for (id title in buttonTitles) {
+      [options addButtonWithTitle:title];
+   }
+   options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+   
+   [options showInView:self.view];
+   [options release];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+   
+   if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
+      if (buttonIndex == 0) {
+         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
+      }
+   } else {
+      if (buttonIndex == 0) {
+         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
+      } else if (buttonIndex == 1) {
+         [[UIApplication sharedApplication] openURL:appDelegate.activeOriginalStoryURL];
+      }
+   }
+}
 
 @end

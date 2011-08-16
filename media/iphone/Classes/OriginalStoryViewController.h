@@ -18,7 +18,8 @@ static const CGFloat kLabelFontSize = 12.0f;
 static const CGFloat kAddressHeight = 30.0f;
 static const CGFloat kButtonWidth   = 48.0f;
 
-@interface OriginalStoryViewController : UIViewController {
+@interface OriginalStoryViewController : UIViewController
+<UIActionSheetDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
     
@@ -46,6 +47,7 @@ static const CGFloat kButtonWidth   = 48.0f;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 
 - (IBAction) doCloseOriginalStoryViewController;
+- (IBAction) doOpenActionSheet;
 - (void)loadAddress:(id)sender event:(UIEvent*)event;
 - (void)updateTitle:(UIWebView*)aWebView;
 - (void)updateAddress:(NSURLRequest*)request;

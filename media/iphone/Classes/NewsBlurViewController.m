@@ -359,7 +359,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 	
-	[self.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+	[self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
 	
 	[appDelegate setActiveFeed:feed];
 	[appDelegate setActiveFeedIndexPath:indexPath];
@@ -426,6 +426,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	if (!self.viewShowingAllFeeds) {
 		NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
 		NSInteger previousLevel = [appDelegate selectedIntelligence];
+//		NSLog(@"Select Intelligence from %d to %d.", previousLevel, newLevel);
 		[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
 	}
 	// TODO: Refresh cells on screen to show correct unread pills.
@@ -483,16 +484,25 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 				}
 			}
 			
-			if ([self.stillVisibleFeeds objectForKey:feedIdStr]) {
-				NSLog(@"Maybe deleting: %@ - %d - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel, !deleted);
-			}
-			BOOL notDeletedYetVisible = !deleted && (newLevel != previousLevel) && 
+			BOOL notDeletedYetVisible = !deleted && 
+										previousLevel != newLevel &&
 										(maxScore < newLevel) && 
 										[self.stillVisibleFeeds objectForKey:feedIdStr];
 			if (notDeletedYetVisible) {
+//				NSLog(@"DELETING: %@ - %d - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel, !deleted);
 				[deleteIndexPaths addObject:indexPath];
 				[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
 			}
+		}
+	}
+	
+	for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
+		NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+		int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+//		NSLog(@"Still visible: %@ - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel);
+		if (previousLevel != newLevel && maxScore < newLevel) {
+			[deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
+			[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
 		}
 	}
     
