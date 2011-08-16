@@ -33,6 +33,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize logoutButton;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
+@synthesize stillVisibleFeeds;
 @synthesize sitesButton;
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
@@ -129,6 +130,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	[logoutButton release];
     [intelligenceControl release];
 	[activeFeedLocations release];
+	[stillVisibleFeeds release];
 	[sitesButton release];
 	[pull release];
 	[lastUpdate release];
@@ -182,11 +184,13 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	//[connection release];
 	
 	[MBProgressHUD hideHUDForView:self.view animated:YES];
+	self.stillVisibleFeeds = [NSMutableDictionary dictionary];
 	[pull finishedLoading];
 	[self loadFavicons];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 	[responseData release];
+	
 	if ([jsonString length] > 0) {
 		NSDictionary *results = [[NSDictionary alloc] 
 								 initWithDictionary:[jsonString JSONValue]];
@@ -204,9 +208,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		
 		self.dictFoldersArray = [NSMutableArray array];
 		for (id f in self.dictFolders) {
-			NSString *folderTitle = [f 
-									 stringByTrimmingCharactersInSet:
-									 [NSCharacterSet whitespaceCharacterSet]];
+//			NSString *folderTitle = [f 
+//									 stringByTrimmingCharactersInSet:
+//									 [NSCharacterSet whitespaceCharacterSet]];
 			[self.dictFoldersArray addObject:f];
 //			NSArray *folder = [self.dictFolders objectForKey:f];
 //			NSLog(@"F: %@", f);
@@ -225,6 +229,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		[sortedFolders release];
 		[results release];
 	}
+	
 	[jsonString release];
 }
 
@@ -353,7 +358,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	id feedId = [feeds objectAtIndex:location];
 	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-
+	
+	[self.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+	
 	[appDelegate setActiveFeed:feed];
 	[appDelegate setActiveFeedIndexPath:indexPath];
 	
@@ -433,6 +440,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		[self calculateFeedLocations];
     }
 	
+	BOOL deleted = NO;
+//	BOOL inserted = NO;
+	
 	for (int s=0; s < [self.dictFoldersArray count]; s++) {
 		NSString *folderName = [self.dictFoldersArray objectAtIndex:s];
 		NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
@@ -444,25 +454,44 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+			deleted = NO;
+//			inserted = NO;
 			
 			if (previousLevel == -1) {
 				if (newLevel == 0 && maxScore == -1) {
 					[deleteIndexPaths addObject:indexPath];
+					deleted = YES;
 				} else if (newLevel == 1 && maxScore < 1) {
 					[deleteIndexPaths addObject:indexPath];
+					deleted = YES;
 				}
 			} else if (previousLevel == 0) {
 				if (newLevel == -1 && maxScore == -1) {
 					[insertIndexPaths addObject:indexPath];
+//					inserted = YES;
 				} else if (newLevel == 1 && maxScore == 0) {
 					[deleteIndexPaths addObject:indexPath];
+					deleted = YES;
 				}
 			} else if (previousLevel == 1) {
 				if (newLevel == 0 && maxScore == 0) {
 					[insertIndexPaths addObject:indexPath];
+//					inserted = YES;
 				} else if (newLevel == -1 && (maxScore == -1 || maxScore == 0)) {
 					[insertIndexPaths addObject:indexPath];
+//					inserted = YES;
 				}
+			}
+			
+			if ([self.stillVisibleFeeds objectForKey:feedIdStr]) {
+				NSLog(@"Maybe deleting: %@ - %d - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel, !deleted);
+			}
+			BOOL notDeletedYetVisible = !deleted && (newLevel != previousLevel) && 
+										(maxScore < newLevel) && 
+										[self.stillVisibleFeeds objectForKey:feedIdStr];
+			if (notDeletedYetVisible) {
+				[deleteIndexPaths addObject:indexPath];
+				[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
 			}
 		}
 	}

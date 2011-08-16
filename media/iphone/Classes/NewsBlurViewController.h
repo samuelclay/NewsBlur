@@ -23,6 +23,7 @@
     NSDictionary * dictFeeds;
     NSMutableArray * dictFoldersArray;
     NSMutableDictionary * activeFeedLocations;
+    NSMutableDictionary *stillVisibleFeeds;
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
@@ -56,6 +57,7 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
+@property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableData *responseData;

@@ -174,12 +174,12 @@ static CGFloat *psColors = nil;
                          [UIColor blackColor];
     [textColor set];
     [feedTitle 
-     drawInRect:CGRectMake(36.0, 12.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+     drawInRect:CGRectMake(36.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
      withFont:[UIFont boldSystemFontOfSize:13.0] 
      lineBreakMode:UILineBreakModeTailTruncation 
      alignment:UITextAlignmentLeft];
     
-    [self.feedFavicon drawInRect:CGRectMake(14.0, 12.0, 16.0, 16.0)];
+    [self.feedFavicon drawInRect:CGRectMake(14.0, 11.0, 16.0, 16.0)];
     
 }
 

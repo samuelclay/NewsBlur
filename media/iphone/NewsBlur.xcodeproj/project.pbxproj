@@ -48,6 +48,7 @@
 		78FC34FA11CA94900055C312 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F211CA94900055C312 /* SBJsonBase.m */; };
 		78FC34FB11CA94900055C312 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F411CA94900055C312 /* SBJsonParser.m */; };
 		78FC34FC11CA94900055C312 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 78FC34F611CA94900055C312 /* SBJsonWriter.m */; };
+		FF032DCE13F9F01900FA3F76 /* Entitlements.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */; };
 		FF1C46BC13E5E9BB00E7609E /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46BB13E5E9BB00E7609E /* Default.png */; };
 		FF1C46BE13E5E9BD00E7609E /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46BD13E5E9BD00E7609E /* Default@2x.png */; };
 		FF1C46C013E6002300E7609E /* logo_57.png in Resources */ = {isa = PBXBuildFile; fileRef = FF1C46BF13E6002300E7609E /* logo_57.png */; };
@@ -148,6 +149,7 @@
 		78FC34F511CA94900055C312 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		78FC34F611CA94900055C312 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* NewsBlur-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Entitlements.entitlements; sourceTree = "<group>"; };
 		FF1C46BB13E5E9BB00E7609E /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		FF1C46BD13E5E9BD00E7609E /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		FF1C46BF13E6002300E7609E /* logo_57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_57.png; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				7843F50D11EEB4EE00675F64 /* bullet_red.png */,
 				7843F50E11EEB4EE00675F64 /* bullet_yellow.png */,
 				8D1107310486CEB800E47090 /* NewsBlur-Info.plist */,
+				FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -473,6 +476,7 @@
 				FF56EC8013F759E60009D8E0 /* logo_newsblur_blur.png in Resources */,
 				FF56EC8213F75B7B0009D8E0 /* logo_background.png in Resources */,
 				FF56EC8413F795380009D8E0 /* Background.png in Resources */,
+				FF032DCE13F9F01900FA3F76 /* Entitlements.entitlements in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,6 +530,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -546,6 +551,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -562,7 +568,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -572,6 +579,8 @@
 					"-all_load",
 					"-ObjC",
 				);
+				PROVISIONING_PROFILE = "6A650EA7-28C6-4497-8DED-75A1B681942B";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6A650EA7-28C6-4497-8DED-75A1B681942B";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 			};
@@ -581,12 +590,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PROVISIONING_PROFILE = "6A650EA7-28C6-4497-8DED-75A1B681942B";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6A650EA7-28C6-4497-8DED-75A1B681942B";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
