@@ -41,7 +41,7 @@
     for (id i in appDelegate.recentlyReadStories) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[i intValue]
                                                 inSection:0];
-        NSLog(@"Read story: %d", [i intValue]);
+//        NSLog(@"Read story: %d", [i intValue]);
         [indexPaths addObject:indexPath];
     }
     if ([indexPaths count] > 0) {
@@ -141,7 +141,7 @@
     
     NSInteger newVisibleStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
     
-    NSLog(@"Paging: %d/%d", existingStoriesCount, [appDelegate unreadCount]);
+//    NSLog(@"Paging: %d/%d", existingStoriesCount, [appDelegate unreadCount]);
     
     if (existingStoriesCount > 0 && newVisibleStoriesCount > 0) {
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];

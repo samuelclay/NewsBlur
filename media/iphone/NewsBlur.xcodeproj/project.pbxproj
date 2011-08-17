@@ -115,7 +115,7 @@
 		78095E44128EF37E00230C8E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		78095E46128EF37F00230C8E /* libz.1.2.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.3.dylib; path = usr/lib/libz.1.2.3.dylib; sourceTree = SDKROOT; };
 		78095EC6128F30B500230C8E /* OriginalStoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OriginalStoryViewController.h; sourceTree = "<group>"; };
-		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
+		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
 		78095EC8128F30B500230C8E /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
 		7842ECF511D44A530066CF9D /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
 		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryDetailViewController.m; sourceTree = "<group>"; };
@@ -579,8 +579,8 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PROVISIONING_PROFILE = "AC65D3DC-F270-43C6-A787-2ACACB54A1FB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AC65D3DC-F270-43C6-A787-2ACACB54A1FB";
+				PROVISIONING_PROFILE = "7B7D4B1E-A24A-4E63-9C14-F251D6C5B095";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B7D4B1E-A24A-4E63-9C14-F251D6C5B095";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 			};
@@ -597,8 +597,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "AC65D3DC-F270-43C6-A787-2ACACB54A1FB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AC65D3DC-F270-43C6-A787-2ACACB54A1FB";
+				PROVISIONING_PROFILE = "7B7D4B1E-A24A-4E63-9C14-F251D6C5B095";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B7D4B1E-A24A-4E63-9C14-F251D6C5B095";
 				SDKROOT = iphoneos;
 			};
 			name = Release;

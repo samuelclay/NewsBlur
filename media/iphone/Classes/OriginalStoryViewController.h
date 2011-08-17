@@ -19,7 +19,7 @@ static const CGFloat kAddressHeight = 30.0f;
 static const CGFloat kButtonWidth   = 48.0f;
 
 @interface OriginalStoryViewController : UIViewController
-<UIActionSheetDelegate> {
+<UIActionSheetDelegate, UITextFieldDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
     
@@ -48,7 +48,7 @@ static const CGFloat kButtonWidth   = 48.0f;
 
 - (IBAction) doCloseOriginalStoryViewController;
 - (IBAction) doOpenActionSheet;
-- (void)loadAddress:(id)sender event:(UIEvent*)event;
+- (IBAction)loadAddress:(id)sender;
 - (void)updateTitle:(UIWebView*)aWebView;
 - (void)updateAddress:(NSURLRequest*)request;
 - (void)updateButtons;

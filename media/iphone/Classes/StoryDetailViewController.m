@@ -42,7 +42,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);
+//    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);
     if (self.activeStoryId != [appDelegate.activeStory objectForKey:@"id"]) {
         [self setActiveStory];
         [self showStory];

@@ -30,18 +30,26 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize toolbar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	
+
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
     }
     return self;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
+//    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
     [appDelegate showNavigationBar:NO];
     toolbar.tintColor = UIColorFromRGB(0x183353);
-    NSURLRequest *request = [[[NSURLRequest alloc] initWithURL:[appDelegate activeOriginalStoryURL]] autorelease];
-    [webView loadRequest:request];
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
+    [self updateAddress:request];
+    [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
+    [request release];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    if ([self.webView isLoading]) {
+        [self.webView stopLoading];
+    }
 }
 
 - (void)viewDidLoad {
@@ -79,6 +87,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     address.autocapitalizationType = UITextAutocapitalizationTypeNone;
     address.clearButtonMode = UITextFieldViewModeWhileEditing;
     address.enablesReturnKeyAutomatically = YES;
+    address.returnKeyType = UIReturnKeyGo;
+    [address setDelegate:self];
     [navBar addSubview:address];
     self.pageUrl = address;
     
@@ -117,28 +127,38 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 }
 
-- (void)loadAddress:(id)sender event:(UIEvent *)event
-{
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self loadAddress:nil];
+    return YES;
+}
+
+- (IBAction)loadAddress:(id)sender {
     NSString* urlString = self.pageUrl.text;
     NSURL* url = [NSURL URLWithString:urlString];
-    
+
     if (!url.scheme) {
         NSString* modifiedURLString = [NSString stringWithFormat:@"http://%@", urlString];
         url = [NSURL URLWithString:modifiedURLString];
     }
-    
+    if ([self.webView isLoading]) {
+        [self.webView stopLoading];
+    }
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
+    [self.pageUrl resignFirstResponder];
+    [self.pageTitle setText:@"Loading..."]; 
 }
 
 # pragma mark: -
 # pragma mark: UIWebViewDelegate protocol
 
 - (BOOL)webView:(UIWebView *)webView 
-    shouldStartLoadWithRequest:(NSURLRequest *)request 
-    navigationType:(UIWebViewNavigationType)navigationType
-{
-    [self updateAddress:request];
+        shouldStartLoadWithRequest:(NSURLRequest *)request 
+        navigationType:(UIWebViewNavigationType)navigationType {
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        [self updateAddress:request];
+        return NO;
+    }
     return YES;
 }
 
@@ -152,14 +172,16 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateButtons];
     [self updateTitle:aWebView];
-    NSURLRequest* request = [aWebView request];
-    [self updateAddress:request];
 }
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateButtons];
-    [self informError:error];
+    
+    // User clicking on another link before the page loads is OK.
+    if ([error code] != NSURLErrorCancelled) {
+        [self informError:error];   
+    }
 }
 - (void)updateTitle:(UIWebView*)aWebView
 {
@@ -168,9 +190,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 - (void)updateAddress:(NSURLRequest*)request
 {
-    NSURL *url = [request mainDocumentURL];
-    NSString *absoluteString = [url absoluteString];
-    self.pageUrl.text = absoluteString;
+    NSURL *url = [request URL];
+    self.pageUrl.text = [url absoluteString];
+    [self loadAddress:nil];
 }
 - (void)updateButtons
 {
@@ -212,46 +234,46 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (IBAction)doCloseOriginalStoryViewController {
-    NSLog(@"Close Original Story: %@", appDelegate);
+//    NSLog(@"Close Original Story: %@", appDelegate);
     [appDelegate closeOriginalStory];
 }
 
 - (IBAction)doOpenActionSheet {
-   UIActionSheet *options = [[UIActionSheet alloc] 
-                             initWithTitle:[appDelegate.activeStory objectForKey:@"story_title"]
-                             delegate:self
-                             cancelButtonTitle:nil
-                             destructiveButtonTitle:nil
-                             otherButtonTitles:nil];
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:[appDelegate.activeStory objectForKey:@"story_title"]
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
 
-   NSArray *buttonTitles;
-   if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-      buttonTitles = [NSArray arrayWithObjects:@"Open story in Safari", nil];
-   } else {
-      buttonTitles = [NSArray arrayWithObjects:@"Open this page in Safari", @"Open original in Safari", nil];
-   }
-   for (id title in buttonTitles) {
-      [options addButtonWithTitle:title];
-   }
-   options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-   
-   [options showInView:self.view];
-   [options release];
+    NSArray *buttonTitles;
+    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
+        buttonTitles = [NSArray arrayWithObjects:@"Open story in Safari", nil];
+    } else {
+        buttonTitles = [NSArray arrayWithObjects:@"Open this page in Safari", @"Open original in Safari", nil];
+    }
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+
+    [options showInView:self.view];
+    [options release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-   
-   if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-      if (buttonIndex == 0) {
-         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
-      }
-   } else {
-      if (buttonIndex == 0) {
-         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
-      } else if (buttonIndex == 1) {
-         [[UIApplication sharedApplication] openURL:appDelegate.activeOriginalStoryURL];
-      }
-   }
+
+    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
+        if (buttonIndex == 0) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
+        }
+    } else {
+        if (buttonIndex == 0) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
+        } else if (buttonIndex == 1) {
+            [[UIApplication sharedApplication] openURL:appDelegate.activeOriginalStoryURL];
+        }
+    }
 }
 
 @end

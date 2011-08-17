@@ -249,7 +249,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	[ld release];
 }
 
-- (IBAction)switchSitesUnread {
+- (IBAction)doSwitchSitesUnread {
 	self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
 	
 	if (self.viewShowingAllFeeds) {
@@ -277,7 +277,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
 			
-			if (maxScore < intelligenceLevel) {
+			if (maxScore < intelligenceLevel && 
+				![self.stillVisibleFeeds objectForKey:feedIdStr]) {
 				[indexPaths addObject:indexPath];
 			}
 		}
@@ -298,6 +299,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		}
     }
     [self.feedTitlesTable endUpdates];
+	
+	// Forget still visible feeds, since they won't be populated when
+	// all feeds are showing, and shouldn't be populated after this
+	// hide/show runs.
+	self.stillVisibleFeeds = [NSMutableDictionary dictionary];
 }
 
 #pragma mark -
@@ -359,7 +365,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 	NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 	
-	[self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+	// If all feeds are already showing, no need to remember this one.
+	if (!self.viewShowingAllFeeds) {
+		[self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+	}
 	
 	[appDelegate setActiveFeed:feed];
 	[appDelegate setActiveFeedIndexPath:indexPath];

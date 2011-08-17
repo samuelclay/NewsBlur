@@ -42,7 +42,7 @@
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
-- (IBAction)switchSitesUnread;
+- (IBAction)doSwitchSitesUnread;
 - (void)loadFavicons;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

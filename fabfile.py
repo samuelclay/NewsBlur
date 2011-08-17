@@ -61,6 +61,9 @@ def task():
     server_paths()
     env.roles = ['task']
 
+def server():
+    server_paths()
+    
 # ==========
 # = Deploy =
 # ==========
@@ -322,7 +325,7 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
 
 def setup_nginx():
-    with cd(env.VENDOR_PATH):
+    with cd(env.VENDOR_PATH) and  settings(warn_only=True):
         sudo("groupadd nginx")
         sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
         run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
