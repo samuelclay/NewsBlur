@@ -1,4 +1,5 @@
 # Path to your oh-my-zsh configuration.
+plugins=(git osx ruby gem github pip rails)
 export ZSH=$HOME/.oh-my-zsh
 
 # Set to the name theme to load.
@@ -10,7 +11,8 @@ export CASE_SENSITIVE="true"
 export LC_COLLATE='C'
 source $ZSH/oh-my-zsh.sh
 
-export PROMPT='%{$fg_bold[green]%}%n@%M:%{$fg_bold[blue]%}%~ $(git_prompt_info)%{$reset_color%}%(!.#.$) '
+
+export DISABLE_AUTO_UPDATE="true"
 export PYTHONSTARTUP=$HOME/.pystartup
 export LSCOLORS='gxgxcxdxBxegedabagacad'
 
@@ -32,7 +34,7 @@ zle -N expand-or-complete-with-dots
 bindkey "^I" expand-or-complete-with-dots
 unsetopt LIST_BEEP
 
-PROMPT='%{$fg_bold[green]%}%n%{$reset_color%}%{$fg[yellow]%}@%M:%{$fg_bold[blue]%}%~%b $(git_prompt_info)%{$reset_color%}%(!.#.$) '
+PROMPT='%{$fg_bold[green]%}%n%{$reset_color%}%{$fg_bold[yellow]%}@%M:%{$fg_bold[blue]%}%~%b $(git_prompt_info)%{$reset_color%}%(!.#.$) '
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[red]%}‹%B"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%b%{$fg[red]%}›%{$reset_color%}"

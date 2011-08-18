@@ -13,6 +13,7 @@ body {
     height: 100%;
     overflow: hidden;
     text-rendering: optimizeLegibility;
+    background-color: white;
 }
 
 a, a:active, a:hover, a:visited, button {

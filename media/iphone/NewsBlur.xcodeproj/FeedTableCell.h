@@ -7,10 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 #import "ABTableViewCell.h"
 
+@class NewsBlurAppDelegate;
 
 @interface FeedTableCell : ABTableViewCell {    
+    NewsBlurAppDelegate *appDelegate;
+    
     NSString *feedTitle;
     UIImage *feedFavicon;
     int _positiveCount;
@@ -21,6 +25,7 @@
     NSString *_negativeCountStr;
 }
 
+@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) NSString *feedTitle;
 @property (nonatomic, retain) UIImage *feedFavicon;
 @property (assign, nonatomic) int positiveCount;

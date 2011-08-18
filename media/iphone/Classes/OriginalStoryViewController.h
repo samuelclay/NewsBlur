@@ -52,6 +52,5 @@ static const CGFloat kButtonWidth   = 48.0f;
 - (void)updateTitle:(UIWebView*)aWebView;
 - (void)updateAddress:(NSURLRequest*)request;
 - (void)updateButtons;
-- (void)informError:(NSError*)error;    
 
 @end

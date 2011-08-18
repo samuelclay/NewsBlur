@@ -130,7 +130,13 @@ def relative_timeuntil(value):
     now = datetime.datetime.utcnow()
     
     return _do_timesince(now, chunks, value)
-        
+
+def seconds_timesince(value):
+    now = datetime.datetime.utcnow()
+    delta = now - value
+    
+    return delta.days * 24 * 60 * 60 + delta.seconds
+    
 def format_relative_date(date, future=False):
     if not date or date < datetime.datetime(2010, 1, 1):
         return "Soon"

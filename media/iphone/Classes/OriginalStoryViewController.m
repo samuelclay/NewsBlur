@@ -180,7 +180,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     // User clicking on another link before the page loads is OK.
     if ([error code] != NSURLErrorCancelled) {
-        [self informError:error];   
+        [NewsBlurAppDelegate informError:error];   
     }
 }
 - (void)updateTitle:(UIWebView*)aWebView
@@ -199,17 +199,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     self.forward.enabled = self.webView.canGoForward;
     self.back.enabled = self.webView.canGoBack;
 //    self.stop.enabled = self.webView.loading;
-}
-- (void)informError:(NSError *)error
-{
-    NSString* localizedDescription = [error localizedDescription];
-    UIAlertView* alertView = [[UIAlertView alloc]
-                              initWithTitle:@"Error"
-                              message:localizedDescription delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-    [alertView show];
-    [alertView release];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -248,9 +237,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
     NSArray *buttonTitles;
     if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-        buttonTitles = [NSArray arrayWithObjects:@"Open story in Safari", nil];
+        buttonTitles = [NSArray arrayWithObjects:@"Open Story in Safari", nil];
     } else {
-        buttonTitles = [NSArray arrayWithObjects:@"Open this page in Safari", @"Open original in Safari", nil];
+        buttonTitles = [NSArray arrayWithObjects:@"Open this Page in Safari", @"Open Original in Safari", nil];
     }
     for (id title in buttonTitles) {
         [options addButtonWithTitle:title];

@@ -26,6 +26,7 @@ from utils.fields import AutoOneToOneField
 from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
+from utils.feed_functions import seconds_timesince
 from utils.story_functions import pre_process_story
 from utils.diff import HTMLDiff
 
@@ -71,6 +72,7 @@ class Feed(models.Model):
             'feed_link': self.feed_link,
             'num_subscribers': self.num_subscribers,
             'updated': relative_timesince(self.last_update),
+            'updated_seconds_ago': seconds_timesince(self.last_update),
             'subs': self.num_subscribers,
             'favicon_color': self.favicon_color,
             'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))

@@ -83,6 +83,7 @@
 - (void)markActiveFeedAllRead;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
++ (void)informError:(NSError *)error;
 
 @end
 

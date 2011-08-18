@@ -283,4 +283,15 @@
     return score;
 }
 
++ (void)informError:(NSError *)error {
+    NSString* localizedDescription = [error localizedDescription];
+    UIAlertView* alertView = [[UIAlertView alloc]
+                              initWithTitle:@"Error"
+                              message:localizedDescription delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil];
+    [alertView show];
+    [alertView release];
+}
+
 @end

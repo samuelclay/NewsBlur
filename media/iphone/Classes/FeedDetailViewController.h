@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PullToRefreshView.h"
 
 @class NewsBlurAppDelegate;
 
@@ -25,6 +26,7 @@
     UISlider * feedScoreSlider;
     UIBarButtonItem * feedMarkReadButton;
     UISegmentedControl * intelligenceControl;
+    PullToRefreshView *pull;
 }
 
 - (void)fetchFeedDetail:(int)page;
@@ -34,6 +36,8 @@
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
 - (void)markedAsRead;
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
+- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
@@ -41,6 +45,7 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
+@property (nonatomic, retain) PullToRefreshView *pull;
 
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, retain) NSMutableData * jsonString;

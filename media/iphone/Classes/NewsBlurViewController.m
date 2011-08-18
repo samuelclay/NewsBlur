@@ -178,6 +178,16 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	NSLog(@"%@", [NSString stringWithFormat:@"Connection failed: %@", [error description]]);
+
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	
+	[MBProgressHUD hideHUDForView:self.view animated:YES];
+	[pull finishedLoading];
+	
+	// User clicking on another link before the page loads is OK.
+	if ([error code] != NSURLErrorCancelled) {
+		[NewsBlurAppDelegate informError:error];
+	}
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -329,6 +339,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];	
 	if (cell == nil) {
 		cell = [[[FeedTableCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"FeedCellIdentifier"] autorelease];
+		cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
 	}
 	
 	NSString *folderName = [self.dictFoldersArray objectAtIndex:indexPath.section];
@@ -438,7 +450,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 //		NSLog(@"Select Intelligence from %d to %d.", previousLevel, newLevel);
 		[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
 	}
-	// TODO: Refresh cells on screen to show correct unread pills.
+
+	for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
+		[cell setNeedsDisplay];
+	}
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
@@ -493,13 +508,16 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 				}
 			}
 			
+			BOOL isVisible = !![self.stillVisibleFeeds objectForKey:feedIdStr];
 			BOOL notDeletedYetVisible = !deleted && 
 										previousLevel != newLevel &&
 										(maxScore < newLevel) && 
-										[self.stillVisibleFeeds objectForKey:feedIdStr];
+										isVisible;
 			if (notDeletedYetVisible) {
 //				NSLog(@"DELETING: %@ - %d - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel, !deleted);
 				[deleteIndexPaths addObject:indexPath];
+				[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
+			} else if (deleted && isVisible) {
 				[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
 			}
 		}
@@ -508,8 +526,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
 		NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 		int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-//		NSLog(@"Still visible: %@ - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel);
 		if (previousLevel != newLevel && maxScore < newLevel) {
+			NSLog(@"Still visible: %@ - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel);
 			[deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
 			[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
 		}
@@ -632,6 +650,17 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	appDelegate = [[UIApplication sharedApplication] delegate];
 	NSLog(@"Logout: %@", appDelegate);
 	[appDelegate reloadFeedsView];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+	NSLog(@"%@", [NSString stringWithFormat:@"Connection failed: %@", [error description]]);
+	
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+	
+	// User clicking on another link before the page loads is OK.
+	if ([error code] != NSURLErrorCancelled) {
+		[NewsBlurAppDelegate informError:error];
+	}
 }
 
 @end

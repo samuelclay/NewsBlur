@@ -6,6 +6,7 @@
 //  Copyright 2011 NewsBlur. All rights reserved.
 //
 
+#import "NewsBlurAppDelegate.h"
 #import "FeedTableCell.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
@@ -26,6 +27,7 @@ static CGFloat *psColors = nil;
 
 @implementation FeedTableCell
 
+@synthesize appDelegate;
 @synthesize feedTitle;
 @synthesize feedFavicon;
 @synthesize positiveCount = _positiveCount;
@@ -138,7 +140,7 @@ static CGFloat *psColors = nil;
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
          withFont:indicatorFont];
     }
-	if(_neutralCount > 0){		
+	if(_neutralCount > 0 && appDelegate.selectedIntelligence <= 0){		
 		[neutralBackgroundColor set];
 		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 18);
 		[UIView drawRoundRectangleInRect:rr withRadius:5];
@@ -152,7 +154,7 @@ static CGFloat *psColors = nil;
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
          withFont:indicatorFont];     
 	}
-	if(_negativeCount > 0){		
+	if(_negativeCount > 0 && appDelegate.selectedIntelligence <= -1){		
 		[negativeBackgroundColor set];
 		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, 10, ngWidth, 18);
 		[UIView drawRoundRectangleInRect:rr withRadius:5];

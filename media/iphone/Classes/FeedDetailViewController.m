@@ -9,6 +9,7 @@
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
+#import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
 #import "JSON.h"
@@ -25,12 +26,20 @@
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize intelligenceControl;
+@synthesize pull;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
     }
     return self;
+}
+
+- (void)viewDidLoad {    
+	pull = [[PullToRefreshView alloc] initWithScrollView:self.storyTitlesTable];
+    [pull setDelegate:self];
+    [self.storyTitlesTable addSubview:pull];
+    [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -82,6 +91,7 @@
     [appDelegate release];
     [jsonString release];
     [intelligenceControl release];
+    [pull release];
     [super dealloc];
 }
 
@@ -188,6 +198,13 @@
           [error localizedDescription]);
     
     self.pageFetching = NO;
+    
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    
+	// User clicking on another link before the page loads is OK.
+	if ([error code] != NSURLErrorCancelled) {
+		[NewsBlurAppDelegate informError:error];
+	}
 }
 
 - (UITableViewCell *)makeLoadingCell {
@@ -414,5 +431,20 @@
     int row = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPathRow] intValue];
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
+
+
+#pragma mark -
+#pragma mark PullToRefresh
+
+// called when the user pulls-to-refresh
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+//	[self fetchFeedList:NO];
+}
+
+// called when the date shown needs to be updated, optional
+- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
+//	return self.lastUpdate;
+}
+
 
 @end
