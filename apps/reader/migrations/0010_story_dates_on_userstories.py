@@ -13,9 +13,13 @@ class Migration(DataMigration):
         print "%s userstories" % userstories.count()
         
         for i, userstory in enumerate(userstories):
-            print '%s: %s' % (i, userstory.story.story_date)
-            userstory.story_date = userstory.story.story_date
-            userstory.save()
+            try:
+                if not userstory.story_date:
+                    print '%s: %s' % (i, userstory.story.story_date)
+                    userstory.story_date = userstory.story.story_date
+                    userstory.save()
+            except Exception, e:
+                print e
 
     def backwards(self, orm):
         "Write your backwards methods here."

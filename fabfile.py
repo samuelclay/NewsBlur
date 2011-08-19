@@ -82,7 +82,7 @@ def deploy_full():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('./manage.py migrate')
-        run('sudo supervisorctl restart gunicorn')
+        run('sudo supervisorctl restart gunicorn', warn_only=True)
         run('curl -s http://www.newsblur.com > /dev/null')
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
