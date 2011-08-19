@@ -313,10 +313,11 @@ def load_single_feed(request, feed_id):
     
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
-    if usersub:
+    if usersub and stories:
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
-                                            read_date__gte=usersub.mark_read_date).only('story')
+                                            story_date__lte=stories[0]['story_date'],
+                                            story_date__gte=stories[-1]['story_date']).only('story')
         starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
 
@@ -364,18 +365,15 @@ def load_single_feed(request, feed_id):
     if usersub:
         usersub.feed_opens += 1
         usersub.save()
+    diff1 = checkpoint1-start
+    diff2 = checkpoint2-start
+    diff3 = checkpoint3-start
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    logging.user(request.user, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds)" % (
-        feed, ('~SN/p%s' % page) if page > 1 else '', timediff))
+    logging.user(request.user, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s(%s)/%.4s~SN)" % (
+        feed.feed_title[:32], ('~SN/p%s' % page) if page > 1 else '', timediff,
+        diff1, diff2, userstories_db and userstories_db.count() or '~SN0~SB', diff3))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
-    
-    if timediff >= 1:
-        diff1 = checkpoint1-start
-        diff2 = checkpoint2-start
-        diff3 = checkpoint3-start
-        logging.user(request.user, "~FYSlow feed load: ~SB%.4s/%.4s(%s)/%.4s" % (
-            diff1, diff2, userstories_db and userstories_db.count(), diff3))
     
     data = dict(stories=stories, 
                 feed_tags=feed_tags, 
@@ -622,13 +620,14 @@ def mark_story_as_read(request):
             continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date)
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_date=story.story_date)
         try:
             m.save()
         except OperationError:
             logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
             m.read_date = date
+            m.story_date = story.story_date
             m.save()
     
     return data
@@ -684,7 +683,6 @@ def mark_feed_as_read(request):
             code = 1
         
         logging.user(request.user, "~FMMarking feed as read: ~SB%s" % (feed,))
-        MUserStory.objects(user_id=request.user.pk, feed_id=feed_id).delete()
     return dict(code=code)
 
 def _parse_user_info(user):

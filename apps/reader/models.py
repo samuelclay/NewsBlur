@@ -257,11 +257,12 @@ class MUserStory(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
+    story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, unique_with=('user_id', 'feed_id'))
     
     meta = {
         'collection': 'userstories',
-        'indexes': [('user_id', 'feed_id'), ('feed_id', 'read_date')],
+        'indexes': [('user_id', 'feed_id'), ('feed_id', 'read_date'), ('feed_id', 'story_date')],
         'allow_inheritance': False,
     }
     
