@@ -12,7 +12,7 @@
 @class NewsBlurAppDelegate;
 
 @interface FeedDetailViewController : UIViewController 
-<UITableViewDelegate, UITableViewDataSource> {
+<UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;

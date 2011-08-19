@@ -14,7 +14,7 @@
 @class NewsBlurAppDelegate;
 
 @interface NewsBlurViewController : UIViewController 
-		   <UITableViewDelegate, UITableViewDataSource> 
+		   <UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate> 
 {
     NewsBlurAppDelegate *appDelegate;
     
@@ -36,6 +36,7 @@
     IBOutlet UIBarButtonItem * sitesButton;
 }
 
+- (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
 - (IBAction)doLogoutButton;
 - (IBAction)selectIntelligence;

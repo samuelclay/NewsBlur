@@ -438,12 +438,25 @@
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
-//	[self fetchFeedList:NO];
+    NSString *urlString = @"http://www.newsblur.com/reader/mark_feed_as_read";
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+    [request setDelegate:nil];
+    [request setDidFinishSelector:@selector(markedAsRead)];
+    [request setDidFailSelector:@selector(markedAsRead)];
+    [request startAsynchronous];
+    [appDelegate markActiveFeedAllRead];
+    [appDelegate.navigationController 
+     popToViewController:[appDelegate.navigationController.viewControllers 
+                          objectAtIndex:0]  
+     animated:YES];
 }
 
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
 //	return self.lastUpdate;
+    return [[[NSDate alloc] initWithTimeIntervalSinceNow:-30*30] autorelease];
 }
 
 
