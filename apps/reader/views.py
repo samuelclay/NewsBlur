@@ -277,6 +277,16 @@ def refresh_feeds(request):
     
     return {'feeds': feeds}
 
+def refresh_feed(request, feed_id):
+    user = get_user(request)
+    feed = get_object_or_404(Feed, pk=feed_id)
+    
+    feed = feed.update(force=True, compute_scores=False)
+    usersub = UserSubscription.objects.get(user=user, feed=feed)
+    usersub.calculate_feed_scores(silent=False)
+
+    return load_single_feed(request, feed_id)
+    
 @json.json_view
 def load_single_feed(request, feed_id):
     start        = time.time()

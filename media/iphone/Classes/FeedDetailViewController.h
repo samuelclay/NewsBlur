@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 
 @class NewsBlurAppDelegate;
@@ -19,6 +20,7 @@
     NSMutableData * jsonString;
     int feedPage;
     BOOL pageFetching;
+    BOOL pageRefreshing;
     BOOL pageFinished;
                
     UITableView * storyTitlesTable;
@@ -30,6 +32,7 @@
 }
 
 - (void)fetchFeedDetail:(int)page;
+- (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (IBAction)markAllRead;
 - (IBAction)selectIntelligence;
@@ -38,6 +41,8 @@
 - (void)markedAsRead;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
+- (void)finishedRefreshingFeed:(ASIHTTPRequest *)request;
+- (void)failRefreshingFeed:(ASIHTTPRequest *)request;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
@@ -51,6 +56,7 @@
 @property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
+@property (nonatomic, readwrite) BOOL pageRefreshing;
 @property (nonatomic, readwrite) BOOL pageFinished;
 
 @end

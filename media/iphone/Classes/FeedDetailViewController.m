@@ -24,6 +24,7 @@
 @synthesize jsonString;
 @synthesize feedPage;
 @synthesize pageFetching;
+@synthesize pageRefreshing;
 @synthesize pageFinished;
 @synthesize intelligenceControl;
 @synthesize pull;
@@ -110,7 +111,7 @@
         }
         
         NSString *theFeedDetailURL = [[NSString alloc] 
-                                      initWithFormat:@"http://www.newsblur.com/reader/feed/%@?page=%d", 
+                                      initWithFormat:@"http://nb.local.host:8000/reader/feed/%@?page=%d", 
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
@@ -139,7 +140,13 @@
                        encoding:NSUTF8StringEncoding];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[jsonS JSONValue]];
-    NSArray *newStories = [results objectForKey:@"stories"];
+    [pull finishedLoading];
+    [self renderStories:[results objectForKey:@"stories"]];
+    [results release];
+    [jsonS release];
+}
+
+- (void)renderStories:(NSArray *)newStories {
     NSInteger existingStoriesCount = [[appDelegate activeFeedStoryLocations] count];
     NSInteger newStoriesCount = [newStories count];
     
@@ -185,8 +192,6 @@
                withObject:nil
                afterDelay:0.2];
     
-    [results release];
-    [jsonS release];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
@@ -245,10 +250,15 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    int storyCount = [[appDelegate activeFeedStoryLocations] count];
+    if (self.pageRefreshing) {
+        // Refreshing feed
+        return 1;
+    } else {    
+        int storyCount = [[appDelegate activeFeedStoryLocations] count];
 
-    // The +1 is for the finished/loading bar.
-    return storyCount + 1;
+        // The +1 is for the finished/loading bar.
+        return storyCount + 1;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -352,8 +362,6 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
     [request setDelegate:nil];
-    [request setDidFinishSelector:@selector(markedAsRead)];
-    [request setDidFailSelector:@selector(markedAsRead)];
     [request startAsynchronous];
     [appDelegate markActiveFeedAllRead];
     [appDelegate.navigationController 
@@ -438,25 +446,51 @@
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
-    NSString *urlString = @"http://www.newsblur.com/reader/mark_feed_as_read";
+    NSString *urlString = [NSString 
+                           stringWithFormat:@"http://nb.local.host:8000/reader/refresh_feed/%@", 
+                           [appDelegate.activeFeed objectForKey:@"id"]];
     NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:nil];
-    [request setDidFinishSelector:@selector(markedAsRead)];
-    [request setDidFailSelector:@selector(markedAsRead)];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setDidFinishSelector:@selector(finishedRefreshingFeed:)];
+    [request setDidFailSelector:@selector(failRefreshingFeed:)];
+    [request setTimeOutSeconds:60];
     [request startAsynchronous];
-    [appDelegate markActiveFeedAllRead];
-    [appDelegate.navigationController 
-     popToViewController:[appDelegate.navigationController.viewControllers 
-                          objectAtIndex:0]  
-     animated:YES];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [appDelegate setStories:nil];
+    self.feedPage = 1;
+    self.pageFetching = YES;
+    self.pageRefreshing = YES;
+    [self.storyTitlesTable reloadData];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+}
+
+- (void)finishedRefreshingFeed:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    [pull finishedLoading];
+    self.pageRefreshing = NO;
+    [self renderStories:[results objectForKey:@"stories"]];
+    
+    [results release];
+}
+
+- (void)failRefreshingFeed:(ASIHTTPRequest *)request {
+    NSLog(@"Fail: %@", request);
+    self.pageRefreshing = NO;
+    [pull finishedLoading];
+    [self fetchFeedDetail:1];
 }
 
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
-//	return self.lastUpdate;
-    return [[[NSDate alloc] initWithTimeIntervalSinceNow:-30*30] autorelease];
+    NSLog(@"Updated; %@", [appDelegate.activeFeed objectForKey:@"updated_seconds_ago"]);
+    int seconds = -1 * [[appDelegate.activeFeed objectForKey:@"updated_seconds_ago"] intValue];
+    return [[[NSDate alloc] initWithTimeIntervalSinceNow:seconds] autorelease];
 }
 
 
