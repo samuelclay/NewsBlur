@@ -111,7 +111,7 @@
         }
         
         NSString *theFeedDetailURL = [[NSString alloc] 
-                                      initWithFormat:@"http://nb.local.host:8000/reader/feed/%@?page=%d", 
+                                      initWithFormat:@"http://www.newsblur.com/reader/feed/%@?page=%d", 
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
@@ -447,7 +447,7 @@
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
     NSString *urlString = [NSString 
-                           stringWithFormat:@"http://nb.local.host:8000/reader/refresh_feed/%@", 
+                           stringWithFormat:@"http://www.newsblur.com/reader/refresh_feed/%@", 
                            [appDelegate.activeFeed objectForKey:@"id"]];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];

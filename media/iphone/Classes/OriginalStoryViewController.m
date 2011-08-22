@@ -75,7 +75,30 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     self.pageTitle = label;
     [label release];
     
-    CGRect addressFrame = CGRectMake(kMargin, kSpacer*2.0 + kLabelHeight,
+    
+    UIBarButtonItem *close = [[UIBarButtonItem alloc] 
+                              initWithTitle:@"Close" 
+                              style:UIBarButtonItemStyleBordered 
+                              target:self 
+                              action:@selector(doCloseOriginalStoryViewController)];
+    close.width = kButtonWidth;
+    CGRect closeButtonFrame = CGRectMake(0, 
+                                         kSpacer*2.0 + kLabelHeight - 7.0f, 
+                                         kButtonWidth + kMargin,
+                                         44.0);
+    TransparentToolbar* tools = [[TransparentToolbar alloc] 
+                                 initWithFrame:closeButtonFrame];
+    [tools setItems:[NSArray arrayWithObject:close] animated:NO];
+    [tools setTintColor:UIColorFromRGB(0x183353)];
+    [navBar addSubview:tools];
+    [close release];
+    [tools release];
+
+    
+    CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x + 
+                                     closeButtonFrame.size.width +
+                                     kMargin, 
+                                     kSpacer*2.0 + kLabelHeight,
                                      labelFrame.size.width - kButtonWidth - kMargin, 
                                      kAddressHeight);
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
@@ -88,7 +111,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     address.clearButtonMode = UITextFieldViewModeWhileEditing;
     address.enablesReturnKeyAutomatically = YES;
     address.returnKeyType = UIReturnKeyGo;
-    [address setDelegate:self];
+    address.delegate = self;
     [navBar addSubview:address];
     self.pageUrl = address;
     
@@ -100,26 +123,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                                      self.view.frame.size.width, 
                                      self.view.frame.size.height - kNavBarHeight - 44);
     self.webView.frame = webViewFrame;
-    
-    UIBarButtonItem *close = [[UIBarButtonItem alloc] 
-                              initWithTitle:@"Close" 
-                              style:UIBarButtonItemStyleBordered 
-                              target:self 
-                              action:@selector(doCloseOriginalStoryViewController)];
-    close.width = kButtonWidth;
-    CGRect closeButtonFrame = CGRectMake(addressFrame.origin.x + 
-                                         addressFrame.size.width, 
-                                         addressFrame.origin.y - 7.0f, 
-                                         kButtonWidth + kMargin,
-                                         44.0);
-    TransparentToolbar* tools = [[TransparentToolbar alloc] 
-                                 initWithFrame:closeButtonFrame];
-    [tools setItems:[NSArray arrayWithObject:close] animated:NO];
-    [tools setTintColor:UIColorFromRGB(0x183353)];
-    [navBar addSubview:tools];
-    [close release];
-    [tools release];
-    
+        
     navBar.tintColor = UIColorFromRGB(0x183353);
     
     [navBar release];

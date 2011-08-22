@@ -77,6 +77,7 @@
 		FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF79E11C13EB756A0095C852 /* PullToRefreshView.m */; };
 		FF7DB4C413F58486008176BF /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = FF7DB4C313F58486008176BF /* folder.png */; };
 		FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCE7AE613D49165009A98F6 /* FeedTableCell.m */; };
+		FFD2BB8B1401AD85004277DA /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FFD2BB8A1401AD85004277DA /* libTestFlight.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -191,6 +192,8 @@
 		FF7DB4C313F58486008176BF /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
 		FFCE7AE513D49165009A98F6 /* FeedTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedTableCell.h; path = ../NewsBlur.xcodeproj/FeedTableCell.h; sourceTree = "<group>"; };
 		FFCE7AE613D49165009A98F6 /* FeedTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FeedTableCell.m; path = ../NewsBlur.xcodeproj/FeedTableCell.m; sourceTree = "<group>"; };
+		FFD2BB891401AD85004277DA /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		FFD2BB8A1401AD85004277DA /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +209,7 @@
 				78095E43128EF37E00230C8E /* MobileCoreServices.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
 				78095E47128EF37F00230C8E /* libz.1.2.3.dylib in Frameworks */,
+				FFD2BB8B1401AD85004277DA /* libTestFlight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +269,8 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FFD2BB891401AD85004277DA /* TestFlight.h */,
+				FFD2BB8A1401AD85004277DA /* libTestFlight.a */,
 				FF79E11B13EB756A0095C852 /* PullToRefreshView.h */,
 				FF79E11C13EB756A0095C852 /* PullToRefreshView.m */,
 				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
@@ -539,6 +545,10 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -558,6 +568,10 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = NewsBlur;
 				VALIDATE_PRODUCT = YES;
@@ -570,6 +584,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
+				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -583,6 +598,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9390CCB7-7064-41BA-A292-53CE11BB3BEB";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Debug;
 		};
@@ -592,6 +608,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
+				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -600,6 +617,7 @@
 				PROVISIONING_PROFILE = "9390CCB7-7064-41BA-A292-53CE11BB3BEB";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9390CCB7-7064-41BA-A292-53CE11BB3BEB";
 				SDKROOT = iphoneos;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Release;
 		};

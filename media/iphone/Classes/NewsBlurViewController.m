@@ -166,7 +166,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	}
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	NSURL *urlFeedList = [NSURL URLWithString:
-						  [NSString stringWithFormat:@"http://nb.local.host:8000/reader/feeds?flat=true"]];
+						  [NSString stringWithFormat:@"http://www.newsblur.com/reader/feeds?flat=true"]];
 	responseData = [[NSMutableData data] retain];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
 	NSURLConnection *connection = [[NSURLConnection alloc] 
@@ -260,18 +260,28 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 
 - (IBAction)doLogoutButton {
-	NSLog(@"Logging out...");
-	NSString *urlS = @"http://nb.local.host:8000/reader/logout?api=1";
-	NSURL *url = [NSURL URLWithString:urlS];
-	NSURLRequest *urlR=[[[NSURLRequest alloc] initWithURL:url] autorelease];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-	LogoutDelegate *ld = [LogoutDelegate alloc];
-	NSURLConnection *urlConnection = [[NSURLConnection alloc] 
-									  initWithRequest:urlR 
-									  delegate:ld];
-	[urlConnection release];
-	[ld release];
+	UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
+	[logoutConfirm show];
+	[logoutConfirm release];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 0) {
+		return;
+	} else {
+		NSLog(@"Logging out...");
+		NSString *urlS = @"http://www.newsblur.com/reader/logout?api=1";
+		NSURL *url = [NSURL URLWithString:urlS];
+		NSURLRequest *urlR=[[[NSURLRequest alloc] initWithURL:url] autorelease];
+		[[NSHTTPCookieStorage sharedHTTPCookieStorage]
+		 setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+		LogoutDelegate *ld = [LogoutDelegate alloc];
+		NSURLConnection *urlConnection = [[NSURLConnection alloc] 
+										  initWithRequest:urlR 
+										  delegate:ld];
+		[urlConnection release];
+		[ld release];
+	}
 }
 
 - (IBAction)doSwitchSitesUnread {

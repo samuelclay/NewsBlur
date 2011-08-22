@@ -14,7 +14,7 @@
 @class NewsBlurAppDelegate;
 
 @interface NewsBlurViewController : UIViewController 
-		   <UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate> 
+		   <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, PullToRefreshViewDelegate> 
 {
     NewsBlurAppDelegate *appDelegate;
     
