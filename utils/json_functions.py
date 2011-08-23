@@ -2,7 +2,8 @@ from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.db import models
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
-from django.utils import simplejson as json
+# from django.utils import simplejson as json
+import cjson
 from decimal import Decimal
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseForbidden, Http404
@@ -13,14 +14,14 @@ import sys
 def decode(data):
     if not data:
         return data
-    return json.loads(data)
+    return cjson.decode(data)
     
 def encode(data, *args, **kwargs):
     if type(data) == QuerySet: # Careful, ValuesQuerySet is a dict
         # Django models
         return serializers.serialize("json", data, *args, **kwargs)
     else:
-        return json_encode(data, *args, **kwargs)
+        return cjson.encode(data, extension=lambda x: "\"%s\"" % str(x))
 
 def json_encode(data, *args, **kwargs):
     """
@@ -78,11 +79,11 @@ def json_encode(data, *args, **kwargs):
     def _dict(data):
         ret = {}
         for k,v in data.items():
-            ret[k] = _any(v)
+            ret[str(k)] = _any(v)
         return ret
     
     ret = _any(data)
-    return json.dumps(ret, cls=DateTimeAwareJSONEncoder, ensure_ascii=False, *args, **kwargs)
+    return cjson.encode(ret, extension=lambda x: "\"%s\"" % str(x))
 
 def json_view(func):
     def wrap(request, *a, **kw):

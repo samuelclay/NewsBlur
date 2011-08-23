@@ -150,8 +150,9 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
-        feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
-        if feeds[sub.feed.pk].get('not_yet_fetched'):
+        pk = str(sub.feed.pk)
+        feeds[pk] = sub.canonical(include_favicon=include_favicons)
+        if feeds[pk].get('not_yet_fetched'):
             not_yet_fetched = True
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
             sub.feed.count_subscribers()
@@ -183,7 +184,7 @@ def load_feed_favicons(request):
         user_subs = user_subs.filter(feed__in=feed_ids)
 
     feed_ids   = [sub['feed__pk'] for sub in user_subs.values('feed__pk')]
-    feed_icons = dict([(i.feed_id, i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
+    feed_icons = dict([(str(i.feed_id), i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
         
     return feed_icons
 
@@ -206,7 +207,7 @@ def load_feeds_flat(request):
     for sub in user_subs:
         if sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
-        feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
+        feeds[str(sub.feed.pk)] = sub.canonical(include_favicon=include_favicons)
     
     folders = json.decode(folders.folders)
     flat_folders = {}
@@ -248,27 +249,28 @@ def refresh_feeds(request):
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
 
     for sub in user_subs:
+        pk = str(sub.feed.pk)
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
             sub.calculate_feed_scores(silent=True)
-        feeds[sub.feed.pk] = {
+        feeds[pk] = {
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
             'ng': sub.unread_count_negative,
         }
         if sub.feed.has_feed_exception or sub.feed.has_page_exception:
-            feeds[sub.feed.pk]['has_exception'] = True
-            feeds[sub.feed.pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
-            feeds[sub.feed.pk]['feed_address'] = sub.feed.feed_address
-            feeds[sub.feed.pk]['exception_code'] = sub.feed.exception_code
+            feeds[pk]['has_exception'] = True
+            feeds[pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
+            feeds[pk]['feed_address'] = sub.feed.feed_address
+            feeds[pk]['exception_code'] = sub.feed.exception_code
         if request.REQUEST.get('check_fetch_status', False):
-            feeds[sub.feed.pk]['not_yet_fetched'] = not sub.feed.fetched_once
+            feeds[pk]['not_yet_fetched'] = not sub.feed.fetched_once
         if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
-            feeds[sub.feed.pk]['favicon'] = feed_icons[sub.feed.pk].data
-            feeds[sub.feed.pk]['favicon_color'] = feed_icons[sub.feed.pk].color
-            feeds[sub.feed.pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
-                                                               feed_icons[sub.feed.pk].data))
+            feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
+            feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
+            feeds[pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
+                                                      feed_icons[sub.feed.pk].data))
     
     if settings.DEBUG:
         diff = datetime.datetime.utcnow()-start
