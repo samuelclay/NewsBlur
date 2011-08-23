@@ -43,7 +43,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 //    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);
-    if (self.activeStoryId != [appDelegate.activeStory objectForKey:@"id"]) {
+    id storyId = [appDelegate.activeStory objectForKey:@"id"];
+    if (self.activeStoryId != storyId) {
+        [appDelegate pushReadStory:storyId];
         [self setActiveStory];
         [self showStory];
         [self markStoryAsRead];   
@@ -83,8 +85,10 @@
         [buttonNext setTitle:@"Next Unread"];
     }
     
-    int previousIndex = [appDelegate indexOfPreviousStory];
-    if (previousIndex == -1) {
+    int readStoryCount = [appDelegate.readStories count];
+    if (readStoryCount == 0 || 
+        (readStoryCount == 1 && 
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
         [buttonPrevious setTitle:@"Done"];
     } else {
         [buttonPrevious setTitle:@"Previous"];
@@ -255,6 +259,7 @@
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:nextIndex]];
+        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
         [self setActiveStory];
         [self showStory];
         [self markStoryAsRead];
@@ -271,13 +276,17 @@
 }
 
 - (IBAction)doPreviousStory {
-    int previousIndex = [appDelegate indexOfPreviousStory];
-    if (previousIndex == -1) {
+    id previousStoryId = [appDelegate popReadStory];
+    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
          animated:YES];
     } else {
+        int previousIndex = [appDelegate locationOfStoryId:previousStoryId];
+        if (previousIndex == -1) {
+            return [self doPreviousStory];
+        }
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:previousIndex]];
         [self setActiveStory];

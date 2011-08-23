@@ -36,6 +36,7 @@
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
 @synthesize activeFeedIndexPath;
+@synthesize readStories;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
@@ -73,6 +74,7 @@
     [activeOriginalStoryURL release];
     [recentlyReadStories release];
     [activeFeedIndexPath release];
+    [readStories release];
     [super dealloc];
 }
 
@@ -194,6 +196,31 @@
     return -1;
 }
 
+- (void)pushReadStory:(id)storyId {
+    if ([self.readStories lastObject] != storyId) {
+        [self.readStories addObject:storyId];
+    }
+}
+
+- (id)popReadStory {
+    if (storyCount == 0) {
+        return nil;
+    } else {
+        [self.readStories removeLastObject];
+        id lastStory = [self.readStories lastObject];
+        return lastStory;
+    }
+}
+
+- (int)locationOfStoryId:(id)storyId {
+    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
+        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
+            return [[activeFeedStoryLocations objectAtIndex:i] intValue];
+        }
+    }
+    return -1;
+}
+
 - (int)unreadCount {
     int total = 0;
     total += [[self.activeFeed objectForKey:@"ps"] intValue];
@@ -225,10 +252,10 @@
 
 - (void)markActiveStoryRead {
     int activeLocation = [self locationOfActiveStory];
-    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     if (activeLocation == -1) {
         return;
     }
+    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];

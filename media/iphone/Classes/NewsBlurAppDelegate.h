@@ -37,6 +37,7 @@
     NSInteger selectedIntelligence;
     NSMutableArray * recentlyReadStories;
     NSIndexPath * activeFeedIndexPath;
+    NSMutableArray * readStories;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -61,6 +62,7 @@
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
 @property (readwrite, retain) NSIndexPath * activeFeedIndexPath;
+@property (readwrite, retain) NSMutableArray * readStories;
 
 - (void)showLogin;
 - (void)loadFeedDetailView;
@@ -71,10 +73,15 @@
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;
+
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;
 - (int)indexOfActiveStory;
 - (int)locationOfActiveStory;
+- (void)pushReadStory:(id)storyId;
+- (id)popReadStory;
+- (int)locationOfStoryId:(id)storyId;
+
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)addStories:(NSArray *)stories;
 - (int)unreadCount;

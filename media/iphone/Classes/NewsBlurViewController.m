@@ -409,6 +409,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	
 	[appDelegate setActiveFeed:feed];
 	[appDelegate setActiveFeedIndexPath:indexPath];
+	appDelegate.readStories = [NSMutableArray array];
 	
 	[appDelegate loadFeedDetailView];
 }
