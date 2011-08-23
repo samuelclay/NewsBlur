@@ -214,7 +214,7 @@ def load_feeds_flat(request):
     
     def make_feeds_folder(items, parent_folder="", depth=0):
         for item in items:
-            if isinstance(item, int) and item in feeds:
+            if isinstance(item, int) and str(item) in feeds:
                 if not parent_folder:
                     parent_folder = ' '
                 if parent_folder in flat_folders:
