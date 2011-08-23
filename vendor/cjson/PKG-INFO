@@ -1,0 +1,42 @@
+Metadata-Version: 1.0
+Name: python-cjson
+Version: 1.0.3x5
+Summary: Fast JSON encoder/decoder for Python
+Home-page: http://ag-projects.com/
+Author: Dan Pascu
+Author-email: dan@ag-projects.com
+License: LGPL
+Download-URL: http://cx.hu/python-cjson/1.0.3x5
+Description: This module implements a very fast JSON encoder/decoder for Python.
+        
+        JSON stands for JavaScript Object Notation and is a text based lightweight
+        data exchange format which is easy for humans to read/write and for machines
+        to parse/generate. JSON is completely language independent and has multiple
+        implementations in most of the programming languages, making it ideal for
+        data exchange and storage.
+        
+        The module is written in C and it is up to 250 times faster when compared to
+        the other python JSON implementations which are written directly in python.
+        This speed gain varies with the complexity of the data and the operation and
+        is the the range of 10-200 times for encoding operations and in the range of
+        100-250 times for decoding operations.
+        
+        This module is an enhanced version of the original python-cjson 1.0.3.
+        Please send your comments regarding to this version to:
+        Viktor Ferenczi <cx@cx.hu>
+        
+        New feature not in the original 1.0.3 release:
+        
+        Encoder and decoder functions are extensible to allow conversion of objects
+        not in the official JSON specification, such as Date objects.
+        
+        Unicode and character encoding related enhancements. Automatic conversion
+        of dictionary keys to strings (JSON requires string keys in objects).
+
+Platform: Platform Independent
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
