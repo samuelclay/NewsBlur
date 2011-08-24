@@ -41,8 +41,18 @@
     [super dealloc];
 }
 
+- (void)viewDidLoad {
+    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    backBtn.frame = CGRectMake(0, 0, 51, 31);
+    [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
+    [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *back = [[[UIBarButtonItem alloc] initWithCustomView:backBtn] autorelease];
+    self.navigationItem.backBarButtonItem = back;  
+    [super viewDidLoad];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
-//    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);
+//    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);    
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     if (self.activeStoryId != storyId) {
         [appDelegate pushReadStory:storyId];
@@ -105,7 +115,8 @@
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
         [appDelegate markActiveStoryRead];
         
-        NSString *urlString = @"http://www.newsblur.com/reader/mark_story_as_read";
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
+                               NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:[appDelegate.activeStory 
@@ -118,7 +129,6 @@
         [request setDidFailSelector:@selector(markedAsRead)];
         [request setDelegate:self];
         [request startAsynchronous];
-        [urlString release];
     }
 }
 

@@ -67,7 +67,8 @@
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSLog(@"appdelegate:: %@", [self appDelegate]);
-    NSString *urlString = @"http://www.newsblur.com/reader/login";
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/login",
+                           NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];

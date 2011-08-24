@@ -112,6 +112,7 @@
     [feedDetailViewController fetchFeedDetail:1];
     [self showNavigationBar:YES];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
 }
 
 - (void)loadStoryDetailView {

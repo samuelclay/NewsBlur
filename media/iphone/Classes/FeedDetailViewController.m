@@ -16,6 +16,11 @@
 
 #define kTableViewRowHeight 65;
 
+#define UIColorFromRGB(rgbValue) [UIColor \
+colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 @implementation FeedDetailViewController
 
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
@@ -45,7 +50,45 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
-    self.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
+    
+    UINavigationBar *bar = [self.navigationController navigationBar];
+
+    UIView *titleView = [[UIView alloc] init];
+    
+    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+    titleLabel.text = [appDelegate.activeFeed objectForKey:@"feed_title"];
+    titleLabel.backgroundColor = [UIColor clearColor];
+    titleLabel.textAlignment = UITextAlignmentCenter;
+    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    titleLabel.shadowColor = [UIColor blackColor];
+    titleLabel.shadowOffset = CGSizeMake(0, -1);
+    [titleLabel sizeToFit];
+//    titleLabel.center = CGPointMake(bar.topItem.titleView.center.x, 0);
+    [titleView addSubview:titleLabel];
+    self.navigationItem.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
+	
+    UIImage *titleImage;
+    NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
+	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
+		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+		titleImage = [UIImage imageWithData:imageData];
+	} else {
+		titleImage = [UIImage imageNamed:@"world.png"];
+	}
+	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+	titleImageView.frame = CGRectMake(titleLabel.frame.origin.x-20.0, 2.0, 16.0, 16.0);
+//    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:titleImageView] autorelease];
+    [titleView addSubview:titleImageView];
+    [titleImageView release];
+    
+    [titleView sizeToFit];
+    titleView.center = bar.topItem.titleView.center;
+    
+    self.navigationItem.titleView = titleView;
+    
+    [titleView release];
     
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (id i in appDelegate.recentlyReadStories) {
@@ -110,12 +153,11 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
         
-        NSString *theFeedDetailURL = [[NSString alloc] 
-                                      initWithFormat:@"http://www.newsblur.com/reader/feed/%@?page=%d", 
+        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@?page=%d", 
+                                      NEWSBLUR_URL,
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
-        [theFeedDetailURL release];
         jsonString = [[NSMutableData data] retain];
         NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedDetail];
         NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
@@ -357,7 +399,8 @@
 }
 
 - (IBAction)markAllRead {
-    NSString *urlString = @"http://www.newsblur.com/reader/mark_feed_as_read";
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+                           NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
@@ -447,7 +490,8 @@
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
     NSString *urlString = [NSString 
-                           stringWithFormat:@"http://www.newsblur.com/reader/refresh_feed/%@", 
+                           stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
+                           NEWSBLUR_URL,
                            [appDelegate.activeFeed objectForKey:@"id"]];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
