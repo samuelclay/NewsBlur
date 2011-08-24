@@ -839,7 +839,7 @@ class Feed(models.Model):
                 slow_punishment = 6 * self.last_load_time
         total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
-        random_factor = random.randint(0, total) / 4
+        random_factor = random.randint(0, total) / 2
         
         return total, random_factor
         
