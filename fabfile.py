@@ -31,10 +31,10 @@ env.VENDOR_PATH   = "~/projects/code"
 env.user = 'sclay'
 env.roledefs ={
     'local': ['localhost'],
-    'app': ['app01.newsblur.com', 'db02.newsblur.com'],
-    'web': ['www.newsblur.com', 'db02.newsblur.com'],
+    'app': ['app01.newsblur.com'],
+    'web': ['www.newsblur.com'],
     'db': ['db01.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'db02.newsblur.com', '199.15.250.233'],
 }
 
 # ================
@@ -82,7 +82,8 @@ def deploy_full():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('./manage.py migrate')
-        run('sudo supervisorctl restart gunicorn', warn_only=True)
+        with settings(warn_only=True):
+            run('sudo supervisorctl restart gunicorn')
         run('curl -s http://www.newsblur.com > /dev/null')
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
@@ -208,10 +209,12 @@ def setup_installs():
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
-    run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh', warn_only=True)
+    with settings(warn_only=True):
+        run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
     sudo('chsh sclay -s /bin/zsh')
+    run('mkdir -p %s' % env.VENDOR_PATH)
     
 def setup_user():
     # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
@@ -228,7 +231,8 @@ def add_machine_to_ssh():
     run("echo `cat local_keys` >> .ssh/authorized_keys")
     
 def setup_repo():
-    run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
+    with settings(warn_only=True):
+        run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -257,15 +261,18 @@ def setup_libxml_code():
         run('./configure && make && sudo make install')
 
 def setup_psycopg():
-    sudo('easy-install psycopg2')
+    sudo('easy_install psycopg2')
     
 def setup_python():
     sudo('easy_install pip')
     sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
     
     put('config/pystartup.py', '.pystartup')
-    with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
+        sudo('python setup.py install')
+        
+    # with settings(warn_only=True):
+    #     sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -292,13 +299,15 @@ def config_monit():
     
 def setup_mongoengine():
     with cd(env.VENDOR_PATH):
-        run('git clone https://github.com/hmarr/mongoengine.git')
-        sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
-             os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+        with settings(warn_only=True):
+            run('git clone https://github.com/hmarr/mongoengine.git')
+            sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
+                 os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
-        run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
+        with settings(warn_only=True):
+            run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
     with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
         sudo('python setup.py install')
         
@@ -325,16 +334,17 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
 
 def setup_nginx():
-    with cd(env.VENDOR_PATH) and  settings(warn_only=True):
-        sudo("groupadd nginx")
-        sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-        run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
-        run('tar -xzf nginx-0.9.5.tar.gz')
-        run('rm nginx-0.9.5.tar.gz')
-        with cd('nginx-0.9.5'):
-            run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
-            run('make')
-            sudo('make install')
+    with cd(env.VENDOR_PATH):
+        with settings(warn_only=True):
+            sudo("groupadd nginx")
+            sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
+            run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
+            run('tar -xzf nginx-0.9.5.tar.gz')
+            run('rm nginx-0.9.5.tar.gz')
+            with cd('nginx-0.9.5'):
+                run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
+                run('make')
+                sudo('make install')
             
 def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
