@@ -150,7 +150,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
     [self.pageUrl resignFirstResponder];
-    [self.pageTitle setText:@"Loading..."]; 
+    [self.pageTitle setText:@"Loading..."];
 }
 
 # pragma mark: -
@@ -202,7 +202,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 {
     self.forward.enabled = self.webView.canGoForward;
     self.back.enabled = self.webView.canGoBack;
-//    self.stop.enabled = self.webView.loading;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1024</int>
-		<string key="IBDocument.SystemVersion">11A511</string>
+		<string key="IBDocument.SystemVersion">11B26</string>
 		<string key="IBDocument.InterfaceBuilderVersion">1617</string>
 		<string key="IBDocument.AppKitVersion">1138</string>
 		<string key="IBDocument.HIToolboxVersion">566.00</string>
@@ -98,6 +98,11 @@
 								<reference key="IBUIToolbar" ref="623759027"/>
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
+							<object class="IBUIBarButtonItem" id="628934158">
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<reference key="IBUIToolbar" ref="623759027"/>
+								<int key="IBUISystemItemIdentifier">5</int>
+							</object>
 							<object class="IBUIBarButtonItem" id="1070386646">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<reference key="IBUIToolbar" ref="623759027"/>
@@ -169,14 +174,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">refresh</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="416628934"/>
-					</object>
-					<int key="connectionID">24</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">back</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="443591754"/>
@@ -198,14 +195,6 @@
 						<reference key="destination" ref="812726678"/>
 					</object>
 					<int key="connectionID">28</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">reload</string>
-						<reference key="source" ref="416628934"/>
-						<reference key="destination" ref="812726678"/>
-					</object>
-					<int key="connectionID">31</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -230,6 +219,14 @@
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">51</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">reload</string>
+						<reference key="source" ref="416628934"/>
+						<reference key="destination" ref="812726678"/>
+					</object>
+					<int key="connectionID">53</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -273,13 +270,14 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="1062965078"/>
-							<reference ref="416628934"/>
 							<reference ref="65736986"/>
 							<reference ref="443591754"/>
 							<reference ref="718772107"/>
 							<reference ref="1026790494"/>
 							<reference ref="164040638"/>
 							<reference ref="1070386646"/>
+							<reference ref="416628934"/>
+							<reference ref="628934158"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -291,11 +289,6 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">14</int>
 						<reference key="object" ref="1062965078"/>
-						<reference key="parent" ref="623759027"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">16</int>
-						<reference key="object" ref="416628934"/>
 						<reference key="parent" ref="623759027"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -323,6 +316,16 @@
 						<reference key="object" ref="164040638"/>
 						<reference key="parent" ref="623759027"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">52</int>
+						<reference key="object" ref="416628934"/>
+						<reference key="parent" ref="623759027"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">57</int>
+						<reference key="object" ref="628934158"/>
+						<reference key="parent" ref="623759027"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -335,7 +338,6 @@
 					<string>-2.IBPluginDependency</string>
 					<string>1.IBPluginDependency</string>
 					<string>14.IBPluginDependency</string>
-					<string>16.IBPluginDependency</string>
 					<string>17.IBPluginDependency</string>
 					<string>36.IBPluginDependency</string>
 					<string>4.IBPluginDependency</string>
@@ -343,6 +345,8 @@
 					<string>41.IBPluginDependency</string>
 					<string>44.IBPluginDependency</string>
 					<string>5.IBPluginDependency</string>
+					<string>52.IBPluginDependency</string>
+					<string>57.IBPluginDependency</string>
 					<string>6.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
@@ -350,6 +354,7 @@
 					<string>OriginalStoryViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIResponder</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -376,7 +381,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">51</int>
+			<int key="maxID">58</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -658,8 +663,8 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doLogoutButton</string>
+							<string>doSwitchSitesUnread</string>
 							<string>selectIntelligence</string>
-							<string>switchSitesUnread</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -673,8 +678,8 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doLogoutButton</string>
+							<string>doSwitchSitesUnread</string>
 							<string>selectIntelligence</string>
-							<string>switchSitesUnread</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -683,11 +688,11 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">selectIntelligence</string>
+								<string key="name">doSwitchSitesUnread</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">switchSitesUnread</string>
+								<string key="name">selectIntelligence</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
@@ -773,9 +778,11 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doCloseOriginalStoryViewController</string>
 							<string>doOpenActionSheet</string>
+							<string>loadAddress:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 						</object>
@@ -786,6 +793,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doCloseOriginalStoryViewController</string>
 							<string>doOpenActionSheet</string>
+							<string>loadAddress:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -795,6 +803,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doOpenActionSheet</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">loadAddress:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>

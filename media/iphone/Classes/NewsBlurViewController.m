@@ -1,12 +1,4 @@
-for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
-    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-    int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-    if (previousLevel != newLevel && maxScore < newLevel) {
-        NSLog(@"Still visible: %@ - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel);
-        [deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
-        [self.stillVisibleFeeds removeObjectForKey:feedIdStr];
-    }
-}//
+//
 //  NewsBlurViewController.m
 //  NewsBlur
 //

@@ -45,20 +45,19 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	pull = [[PullToRefreshView alloc] initWithScrollView:self.storyTitlesTable];
     [pull setDelegate:self];
     [self.storyTitlesTable addSubview:pull];
+    
     [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
     
-    UINavigationBar *bar = [self.navigationController navigationBar];
-
     UIView *titleView = [[UIView alloc] init];
     
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
     titleLabel.backgroundColor = [UIColor clearColor];
-    titleLabel.textAlignment = UITextAlignmentCenter;
+    titleLabel.textAlignment = UITextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
@@ -83,17 +82,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 //    [titleView addSubview:titleImageView];
     [titleImageView release];
     
-    NSLog(@"titleLabel titleImageView: %@", NSStringFromCGRect(titleImageView.frame));
-    
     self.navigationItem.titleView = titleLabel;
-//    NSLog(@"titleLabel titleLabel 1: %@", NSStringFromCGRect(titleLabel.frame));
-//    CGRect frame = titleLabel.frame;
-//    frame.size.width += 40;
-//    [titleLabel setFrame:frame];
-    self.navigationItem.title = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
-	
-    NSLog(@"titleLabel titleLabel 2: %@", NSStringFromCGRect(titleLabel.frame));
-    
+//    self.navigationItem.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
+	    
     [titleView release];
     
     NSMutableArray *indexPaths = [NSMutableArray array];

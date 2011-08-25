@@ -269,11 +269,11 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
 				FFD2BB891401AD85004277DA /* TestFlight.h */,
 				FFD2BB8A1401AD85004277DA /* libTestFlight.a */,
 				FF79E11B13EB756A0095C852 /* PullToRefreshView.h */,
 				FF79E11C13EB756A0095C852 /* PullToRefreshView.m */,
-				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
 				FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */,

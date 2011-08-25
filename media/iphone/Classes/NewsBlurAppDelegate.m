@@ -103,22 +103,50 @@
 }
    
 - (void)loadFeedDetailView {
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
+    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+    [newBackButton release];
     UINavigationController *navController = self.navigationController;
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"All" style:UIBarButtonItemStylePlain target:nil action:nil];
     [self setStories:nil];
-    navController.navigationItem.backBarButtonItem = backButton;
-    [backButton release];
     [navController pushViewController:feedDetailViewController animated:YES];
     [feedDetailViewController fetchFeedDetail:1];
     [self showNavigationBar:YES];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-//    self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
 }
 
 - (void)loadStoryDetailView {
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:[activeFeed objectForKey:@"feed_title"] style: UIBarButtonItemStyleBordered target: nil action: nil];
+    [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
+    [newBackButton release];
     UINavigationController *navController = self.navigationController;   
     [navController pushViewController:storyDetailViewController animated:YES];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:[self.activeFeed objectForKey:@"feed_title"] style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
+    navController.navigationItem.hidesBackButton = YES;
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+}
+
+- (void)navigationController:(UINavigationController *)navController 
+      willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    NSLog(@"willShow %@", viewController);
+    if (viewController == feedDetailViewController) {
+        UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
+        UIButton *myBackButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
+        [myBackButton setFrame:CGRectMake(0,0,70,35)];
+        [myBackButton setImage:[UIImage imageNamed:@"toolbar_back_button.png"] forState:UIControlStateNormal];
+        [myBackButton setEnabled:YES];
+        [myBackButton addTarget:viewController.navigationController action:@selector(popViewControllerAnimated:) forControlEvents:UIControlEventTouchUpInside];
+        [backButtonView addSubview:myBackButton];
+        [myBackButton release];
+        UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithCustomView:backButtonView];
+        viewController.navigationItem.leftBarButtonItem = backButton;
+        navController.navigationItem.leftBarButtonItem = backButton;
+        viewController.navigationItem.hidesBackButton = YES;
+        navController.navigationItem.hidesBackButton = YES;
+        
+        [backButtonView release];
+        [backButton release];
+    }
 }
 
 - (void)setTitle:(NSString *)title {
