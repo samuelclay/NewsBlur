@@ -397,7 +397,7 @@ def setup_db_firewall():
     sudo('ufw allow 5432')  # PostgreSQL
     sudo('ufw allow 27017') # MongoDB
     sudo('ufw allow 5672')  # RabbitMQ
-    sudo('ufw enable')
+    sudo('ufw --force enable')
     
 def setup_db_motd():
     put('config/motd_db.txt', '/etc/motd.tail', use_sudo=True)

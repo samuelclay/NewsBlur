@@ -34,6 +34,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
 @synthesize stillVisibleFeeds;
+@synthesize visibleFeeds;
 @synthesize sitesButton;
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
@@ -83,7 +84,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		
 		NSInteger previousLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
 		NSInteger newLevel = [appDelegate selectedIntelligence];
-		[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+		if (newLevel != previousLevel) {
+			[self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+		}
 	}
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
@@ -137,6 +140,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [intelligenceControl release];
 	[activeFeedLocations release];
 	[stillVisibleFeeds release];
+	[visibleFeeds release];
 	[sitesButton release];
 	[pull release];
 	[lastUpdate release];
@@ -211,6 +215,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	
 	[MBProgressHUD hideHUDForView:self.view animated:YES];
 	self.stillVisibleFeeds = [NSMutableDictionary dictionary];
+	self.visibleFeeds = [NSMutableDictionary dictionary];
 	[pull finishedLoading];
 	[self loadFavicons];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -249,7 +254,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 //		self.dictFolders = sortedFolders;
 		[self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 
-		[self calculateFeedLocations];
+		[self calculateFeedLocations:YES];
 		[self.feedTitlesTable reloadData];
 		
 		[sortedFolders release];
@@ -299,7 +304,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	NSMutableArray *indexPaths = [NSMutableArray array];
 
 	if (self.viewShowingAllFeeds) {
-		[self calculateFeedLocations];
+		[self calculateFeedLocations:NO];
 	}
 	
 	for (int s=0; s < [self.dictFoldersArray count]; s++) {
@@ -322,7 +327,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 	}
 	
 	if (!self.viewShowingAllFeeds) {
-		[self calculateFeedLocations];
+		[self calculateFeedLocations:YES];
 	}
     
     [self.feedTitlesTable beginUpdates];
@@ -487,66 +492,52 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
-
-    if (newLevel < previousLevel) {
-        [appDelegate setSelectedIntelligence:newLevel];
-		[self calculateFeedLocations];
+	
+	[appDelegate setSelectedIntelligence:newLevel];
+    if (newLevel <= previousLevel) {
+		[self calculateFeedLocations:NO];
     }
 	
-	BOOL deleted = NO;
+//	BOOL deleted = NO;
 //	BOOL inserted = NO;
 	
 	for (int s=0; s < [self.dictFoldersArray count]; s++) {
 		NSString *folderName = [self.dictFoldersArray objectAtIndex:s];
 		NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
 		NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
-		for (int f=0; f < [activeFolderFeeds count]; f++) {
-			int location = [[activeFolderFeeds objectAtIndex:f] intValue];
-			id feedId = [originalFolder objectAtIndex:location];
-			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
+		for (int f=0; f < [originalFolder count]; f++) {
+			NSNumber *feedId = [originalFolder objectAtIndex:f];
 			NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
 			NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 			int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-			deleted = NO;
+//			deleted = NO;
 //			inserted = NO;
 			
-			if (previousLevel == -1) {
-				if (newLevel == 0 && maxScore == -1) {
-					[deleteIndexPaths addObject:indexPath];
-					deleted = YES;
-				} else if (newLevel == 1 && maxScore < 1) {
-					[deleteIndexPaths addObject:indexPath];
-					deleted = YES;
+			if ([self.visibleFeeds objectForKey:feedIdStr]) {
+				if (maxScore < newLevel) {
+					for (int l=0; l < [activeFolderFeeds count]; l++) {
+						if ([originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] == feedId) {
+							NSIndexPath *indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+							[deleteIndexPaths addObject:indexPath];
+							if ([self.stillVisibleFeeds objectForKey:feedIdStr]) {
+								[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
+							}
+							break;
+						}
+					}
 				}
-			} else if (previousLevel == 0) {
-				if (newLevel == -1 && maxScore == -1) {
-					[insertIndexPaths addObject:indexPath];
-//					inserted = YES;
-				} else if (newLevel == 1 && maxScore == 0) {
-					[deleteIndexPaths addObject:indexPath];
-					deleted = YES;
+			} else {
+				if (maxScore >= newLevel) {
+					for (int l=0; l < [activeFolderFeeds count]; l++) {
+						if ([originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] == feedId) {
+							NSIndexPath *indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+							[self.visibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+							[insertIndexPaths addObject:indexPath];
+							break;
+						}
+					}
 				}
-			} else if (previousLevel == 1) {
-				if (newLevel == 0 && maxScore == 0) {
-					[insertIndexPaths addObject:indexPath];
-//					inserted = YES;
-				} else if (newLevel == -1 && (maxScore == -1 || maxScore == 0)) {
-					[insertIndexPaths addObject:indexPath];
-//					inserted = YES;
-				}
-			}
-			
-			BOOL isVisible = !![self.stillVisibleFeeds objectForKey:feedIdStr];
-			BOOL notDeletedYetVisible = !deleted && 
-										previousLevel != newLevel &&
-										(maxScore < newLevel) && 
-										isVisible;
-			if (notDeletedYetVisible) {
-//				NSLog(@"DELETING: %@ - %d - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel, !deleted);
-				[deleteIndexPaths addObject:indexPath];
-				[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
-			} else if (deleted && isVisible) {
-				[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
+				
 			}
 		}
 	}
@@ -555,15 +546,14 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
 		int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
 		if (previousLevel != newLevel && maxScore < newLevel) {
-			NSLog(@"Still visible: %@ - %d - %d - %d", [feed objectForKey:@"feed_title"], maxScore, newLevel, previousLevel);
 			[deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
 			[self.stillVisibleFeeds removeObjectForKey:feedIdStr];
+			[self.visibleFeeds removeObjectForKey:feedIdStr];
 		}
 	}
     
     if (newLevel > previousLevel) {
-        [appDelegate setSelectedIntelligence:newLevel];
-		[self calculateFeedLocations];
+		[self calculateFeedLocations:YES];
     }
     
     [self.feedTitlesTable beginUpdates];
@@ -578,8 +568,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.feedTitlesTable endUpdates];
 }
 
-- (void)calculateFeedLocations {
+- (void)calculateFeedLocations:(BOOL)markVisible {
     self.activeFeedLocations = [NSMutableDictionary dictionary];
+	if (markVisible) {
+		self.visibleFeeds = [NSMutableDictionary dictionary];
+	}
 	for (NSString *folderName in self.dictFoldersArray) {
 		NSArray *folder = [self.dictFolders objectForKey:folderName];
 		NSMutableArray *feedLocations = [NSMutableArray array];
@@ -596,6 +589,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 				if (maxScore >= appDelegate.selectedIntelligence) {
 					NSNumber *location = [NSNumber numberWithInt:f];
 					[feedLocations addObject:location];
+					if (markVisible) {
+						[self.visibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+					}
 				}
 			}
 		}

@@ -24,6 +24,7 @@
     NSMutableArray * dictFoldersArray;
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
+    NSMutableDictionary *visibleFeeds;
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
@@ -41,7 +42,7 @@
 - (IBAction)doLogoutButton;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
-- (void)calculateFeedLocations;
+- (void)calculateFeedLocations:(BOOL)markVisible;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
 - (void)loadFavicons;
@@ -59,6 +60,7 @@
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
+@property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableData *responseData;
