@@ -43,7 +43,7 @@ def main():
                         streams.remove(stream)
                         break
                     host = re.match(r'^(.*?)\.', stream.name)
-                    combination_message = "[%s] %s" % (host.group(1), data)
+                    combination_message = "[%-5s] %s" % (host.group(1), data)
                     sys.stdout.write(combination_message)
                     break
     except KeyboardInterrupt:

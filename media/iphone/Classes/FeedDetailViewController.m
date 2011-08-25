@@ -56,7 +56,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     UIView *titleView = [[UIView alloc] init];
     
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
-    titleLabel.text = [appDelegate.activeFeed objectForKey:@"feed_title"];
+    titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = UITextAlignmentCenter;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
@@ -64,11 +64,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
     titleLabel.shadowColor = [UIColor blackColor];
     titleLabel.shadowOffset = CGSizeMake(0, -1);
+    titleLabel.center = CGPointMake(28, -2);
     [titleLabel sizeToFit];
-//    titleLabel.center = CGPointMake(bar.topItem.titleView.center.x, 0);
-    [titleView addSubview:titleLabel];
-    self.navigationItem.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
-	
+    
+    
     UIImage *titleImage;
     NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
 	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
@@ -78,15 +77,22 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 		titleImage = [UIImage imageNamed:@"world.png"];
 	}
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-	titleImageView.frame = CGRectMake(titleLabel.frame.origin.x-20.0, 2.0, 16.0, 16.0);
-//    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:titleImageView] autorelease];
-    [titleView addSubview:titleImageView];
+	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+    //    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:titleImageView] autorelease];
+    [titleLabel addSubview:titleImageView];
+//    [titleView addSubview:titleImageView];
     [titleImageView release];
     
-    [titleView sizeToFit];
-    titleView.center = bar.topItem.titleView.center;
+    NSLog(@"titleLabel titleImageView: %@", NSStringFromCGRect(titleImageView.frame));
     
-    self.navigationItem.titleView = titleView;
+    self.navigationItem.titleView = titleLabel;
+//    NSLog(@"titleLabel titleLabel 1: %@", NSStringFromCGRect(titleLabel.frame));
+//    CGRect frame = titleLabel.frame;
+//    frame.size.width += 40;
+//    [titleLabel setFrame:frame];
+    self.navigationItem.title = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
+	
+    NSLog(@"titleLabel titleLabel 2: %@", NSStringFromCGRect(titleLabel.frame));
     
     [titleView release];
     
