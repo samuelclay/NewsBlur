@@ -66,6 +66,9 @@ def index(request):
     unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True).select_related('feed')[:2]
     statistics   = MStatistics.all()
     feedbacks    = MFeedback.all()
+    start_import_from_google_reader = request.session.get('import_from_google_reader', False)
+    if start_import_from_google_reader:
+        del request.session['import_from_google_reader']
 
     return render_to_response('reader/feeds.xhtml', {
         'user_profile'      : hasattr(user, 'profile') and user.profile,
@@ -81,7 +84,7 @@ def index(request):
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
         'feedbacks'         : feedbacks,
-        'start_import_from_google_reader': request.session.get('import_from_google_reader', False),
+        'start_import_from_google_reader': start_import_from_google_reader,
     }, context_instance=RequestContext(request))
 
 @never_cache
