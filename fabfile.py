@@ -33,8 +33,8 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com'],
     'web': ['www.newsblur.com'],
-    'db': ['db01.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'db02.newsblur.com', '199.15.250.233'],
+    'db': ['db01.newsblur.com', 'db02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
 # ================
@@ -350,7 +350,7 @@ def configure_nginx():
     put("config/nginx.conf", "/usr/local/nginx/conf/nginx.conf", use_sudo=True)
     sudo("mkdir -p /usr/local/nginx/conf/sites-enabled")
     sudo("mkdir -p /var/log/nginx")
-    put("config/newsblur.conf", "/usr/local/nginx/conf/sites-enabled/newsblur.conf", use_sudo=True)
+    put("config/nginx.newsblur.conf", "/usr/local/nginx/conf/sites-enabled/newsblur.conf", use_sudo=True)
     put("config/nginx-init", "/etc/init.d/nginx", use_sudo=True)
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")

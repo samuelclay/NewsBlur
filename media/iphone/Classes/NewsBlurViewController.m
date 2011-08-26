@@ -63,16 +63,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self 
-                                             selector:@selector(returnToApp) 
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter] 
+     addObserver:self
+     selector:@selector(returnToApp)
+     name:UIApplicationWillEnterForegroundNotification
+     object:nil];
     
     [super viewDidLoad];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] animated:animated];
+    [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
+                                        animated:animated];
     if (appDelegate.activeFeedIndexPath) {
         //      NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
         [self.feedTitlesTable beginUpdates];
@@ -88,9 +90,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
             [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
         }
     }
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] 
+                     forSegmentAtIndex:0];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] 
+                     forSegmentAtIndex:1];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] 
+                     forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)
                        forControlEvents:UIControlEventValueChanged];
@@ -155,16 +160,16 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark Initialization
 
 - (void)returnToApp {
-    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-10*60)];
+    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(1/*-10*60*/)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
-        [self fetchFeedList:NO];
+        [self fetchFeedList:YES];
     }
     [decayDate release];
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-    if (showLoader) {
+    if (showLoader && appDelegate.feedsViewController.view.window) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
     }
@@ -226,7 +231,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         NSDictionary *results = [[NSDictionary alloc] 
                                  initWithDictionary:[jsonString JSONValue]];
         appDelegate.activeUsername = [results objectForKey:@"user"];
-        [appDelegate setTitle:[results objectForKey:@"user"]];
+        if (appDelegate.feedsViewController.view.window) {
+            [appDelegate setTitle:[results objectForKey:@"user"]];
+        }
         self.dictFolders = [results objectForKey:@"flat_folders"];
         self.dictFeeds = [results objectForKey:@"feeds"];
         //      NSLog(@"Received Feeds: %@", dictFolders);

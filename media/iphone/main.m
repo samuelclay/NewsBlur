@@ -3,7 +3,7 @@
 //  NewsBlur
 //
 //  Created by Samuel Clay on 6/16/10.
-//  Copyright __MyCompanyName__ 2010. All rights reserved.
+//  Copyright NewsBlur 2010. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
