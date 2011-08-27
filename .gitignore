@@ -2,6 +2,7 @@ logs/*.log
 *.pycmedia/release/
 *.pyc
 media/*/*-compressed-*.*
+media/css/*/*-compressed-*.*
 media/release
 local_settings.py
 media/iphone/NewsBlur/build

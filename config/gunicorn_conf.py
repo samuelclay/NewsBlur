@@ -10,4 +10,4 @@ pidfile = "/home/sclay/newsblur/logs/gunicorn.pid"
 logfile = "/home/sclay/newsblur/logs/production.log"
 loglevel = "debug"
 name = "newsblur"
-workers = numCPUs() * 2
+workers = numCPUs()
