@@ -204,7 +204,10 @@ class IconImporter(object):
         # if image.size != (16, 16):
         #     image = image.resize((16, 16), Image.BICUBIC)
         if image.mode != 'RGBA':
-            image = image.convert('RGBA')
+            try:
+                image = image.convert('RGBA')
+            except IOError:
+                pass
         
         return image
 

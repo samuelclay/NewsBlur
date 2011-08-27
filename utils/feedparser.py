@@ -220,9 +220,12 @@ else:
     # feedparser's scope instead of sgmllib's scope.
     charref = re.compile('&#(\d+|[xX][0-9a-fA-F]+);')
     tagfind = re.compile('[a-zA-Z][-_.:a-zA-Z0-9]*')
+    attrfind = re.compile(
+        r'\s*([a-zA-Z_][-:.a-zA-Z_0-9]*)[$]?(\s*=\s*'
+        r'(\'[^\']*\'|"[^"]*"|[][\-a-zA-Z0-9./,:;+*%?!&$\(\)_#=~\'"@]*))?'
+    )
 
     # Unfortunately, these must be copied over to prevent NameError exceptions
-    attrfind = sgmllib.attrfind
     entityref = sgmllib.entityref
     incomplete = sgmllib.incomplete
     interesting = sgmllib.interesting
@@ -1740,11 +1743,13 @@ if _XML_AVAILABLE:
             self.decls = {}
 
         def startPrefixMapping(self, prefix, uri):
+            if not uri:
+                return
             # Jython uses '' instead of None; standardize on None
             prefix = prefix or None
             self.trackNamespace(prefix, uri)
-            if uri == 'http://www.w3.org/1999/xlink':
-              self.decls['xmlns:'+prefix] = uri
+            if prefix and uri == 'http://www.w3.org/1999/xlink':
+                self.decls['xmlns:' + prefix] = uri
 
         def startElementNS(self, name, qname, attrs):
             namespace, localname = name
@@ -1817,6 +1822,9 @@ if _XML_AVAILABLE:
         def error(self, exc):
             self.bozo = 1
             self.exc = exc
+
+        # drv_libxml2 calls warning() in some cases
+        warning = error
 
         def fatalError(self, exc):
             self.error(exc)
@@ -3455,6 +3463,8 @@ registerDateHandler(_parse_date_perforce)
 
 def _parse_date(dateString):
     '''Parses a variety of date formats into a 9-tuple in GMT'''
+    if not dateString:
+        return None
     for handler in _date_handlers:
         try:
             date9tuple = handler(dateString)
@@ -3879,6 +3889,11 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
         feedparser = _StrictFeedParser(baseuri, baselang, 'utf-8')
         saxparser = xml.sax.make_parser(PREFERRED_XML_PARSERS)
         saxparser.setFeature(xml.sax.handler.feature_namespaces, 1)
+        try:
+            # disable downloading external doctype references, if possible
+            saxparser.setFeature(xml.sax.handler.feature_external_ges, 0)
+        except xml.sax.SAXNotSupportedException:
+            pass
         saxparser.setContentHandler(feedparser)
         saxparser.setErrorHandler(feedparser)
         source = xml.sax.xmlreader.InputSource()
