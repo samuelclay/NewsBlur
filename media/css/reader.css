@@ -4790,8 +4790,8 @@ background: transparent;
     float: right;
     font-size: 14px;
     line-height: 16px;
-    color: #707070;
-    margin: 24px 0 0;
+    color: #427700;
+    margin: 24px 0 1px;
     font-weight: bold;
     text-shadow:1px 1px 0 #F0F0F0;
 }
@@ -4808,6 +4808,8 @@ background: transparent;
 /*    color: #5090D0;*/
 }
 .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-error {
+    display: block;
+    padding: 0;
     color: #C05050;
 }
 

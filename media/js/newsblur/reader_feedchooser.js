@@ -140,6 +140,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
+        this.feed_count = _.size(feeds);
         
         var $feeds = $('#feed_list').clone(true).attr({
             'id': 'NB-feedchooser-feeds',
@@ -260,7 +261,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var difference = approved - this.MAX_FEEDS;
         
-        $count.text(approved + '/' + this.MAX_FEEDS);
+        $count.text(approved + '/' + Inflector.commas(this.feed_count));
         $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
         $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
         $('.NB-feedchooser-info-sort', this.$modal).fadeOut(500);
