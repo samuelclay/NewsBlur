@@ -440,9 +440,9 @@ DEBUG_TOOLBAR_CONFIG = {
 # = Mongo =
 # =========
 
-MONGODB = connect(MONGO_DB['NAME'], 
-                  host=MONGO_DB['HOST'], 
-                  port=MONGO_DB['PORT'], 
-                  username=MONGO_DB.get('USERNAME'), 
-                  password=MONGO_DB.get('PASSWORD'),
-                  slave_okay=True)
+MONGO_DB_DEFAULTS = {
+    'name': 'newsblur',
+    'host': 'mongodb:db01,db02/?slaveOk=true',
+}
+MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
+MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)

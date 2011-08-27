@@ -11,9 +11,9 @@ DATABASES = {
 }
 
 MONGO_DB = {
-    'NAME': 'newsblur',
-    'HOST': '127.0.0.1',
-    'PORT': 27017
+    'name': 'newsblur',
+    'host': '127.0.0.1',
+    'port': 27017
 }
 
 DEBUG = True
