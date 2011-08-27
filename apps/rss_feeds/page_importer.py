@@ -3,6 +3,7 @@ import re
 import urlparse
 import traceback
 import feedparser
+import time
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, mail_feed_error_to_admin
@@ -26,6 +27,7 @@ class PageImporter(object):
         try:
             request = urllib2.Request(self.url, headers=HEADERS)
             response = urllib2.urlopen(request)
+            time.sleep(0.01) # Grrr, GIL.
             data = response.read()
             html = self.rewrite_page(data)
             self.save_page(html)

@@ -114,6 +114,9 @@ class Feed(models.Model):
         max_feed_title = Feed._meta.get_field('feed_title').max_length
         if len(self.feed_title) > max_feed_title:
             self.feed_title = self.feed_title[:max_feed_title]
+        max_feed_address = Feed._meta.get_field('feed_address').max_length
+        if len(self.feed_address) > max_feed_address:
+            self.feed_address = self.feed_address[:max_feed_address]
         
         try:
             super(Feed, self).save(*args, **kwargs)
@@ -613,11 +616,10 @@ class Feed(models.Model):
             self.data.save()
             return
 
-        if not feed_tags:
-            tags_list = []
-        elif isinstance(feed_tags, unicode):
+        tags_list = []
+        if feed_tags and isinstance(feed_tags, unicode):
             tags_list = json.decode(feed_tags)
-        if len(tags_list) > 1:
+        if len(tags_list) >= 1:
             self.save_popular_tags(tags_list[:-1])
     
     def save_popular_authors(self, feed_authors=None):
