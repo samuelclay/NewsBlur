@@ -87,7 +87,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         NSInteger previousLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
         NSInteger newLevel = [appDelegate selectedIntelligence];
         if (newLevel != previousLevel) {
+            [appDelegate setSelectedIntelligence:newLevel];
             [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+            [self redrawUnreadCounts];
         }
     }
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] 
@@ -353,6 +355,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     // all feeds are showing, and shouldn't be populated after this
     // hide/show runs.
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
+    [self redrawUnreadCounts];
 }
 
 #pragma mark -
@@ -484,29 +487,25 @@ viewForHeaderInSection:(NSInteger)section {
 }
 
 - (IBAction)selectIntelligence {
+    NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
+    NSInteger previousLevel = [appDelegate selectedIntelligence];
+    [appDelegate setSelectedIntelligence:newLevel];
+    
     if (!self.viewShowingAllFeeds) {
-        NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
-        NSInteger previousLevel = [appDelegate selectedIntelligence];
         //      NSLog(@"Select Intelligence from %d to %d.", previousLevel, newLevel);
         [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
     }
     
-    for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
-        [cell setNeedsDisplay];
-    }
+    [self redrawUnreadCounts];
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
     
-    [appDelegate setSelectedIntelligence:newLevel];
     if (newLevel <= previousLevel) {
         [self calculateFeedLocations:NO];
     }
-    
-    //  BOOL deleted = NO;
-    //  BOOL inserted = NO;
     
     for (int s=0; s < [self.dictFoldersArray count]; s++) {
         NSString *folderName = [self.dictFoldersArray objectAtIndex:s];
@@ -517,8 +516,6 @@ viewForHeaderInSection:(NSInteger)section {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
             NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-            //          deleted = NO;
-            //          inserted = NO;
             
             if ([self.visibleFeeds objectForKey:feedIdStr]) {
                 if (maxScore < newLevel) {
@@ -573,6 +570,12 @@ viewForHeaderInSection:(NSInteger)section {
                                     withRowAnimation:UITableViewRowAnimationNone];
     }
     [self.feedTitlesTable endUpdates];
+}
+
+- (void)redrawUnreadCounts {
+    for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
+        [cell setNeedsDisplay];
+    }
 }
 
 - (void)calculateFeedLocations:(BOOL)markVisible {

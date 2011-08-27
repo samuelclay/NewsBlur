@@ -43,6 +43,7 @@
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations:(BOOL)markVisible;
+- (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
 - (void)loadFavicons;
