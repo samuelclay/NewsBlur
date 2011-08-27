@@ -418,7 +418,8 @@ def setup_postgres():
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
-    sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
+    # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
+    sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
     

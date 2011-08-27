@@ -613,7 +613,10 @@ class Feed(models.Model):
             self.data.save()
             return
 
-        tags_list = json.decode(feed_tags) if feed_tags else []
+        if not feed_tags:
+            tags_list = []
+        elif isinstance(feed_tags, unicode):
+            tags_list = json.decode(feed_tags)
         if len(tags_list) > 1:
             self.save_popular_tags(tags_list[:-1])
     
