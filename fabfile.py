@@ -300,7 +300,10 @@ def config_monit():
 def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
+            run('rm -fr mongoengine')
             run('git clone https://github.com/hmarr/mongoengine.git')
+            run('git checkout -b dev origin/dev')
+            sudo('rm -f /usr/local/lib/python2.6/site-packages/mongoengine')
             sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         

@@ -398,7 +398,7 @@ class Feed(models.Model):
             }
         """
         dates = {}
-        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, 'inline', keep_temp=False)
+        res = MStory.objects(story_feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
         for r in res:
             dates[r.key] = r.value
             year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
@@ -460,7 +460,7 @@ class Feed(models.Model):
                 }
             """
             scores = []
-            res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, 'inline', keep_temp=False)
+            res = cls.objects(feed_id=self.pk).map_reduce(map_f, reduce_f, output='inline')
             for r in res:
                 facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
                 facet_values[facet] = r.key
@@ -600,7 +600,7 @@ class Feed(models.Model):
         
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
-            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies_mr('story_tags')
+            all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
                 
             feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, float) and int(v) > 1], 
                                key=itemgetter(1), 

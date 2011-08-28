@@ -10,4 +10,5 @@ pidfile = "/home/sclay/newsblur/logs/gunicorn.pid"
 logfile = "/home/sclay/newsblur/logs/production.log"
 loglevel = "debug"
 name = "newsblur"
+timeout = 60
 workers = numCPUs()
