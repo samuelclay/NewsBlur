@@ -252,7 +252,7 @@ class GoogleReaderImporter(Importer):
                 self.subscription_folders.append({folder: items})
     
     def import_starred_items(self):
-        sub_url = "%s/0/stream/contents/user/-/state/com.google/starred" % self.scope
+        sub_url = "%s/0/stream/contents/user/-/state/com.google/starred?n=1000" % self.scope
         stories_str = self.send_request(sub_url)
         stories = json.decode(stories_str)
         if stories:
