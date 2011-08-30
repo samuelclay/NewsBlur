@@ -149,7 +149,7 @@ def load_feeds(request):
     except UserSubscriptionFolders.MultipleObjectsReturned:
         UserSubscriptionFolders.objects.filter(user=user)[1:].delete()
         folders = UserSubscriptionFolders.objects.get(user=user)
-        
+    
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
@@ -250,7 +250,7 @@ def refresh_feeds(request):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
-
+    
     for sub in user_subs:
         pk = str(sub.feed.pk)
         if (sub.needs_unread_recalc or 
@@ -269,12 +269,24 @@ def refresh_feeds(request):
             feeds[pk]['exception_code'] = sub.feed.exception_code
         if request.REQUEST.get('check_fetch_status', False):
             feeds[pk]['not_yet_fetched'] = not sub.feed.fetched_once
+            
         if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
             feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
             feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
             feeds[pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
                                                       feed_icons[sub.feed.pk].data))
     
+    if favicons_fetching:
+        sub_feed_ids = [s.feed.pk for s in user_subs]
+        moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
+        for moved_feed_id in moved_feed_ids:
+            try:
+                duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=moved_feed_id)
+                feeds[moved_feed_id] = feeds[str(duplicate_feed.feed.pk)]
+                feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feed.feed.pk
+            except DuplicateFeed.DoesNotExist:
+                pass
+        
     if settings.DEBUG:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))

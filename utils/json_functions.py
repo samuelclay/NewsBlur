@@ -14,6 +14,7 @@ import sys
 def decode(data):
     if not data:
         return data
+    # return json.loads(data)
     return cjson.decode(data)
     
 def encode(data, *args, **kwargs):
@@ -21,7 +22,8 @@ def encode(data, *args, **kwargs):
         # Django models
         return serializers.serialize("json", data, *args, **kwargs)
     else:
-        return cjson.encode(data, extension=lambda x: "\"%s\"" % str(x))
+        return cjson.encode(data, encoding='utf-8', extension=lambda x: "\"%s\"" % str(x))
+        # return json_encode(data, *args, **kwargs)
 
 def json_encode(data, *args, **kwargs):
     """
@@ -83,7 +85,8 @@ def json_encode(data, *args, **kwargs):
         return ret
     
     ret = _any(data)
-    return cjson.encode(ret, extension=lambda x: "\"%s\"" % str(x))
+    # return json.dumps(ret)
+    return cjson.encode(ret, encoding='utf-8', extension=lambda x: "\"%s\"" % str(x))
 
 def json_view(func):
     def wrap(request, *a, **kw):
