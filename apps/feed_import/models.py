@@ -254,7 +254,11 @@ class GoogleReaderImporter(Importer):
     def import_starred_items(self, count=10):
         sub_url = "%s/0/stream/contents/user/-/state/com.google/starred?n=%s" % (self.scope, count)
         stories_str = self.send_request(sub_url)
-        stories = json.decode(stories_str)
+        try:
+            stories = json.decode(stories_str)
+        except:
+            logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FWNo stories" % (len(stories['items'])))
+            stories = None
         if stories:
             logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FW%s stories" % (len(stories['items'])))
             self.process_starred_items(stories['items'])

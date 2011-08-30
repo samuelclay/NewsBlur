@@ -252,7 +252,7 @@ def refresh_feeds(request):
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
     
     for sub in user_subs:
-        pk = str(sub.feed.pk)
+        pk = sub.feed.pk
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
@@ -651,10 +651,11 @@ def mark_story_as_read(request):
             m.save()
         except OperationError:
             logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request.user, "~BROriginal: %s, story_date: %s, now: %s." % (m.read_date, now, story.story_date))
+            logging.user(request.user, "~BRRead now date: %s, story_date: %s." % (m.read_date, story.story_date))
             logging.user(request.user, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
+            logging.user(request.user, "~BROriginal: %s, story_date: %s." % (m.read_date))
             m.read_date = date
             m.story_date = story.story_date
             m.save()
