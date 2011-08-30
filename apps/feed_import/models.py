@@ -262,9 +262,9 @@ class GoogleReaderImporter(Importer):
     def process_starred_items(self, stories):
         for story in stories:
             try:
-                original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=False, aggressive=True, fetch=False)
+                original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=False, fetch=False)
                 if not original_feed:
-                    original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, aggressive=True, fetch=False)
+                    original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, fetch=False)
                 content = story.get('content') or story.get('summary')
                 story_db = {
                     "user_id": self.user.pk,
