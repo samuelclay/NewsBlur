@@ -282,8 +282,8 @@ def refresh_feeds(request):
         for moved_feed_id in moved_feed_ids:
             try:
                 duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=moved_feed_id)
-                feeds[moved_feed_id] = feeds[str(duplicate_feed.feed.pk)]
-                feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feed.feed.pk
+                feeds[str(moved_feed_id)] = feeds[str(duplicate_feed.feed.pk)]
+                feeds[str(moved_feed_id)]['dupe_feed_id'] = duplicate_feed.feed.pk
             except DuplicateFeed.DoesNotExist:
                 pass
         

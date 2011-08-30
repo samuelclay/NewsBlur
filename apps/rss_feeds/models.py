@@ -131,7 +131,7 @@ class Feed(models.Model):
             pass
     
     @classmethod
-    def get_feed_from_url(cls, url, create=True, aggressive=False, offset=0):
+    def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
         
         def criteria(key, value):
@@ -165,7 +165,7 @@ class Feed(models.Model):
                 feed = feed.update()
         
         # Still nothing? Maybe the URL has some clues.
-        if not feed:
+        if not feed and fetch:
             feed_finder_url = feedfinder.feed(url)
             if feed_finder_url:
                 feed = by_url(feed_finder_url)

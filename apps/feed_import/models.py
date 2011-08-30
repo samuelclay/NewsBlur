@@ -262,12 +262,9 @@ class GoogleReaderImporter(Importer):
     def process_starred_items(self, stories):
         for story in stories:
             try:
-                original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=False, aggressive=True)
+                original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=False, aggressive=True, fetch=False)
                 if not original_feed:
-                    original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, aggressive=True)
-                if not original_feed:
-                    original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=True, aggressive=True)
-                if not original_feed: continue
+                    original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, aggressive=True, fetch=False)
                 content = story.get('content') or story.get('summary')
                 story_db = {
                     "user_id": self.user.pk,
@@ -278,10 +275,10 @@ class GoogleReaderImporter(Importer):
                     "story_guid": story['id'],
                     "story_content": content.get('content'),
                     "story_author_name": story.get('author'),
-                    "story_feed_id": original_feed.pk,
+                    "story_feed_id": original_feed and original_feed.pk,
                     "story_tags": [tag for tag in story.get('categories', []) if 'user/' not in tag]
                 }
-                logging.user(self.user, "~FCStarring: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed))
+                logging.user(self.user, "~FCStarring: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed and original_feed))
                 MStarredStory.objects.create(**story_db)
             except OperationError:
                 logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
