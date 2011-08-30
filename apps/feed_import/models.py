@@ -1,23 +1,19 @@
+import datetime
+import oauth2 as oauth
 from collections import defaultdict
+from StringIO import StringIO
+from xml.etree.ElementTree import Element, SubElement, Comment, tostring
+from lxml import etree
 from django.db import models
 from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed, DuplicateFeed
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
-import datetime
-from StringIO import StringIO
-from lxml import etree
-from utils import json_functions as json, urlnorm
+from django.conf import settings
+from mongoengine.queryset import OperationError
 import vendor.opml as opml
+from apps.rss_feeds.models import Feed, DuplicateFeed, MStarredStory
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from utils import json_functions as json, urlnorm
 from utils import log as logging
-from xml.etree.ElementTree import Element, SubElement, Comment, tostring
-# import minidom
 
-# def prettify(elem):
-#     """Return a pretty-printed XML string for the Element.
-#     """
-#     rough_string = ElementTree.tostring(elem, 'utf-8')
-#     reparsed = minidom.parseString(rough_string)
-#     return reparsed.toprettyxml(indent="  ")
     
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
@@ -160,14 +156,30 @@ class OPMLImporter(Importer):
 
 class GoogleReaderImporter(Importer):
     
-    def __init__(self, feeds_xml, user):
+    def __init__(self, user):
         self.user = user
-        self.feeds_xml = feeds_xml
         self.subscription_folders = []
+        self.scope = "http://www.google.com/reader/api"
+    
+    def import_feeds(self):
+        sub_url = "%s/0/subscription/list" % self.scope
+        feeds_xml = self.send_request(sub_url)
+        self.process_feeds(feeds_xml)
         
-    def process(self):
+    def send_request(self, url):
+        user_tokens = OAuthToken.objects.filter(user=self.user)
+
+        if user_tokens.count():
+            user_token = user_tokens[0]
+            consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
+            token = oauth.Token(user_token.access_token, user_token.access_token_secret)
+            client = oauth.Client(consumer, token)
+            _, content = client.request(url, 'GET')
+            return content
+        
+    def process_feeds(self, feeds_xml):
         self.clear_feeds()
-        self.parse()
+        self.feeds = self.parse(feeds_xml)
 
         folders = defaultdict(list)
         for item in self.feeds:
@@ -178,11 +190,11 @@ class GoogleReaderImporter(Importer):
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
 
-
-    def parse(self):
+    def parse(self, feeds_xml):
         parser = etree.XMLParser(recover=True)
-        tree = etree.parse(StringIO(self.feeds_xml), parser)
-        self.feeds = tree.xpath('/object/list/object')
+        tree = etree.parse(StringIO(feeds_xml), parser)
+        feeds = tree.xpath('/object/list/object')
+        return feeds
     
     def process_item(self, item, folders):
         feed_title = item.xpath('./string[@name="title"]') and \
@@ -238,4 +250,41 @@ class GoogleReaderImporter(Importer):
             else:
                 # folder_parents = folder.split(u' \u2014 ')
                 self.subscription_folders.append({folder: items})
-     
+    
+    def import_starred_items(self):
+        sub_url = "%s/0/stream/contents/user/-/state/com.google/starred" % self.scope
+        stories_str = self.send_request(sub_url)
+        stories = json.decode(stories_str)
+        if stories:
+            logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FW%s stories" % (len(stories['items'])))
+            self.process_starred_items(stories['items'])
+        
+    def process_starred_items(self, stories):
+        for story in stories:
+            try:
+                original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=False, aggressive=True)
+                if not original_feed:
+                    original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, aggressive=True)
+                if not original_feed:
+                    original_feed = Feed.get_feed_from_url(story['origin']['streamId'], create=True, aggressive=True)
+                if not original_feed: continue
+                content = story.get('content') or story.get('summary')
+                story_db = {
+                    "user_id": self.user.pk,
+                    "starred_date": datetime.datetime.fromtimestamp(story['updated']),
+                    "story_date": datetime.datetime.fromtimestamp(story['published']),
+                    "story_title": story.get('title'),
+                    "story_permalink": story['alternate'][0]['href'],
+                    "story_guid": story['id'],
+                    "story_content": content.get('content'),
+                    "story_author_name": story.get('author'),
+                    "story_feed_id": original_feed.pk,
+                    "story_tags": [tag for tag in story.get('categories', []) if 'user/' not in tag]
+                }
+                logging.user(self.user, "~FCStarring: ~SB%s~SN in ~SB%s" % (story_db['story_title'][:50], original_feed))
+                MStarredStory.objects.create(**story_db)
+            except OperationError:
+                logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
+            except:
+                logging.user(self.user, "~FC~BRFailed to star: ~SB%s" % (story))
+                

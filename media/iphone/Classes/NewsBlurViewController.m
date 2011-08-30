@@ -162,7 +162,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark Initialization
 
 - (void)returnToApp {
-    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(1/*-10*60*/)];
+    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-10*60)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
         [self fetchFeedList:YES];

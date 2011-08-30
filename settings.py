@@ -295,7 +295,7 @@ INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
 APPEND_SLASH            = True
 SOUTH_TESTS_MIGRATE     = False 
-SESSION_ENGINE          = "django.contrib.sessions.backends.cached_db"
+SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
@@ -443,6 +443,7 @@ DEBUG_TOOLBAR_CONFIG = {
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
     'host': 'mongodb://db01,db02/?slaveOk=true',
+    # 'tz_aware': True,
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)

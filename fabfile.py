@@ -41,33 +41,34 @@ env.roledefs ={
 # = Environments =
 # ================
 
-def server_paths():
+def server():
     env.NEWSBLUR_PATH = "~/newsblur"
     env.VENDOR_PATH   = "~/code"
-    
+
 def app():
-    server_paths()
+    server()
     env.roles = ['app']
 
 def web():
-    server_paths()
+    server()
     env.roles = ['web']
 
 def db():
-    server_paths()
+    server()
     env.roles = ['db']
     
 def task():
-    server_paths()
+    server()
     env.roles = ['task']
-
-def server():
-    server_paths()
     
 # ==========
 # = Deploy =
 # ==========
 
+def pull():
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+    
 def deploy():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -302,10 +303,11 @@ def setup_mongoengine():
         with settings(warn_only=True):
             run('rm -fr mongoengine')
             run('git clone https://github.com/hmarr/mongoengine.git')
-            run('git checkout -b dev origin/dev')
             sudo('rm -f /usr/local/lib/python2.6/site-packages/mongoengine')
             sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
+    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
+        run('git checkout -b dev origin/dev')
         
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):

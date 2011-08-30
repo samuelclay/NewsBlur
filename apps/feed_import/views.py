@@ -153,24 +153,15 @@ def reader_callback(request):
     
 @json.json_view
 def import_from_google_reader(request):
-    scope = "http://www.google.com/reader/api"
-    sub_url = "%s/0/subscription/list" % scope
     code = 0
 
     if request.user.is_authenticated():
-        user_tokens = OAuthToken.objects.filter(user=request.user)
-        if user_tokens.count():
-            user_token = user_tokens[0]
-            consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
-            token = oauth.Token(user_token.access_token, user_token.access_token_secret)
-            client = oauth.Client(consumer, token)
-
-            resp, content = client.request(sub_url, 'GET')
-            reader_importer = GoogleReaderImporter(content, request.user)
-            reader_importer.process()
-            code = 1
-            if 'import_from_google_reader' in request.session:
-                del request.session['import_from_google_reader']
+        reader_importer = GoogleReaderImporter(request.user)
+        reader_importer.import_feeds()
+        reader_importer.import_starred_items()
+        code = 1
+        if 'import_from_google_reader' in request.session:
+            del request.session['import_from_google_reader']
 
     return dict(code=code)
 
