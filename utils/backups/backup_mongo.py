@@ -15,8 +15,7 @@ COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title
 
 date = time.strftime('%Y-%m-%d-%H-%M')
 collections = COLLECTIONS.split(' ')
-db_name = settings.MONGO_DB.get('NAME')
-db_pass = settings.MONGO_DB.get('PASSWORD')
+db_name = settings.MONGO_DB.get('name')
 dir_name = 'backup_mongo_%s' % date
 filename = '%s.tgz' % dir_name
 
@@ -26,7 +25,7 @@ for collection in collections:
     cmd = 'mongodump  --db %s --collection %s -o %s' % (db_name, collection, dir_name)
     print "Dumping %s: %s" % (collection, cmd)
     os.system(cmd)
-    
+
 cmd = 'tar -jcf %s %s' % (filename, dir_name)
 os.system(cmd)
 
