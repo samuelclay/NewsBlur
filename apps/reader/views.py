@@ -280,13 +280,10 @@ def refresh_feeds(request):
         sub_feed_ids = [s.feed.pk for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
         for moved_feed_id in moved_feed_ids:
-            try:
-                duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=moved_feed_id)
-                if duplicate_feed.feed.pk in feeds:
-                    feeds[moved_feed_id] = feeds[duplicate_feed.feed.pk]
-                    feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feed.feed.pk
-            except DuplicateFeed.DoesNotExist:
-                pass
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=moved_feed_id)
+            if duplicate_feeds and duplicate_feeds[0].feed.pk in feeds:
+                feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
+                feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
         
     if settings.DEBUG:
         diff = datetime.datetime.utcnow()-start
