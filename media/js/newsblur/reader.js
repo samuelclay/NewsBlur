@@ -1746,7 +1746,7 @@
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             
-            this.model.fetch_starred_stories(0, _.bind(this.post_open_starred_stories, this), true);
+            this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), true);
         },
         
         post_open_starred_stories: function(data, first_load) {

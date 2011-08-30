@@ -432,8 +432,8 @@ def load_starred_stories(request):
     user = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 10))
-    page = int(request.REQUEST.get('page', 0))
-    if page: offset = limit * page
+    page = int(request.REQUEST.get('page'))
+    if page: offset = limit * (page - 1)
         
     mstories = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
