@@ -501,10 +501,10 @@ def load_river_stories(request):
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
     feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:50]
     feed_ids = [f[0] for f in feed_counts]
-    feed_last_reads = dict([(str(feed_id), feed_last_reads[str(feed_id)]) for feed_id in feed_ids
-                            if str(feed_id) in feed_last_reads])
+    feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids
+                            if feed_id in feed_last_reads])
     feed_counts = dict(feed_counts)
-    
+
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.
     mstories = MStory.objects(
