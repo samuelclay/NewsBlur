@@ -498,7 +498,7 @@ def load_river_stories(request):
                                 usersub.unread_count_positive * 20)
         # if feed_counts[feed_id] > max_feed_count:
         #     max_feed_count = feed_counts[feed_id]
-        feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
+        feed_last_reads[str(feed_id)] = int(time.mktime(usersub.mark_read_date.timetuple()))
     feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:50]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(feed_id, feed_last_reads[feed_id]) for feed_id in feed_ids])

@@ -15,7 +15,10 @@ def decode(data):
     if not data:
         return data
     # return json.loads(data)
-    return cjson.decode(data, encoding='utf-8')
+    try:
+        return cjson.decode(data, encoding='utf-8')
+    except cjson.DecodeError:
+        return cjson.decode(data)
     
 def encode(data, *args, **kwargs):
     if type(data) == QuerySet: # Careful, ValuesQuerySet is a dict
