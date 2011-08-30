@@ -153,7 +153,7 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
-        pk = str(sub.feed.pk)
+        pk = sub.feed.pk
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if feeds[pk].get('not_yet_fetched'):
             not_yet_fetched = True
@@ -187,7 +187,7 @@ def load_feed_favicons(request):
         user_subs = user_subs.filter(feed__in=feed_ids)
 
     feed_ids   = [sub['feed__pk'] for sub in user_subs.values('feed__pk')]
-    feed_icons = dict([(str(i.feed_id), i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
+    feed_icons = dict([(i.feed_id, i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
         
     return feed_icons
 
@@ -210,7 +210,7 @@ def load_feeds_flat(request):
     for sub in user_subs:
         if sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
-        feeds[str(sub.feed.pk)] = sub.canonical(include_favicon=include_favicons)
+        feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
     
     folders = json.decode(folders.folders)
     flat_folders = {}
@@ -282,9 +282,9 @@ def refresh_feeds(request):
         for moved_feed_id in moved_feed_ids:
             try:
                 duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=moved_feed_id)
-                if str(duplicate_feed.feed.pk) in feeds:
-                    feeds[str(moved_feed_id)] = feeds[str(duplicate_feed.feed.pk)]
-                    feeds[str(moved_feed_id)]['dupe_feed_id'] = duplicate_feed.feed.pk
+                if duplicate_feed.feed.pk in feeds:
+                    feeds[moved_feed_id] = feeds[duplicate_feed.feed.pk]
+                    feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feed.feed.pk
             except DuplicateFeed.DoesNotExist:
                 pass
         
@@ -501,7 +501,7 @@ def load_river_stories(request):
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
     feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:50]
     feed_ids = [f[0] for f in feed_counts]
-    feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids])
+    feed_last_reads = dict([(feed_id, feed_last_reads[feed_id]) for feed_id in feed_ids])
     feed_counts = dict(feed_counts)
     
     # After excluding read stories, all that's left are stories 

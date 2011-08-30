@@ -15,14 +15,14 @@ def decode(data):
     if not data:
         return data
     # return json.loads(data)
-    return cjson.decode(data)
+    return cjson.decode(data, encoding='utf-8')
     
 def encode(data, *args, **kwargs):
     if type(data) == QuerySet: # Careful, ValuesQuerySet is a dict
         # Django models
         return serializers.serialize("json", data, *args, **kwargs)
     else:
-        return cjson.encode(data, encoding='utf-8', extension=lambda x: "\"%s\"" % str(x))
+        return cjson.encode(data, encoding='utf-8', key2str=True)
         # return json_encode(data, *args, **kwargs)
 
 def json_encode(data, *args, **kwargs):
