@@ -156,14 +156,18 @@ class OPMLImporter(Importer):
 
 class GoogleReaderImporter(Importer):
     
-    def __init__(self, user):
+    def __init__(self, user, xml=None):
         self.user = user
         self.subscription_folders = []
         self.scope = "http://www.google.com/reader/api"
+        self.xml = xml
     
     def import_feeds(self):
         sub_url = "%s/0/subscription/list" % self.scope
-        feeds_xml = self.send_request(sub_url)
+        if not self.xml:
+            feeds_xml = self.send_request(sub_url)
+        else:
+            feeds_xml = self.xml
         self.process_feeds(feeds_xml)
         
     def send_request(self, url):

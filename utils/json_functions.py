@@ -25,7 +25,8 @@ def encode(data, *args, **kwargs):
         # Django models
         return serializers.serialize("json", data, *args, **kwargs)
     else:
-        return cjson.encode(data, encoding='utf-8', key2str=True)
+        return cjson.encode(data, encoding='utf-8', key2str=True, 
+                            extension=lambda x: "\"%s\"" % str(x))
         # return json_encode(data, *args, **kwargs)
 
 def json_encode(data, *args, **kwargs):

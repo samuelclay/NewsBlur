@@ -8,7 +8,7 @@ from apps.feed_import.models import GoogleReaderImporter
 from utils import json_functions as json
 
 class ImportTest(TestCase):
-    fixtures = ['feed_import.json']
+    fixtures = ['opml_import.json']
     
     def setUp(self):
         self.client = Client()
@@ -53,8 +53,8 @@ class ImportTest(TestCase):
         xml = f.read()
         f.close()
         
-        reader_importer = GoogleReaderImporter(xml, user)
-        reader_importer.process()
+        reader_importer = GoogleReaderImporter(user)
+        reader_importer.import_feeds()
 
         subs = UserSubscription.objects.filter(user=user)
         self.assertEquals(subs.count(), 66)

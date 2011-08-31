@@ -25,10 +25,13 @@ class PageImporter(object):
             return
         
         try:
-            request = urllib2.Request(self.url, headers=HEADERS)
-            response = urllib2.urlopen(request)
-            time.sleep(0.01) # Grrr, GIL.
-            data = response.read()
+            if 'http' in self.url:
+                request = urllib2.Request(self.url, headers=HEADERS)
+                response = urllib2.urlopen(request)
+                time.sleep(0.01) # Grrr, GIL.
+                data = response.read()
+            else:
+                data = open(self.url, 'r').read()
             html = self.rewrite_page(data)
             self.save_page(html)
         except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
