@@ -53,11 +53,11 @@ class ImportTest(TestCase):
         xml = f.read()
         f.close()
         
-        reader_importer = GoogleReaderImporter(user)
+        reader_importer = GoogleReaderImporter(user, xml=xml)
         reader_importer.import_feeds()
 
         subs = UserSubscription.objects.filter(user=user)
         self.assertEquals(subs.count(), 66)
         
         usf = UserSubscriptionFolders.objects.get(user=user)
-        self.assertEquals(json.decode(usf.folders), [{u'Blogs \u2014 The Bloglets': [6, 16, 22, 35, 51, 56]}, {u'Blogs': [1, 3, 25, 29, 30, 39, 40, 41, 50, 55, 57, 58, 59, 60, 66]}, {u'Cooking': [11, 15, 42, 43, 46]}, {u'New York': [7, 8, 17, 18, 19, 36, 45, 47, 52, 61]}, {u'Tech': [2, 4, 9, 10, 12, 13, 14, 20, 23, 24, 26, 27, 28, 31, 32, 33, 34, 48, 49, 62, 64]}, {u'Blogs \u2014 Tumblrs': [5, 21, 37, 38, 53, 54, 63, 65]}, 44])
+        self.assertEquals(json.decode(usf.folders), [{'Blogs \xe2\x80\x94 The Bloglets': [6, 16, 22, 35, 51, 56]}, {'Blogs': [1, 3, 25, 29, 30, 39, 40, 41, 50, 55, 57, 58, 59, 60, 66]}, {'Cooking': [11, 15, 42, 43, 46]}, {'New York': [7, 8, 17, 18, 19, 36, 45, 47, 52, 61]}, {'Tech': [2, 4, 9, 10, 12, 13, 14, 20, 23, 24, 26, 27, 28, 31, 32, 33, 34, 48, 49, 62, 64]}, {'Blogs \xe2\x80\x94 Tumblrs': [5, 21, 37, 38, 53, 54, 63, 65]}, 44])

@@ -17,7 +17,7 @@
         "pk": 1,
         "model": "reader.usersubscriptionfolders",
         "fields": {
-            "folders": "[1, {\"Tech\": [4, 5, {\"Deep Tech\": [6, 7]}]}, 2, 3, {\"Blogs\": [8, 9]}]",
+            "folders": "[1, {\"Tech\": [4, 5, {\"Deep Tech\": [6, 7]}]}, 2, 3, 8, 9, {\"Blogs\": [8, 9]}]",
             "user": 1
         }
     },
