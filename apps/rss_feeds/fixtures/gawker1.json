@@ -10,6 +10,7 @@
             "active_subscribers": 1,
             "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker1.xml", 
             "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker1.html", 
+            "feed_link_locked": true,  
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,

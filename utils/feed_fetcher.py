@@ -188,7 +188,8 @@ class ProcessFeed:
         if tagline:
             self.feed.data.feed_tagline = utf8encode(tagline)
             self.feed.data.save()
-        self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
+        if not self.feed.feed_link_locked:
+            self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         
         self.feed.last_update = datetime.datetime.utcnow()
         

@@ -6,6 +6,7 @@
             "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/slashdot2.xml", 
             "days_to_trim": 90, 
             "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/slashdot1.html", 
+            "feed_link_locked": true,  
             "num_subscribers": 0, 
             "creation": "2009-01-12", 
             "feed_title": "Slashdot", 
