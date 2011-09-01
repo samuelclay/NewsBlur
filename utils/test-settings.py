@@ -16,6 +16,8 @@ MONGO_DB = {
 
 TEST_DATABASE_NAME = ":memory:"
 
+TEST_DEBUG = True
+
 # from django.db import connection
 # cursor = connection.cursor()
 # cursor.execute('PRAGMA temp_store = MEMORY;')

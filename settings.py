@@ -32,6 +32,7 @@ if '/vendor' not in ' '.join(sys.path):
 ADMINS                = (
     ('Samuel Clay', 'samuel@ofbrooklyn.com'),
 )
+TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
 PAYPAL_RECEIVER_EMAIL = 'samuel@ofbrooklyn.com'

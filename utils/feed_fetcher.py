@@ -62,6 +62,7 @@ class FetchFeed:
             's' if self.feed.num_subscribers != 1 else '',
             URL
         )
+
         self.fpf = feedparser.parse(self.feed.feed_address,
                                     agent=USER_AGENT,
                                     etag=etag,
@@ -385,7 +386,7 @@ class Dispatcher:
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
         
-        time_taken = datetime.datetime.utcnow() - self.time_start
+        # time_taken = datetime.datetime.utcnow() - self.time_start
     
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):

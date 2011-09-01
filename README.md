@@ -203,6 +203,13 @@ To populate the statistics graphs on the homepage, use the `collect_stats` manag
 command every few minutes:
 
     ./manage.py collect_stats
+    
+### Running unit and integration tests
+
+NewsBlur comes complete with a test suite that tests the functionality of the rss_feeds,
+reader, and feed importer. To run the test suite:
+
+    ./manage.py test --settings=utils.test-settings
 
 
 ## Roadmap

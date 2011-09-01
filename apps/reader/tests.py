@@ -78,7 +78,8 @@ class ReaderTest(TestCase):
         # connection.queries = []
 
         self.client.login(username='conesus', password='test')        
-        response = self.client.get(reverse('load-single-feed', args=[1]))
+        url = reverse('load-single-feed', kwargs=dict(feed_id=1))
+        response = self.client.get(url)
         feed = json.decode(response.content)
         self.assertEquals(len(feed['feed_tags']), 0)
         self.assertEquals(len(feed['classifiers']['tags']), 0)

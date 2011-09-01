@@ -5,6 +5,7 @@ import traceback
 import pprint
 from django.core.mail import mail_admins
 from django.utils.translation import ungettext
+from django.conf import settings
 from utils import log as logging
 
 class TimeoutError(Exception): pass
@@ -26,17 +27,19 @@ def timelimit(timeout):
                         self.result = function(*args, **kw)
                     except:
                         self.error = sys.exc_info()
-
-            c = Dispatch()
-            c.join(timeout)
-            if c.isAlive():
-                raise TimeoutError, 'took too long'
-            if c.error:
-                tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
-                logging.debug(tb)
-                mail_admins('Error in timeout: %s' % c.error[0], tb)
-                raise c.error[0], c.error[1]
-            return c.result
+            if not settings.DEBUG and not settings.TEST_DEBUG:
+                c = Dispatch()
+                c.join(timeout)
+                if c.isAlive():
+                    raise TimeoutError, 'took too long'
+                if c.error:
+                    tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
+                    logging.debug(tb)
+                    mail_admins('Error in timeout: %s' % c.error[0], tb)
+                    raise c.error[0], c.error[1]
+                return c.result
+            else:
+                return function(*args, **kw)
         return _2
     return _1
     
