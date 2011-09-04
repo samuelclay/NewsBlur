@@ -90,6 +90,34 @@ NEWSBLUR.utils = {
         var b = parseInt(color.substr(4, 2), 16) / 255.0;
 
         return $.textColor({r: r, g: g, b: b}) != 'white';
+    },
+    
+    make_folders: function(model) {
+        var folders = model.get_folders();
+        var $options = $.make('select', { className: 'NB-folders'});
+        
+        var $option = $.make('option', { value: '' }, "Top Level");
+        $options.append($option);
+
+        $options = this.make_folder_options($options, folders, '-');
+        
+        return $options;
+    },
+
+    make_folder_options: function($options, items, depth) {
+        for (var i in items) {
+            var item = items[i];
+            if (typeof item == "object") {
+                for (var o in item) {
+                    var folder = item[o];
+                    var $option = $.make('option', { value: o }, depth + ' ' + o);
+                    $options.append($option);
+                    $options = this.make_folder_options($options, folder, depth+'-');
+                }
+            }
+        }
+    
+        return $options;
     }
   
 };

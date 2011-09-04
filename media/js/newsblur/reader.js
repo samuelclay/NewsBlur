@@ -3813,14 +3813,27 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-move NB-menu-manage-feed-move' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-feed-move-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
+                            $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-feed-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                            $.make('div', { className: 'NB-menu-manage-image' }),
+                            $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model))
+                        ])
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
-                        $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-feed-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.feed_title })
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
+                            $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-feed-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                            $.make('div', { className: 'NB-menu-manage-image' }),
+                            $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.feed_title })
+                        ])
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -3845,14 +3858,27 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-move NB-menu-manage-folder-move' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-folder-move-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
+                            $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-folder-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                            $.make('div', { className: 'NB-menu-manage-image' }),
+                            $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model))
+                        ])
+                    ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-folder-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this folder')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
-                        $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed_id })
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
+                            $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
+                            $.make('div', { className: 'NB-menu-manage-image' }),
+                            $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed_id })
+                        ])
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4099,7 +4125,7 @@
         hide_manage_menu: function(type, $item, animate) {
             var $manage_menu_container = $('.NB-menu-manage-container');
             var height = $manage_menu_container.outerHeight();
-            if (this.flags['showing_rename_input_on_manage_menu'] && animate) return;
+            if (this.flags['showing_confirm_input_on_manage_menu'] && animate) return;
             // NEWSBLUR.log(['hide_manage_menu', type, $item, animate, $manage_menu_container.css('opacity')]);
             
             clearTimeout(this.flags.closed_manage_menu);
@@ -4215,6 +4241,96 @@
         },
         
         // ========================
+        // = Manage menu - Move =
+        // ========================
+        
+        show_confirm_move_menu_item: function(feed_id, $feed) {
+            var self = this;
+            var $move = $('.NB-menu-manage-feed-move,.NB-menu-manage-folder-move');
+            var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
+            var $position = $('.NB-menu-manage-confirm-position', $confirm);
+            var $select = $('select', $confirm);
+            var $parent    = $feed.closest('li.folder');
+            var in_folder = '';
+
+            if ($parent.length) {
+                in_folder = $feed.eq(0).closest('li.folder').find('.folder_title_text').eq(0).text();
+            }
+            
+            $move.addClass('NB-menu-manage-feed-move-cancel');
+            $('.NB-menu-manage-title', $move).text('Cancel move');
+            $position.css('position', 'relative');
+            var height = $confirm.height();
+            $position.css('position', 'absolute');
+            $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
+                'duration': 500, 
+                'easing': 'easeOutQuart'
+            });
+            $('select', $confirm).focus().select();
+            this.flags['showing_confirm_input_on_manage_menu'] = true;
+            console.log(["$select", $select, $('option', $select)]);
+            $('option', $select).each(function() {
+                console.log(["show_confirm_move_menu_item", in_folder, $(this).attr('value')]);
+                if ($(this).attr('value') == in_folder) {
+                    $(this).attr('selected', 'selected');
+                    return false;
+                }
+            });
+        },
+        
+        hide_confirm_move_menu_item: function(moved) {
+            var $move = $('.NB-menu-manage-feed-move,.NB-menu-manage-folder-move');
+            var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
+            
+            $move.removeClass('NB-menu-manage-feed-move-cancel');
+            var text = 'Move to folder';
+            if (moved) {
+                text = 'Moved';
+                $move.addClass('NB-active');
+            } else {
+                $move.removeClass('NB-active');
+            }
+            $('.NB-menu-manage-title', $move).text(text);
+            $confirm.slideUp(500);
+            this.flags['showing_confirm_input_on_manage_menu'] = false;
+        },
+        
+        manage_menu_move_feed: function(feed, $feed) {
+            var self       = this;
+            var feed_id    = feed || this.active_feed;
+            $feed          = $feed || this.find_feed_in_feed_list(feed_id);
+            var $parent    = $feed.closest('li.folder');
+            var in_folder  = '';
+            var new_folder = $('.NB-menu-manage-feed-move-confirm select').val();
+            
+            if (new_folder.length <= 0) return this.hide_confirm_move_menu_item();
+            
+            if ($parent.length) {
+                in_folder = $feed.eq(0).closest('li.folder').find('.folder_title_text').eq(0).text();
+            }
+            
+            this.model.move_feed_to_folder(feed_id, new_folder, function() {});
+
+            this.hide_confirm_move_menu_item(true);
+        },
+        
+        manage_menu_move_folder: function(folder, $folder) {
+            var self       = this;
+            var in_folder  = '';
+            var $parent    = $folder.closest('li.folder');
+            var new_folder = $('.NB-menu-manage-folder-move-confirm select').val();
+
+            if (new_folder.length <= 0) return this.hide_confirm_move_menu_item();
+            
+            if ($parent.length) {
+                in_folder = $parent.find('.folder_title_text').eq(0).text();
+            }
+        
+            this.model.move_folder_to_folder(folder, new_folder, in_folder, function() {});
+            this.hide_confirm_move_menu_item(true);
+        },
+        
+        // ========================
         // = Manage menu - Rename =
         // ========================
         
@@ -4222,13 +4338,19 @@
             var self = this;
             var $rename = $('.NB-menu-manage-feed-rename,.NB-menu-manage-folder-rename');
             var $confirm = $('.NB-menu-manage-feed-rename-confirm,.NB-menu-manage-folder-rename-confirm');
+            var $position = $('.NB-menu-manage-confirm-position', $confirm);
             
             $rename.addClass('NB-menu-manage-feed-rename-cancel');
             $('.NB-menu-manage-title', $rename).text('Cancel rename');
+            $position.css('position', 'relative');
             var height = $confirm.height();
-            $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {'duration': 500});
+            $position.css('position', 'absolute');
+            $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
+                'duration': 500, 
+                'easing': 'easeOutQuart'
+            });
             $('input', $confirm).focus().select();
-            this.flags['showing_rename_input_on_manage_menu'] = true;
+            this.flags['showing_confirm_input_on_manage_menu'] = true;
             $('.NB-menu-manage-feed-rename-confirm input.NB-menu-manage-title').bind('keyup', 'return', function(e) {
                 var $t = $(e.target);
                 var feed_id = $t.closest('.NB-menu-manage').data('feed_id');
@@ -4259,7 +4381,7 @@
             }
             $('.NB-menu-manage-title', $rename).text(text);
             $confirm.slideUp(500);
-            this.flags['showing_rename_input_on_manage_menu'] = false;
+            this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
         
         manage_menu_rename_feed: function(feed, $feed) {
@@ -5463,6 +5585,44 @@
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.manage_menu_delete_folder(folder_name, $folder);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-move' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                
+                if ($t.hasClass('NB-menu-manage-feed-move-cancel') ||
+                    $t.hasClass('NB-menu-manage-folder-move-cancel')) {
+                    self.hide_confirm_move_menu_item();
+                } else {
+                    self.show_confirm_move_menu_item(feed_id || folder_name, $feed || $folder);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-move-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.manage_menu_rename_folder(folder_name, $folder);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                self.manage_menu_move_feed(feed_id, $feed);
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-move-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-rename' }, function($t, $p){
                 e.preventDefault();
