@@ -45,6 +45,7 @@ class Feed(models.Model):
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
+    has_page = models.BooleanField(default=True)
     exception_code = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=0)
     days_to_trim = models.IntegerField(default=90)

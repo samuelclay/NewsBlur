@@ -22,14 +22,18 @@ class PageImporter(object):
     @timelimit(15)
     def fetch_page(self):
         if not self.url:
+            self.save_no_page()
             return
         
         try:
-            if 'http' in self.url:
+            if self.url.startswith('http'):
                 request = urllib2.Request(self.url, headers=HEADERS)
                 response = urllib2.urlopen(request)
                 time.sleep(0.01) # Grrr, GIL.
                 data = response.read()
+            elif any(self.url.startswith(s) for s in ['tag:', 'info:']):
+                self.save_no_page()
+                return
             else:
                 data = open(self.url, 'r').read()
             html = self.rewrite_page(data)
@@ -55,7 +59,12 @@ class PageImporter(object):
             return
         
         self.feed.save_page_history(200, "OK")
-    
+
+    def save_no_page(self):
+        self.feed.has_page = False
+        self.feed.save()
+        self.feed.save_page_history(404, "Feed has no original page.")
+
     def rewrite_page(self, response):
         BASE_RE = re.compile(r'<head(.*?\>)', re.I)
         base_code = u'<base href="%s" />' % (self.feed.feed_link,)
