@@ -245,6 +245,7 @@ def refresh_feeds(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     feeds = {}
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
     if feed_ids:
         user_subs = user_subs.filter(feed__in=feed_ids)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)

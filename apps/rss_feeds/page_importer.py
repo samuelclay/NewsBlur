@@ -13,6 +13,13 @@ HEADERS = {
     'Connection': 'close',
 }
 
+BROKEN_PAGES = [
+    'tag:', 
+    'info:', 
+    'uuid:', 
+    '[]',
+]
+
 class PageImporter(object):
     
     def __init__(self, url, feed):
@@ -31,7 +38,7 @@ class PageImporter(object):
                 response = urllib2.urlopen(request)
                 time.sleep(0.01) # Grrr, GIL.
                 data = response.read()
-            elif any(self.url.startswith(s) for s in ['tag:', 'info:']):
+            elif any(self.url.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
                 return
             else:

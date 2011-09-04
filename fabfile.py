@@ -110,7 +110,8 @@ def staging_full():
 
 @roles('task')
 def celery():
-    run('git pull')
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
     celery_stop()
     celery_start()
 

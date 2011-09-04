@@ -261,7 +261,7 @@ class GoogleReaderImporter(Importer):
         try:
             stories = json.decode(stories_str)
         except:
-            logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FWNo stories" % (len(stories['items'])))
+            logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FWNo stories")
             stories = None
         if stories:
             logging.user(self.user, "~BB~FW~SBGoogle Reader starred stories: ~BT~FW%s stories" % (len(stories['items'])))
