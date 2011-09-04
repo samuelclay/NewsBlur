@@ -1,0 +1,15 @@
+django
+mongoengine
+django-celery
+django-compress
+South
+django-extensions
+psycopg2
+BeautifulSoup
+pyyaml
+nltk
+lxml
+oauth2
+pytz
+boto
+gunicorn
