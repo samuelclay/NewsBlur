@@ -17,7 +17,6 @@
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
-    NSMutableData * jsonString;
     int feedPage;
     BOOL pageFetching;
     BOOL pageRefreshing;
@@ -31,7 +30,11 @@
     PullToRefreshView *pull;
 }
 
-- (void)fetchFeedDetail:(int)page;
+- (void)fetchNextPage:(void(^)())callback;
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
+- (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
+- (void)failLoadingFeed:(ASIHTTPRequest *)request;
+
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (IBAction)markAllRead;
@@ -53,7 +56,6 @@
 @property (nonatomic, retain) PullToRefreshView *pull;
 
 @property (nonatomic, retain) NSArray * stories;
-@property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageRefreshing;

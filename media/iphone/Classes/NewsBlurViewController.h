@@ -18,7 +18,6 @@
             UIAlertViewDelegate, PullToRefreshViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-	NSMutableData *responseData;
 	NSDictionary * dictFolders;
     NSDictionary * dictFeeds;
     NSMutableArray * dictFoldersArray;
@@ -39,6 +38,9 @@
 
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
+- (void)finishedWithError:(ASIHTTPRequest *)request;
+- (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
+
 - (IBAction)doLogoutButton;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
@@ -64,7 +66,6 @@
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
-@property (nonatomic, retain) NSMutableData *responseData;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, retain) PullToRefreshView *pull;
 @property (nonatomic, retain) NSDate *lastUpdate;
@@ -77,9 +78,8 @@
     NewsBlurAppDelegate *appDelegate;
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection;
+- (void)finishedWithError:(ASIHTTPRequest *)request;
+- (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 

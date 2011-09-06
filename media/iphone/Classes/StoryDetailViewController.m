@@ -8,8 +8,10 @@
 
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "FeedDetailViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
+#import "Base64.h"
 
 
 @implementation StoryDetailViewController
@@ -21,7 +23,8 @@
 @synthesize toolbar;
 @synthesize buttonNext;
 @synthesize buttonPrevious;
-
+@synthesize activity;
+@synthesize loadingIndicator;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -38,6 +41,8 @@
     [toolbar release];
     [buttonNext release];
     [buttonPrevious release];
+    [activity release];
+    [loadingIndicator release];
     [super dealloc];
 }
 
@@ -48,6 +53,10 @@
     [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *back = [[[UIBarButtonItem alloc] initWithCustomView:backBtn] autorelease];
     self.navigationItem.backBarButtonItem = back;  
+    self.loadingIndicator = [[[UIActivityIndicatorView alloc] 
+                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
+                             autorelease];
+
     [super viewDidLoad];
 }
 
@@ -62,6 +71,7 @@
         [self setNextPreviousButtons];
         self.webView.scalesPageToFit = YES;
     }
+    [self.loadingIndicator stopAnimating];
     
 	[super viewWillAppear:animated];
 }
@@ -89,9 +99,15 @@
 
 - (void)setNextPreviousButtons {
     int nextIndex = [appDelegate indexOfNextStory];
-    if (nextIndex == -1) {
+    int unreadCount = [appDelegate unreadCount];
+    if (nextIndex == -1 && unreadCount > 0) {
+        [buttonNext setStyle:UIBarButtonItemStyleBordered];
+        [buttonNext setTitle:@"Next Unread"];        
+    } else if (nextIndex == -1) {
+        [buttonNext setStyle:UIBarButtonItemStyleDone];
         [buttonNext setTitle:@"Done"];
     } else {
+        [buttonNext setStyle:UIBarButtonItemStyleBordered];
         [buttonNext setTitle:@"Next Unread"];
     }
     
@@ -99,8 +115,11 @@
     if (readStoryCount == 0 || 
         (readStoryCount == 1 && 
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+            
+        [buttonPrevious setStyle:UIBarButtonItemStyleDone];
         [buttonPrevious setTitle:@"Done"];
     } else {
+        [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
         [buttonPrevious setTitle:@"Previous"];
     }
     
@@ -261,7 +280,20 @@
 
 - (IBAction)doNextUnreadStory {
     int nextIndex = [appDelegate indexOfNextStory];
-    if (nextIndex == -1) {
+    int unreadCount = [appDelegate unreadCount];
+    [self.loadingIndicator stopAnimating];
+
+    if (nextIndex == -1 && unreadCount > 0 && 
+        self.appDelegate.feedDetailViewController.feedPage < 50 &&
+        !self.appDelegate.feedDetailViewController.pageFinished &&
+        !self.appDelegate.feedDetailViewController.pageFetching) {
+        // Fetch next page and see if it has the unreads.
+        [self.loadingIndicator startAnimating];
+        self.activity.customView = self.loadingIndicator;
+        [self.appDelegate.feedDetailViewController fetchNextPage:^() {
+            [self doNextUnreadStory];
+        }];
+    } else if (nextIndex == -1) {
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
@@ -286,6 +318,7 @@
 }
 
 - (IBAction)doPreviousStory {
+    [self.loadingIndicator stopAnimating];
     id previousStoryId = [appDelegate popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
         [appDelegate.navigationController 

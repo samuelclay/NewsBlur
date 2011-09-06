@@ -68,10 +68,11 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIProgressView" id="484194819">
 								<reference key="NSNextResponder" ref="155973878"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{122, 17}, {56, 11}}</string>
+								<int key="NSvFlags">290</int>
+								<string key="NSFrame">{{128, 17}, {56, 11}}</string>
 								<reference key="NSSuperview" ref="155973878"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIProgress">0.5</float>
@@ -93,8 +94,15 @@
 							<object class="IBUIBarButtonItem" id="542821156">
 								<string key="IBUITitle">Previous</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">66</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
+							</object>
+							<object class="IBUIBarButtonItem" id="950073051">
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">46</float>
+								<reference key="IBUIToolbar" ref="155973878"/>
+								<int key="IBUISystemItemIdentifier">6</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="936960182">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -110,6 +118,11 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<reference key="IBUIToolbar" ref="155973878"/>
 								<int key="IBUISystemItemIdentifier">5</int>
+							</object>
+							<object class="IBUIBarButtonItem" id="603917279">
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">20</float>
+								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
 							<object class="IBUIBarButtonItem" id="1065495688">
 								<string key="IBUITitle">Next unread</string>
@@ -214,6 +227,14 @@
 					</object>
 					<int key="connectionID">59</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">activity</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="603917279"/>
+					</object>
+					<int key="connectionID">65</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -260,6 +281,8 @@
 							<reference ref="936960182"/>
 							<reference ref="812131495"/>
 							<reference ref="284060761"/>
+							<reference ref="603917279"/>
+							<reference ref="950073051"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -297,6 +320,16 @@
 						<reference key="object" ref="284060761"/>
 						<reference key="parent" ref="155973878"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">63</int>
+						<reference key="object" ref="603917279"/>
+						<reference key="parent" ref="155973878"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">64</int>
+						<reference key="object" ref="950073051"/>
+						<reference key="parent" ref="155973878"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -316,12 +349,16 @@
 					<string>46.IBPluginDependency</string>
 					<string>47.IBPluginDependency</string>
 					<string>48.IBPluginDependency</string>
+					<string>63.IBPluginDependency</string>
+					<string>64.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>StoryDetailViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIResponder</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -346,7 +383,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">59</int>
+			<int key="maxID">66</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -908,6 +945,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>activity</string>
 							<string>appDelegate</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
@@ -917,6 +955,7 @@
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
@@ -929,6 +968,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>activity</string>
 							<string>appDelegate</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
@@ -938,6 +978,10 @@
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">activity</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>

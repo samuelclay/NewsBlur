@@ -8,7 +8,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 + (id)dataWithBase64EncodedString:(NSString *)string;
 {
     if (string == nil)
-        [NSException raise:NSInvalidArgumentException format:nil];
+        [NSException raise:NSInvalidArgumentException format:@""];
     if ([string length] == 0)
         return [NSData data];
     
