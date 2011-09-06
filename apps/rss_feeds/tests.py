@@ -112,3 +112,6 @@ class FeedTest(TestCase):
         
         # Test: 1 changed char in title
         self.assertEquals(len(feed['stories']), 10)
+        
+    def test_all_feeds(self):
+        pass

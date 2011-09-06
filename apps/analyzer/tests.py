@@ -1,14 +1,109 @@
-from utils import json_functions as json
 from django.test.client import Client
-from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import MStory
 from django.test import TestCase
 from django.core import management
-from pprint import pprint
 # from apps.analyzer.classifier import FisherClassifier
+import nltk
+from itertools import groupby
 from apps.analyzer.tokenizer import Tokenizer
 from vendor.reverend.thomas import Bayes
 from apps.analyzer.phrase_filter import PhraseFilter
+
+
+class QuadgramCollocationFinder(nltk.collocations.AbstractCollocationFinder):
+    """A tool for the finding and ranking of quadgram collocations or other association measures. 
+    It is often useful to use from_words() rather thanconstructing an instance directly.
+    """
+    def __init__(self, word_fd, quadgram_fd, trigram_fd, bigram_fd, wildcard_fd):
+        """Construct a TrigramCollocationFinder, given FreqDists for appearances of words, bigrams, two words with any word between them,and trigrams."""
+        nltk.collocations.AbstractCollocationFinder.__init__(self, word_fd, quadgram_fd)
+        self.trigram_fd = trigram_fd
+        self.bigram_fd = bigram_fd
+        self.wildcard_fd = wildcard_fd
+        
+    @classmethod
+    def from_words(cls, words):
+        wfd = nltk.probability.FreqDist()
+        qfd = nltk.probability.FreqDist()
+        tfd = nltk.probability.FreqDist()
+        bfd = nltk.probability.FreqDist()
+        wildfd = nltk.probability.FreqDist()
+        
+        for w1, w2, w3 ,w4 in nltk.util.ingrams(words, 4, pad_right=True):
+            wfd.inc(w1)
+            if w4 is None:
+                continue
+            else:
+                qfd.inc((w1,w2,w3,w4))
+            bfd.inc((w1,w2))
+            tfd.inc((w1,w2,w3))
+            wildfd.inc((w1,w3,w4))
+            wildfd.inc((w1,w2,w4))
+            
+        return cls(wfd, qfd, tfd, bfd, wildfd)
+    
+    def score_ngram(self, score_fn, w1, w2, w3, w4):
+        n_all = self.word_fd.N()
+        n_iiii = self.ngram_fd[(w1, w2, w3, w4)]
+        if not n_iiii:
+            return
+        n_iiix = self.bigram_fd[(w1, w2)]
+        n_iixi = self.bigram_fd[(w2, w3)]
+        n_ixii = self.bigram_fd[(w3, w4)]
+        n_xiii = self.bigram_fd[(w3, w4)]
+        n_iixx = self.word_fd[w1]
+        n_ixix = self.word_fd[w2]
+        n_ixxi = self.word_fd[w3]
+        n_ixxx = self.word_fd[w4]
+        n_xiix = self.trigram_fd[(w1, w2)]
+        n_xixi = self.trigram_fd[(w2, w3)]
+        n_xxii = self.trigram_fd[(w3, w4)]
+        n_xxxi = self.trigram_fd[(w3, w4)]
+        return score_fn(n_iiii,
+                        (n_iiix, n_iixi, n_ixii, n_xiii),
+                        (n_iixx, n_ixix, n_ixxi, n_ixxx),
+                        (n_xiix, n_xixi, n_xxii, n_xxxi),
+                        n_all)
+
+    
+class CollocationTest(TestCase):
+    
+    fixtures = ['brownstoner.json']
+    
+    def setUp(self):
+        self.client = Client()
+        
+    def test_bigrams(self):
+        # bigram_measures = nltk.collocations.BigramAssocMeasures()
+        trigram_measures = nltk.collocations.TrigramAssocMeasures()
+
+        tokens = [
+            'Co-op', 'of', 'the', 'day',
+            'House', 'of', 'the', 'day',
+            'Condo', 'of', 'the', 'day',
+            'Development', 'Watch',
+            'Co-op', 'of', 'the', 'day',
+        ]
+        finder = nltk.collocations.TrigramCollocationFinder.from_words(tokens)
+        
+        finder.apply_freq_filter(2)
+        
+        # return the 10 n-grams with the highest PMI
+        print finder.nbest(trigram_measures.pmi, 10)
+
+        titles = [
+            'Co-op of the day',
+            'Condo of the day',
+            'Co-op of the day',
+            'House of the day',
+            'Development Watch',
+            'Streetlevel',
+        ]
+
+        tokens = nltk.tokenize.word(' '.join(titles))
+        ngrams = nltk.ngrams(tokens, 4)
+        d = [key for key, group in groupby(sorted(ngrams)) if len(list(group)) >= 2]
+        print d
 
 class ClassifierTest(TestCase):
     
@@ -41,8 +136,8 @@ class ClassifierTest(TestCase):
     #     phrasefilter.print_phrases()
     #     
     def test_train(self):
-        user = User.objects.all()
-        feed = Feed.objects.all()
+        # user = User.objects.all()
+        # feed = Feed.objects.all()
         
         management.call_command('loaddata', 'brownstoner.json', verbosity=0)
         management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False)
