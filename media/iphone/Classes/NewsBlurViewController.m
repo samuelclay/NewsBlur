@@ -87,7 +87,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         NSInteger newLevel = [appDelegate selectedIntelligence];
         if (newLevel != previousLevel) {
             [appDelegate setSelectedIntelligence:newLevel];
-            [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+            if (!self.viewShowingAllFeeds) {
+                [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+            }
             [self redrawUnreadCounts];
         }
     }
@@ -170,7 +172,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-//    NSLog(@"fetchFeedList: %d %d", showLoader, !!appDelegate.feedsViewController.view.window);
+    NSLog(@"fetchFeedList: %d %d", showLoader, !!appDelegate.feedsViewController.view.window);
     if (showLoader && appDelegate.feedsViewController.view.window) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
@@ -273,19 +275,21 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                           NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlS];
         
-        LogoutDelegate *ld = [LogoutDelegate alloc];
-        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setDelegate:ld];
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setDidFinishSelector:@selector(finishLoadingFeedList:)];
-        [request setDidFailSelector:@selector(finishedWithError:)];
+        [request setFailedBlock:^(void) {
+            [self finishedWithError:request];
+        }];
+        [request setCompletionBlock:^(void) {
+            [appDelegate showLogin];
+        }];
         [request setTimeOutSeconds:30];
         [request startAsynchronous];
         
         [ASIHTTPRequest setSessionCookies:nil];
         
-        [ld release];
     }
 }
 
@@ -654,26 +658,6 @@ viewForHeaderInSection:(NSInteger)section {
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
     return self.lastUpdate;
-}
-
-@end
-
-
-@implementation LogoutDelegate
-
-@synthesize appDelegate;
-
-
-
-- (void)finishedWithError:(ASIHTTPRequest *)request {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
-    // User clicking on another link before the page loads is OK.
-    [NewsBlurAppDelegate informError:[request error]];
-}
-
-- (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
-    return [appDelegate showLogin];
 }
 
 @end

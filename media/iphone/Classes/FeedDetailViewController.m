@@ -131,6 +131,13 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark -
 #pragma mark Initialization
 
+- (void)resetFeedDetail {
+    self.pageFetching = NO;
+    self.pageFinished = NO;
+    self.pageRefreshing = NO;
+    self.feedPage = 1;
+}
+
 - (void)fetchNextPage:(void(^)())callback {
     [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
 }
@@ -186,8 +193,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    [pull finishedLoading];
-    [self renderStories:[results objectForKey:@"stories"]];
+    
+    if (request.tag == [[results objectForKey:@"feed_id"] intValue]) {
+        [pull finishedLoading];
+        [self renderStories:[results objectForKey:@"stories"]];
+    }
+    
     [results release];
 }
 

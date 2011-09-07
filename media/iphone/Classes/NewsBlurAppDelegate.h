@@ -12,7 +12,6 @@
 @class FeedDetailViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
-@class LogoutDelegate;
 @class OriginalStoryViewController;
 
 @interface NewsBlurAppDelegate : NSObject <UIApplicationDelegate> {
@@ -22,7 +21,6 @@
     FeedDetailViewController *feedDetailViewController;
     StoryDetailViewController *storyDetailViewController;
     LoginViewController *loginViewController;
-    LogoutDelegate *logoutDelegate;
     OriginalStoryViewController *originalStoryViewController;
     
     NSString * activeUsername;
@@ -46,7 +44,6 @@
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
-@property (nonatomic, retain) IBOutlet LogoutDelegate *logoutDelegate;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
 
 

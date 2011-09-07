@@ -30,6 +30,7 @@
     PullToRefreshView *pull;
 }
 
+- (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;

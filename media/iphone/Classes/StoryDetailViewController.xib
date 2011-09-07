@@ -69,7 +69,7 @@
 							<object class="IBUIProgressView" id="484194819">
 								<reference key="NSNextResponder" ref="155973878"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrame">{{128, 17}, {56, 11}}</string>
+								<string key="NSFrame">{{132, 17}, {56, 11}}</string>
 								<reference key="NSSuperview" ref="155973878"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -92,15 +92,15 @@
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIBarButtonItem" id="542821156">
-								<string key="IBUITitle">Previous</string>
+								<string key="IBUITitle">←</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">66</float>
+								<float key="IBUIWidth">86</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
-							<object class="IBUIBarButtonItem" id="950073051">
+							<object class="IBUIBarButtonItem" id="766697033">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">46</float>
+								<float key="IBUIWidth">29</float>
 								<reference key="IBUIToolbar" ref="155973878"/>
 								<int key="IBUISystemItemIdentifier">6</int>
 							</object>
@@ -111,6 +111,7 @@
 							</object>
 							<object class="IBUIBarButtonItem" id="812131495">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">56</float>
 								<reference key="IBUICustomView" ref="484194819"/>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
@@ -119,7 +120,7 @@
 								<reference key="IBUIToolbar" ref="155973878"/>
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
-							<object class="IBUIBarButtonItem" id="603917279">
+							<object class="IBUIBarButtonItem" id="672699755">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIWidth">20</float>
 								<reference key="IBUIToolbar" ref="155973878"/>
@@ -127,6 +128,7 @@
 							<object class="IBUIBarButtonItem" id="1065495688">
 								<string key="IBUITitle">Next unread</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">86</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
@@ -231,7 +233,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">activity</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="603917279"/>
+						<reference key="destination" ref="672699755"/>
 					</object>
 					<int key="connectionID">65</int>
 				</object>
@@ -281,8 +283,8 @@
 							<reference ref="936960182"/>
 							<reference ref="812131495"/>
 							<reference ref="284060761"/>
-							<reference ref="603917279"/>
-							<reference ref="950073051"/>
+							<reference ref="672699755"/>
+							<reference ref="766697033"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -322,12 +324,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">63</int>
-						<reference key="object" ref="603917279"/>
+						<reference key="object" ref="672699755"/>
 						<reference key="parent" ref="155973878"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">64</int>
-						<reference key="object" ref="950073051"/>
+						<reference key="object" ref="766697033"/>
 						<reference key="parent" ref="155973878"/>
 					</object>
 				</object>
@@ -557,25 +559,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">LogoutDelegate</string>
-					<string key="superclassName">NSObject</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">appDelegate</string>
-						<string key="NS.object.0">NewsBlurAppDelegate</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">appDelegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/LogoutDelegate.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">NewsBlurAppDelegate</string>
 					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="outlets">
@@ -585,7 +568,6 @@
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>loginViewController</string>
-							<string>logoutDelegate</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>storyDetailViewController</string>
@@ -596,7 +578,6 @@
 							<string>FeedDetailViewController</string>
 							<string>NewsBlurViewController</string>
 							<string>LoginViewController</string>
-							<string>LogoutDelegate</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
 							<string>StoryDetailViewController</string>
@@ -610,7 +591,6 @@
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>loginViewController</string>
-							<string>logoutDelegate</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>storyDetailViewController</string>
@@ -629,10 +609,6 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">loginViewController</string>
 								<string key="candidateClassName">LoginViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">logoutDelegate</string>
-								<string key="candidateClassName">LogoutDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">navigationController</string>

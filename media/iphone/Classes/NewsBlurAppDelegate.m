@@ -23,7 +23,6 @@
 @synthesize loginViewController;
 @synthesize originalStoryViewController;
 
-@synthesize logoutDelegate;
 @synthesize activeUsername;
 @synthesize activeFeed;
 @synthesize activeFeedStories;
@@ -110,6 +109,7 @@
     UINavigationController *navController = self.navigationController;
     [self setStories:nil];
     [navController pushViewController:feedDetailViewController animated:YES];
+    [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     [self showNavigationBar:YES];
     navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];

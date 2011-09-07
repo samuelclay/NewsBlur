@@ -15,7 +15,8 @@
 
 @interface NewsBlurViewController : UIViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
-            UIAlertViewDelegate, PullToRefreshViewDelegate> {
+            UIAlertViewDelegate, PullToRefreshViewDelegate,
+            ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
 	NSDictionary * dictFolders;
@@ -70,17 +71,5 @@
 @property (nonatomic, retain) PullToRefreshView *pull;
 @property (nonatomic, retain) NSDate *lastUpdate;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
-
-@end
-
-
-@interface LogoutDelegate : NSObject {
-    NewsBlurAppDelegate *appDelegate;
-}
-
-- (void)finishedWithError:(ASIHTTPRequest *)request;
-- (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
-
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 @end
