@@ -163,7 +163,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark Initialization
 
 - (void)returnToApp {
-    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-10*60)];
+    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-4/*-10*60*/)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
         [self fetchFeedList:YES];
@@ -172,8 +172,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-    NSLog(@"fetchFeedList: %d %d", showLoader, !!appDelegate.feedsViewController.view.window);
-    if (showLoader && appDelegate.feedsViewController.view.window) {
+    NSLog(@"fetchFeedList: %d %d", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController);
+    if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
     }
@@ -192,6 +192,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [request startAsynchronous];
     
     self.lastUpdate = [NSDate date];
+    [appDelegate setActiveFeedIndexPath:nil];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {
