@@ -17,6 +17,7 @@ BROKEN_PAGES = [
     'tag:', 
     'info:', 
     'uuid:', 
+    'urn:', 
     '[]',
 ]
 
