@@ -175,18 +175,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         [request setTimeOutSeconds:30];
         [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
-        
     }
 }
 
 - (void)failLoadingFeed:(ASIHTTPRequest *)request {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
-    [NewsBlurAppDelegate informError:[request error]];
     [appDelegate.navigationController 
      popToViewController:[appDelegate.navigationController.viewControllers 
                           objectAtIndex:0]  
      animated:YES];
+    
+    [NewsBlurAppDelegate informError:[request error]];
 }
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
