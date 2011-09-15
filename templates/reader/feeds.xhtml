@@ -135,13 +135,13 @@ $(document).ready(function() {
         <div class="NB-signup">
           <form method="post" action="{% url signup %}">
             <div>
-              {{ signup_form.signup_username.label_tag }}
-              {{ signup_form.signup_username }}
+              {{ signup_form.username.label_tag }}
+              {{ signup_form.username }}
             </div>
             <div class="NB-signup-hidden">
               <div class="NB-signup-optional">Optional</div>
-              {{ signup_form.signup_password.label_tag }}
-              {{ signup_form.signup_password }}
+              {{ signup_form.password.label_tag }}
+              {{ signup_form.password }}
             </div>
             <div class="NB-signup-hidden">
               <div class="NB-signup-optional">Optional</div>
