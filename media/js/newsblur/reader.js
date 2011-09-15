@@ -4930,7 +4930,7 @@
         handle_login_and_signup_forms: function() {
             var self = this;
             var $hidden_inputs = $('.NB-signup-hidden');
-            var $signup_username = $('input[name=signup-signup_username]');
+            var $signup_username = $('input[name=signup-username]');
             
             $signup_username.bind('focus', function() {
                 $hidden_inputs.slideDown(300);

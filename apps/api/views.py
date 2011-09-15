@@ -15,27 +15,35 @@ from utils import log as logging
 @json.json_view
 def login(request):
     code = -1
+    errors = None
+    
     if request.method == "POST":
         form = LoginForm(data=request.POST)
+        if form.errors:
+            errors = form.errors
         if form.is_valid():
             login_user(request, form.get_user())
             logging.user(form.get_user(), "~FG~BB~SKAPI Login~FW")
             code = 1
 
-    return dict(code=code)
+    return dict(code=code, errors=errors)
     
 @json.json_view
 def signup(request):
     code = -1
+    errors = None
+    
     if request.method == "POST":
         form = SignupForm(data=request.POST)
+        if form.errors:
+            errors = form.errors
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
             logging.user(new_user, "~FG~SB~BBAPI NEW SIGNUP~FW")
             code = 1
 
-    return dict(code=code)
+    return dict(code=code, errors=errors)
         
 @json.json_view
 def logout(request):
