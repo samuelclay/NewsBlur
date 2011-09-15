@@ -22,13 +22,10 @@ class request():
 
     def __call__(self, func):
         def wrapped(*args, **kwargs):
-            params   = func(*args, **kwargs) or {}
-            url      = self.endpoint
-            if not url:
-                url  = params['url']
-                del params['url']
-            params   = urllib.urlencode(params)
-            url      = "%s%s" % (API_URL, url)
+            params = func(*args, **kwargs) or {}
+            url    = self.endpoint if self.endpoint else params.pop('url')
+            params = urllib.urlencode(params)
+            url    = "%s%s" % (API_URL, url)
             
             response = self.opener.open(url, params).read()
             
@@ -102,7 +99,7 @@ class API:
             'feeds': feeds
         }
 
-    @request(None)
+    @request()
     def page(self, feed_id):
         '''
         Retrieve the original page from a single feed.
@@ -111,7 +108,7 @@ class API:
             'url': 'reader/page/%s' % feed_id
         }
 
-    @request(None)
+    @request()
     def feed(self, feed_id, page=1):
         '''
         Retrieve the stories from a single feed.
@@ -138,233 +135,203 @@ class API:
         return {
             'feed_id': feed_id,
         }
-
-    def statistics(self, id_no):
+        
+    @request()
+    def statistics(self, feed_id=None):
         '''
-    
         If you only want a user's classifiers, use /classifiers/:id.
             Omit the feed_id to get all classifiers for all subscriptions.
-        
         '''
-
-        url = 'http://www.newsblur.com/rss_feeds/statistics/%d' % id_no
-        return urllib.urlopen(url).read()
-
+        return {
+            'url': 'rss_feeds/statistics/%d' % feed_id
+        }
+        
+    @request('rss_feeds/feed_autocomplete')
     def feed_autocomplete(self, term):
         '''
-    
         Get a list of feeds that contain a search phrase.
         Searches by feed address, feed url, and feed title, in that order.
         Will only show sites with 2+ subscribers.
-
         '''
-        url = 'http://www.newsblur.com/rss_feeds/feed_autocomplete'
-        params = urllib.urlencode({'term':term})
-        return urllib.urlopen(url,params).read()
+        return {
+            'term': term
+        }
 
-    def read(self, page=1):
-        '''
-    
-        Retrieve stories from a single feed.
-    
-        '''
-        url = 'http://www.newsblur.com/reader/feed/%d' % page
-        return urllib.urlopen(url).read()
-
+    @request('reader/starred_stories')
     def starred_stories(self, page=1):
         '''
-    
         Retrieve a user's starred stories.
-    
         '''
-        url = 'http://www.newsblur.com/reader/starred_stories'
-        params = urllib.urlencode({'page':page})
-        return urllib.urlopen(url,params).read()
+        return {
+            'page': page,
+        }
 
-    def river_stories(self, feeds,page=1,read_stories_count=0):
+    @request('rewader/river_stories')
+    def river_stories(self, feeds, page=1, read_stories_count=0):
         '''
-    
         Retrieve stories from a collection of feeds. This is known as the River of News.
         Stories are ordered in reverse chronological order.
-        
+        `read_stories_count` is the number of stories that have been read in this
+        continuation, so NewsBlur can efficiently skip those stories when retrieving
+        new stories.
         '''
-
-        url = 'http://www.newsblur.com/reader/river_stories'
-        params = urllib.urlencode({'feeds':feeds,'page':page,'read_stories_count':read_stories_count})
-        return urllib.urlopen(url,params).read()
-
-    def mark_story_as_read(self, story_id,feed_id):
-        '''
+        return {
+            'feeds': feeds,
+            'page': page,
+            'read_stories_count': read_stories_count,
+        }
     
+    @request('reader/mark_story_as_read')
+    def mark_story_as_read(self, feed_id, story_id):
+        '''
          Mark stories as read.
             Multiple story ids can be sent at once.
             Each story must be from the same feed.
-        
-            '''
-
-        url = 'http://www.newsblur.com/reader/mark_story_as_read'
-        params = urllib.urlencode({'story_id':story_id,'feed_id':feed_id})
-        return urllib.urlopen(url,params).read()
-
-    def mark_story_as_starred(self, story_id,feed_id):
         '''
-    
+        return {
+            'feed_id': feed_id,
+            'story_id': story_id,
+        }
+
+    @request('reader/mark_story_as_starred')
+    def mark_story_as_starred(self, feed_id, story_id):
+        '''
         Mark a story as starred (saved).
-    
         '''
-        url = 'http://www.newsblur.com/reader/mark_story_as_starred'
-        params = urllib.urlencode({'story_id':story_id,'feed_id':feed_id})
-        return urllib.urlopen(url,params).read()
+        return {
+            'feed_id': feed_id,
+            'story_id': story_id,
+        }
 
+    @request('reader/mark_all_as_read')
     def mark_all_as_read(self, days=0):
         '''
-    
         Mark all stories in a feed or list of feeds as read.
-    
         '''
-        url = 'http://www.newsblur.com/reader/mark_all_as_read'
-        params = urllib.urlencode({'days':days})
-        return urllib.urlopen(url,params).read()
+        return {
+            'days': days,
+        }
 
-    def add_url(self, url,folder='[Top Level]'):
+    @request('reader/add_url')
+    def add_url(self, url, folder=''):
         '''
-    
         Add a feed by its URL. 
         Can be either the RSS feed or the website itself.
-    
         '''
-        url = 'http://www.newsblur.com/reader/add_url'
-        params = urllib.urlencode({'url':url,'folder':folder})
-        return urllib.urlopen(url,params).read()
+        return {
+            'url': url,
+            'folder': folder,
+        }
 
-
-    def add_folder(self, folder,parent_folder='[Top Level]'):
+    @request('reader/add_folder')
+    def add_folder(self, folder, parent_folder=''):
         '''
-    
         Add a new folder.
-    
         '''
+        return {
+            'folder': folder,
+            'parent_folder': parent_folder,
+        }
     
-        url = 'http://www.newsblur.com/reader/add_folder'
-        params = urllib.urlencode({'folder':folder,'parent_folder':parent_folder})
-        return urllib.urlopen(url,params).read()
-
-    def rename_feed(self, feed_title,feed_id):
+    @request('reader/rename_feed')
+    def rename_feed(self, feed_id, feed_title):
         '''
-    
         Rename a feed title. Only the current user will see the new title.
-    
         '''
-        url = 'http://www.newsblur.com/reader/rename_feed'
-        params = urllib.urlencode({'feed_title':feed_title,'feed_id':feed_id})
-        return urllib.urlopen(url,params).read()
-
-    def delete_feed(self, feed_id,in_folder):
-        '''
+        return {
+            'feed_id': feed_id,
+            'feed_title': feed_title,
+        }
     
+    @request('reader/delete_feed')
+    def delete_feed(self, feed_id, in_folder):
+        '''
         Unsubscribe from a feed. Removes it from the folder.
         Set the in_folder parameter to remove a feed from the correct 
         folder, in case the user is subscribed to the feed in multiple folders.
-
         ''' 
-        url = 'http://www.newsblur.com/reader/delete_feed'
-        params = urllib.urlencode({'feed_id':feed_id,'in_folder':in_folder})
-        return urllib.urlopen(url,params).read()
-
-    def rename_folder(self, folder_to_rename,new_folder_name,in_folder):
-        '''
+        return {
+            'feed_id': feed_id,
+            'in_folder': in_folder,
+        }
     
+    @request('reader/rename_folder')
+    def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
+        '''
         Rename a folder.
-    
         '''
-        url = 'http://www.newsblur.com/reader/rename_folder'
-        params = urllib.urlencode({'folder_to_rename':folder_to_rename,'new_folder_name':new_folder_name,'in_folder':in_folder})
-        return urllib.urlopen(url,params).read()
-
-    def delete_folder(self, folder_to_delete,in_folder,feed_id):
-        '''
+        return {
+            'folder_to_rename': folder_to_rename,
+            'new_folder_name': new_folder_name,
+            'in_folder': in_folder,
+        }
     
+    @request('reader/delete_folder')
+    def delete_folder(self, folder_to_delete, in_folder):
+        '''
         Delete a folder and unsubscribe from all feeds inside.
-    
         '''
-        url = 'http://www.newsblur.com/reader/delete_folder'
-        params = urllib.urlencode({'folder_to_delete':folder_to_delete,'in_folder':in_folder,'feed_id':feed_id})
-        return urllib.urlopen(url,params).read()
-
-
+        return {
+            'folder_to_delete': folder_to_delete,
+            'in_folder': in_folder,
+        }
+    
+    @request('reader/mark_feed_as_read')
     def mark_feed_as_read(self, feed_id):
         '''
-    
         Mark a list of feeds as read.
-    
         '''
-        url = 'http://www.newsblur.com/reader/mark_feed_as_read'
-        params = urllib.urlencode({'feed_id':feed_id})
-        return urllib.urlopen(url,params).read()
+        return {
+            'feed_id': feed_id,
+        }
 
-
+    @request('reader/save_feed_order')
     def save_feed_order(self, folders):
         '''
-    
         Reorder feeds and move them around between folders.
             The entire folder structure needs to be serialized.
-        
         '''
+        return {
+            'folders': folders,
+        }
 
-        url = 'http://www.newsblur.com/reader/save_feed_order'
-        params = urllib.urlencode({'folders':folders})
-        return urllib.urlopen(url,params).read()
-
-
-    def classifier(self, id_no):
+    @request()
+    def classifier(self, feed_id):
         '''
-    
             Get the intelligence classifiers for a user's site.
             Only includes the user's own classifiers. 
             Use /reader/feeds_trainer for popular classifiers.
-        
         '''
+        return {
+            'url': '/classifier/%d' % feed_id,
+        }
 
-        url = 'http://www.newsblur.com/classifier/%d' % id_no
-        return urllib.urlopen(url).read()
-
-
-    def classifier_save(self, like_type,dislike_type,remove_like_type,remove_dislike_type):
+    @request('classifier/save')
+    def classifier_save(self, like_type, dislike_type, remove_like_type, remove_dislike_type):
         '''
-    
         Save intelligence classifiers (tags, titles, authors, and the feed) for a feed.
-    
+        
+        TODO: Make this usable.
         '''
-        url = 'http://www.newsblur.com/classifier/save'
-        params = urllib.urlencode({'like_[TYPE]':like_type,
-                       'dislike_[TYPE]':dislike_type,
-                       'remove_like_[TYPE]':remove_like_type,
-                       'remove_dislike_[TYPE]':remove_dislike_type})
-        return urllib.urlopen(url,params).read()
+        raise NotImplemented
 
-
+    
+    @request('import/opml_export')
     def opml_export(self):
         '''
-    
         Download a backup of feeds and folders as an OPML file.
         Contains folders and feeds in XML; useful for importing in another RSS reader.
-    
         '''
-        url = 'http://www.newsblur.com/import/opml_export'
-        return urllib.urlopen(url).read()
-
-
-
+        return
+    
+    @request('import/opml_upload')
     def opml_upload(self, opml_file):
         '''
-    
         Upload an OPML file.
-    
         '''
-        url = 'http://www.newsblur.com/import/opml_upload'
         f = open(opml_file)
-        params = urllib.urlencode({'file':f})
-        f.close()
-        return urllib.urlopen(url,params).read()
+        return {
+            'file': f
+        }
     
 
