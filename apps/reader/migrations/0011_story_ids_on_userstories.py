@@ -17,8 +17,8 @@ class Migration(DataMigration):
                     print '%s: %s' % (i, userstory.story.story_guid)
                     userstory.story_id = userstory.story.story_guid
                     userstory.save()
-                else:
-                    print "%s: skipping" % i
+                # else:
+                #     print "%s: skipping" % i
             except Exception, e:
                 print '%s: %s' % (i, e)
                 print ' ---> %s' % userstory.story
