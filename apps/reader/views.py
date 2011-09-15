@@ -340,18 +340,15 @@ def load_single_feed(request, feed_id):
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
     if usersub and stories:
+        story_ids = [story['id'] for story in stories]
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
-                                            story_date__lte=stories[0]['story_date'],
-                                            story_date__gte=stories[-1]['story_date']).only('story')
-        starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
+                                            story_id__in=story_ids).only('story_id')
+        starred_stories = MStarredStory.objects(user_id=user.pk, 
+                                                story_feed_id=feed_id, 
+                                                story_guid__in=story_ids).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
-
-        for us in userstories_db:
-            if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
-                userstories.append(us.story.story_guid)
-            elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
-                userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
+        userstories = set(us.story_id for us in userstories_db)
             
     checkpoint2 = time.time()
     
@@ -478,8 +475,8 @@ def load_river_stories(request):
     limit = limit * page - read_stories_count
     
     # Read stories to exclude
-    read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
-    read_stories = [rs.story.id for rs in read_stories]
+    read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story_id')
+    read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
     # max_feed_count     = 0
@@ -506,7 +503,7 @@ def load_river_stories(request):
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.
     mstories = MStory.objects(
-        id__nin=read_stories,
+        story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
         story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
@@ -523,7 +520,7 @@ def load_river_stories(request):
             'feed_last_reads': feed_last_reads
         }
     )
-    mstories = [story.value for story in mstories]
+    mstories = [story.value for story in mstories if story and story.value]
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
 
@@ -641,24 +638,23 @@ def mark_story_as_read(request):
         
     for story_id in story_ids:
         try:
-            story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-        except IndexError:
+            story = MStory.objects.get(story_feed_id=feed_id, story_guid=story_id)
+        except MStory.DoesNotExist:
             # Story has been deleted, probably by feed_fetcher.
             continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_date=story.story_date)
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story.story_guid)
         try:
             m.save()
         except OperationError:
             logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request.user, "~BRRead now date: %s, story_date: %s." % (m.read_date, story.story_date))
+            logging.user(request.user, "~BRRead now date: %s, story_id: %s." % (m.read_date, story.story_guid))
             logging.user(request.user, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request.user, "~BROriginal read date: %s, story date: %s" % (m.read_date, m.story_date))
+            logging.user(request.user, "~BROriginal read date: %s, story id: %s" % (m.read_date, m.story_guid))
             m.read_date = date
-            m.story_date = story.story_date
             m.save()
     
     return data
