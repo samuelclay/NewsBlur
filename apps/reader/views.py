@@ -503,7 +503,7 @@ def load_river_stories(request):
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.
     mstories = MStory.objects(
-        id__nin=read_stories,
+        story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
         story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
@@ -520,7 +520,7 @@ def load_river_stories(request):
             'feed_last_reads': feed_last_reads
         }
     )
-    mstories = [story.value for story in mstories]
+    mstories = [story.value for story in mstories if story and story.value]
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
 
