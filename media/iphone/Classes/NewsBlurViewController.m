@@ -281,16 +281,21 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self finishedWithError:request];
         }];
         [request setCompletionBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             [appDelegate showLogin];
         }];
         [request setTimeOutSeconds:30];
         [request startAsynchronous];
         
         [ASIHTTPRequest setSessionCookies:nil];
-        
+
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Logging out...";
     }
 }
 
