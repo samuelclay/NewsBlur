@@ -16,7 +16,6 @@ def user(u, msg):
         request = u
         u = request.user
         user_agent = request.environ.get('HTTP_USER_AGENT', '')
-        print user_agent
         if 'iPhone App' in user_agent:
             platform = 'iPhone'
         elif 'Blar' in user_agent:
@@ -32,7 +31,7 @@ def user(u, msg):
         elif 'Opera' in user_agent:
             platform = 'Opera'
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
-    info(' ---> [~FC%-6s~FB] [%s%s] %s' % (platform, u, premium, msg))
+    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, u, premium, msg))
     
 def debug(msg):
     logger = getlogger()
