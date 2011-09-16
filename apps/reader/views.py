@@ -653,7 +653,7 @@ def mark_story_as_read(request):
             logging.user(request.user, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request.user, "~BROriginal read date: %s, story id: %s" % (m.read_date, m.story_guid))
+            logging.user(request.user, "~BROriginal read date: %s, story id: %s" % (m.read_date, m.story_id))
             m.read_date = date
             m.save()
     
