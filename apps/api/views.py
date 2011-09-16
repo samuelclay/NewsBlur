@@ -48,7 +48,7 @@ def signup(request):
 @json.json_view
 def logout(request):
     code = 1
-    logging.user(request.user, "~FG~BBAPI Logout~FW")
+    logging.user(request, "~FG~BBAPI Logout~FW")
     logout_user(request)
     
     return dict(code=code)
