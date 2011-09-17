@@ -302,7 +302,8 @@ def config_pgbouncer():
     # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     # sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('/etc/init.d/pgbouncer stop')
-    sudo('pkill pgbouncer')
+    with settings(warn_only=True):
+        sudo('pkill pgbouncer')
     sudo('/etc/init.d/pgbouncer start')
     
 def config_monit():

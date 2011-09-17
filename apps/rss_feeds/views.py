@@ -56,7 +56,7 @@ def feed_autocomplete(request):
                 'num_subscribers'
             ).order_by('-num_subscribers')[:5]
     
-    logging.user(request.user, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
+    logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
     
     feeds = [{
         'value': feed.feed_address,
@@ -100,7 +100,7 @@ def load_feed_statistics(request, feed_id):
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
     stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
     
-    logging.user(request.user, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
+    logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
     return stats
 
@@ -116,10 +116,10 @@ def exception_retry(request):
     feed.has_feed_exception = False
     feed.active = True
     if reset_fetch:
-        logging.user(request.user, "~FRRefreshing exception feed: ~SB%s" % (feed))
+        logging.user(request, "~FRRefreshing exception feed: ~SB%s" % (feed))
         feed.fetched_once = False
     else:
-        logging.user(request.user, "~FRForcing refreshing feed: ~SB%s" % (feed))
+        logging.user(request, "~FRForcing refreshing feed: ~SB%s" % (feed))
         feed.fetched_once = True
     feed.save()
     
@@ -158,7 +158,7 @@ def exception_change_feed_address(request):
         original_feed.save()
         merge_feeds(original_feed.pk, feed.pk)
     
-    logging.user(request.user, "~FRFixing feed exception by address: ~SB%s" % (retry_feed.feed_address))
+    logging.user(request, "~FRFixing feed exception by address: ~SB%s" % (retry_feed.feed_address))
     retry_feed.update()
     
     usersub = UserSubscription.objects.get(user=request.user, feed=retry_feed)
@@ -199,7 +199,7 @@ def exception_change_feed_link(request):
             original_feed.active = True
             original_feed.save()
     
-    logging.user(request.user, "~FRFixing feed exception by link: ~SB%s" % (retry_feed.feed_link))
+    logging.user(request, "~FRFixing feed exception by link: ~SB%s" % (retry_feed.feed_link))
     retry_feed.update()
     
     usersub = UserSubscription.objects.get(user=request.user, feed=retry_feed)
@@ -211,7 +211,7 @@ def exception_change_feed_link(request):
 @login_required
 def status(request):
     if not request.user.is_staff:
-        logging.user(request.user, "~SKNON-STAFF VIEWING RSS FEEDS STATUS!")
+        logging.user(request, "~SKNON-STAFF VIEWING RSS FEEDS STATUS!")
         assert False
         return HttpResponseForbidden()
     minutes  = int(request.GET.get('minutes', 10))

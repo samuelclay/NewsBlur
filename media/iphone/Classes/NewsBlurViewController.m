@@ -163,7 +163,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark Initialization
 
 - (void)returnToApp {
-    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-4/*-10*60*/)];
+    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-10*60)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
         [self fetchFeedList:YES];
@@ -174,6 +174,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)fetchFeedList:(BOOL)showLoader {
     NSLog(@"fetchFeedList: %d %d", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController);
     if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
     }
@@ -281,16 +282,21 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self finishedWithError:request];
         }];
         [request setCompletionBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             [appDelegate showLogin];
         }];
         [request setTimeOutSeconds:30];
         [request startAsynchronous];
         
         [ASIHTTPRequest setSessionCookies:nil];
-        
+
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Logging out...";
     }
 }
 

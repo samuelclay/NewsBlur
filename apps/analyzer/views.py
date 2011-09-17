@@ -23,7 +23,7 @@ def save_classifier(request):
     message = 'OK'
     payload = {}
 
-    logging.user(request.user, "~FGSaving classifier: ~SB%s~SN ~FW%s" % (feed, post))
+    logging.user(request, "~FGSaving classifier: ~SB%s~SN ~FW%s" % (feed, post))
     
     # Mark subscription as dirty, so unread counts can be recalculated
     try:

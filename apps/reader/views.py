@@ -123,7 +123,7 @@ def signup(request):
         
 @never_cache
 def logout(request):
-    logging.user(request.user, "~FG~BBLogout~FW")
+    logging.user(request, "~FG~BBLogout~FW")
     logout_user(request)
     
     if request.GET.get('api'):
@@ -205,7 +205,7 @@ def load_feeds_flat(request):
         data = dict(folders=[])
         return data
         
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
     for sub in user_subs:
         if sub.needs_unread_recalc:
@@ -289,7 +289,7 @@ def refresh_feeds(request):
     if settings.DEBUG:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request.user, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+        logging.user(request, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
     
     return {'feeds': feeds}
 
@@ -340,18 +340,15 @@ def load_single_feed(request, feed_id):
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
     if usersub and stories:
+        story_ids = [story['id'] for story in stories]
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
-                                            story_date__lte=stories[0]['story_date'],
-                                            story_date__gte=stories[-1]['story_date']).only('story')
-        starred_stories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).only('story_guid', 'starred_date')
+                                            story_id__in=story_ids).only('story_id')
+        starred_stories = MStarredStory.objects(user_id=user.pk, 
+                                                story_feed_id=feed_id, 
+                                                story_guid__in=story_ids).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
-
-        for us in userstories_db:
-            if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
-                userstories.append(us.story.story_guid)
-            elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
-                userstories.append(us.story.id) # TODO: Remove me after migration from story.id->guid
+        userstories = set(us.story_id for us in userstories_db)
             
     checkpoint2 = time.time()
     
@@ -396,7 +393,7 @@ def load_single_feed(request, feed_id):
     diff3 = checkpoint3-start
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    logging.user(request.user, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s(%s)/%.4s~SN)" % (
+    logging.user(request, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s(%s)/%.4s~SN)" % (
         feed.feed_title[:32], ('~SN/p%s' % page) if page > 1 else '', timediff,
         diff1, diff2, userstories_db and userstories_db.count() or '~SN0~SB', diff3))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
@@ -452,7 +449,7 @@ def load_starred_stories(request):
             'title': 0,
         }
     
-    logging.user(request.user, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
+    logging.user(request, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
     
     return dict(stories=stories)
 
@@ -469,7 +466,7 @@ def load_river_stories(request):
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
-        logging.user(request.user, "~FCLoading empty river stories: page %s" % (page))
+        logging.user(request, "~FCLoading empty river stories: page %s" % (page))
         return dict(stories=[])
     
     # Fetch all stories at and before the page number.
@@ -478,8 +475,8 @@ def load_river_stories(request):
     limit = limit * page - read_stories_count
     
     # Read stories to exclude
-    read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story')
-    read_stories = [rs.story.id for rs in read_stories]
+    read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story_id')
+    read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
     # max_feed_count     = 0
@@ -506,7 +503,7 @@ def load_river_stories(request):
     # After excluding read stories, all that's left are stories 
     # past the mark_read_date. Everything returned is guaranteed to be unread.
     mstories = MStory.objects(
-        id__nin=read_stories,
+        story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
         story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
@@ -523,7 +520,7 @@ def load_river_stories(request):
             'feed_last_reads': feed_last_reads
         }
     )
-    mstories = [story.value for story in mstories]
+    mstories = [story.value for story in mstories if story and story.value]
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
 
@@ -581,7 +578,7 @@ def load_river_stories(request):
     
     diff = datetime.datetime.utcnow() - start
     timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-    logging.user(request.user, "~FCLoading river stories: page %s - ~SB%s/%s "
+    logging.user(request, "~FCLoading river stories: page %s - ~SB%s/%s "
                                "stories ~SN(%s/%s/%s feeds) ~FB(%s seconds)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), timediff))
@@ -606,7 +603,7 @@ def mark_all_as_read(request):
                 sub.mark_read_date = read_date
                 sub.save()
     
-    logging.user(request.user, "~FMMarking all as read: ~SB%s days" % (days,))
+    logging.user(request, "~FMMarking all as read: ~SB%s days" % (days,))
     return dict(code=code)
     
 @ajax_login_required
@@ -635,30 +632,29 @@ def mark_story_as_read(request):
     data = dict(code=0, payload=story_ids)
     
     if len(story_ids) > 1:
-        logging.user(request.user, "~FYRead %s stories in feed: %s" % (len(story_ids), usersub.feed))
+        logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_ids), usersub.feed))
     else:
-        logging.user(request.user, "~FYRead story in feed: %s" % (usersub.feed))
+        logging.user(request, "~FYRead story in feed: %s" % (usersub.feed))
         
     for story_id in story_ids:
         try:
-            story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-        except IndexError:
+            story = MStory.objects.get(story_feed_id=feed_id, story_guid=story_id)
+        except MStory.DoesNotExist:
             # Story has been deleted, probably by feed_fetcher.
             continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_date=story.story_date)
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story.story_guid)
         try:
             m.save()
         except OperationError:
-            logging.user(request.user, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request.user, "~BRRead now date: %s, story_date: %s." % (m.read_date, story.story_date))
-            logging.user(request.user, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
+            logging.user(request, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
+            logging.user(request, "~BRRead now date: %s, story_id: %s." % (m.read_date, story.story_guid))
+            logging.user(request, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request.user, "~BROriginal read date: %s, story date: %s" % (m.read_date, m.story_date))
+            logging.user(request, "~BROriginal read date: %s, story id: %s" % (m.read_date, m.story_id))
             m.read_date = date
-            m.story_date = story.story_date
             m.save()
     
     return data
@@ -685,7 +681,7 @@ def mark_story_as_unread(request):
         usersub.save()
         
     data = dict(code=0, payload=dict(story_id=story_id))
-    logging.user(request.user, "~FY~SBUnread~SN story in feed: %s" % (usersub.feed))
+    logging.user(request, "~FY~SBUnread~SN story in feed: %s" % (usersub.feed))
         
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
     m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
@@ -713,7 +709,7 @@ def mark_feed_as_read(request):
         else:
             code = 1
         
-        logging.user(request.user, "~FMMarking feed as read: ~SB%s" % (feed,))
+        logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
     return dict(code=code)
 
 def _parse_user_info(user):
@@ -745,7 +741,7 @@ def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST.get('parent_folder', '')
     
-    logging.user(request.user, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
+    logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
     if folder:
         code = 1
@@ -794,7 +790,7 @@ def rename_feed(request):
     user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
     feed_title = request.POST['feed_title']
     
-    logging.user(request.user, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (
+    logging.user(request, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (
                  feed.feed_title, feed_title))
                  
     user_sub.user_title = feed_title
@@ -836,7 +832,7 @@ def add_feature(request):
 def load_features(request):
     user = get_user(request)
     page = int(request.REQUEST.get('page', 0))
-    logging.user(request.user, "~FBBrowse features: ~SBPage #%s" % (page+1))
+    logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
         'description': f['description'], 
@@ -852,7 +848,7 @@ def save_feed_order(request):
         # Test that folders can be JSON decoded
         folders_list = json.decode(folders)
         assert folders_list is not None
-        logging.user(request.user, "~FBFeed re-ordering: ~SB%s folders/feeds" % (len(folders_list)))
+        logging.user(request, "~FBFeed re-ordering: ~SB%s folders/feeds" % (len(folders_list)))
         user_sub_folders = UserSubscriptionFolders.objects.get(user=request.user)
         user_sub_folders.folders = folders
         user_sub_folders.save()
@@ -906,7 +902,7 @@ def save_feed_chooser(request):
             pass
             
     
-    logging.user(request.user, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
+    logging.user(request, "~BB~FW~SBActivated standard account: ~FC%s~SN/~SB%s" % (
         activated, 
         usersubs.count()
     ))
@@ -946,7 +942,7 @@ def activate_premium_account(request):
 @login_required
 def login_as(request):
     if not request.user.is_staff:
-        logging.user(request.user, "~SKNON-STAFF LOGGING IN AS ANOTHER USER!")
+        logging.user(request, "~SKNON-STAFF LOGGING IN AS ANOTHER USER!")
         assert False
         return HttpResponseForbidden()
     username = request.GET['user']
@@ -956,7 +952,7 @@ def login_as(request):
     return HttpResponseRedirect(reverse('index'))
     
 def iframe_buster(request):
-    logging.user(request.user, "~FB~SBiFrame bust!")
+    logging.user(request, "~FB~SBiFrame bust!")
     return HttpResponse(status=204)
     
 @ajax_login_required
@@ -973,7 +969,7 @@ def mark_story_as_starred(request):
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
         MStarredStory.objects.create(**story_values)
-        logging.user(request.user, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
     else:
         code = -1
     
@@ -987,7 +983,7 @@ def mark_story_as_unstarred(request):
     
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
-        logging.user(request.user, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
+        logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()
     else:
         code = -1
@@ -1031,7 +1027,7 @@ def send_story_email(request):
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
         msg.send()
-        logging.user(request.user, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
+        logging.user(request, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
@@ -1039,11 +1035,11 @@ def send_story_email(request):
 @json.json_view
 def load_tutorial(request):
     if request.REQUEST.get('finished'):
-        logging.user(request.user, '~BY~FW~SBFinishing Tutorial')
+        logging.user(request, '~BY~FW~SBFinishing Tutorial')
         return {}
     else:
         newsblur_feed = Feed.objects.filter(feed_address__icontains='blog.newsblur.com').order_by('-pk')[0]
-        logging.user(request.user, '~BY~FW~SBLoading Tutorial')
+        logging.user(request, '~BY~FW~SBLoading Tutorial')
         return {
             'newsblur_feed': newsblur_feed.canonical()
         }

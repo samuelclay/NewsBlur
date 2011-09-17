@@ -61,22 +61,25 @@ class LoginForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    signup_username = forms.RegexField(regex=r'^\w+$',
-                                       max_length=30,
-                                       widget=forms.TextInput(),
-                                       label=_(u'username'),
-                                       error_messages={'required': 'Please enter a username.'})
+    username = forms.RegexField(regex=r'^\w+$',
+                                max_length=30,
+                                widget=forms.TextInput(),
+                                label=_(u'username'),
+                                error_messages={
+                                    'required': 'Please enter a username.', 
+                                    'invalid': "Your username may only contain letters and numbers."
+                                })
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
                              label=_(u'email address'),
                              required=False)  
                              # error_messages={'required': 'Please enter your email.'})
-    signup_password = forms.CharField(widget=forms.PasswordInput(),
-                                      label=_(u'password'),
-                                      required=False)
-                                      # error_messages={'required': 'Please enter a password.'})
+    password = forms.CharField(widget=forms.PasswordInput(),
+                               label=_(u'password'),
+                               required=False)
+                               # error_messages={'required': 'Please enter a password.'})
     
-    def clean_signup_username(self):
-        username = self.cleaned_data['signup_username']
+    def clean_username(self):
+        username = self.cleaned_data['username']
         try:
             User.objects.get(username__iexact=username)
         except User.DoesNotExist:
@@ -84,10 +87,10 @@ class SignupForm(forms.Form):
         raise forms.ValidationError(_(u'Someone is already using that username.'))
         return username
 
-    def clean_signup_password(self):
-        if not self.cleaned_data['signup_password']:
+    def clean_password(self):
+        if not self.cleaned_data['password']:
             return ""
-        return self.cleaned_data['signup_password']
+        return self.cleaned_data['password']
             
     def clean_email(self):
         if not self.cleaned_data['email']:
@@ -95,13 +98,13 @@ class SignupForm(forms.Form):
         return self.cleaned_data['email']
             
     def save(self, profile_callback=None):
-        new_user = User(username=self.cleaned_data['signup_username'])
-        new_user.set_password(self.cleaned_data['signup_password'])
+        new_user = User(username=self.cleaned_data['username'])
+        new_user.set_password(self.cleaned_data['password'])
         new_user.is_active = True
         new_user.email = self.cleaned_data['email']
         new_user.save()
-        new_user = authenticate(username=self.cleaned_data['signup_username'],
-                                password=self.cleaned_data['signup_password'])
+        new_user = authenticate(username=self.cleaned_data['username'],
+                                password=self.cleaned_data['password'])
         
         return new_user
 
