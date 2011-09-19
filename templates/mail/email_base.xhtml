@@ -12,7 +12,7 @@
                 <table cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" align="left" width="644" style="padding: 20px; margin-top: 24px;align:center;border: 1px solid #BABABA;">
                     <tr>
                         <td align="center">
-                            <a href="http://www.newsblur.com/login"><img alt="NewsBlur" src="http://www.newsblur.com/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:312px;height:55px;border: none;"></a>
+                            <a href="http://www.newsblur.com{{ user.profile.autologin_url }}"><img alt="NewsBlur" src="http://www.newsblur.com/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:312px;height:55px;border: none;"></a>
                         </td>
                     </tr>
                     <tr>
@@ -44,7 +44,7 @@
                                 <tr>
                                     <td>
                                         <p style="font-size:12px;"> 
-                                            Don't want to be notified about anything NewsBlur related? <a href="http://www.newsblur.com/" style="color:#1C4D84; text-decoration:none;">Opt-out of emails from NewsBlur</a>.
+                                            Don't want to be notified about anything NewsBlur related? <a href="http://www.newsblur.com{{ user.profile.autologin_url }}?optout=1" style="color:#1C4D84; text-decoration:none;">Opt-out of emails from NewsBlur</a>.
                                         </p>
                                     </td>
                                 </tr>
@@ -53,7 +53,7 @@
                     </tr>
                     <tr>
                         <td align="center">
-                            <a href="http://www.newsblur.com/login"><img alt="NewsBlur" src="http://www.newsblur.com/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:55px;border: none;"></a>
+                            <a href="http://www.newsblur.com{{ user.profile.autologin_url }}"><img alt="NewsBlur" src="http://www.newsblur.com/media/img/logo_newsblur.png" title="NewsBlur" style="width:312px;height:55px;border: none;"></a>
                         </td>
                     </tr>
                 </table>

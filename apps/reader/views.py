@@ -22,6 +22,7 @@ from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
+from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
@@ -130,6 +131,21 @@ def logout(request):
         return HttpResponse(json.encode(dict(code=1)), mimetype='application/json')
     else:
         return HttpResponseRedirect(reverse('index'))
+
+def autologin(request, username, secret):
+    if not username or not secret:
+        return HttpResponseForbidden()
+    
+    profile = Profile.objects.filter(user__username=username, secret_token=secret)
+    if profile:
+        user = profile[0].user
+        user.backend = settings.AUTHENTICATION_BACKENDS[0]
+        login_user(request, user)
+        logging.user(user, "~FG~BB~SKAuto-Login~FW")
+    else:
+        return HttpResponseForbidden()
+    
+    return HttpResponseRedirect(reverse('index') + request.GET.get('next', ''))
     
 @json.json_view
 def load_feeds(request):

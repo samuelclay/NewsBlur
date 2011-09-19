@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from celery.task import Task
 from apps.reader.models import UserSubscription
@@ -127,6 +128,12 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
+        
+    def autologin_url(self, next=None):
+        return reverse('autologin', kwargs={
+            'username': self.user.username, 
+            'secret': self.secret_token
+        }) + ('?' + next + '=1' if next else '')
         
         
 def create_profile(sender, instance, created, **kwargs):
