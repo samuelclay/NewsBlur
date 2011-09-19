@@ -47,7 +47,7 @@ LOGIN_URL             = '/reader/login'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
-EMAIL_BACKEND         = 'django_ses.SESBackend'
+EMAIL_BACKEND         = 'seacucumber.backend.SESBackend'
 
 
 # ===============
@@ -302,6 +302,7 @@ TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SERVER_EMAIL            = 'server@newsblur.com'
+HELLO_EMAIL             = 'hello@newsblur.com'
 
 # ===========
 # = Logging =
@@ -322,6 +323,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
+    'seacucumber',
     'compress',
     'apps.rss_feeds',
     'apps.reader',

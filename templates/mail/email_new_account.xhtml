@@ -1,25 +1,9 @@
-{% extends "email_base.xhtml" %}
+{% extends "mail/email_base.xhtml" %}
 
 {% block body %}
-    <table cellspacing="0" cellpadding="0" style="width:100%;">
-        <tr>
-            <td align="center">
-                <img alt="NewsBlur" src="http://www.newsblur.com/media/img/logo_newsblur.png" title="NewsBlur" />
-            </td>
-        </tr>
-    </table>
-    <p style="font-size: 37px; color:#555555; margin-top: 12px;margin-bottom: 10px;padding-top:6px;">Welcome, {{ user.name }}.</p>
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Welcome to NewsBlur, {{ user.username }}.</p>
     <p style="line-height: 20px;">OK, firstly, thank you for trying out new software. It's not quite what you're used to, but you might find NewsBlur to be a perfect fit. There's a lot packed into a minimal interface.</p>
     <p style="line-height: 20px;">Spend a few days trying out NewsBlur. I hope you end up loving it.</p>
-    <p style="line-height: 20px;">Stay up to date and in touch with me, yr. developer, in a few different ways:</p>
-    <p style="line-height: 20px;">
-        <ul>
-            <li><a href="http://twitter.com/samuelclay">Follow @samuelclay on Twitter</a>.</li>
-            <li><a href="http://twitter.com/samuelclay">Follow @newsblur on Twitter</a>.</li>
-            <li><a href="http://github.com/samuelclay">Peak at the source code on GitHub</a>.</li>
-            <li><a href="http://blog.newsblur.com">Read the NewsBlur Blog</a>.</li>
-            <li><a href="http://getsatisfaction.com/newsblur">Get support on NewsBlur's Get Satisfaction</a>.</li>
-            <li><a href="http://itunes.com/newsblur">Download the free NewsBlur iPhone app</a>.</li>
-        </ul>
-    </p>
 {% endblock %}
+
+{% block resources_header %}There are a few resources that would make sense to follow if you end up loving NewsBlur:{% endblock resources_header %}

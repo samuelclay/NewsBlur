@@ -1,0 +1,3 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Thank you, thank you, thank you!{% endblock body %}

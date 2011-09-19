@@ -1,0 +1,7 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Welcome to NewsBlur, {{ user.username }}.
+
+OK, firstly, thank you for trying out new software. It's not quite what you're used to, but you might find NewsBlur to be a perfect fit. There's a lot packed into a minimal interface.
+
+Spend a few days trying out NewsBlur. I hope you end up loving it.{% endblock body %}

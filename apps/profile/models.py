@@ -2,19 +2,23 @@ import datetime
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
-from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.core.mail import mail_admins
+from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.core.mail import mail_admins
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from celery.task import Task
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
-from paypal.standard.ipn.signals import subscription_signup
 from apps.rss_feeds.tasks import NewFeeds
-from celery.task import Task
 from utils import log as logging
-from vendor.timezones.fields import TimeZoneField
 from utils.user_functions import generate_secret_token
-     
+from vendor.timezones.fields import TimeZoneField
+from vendor.paypal.standard.ipn.signals import subscription_signup
+
+
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
     is_premium        = models.BooleanField(default=False)
@@ -30,7 +34,7 @@ class Profile(models.Model):
     secret_token      = models.CharField(max_length=12, blank=True, null=True)
     
     def __unicode__(self):
-        return "%s" % self.user
+        return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
     def save(self, *args, **kwargs):
         if not self.secret_token:
@@ -95,6 +99,34 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         if stale_feeds:
             stale_feeds = list(set([f.feed.pk for f in stale_feeds]))
             self.queue_new_feeds(new_feeds=stale_feeds)
+    
+    def mail_new_account(self):
+        if not self.user.email:
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_new_account.txt', locals())
+        html    = render_to_string('mail/email_new_account.xhtml', locals())
+        subject = "Welcome to NewsBlur, %s" % (self.user.username)
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+    
+    def mail_new_premium(self):
+        if not self.user.email:
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_new_premium.txt', locals())
+        html    = render_to_string('mail/email_new_premium.xhtml', locals())
+        subject = "Thanks for going premium on NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
         
         
 def create_profile(sender, instance, created, **kwargs):
