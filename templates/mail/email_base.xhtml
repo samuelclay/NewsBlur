@@ -9,37 +9,48 @@
         <tr>
             <td>
                 <center>
-                <table cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" align="left" width="644" style="padding: 20px; margin-top: 24px;align:center;border: 1px solid #BABABA;">
+                <table cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" align="left" width="644" style="padding: 20px; margin-top: 24px;align:center;border: 1px solid #BABABA;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;color:#333;">
                     <tr>
                         <td align="center">
                             <a href="http://www.newsblur.com{{ user.profile.autologin_url }}"><img alt="NewsBlur" src="http://www.newsblur.com/media/img/logo_newsblur_blur.png" title="NewsBlur" style="width:312px;height:55px;border: none;"></a>
                         </td>
                     </tr>
                     <tr>
-                        <td style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:16px;color:#333;">
+                        <td>
  
                             {% block body %}{% endblock %}
                             
-                            <p style="line-height: 20px;border-top: 3px solid #404040;margin-top: 18px;padding-top: 18px">Stay up to date and in touch with me, yr. developer, in a few different ways:</p>
-                            <p style="line-height: 20px;">
-                                <ul style="list-style: none;">
-                                    <li><a href="http://twitter.com/samuelclay" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/twitter_icon_2.png" style="width:16px;height:16px;vertical-align:top;">  Follow @samuelclay on Twitter</a>.</li>
-                                    <li><a href="http://twitter.com/newsblur" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/twitter.png" style="width:16px;height:16px;vertical-align:top;"> Follow @newsblur on Twitter</a>.</li>
-                                    <li><a href="http://github.com/samuelclay" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/github_icon.png" style="width:16px;height:16px;vertical-align:top;"> Follow the constantly evolving source code on GitHub</a>.</li>
-                                </ul>
-                            </p>
-                            <p style="line-height: 20px;">{% block resources_header %}There are a few resources that would make sense to follow if you end up loving NewsBlur:{% endblock resources_header %}</p>
-                            <p style="line-height: 20px;">
-                                <ul style="list-style: none;">
-                                    <li><a href="http://blog.newsblur.com" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/favicon.png" style="width:16px;height:16px;vertical-align:top;"> Read the NewsBlur Blog</a>.</li>
-                                    <li><a href="http://getsatisfaction.com/newsblur" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/getsatisfaction.png" style="width:16px;height:16px;vertical-align:top;"> Get support on NewsBlur's Get Satisfaction</a>.</li>
-                                    <li><a href="http://itunes.com/newsblur" style="text-decoration:none"><img src="http://nb.local.host:8000/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;"> Download the free NewsBlur iPhone app</a>.</li>
-                                </ul>
-                            </p>
+                            <p style="line-height:20px;">- Samuel Clay, <a href="http://twitter.com/samuelclay">@samuelclay</a></p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="border-top: 3px solid #404040; padding-top: 4px;" align="center">
+                        <td style="border-top: 3px solid #404040; padding-top: 4px;" align="left">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <p style="line-height:20px;">Stay up to date and in touch with me, yr. developer, in a few different ways:</p>
+                                        <p style="line-height: 20px;">
+                                            <ul style="list-style: none;">
+                                                <li><a href="http://twitter.com/samuelclay" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/twitter_icon_2.png" style="width:16px;height:16px;vertical-align:top;">  Follow @samuelclay on Twitter</a>.</li>
+                                                <li><a href="http://twitter.com/newsblur" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/twitter.png" style="width:16px;height:16px;vertical-align:top;"> Follow @newsblur on Twitter</a>.</li>
+                                                <li><a href="http://github.com/samuelclay" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/github_icon.png" style="width:16px;height:16px;vertical-align:top;"> Follow the constantly evolving source code on GitHub</a>.</li>
+                                            </ul>
+                                        </p>
+                                        <p style="line-height: 20px;">{% block resources_header %}There are a few resources that would make sense to follow if you end up loving NewsBlur:{% endblock resources_header %}</p>
+                                        <p style="line-height: 20px;">
+                                            <ul style="list-style: none;">
+                                                <li><a href="http://blog.newsblur.com" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/favicon.png" style="width:16px;height:16px;vertical-align:top;"> Read the NewsBlur Blog</a>.</li>
+                                                <li><a href="http://getsatisfaction.com/newsblur" style="text-decoration:none"><img src="http://www.newsblur.com/media/img/reader/getsatisfaction.png" style="width:16px;height:16px;vertical-align:top;"> Get support on NewsBlur's Get Satisfaction</a>.</li>
+                                                <li><a href="http://itunes.com/newsblur" style="text-decoration:none"><img src="http://nb.local.host:8000/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;"> Download the free NewsBlur iPhone app</a>.</li>
+                                            </ul>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 3px solid #404040; padding-top: 4px;font-size: 14px" align="center">
                             <table>
                                 <tr>
                                     <td>

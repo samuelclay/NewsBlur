@@ -1,5 +1,7 @@
 {% block body %}{% endblock body %}
 
+- Samuel Clay, @samuelclay
+
 -----------------------------------------------------------------------------
 
 Stay up to date and in touch with me, yr. developer, in a few different ways:
@@ -16,4 +18,4 @@ Stay up to date and in touch with me, yr. developer, in a few different ways:
 
 -----------------------------------------------------------------------------
 
-Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: http://www.newsblur.com/optout.
+Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: http://www.newsblur.com{{ user.profile.autologin_url }}?optout=1.
