@@ -105,6 +105,7 @@ class SignupForm(forms.Form):
         new_user.save()
         new_user = authenticate(username=self.cleaned_data['username'],
                                 password=self.cleaned_data['password'])
+        new_user.profile.send_new_user_email()
         
         return new_user
 

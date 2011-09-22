@@ -23,6 +23,7 @@ from vendor.paypal.standard.ipn.signals import subscription_signup
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
     is_premium        = models.BooleanField(default=False)
+    send_emails       = models.BooleanField(default=True)
     preferences       = models.TextField(default="{}")
     view_settings     = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
@@ -48,6 +49,8 @@ class Profile(models.Model):
     def activate_premium(self):
         self.is_premium = True
         self.save()
+        
+        self.send_new_premium_email()
         
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
@@ -101,8 +104,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             stale_feeds = list(set([f.feed.pk for f in stale_feeds]))
             self.queue_new_feeds(new_feeds=stale_feeds)
     
-    def mail_new_account(self):
-        if not self.user.email:
+    def send_new_user_email(self):
+        if not self.user.email or not self.send_emails:
             return
         
         user    = self.user
@@ -115,8 +118,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.attach_alternative(html, "text/html")
         msg.send()
     
-    def mail_new_premium(self):
-        if not self.user.email:
+    def send_new_premium_email(self):
+        if not self.user.email or not self.send_emails:
             return
         
         user    = self.user

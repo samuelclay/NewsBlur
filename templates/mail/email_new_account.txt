@@ -4,4 +4,8 @@
 
 OK, firstly, thank you for trying out new software. It's not quite what you're used to, but you might find NewsBlur to be a perfect fit. There's a lot packed into a minimal interface.
 
-Spend a few days trying out NewsBlur. I hope you end up loving it.{% endblock body %}
+Spend a few days trying out NewsBlur. I hope you end up loving it.
+
+If you really do love using NewsBlur you can purchase a fancy new premium account for only $1/month. You get to support an independent developer, help feed his dog, and contribute to the long-term health of NewsBlur.
+    
+(Plus, among other cool premium-only features, all of your sites will update more often. Going premium supports 100% genuine hard-work and you'll make me a very happy developer.){% endblock body %}

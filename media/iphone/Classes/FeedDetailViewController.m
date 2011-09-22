@@ -181,10 +181,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)failLoadingFeed:(ASIHTTPRequest *)request {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
-    [appDelegate.navigationController 
-     popToViewController:[appDelegate.navigationController.viewControllers 
-                          objectAtIndex:0]  
-     animated:YES];
+    if (self.feedPage <= 1) {
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    }
     
     [NewsBlurAppDelegate informError:[request error]];
 }

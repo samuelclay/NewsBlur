@@ -20,7 +20,11 @@ NEWSBLUR.Modal.prototype = {
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
+                    dialog.data.fadeIn(200, function() {
+                        if (self.options.onOpen) {
+                            self.options.onOpen();
+                        }
+                    });
                     setTimeout(function() {
                         $(window).resize();
                     });
@@ -28,6 +32,9 @@ NEWSBLUR.Modal.prototype = {
             },
             'onShow': function(dialog) {
                 $('#simplemodal-container').corner('6px');
+                if (self.options.onShow) {
+                    self.options.onShow();
+                }
             },
             'onClose': function(dialog, callback) {
                 dialog.data.hide().empty().remove();

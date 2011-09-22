@@ -10,12 +10,12 @@ Stay up to date and in touch with me, yr. developer, in a few different ways:
     * Follow @newsblur on Twitter: http://twitter.com/newsblur
     * Follow the constantly evolving source code on GitHub: http://github.com/samuelclay
 
-{% block resources_header %}There are a few resources that would make sense to follow if you end up loving NewsBlur:{% endblock resources_header %}
+{% block resources_header %}There are a few resources you can use if you end up loving NewsBlur:{% endblock resources_header %}
 
     * Read the NewsBlur Blog: http://blog.newsblur.com
     * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur
-    * Download the free NewsBlur iPhone app: http://itunes.com/newsblur
+    * Download the free NewsBlur iPhone app: [Coming soon -- it's in review on the App Store]
 
 -----------------------------------------------------------------------------
 
-Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: http://www.newsblur.com{{ user.profile.autologin_url }}?optout=1.
+Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: http://www.newsblur.com{{ user.profile.autologin_url }}?next=optout

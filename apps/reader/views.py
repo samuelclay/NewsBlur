@@ -133,19 +133,24 @@ def logout(request):
         return HttpResponseRedirect(reverse('index'))
 
 def autologin(request, username, secret):
+    next = request.GET.get('next', '')
+    
     if not username or not secret:
         return HttpResponseForbidden()
     
     profile = Profile.objects.filter(user__username=username, secret_token=secret)
-    if profile:
-        user = profile[0].user
-        user.backend = settings.AUTHENTICATION_BACKENDS[0]
-        login_user(request, user)
-        logging.user(user, "~FG~BB~SKAuto-Login~FW")
-    else:
+    if not profile:
         return HttpResponseForbidden()
+
+    user = profile[0].user
+    user.backend = settings.AUTHENTICATION_BACKENDS[0]
+    login_user(request, user)
+    logging.user(user, "~FG~BB~SKAuto-Login. Next stop: %s~FW" % (next if next else 'Homepage',))
     
-    return HttpResponseRedirect(reverse('index') + request.GET.get('next', ''))
+    if next:
+        next = '?next=' + next
+        
+    return HttpResponseRedirect(reverse('index') + next)
     
 @json.json_view
 def load_feeds(request):

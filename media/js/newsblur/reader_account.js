@@ -1,5 +1,10 @@
 NEWSBLUR.ReaderAccount = function(options) {
-    var defaults = {};
+    var defaults = {
+        'animate_email': false,
+        'onOpen': _.bind(function() {
+            this.animate_email();
+        }, this)
+    };
         
     this.options = $.extend({}, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
@@ -18,6 +23,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.handle_change();
+        this.select_preferences();
     },
     
     make_modal: function() {
@@ -89,6 +95,25 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-emails' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-emails-1', type: 'radio', name: 'send_emails', value: 'true' }),
+                            $.make('label', { 'for': 'NB-preference-emails-1' }, [
+                                'Mail me the infrequent email'
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-emails-2', type: 'radio', name: 'send_emails', value: 'false' }),
+                            $.make('label', { 'for': 'NB-preference-emails-2' }, [
+                                'Never ever send me an email'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Emails'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
                     ' or ',
@@ -100,6 +125,31 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 return false;
             })
         ]);
+    },
+    
+    animate_email: function() {
+        if (this.options.animate_email) {
+            _.delay(_.bind(function() {
+                var $emails = $('.NB-preference-emails', this.$modal);
+                var bgcolor = $emails.css('backgroundColor');
+                $emails.css('backgroundColor', bgcolor).animate({
+                    'backgroundColor': 'orange'
+                }, {
+                    'queue': false,
+                    'duration': 1200,
+                    'easing': 'easeInQuad',
+                    'complete': function() {
+                        $emails.animate({
+                            'backgroundColor': bgcolor
+                        }, {
+                            'queue': false,
+                            'duration': 650,
+                            'easing': 'easeOutQuad'
+                        });
+                    }
+                });
+            }, this), 200);
+        }
     },
     
     close_and_load_preferences: function() {
@@ -122,11 +172,22 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $.modal.close();
         });
     },
+    
+    select_preferences: function() {
+        var pref = this.model.preference;
+        $('input[name=send_emails]', this.$modal).each(function() {
+            console.log(["pref", pref('send_emails'), $(this).val()]);
+            if ($(this).val() == ""+pref('send_emails')) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+    },
         
     serialize_preferences: function() {
         var preferences = {};
 
-        $('input[type=radio]:checked, select, input', this.$modal).each(function() {
+        $('input[type=radio]:checked, select, input[type=text], input[type=password]', this.$modal).each(function() {
             var name       = $(this).attr('name');
             var preference = preferences[name] = $(this).val();
             if (preference == 'true')       preferences[name] = true;
@@ -145,6 +206,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         $('.NB-preference-error', this.$modal).text('');
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
+        console.log(["form['send_emails']", form['send_emails']]);
+        this.model.preference('send_emails', form['send_emails']);
         this.model.save_account_settings(form, function(data) {
             if (data.code == -1) {
                 $('.NB-preference-username .NB-preference-error', this.$modal).text(data.message);
