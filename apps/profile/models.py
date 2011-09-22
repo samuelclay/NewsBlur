@@ -131,6 +131,28 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
+    
+    def send_forgot_password_email(self, email=None):
+        if not self.user.email and not email:
+            print "Please provide an email address."
+            return
+        
+        if not self.user.email and email:
+            self.user.email = email
+            self.user.save()
+        
+        user    = self.user
+        text    = render_to_string('mail/email_forgot_password.txt', locals())
+        html    = render_to_string('mail/email_forgot_password.xhtml', locals())
+        subject = "Forgot your password on NewsBlur?"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+        user.set_password('')
+        user.save()
         
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={

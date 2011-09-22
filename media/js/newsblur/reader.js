@@ -315,6 +315,8 @@
                 this.open_account_modal({'animate_email': true});
             } else if (next == 'goodies') {
                 this.open_goodies_modal();
+            } else if (next == 'password') {
+                this.open_account_modal({'change_password': true});
             }
         },
         

@@ -1,8 +1,9 @@
 NEWSBLUR.ReaderAccount = function(options) {
     var defaults = {
         'animate_email': false,
+        'change_password': false,
         'onOpen': _.bind(function() {
-            this.animate_email();
+            this.animate_fields();
         }, this)
     };
         
@@ -59,7 +60,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 ]),
                 $.make('div', { className: 'NB-preference NB-preference-password' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
-                        $.make('div', { className: 'NB-preference-option' }, [
+                        $.make('div', { className: 'NB-preference-option', style: (this.options.change_password ? 'opacity: .2' : '') }, [
                             $.make('label', { 'for': 'NB-preference-password-old' }, 'Old password'),
                             $.make('input', { id: 'NB-preference-password-old', type: 'password', name: 'old_password', value: '' })
                         ]),
@@ -127,7 +128,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         ]);
     },
     
-    animate_email: function() {
+    animate_fields: function() {
         if (this.options.animate_email) {
             _.delay(_.bind(function() {
                 var $emails = $('.NB-preference-emails', this.$modal);
@@ -149,7 +150,29 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     }
                 });
             }, this), 200);
+        } else if (this.options.change_password) {
+            _.delay(_.bind(function() {
+                var $emails = $('.NB-preference-password', this.$modal);
+                var bgcolor = $emails.css('backgroundColor');
+                $emails.css('backgroundColor', bgcolor).animate({
+                    'backgroundColor': 'orange'
+                }, {
+                    'queue': false,
+                    'duration': 1200,
+                    'easing': 'easeInQuad',
+                    'complete': function() {
+                        $emails.animate({
+                            'backgroundColor': bgcolor
+                        }, {
+                            'queue': false,
+                            'duration': 650,
+                            'easing': 'easeOutQuad'
+                        });
+                    }
+                });
+            }, this), 200);
         }
+
     },
     
     close_and_load_preferences: function() {
