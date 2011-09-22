@@ -14,7 +14,12 @@ Stay up to date and in touch with me, yr. developer, in a few different ways:
 
     * Read the NewsBlur Blog: http://blog.newsblur.com
     * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur
-    * Download the free NewsBlur iPhone app: [Coming soon -- it's in review on the App Store]
+
+There's plenty of ways to use NewsBlur beyond the website:
+
+    * Download the iPhone App -- Coming soon, it's in review on the App Store.
+    * Download the Android App on the Android Market: https://market.android.com/details?id=bitwrit.Blar
+    * Download browser extensions for Safari, Firefox, and Chrome: http://www.newsblur.com{{ user.profile.autologin_url }}?next=goodies
 
 -----------------------------------------------------------------------------
 

@@ -104,7 +104,7 @@
         this.load_recommended_feeds();
         this.setup_dashboard_graphs();
         this.setup_howitworks_hovers();
-        this.load_email_optout();
+        this.load_url_next_param();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -309,10 +309,12 @@
             }
         },
         
-        load_email_optout: function() {
+        load_url_next_param: function() {
             var next = $.getQueryString('next');
             if (next == 'optout') {
                 this.open_account_modal({'animate_email': true});
+            } else if (next == 'goodies') {
+                this.open_goodies_modal();
             }
         },
         
