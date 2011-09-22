@@ -3586,8 +3586,9 @@ background: transparent;
 }
 
 .NB-module-mobile .NB-module-mobile-freeforpremium {
-    font-size: 11px;
-    color: #606060;
+    font-size: 12px;
+    color: #3D3D3D;
+    font-weight: bold;
 }
 
 /* ================ */

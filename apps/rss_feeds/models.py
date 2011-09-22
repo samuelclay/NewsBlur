@@ -8,7 +8,7 @@ import urllib
 from collections import defaultdict
 from operator import itemgetter
 from BeautifulSoup import BeautifulStoneSoup
-from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
+# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -867,39 +867,39 @@ class Feed(models.Model):
 
         self.save()
         
-    def calculate_collocations_story_content(self,
-                                             collocation_measures=TrigramAssocMeasures,
-                                             collocation_finder=TrigramCollocationFinder):
-        stories = MStory.objects.filter(story_feed_id=self.pk)
-        story_content = ' '.join([s.story_content for s in stories if s.story_content])
-        return self.calculate_collocations(story_content, collocation_measures, collocation_finder)
-        
-    def calculate_collocations_story_title(self,
-                                           collocation_measures=BigramAssocMeasures,
-                                           collocation_finder=BigramCollocationFinder):
-        stories = MStory.objects.filter(story_feed_id=self.pk)
-        story_titles = ' '.join([s.story_title for s in stories if s.story_title])
-        return self.calculate_collocations(story_titles, collocation_measures, collocation_finder)
-    
-    def calculate_collocations(self, content,
-                               collocation_measures=TrigramAssocMeasures,
-                               collocation_finder=TrigramCollocationFinder):
-        content = re.sub(r'&#8217;', '\'', content)
-        content = re.sub(r'&amp;', '&', content)
-        try:
-            content = unicode(BeautifulStoneSoup(content,
-                              convertEntities=BeautifulStoneSoup.HTML_ENTITIES))
-        except ValueError, e:
-            print "ValueError, ignoring: %s" % e
-        content = re.sub(r'</?\w+\s+[^>]*>', '', content)
-        content = re.split(r"[^A-Za-z-'&]+", content)
-
-        finder = collocation_finder.from_words(content)
-        finder.apply_freq_filter(3)
-        best = finder.nbest(collocation_measures.pmi, 10)
-        phrases = [' '.join(phrase) for phrase in best]
-        
-        return phrases
+    # def calculate_collocations_story_content(self,
+    #                                          collocation_measures=TrigramAssocMeasures,
+    #                                          collocation_finder=TrigramCollocationFinder):
+    #     stories = MStory.objects.filter(story_feed_id=self.pk)
+    #     story_content = ' '.join([s.story_content for s in stories if s.story_content])
+    #     return self.calculate_collocations(story_content, collocation_measures, collocation_finder)
+    #     
+    # def calculate_collocations_story_title(self,
+    #                                        collocation_measures=BigramAssocMeasures,
+    #                                        collocation_finder=BigramCollocationFinder):
+    #     stories = MStory.objects.filter(story_feed_id=self.pk)
+    #     story_titles = ' '.join([s.story_title for s in stories if s.story_title])
+    #     return self.calculate_collocations(story_titles, collocation_measures, collocation_finder)
+    # 
+    # def calculate_collocations(self, content,
+    #                            collocation_measures=TrigramAssocMeasures,
+    #                            collocation_finder=TrigramCollocationFinder):
+    #     content = re.sub(r'&#8217;', '\'', content)
+    #     content = re.sub(r'&amp;', '&', content)
+    #     try:
+    #         content = unicode(BeautifulStoneSoup(content,
+    #                           convertEntities=BeautifulStoneSoup.HTML_ENTITIES))
+    #     except ValueError, e:
+    #         print "ValueError, ignoring: %s" % e
+    #     content = re.sub(r'</?\w+\s+[^>]*>', '', content)
+    #     content = re.split(r"[^A-Za-z-'&]+", content)
+    # 
+    #     finder = collocation_finder.from_words(content)
+    #     finder.apply_freq_filter(3)
+    #     best = finder.nbest(collocation_measures.pmi, 10)
+    #     phrases = [' '.join(phrase) for phrase in best]
+    #     
+    #     return phrases
         
     class Meta:
         db_table="feeds"

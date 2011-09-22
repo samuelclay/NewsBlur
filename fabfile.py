@@ -90,6 +90,12 @@ def deploy_full():
         compress_media()
 
 @roles('web')
+def restart_gunicorn():
+    with cd(env.NEWSBLUR_PATH):
+        with settings(warn_only=True):
+            run('sudo supervisorctl restart gunicorn')
+        
+@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
