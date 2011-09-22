@@ -430,6 +430,8 @@ from local_settings import *
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
+AWS_SECRET_ACCESS_KEY = S3_ACCESS_KEY
+AWS_ACCESS_KEY_ID = S3_SECRET
 
 def custom_show_toolbar(request):
     return DEBUG
