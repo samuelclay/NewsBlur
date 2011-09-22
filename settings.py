@@ -47,7 +47,7 @@ LOGIN_URL             = '/reader/login'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
-EMAIL_BACKEND         = 'seacucumber.backend.SESBackend'
+EMAIL_BACKEND         = 'django_ses.SESBackend'
 
 
 # ===============
@@ -323,7 +323,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    'seacucumber',
+    # 'seacucumber',
+    'django_ses',
     'compress',
     'apps.rss_feeds',
     'apps.reader',
@@ -430,8 +431,8 @@ from local_settings import *
 COMPRESS = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
-AWS_SECRET_ACCESS_KEY = S3_ACCESS_KEY
-AWS_ACCESS_KEY_ID = S3_SECRET
+AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY = S3_SECRET
 
 def custom_show_toolbar(request):
     return DEBUG
