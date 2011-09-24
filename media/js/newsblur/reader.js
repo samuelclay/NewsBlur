@@ -318,6 +318,10 @@
             } else if (next == 'password') {
                 this.open_account_modal({'change_password': true});
             }
+            
+            if (window.history.replaceState) {
+                window.history.replaceState({}, null, '/');
+            }
         },
         
         animate_progress_bar: function($bar, seconds, percentage) {

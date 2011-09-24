@@ -117,6 +117,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
+        
+        logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
     def send_new_premium_email(self):
         if not self.user.email or not self.send_emails:
@@ -131,6 +133,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
+        
+        logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
     
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
@@ -153,6 +157,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         user.set_password('')
         user.save()
+        
+        logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
         
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
