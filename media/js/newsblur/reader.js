@@ -4329,7 +4329,7 @@
                 in_folder = $feed.eq(0).closest('li.folder').find('.folder_title_text').eq(0).text();
             }
             
-            this.model.move_feed_to_folder(feed_id, new_folder, function() {});
+            this.model.move_feed_to_folder(feed_id, in_folder, new_folder, function() {});
 
             this.hide_confirm_move_menu_item(true);
         },

@@ -661,6 +661,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
+    move_feed_to_folder: function(feed_id, in_folder, new_folder, callback) {
+        this.make_request('/reader/move_feed_to_folder', {
+            'feed_id': feed_id,
+            'in_folder': in_folder,
+            'new_folder': new_folder
+        }, callback);
+    },
+    
     preference: function(preference, value, callback) {
         if (typeof value == 'undefined') {
             var pref = NEWSBLUR.Preferences[preference];
