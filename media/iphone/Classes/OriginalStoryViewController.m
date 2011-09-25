@@ -104,8 +104,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     UITextField *address = [[UITextField alloc] initWithFrame:addressFrame];
     address.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     address.borderStyle = UITextBorderStyleRoundedRect;
-    address.font = [UIFont systemFontOfSize:18];
-    address.adjustsFontSizeToFitWidth = YES;
+    address.font = [UIFont systemFontOfSize:14];
+    address.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    address.adjustsFontSizeToFitWidth = NO;
     address.keyboardType = UIKeyboardTypeURL;
     address.autocapitalizationType = UITextAutocapitalizationTypeNone;
     address.clearButtonMode = UITextFieldViewModeWhileEditing;

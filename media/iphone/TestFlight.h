@@ -23,6 +23,14 @@
 + (void)takeOff:(NSString *)teamToken;
 
 /**
+ Sets custom options
+    Option                      Accepted Values                 Description
+    reinstallCrashHandlers      [NSNumber numberWithBool:YES]   Reinstalls crash handlers, to be used if a third party 
+                                                                library installs crash handlers overtop of the TestFlight Crash Handlers
+ */
++ (void)setOptions:(NSDictionary*)options;
+
+/**
  Track when a user has passed a checkpoint after the flight has taken off. Eg. passed level 1, posted high score
  */
 + (void)passCheckpoint:(NSString *)checkpointName;

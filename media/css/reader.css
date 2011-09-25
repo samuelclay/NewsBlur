@@ -3586,8 +3586,9 @@ background: transparent;
 }
 
 .NB-module-mobile .NB-module-mobile-freeforpremium {
-    font-size: 11px;
-    color: #606060;
+    font-size: 12px;
+    color: #3D3D3D;
+    font-weight: bold;
 }
 
 /* ================ */
@@ -4108,7 +4109,18 @@ background: transparent;
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 1px;   
     font-weight: bold; 
 }
-
+.NB-menu-manage .NB-menu-manage-move {
+    display: none;
+}
+.NB-menu-manage .NB-menu-manage-move .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/arrow_branch.png') no-repeat  0px 2px;  
+}
+.NB-menu-manage .NB-menu-manage-move.NB-active .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/accept.png') no-repeat  0 2px;
+}
+.NB-menu-manage .NB-menu-manage-move.NB-menu-manage-feed-move-cancel .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
+}
 .NB-menu-manage .NB-menu-manage-rename .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/font.png') no-repeat  0px 2px;  
 }
@@ -4118,13 +4130,21 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-rename.NB-menu-manage-feed-rename-cancel .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
 }
-.NB-menu-manage .NB-menu-manage-rename-confirm .NB-menu-manage-image {
+.NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bullet_arrow_right.png') no-repeat  2px -1px;
 }
-.NB-menu-manage .NB-menu-manage-rename-confirm {
+.NB-menu-manage .NB-menu-manage-confirm {
     overflow: hidden;
+    position: relative;
 }
-.NB-menu-manage .NB-menu-manage-rename-confirm input.NB-menu-manage-title {
+.NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-confirm-position {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.NB-menu-manage .NB-menu-manage-confirm select,
+.NB-menu-manage .NB-menu-manage-confirm input.NB-menu-manage-title {
     padding: 1px;
     font-size: 11px;
     margin: 2px 0 2px 36px;
@@ -4137,15 +4157,19 @@ background: transparent;
     -webkit-box-shadow:2px 2px 0 #95AB76;
     box-shadow:2px 2px 0 #95AB76;
 }
-.NB-menu-manage li.NB-menu-manage-rename-confirm:hover {
+.NB-menu-manage .NB-menu-manage-confirm select {
+    height: auto;
+}
+.NB-menu-manage li.NB-menu-manage-confirm:hover {
     background-color: #BAE3A8;
     cursor: default;
 }
-.NB-menu-manage .NB-menu-manage-rename-confirm input.NB-menu-manage-title,
-.NB-menu-manage .NB-menu-manage-rename-confirm:hover input.NB-menu-manage-title {
+.NB-menu-manage .NB-menu-manage-confirm input.NB-menu-manage-title,
+.NB-menu-manage .NB-menu-manage-confirm:hover input.NB-menu-manage-title {
     text-shadow: none;
 }
-.NB-menu-manage .NB-menu-manage-rename-confirm .NB-menu-manage-rename-save {
+.NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-move-save,
+.NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-rename-save {
   float: right;
   font-size: 10px;
   font-weight: bold;
@@ -4159,7 +4183,9 @@ background: transparent;
   -webkit-box-shadow:2px 2px 0 #95AB76;
   box-shadow:2px 2px 0 #95AB76;
 }
-
+.NB-menu-manage .NB-menu-manage-confirm .NB-add-folders {
+    float: left;
+}
 .NB-menu-manage .NB-menu-manage-site-mark-read .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/control_fastforward_blue.png') no-repeat  0 1px;
 }
@@ -4257,9 +4283,7 @@ background: transparent;
     background: transparent url('../img/reader/star_blue.png') no-repeat 0 0px;
     opacity: .55;
 }
-.NB-menu-manage .NB-menu-manage-rename-confirm {
-    display: none;
-}
+.NB-menu-manage .NB-menu-manage-confirm,
 .NB-menu-manage .NB-menu-manage-delete-confirm {
     display: none;
 }

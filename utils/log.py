@@ -1,5 +1,6 @@
 import logging
 import re
+from django.core.handlers.wsgi import WSGIRequest
 
 class NullHandler(logging.Handler): #exists in python 3.1
     def emit(self, record):
@@ -10,8 +11,27 @@ def getlogger():
     return logger
 
 def user(u, msg):
+    platform = '------'
+    if isinstance(u, WSGIRequest):
+        request = u
+        u = request.user
+        user_agent = request.environ.get('HTTP_USER_AGENT', '')
+        if 'iPhone App' in user_agent:
+            platform = 'iPhone'
+        elif 'Blar' in user_agent:
+            platform = 'Blar'
+        elif 'MSIE' in user_agent:
+            platform = 'IE'
+        elif 'Chrome' in user_agent:
+            platform = 'Chrome'
+        elif 'Safari' in user_agent:
+            platform = 'Safari'
+        elif 'Firefox' in user_agent:
+            platform = 'FF'
+        elif 'Opera' in user_agent:
+            platform = 'Opera'
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
-    info(' ---> [%s%s] %s' % (u, premium, msg))
+    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, u, premium, msg))
     
 def debug(msg):
     logger = getlogger()

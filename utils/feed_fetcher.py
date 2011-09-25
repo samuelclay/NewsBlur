@@ -334,6 +334,7 @@ class Dispatcher:
             if ((self.options['force']) or 
                 (fetched_feed and
                  feed.feed_link and
+                 feed.has_page and
                  (ret_feed == FEED_OK or
                   (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                   

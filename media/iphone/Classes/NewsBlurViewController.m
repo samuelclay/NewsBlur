@@ -26,7 +26,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @synthesize appDelegate;
 
-@synthesize responseData;
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -88,7 +87,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         NSInteger newLevel = [appDelegate selectedIntelligence];
         if (newLevel != previousLevel) {
             [appDelegate setSelectedIntelligence:newLevel];
-            [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+            if (!self.viewShowingAllFeeds) {
+                [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+            }
             [self redrawUnreadCounts];
         }
     }
@@ -171,7 +172,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-    if (showLoader && appDelegate.feedsViewController.view.window) {
+    NSLog(@"fetchFeedList: %d %d", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController);
+    if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
     }
@@ -179,46 +182,39 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     NSURL *urlFeedList = [NSURL URLWithString:
                           [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",
                            NEWSBLUR_URL]];
-    responseData = [[NSMutableData data] retain];
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedList];
-    NSURLConnection *connection = [[NSURLConnection alloc] 
-                                   initWithRequest:request delegate:self];
-    [connection release];
-    [request release];
+
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setDidFinishSelector:@selector(finishLoadingFeedList:)];
+    [request setDidFailSelector:@selector(finishedWithError:)];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
     
     self.lastUpdate = [NSDate date];
+    [appDelegate setActiveFeedIndexPath:nil];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    [responseData setLength:0];
-    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-    int responseStatusCode = [httpResponse statusCode];
-    if (responseStatusCode == 403) {
-        [appDelegate showLogin];
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    //NSLog(@"didReceiveData: %@", data);
-    [responseData appendData:data];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    NSLog(@"%@", [NSString stringWithFormat:@"Connection failed: %@", [error description]]);
-    
+- (void)finishedWithError:(ASIHTTPRequest *)request {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [pull finishedLoading];
     
     // User clicking on another link before the page loads is OK.
-    if ([error code] != NSURLErrorCancelled) {
-        [NewsBlurAppDelegate informError:error];
-    }
+    [NewsBlurAppDelegate informError:[request error]];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    //[connection release];
+- (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] == 403) {
+       return [appDelegate showLogin];
+    }
+    
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
@@ -226,51 +222,43 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [pull finishedLoading];
     [self loadFavicons];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    NSString *jsonString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-    [responseData release];
     
-    if ([jsonString length] > 0) {
-        NSDictionary *results = [[NSDictionary alloc] 
-                                 initWithDictionary:[jsonString JSONValue]];
-        appDelegate.activeUsername = [results objectForKey:@"user"];
-        if (appDelegate.feedsViewController.view.window) {
-            [appDelegate setTitle:[results objectForKey:@"user"]];
-        }
-        self.dictFolders = [results objectForKey:@"flat_folders"];
-        self.dictFeeds = [results objectForKey:@"feeds"];
-        //      NSLog(@"Received Feeds: %@", dictFolders);
-        //      NSSortDescriptor *sortDescriptor;
-        //      sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
-        //                                                    ascending:YES] autorelease];
-        //      NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
-        NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
-        //      NSArray *sortedArray;
-        
-        self.dictFoldersArray = [NSMutableArray array];
-        for (id f in self.dictFolders) {
-            //          NSString *folderTitle = [f 
-            //                                   stringByTrimmingCharactersInSet:
-            //                                   [NSCharacterSet whitespaceCharacterSet]];
-            [self.dictFoldersArray addObject:f];
-            //          NSArray *folder = [self.dictFolders objectForKey:f];
-            //          NSLog(@"F: %@", f);
-            //          NSLog(@"F: %@", folder);
-            //          NSLog(@"F: %@", sortDescriptors);
-            //          sortedArray = [folder sortedArrayUsingDescriptors:sortDescriptors];
-            //          [sortedFolders setValue:sortedArray forKey:f];
-        }
-        
-        //      self.dictFolders = sortedFolders;
-        [self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-        
-        [self calculateFeedLocations:YES];
-        [self.feedTitlesTable reloadData];
-        
-        [sortedFolders release];
-        [results release];
+    appDelegate.activeUsername = [results objectForKey:@"user"];
+    if (appDelegate.feedsViewController.view.window) {
+        [appDelegate setTitle:[results objectForKey:@"user"]];
+    }
+    self.dictFolders = [results objectForKey:@"flat_folders"];
+    self.dictFeeds = [results objectForKey:@"feeds"];
+    //      NSLog(@"Received Feeds: %@", dictFolders);
+    //      NSSortDescriptor *sortDescriptor;
+    //      sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
+    //                                                    ascending:YES] autorelease];
+    //      NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+    NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
+    //      NSArray *sortedArray;
+    
+    self.dictFoldersArray = [NSMutableArray array];
+    for (id f in self.dictFolders) {
+        //          NSString *folderTitle = [f 
+        //                                   stringByTrimmingCharactersInSet:
+        //                                   [NSCharacterSet whitespaceCharacterSet]];
+        [self.dictFoldersArray addObject:f];
+        //          NSArray *folder = [self.dictFolders objectForKey:f];
+        //          NSLog(@"F: %@", f);
+        //          NSLog(@"F: %@", folder);
+        //          NSLog(@"F: %@", sortDescriptors);
+        //          sortedArray = [folder sortedArrayUsingDescriptors:sortDescriptors];
+        //          [sortedFolders setValue:sortedArray forKey:f];
     }
     
-    [jsonString release];
+    //      self.dictFolders = sortedFolders;
+    [self.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
+    
+    [self calculateFeedLocations:YES];
+    [self.feedTitlesTable reloadData];
+    
+    [sortedFolders release];
+    [results release];
 }
 
 
@@ -288,15 +276,27 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
                           NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlS];
-        NSURLRequest *urlR=[[[NSURLRequest alloc] initWithURL:url] autorelease];
-        [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-         setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-        LogoutDelegate *ld = [LogoutDelegate alloc];
-        NSURLConnection *urlConnection = [[NSURLConnection alloc] 
-                                          initWithRequest:urlR 
-                                          delegate:ld];
-        [urlConnection release];
-        [ld release];
+        
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [self finishedWithError:request];
+        }];
+        [request setCompletionBlock:^(void) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [appDelegate showLogin];
+        }];
+        [request setTimeOutSeconds:30];
+        [request startAsynchronous];
+        
+        [ASIHTTPRequest setSessionCookies:nil];
+
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Logging out...";
     }
 }
 
@@ -665,37 +665,6 @@ viewForHeaderInSection:(NSInteger)section {
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
     return self.lastUpdate;
-}
-
-@end
-
-
-@implementation LogoutDelegate
-
-@synthesize appDelegate;
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    
-}
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    appDelegate = [[UIApplication sharedApplication] delegate];
-    NSLog(@"Logout: %@", appDelegate);
-    [appDelegate reloadFeedsView];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    NSLog(@"%@", [NSString stringWithFormat:@"Connection failed: %@", [error description]]);
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
-    // User clicking on another link before the page loads is OK.
-    if ([error code] != NSURLErrorCancelled) {
-        [NewsBlurAppDelegate informError:error];
-    }
 }
 
 @end

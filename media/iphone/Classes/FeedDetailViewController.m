@@ -12,6 +12,7 @@
 #import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
+#import "Base64.h"
 #import "JSON.h"
 
 #define kTableViewRowHeight 65;
@@ -26,7 +27,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
 @synthesize stories;
 @synthesize appDelegate;
-@synthesize jsonString;
 @synthesize feedPage;
 @synthesize pageFetching;
 @synthesize pageRefreshing;
@@ -111,16 +111,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    //[appDelegate showNavigationBar:animated];
-    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL 
+//    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
+    [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
 	[super viewDidAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
 }
 
 - (void)dealloc {
@@ -130,7 +123,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [feedMarkReadButton release];
     [stories release];
     [appDelegate release];
-    [jsonString release];
     [intelligenceControl release];
     [pull release];
     [super dealloc];
@@ -139,7 +131,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #pragma mark -
 #pragma mark Initialization
 
-- (void)fetchFeedDetail:(int)page {
+- (void)resetFeedDetail {
+    self.pageFetching = NO;
+    self.pageFinished = NO;
+    self.pageRefreshing = NO;
+    self.feedPage = 1;
+}
+
+- (void)fetchNextPage:(void(^)())callback {
+    [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
+}
+
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.feedPage = page;
@@ -155,34 +158,50 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
-        jsonString = [[NSMutableData data] retain];
-        NSURLRequest *request = [[NSURLRequest alloc] initWithURL: urlFeedDetail];
-        NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-        [connection release];
-        [request release];
+
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [self failLoadingFeed:request];
+        }];
+        [request setCompletionBlock:^(void) {
+            [self finishedLoadingFeed:request];
+            if (callback) {
+                callback();
+            }
+        }];
+        [request setTimeOutSeconds:30];
+        [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
+        [request startAsynchronous];
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    [jsonString setLength:0];
+- (void)failLoadingFeed:(ASIHTTPRequest *)request {
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    
+    if (self.feedPage <= 1) {
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    }
+    
+    [NewsBlurAppDelegate informError:[request error]];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data 
-{   
-    [jsonString appendData:data];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    NSString *jsonS = [[NSString alloc] 
-                       initWithData:jsonString 
-                       encoding:NSUTF8StringEncoding];
+- (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[jsonS JSONValue]];
-    [pull finishedLoading];
-    [self renderStories:[results objectForKey:@"stories"]];
+                             initWithDictionary:[responseString JSONValue]];
+    
+    if (request.tag == [[results objectForKey:@"feed_id"] intValue]) {
+        [pull finishedLoading];
+        [self renderStories:[results objectForKey:@"stories"]];
+    }
+    
     [results release];
-    [jsonS release];
 }
 
 - (void)renderStories:(NSArray *)newStories {
@@ -391,7 +410,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
     if (maximumOffset - currentOffset <= 60.0) {
-        [self fetchFeedDetail:self.feedPage+1];
+        [self fetchFeedDetail:self.feedPage+1 withCallback:nil];
     }
 }
 
@@ -523,8 +542,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request {
     NSLog(@"Fail: %@", request);
     self.pageRefreshing = NO;
+    [NewsBlurAppDelegate informError:[request error]];
     [pull finishedLoading];
-    [self fetchFeedDetail:1];
+    [self fetchFeedDetail:1 withCallback:nil];
 }
 
 // called when the date shown needs to be updated, optional

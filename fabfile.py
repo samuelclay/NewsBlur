@@ -90,6 +90,12 @@ def deploy_full():
         compress_media()
 
 @roles('web')
+def restart_gunicorn():
+    with cd(env.NEWSBLUR_PATH):
+        with settings(warn_only=True):
+            run('sudo supervisorctl restart gunicorn')
+        
+@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
@@ -117,6 +123,13 @@ def celery():
 @roles('task')
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+        celery_stop()
+        celery_start()
+
+@roles('task')
+def celery_stop():
+    with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
             run('./utils/kill_celery.sh')
@@ -128,11 +141,9 @@ def celery_start():
         run('tail logs/newsblur.log')
 
 @roles('task')
-def force_celery():
+def kill_celery():
     with cd(env.NEWSBLUR_PATH):
-        run('git pull')
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
-        # run('sudo supervisorctl start celery && tail logs/newsblur.log')
 
 def compress_media():
     with cd('media/js'):
@@ -185,6 +196,7 @@ def setup_common():
 
 def setup_app():
     setup_common()
+    setup_app_firewall()
     setup_app_motd()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
@@ -199,6 +211,7 @@ def setup_db():
 
 def setup_task():
     setup_common()
+    setup_task_firewall()
     setup_task_motd()
     enable_celery_supervisor()
     setup_gunicorn(supervisor=False)
@@ -275,14 +288,14 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto')
+    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
         sudo('python setup.py install')
         
-    # with settings(warn_only=True):
-    #     sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+    with settings(warn_only=True):
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -296,10 +309,12 @@ def setup_hosts():
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
-    sudo('mkdir -p /var/run/postgresql')
-    sudo('chown postgres.postgres /var/run/postgresql')
-    sudo('echo "START=1" > /etc/default/pgbouncer')
+    # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    # sudo('echo "START=1" > /etc/default/pgbouncer')
+    sudo('/etc/init.d/pgbouncer stop')
+    with settings(warn_only=True):
+        sudo('pkill pgbouncer')
+    sudo('/etc/init.d/pgbouncer start')
     
 def config_monit():
     # sudo('apt-get install -y monit')
@@ -374,10 +389,16 @@ def configure_nginx():
 # = Setup - App =
 # ===============
 
+def setup_app_firewall():
+    sudo('ufw default deny')
+    sudo('ufw allow ssh')
+    sudo('ufw allow 80')
+    sudo('ufw --force enable')
+
 def setup_app_motd():
     put('config/motd_app.txt', '/etc/motd.tail', use_sudo=True)
 
-def setup_gunicorn(supervisor=False):
+def setup_gunicorn(supervisor=True):
     if supervisor:
         put('config/supervisor_gunicorn.conf', '/etc/supervisor/conf.d/gunicorn.conf', use_sudo=True)
     with cd(env.VENDOR_PATH):
@@ -407,10 +428,14 @@ def setup_staging():
 
 def setup_db_firewall():
     sudo('ufw default deny')
-    sudo('ufw allow ssh')   # SSH
-    sudo('ufw allow 5432')  # PostgreSQL
-    sudo('ufw allow 27017') # MongoDB
-    sudo('ufw allow 5672')  # RabbitMQ
+    sudo('ufw allow ssh')
+    sudo('ufw allow 80')
+    sudo('ufw allow from 199.15.253.0/24 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 199.15.250.0/24 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 199.15.253.0/24 to any port 27017') # MongoDB
+    sudo('ufw allow from 199.15.250.0/24 to any port 27017') # MongoDB
+    sudo('ufw allow from 199.15.253.0/24 to any port 5672 ') # RabbitMQ
+    sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -440,6 +465,12 @@ def setup_mongo():
 # ================
 # = Setup - Task =
 # ================
+
+def setup_task_firewall():
+    sudo('ufw default deny')
+    sudo('ufw allow ssh')
+    sudo('ufw allow 80')
+    sudo('ufw --force enable')
 
 def setup_task_motd():
     put('config/motd_task.txt', '/etc/motd.tail', use_sudo=True)

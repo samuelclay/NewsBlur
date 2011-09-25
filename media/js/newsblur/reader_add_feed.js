@@ -27,7 +27,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             $.make('div', { className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-fieldset NB-add-add-url NB-modal-submit' }, [
                     $.make('h5', [
-                        $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
+                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model)),
                         'Add a new site'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -42,7 +42,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-add-add-folder NB-modal-submit' }, [
                     $.make('h5', [
-                        $.make('div', { className: 'NB-add-folders' }, this.make_folders()),
+                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model)),
                         'Add a new folder'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -103,34 +103,6 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         if (NEWSBLUR.Globals.is_anonymous) {
             this.$modal.addClass('NB-signed-out');
         }
-    },
-    
-    make_folders: function() {
-        var folders = this.model.get_folders();
-        var $options = $.make('select', { className: 'NB-folders'});
-        
-        var $option = $.make('option', { value: '' }, "Top Level");
-        $options.append($option);
-
-        $options = this.make_folder_options($options, folders, '-');
-        
-        return $options;
-    },
-
-    make_folder_options: function($options, items, depth) {
-        for (var i in items) {
-            var item = items[i];
-            if (typeof item == "object") {
-                for (var o in item) {
-                    var folder = item[o];
-                    var $option = $.make('option', { value: o }, depth + ' ' + o);
-                    $options.append($option);
-                    $options = this.make_folder_options($options, folder, depth+'-');
-                }
-            }
-        }
-    
-        return $options;
     },
 
     open_modal: function() {

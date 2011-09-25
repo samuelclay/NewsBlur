@@ -537,6 +537,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -554,6 +556,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = NewsBlur;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = Debug;
 		};
@@ -562,6 +566,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -574,6 +580,8 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = NewsBlur;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -594,8 +602,8 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PROVISIONING_PROFILE = "B1DC7917-DD61-400C-9DD3-708E586ED145";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B1DC7917-DD61-400C-9DD3-708E586ED145";
+				PROVISIONING_PROFILE = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -614,8 +622,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "B1DC7917-DD61-400C-9DD3-708E586ED145";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B1DC7917-DD61-400C-9DD3-708E586ED145";
+				PROVISIONING_PROFILE = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};

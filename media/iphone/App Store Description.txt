@@ -1,0 +1,11 @@
+NewsBlur is a free visual RSS feed reader. 
+
+NOTE: You must already have a free account on www.newsblur.com. This iPhone app is an accessory to the website.
+
+Features:
+
+1) Train stories based on tags, keywords, authors, etc.
+2) Highlights stories you want to read.
+3) Hides stories you don't want to read.
+
+NewsBlur is a very original take on RSS feed reading. It's also being built by a sole indie developer as open-source software: http://github.com/samuelclay.

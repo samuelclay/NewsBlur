@@ -20,7 +20,9 @@
     UIToolbar *toolbar;
     UIBarButtonItem *buttonPrevious;
     UIBarButtonItem *buttonNext;
+    UIBarButtonItem *activity;
     
+    UIActivityIndicatorView *loadingIndicator;
 }
 
 @property (nonatomic, retain) NSString *activeStoryId;
@@ -29,6 +31,8 @@
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonPrevious;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *activity;
+@property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 - (void)setNextPreviousButtons;

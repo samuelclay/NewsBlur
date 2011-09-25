@@ -28,7 +28,7 @@ def opml_upload(request):
     
     if request.method == 'POST':
         if 'file' in request.FILES:
-            logging.user(request.user, "~FR~SBOPML upload starting...")
+            logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
             xml_opml = file.read()
             opml_importer = OPMLImporter(xml_opml, request.user)
@@ -36,7 +36,7 @@ def opml_upload(request):
 
             feeds = UserSubscription.objects.filter(user=request.user).values()
             payload = dict(folders=folders, feeds=feeds)
-            logging.user(request.user, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
+            logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
             
             request.session['import_from_google_reader'] = False
         else:
@@ -60,7 +60,7 @@ def opml_export(request):
     return response
         
 def reader_authorize(request): 
-    logging.user(request.user, "~BB~FW~SBAuthorize Google Reader import - %s" % (
+    logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
     ))
     oauth_key = settings.OAUTH_KEY
@@ -141,7 +141,7 @@ def reader_callback(request):
         # Fetch imported feeds on next page load
         request.session['import_from_google_reader'] = True
     
-        logging.user(request.user, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
+        logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
     
         if request.user.is_authenticated():
             return HttpResponseRedirect(reverse('index'))

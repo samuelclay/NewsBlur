@@ -175,9 +175,15 @@ static CGFloat *psColors = nil;
                          [UIColor whiteColor] : 
                          [UIColor blackColor];
     [textColor set];
+    UIFont *font;
+    if (self.negativeCount || self.neutralCount || self.positiveCount) {
+        font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.0];
+    } else {
+        font = [UIFont fontWithName:@"Helvetica" size:12.6];
+    }
     [feedTitle 
      drawInRect:CGRectMake(36.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
-     withFont:[UIFont boldSystemFontOfSize:13.0] 
+     withFont:font
      lineBreakMode:UILineBreakModeTailTruncation 
      alignment:UITextAlignmentLeft];
     

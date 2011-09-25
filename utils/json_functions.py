@@ -102,6 +102,8 @@ def json_view(func):
                 response = dict(response)
                 if 'result' not in response:
                     response['result'] = 'ok'
+                authenticated = request.user.is_authenticated()
+                response['authenticated'] = authenticated
         except KeyboardInterrupt:
             # Allow keyboard interrupts through for debugging.
             raise
