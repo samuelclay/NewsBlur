@@ -67,17 +67,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
 }
-/* =================== */
-/* = Resize Controls = */
-/* =================== */
-
-.ui-layout-resizer-west {
-    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
-}
-
-.ui-layout-resizer-south {
-    background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
-}
 
 /* =============== */
 /* = Splash page = */
@@ -2152,7 +2141,7 @@ background: transparent;
 
 .NB-taskbar {
     position: relative;
-    border-top: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0F0;
 }
 
 .NB-taskbar .NB-taskbar-sidebar-toggle-close {
@@ -2423,6 +2412,28 @@ background: transparent;
   display: block;
 }
 
+
+/* ======================= */
+/* = Pane Customizations = */
+/* ======================= */
+
+.ui-layout-resizer-west {
+    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
+}
+
+.right-pane .ui-layout-resizer-west {
+    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
+}
+
+.right-pane .ui-layout-resizer-south,
+.right-pane .ui-layout-resizer-north {
+    background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
+}
+
+.NB-story-pane-north .NB-taskbar-container {
+    border-top: none;
+    border-bottom: 1px solid #777D86;
+}
 
 /* ==================== */
 /* = OPML Import Form = */

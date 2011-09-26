@@ -133,6 +133,7 @@
         
         apply_resizable_layout: function() {
             var outerLayout, rightLayout, contentLayout, leftLayout, leftCenterLayout;
+            var story_anchor = this.model.preference('story_pane_anchor');
             
             outerLayout = this.$s.$body.layout({ 
                 closable: true,
@@ -142,11 +143,13 @@
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
                 spacing_open:           4,
                 resizerDragOpacity:     0.6,
+                resizeWhileDragging:    true,
                 enableCursorHotkey:     false
             }); 
             
             leftLayout = $('.left-pane').layout({
                 closable:               false,
+                resizeWhileDragging:    true,
                 fxName:                 "scale",
                 fxSettings:             { duration: 500, easing: "easeInOutQuint" },
                 north__paneSelector:    ".left-north",
@@ -165,6 +168,7 @@
             leftCenterLayout = $('.left-center').layout({
                 closable:               false,
                 slidable:               false, 
+                resizeWhileDragging:    true,
                 center__paneSelector:   ".left-center-content",
                 center__resizable:      false,
                 south__paneSelector:    ".left-center-footer",
@@ -180,25 +184,29 @@
                 fxSettings:             { duration: 1000, easing: "easeInOutQuint" },
                 enableCursorHotkey:     false
             });
-
-            rightLayout = $('.right-pane').layout({ 
-                south__paneSelector:    ".right-north",
+            
+            var rightLayoutOptions = { 
+                resizeWhileDragging:    true,
                 center__paneSelector:   ".content-pane",
-                south__size:            this.model.preference('story_titles_pane_size'),
-                south__onresize_end:    $.rescope(this.save_story_titles_pane_size, this),
                 spacing_open:           10,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false
-            }); 
+            };
+            rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
+            rightLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
+            rightLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
+            rightLayout = $('.right-pane').layout(rightLayoutOptions); 
 
-            contentLayout = this.$s.$content_pane.layout({ 
+            var contentLayoutOptions = { 
+                resizeWhileDragging:    true,
                 center__paneSelector:   ".content-center",
-                south__paneSelector:    ".content-north",
-                south__size:            30,
                 spacing_open:           0,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false
-            }); 
+            };
+            contentLayoutOptions[story_anchor+'__paneSelector'] = '.content-north';
+            contentLayoutOptions[story_anchor+'__size'] = 30;
+            contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
             
             $('.right-pane').hide();
         },
@@ -233,7 +241,11 @@
             var feed_pane_size = state.size;
             
             $('#NB-splash').css('left', feed_pane_size);
-            this.model.preference('feed_pane_size', feed_pane_size);
+            this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
+                this.model.preference('feed_pane_size', feed_pane_size);
+                this.flags.set_feed_pane_size = null;
+            }, this), 1000);
+            this.flags.set_feed_pane_size();
         },
         
         save_story_titles_pane_size: function(w, pane, $pane, state, options, name) {
