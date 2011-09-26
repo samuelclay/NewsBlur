@@ -4069,8 +4069,8 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }
-.NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
+.NB-menu-manage .NB-menu-manage-feed-settings .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/calculator.png') no-repeat  0 1px;    
 }
 .NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/car.png') no-repeat  0 1px;    
@@ -4752,11 +4752,24 @@ background: transparent;
   margin-bottom: 6px;
 }
 
-.NB-modal-exception input[type=text] {
-  width: 200px;
-  margin: 0 10px;
+.NB-modal-exception .NB-exception-input-wrapper {
+    position: relative;
+    margin: 4px 0 0;
+}
+.NB-modal-exception .NB-exception-label {
+    position: absolute;
+    top: 2px;
+    left: 0;
 }
 
+.NB-modal-exception input[type=text] {
+  width: 400px;
+  margin: 0 0 12px 104px;
+}
+
+.NB-modal-exception .NB-exception-submit-wrapper {
+    margin: 0 0 2px 100px;
+}
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */

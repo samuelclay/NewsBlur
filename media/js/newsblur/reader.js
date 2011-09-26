@@ -3821,6 +3821,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
                     ]),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-settings' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Feed settings')
+                    ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4207,7 +4211,8 @@
             
             var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
             var duplicate_feed = this.find_feed_in_feed_list(feed_id).length > 1;
-
+            
+            this.delete_feed(feed_id, $feed);
             this.model.delete_feed(feed_id, in_folder, function() {
                 self.delete_feed(feed_id, $feed);
             }, duplicate_feed);
@@ -5575,6 +5580,13 @@
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                     NEWSBLUR.log(['statistics feed_id', feed_id]);
                     self.open_feed_statistics_modal(feed_id);
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-settings' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    var feed_id = $t.parents('.NB-menu-manage').data('feed_id');                    
+                    self.open_feed_exception_modal(feed_id, $t);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-reload' }, function($t, $p){

@@ -1,14 +1,18 @@
 NEWSBLUR.ReaderFeedException = function(feed_id, options) {
     var defaults = {};
-    
+        
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model   = NEWSBLUR.AssetModel.reader();
     this.feed_id = feed_id;
-    this.feed = this.model.get_feed(feed_id);
+    this.feed    = this.model.get_feed(feed_id);
+
     this.runner();
 };
 
-NEWSBLUR.ReaderFeedException.prototype = {
+NEWSBLUR.ReaderFeedException.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderFeedException.prototype.constructor = NEWSBLUR.ReaderFeedException;
+
+_.extend(NEWSBLUR.ReaderFeedException.prototype, {
     
     runner: function() {
         this.make_modal();
@@ -17,8 +21,6 @@ NEWSBLUR.ReaderFeedException.prototype = {
         this.open_modal();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
-        
-        NEWSBLUR.log(['Exception Modal', this.feed]);
     },
     
     make_modal: function() {
@@ -52,13 +54,15 @@ NEWSBLUR.ReaderFeedException.prototype = {
                     'Change Website Address'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
-                    $.make('div', [
+                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('label', { 'for': 'NB-exception-input-link' }, [
+                        $.make('label', { 'for': 'NB-exception-input-link', className: 'NB-exception-label' }, [
                             $.make('div', { className: 'NB-folder-icon' }),
                             'Website URL: '
                         ]),
-                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link', name: 'feed_link', value: this.feed['feed_link'] }),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed['feed_link'] })
+                    ]),
+                    $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
                         $.make('div', { className: 'NB-error' })
                     ])
@@ -71,13 +75,15 @@ NEWSBLUR.ReaderFeedException.prototype = {
                     'Change RSS Feed Address'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
-                    $.make('div', [
+                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
                         $.make('div', { className: 'NB-loading' }),
-                        $.make('label', { 'for': 'NB-exception-input-address' }, [
+                        $.make('label', { 'for': 'NB-exception-input-address', className: 'NB-exception-label' }, [
                             $.make('div', { className: 'NB-folder-icon' }),
                             'RSS/XML URL: '
                         ]),
-                        $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address', name: 'feed_address', value: this.feed['feed_address'] }),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed['feed_address'] })
+                    ]),
+                    $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
                         $.make('div', { className: 'NB-error' })
                     ])
@@ -123,34 +129,6 @@ NEWSBLUR.ReaderFeedException.prototype = {
               $meta_page.text('Recommended');
           }
       }
-    },
-    
-    open_modal: function() {
-        var self = this;
-        
-        this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
-            'overlayClose': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
     },
     
     handle_cancel: function() {
@@ -255,4 +233,4 @@ NEWSBLUR.ReaderFeedException.prototype = {
         });
     }
     
-};
+});
