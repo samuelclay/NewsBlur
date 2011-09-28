@@ -1049,6 +1049,10 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .feed .NB-feedlist-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 3px 4px;
+}
+
+#story_titles .NB-feedbar .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 3px 4px;
 }
 
@@ -1694,6 +1698,9 @@ background: transparent;
 #story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 7px 1px;
     cursor: pointer;
+}
+#story_pane .NB-feed-story.NB-hover-inverse .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 7px 1px;
 }
 
 #story_pane .NB-feed-story-title-container {

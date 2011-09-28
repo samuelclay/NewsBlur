@@ -1369,15 +1369,7 @@
             } else {
                 $feeds = $('.feed, .folder_title', $folder);
             }
-            // $feeds.rightClick(function() {
-            //     var $this = $(this);
-            //     if ($this.is('.feed')) {
-            //         self.show_manage_menu('feed', $this);
-            //     } else if ($this.is('.folder_title')) {
-            //         self.show_manage_menu('folder', $this.closest('li.folder'));
-            //     }
-            // });
-            
+
             // NEWSBLUR.log(['hover_over_feed_titles', $folder, $feeds]);
             
             $feeds.unbind('mouseenter').unbind('mouseleave');
@@ -2642,12 +2634,14 @@
         },
         
         hover_story_titles: function() {
-            var $story_titles = $('.story', this.$s.$story_titles);
+            var $story_titles = $('#story_titles .story,.NB-feedbar .feed');
             $story_titles.unbind('mouseenter').unbind('mouseleave');
             
             $story_titles.hover(function() {
                 var $this = $(this);
-                if ($this.offset().top > $(window).height() - 150) {
+                var menu_height = $this.hasClass('story') ? 150 : 270;
+                NEWSBLUR.log(["hover", $this.offset().top, $(window).height() - menu_height]);
+                if ($this.offset().top > $(window).height() - menu_height) {
                     $this.addClass('NB-hover-inverse');
                 } 
             }, function() {
@@ -3309,6 +3303,7 @@
             }
             
             this.append_feed_view_story_endbar();
+            this.hover_story_feed_titles();
             if (first_load) this.show_stories_preference_in_feed_view(true);
         },
         
@@ -3341,6 +3336,23 @@
                     }, tag).data('tag', tag); 
                 }));
         },
+        
+        hover_story_feed_titles: function() {
+            var $story_titles = $('.NB-feed-story-header-info');
+            $story_titles.unbind('mouseenter').unbind('mouseleave');
+            
+            $story_titles.hover(function() {
+                var $this = $(this);
+                var menu_height = $this.hasClass('story') ? 150 : 270;
+                if ($this.offset().top > $(window).height() - menu_height) {
+                    $this.closest('.NB-feed-story').addClass('NB-hover-inverse');
+                } 
+            }, function() {
+                $(this).closest('.NB-feed-story').removeClass('NB-hover-inverse');
+            });
+        },
+        
+
         
         preserve_classifier_color: function($story, classifier_type, value, score) {
             var $t;
@@ -4100,7 +4112,7 @@
                 feed_id = $item && parseInt($item.attr('data-id'), 10);
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
-                story_id = $item.data('story_id') || $item.closest('.NB-feed-story').data('story_id');  
+                story_id = $item.data('story_id');
                 if ($item.hasClass('NB-hover-inverse')) inverse = true; 
             } else if (type == 'site') {
                 $('.NB-task-manage').tipsy('hide');
@@ -4123,21 +4135,18 @@
                 var left, top;
                 // NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
                 if (inverse) {
+                    var $align = $item;
                     if (type == 'feed') {
                         left = toplevel ? 0 : -20;
                         top = toplevel ? 21 : 21;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -20;
                         top = toplevel ? 24 : 24;
+                        $align = $('.folder_title', $item);
                     } else if (type == 'story') {
                         left = 4;
                         top = 24    ;
-                    }
-                    var $align = $item;
-                    if (type == 'folder') {
-                        $align = $('.folder_title', $item);
-                    } else if (type == 'story') {
-                        $align = $('.NB-story-manage-icon', $item);
+                        $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                     }
                     $manage_menu_container.align($align, '-bottom -left', {
                         'top': -1 * top, 
@@ -4148,17 +4157,20 @@
                         $(this).prependTo($(this).parent());
                     });
                 } else {
+                    var $align = $item;
                     if (type == 'feed') {
-                        left = toplevel ? 2 : -20;
+                        left = toplevel ? 2 : -18;
                         top = toplevel ? 21 : 21;
+                        $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
                         left = toplevel ? 2 : -20;
                         top = toplevel ? 22 : 21;
                     } else if (type == 'story') {
                         left = 4;
-                        top = 19;
+                        top = 18;
+                        $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                     }
-                    $manage_menu_container.align($item, '-top -left', {
+                    $manage_menu_container.align($align, '-top -left', {
                         'top': top, 
                         'left': left
                     });
@@ -5467,7 +5479,7 @@
             
             $.targetIs(e, { tagSelector: '.NB-feedbar .NB-feedlist-manage-icon' }, function($t, $p) {
                 e.preventDefault();
-                self.show_manage_menu('feed', $t.closest('.feed'), {inverse: true, toplevel: true});
+                self.show_manage_menu('feed', $t.closest('.feed'), {toplevel: true});
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){
                 e.preventDefault();
@@ -5522,7 +5534,7 @@
             $.targetIs(e, { tagSelector: '.NB-feed-story-manage-icon' }, function($t, $p) {
                 e.preventDefault();
                 story_prevent_bubbling = true;
-                self.show_manage_menu('story', $t);
+                self.show_manage_menu('story', $t.closest('.NB-feed-story'));
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
                 e.preventDefault();
@@ -6064,7 +6076,7 @@
             });
             $.targetIs(e, { tagSelector: '.NB-feed-story-header', childOf: '#story_pane' }, function($t, $p) {
                 e.preventDefault();
-                self.show_manage_menu('story', $t.closest('.NB-feed-story').find('.NB-feed-story-manage-icon'));
+                self.show_manage_menu('story', $t.closest('.NB-feed-story'));
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage' }, function($t, $p) {
                 e.preventDefault();
