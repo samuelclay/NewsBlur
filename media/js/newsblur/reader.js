@@ -59,6 +59,7 @@
             '$feed_in_feed_list': {},
             '$feed_counts_in_feed_list': {}
         };
+        this.layout = {};
         this.constants = {
           FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
           FILL_OUT_PAGES: 8,
@@ -129,13 +130,13 @@
                 flag = 'story';
             }
             this.switch_taskbar_view(view, flag);
+            this.check_story_titles_last_story();
         },
         
         apply_resizable_layout: function() {
-            var outerLayout, rightLayout, contentLayout, leftLayout, leftCenterLayout;
             var story_anchor = this.model.preference('story_pane_anchor');
             
-            outerLayout = this.$s.$body.layout({ 
+            this.layout.outerLayout = this.$s.$body.layout({ 
                 closable: true,
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
@@ -147,7 +148,7 @@
                 enableCursorHotkey:     false
             }); 
             
-            leftLayout = $('.left-pane').layout({
+            this.layout.leftLayout = $('.left-pane').layout({
                 closable:               false,
                 resizeWhileDragging:    true,
                 fxName:                 "scale",
@@ -165,7 +166,7 @@
                 enableCursorHotkey:     false
             });
             
-            leftCenterLayout = $('.left-center').layout({
+            this.layout.leftCenterLayout = $('.left-center').layout({
                 closable:               false,
                 slidable:               false, 
                 resizeWhileDragging:    true,
@@ -188,14 +189,14 @@
             var rightLayoutOptions = { 
                 resizeWhileDragging:    true,
                 center__paneSelector:   ".content-pane",
-                spacing_open:           10,
+                spacing_open:           story_anchor == 'west' ? 4 : 10,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false
             };
             rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
             rightLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
             rightLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
-            rightLayout = $('.right-pane').layout(rightLayoutOptions); 
+            this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
 
             var contentLayoutOptions = { 
                 resizeWhileDragging:    true,
@@ -204,11 +205,22 @@
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false
             };
-            contentLayoutOptions[story_anchor+'__paneSelector'] = '.content-north';
-            contentLayoutOptions[story_anchor+'__size'] = 30;
-            contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
+
+            if (story_anchor == 'west') {
+                contentLayoutOptions['north__paneSelector'] = '.content-north';
+                contentLayoutOptions['north__size'] = 30;
+            } else {
+                contentLayoutOptions[story_anchor+'__paneSelector'] = '.content-north';
+                contentLayoutOptions[story_anchor+'__size'] = 30;
+            }
+            this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
             
             $('.right-pane').hide();
+            
+            $('.right-pane').removeClass('NB-story-pane-west')
+                            .removeClass('NB-story-pane-north')
+                            .removeClass('NB-story-pane-south')
+                            .addClass('NB-story-pane-'+story_anchor);
         },
         
         apply_tipsy_titles: function() {
@@ -242,6 +254,7 @@
             
             $('#NB-splash').css('left', feed_pane_size);
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
+                var feed_pane_size = this.layout.outerLayout.state.west.size;
                 this.model.preference('feed_pane_size', feed_pane_size);
                 this.flags.set_feed_pane_size = null;
             }, this), 1000);
@@ -249,7 +262,20 @@
         },
         
         save_story_titles_pane_size: function(w, pane, $pane, state, options, name) {
-            this.model.preference('story_titles_pane_size', state.size);
+            var offset = 0;
+            if (this.story_view == 'feed') {
+                offset = this.$s.$feed_iframe.width();
+            } else if (this.story_view == 'story') {
+                offset = 2 * this.$s.$feed_iframe.width();
+            }
+            this.$s.$story_pane.css('left', -1 * offset);
+            this.flags.set_story_titles_size = this.flags.set_story_titles_size || _.debounce( _.bind(function() {
+                var story_titles_size = this.layout.rightLayout.state[this.model.preference('story_pane_anchor')].size;
+                this.model.preference('story_titles_pane_size', story_titles_size);
+                this.resize_window();
+                this.flags.set_story_titles_size = null;
+            }, this), 1000);
+            this.flags.set_story_titles_size();
         },
         
         cornerize_buttons: function() {
@@ -2557,7 +2583,9 @@
             }
             if (!stories || stories.length == 0) {
                 this.append_story_titles_endbar();
-            } 
+            }
+            
+            this.hover_story_titles();
         },
         
         make_story_title: function(story, options) {
@@ -2611,6 +2639,20 @@
             }
             
             return $story_title;
+        },
+        
+        hover_story_titles: function() {
+            var $story_titles = $('.story', this.$s.$story_titles);
+            $story_titles.unbind('mouseenter').unbind('mouseleave');
+            
+            $story_titles.hover(function() {
+                var $this = $(this);
+                if ($this.offset().top > $(window).height() - 150) {
+                    $this.addClass('NB-hover-inverse');
+                } 
+            }, function() {
+                $(this).removeClass('NB-hover-inverse');
+            });
         },
         
         story_titles_clear_loading_endbar: function() {
@@ -2966,6 +3008,24 @@
                           .removeClass('unread_threshold_neutral')
                           .removeClass('unread_threshold_negative')
                           .addClass('unread_threshold_'+unread_view_name);
+            }
+        },
+        
+        check_story_titles_last_story: function() {
+            var $story_titles = this.$s.$story_titles;
+
+            if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
+                var $last_story = $('#story_titles .story').last();
+                var container_offset = $story_titles.position().top;
+                var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
+                var visible_height = $('#story_titles').height();
+                var scroll_y = $('#story_titles').scrollTop();
+                // NEWSBLUR.log(['Story_titles Scroll', full_height, container_offset, visible_height, scroll_y]);
+            
+                // Fudge factor is simply because it looks better at 13 pixels off.
+                if ((visible_height + 13) >= full_height) {
+                    this.load_page_of_feed_stories();
+                }
             }
         },
         
@@ -4041,7 +4101,7 @@
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
                 story_id = $item.data('story_id') || $item.closest('.NB-feed-story').data('story_id');  
-                if ($item.hasClass('story')) inverse = true; 
+                if ($item.hasClass('NB-hover-inverse')) inverse = true; 
             } else if (type == 'site') {
                 $('.NB-task-manage').tipsy('hide');
                 $('.NB-task-manage').tipsy('disable');
@@ -4071,11 +4131,14 @@
                         top = toplevel ? 24 : 24;
                     } else if (type == 'story') {
                         left = 4;
-                        top = 21;
+                        top = 24    ;
                     }
-                    var $align;
-                    if (type == 'feed' || type == 'story') $align = $item;
-                    else $align = $('.folder_title', $item);
+                    var $align = $item;
+                    if (type == 'folder') {
+                        $align = $('.folder_title', $item);
+                    } else if (type == 'story') {
+                        $align = $('.NB-story-manage-icon', $item);
+                    }
                     $manage_menu_container.align($align, '-bottom -left', {
                         'top': -1 * top, 
                         'left': left
@@ -4093,7 +4156,7 @@
                         top = toplevel ? 22 : 21;
                     } else if (type == 'story') {
                         left = 4;
-                        top = 18;
+                        top = 19;
                     }
                     $manage_menu_container.align($item, '-top -left', {
                         'top': top, 
@@ -4641,6 +4704,7 @@
             if (!options['animate']) {
                 $stories_hide.css({'display': 'none'});
                 $stories_show.css({'display': 'block'});
+                this.check_story_titles_last_story();
             }
             
             if (this.story_view == 'feed' && !this.model.preference('feed_view_single_story')) {
@@ -4672,6 +4736,7 @@
                         self.active_story = null; // Set is in open_story(), which allows it to scroll.
                         self.open_story(story, $story);
                         self.scroll_story_titles_to_show_selected_story_title($story);
+                        self.check_story_titles_last_story();
                     }
                 }, this.model.preference('animations') ? 550 : 0);
             }
@@ -6012,21 +6077,7 @@
         
         handle_scroll_story_titles: function(elem, e) {
             var self = this;
-            var $story_titles = this.$s.$story_titles;
-
-            if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
-                var $last_story = $('#story_titles .story').last();
-                var container_offset = $story_titles.position().top;
-                var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
-                var visible_height = $('#story_titles').height();
-                var scroll_y = $('#story_titles').scrollTop();
-                // NEWSBLUR.log(['Story_titles Scroll', full_height, container_offset, visible_height, scroll_y]);
-            
-                // Fudge factor is simply because it looks better at 13 pixels off.
-                if ((visible_height + 13) >= full_height) {
-                    this.load_page_of_feed_stories();
-                }
-            }
+            this.check_story_titles_last_story();
         },
         
         handle_scroll_feed_iframe: function(elem, e) {

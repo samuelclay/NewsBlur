@@ -927,6 +927,9 @@ background: transparent;
     border-bottom: 2px solid #404040;
     position: relative;
 }
+.NB-story-pane-west #story_titles .NB-feedbar {
+    padding-right: 4px;
+}
 #story_titles .NB-feedbar .feed {
     overflow: hidden;
 }
@@ -980,6 +983,11 @@ background: transparent;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
+.NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
+    position: static;
+    float: left;
+    margin-left: 26px;
+}
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
     color: #808080;
     text-shadow: 0 1px 0 #e6e6e6;
@@ -992,6 +1000,11 @@ background: transparent;
     margin: 3px 0 2px;
     width: 150px;
     text-transform: uppercase;
+}
+.NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-last-updated {
+    position: static;
+    float: left;
+    margin-left: 26px;
 }
 
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
@@ -1203,6 +1216,9 @@ background: transparent;
     line-height: 1em;
     background-color: white;
 }
+.NB-story-pane-west #story_titles .story {
+    padding-right: 4px;
+}
 .NB-view-river #story_titles .story {
   padding-left: 148px;
 }
@@ -1355,6 +1371,10 @@ background: transparent;
 }
 
 #story_titles .story:hover .NB-story-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 7px 1px;
+    cursor: pointer;
+}
+#story_titles .story.NB-hover-inverse:hover .NB-story-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 7px 1px;
     cursor: pointer;
 }
@@ -1387,6 +1407,16 @@ background: transparent;
     right: 4px;
     width: 200px;
     top: 4px;
+}
+.NB-story-pane-west #story_titles .story .story_date {
+    position: static;
+    margin: 0 0 4px 0;
+    color: #888C9B;
+    top: none;
+    left: none;
+    right: none;
+    display: block;
+    font-size: 9px;
 }
 #story_titles .story.selected .story_date {
     text-shadow: 1px 1px 0 #E6E6E6;
@@ -2430,7 +2460,8 @@ background: transparent;
     background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
 }
 
-.NB-story-pane-north .NB-taskbar-container {
+.NB-story-pane-north .NB-taskbar-container,
+.NB-story-pane-west .NB-taskbar-container {
     border-top: none;
     border-bottom: 1px solid #777D86;
 }
