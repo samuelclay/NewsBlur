@@ -116,10 +116,16 @@ def staging_full():
 
 @roles('task')
 def celery():
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
+    run('git pull')
     celery_stop()
     celery_start()
+
+@roles('task')
+def celery_stop():
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+        celery_stop()
+        celery_start()
 
 @roles('task')
 def celery_stop():
@@ -135,11 +141,9 @@ def celery_start():
         run('tail logs/newsblur.log')
 
 @roles('task')
-def force_celery():
+def kill_celery():
     with cd(env.NEWSBLUR_PATH):
-        run('git pull')
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
-        # run('sudo supervisorctl start celery && tail logs/newsblur.log')
 
 def compress_media():
     with cd('media/js'):
