@@ -159,6 +159,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.')
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-story-pane-position' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-story-pane-position-1', type: 'radio', name: 'story_pane_position', value: 'north' }),
+                            $.make('label', { 'for': 'NB-preference-story-pane-position-1' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_original.png' })
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-story-pane-position-2', type: 'radio', name: 'story_pane_position', value: 'west' }),
+                            $.make('label', { 'for': 'NB-preference-story-pane-position-2' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_feed.png' })
+                            ])
+                        ]),
+                        $.make('div', [
+                            $.make('input', { id: 'NB-preference-story-pane-position-3', type: 'radio', name: 'story_pane_position', value: 'south' }),
+                            $.make('label', { 'for': 'NB-preference-story-pane-position-3' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_story.png' })
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Story titles pane position'
+                    ])
+                ]),
                 $.make('div', { className: 'NB-preference NB-preference-window' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('div', [
