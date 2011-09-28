@@ -14,6 +14,7 @@ body {
     overflow: hidden;
     text-rendering: optimizeLegibility;
     background-color: white;
+    -webkit-overflow-scrolling: touch;
 }
 
 a, a:active, a:hover, a:visited, button {
@@ -1421,6 +1422,7 @@ background: transparent;
     right: none;
     display: block;
     font-size: 9px;
+    clear: both;
 }
 #story_titles .story.selected .story_date {
     text-shadow: 1px 1px 0 #E6E6E6;
