@@ -133,9 +133,26 @@
             this.check_story_titles_last_story();
         },
         
-        apply_resizable_layout: function() {
+        apply_resizable_layout: function(refresh) {
             var story_anchor = this.model.preference('story_pane_anchor');
             
+            if (refresh) {
+                alert(1);
+                this.layout.contentLayout && this.layout.contentLayout.destroy();
+                this.layout.leftLayout && this.layout.leftLayout.destroy();
+                this.layout.leftCenterLayout && this.layout.leftCenterLayout.destroy();
+                this.layout.rightLayout && this.layout.rightLayout.destroy();
+                this.layout.contentLayout && this.layout.contentLayout.destroy();
+                alert(2);
+                var feed_stories_bin = $.make('div').append(this.$s.$feed_stories.children());
+                var story_titles_bin = $.make('div').append(this.$s.$story_titles.children());
+            }
+            
+            $('.right-pane').removeClass('NB-story-pane-west')
+                            .removeClass('NB-story-pane-north')
+                            .removeClass('NB-story-pane-south')
+                            .addClass('NB-story-pane-'+story_anchor);
+                            
             this.layout.outerLayout = this.$s.$body.layout({ 
                 closable: true,
                 center__paneSelector:   ".right-pane",
@@ -213,14 +230,16 @@
                 contentLayoutOptions[story_anchor+'__paneSelector'] = '.content-north';
                 contentLayoutOptions[story_anchor+'__size'] = 30;
             }
+            alert(3);
             this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
-            
-            $('.right-pane').hide();
-            
-            $('.right-pane').removeClass('NB-story-pane-west')
-                            .removeClass('NB-story-pane-north')
-                            .removeClass('NB-story-pane-south')
-                            .addClass('NB-story-pane-'+story_anchor);
+            alert(4);
+            if (!refresh) {
+                $('.right-pane').hide();
+            } else {
+                this.$s.$feed_stories.append(feed_stories_bin.children());
+                this.$s.$story_titles.append(story_titles_bin.children());
+                this.resize_window();
+            }
         },
         
         apply_tipsy_titles: function() {
@@ -1565,6 +1584,7 @@
             this.$s.$story_titles.data('feed_id', null);
             this.$s.$feed_stories.scrollTop(0);
             this.$s.$feed_stories.empty();
+            this.$s.$story_titles.empty();
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$river_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
@@ -2640,7 +2660,7 @@
             $story_titles.hover(function() {
                 var $this = $(this);
                 var menu_height = $this.hasClass('story') ? 150 : 270;
-                NEWSBLUR.log(["hover", $this.offset().top, $(window).height() - menu_height]);
+
                 if ($this.offset().top > $(window).height() - menu_height) {
                     $this.addClass('NB-hover-inverse');
                 } 

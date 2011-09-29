@@ -5307,6 +5307,17 @@ background: transparent;
 /* = Preferences = */
 /* =============== */
 
+.NB-modal-preferences {
+    overflow: hidden;
+}
+
+.NB-modal-preferences .NB-preferences-scroll {
+    overflow: auto;
+    max-height: 500px;
+    width: 100%;
+    padding-right: 12px;
+}
+
 .NB-modal-preferences .NB-preference {
   overflow: hidden;
   margin: 12px 0 12px;
@@ -5362,6 +5373,13 @@ background: transparent;
 .NB-modal-preferences .NB-preference-view input {
   margin-top: 10px;
 }
+.NB-modal-preferences .NB-preference-story-pane-position input {
+  margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference-story-pane-position label img {
+  vertical-align: middle;
+  margin: -2px 6px 0 2px;
+}
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-sans-serif {
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
@@ -5373,7 +5391,7 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-window label img {
   vertical-align: middle;
-  margin: -1px 6px 0 2px;
+  margin: -2px 6px 0 2px;
 }
 .NB-modal-preferences .NB-preference-hidereadfeeds label img {
   vertical-align: middle;
