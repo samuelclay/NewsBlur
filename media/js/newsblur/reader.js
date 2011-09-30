@@ -129,21 +129,31 @@
                 view = 'story';
                 flag = 'story';
             }
+            
+            this.flags.scrolling_by_selecting_story_title = true;
+            clearTimeout(this.locks.scrolling);
+            this.locks.scrolling = _.delay(_.bind(function() {
+                this.flags.scrolling_by_selecting_story_title = false;
+            }, this), 1000);
+            
             this.switch_taskbar_view(view, flag);
             this.check_story_titles_last_story();
+            this.flags.fetch_story_locations_in_feed_view = this.flags.fetch_story_locations_in_feed_view ||
+                                                            _.throttle(_.bind(this.fetch_story_locations_in_feed_view, this), 2000);
+            this.flags.fetch_story_locations_in_feed_view();
         },
         
         apply_resizable_layout: function(refresh) {
             var story_anchor = this.model.preference('story_pane_anchor');
+            var right_pane_hidden = !$('.right-pane').is(':visible');
             
             if (refresh) {
-                alert(1);
                 this.layout.contentLayout && this.layout.contentLayout.destroy();
-                this.layout.leftLayout && this.layout.leftLayout.destroy();
-                this.layout.leftCenterLayout && this.layout.leftCenterLayout.destroy();
                 this.layout.rightLayout && this.layout.rightLayout.destroy();
-                this.layout.contentLayout && this.layout.contentLayout.destroy();
-                alert(2);
+                this.layout.leftCenterLayout && this.layout.leftCenterLayout.destroy();
+                this.layout.leftLayout && this.layout.leftLayout.destroy();
+                this.layout.outerLayout && this.layout.outerLayout.destroy();
+
                 var feed_stories_bin = $.make('div').append(this.$s.$feed_stories.children());
                 var story_titles_bin = $.make('div').append(this.$s.$story_titles.children());
             }
@@ -222,7 +232,6 @@
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false
             };
-
             if (story_anchor == 'west') {
                 contentLayoutOptions['north__paneSelector'] = '.content-north';
                 contentLayoutOptions['north__size'] = 30;
@@ -230,15 +239,17 @@
                 contentLayoutOptions[story_anchor+'__paneSelector'] = '.content-north';
                 contentLayoutOptions[story_anchor+'__size'] = 30;
             }
-            alert(3);
             this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
-            alert(4);
+
             if (!refresh) {
                 $('.right-pane').hide();
             } else {
                 this.$s.$feed_stories.append(feed_stories_bin.children());
                 this.$s.$story_titles.append(story_titles_bin.children());
                 this.resize_window();
+                if (right_pane_hidden) {
+                    $('.right-pane').hide();
+                }
             }
         },
         
@@ -281,6 +292,9 @@
         },
         
         save_story_titles_pane_size: function(w, pane, $pane, state, options, name) {
+            this.flags.scrolling_by_selecting_story_title = true;
+            clearTimeout(this.locks.scrolling);
+            
             var offset = 0;
             if (this.story_view == 'feed') {
                 offset = this.$s.$feed_iframe.width();
@@ -288,13 +302,23 @@
                 offset = 2 * this.$s.$feed_iframe.width();
             }
             this.$s.$story_pane.css('left', -1 * offset);
+            
             this.flags.set_story_titles_size = this.flags.set_story_titles_size || _.debounce( _.bind(function() {
                 var story_titles_size = this.layout.rightLayout.state[this.model.preference('story_pane_anchor')].size;
                 this.model.preference('story_titles_pane_size', story_titles_size);
-                this.resize_window();
                 this.flags.set_story_titles_size = null;
+                this.locks.scrolling = _.delay(_.bind(function() {
+                    this.flags.scrolling_by_selecting_story_title = false;
+                }, this), 100);
             }, this), 1000);
             this.flags.set_story_titles_size();
+            
+            this.flags.resize_window = this.flags.resize_window || _.debounce( _.bind(function() {
+                this.resize_window();
+                this.flags.resize_window = null;
+            }, this), 10);
+            this.flags.resize_window();
+            
         },
         
         cornerize_buttons: function() {

@@ -16,6 +16,9 @@ NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
 _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     runner: function() {
+        this.options.onOpen = _.bind(function() {
+            this.resize_modal();
+        }, this);
         this.make_modal();
         this.select_preferences();
         this.handle_change();
@@ -409,7 +412,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             })
         ]);
     },
+    
+    resize_modal: function() {
+        var $scroll = $('.NB-preferences-scroll', this.$modal);
+        var $modal = this.$modal;
+        var $modal_container = $modal.closest('.simplemodal-container');
         
+        if ($modal.height() > $modal_container.height() - 24) {
+            $scroll.height($scroll.height() - 5);
+            this.resize_modal();
+        }
+        
+    },
+    
     select_preferences: function() {
         if (NEWSBLUR.Preferences.timezone) {
             $('select[name=timezone] option', this.$modal).each(function() {
