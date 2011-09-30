@@ -14,6 +14,7 @@ body {
     overflow: hidden;
     text-rendering: optimizeLegibility;
     background-color: white;
+    -webkit-overflow-scrolling: touch;
 }
 
 a, a:active, a:hover, a:visited, button {
@@ -66,17 +67,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     -moz-box-shadow:2px 2px 0 #D0D0D0;
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
-}
-/* =================== */
-/* = Resize Controls = */
-/* =================== */
-
-.ui-layout-resizer-west {
-    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
-}
-
-.ui-layout-resizer-south {
-    background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
 }
 
 /* =============== */
@@ -938,6 +928,9 @@ background: transparent;
     border-bottom: 2px solid #404040;
     position: relative;
 }
+.NB-story-pane-west #story_titles .NB-feedbar {
+    padding-right: 4px;
+}
 #story_titles .NB-feedbar .feed {
     overflow: hidden;
 }
@@ -991,6 +984,11 @@ background: transparent;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
+.NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-mark-feed-read {
+    position: static;
+    float: left;
+    margin-left: 26px;
+}
 #story_titles .NB-feedbar .NB-feedbar-last-updated {
     color: #808080;
     text-shadow: 0 1px 0 #e6e6e6;
@@ -1003,6 +1001,11 @@ background: transparent;
     margin: 3px 0 2px;
     width: 150px;
     text-transform: uppercase;
+}
+.NB-story-pane-west #story_titles .NB-feedbar .NB-feedbar-last-updated {
+    position: static;
+    float: left;
+    margin-left: 26px;
 }
 
 #story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
@@ -1047,6 +1050,10 @@ background: transparent;
 }
 
 #story_titles .NB-feedbar .feed .NB-feedlist-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 3px 4px;
+}
+
+#story_titles .NB-feedbar .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 3px 4px;
 }
 
@@ -1214,6 +1221,9 @@ background: transparent;
     line-height: 1em;
     background-color: white;
 }
+.NB-story-pane-west #story_titles .story {
+    padding-right: 4px;
+}
 .NB-view-river #story_titles .story {
   padding-left: 148px;
 }
@@ -1366,6 +1376,10 @@ background: transparent;
 }
 
 #story_titles .story:hover .NB-story-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 7px 1px;
+    cursor: pointer;
+}
+#story_titles .story.NB-hover-inverse:hover .NB-story-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 7px 1px;
     cursor: pointer;
 }
@@ -1398,6 +1412,17 @@ background: transparent;
     right: 4px;
     width: 200px;
     top: 4px;
+}
+.NB-story-pane-west #story_titles .story .story_date {
+    position: static;
+    margin: 0 0 4px 0;
+    color: #888C9B;
+    top: none;
+    left: none;
+    right: none;
+    display: block;
+    font-size: 9px;
+    clear: both;
 }
 #story_titles .story.selected .story_date {
     text-shadow: 1px 1px 0 #E6E6E6;
@@ -1675,6 +1700,9 @@ background: transparent;
 #story_pane .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
     background: transparent url('../img/icons/silk/bullet_arrow_down.png') no-repeat 7px 1px;
     cursor: pointer;
+}
+#story_pane .NB-feed-story.NB-hover-inverse .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
+    background: transparent url('../img/icons/silk/bullet_arrow_up.png') no-repeat 7px 1px;
 }
 
 #story_pane .NB-feed-story-title-container {
@@ -2152,7 +2180,7 @@ background: transparent;
 
 .NB-taskbar {
     position: relative;
-    border-top: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0F0;
 }
 
 .NB-taskbar .NB-taskbar-sidebar-toggle-close {
@@ -2423,6 +2451,29 @@ background: transparent;
   display: block;
 }
 
+
+/* ======================= */
+/* = Pane Customizations = */
+/* ======================= */
+
+.ui-layout-resizer-west {
+    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
+}
+
+.right-pane .ui-layout-resizer-west {
+    background: #e0e0e0 url('../img/reader/resize_west_small.png') repeat-y 50% 50%;
+}
+
+.right-pane .ui-layout-resizer-south,
+.right-pane .ui-layout-resizer-north {
+    background: #e0e0e0 url('../img/reader/resize_north.png') repeat-x 50% 50%;
+}
+
+.NB-story-pane-north .NB-taskbar-container,
+.NB-story-pane-west .NB-taskbar-container {
+    border-top: none;
+    border-bottom: 1px solid #777D86;
+}
 
 /* ==================== */
 /* = OPML Import Form = */
@@ -5256,6 +5307,17 @@ background: transparent;
 /* = Preferences = */
 /* =============== */
 
+.NB-modal-preferences {
+    overflow: hidden;
+}
+
+.NB-modal-preferences .NB-preferences-scroll {
+    overflow: auto;
+    max-height: 500px;
+    width: 100%;
+    padding-right: 12px;
+}
+
 .NB-modal-preferences .NB-preference {
   overflow: hidden;
   margin: 12px 0 12px;
@@ -5271,7 +5333,7 @@ background: transparent;
 
 .NB-modal-preferences .NB-preference .NB-preference-options {
   float: right;
-  width: 375px;
+  width: 370px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-label {
   float: left;
@@ -5311,6 +5373,13 @@ background: transparent;
 .NB-modal-preferences .NB-preference-view input {
   margin-top: 10px;
 }
+.NB-modal-preferences .NB-preference-story-pane-position input {
+  margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference-story-pane-position label img {
+  vertical-align: middle;
+  margin: -2px 6px 0 2px;
+}
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-sans-serif {
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
@@ -5322,7 +5391,7 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-window label img {
   vertical-align: middle;
-  margin: -1px 6px 0 2px;
+  margin: -2px 6px 0 2px;
 }
 .NB-modal-preferences .NB-preference-hidereadfeeds label img {
   vertical-align: middle;
