@@ -2005,6 +2005,7 @@
                 this.active_story = story;
                 this.mark_story_title_as_selected($story_title);
                 this.mark_story_as_read_in_feed_view(story, {'animate': true});
+                this.unload_story_iframe();
                 
                 // Used when auto-tracking the user as they move over the feed/page.
                 // No need to find the story, since they have already found it.
@@ -2765,6 +2766,10 @@
             });
             
             $feed_iframe.removeAttr('src');
+            $feed_iframe.empty();
+            
+            this.$s.$story_iframe.attr('src', '');
+            this.$s.$story_iframe.empty();
         },
         
         load_feed_iframe: function(feed_id) {
@@ -3794,6 +3799,7 @@
         unload_story_iframe: function() {
             var $story_iframe = this.$s.$story_iframe;
             
+            $story_iframe.empty();
             $story_iframe.removeAttr('src').attr({src: 'about:blank'});
         },
         

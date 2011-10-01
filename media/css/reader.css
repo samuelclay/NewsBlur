@@ -4836,15 +4836,15 @@ background: transparent;
 .NB-modal-feedchooser .NB-feedchooser-type {
   float: left;
   width: 345px;
-  margin: 24px 24px 0 0;
-  padding: 0 24px 0 0;
-  border-right: 1px solid #E0E0E0;
+  margin: 24px 12px 0 0;
+  padding: 0 12px 0 0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-type.NB-last {
-  padding-right: 0;
+  margin: 24px 0 0 0;
+  padding: 0 0 0 24px;
   margin-right: 0;
-  border-right: none;
+  border-left: 1px solid #909090;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-info {
@@ -4859,7 +4859,7 @@ background: transparent;
     font-weight: bold;
     text-transform: uppercase;
     text-align: center;
-    border: 1px solid #202020;
+    border: 1px solid #101010;
 }
 .NB-modal-feedchooser .NB-feedchooser-info-counts {
     float: right;
@@ -4895,7 +4895,7 @@ background: transparent;
     list-style: none;
 /*    margin: 12px 0;*/
     padding: 0;
-    max-height: 348px;
+    max-height: 392px;
     min-height: 186px;
     width: auto;
     border: 1px solid #909090;
