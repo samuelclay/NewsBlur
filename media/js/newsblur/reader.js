@@ -536,7 +536,7 @@
             $iframe = $iframe || this.$s.$feed_iframe.contents();
             var $stories = $([]);
             
-            if (this.flags.iframe_story_locations_fetched || story.id in this.cache.iframe_stories) {
+            if (this.flags['iframe_story_locations_fetched'] || story.id in this.cache.iframe_stories) {
                 return this.cache.iframe_stories[story.id];
             }
             
@@ -1697,7 +1697,7 @@
             this.flags['story_titles_loaded'] = true;
             if (!first_load) {
                 var stories_count = this.cache['iframe_story_positions_keys'].length;
-                this.flags.iframe_story_locations_fetched = false;
+                this.flags['iframe_story_locations_fetched'] = false;
                 var $iframe = this.$s.$feed_iframe.contents();
                 this.fetch_story_locations_in_story_frame(stories_count, false, $iframe);
                 if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
@@ -2228,7 +2228,8 @@
             if (!$iframe) $iframe = this.$s.$feed_iframe.contents();
             
             this.flags['iframe_fetching_story_locations'] = true;
-            
+            this.flags['iframe_story_locations_fetched'] = false;
+
             if (clear_cache) {
                 $.extend(this.cache, {
                     'iframe_stories': {},
@@ -2239,7 +2240,7 @@
             
             if (story && story['story_feed_id'] == this.active_feed) {
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
-                // NEWSBLUR.log(['Fetching story', s, {'title': story.story_title}, $story]);
+                // NEWSBLUR.log(['Fetching story', s, story.story_title, $story]);
                 
                 setTimeout(function() {
                     if ((stories.length-1) >= (s+1) 
@@ -2251,7 +2252,7 @@
                                 || (self.cache.iframe_stories[stories[s-2].id] 
                                     && self.cache.iframe_stories[stories[s-2].id].length)))) {
                         self.fetch_story_locations_in_story_frame(s+1, false, $iframe);
-                        self.flags.iframe_story_locations_fetched = false;
+                        self.flags['iframe_story_locations_fetched'] = false;
                     } else {
                         NEWSBLUR.log(['iFrame view entirely loaded', (s-2) + ' stories', self.cache.iframe_stories]);
                         self.flags['iframe_story_locations_fetched'] = true;
