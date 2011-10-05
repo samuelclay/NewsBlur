@@ -36,6 +36,8 @@
 - (void)checkPassword;
 - (void)registerAccount;
 - (IBAction)selectLoginSignup;
+- (IBAction)doCancelButton;
+- (IBAction)doAddButton;
 - (void)animateLoop;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;

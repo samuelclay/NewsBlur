@@ -41,7 +41,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
 	pull = [[PullToRefreshView alloc] initWithScrollView:self.storyTitlesTable];
     [pull setDelegate:self];
     [self.storyTitlesTable addSubview:pull];
@@ -113,6 +113,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)viewDidAppear:(BOOL)animated {
 //    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    
 	[super viewDidAppear:animated];
 }
 

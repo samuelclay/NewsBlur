@@ -254,13 +254,24 @@ numberOfRowsInComponent:(NSInteger)component {
 - (NSString *)pickerView:(UIPickerView *)pickerView
              titleForRow:(NSInteger)row
             forComponent:(NSInteger)component {
-    return [[appDelegate dictFoldersArray] objectAtIndex:row];
+    if (row == 0) {
+        return @"— Top Level —";
+    } else {
+        return [[appDelegate dictFoldersArray] objectAtIndex:row];
+    }
 }
 
 - (void)pickerView:(UIPickerView *)pickerView 
       didSelectRow:(NSInteger)row 
        inComponent:(NSInteger)component {
     
+}
+
+#pragma mark -
+#pragma mark Server
+
+- (IBAction)doCancelButton {
+    [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
 }
 
 @end
