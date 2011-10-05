@@ -7,8 +7,9 @@ def numCPUs():
 
 bind = "127.0.0.1:8000"
 pidfile = "/home/sclay/newsblur/logs/gunicorn.pid"
-logfile = "/home/sclay/newsblur/logs/production.log"
+accesslog = "/home/sclay/newsblur/logs/production.log"
 loglevel = "debug"
 name = "newsblur"
 timeout = 60
+max_requests = 1000
 workers = numCPUs()
