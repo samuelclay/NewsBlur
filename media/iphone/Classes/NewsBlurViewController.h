@@ -19,9 +19,6 @@
             ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-	NSDictionary * dictFolders;
-    NSDictionary * dictFeeds;
-    NSMutableArray * dictFoldersArray;
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFeeds;
@@ -49,6 +46,7 @@
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
+- (IBAction)doAddButton;
 - (void)loadFavicons;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
@@ -61,12 +59,9 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
-@property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
-@property (nonatomic, retain) NSDictionary *dictFolders;
-@property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, retain) PullToRefreshView *pull;
 @property (nonatomic, retain) NSDate *lastUpdate;

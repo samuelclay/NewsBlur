@@ -11,6 +11,7 @@
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "LoginViewController.h"
+#import "AddViewController.h"
 #import "OriginalStoryViewController.h"
 
 @implementation NewsBlurAppDelegate
@@ -21,6 +22,7 @@
 @synthesize feedDetailViewController;
 @synthesize storyDetailViewController;
 @synthesize loginViewController;
+@synthesize addViewController;
 @synthesize originalStoryViewController;
 
 @synthesize activeUsername;
@@ -36,6 +38,10 @@
 @synthesize recentlyReadStories;
 @synthesize activeFeedIndexPath;
 @synthesize readStories;
+
+@synthesize dictFolders;
+@synthesize dictFeeds;
+@synthesize dictFoldersArray;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
@@ -62,6 +68,7 @@
     [feedDetailViewController release];
     [storyDetailViewController release];
     [loginViewController release];
+    [addViewController release];
     [originalStoryViewController release];
     [navigationController release];
     [window release];
@@ -75,6 +82,11 @@
     [recentlyReadStories release];
     [activeFeedIndexPath release];
     [readStories release];
+    
+    [dictFolders release];
+    [dictFeeds release];
+    [dictFoldersArray release];
+    
     [super dealloc];
 }
 
@@ -93,6 +105,11 @@
 - (void)showLogin {
     UINavigationController *navController = self.navigationController;
     [navController presentModalViewController:loginViewController animated:YES];
+}
+
+- (void)showAdd {
+    UINavigationController *navController = self.navigationController;
+    [navController presentModalViewController:addViewController animated:YES];
 }
 
 - (void)reloadFeedsView {

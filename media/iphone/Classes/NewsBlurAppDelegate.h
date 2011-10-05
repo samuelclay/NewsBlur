@@ -12,6 +12,7 @@
 @class FeedDetailViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
+@class AddViewController;
 @class OriginalStoryViewController;
 
 @interface NewsBlurAppDelegate : NSObject <UIApplicationDelegate> {
@@ -21,6 +22,7 @@
     FeedDetailViewController *feedDetailViewController;
     StoryDetailViewController *storyDetailViewController;
     LoginViewController *loginViewController;
+    AddViewController *addViewController;
     OriginalStoryViewController *originalStoryViewController;
     
     NSString * activeUsername;
@@ -36,6 +38,10 @@
     NSMutableArray * recentlyReadStories;
     NSIndexPath * activeFeedIndexPath;
     NSMutableArray * readStories;
+    
+	NSDictionary * dictFolders;
+    NSDictionary * dictFeeds;
+    NSMutableArray * dictFoldersArray;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -44,8 +50,8 @@
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
+@property (nonatomic, retain) IBOutlet AddViewController *addViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
-
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (readwrite, retain) NSDictionary * activeFeed;
@@ -61,7 +67,12 @@
 @property (readwrite, retain) NSIndexPath * activeFeedIndexPath;
 @property (readwrite, retain) NSMutableArray * readStories;
 
+@property (nonatomic, retain) NSDictionary *dictFolders;
+@property (nonatomic, retain) NSDictionary *dictFeeds;
+@property (nonatomic, retain) NSMutableArray *dictFoldersArray;
+
 - (void)showLogin;
+- (void)showAdd;
 - (void)loadFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)reloadFeedsView;
