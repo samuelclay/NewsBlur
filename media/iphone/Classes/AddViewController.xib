@@ -17,6 +17,7 @@
 			<string>IBUILabel</string>
 			<string>IBUIBarButtonItem</string>
 			<string>IBUIActivityIndicatorView</string>
+			<string>IBUITextField</string>
 			<string>IBUINavigationBar</string>
 			<string>IBUINavigationItem</string>
 			<string>IBUISegmentedControl</string>
@@ -55,7 +56,7 @@
 						<string key="NSFrame">{{0, 44}, {320, 416}}</string>
 						<reference key="NSSuperview" ref="973185930"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="292705575"/>
+						<reference key="NSNextKeyView" ref="739108230"/>
 						<string key="NSReuseIdentifierKey">_NS:541</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -216,6 +217,42 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<bool key="IBUIShowsSelectionIndicator">YES</bool>
 					</object>
+					<object class="IBUITextField" id="739108230">
+						<reference key="NSNextResponder" ref="973185930"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{20, 86}, {280, 31}}</string>
+						<reference key="NSSuperview" ref="973185930"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="292705575"/>
+						<string key="NSReuseIdentifierKey">_NS:294</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<bool key="IBUIClipsSubviews">YES</bool>
+						<object class="IBUIAccessibilityConfiguration" key="IBUIAccessibilityConfiguration">
+							<integer value="5" key="IBUIAccessibilityTraits"/>
+						</object>
+						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<string key="IBUIText"/>
+						<int key="IBUIBorderStyle">3</int>
+						<string key="IBUIPlaceholder">Choose a folder</string>
+						<object class="NSColor" key="IBUITextColor">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MAA</bytes>
+							<object class="NSColorSpace" key="NSCustomColorSpace">
+								<int key="NSID">2</int>
+							</object>
+						</object>
+						<object class="NSFont" key="IBUIFont">
+							<string key="NSName">Helvetica</string>
+							<double key="NSSize">18</double>
+							<int key="NSfFlags">16</int>
+						</object>
+						<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
+						<float key="IBUIMinimumFontSize">17</float>
+						<object class="IBUITextInputTraits" key="IBUITextInputTraits">
+							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						</object>
+					</object>
 				</object>
 				<string key="NSFrame">{{0, 20}, {320, 460}}</string>
 				<reference key="NSSuperview"/>
@@ -280,6 +317,30 @@
 					</object>
 					<int key="connectionID">35</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="739108230"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">37</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">folderPicker</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="292705575"/>
+					</object>
+					<int key="connectionID">38</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">inFolderInput</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="739108230"/>
+					</object>
+					<int key="connectionID">39</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -313,6 +374,7 @@
 							<reference ref="836275523"/>
 							<reference ref="151912820"/>
 							<reference ref="292705575"/>
+							<reference ref="739108230"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -376,6 +438,11 @@
 						<reference key="object" ref="292705575"/>
 						<reference key="parent" ref="973185930"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">36</int>
+						<reference key="object" ref="739108230"/>
+						<reference key="parent" ref="973185930"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -394,6 +461,7 @@
 					<string>26.IBPluginDependency</string>
 					<string>27.IBPluginDependency</string>
 					<string>30.IBPluginDependency</string>
+					<string>36.IBPluginDependency</string>
 					<string>5.IBPluginDependency</string>
 					<string>7.IBPluginDependency</string>
 					<string>8.IBPluginDependency</string>
@@ -417,6 +485,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -431,7 +500,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">35</int>
+			<int key="maxID">39</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -485,14 +554,15 @@
 							<string>activityIndicator</string>
 							<string>appDelegate</string>
 							<string>authenticatingLabel</string>
-							<string>emailInput</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
+							<string>folderPicker</string>
+							<string>inFolderInput</string>
 							<string>loginControl</string>
-							<string>passwordInput</string>
+							<string>newFolderInput</string>
 							<string>passwordLabel</string>
 							<string>passwordOptionalLabel</string>
-							<string>usernameInput</string>
+							<string>siteAddressInput</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
 						</object>
@@ -501,9 +571,10 @@
 							<string>UIActivityIndicatorView</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UIPickerView</string>
 							<string>UITextField</string>
-							<string>UILabel</string>
-							<string>UILabel</string>
 							<string>UISegmentedControl</string>
 							<string>UITextField</string>
 							<string>UILabel</string>
@@ -520,14 +591,15 @@
 							<string>activityIndicator</string>
 							<string>appDelegate</string>
 							<string>authenticatingLabel</string>
-							<string>emailInput</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
+							<string>folderPicker</string>
+							<string>inFolderInput</string>
 							<string>loginControl</string>
-							<string>passwordInput</string>
+							<string>newFolderInput</string>
 							<string>passwordLabel</string>
 							<string>passwordOptionalLabel</string>
-							<string>usernameInput</string>
+							<string>siteAddressInput</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
 						</object>
@@ -546,10 +618,6 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">emailInput</string>
-								<string key="candidateClassName">UITextField</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">emailLabel</string>
 								<string key="candidateClassName">UILabel</string>
 							</object>
@@ -558,11 +626,19 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">folderPicker</string>
+								<string key="candidateClassName">UIPickerView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">inFolderInput</string>
+								<string key="candidateClassName">UITextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">loginControl</string>
 								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">passwordInput</string>
+								<string key="name">newFolderInput</string>
 								<string key="candidateClassName">UITextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -574,7 +650,7 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">usernameInput</string>
+								<string key="name">siteAddressInput</string>
 								<string key="candidateClassName">UITextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">

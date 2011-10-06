@@ -15,9 +15,10 @@
 @implementation AddViewController
 
 @synthesize appDelegate;
-@synthesize usernameInput;
-@synthesize passwordInput;
-@synthesize emailInput;
+@synthesize inFolderInput;
+@synthesize newFolderInput;
+@synthesize siteAddressInput;
+@synthesize folderPicker;
 @synthesize jsonString;
 @synthesize activityIndicator;
 @synthesize authenticatingLabel;
@@ -32,15 +33,15 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-		[appDelegate hideNavigationBar:NO];
     }
     return self;
 }
 
-- (void)viewDidLoad {
-    [usernameInput becomeFirstResponder];
-    
-	[appDelegate hideNavigationBar:NO];
+- (void)viewDidLoad {    
+    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    [inFolderInput setLeftView:folderImage];
+    [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    [folderImage release];
     
     [super viewDidLoad];
 }
@@ -67,8 +68,10 @@
 
 - (void)dealloc {
     [appDelegate release];
-    [usernameInput release];
-    [passwordInput release];
+    [inFolderInput release];
+    [newFolderInput release];
+    [siteAddressInput release];
+    [folderPicker release];
     [jsonString release];
     [super dealloc];
 }
@@ -76,23 +79,38 @@
 #pragma mark -
 #pragma mark Add Site
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
-	if(textField == usernameInput) {
-        [passwordInput becomeFirstResponder];
-    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 0) {
-        NSLog(@"Password return");
-        NSLog(@"appdelegate:: %@", [self appDelegate]);
-        [self checkPassword];
-    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 1) {
-        [emailInput becomeFirstResponder];
-    } else if (textField == emailInput) {
-        [self registerAccount];
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if (textField == inFolderInput) {
+        folderPicker.frame = CGRectMake(0, appDelegate.window.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:.50];
+        [UIView setAnimationDelegate:self];
+        folderPicker.frame = CGRectMake(0, appDelegate.window.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
+        [self.view addSubview:folderPicker];
+        [UIView commitAnimations];
+        return NO;
     }
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField == inFolderInput) {
+    }
+//	if(textField == usernameInput) {
+//        [passwordInput becomeFirstResponder];
+//    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 0) {
+//        NSLog(@"Password return");
+//        NSLog(@"appdelegate:: %@", [self appDelegate]);
+//        [self checkPassword];
+//    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 1) {
+//        [emailInput becomeFirstResponder];
+//    } else if (textField == emailInput) {
+//        [self registerAccount];
+//    }
 	return YES;
 }
 
-- (void)checkPassword {
+- (void)addSite {
     [self.authenticatingLabel setHidden:NO];
     [self.authenticatingLabel setText:@"Authenticating..."];
     [self.errorLabel setHidden:YES];
@@ -103,10 +121,8 @@
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[usernameInput text] forKey:@"username"]; 
-    [request setPostValue:[passwordInput text] forKey:@"password"]; 
-    [request setPostValue:@"login" forKey:@"submit"]; 
-    [request setPostValue:@"1" forKey:@"api"]; 
+    [request setPostValue:[inFolderInput text] forKey:@"in_folder"]; 
+    [request setPostValue:[siteAddressInput text] forKey:@"address"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -136,29 +152,24 @@
 }
 
 
-- (void)registerAccount {
+- (void)addFolder {
     [self.authenticatingLabel setHidden:NO];
-    [self.authenticatingLabel setText:@"Registering..."];
+    [self.authenticatingLabel setText:@"Adding Folder..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/api/signup",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/api/add_folder",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[usernameInput text] forKey:@"username"]; 
-    [request setPostValue:[passwordInput text] forKey:@"password"]; 
-    [request setPostValue:[emailInput text] forKey:@"email"]; 
-    [request setPostValue:@"login" forKey:@"submit"]; 
-    [request setPostValue:@"1" forKey:@"api"]; 
+    [request setPostValue:[inFolderInput text] forKey:@"in_folder"]; 
+    [request setPostValue:[newFolderInput text] forKey:@"folder_name"]; 
     [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishRegistering:)];
+    [request setDidFinishSelector:@selector(finishAddFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
 }
 
-- (void)finishRegistering:(ASIHTTPRequest *)request {
+- (void)finishAddFolder:(ASIHTTPRequest *)request {
     [self.authenticatingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
@@ -201,41 +212,41 @@
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
-            usernameOrEmailLabel.alpha = 1.0;
-            
-            
-            passwordInput.frame = CGRectMake(20, 129, 280, 31);
-            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
-            
-            emailInput.alpha = 0.0;
-            emailLabel.alpha = 0.0;
+//            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
+//            usernameOrEmailLabel.alpha = 1.0;
+//            
+//            
+//            passwordInput.frame = CGRectMake(20, 129, 280, 31);
+//            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
+//            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
+//            
+//            emailInput.alpha = 0.0;
+//            emailLabel.alpha = 0.0;
         }];
         
-        passwordInput.returnKeyType = UIReturnKeyGo;
-        usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
-        [usernameInput resignFirstResponder];
-        [usernameInput becomeFirstResponder];
+//        passwordInput.returnKeyType = UIReturnKeyGo;
+//        usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
+//        [usernameInput resignFirstResponder];
+//        [usernameInput becomeFirstResponder];
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
-            usernameOrEmailLabel.alpha = 0.0;
-            
-            
-            passwordInput.frame = CGRectMake(170, 67, 130, 31);
-            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
-            
-            emailInput.alpha = 1.0;
-            emailLabel.alpha = 1.0;
+//            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
+//            usernameOrEmailLabel.alpha = 0.0;
+//            
+//            
+//            passwordInput.frame = CGRectMake(170, 67, 130, 31);
+//            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
+//            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
+//            
+//            emailInput.alpha = 1.0;
+//            emailLabel.alpha = 1.0;
         }];
         
-        passwordInput.returnKeyType = UIReturnKeyNext;
-        usernameInput.keyboardType = UIKeyboardTypeAlphabet;
-        [usernameInput resignFirstResponder];
-        [usernameInput becomeFirstResponder];
+//        passwordInput.returnKeyType = UIReturnKeyNext;
+//        usernameInput.keyboardType = UIKeyboardTypeAlphabet;
+//        [usernameInput resignFirstResponder];
+//        [usernameInput becomeFirstResponder];
     }
 }
 

@@ -13,13 +13,15 @@
 @class NewsBlurAppDelegate;
 
 @interface AddViewController : UIViewController 
-<UIPickerViewDelegate, UIPickerViewDataSource, ASIHTTPRequestDelegate> {
+<UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    UITextField *usernameInput;
-    UITextField *passwordInput;
-    UITextField *emailInput;
+    UITextField *inFolderInput;
+    UITextField *newFolderInput;
+    UITextField *siteAddressInput;
     NSMutableData * jsonString;
+    
+    UIPickerView *folderPicker;
     
     UIActivityIndicatorView *activityIndicator;
     UILabel *authenticatingLabel;
@@ -33,18 +35,19 @@
     UILabel *passwordOptionalLabel;
 }
 
-- (void)checkPassword;
-- (void)registerAccount;
+- (void)addSite;
+- (void)addFolder;
 - (IBAction)selectLoginSignup;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (void)animateLoop;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) IBOutlet UITextField *usernameInput;
-@property (nonatomic, retain) IBOutlet UITextField *passwordInput;
-@property (nonatomic, retain) IBOutlet UITextField *emailInput;
+@property (nonatomic, retain) IBOutlet UITextField *inFolderInput;
+@property (nonatomic, retain) IBOutlet UITextField *newFolderInput;
+@property (nonatomic, retain) IBOutlet UITextField *siteAddressInput;
 
+@property (nonatomic, retain) IBOutlet UIPickerView *folderPicker;
 @property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, retain) IBOutlet UILabel *authenticatingLabel;
