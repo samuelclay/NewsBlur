@@ -78,6 +78,7 @@
 								<string key="NSFrame">{{80, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
@@ -134,7 +135,7 @@
 							<object class="IBUIBarButtonItem" id="240724681">
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">folder.png</string>
+									<string key="NSResourceName">icon_list_bullets_half.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIWidth">40</float>
@@ -159,7 +160,7 @@
 							<object class="IBUIBarButtonItem" id="194232446">
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">world.png</string>
+									<string key="NSResourceName">add_button.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIWidth">40</float>
@@ -266,6 +267,14 @@
 					</object>
 					<int key="connectionID">80</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">addButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="194232446"/>
+					</object>
+					<int key="connectionID">81</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -292,8 +301,8 @@
 						<reference key="object" ref="774585933"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="224086083"/>
 							<reference ref="895374018"/>
+							<reference ref="224086083"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -402,7 +411,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">80</int>
+			<int key="maxID">81</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -416,7 +425,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doAddButton</string>
 							<string>doCancelButton</string>
-							<string>selectLoginSignup</string>
+							<string>selectAddTypeSignup</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -431,7 +440,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doAddButton</string>
 							<string>doCancelButton</string>
-							<string>selectLoginSignup</string>
+							<string>selectAddTypeSignup</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -444,7 +453,7 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">selectLoginSignup</string>
+								<string key="name">selectAddTypeSignup</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
@@ -454,28 +463,36 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activityIndicator</string>
+							<string>addButton</string>
+							<string>addTypeControl</string>
 							<string>appDelegate</string>
 							<string>authenticatingLabel</string>
-							<string>emailInput</string>
+							<string>cancelButton</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
-							<string>loginControl</string>
-							<string>passwordInput</string>
+							<string>folderPicker</string>
+							<string>inFolderInput</string>
+							<string>navBar</string>
+							<string>newFolderInput</string>
 							<string>passwordLabel</string>
 							<string>passwordOptionalLabel</string>
-							<string>usernameInput</string>
+							<string>siteAddressInput</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>UIActivityIndicatorView</string>
+							<string>UIBarButtonItem</string>
+							<string>UISegmentedControl</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UILabel</string>
+							<string>UIBarButtonItem</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UIPickerView</string>
 							<string>UITextField</string>
-							<string>UILabel</string>
-							<string>UILabel</string>
-							<string>UISegmentedControl</string>
+							<string>UINavigationBar</string>
 							<string>UITextField</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
@@ -489,16 +506,20 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activityIndicator</string>
+							<string>addButton</string>
+							<string>addTypeControl</string>
 							<string>appDelegate</string>
 							<string>authenticatingLabel</string>
-							<string>emailInput</string>
+							<string>cancelButton</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
-							<string>loginControl</string>
-							<string>passwordInput</string>
+							<string>folderPicker</string>
+							<string>inFolderInput</string>
+							<string>navBar</string>
+							<string>newFolderInput</string>
 							<string>passwordLabel</string>
 							<string>passwordOptionalLabel</string>
-							<string>usernameInput</string>
+							<string>siteAddressInput</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
 						</object>
@@ -509,6 +530,14 @@
 								<string key="candidateClassName">UIActivityIndicatorView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">addButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addTypeControl</string>
+								<string key="candidateClassName">UISegmentedControl</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
@@ -517,8 +546,8 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">emailInput</string>
-								<string key="candidateClassName">UITextField</string>
+								<string key="name">cancelButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">emailLabel</string>
@@ -529,11 +558,19 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">loginControl</string>
-								<string key="candidateClassName">UISegmentedControl</string>
+								<string key="name">folderPicker</string>
+								<string key="candidateClassName">UIPickerView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">passwordInput</string>
+								<string key="name">inFolderInput</string>
+								<string key="candidateClassName">UITextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">navBar</string>
+								<string key="candidateClassName">UINavigationBar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">newFolderInput</string>
 								<string key="candidateClassName">UITextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -545,7 +582,7 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">usernameInput</string>
+								<string key="name">siteAddressInput</string>
 								<string key="candidateClassName">UITextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -926,6 +963,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
 							<string>feedTitlesTable</string>
@@ -936,6 +974,7 @@
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UISlider</string>
 							<string>UITableView</string>
@@ -949,6 +988,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addButton</string>
 							<string>appDelegate</string>
 							<string>feedScoreSlider</string>
 							<string>feedTitlesTable</string>
@@ -959,6 +999,10 @@
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
@@ -1254,13 +1298,13 @@
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<object class="NSArray" key="dict.sortedKeys">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>folder.png</string>
-				<string>world.png</string>
+				<string>add_button.png</string>
+				<string>icon_list_bullets_half.png</string>
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>{16, 16}</string>
-				<string>{16, 16}</string>
+				<string>{13, 14}</string>
+				<string>{19, 8}</string>
 			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">534</string>

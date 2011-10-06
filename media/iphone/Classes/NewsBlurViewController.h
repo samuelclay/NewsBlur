@@ -32,6 +32,7 @@
     IBOutlet UIBarButtonItem * logoutButton;
     IBOutlet UISegmentedControl * intelligenceControl;
     IBOutlet UIBarButtonItem * sitesButton;
+    IBOutlet UIBarButtonItem * addButton;
 }
 
 - (void)returnToApp;
@@ -59,6 +60,7 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * addButton;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;

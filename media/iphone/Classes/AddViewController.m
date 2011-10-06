@@ -18,12 +18,15 @@
 @synthesize inFolderInput;
 @synthesize newFolderInput;
 @synthesize siteAddressInput;
+@synthesize addButton;
+@synthesize cancelButton;
 @synthesize folderPicker;
 @synthesize jsonString;
+@synthesize navBar;
 @synthesize activityIndicator;
 @synthesize authenticatingLabel;
 @synthesize errorLabel;
-@synthesize loginControl;
+@synthesize addTypeControl;
 @synthesize usernameLabel;
 @synthesize usernameOrEmailLabel;
 @synthesize passwordLabel;
@@ -42,6 +45,9 @@
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage release];
+    
+    
+    navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     [super viewDidLoad];
 }
@@ -71,8 +77,11 @@
     [inFolderInput release];
     [newFolderInput release];
     [siteAddressInput release];
+    [addButton release];
+    [cancelButton release];
     [folderPicker release];
     [jsonString release];
+    [navBar release];
     [super dealloc];
 }
 
@@ -98,11 +107,11 @@
     }
 //	if(textField == usernameInput) {
 //        [passwordInput becomeFirstResponder];
-//    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 0) {
+//    } else if (textField == passwordInput && [self.addTypeControl selectedSegmentIndex] == 0) {
 //        NSLog(@"Password return");
 //        NSLog(@"appdelegate:: %@", [self appDelegate]);
 //        [self checkPassword];
-//    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 1) {
+//    } else if (textField == passwordInput && [self.addTypeControl selectedSegmentIndex] == 1) {
 //        [emailInput becomeFirstResponder];
 //    } else if (textField == emailInput) {
 //        [self registerAccount];
@@ -204,12 +213,13 @@
 #pragma mark -
 #pragma mark Add Folder
 
-- (IBAction)selectLoginSignup {
+- (IBAction)selectAddTypeSignup {
     [self animateLoop];
 }
 
 - (void)animateLoop {
-    if ([self.loginControl selectedSegmentIndex] == 0) {
+    if ([self.addTypeControl selectedSegmentIndex] == 0) {
+        [addButton setTitle:@"Add Site"];
         [UIView animateWithDuration:0.5 animations:^{
             // Login
 //            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
@@ -229,6 +239,7 @@
 //        [usernameInput resignFirstResponder];
 //        [usernameInput becomeFirstResponder];
     } else {
+        [addButton setTitle:@"Add Folder"];
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
 //            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
@@ -283,6 +294,10 @@ numberOfRowsInComponent:(NSInteger)component {
 
 - (IBAction)doCancelButton {
     [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
+}
+
+- (IBAction)doAddButton {
+    
 }
 
 @end

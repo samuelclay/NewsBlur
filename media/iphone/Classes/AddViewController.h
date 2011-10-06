@@ -21,12 +21,15 @@
     UITextField *siteAddressInput;
     NSMutableData * jsonString;
     
+    UIBarButtonItem *addButton;
+    UIBarButtonItem *cancelButton;
     UIPickerView *folderPicker;
     
+    UINavigationBar *navBar;
     UIActivityIndicatorView *activityIndicator;
     UILabel *authenticatingLabel;
     UILabel *errorLabel;
-    UISegmentedControl *loginControl;
+    UISegmentedControl *addTypeControl;
     
     UILabel *usernameLabel;
     UILabel *usernameOrEmailLabel;
@@ -37,7 +40,7 @@
 
 - (void)addSite;
 - (void)addFolder;
-- (IBAction)selectLoginSignup;
+- (IBAction)selectAddTypeSignup;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (void)animateLoop;
@@ -47,12 +50,16 @@
 @property (nonatomic, retain) IBOutlet UITextField *newFolderInput;
 @property (nonatomic, retain) IBOutlet UITextField *siteAddressInput;
 
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *addButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *cancelButton;
 @property (nonatomic, retain) IBOutlet UIPickerView *folderPicker;
 @property (nonatomic, retain) NSMutableData * jsonString;
+
+@property (nonatomic, retain) IBOutlet UINavigationBar *navBar;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, retain) IBOutlet UILabel *authenticatingLabel;
 @property (nonatomic, retain) IBOutlet UILabel *errorLabel;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *loginControl;
+@property (nonatomic, retain) IBOutlet UISegmentedControl *addTypeControl;
 
 @property (nonatomic, retain) IBOutlet UILabel *usernameLabel;
 @property (nonatomic, retain) IBOutlet UILabel *usernameOrEmailLabel;

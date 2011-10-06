@@ -35,6 +35,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize stillVisibleFeeds;
 @synthesize visibleFeeds;
 @synthesize sitesButton;
+@synthesize addButton;
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
 @synthesize lastUpdate;
@@ -63,6 +64,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
      selector:@selector(returnToApp)
      name:UIApplicationWillEnterForegroundNotification
      object:nil];
+    
+    [addButton setWidth:40];
     
     [super viewDidLoad];
 }
@@ -146,6 +149,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [stillVisibleFeeds release];
     [visibleFeeds release];
     [sitesButton release];
+    [addButton release];
     [pull release];
     [lastUpdate release];
     
@@ -296,11 +300,13 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (IBAction)doSwitchSitesUnread {
     self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
     
-//    if (self.viewShowingAllFeeds) {
+    if (self.viewShowingAllFeeds) {
+        [self.sitesButton setImage:[UIImage imageNamed:@"icon_list_bullets.png"]];
 //        [self.sitesButton setTitle:@"Unreads"];
-//    } else {
+    } else {
+        [self.sitesButton setImage:[UIImage imageNamed:@"icon_list_bullets_half.png"]];
 //        [self.sitesButton setTitle:@"All Sites"];
-//    }
+    }
     
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     NSMutableArray *indexPaths = [NSMutableArray array];
