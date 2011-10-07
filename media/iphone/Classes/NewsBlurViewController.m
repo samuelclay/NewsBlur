@@ -74,7 +74,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
                                         animated:animated];
     if (appDelegate.activeFeedIndexPath) {
-        //      NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
+        NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
          reloadRowsAtIndexPaths:[NSArray 
@@ -301,10 +301,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
     
     if (self.viewShowingAllFeeds) {
-        [self.sitesButton setImage:[UIImage imageNamed:@"icon_list_bullets.png"]];
+        [self.sitesButton setImage:[UIImage imageNamed:@"network_icon_all.png"]];
 //        [self.sitesButton setTitle:@"Unreads"];
     } else {
-        [self.sitesButton setImage:[UIImage imageNamed:@"icon_list_bullets_half.png"]];
+        [self.sitesButton setImage:[UIImage imageNamed:@"network_icon.png"]];
 //        [self.sitesButton setTitle:@"All Sites"];
     }
     

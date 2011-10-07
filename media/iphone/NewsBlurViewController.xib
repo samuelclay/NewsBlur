@@ -135,10 +135,10 @@
 							<object class="IBUIBarButtonItem" id="240724681">
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">icon_list_bullets_half.png</string>
+									<string key="NSResourceName">network_icon.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">40</float>
+								<float key="IBUIWidth">42</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="895374018"/>
 							</object>
@@ -163,7 +163,7 @@
 									<string key="NSResourceName">add_button.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">40</float>
+								<float key="IBUIWidth">42</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="895374018"/>
 							</object>
@@ -1299,12 +1299,12 @@
 			<object class="NSArray" key="dict.sortedKeys">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<string>add_button.png</string>
-				<string>icon_list_bullets_half.png</string>
+				<string>network_icon.png</string>
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<string>{13, 14}</string>
-				<string>{19, 8}</string>
+				<string>{19, 19}</string>
 			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">534</string>

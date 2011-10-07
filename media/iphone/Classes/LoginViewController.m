@@ -123,12 +123,15 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSLog(@"Bad login: %@", results);
         [appDelegate showLogin];
-        [self.errorLabel setText:[[[results valueForKey:@"errors"] valueForKey:@"__all__"] objectAtIndex:0]];
+        NSDictionary *errors = [results valueForKey:@"errors"];
+        if ([errors valueForKey:@"username"]) {
+            [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];   
+        } else if ([errors valueForKey:@"__all__"]) {
+            [self.errorLabel setText:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
+        }
         [self.errorLabel setHidden:NO];
     } else {
-        NSLog(@"Good login");
         [appDelegate reloadFeedsView];
     }
     
@@ -167,7 +170,6 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSLog(@"Bad login: %@", results);
         [appDelegate showLogin];
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"email"]) {
@@ -177,7 +179,6 @@
         }
         [self.errorLabel setHidden:NO];
     } else {
-        NSLog(@"Good login");
         [appDelegate reloadFeedsView];
     }
     

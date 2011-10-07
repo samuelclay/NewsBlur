@@ -21,10 +21,11 @@
 @synthesize addButton;
 @synthesize cancelButton;
 @synthesize folderPicker;
+@synthesize siteTable;
 @synthesize jsonString;
 @synthesize navBar;
 @synthesize activityIndicator;
-@synthesize authenticatingLabel;
+@synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
 @synthesize usernameLabel;
@@ -54,7 +55,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
-    [self.authenticatingLabel setHidden:YES];
+    [self.addingLabel setHidden:YES];
+    [self.folderPicker setHidden:YES];
+    [self.siteTable setHidden:YES];
     [self.activityIndicator stopAnimating];
     [super viewWillAppear:animated];
 }
@@ -80,6 +83,7 @@
     [addButton release];
     [cancelButton release];
     [folderPicker release];
+    [siteTable release];
     [jsonString release];
     [navBar release];
     [super dealloc];
@@ -90,14 +94,24 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     if (textField == inFolderInput) {
-        folderPicker.frame = CGRectMake(0, appDelegate.window.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:.50];
-        [UIView setAnimationDelegate:self];
-        folderPicker.frame = CGRectMake(0, appDelegate.window.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
-        [self.view addSubview:folderPicker];
-        [UIView commitAnimations];
+        [siteAddressInput resignFirstResponder];
+        [newFolderInput resignFirstResponder];
+        folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
+        folderPicker.hidden = NO;
+        [UIView animateWithDuration:.35 animations:^{
+            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
+        }];
         return NO;
+    } else if (textField == siteAddressInput) {
+        [UIView animateWithDuration:.35 animations:^{
+            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
+        }];
+        
+    } else if (textField == newFolderInput) {
+        [UIView animateWithDuration:.35 animations:^{
+            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
+        }];
+        
     }
     return YES;
 }
@@ -120,8 +134,8 @@
 }
 
 - (void)addSite {
-    [self.authenticatingLabel setHidden:NO];
-    [self.authenticatingLabel setText:@"Authenticating..."];
+    [self.addingLabel setHidden:NO];
+    [self.addingLabel setText:@"Adding site..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/api/login",
@@ -140,7 +154,7 @@
 
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
-    [self.authenticatingLabel setHidden:YES];
+    [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
@@ -148,12 +162,14 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSLog(@"Bad login: %@", results);
-        [appDelegate showLogin];
-        [self.errorLabel setText:[[[results valueForKey:@"errors"] valueForKey:@"__all__"] objectAtIndex:0]];
+        NSDictionary *errors = [results valueForKey:@"errors"];
+        if ([errors valueForKey:@"username"]) {
+            [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];   
+        } else if ([errors valueForKey:@"__all__"]) {
+            [self.errorLabel setText:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
+        }
         [self.errorLabel setHidden:NO];
     } else {
-        NSLog(@"Good login");
         [appDelegate reloadFeedsView];
     }
     
@@ -162,8 +178,8 @@
 
 
 - (void)addFolder {
-    [self.authenticatingLabel setHidden:NO];
-    [self.authenticatingLabel setText:@"Adding Folder..."];
+    [self.addingLabel setHidden:NO];
+    [self.addingLabel setText:@"Adding Folder..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/api/add_folder",
@@ -179,7 +195,7 @@
 }
 
 - (void)finishAddFolder:(ASIHTTPRequest *)request {
-    [self.authenticatingLabel setHidden:YES];
+    [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
@@ -187,8 +203,6 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSLog(@"Bad login: %@", results);
-        [appDelegate showLogin];
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"email"]) {
             [self.errorLabel setText:[[errors valueForKey:@"email"] objectAtIndex:0]];   
@@ -197,7 +211,6 @@
         }
         [self.errorLabel setHidden:NO];
     } else {
-        NSLog(@"Good login");
         [appDelegate reloadFeedsView];
     }
     
@@ -220,44 +233,35 @@
 - (void)animateLoop {
     if ([self.addTypeControl selectedSegmentIndex] == 0) {
         [addButton setTitle:@"Add Site"];
+        [newFolderInput resignFirstResponder];
         [UIView animateWithDuration:0.5 animations:^{
-            // Login
-//            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
-//            usernameOrEmailLabel.alpha = 1.0;
-//            
-//            
-//            passwordInput.frame = CGRectMake(20, 129, 280, 31);
-//            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-//            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
-//            
-//            emailInput.alpha = 0.0;
-//            emailLabel.alpha = 0.0;
+            siteAddressInput.frame = CGRectMake(newFolderInput.frame.origin.x, 
+                                                siteAddressInput.frame.origin.y, 
+                                                siteAddressInput.frame.size.width, 
+                                                siteAddressInput.frame.size.height);
+            newFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+                                              siteAddressInput.frame.origin.y, 
+                                              siteAddressInput.frame.size.width, 
+                                              siteAddressInput.frame.size.height);
         }];
-        
-//        passwordInput.returnKeyType = UIReturnKeyGo;
-//        usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
-//        [usernameInput resignFirstResponder];
-//        [usernameInput becomeFirstResponder];
     } else {
         [addButton setTitle:@"Add Folder"];
+        [siteAddressInput resignFirstResponder];
+        newFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+                                          siteAddressInput.frame.origin.y, 
+                                          siteAddressInput.frame.size.width, 
+                                          siteAddressInput.frame.size.height);
         [UIView animateWithDuration:0.5 animations:^{
-            // Signup
-//            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
-//            usernameOrEmailLabel.alpha = 0.0;
-//            
-//            
-//            passwordInput.frame = CGRectMake(170, 67, 130, 31);
-//            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
-//            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
-//            
-//            emailInput.alpha = 1.0;
-//            emailLabel.alpha = 1.0;
+            newFolderInput.frame = CGRectMake(siteAddressInput.frame.origin.x, 
+                                              siteAddressInput.frame.origin.y, 
+                                              siteAddressInput.frame.size.width, 
+                                              siteAddressInput.frame.size.height);
+            siteAddressInput.frame = CGRectMake(-1 * (siteAddressInput.frame.origin.x + 
+                                                      siteAddressInput.frame.size.width), 
+                                                siteAddressInput.frame.origin.y, 
+                                                siteAddressInput.frame.size.width, 
+                                                siteAddressInput.frame.size.height);
         }];
-        
-//        passwordInput.returnKeyType = UIReturnKeyNext;
-//        usernameInput.keyboardType = UIKeyboardTypeAlphabet;
-//        [usernameInput resignFirstResponder];
-//        [usernameInput becomeFirstResponder];
     }
 }
 
@@ -287,6 +291,14 @@ numberOfRowsInComponent:(NSInteger)component {
       didSelectRow:(NSInteger)row 
        inComponent:(NSInteger)component {
     
+}
+
+#pragma mark -
+#pragma mark Autocomplete sites
+
+
+- (int)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 0;
 }
 
 #pragma mark -

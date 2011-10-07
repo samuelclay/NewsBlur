@@ -75,7 +75,7 @@
 							<object class="IBUISegmentedControl" id="122945842">
 								<reference key="NSNextResponder" ref="929039419"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{95, 8}, {161, 30}}</string>
+								<string key="NSFrame">{{93, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="929039419"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -148,17 +148,18 @@
 								<reference key="IBUICustomView" ref="122945842"/>
 								<reference key="IBUIToolbar" ref="929039419"/>
 							</object>
-							<object class="IBUIBarButtonItem" id="904223526">
+							<object class="IBUIBarButtonItem" id="1004249118">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<reference key="IBUIToolbar" ref="929039419"/>
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
-							<object class="IBUIBarButtonItem" id="421248050">
+							<object class="IBUIBarButtonItem" id="274994040">
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
 									<string key="NSResourceName">settings_icon.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">42</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="929039419"/>
 							</object>
@@ -300,8 +301,8 @@
 							<reference ref="277161432"/>
 							<reference ref="625055884"/>
 							<reference ref="619609825"/>
-							<reference ref="421248050"/>
-							<reference ref="904223526"/>
+							<reference ref="274994040"/>
+							<reference ref="1004249118"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -331,12 +332,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">59</int>
-						<reference key="object" ref="421248050"/>
+						<reference key="object" ref="274994040"/>
 						<reference key="parent" ref="929039419"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">60</int>
-						<reference key="object" ref="904223526"/>
+						<reference key="object" ref="1004249118"/>
 						<reference key="parent" ref="929039419"/>
 					</object>
 				</object>
@@ -1313,7 +1314,7 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="NS.key.0">settings_icon.png</string>
-			<string key="NS.object.0">{19, 19}</string>
+			<string key="NS.object.0">{19, 20}</string>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">534</string>
 	</data>
