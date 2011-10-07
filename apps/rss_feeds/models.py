@@ -512,8 +512,9 @@ class Feed(models.Model):
             feed = Feed.objects.get(pk=self.pk)
         except Feed.DoesNotExist:
             # Feed has been merged after updating. Find the right feed.
-            duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=self.pk)
-            feed = duplicate_feed.feed
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.pk)
+            if duplicate_feeds:
+                feed = duplicate_feeds[0].feed
             
         return feed
 
