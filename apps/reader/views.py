@@ -671,7 +671,7 @@ def mark_story_as_read(request):
             m.save()
         except OperationError:
             logging.user(request, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request, "~BRRead now date: %s, story_id: %s." % (m.read_date, story.story_guid))
+            logging.user(request, "~BRRead now date: %s, story_date: %s, story_id: %s." % (m.read_date, story.story_date, story.story_guid))
             logging.user(request, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
