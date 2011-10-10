@@ -249,10 +249,11 @@ def load_feeds_flat(request):
                 for folder_name in item:
                     folder = item[folder_name]
                     flat_folder_name = "%s%s%s" % (
-                        parent_folder,
+                        parent_folder if parent_folder and parent_folder != ' ' else "",
                         " - " if parent_folder and parent_folder != ' ' else "",
                         folder_name
                     )
+                    flat_folders[flat_folder_name] = []
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
@@ -761,7 +762,7 @@ def add_url(request):
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST.get('parent_folder', '')
-    
+
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
     if folder:

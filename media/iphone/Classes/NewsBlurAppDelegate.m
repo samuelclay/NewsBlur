@@ -110,6 +110,7 @@
 - (void)showAdd {
     UINavigationController *navController = self.navigationController;
     [navController presentModalViewController:addViewController animated:YES];
+    [addViewController reload];
 }
 
 - (void)reloadFeedsView {

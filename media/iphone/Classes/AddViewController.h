@@ -39,8 +39,9 @@
     UILabel *passwordOptionalLabel;
 }
 
-- (void)addSite;
-- (void)addFolder;
+- (void)reload;
+- (IBAction)addSite;
+- (IBAction)addFolder;
 - (IBAction)selectAddTypeSignup;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;

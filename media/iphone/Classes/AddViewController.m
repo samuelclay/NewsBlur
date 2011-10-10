@@ -47,7 +47,6 @@
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage release];
     
-    
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     [super viewDidLoad];
@@ -89,13 +88,30 @@
     [super dealloc];
 }
 
+- (IBAction)doCancelButton {
+    [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
+}
+
+- (IBAction)doAddButton {
+    if ([self.addTypeControl selectedSegmentIndex] == 0) {
+        return [self addSite];
+    } else {
+        return [self addFolder];
+    }
+}
+
+- (void)reload {
+    [folderPicker reloadAllComponents];
+}
+
 #pragma mark -
 #pragma mark Add Site
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    if (textField == inFolderInput) {
+    if (textField == inFolderInput && ![inFolderInput isFirstResponder]) {
         [siteAddressInput resignFirstResponder];
         [newFolderInput resignFirstResponder];
+        [inFolderInput setInputView:folderPicker];
         folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
         folderPicker.hidden = NO;
         [UIView animateWithDuration:.35 animations:^{
@@ -118,34 +134,31 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField == inFolderInput) {
+        
+    } else if (textField == siteAddressInput) {
+        [self addSite];
+    } else if (textField == newFolderInput) {
+        [self addFolder];
     }
-//	if(textField == usernameInput) {
-//        [passwordInput becomeFirstResponder];
-//    } else if (textField == passwordInput && [self.addTypeControl selectedSegmentIndex] == 0) {
-//        NSLog(@"Password return");
-//        NSLog(@"appdelegate:: %@", [self appDelegate]);
-//        [self checkPassword];
-//    } else if (textField == passwordInput && [self.addTypeControl selectedSegmentIndex] == 1) {
-//        [emailInput becomeFirstResponder];
-//    } else if (textField == emailInput) {
-//        [self registerAccount];
-//    }
 	return YES;
 }
 
-- (void)addSite {
+- (IBAction)addSite {
+    [siteAddressInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding site..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/api/login",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
-    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
-     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[inFolderInput text] forKey:@"in_folder"]; 
-    [request setPostValue:[siteAddressInput text] forKey:@"address"]; 
+    NSString *folder_title = [inFolderInput text];
+    if (folder_title == @"- Top Level -") {
+        folder_title = @"";
+    }
+    [request setPostValue:folder_title forKey:@"folder"]; 
+    [request setPostValue:[siteAddressInput text] forKey:@"url"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -162,14 +175,10 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSDictionary *errors = [results valueForKey:@"errors"];
-        if ([errors valueForKey:@"username"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];   
-        } else if ([errors valueForKey:@"__all__"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
-        }
+        [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
+        [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
         [appDelegate reloadFeedsView];
     }
     
@@ -177,17 +186,28 @@
 }
 
 
-- (void)addFolder {
+#pragma mark -
+#pragma mark Add Folder
+
+
+- (IBAction)addFolder {
+    [newFolderInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding Folder..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/api/add_folder",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[inFolderInput text] forKey:@"in_folder"]; 
-    [request setPostValue:[newFolderInput text] forKey:@"folder_name"]; 
+    // [string rangeOfString:substring options:NSBackwardsSearch].location
+    NSString *parent_folder = [inFolderInput text];
+    int folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
+    if ([parent_folder length] && folder_loc > 0) {
+        parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
+    }
+    [request setPostValue:parent_folder forKey:@"parent_folder"]; 
+    [request setPostValue:[newFolderInput text] forKey:@"folder"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -203,14 +223,10 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        NSDictionary *errors = [results valueForKey:@"errors"];
-        if ([errors valueForKey:@"email"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"email"] objectAtIndex:0]];   
-        } else if ([errors valueForKey:@"username"]) {
-            [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];
-        }
+        [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
+        [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
         [appDelegate reloadFeedsView];
     }
     
@@ -224,7 +240,7 @@
 }
 
 #pragma mark -
-#pragma mark Add Folder
+#pragma mark Page Controls
 
 - (IBAction)selectAddTypeSignup {
     [self animateLoop];
@@ -290,7 +306,13 @@ numberOfRowsInComponent:(NSInteger)component {
 - (void)pickerView:(UIPickerView *)pickerView 
       didSelectRow:(NSInteger)row 
        inComponent:(NSInteger)component {
-    
+    NSString *folder_title;
+    if (row == 0) {
+        folder_title = @"- Top Level -";
+    } else {
+        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row];        
+    }
+    [inFolderInput setText:folder_title];
 }
 
 #pragma mark -
@@ -299,17 +321,6 @@ numberOfRowsInComponent:(NSInteger)component {
 
 - (int)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return 0;
-}
-
-#pragma mark -
-#pragma mark Server
-
-- (IBAction)doCancelButton {
-    [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
-}
-
-- (IBAction)doAddButton {
-    
 }
 
 @end
