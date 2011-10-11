@@ -666,7 +666,7 @@ def mark_story_as_read(request):
             continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story.story_guid)
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story_id)
         try:
             m.save()
         except OperationError:
@@ -676,6 +676,7 @@ def mark_story_as_read(request):
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
             logging.user(request, "~BROriginal read date: %s, story id: %s, story.id: %s" % (m.read_date, m.story_id, m.story.id))
+            m.story_id = story_id
             m.read_date = date
             m.save()
     
