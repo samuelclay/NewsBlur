@@ -119,6 +119,10 @@
     [siteAddressInput setText:@""];
     [newFolderInput setText:@""];
     [folderPicker reloadAllComponents];
+    
+    folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, 
+                                    folderPicker.frame.size.width, 
+                                    folderPicker.frame.size.height);
 }
 
 #pragma mark -
@@ -130,11 +134,12 @@
         [siteAddressInput resignFirstResponder];
         [newFolderInput resignFirstResponder];
         [inFolderInput setInputView:folderPicker];
-        folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);
-        folderPicker.hidden = NO;
-        [UIView animateWithDuration:.35 animations:^{
-            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
-        }];
+        if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
+            folderPicker.hidden = NO;
+            [UIView animateWithDuration:.35 animations:^{
+                folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
+            }];
+        }
         return NO;
     } else if (textField == siteAddressInput) {
         [self hideFolderPicker];
@@ -166,11 +171,8 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *folder_title = [inFolderInput text];
-    if (folder_title == @"- Top Level -") {
-        folder_title = @"";
-    }
-    [request setPostValue:folder_title forKey:@"folder"]; 
+    NSString *parent_folder = [self extractParentFolder];
+    [request setPostValue:parent_folder forKey:@"folder"]; 
     [request setPostValue:[siteAddressInput text] forKey:@"url"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
@@ -198,6 +200,14 @@
     [results release];
 }
 
+- (NSString *)extractParentFolder {
+    NSString *parent_folder = [inFolderInput text];
+    int folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
+    if ([parent_folder length] && folder_loc != NSNotFound) {
+        parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
+    }
+    return parent_folder;
+}
 
 #pragma mark -
 #pragma mark Add Folder
@@ -214,11 +224,7 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *parent_folder = [inFolderInput text];
-    int folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
-    if ([parent_folder length] && folder_loc != NSNotFound) {
-        parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
-    }
+    NSString *parent_folder = [self extractParentFolder];
     [request setPostValue:parent_folder forKey:@"parent_folder"]; 
     [request setPostValue:[newFolderInput text] forKey:@"folder"]; 
     [request setDelegate:self];
@@ -248,8 +254,12 @@
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    [self.addingLabel setHidden:YES];
+    [self.errorLabel setHidden:NO];
+    [self.activityIndicator stopAnimating];
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    [self.errorLabel setText:error.localizedDescription];
 }
 
 #pragma mark -

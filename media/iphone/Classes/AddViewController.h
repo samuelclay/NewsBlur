@@ -45,6 +45,7 @@
 - (IBAction)selectAddTypeSignup;
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
+- (NSString *)extractParentFolder;
 - (void)animateLoop;
 - (void)hideFolderPicker;
 
