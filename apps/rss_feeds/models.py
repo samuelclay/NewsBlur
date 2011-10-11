@@ -559,7 +559,7 @@ class Feed(models.Model):
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
-                
+                    story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -573,9 +573,10 @@ class Feed(models.Model):
                         story_content_diff = original_content
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    if existing_story.story_title != story.get('title'):
-                        # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-                        pass
+                    # if existing_story.story_title != story.get('title'):
+                    #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
+                    if existing_story.story_guid != story_guid:
+                        self.update_read_stories_with_new_guid(existing_story.story_guid, story_guid)
 
                     existing_story.story_feed = self.pk
                     existing_story.story_date = story.get('published')
@@ -584,7 +585,7 @@ class Feed(models.Model):
                     existing_story.story_original_content = original_content
                     existing_story.story_author_name = story.get('author')
                     existing_story.story_permalink = story.get('link')
-                    existing_story.story_guid = story.get('guid') or story.get('id') or story.get('link')
+                    existing_story.story_guid = story_guid
                     existing_story.story_tags = story_tags
                     try:
                         existing_story.save()
@@ -601,6 +602,13 @@ class Feed(models.Model):
                     # logging.debug("Unchanged story: %s " % story.get('title'))
             
         return ret_values
+    
+    def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
+        from apps.reader.models import MUserStory
+        read_stories = MUserStory.objects.filter(feed_id=self.pk, story_id=old_story_guid)
+        for story in read_stories:
+            story.story_id = new_story_guid
+            story.save()
         
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
