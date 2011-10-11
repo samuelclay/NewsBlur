@@ -46,8 +46,22 @@
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage release];
+    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    [newFolderInput setLeftView:folderImage2];
+    [newFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    [folderImage2 release];
+    
+    UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
+    [siteAddressInput setLeftView:urlImage];
+    [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
+    [urlImage release];
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    newFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+                                      siteAddressInput.frame.origin.y, 
+                                      siteAddressInput.frame.size.width, 
+                                      siteAddressInput.frame.size.height);
     
     [super viewDidLoad];
 }
@@ -101,6 +115,9 @@
 }
 
 - (void)reload {
+    [inFolderInput setText:@""];
+    [siteAddressInput setText:@""];
+    [newFolderInput setText:@""];
     [folderPicker reloadAllComponents];
 }
 
@@ -108,6 +125,7 @@
 #pragma mark Add Site
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    [errorLabel setText:@""];
     if (textField == inFolderInput && ![inFolderInput isFirstResponder]) {
         [siteAddressInput resignFirstResponder];
         [newFolderInput resignFirstResponder];
@@ -119,15 +137,9 @@
         }];
         return NO;
     } else if (textField == siteAddressInput) {
-        [UIView animateWithDuration:.35 animations:^{
-            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
-        }];
-        
+        [self hideFolderPicker];
     } else if (textField == newFolderInput) {
-        [UIView animateWithDuration:.35 animations:^{
-            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
-        }];
-        
+        [self hideFolderPicker];
     }
     return YES;
 }
@@ -144,6 +156,7 @@
 }
 
 - (IBAction)addSite {
+    [self hideFolderPicker];
     [siteAddressInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding site..."];
@@ -191,6 +204,7 @@
 
 
 - (IBAction)addFolder {
+    [self hideFolderPicker];
     [newFolderInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding Folder..."];
@@ -200,10 +214,9 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    // [string rangeOfString:substring options:NSBackwardsSearch].location
     NSString *parent_folder = [inFolderInput text];
     int folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
-    if ([parent_folder length] && folder_loc > 0) {
+    if ([parent_folder length] && folder_loc != NSNotFound) {
         parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
     }
     [request setPostValue:parent_folder forKey:@"parent_folder"]; 
@@ -315,12 +328,23 @@ numberOfRowsInComponent:(NSInteger)component {
     [inFolderInput setText:folder_title];
 }
 
+- (void)hideFolderPicker {
+    [UIView animateWithDuration:.35 animations:^{
+        folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
+    }];
+}
+
 #pragma mark -
 #pragma mark Autocomplete sites
 
 
 - (int)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return 0;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView 
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
 }
 
 @end

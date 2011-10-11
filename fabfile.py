@@ -116,16 +116,10 @@ def staging_full():
 
 @roles('task')
 def celery():
-    run('git pull')
-    celery_stop()
-    celery_start()
-
-@roles('task')
-def celery_stop():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
-        celery_stop()
-        celery_start()
+    celery_stop()
+    celery_start()
 
 @roles('task')
 def celery_stop():

@@ -46,6 +46,7 @@
 - (IBAction)doCancelButton;
 - (IBAction)doAddButton;
 - (void)animateLoop;
+- (void)hideFolderPicker;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITextField *inFolderInput;
