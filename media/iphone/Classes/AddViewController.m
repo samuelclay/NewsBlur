@@ -7,6 +7,7 @@
 //
 
 #import "AddViewController.h"
+#import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
@@ -23,8 +24,10 @@
 @synthesize folderPicker;
 @synthesize siteTable;
 @synthesize jsonString;
+@synthesize autocompleteResults;
 @synthesize navBar;
 @synthesize activityIndicator;
+@synthesize siteActivityIndicator;
 @synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
@@ -98,6 +101,7 @@
     [folderPicker release];
     [siteTable release];
     [jsonString release];
+    [autocompleteResults release];
     [navBar release];
     [super dealloc];
 }
@@ -158,6 +162,46 @@
         [self addFolder];
     }
 	return YES;
+}
+
+- (IBAction)checkSiteAddress {
+    NSString *phrase = siteAddressInput.text;
+    int period_loc = [phrase rangeOfString:@"."].location;
+    NSLog(@"phrase: %@ - %d", phrase, period_loc);
+    if (period_loc != NSNotFound) {
+        // URL
+        [siteAddressInput setReturnKeyType:UIReturnKeyDone];
+        [siteAddressInput resignFirstResponder];
+        [siteAddressInput becomeFirstResponder];
+    } else {
+        // Search
+        [siteAddressInput setReturnKeyType:UIReturnKeySearch];
+        [siteAddressInput resignFirstResponder];
+        [siteAddressInput becomeFirstResponder];
+    }
+    
+    
+    [self.siteActivityIndicator startAnimating];
+    [siteAddressInput setLeftView:self.siteActivityIndicator];
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@",
+                           NEWSBLUR_URL, phrase];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(autocompleteSite:)];
+    [request startAsynchronous];
+}
+
+- (void)autocompleteSite:(ASIHTTPRequest *)request {
+    [self.siteActivityIndicator stopAnimating];
+    UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
+    [siteAddressInput setLeftView:urlImage];
+    [urlImage release];
+    NSString *responseString = [request responseString];
+    autocompleteResults = [responseString JSONValue];
+    NSLog(@"%@", autocompleteResults);
+    [siteTable reloadData];
+    [siteTable setHidden:NO];
 }
 
 - (IBAction)addSite {
@@ -349,12 +393,33 @@ numberOfRowsInComponent:(NSInteger)component {
 
 
 - (int)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
+    return [autocompleteResults count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *AddSiteAutocompleteCellIdentifier = @"AddSiteAutocompleteCellIdentifier";
     
+	AddSiteAutocompleteCell *cell = (AddSiteAutocompleteCell *)[tableView dequeueReusableCellWithIdentifier:AddSiteAutocompleteCellIdentifier];
+	if (cell == nil) {
+		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"AddSiteAutocompleteCell"
+                                                     owner:self
+                                                   options:nil];
+        for (id oneObject in nib) {
+            if ([oneObject isKindOfClass:[AddSiteAutocompleteCell class]]) {
+                cell = (AddSiteAutocompleteCell *)oneObject;
+            }
+        }
+	}
+    
+    NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
+    int subs = [[result objectForKey:@"num_subscribers"] intValue];
+    cell.feedTitle.text = [result objectForKey:@"label"];
+    cell.feedUrl.text = [result objectForKey:@"value"];
+    cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@", 
+                          subs, subs == 1 ? @"" : @"s"];
+    
+    return cell;
 }
 
 @end

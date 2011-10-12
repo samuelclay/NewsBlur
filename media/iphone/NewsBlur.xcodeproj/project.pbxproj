@@ -91,6 +91,8 @@
 		FFD5338D143E701400C5555D /* settings_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFD5338C143E701400C5555D /* settings_icon@2x.png */; };
 		FFD53390143E722000C5555D /* network_icon_all.png in Resources */ = {isa = PBXBuildFile; fileRef = FFD5338E143E722000C5555D /* network_icon_all.png */; };
 		FFD53391143E722000C5555D /* network_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FFD5338F143E722000C5555D /* network_icon.png */; };
+		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
+		FFD887F11445F1E800385399 /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFD887EF1445F1E800385399 /* AddSiteAutocompleteCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -221,6 +223,9 @@
 		FFD5338C143E701400C5555D /* settings_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings_icon@2x.png"; sourceTree = "<group>"; };
 		FFD5338E143E722000C5555D /* network_icon_all.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = network_icon_all.png; sourceTree = "<group>"; };
 		FFD5338F143E722000C5555D /* network_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = network_icon.png; sourceTree = "<group>"; };
+		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
+		FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteAutocompleteCell.m; sourceTree = "<group>"; };
+		FFD887EF1445F1E800385399 /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -260,6 +265,9 @@
 				FF5EA47C143B691000B7563D /* AddViewController.h */,
 				FF5EA47D143B691000B7563D /* AddViewController.m */,
 				FF5EA47E143B691000B7563D /* AddViewController.xib */,
+				FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */,
+				FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */,
+				FFD887EF1445F1E800385399 /* AddSiteAutocompleteCell.xib */,
 				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
 				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
 				787A0CDA11CE65330056422D /* FeedDetailViewController.xib */,
@@ -536,6 +544,7 @@
 				FFD5338D143E701400C5555D /* settings_icon@2x.png in Resources */,
 				FFD53390143E722000C5555D /* network_icon_all.png in Resources */,
 				FFD53391143E722000C5555D /* network_icon.png in Resources */,
+				FFD887F11445F1E800385399 /* AddSiteAutocompleteCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -580,6 +589,7 @@
 				FF4BBC1E13F7487A001EBEBD /* TransparentToolbar.m in Sources */,
 				FF56EC7B13F755E40009D8E0 /* MBProgressHUD.m in Sources */,
 				FF5EA47F143B691000B7563D /* AddViewController.m in Sources */,
+				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
