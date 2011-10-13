@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1056</int>
-		<string key="IBDocument.SystemVersion">11B26</string>
+		<string key="IBDocument.SystemVersion">11C74</string>
 		<string key="IBDocument.InterfaceBuilderVersion">1617</string>
-		<string key="IBDocument.AppKitVersion">1138</string>
-		<string key="IBDocument.HIToolboxVersion">566.00</string>
+		<string key="IBDocument.AppKitVersion">1138.23</string>
+		<string key="IBDocument.HIToolboxVersion">567.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			<string key="NS.object.0">534</string>
@@ -319,12 +319,13 @@
 					<object class="IBUIActivityIndicatorView" id="450177912">
 						<reference key="NSNextResponder" ref="973185930"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{25, 136}, {20, 20}}</string>
+						<string key="NSFrame">{{24, 136}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="973185930"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="919897576"/>
+						<reference key="NSNextKeyView" ref="39450128"/>
 						<string key="NSReuseIdentifierKey">_NS:824</string>
-						<bool key="IBUIOpaque">NO</bool>
+						<reference key="IBUIBackgroundColor" ref="346851231"/>
+						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIStyle">2</int>
 					</object>
@@ -336,17 +337,20 @@
 							<object class="IBUITableView" id="919897576">
 								<reference key="NSNextResponder" ref="39450128"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrameSize">{280, 77}</string>
+								<string key="NSFrameSize">{320, 81}</string>
 								<reference key="NSSuperview" ref="39450128"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="292705575"/>
 								<string key="NSReuseIdentifierKey">_NS:392</string>
-								<reference key="IBUIBackgroundColor" ref="346851231"/>
+								<object class="NSColor" key="IBUIBackgroundColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MC42IDAuNiAwLjYgMC42AA</bytes>
+								</object>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<bool key="IBUIAlwaysBounceVertical">YES</bool>
 								<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
-								<int key="IBUISeparatorStyle">1</int>
+								<int key="IBUISeparatorStyle">2</int>
 								<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
 								<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
 								<float key="IBUIRowHeight">44</float>
@@ -354,11 +358,17 @@
 								<float key="IBUISectionFooterHeight">22</float>
 							</object>
 						</object>
-						<string key="NSFrame">{{20, 164}, {280, 77}}</string>
+						<string key="NSFrame">{{0, 164}, {320, 81}}</string>
 						<reference key="NSSuperview" ref="973185930"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="919897576"/>
 						<string key="NSReuseIdentifierKey">_NS:174</string>
+						<object class="NSColor" key="IBUIBackgroundColor" id="321742317">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MCAwAA</bytes>
+						</object>
 						<bool key="IBUIClipsSubviews">YES</bool>
+						<float key="IBUIAlpha">0.0</float>
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -4756,10 +4766,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								</object>
 							</object>
 						</object>
-						<object class="NSColor" key="NSColor">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MCAwAA</bytes>
-						</object>
+						<reference key="NSColor" ref="321742317"/>
 					</object>
 					<string key="IBUIColorCocoaTouchKeyPath">scrollViewTexturedBackgroundColor</string>
 				</object>
@@ -4968,15 +4975,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="label">checkSiteAddress</string>
 						<reference key="source" ref="782639577"/>
 						<reference key="destination" ref="372490531"/>
-						<int key="IBEventType">13</int>
-					</object>
-					<int key="connectionID">59</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">checkSiteAddress</string>
-						<reference key="source" ref="782639577"/>
-						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">18</int>
 					</object>
 					<int key="connectionID">60</int>
@@ -4988,6 +4986,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="destination" ref="450177912"/>
 					</object>
 					<int key="connectionID">62</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">siteScrollView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="39450128"/>
+					</object>
+					<int key="connectionID">64</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -5191,7 +5197,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">63</int>
+			<int key="maxID">64</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5279,6 +5285,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>passwordOptionalLabel</string>
 							<string>siteActivityIndicator</string>
 							<string>siteAddressInput</string>
+							<string>siteScrollView</string>
 							<string>siteTable</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
@@ -5301,6 +5308,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>UILabel</string>
 							<string>UIActivityIndicatorView</string>
 							<string>UITextField</string>
+							<string>UIScrollView</string>
 							<string>UITableView</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
@@ -5326,6 +5334,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>passwordOptionalLabel</string>
 							<string>siteActivityIndicator</string>
 							<string>siteAddressInput</string>
+							<string>siteScrollView</string>
 							<string>siteTable</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
@@ -5395,6 +5404,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">siteAddressInput</string>
 								<string key="candidateClassName">UITextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">siteScrollView</string>
+								<string key="candidateClassName">UIScrollView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">siteTable</string>

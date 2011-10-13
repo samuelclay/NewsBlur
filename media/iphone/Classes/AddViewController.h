@@ -26,6 +26,7 @@
     UIBarButtonItem *cancelButton;
     UIPickerView *folderPicker;
     UITableView *siteTable;
+    UIScrollView *siteScrollView;
     
     UINavigationBar *navBar;
     UIActivityIndicatorView *activityIndicator;
@@ -62,6 +63,7 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *cancelButton;
 @property (nonatomic, retain) IBOutlet UIPickerView *folderPicker;
 @property (nonatomic, retain) IBOutlet UITableView *siteTable;
+@property (nonatomic, retain) IBOutlet UIScrollView *siteScrollView;
 @property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, retain) NSMutableArray *autocompleteResults;
 

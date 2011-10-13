@@ -275,7 +275,6 @@
     [webView loadHTMLString:htmlString
                     baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
                                                   objectForKey:@"feed_link"]]];
-    
 }
 
 - (IBAction)doNextUnreadStory {

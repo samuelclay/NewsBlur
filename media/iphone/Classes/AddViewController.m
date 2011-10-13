@@ -23,6 +23,7 @@
 @synthesize cancelButton;
 @synthesize folderPicker;
 @synthesize siteTable;
+@synthesize siteScrollView;
 @synthesize jsonString;
 @synthesize autocompleteResults;
 @synthesize navBar;
@@ -73,7 +74,7 @@
     [self.errorLabel setHidden:YES];
     [self.addingLabel setHidden:YES];
     [self.folderPicker setHidden:YES];
-    [self.siteTable setHidden:YES];
+    [self.siteScrollView setAlpha:0];
     [self.activityIndicator stopAnimating];
     [super viewWillAppear:animated];
 }
@@ -100,6 +101,7 @@
     [cancelButton release];
     [folderPicker release];
     [siteTable release];
+    [siteScrollView release];
     [jsonString release];
     [autocompleteResults release];
     [navBar release];
@@ -166,8 +168,15 @@
 
 - (IBAction)checkSiteAddress {
     NSString *phrase = siteAddressInput.text;
+    if ([phrase length] == 0) {
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
+                         animations:^{
+                             [siteScrollView setAlpha:0];
+                         } completion:nil];
+        return;
+    }
+    
     int period_loc = [phrase rangeOfString:@"."].location;
-    NSLog(@"phrase: %@ - %d", phrase, period_loc);
     if (period_loc != NSNotFound) {
         // URL
         [siteAddressInput setReturnKeyType:UIReturnKeyDone];
@@ -182,9 +191,8 @@
     
     
     [self.siteActivityIndicator startAnimating];
-    [siteAddressInput setLeftView:self.siteActivityIndicator];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@",
-                           NEWSBLUR_URL, phrase];
+                           NEWSBLUR_URL, [phrase stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request setDelegate:self];
@@ -193,15 +201,17 @@
 }
 
 - (void)autocompleteSite:(ASIHTTPRequest *)request {
+    if ([siteAddressInput.text length] > 0) {
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
+                         animations:^{
+                             [siteScrollView setAlpha:1];
+                         } completion:nil];
+    }
     [self.siteActivityIndicator stopAnimating];
-    UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
-    [siteAddressInput setLeftView:urlImage];
-    [urlImage release];
     NSString *responseString = [request responseString];
-    autocompleteResults = [responseString JSONValue];
+    autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
     NSLog(@"%@", autocompleteResults);
     [siteTable reloadData];
-    [siteTable setHidden:NO];
 }
 
 - (IBAction)addSite {
@@ -344,6 +354,7 @@
                                                 siteAddressInput.frame.origin.y, 
                                                 siteAddressInput.frame.size.width, 
                                                 siteAddressInput.frame.size.height);
+            siteScrollView.alpha = 0;
         }];
     }
 }
@@ -414,12 +425,25 @@ numberOfRowsInComponent:(NSInteger)component {
     
     NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
     int subs = [[result objectForKey:@"num_subscribers"] intValue];
+    NSNumberFormatter *numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+	[numberFormatter setPositiveFormat:@"#,###"];
+	NSNumber *theScore = [NSNumber numberWithInt:subs];
     cell.feedTitle.text = [result objectForKey:@"label"];
     cell.feedUrl.text = [result objectForKey:@"value"];
     cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@", 
-                          subs, subs == 1 ? @"" : @"s"];
+                          [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView 
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
+    [self.siteAddressInput setText:[result objectForKey:@"value"]];
+    [self addSite];
+    [UIView animateWithDuration:.35 animations:^{
+        siteScrollView.alpha = 0;
+    }];
 }
 
 @end
