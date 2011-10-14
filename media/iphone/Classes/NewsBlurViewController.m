@@ -350,6 +350,9 @@
     }
     [self.feedTitlesTable endUpdates];
     
+    CGPoint offset = CGPointMake(0, 0);
+    [self.feedTitlesTable setContentOffset:offset animated:YES];
+
     // Forget still visible feeds, since they won't be populated when
     // all feeds are showing, and shouldn't be populated after this
     // hide/show runs.
@@ -398,18 +401,8 @@
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     cell.feedTitle = [feed objectForKey:@"feed_title"];
     
-    NSString *favicon = [feed objectForKey:@"favicon"];
-    if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-        NSLog(@"Storing cache: %@ - %@", feedIdStr, favicon);
-        [imageCache setObject:favicon forKey:feedIdStr];
-    }
-    UIImage *image;
-    NSString *cachedImage = [imageCache objectForKey:feedIdStr];
-    NSLog(@"Cache: %@ - %@", feedIdStr, cachedImage);
-    if (cachedImage) {
-        NSData *imageData = [NSData dataWithBase64EncodedString:cachedImage];
-        image = [UIImage imageWithData:imageData];
-    } else {
+    UIImage *image = [imageCache objectForKey:feedIdStr];
+    if (!image) {
         image = [UIImage imageNamed:@"world.png"];
     }
     cell.feedFavicon = image;
@@ -514,6 +507,7 @@ viewForHeaderInSection:(NSInteger)section {
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
+    NSMutableDictionary *addToVisibleFeeds = [NSMutableDictionary dictionary];
     
     if (newLevel <= previousLevel) {
         [self calculateFeedLocations:NO];
@@ -523,11 +517,23 @@ viewForHeaderInSection:(NSInteger)section {
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
         NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
         NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+        
+        if (s == 9) {
+//            NSLog(@"Section %d: %@. %d to %d", s, folderName, previousLevel, newLevel);
+        }
+        
         for (int f=0; f < [originalFolder count]; f++) {
             NSNumber *feedId = [originalFolder objectAtIndex:f];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
             NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+            
+            if (s == 9) {
+//                NSLog(@"MaxScore: %d for %@ (%@/%@/%@). Visible: %@", maxScore, 
+//                      [feed objectForKey:@"feed_title"],
+//                      [feed objectForKey:@"ng"], [feed objectForKey:@"nt"], [feed objectForKey:@"ng"],
+//                      [self.visibleFeeds objectForKey:feedIdStr]);
+            }
             
             if ([self.visibleFeeds objectForKey:feedIdStr]) {
                 if (maxScore < newLevel) {
@@ -547,7 +553,7 @@ viewForHeaderInSection:(NSInteger)section {
                     for (int l=0; l < [activeFolderFeeds count]; l++) {
                         if ([originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] == feedId) {
                             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:l inSection:s];
-                            [self.visibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+                            [addToVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
                             [insertIndexPaths addObject:indexPath];
                             break;
                         }
@@ -556,6 +562,10 @@ viewForHeaderInSection:(NSInteger)section {
                 
             }
         }
+    }
+    
+    for (id feedIdStr in addToVisibleFeeds) {
+        [self.visibleFeeds setObject:[addToVisibleFeeds objectForKey:feedIdStr] forKey:feedIdStr];
     }
     
     for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
@@ -569,7 +579,7 @@ viewForHeaderInSection:(NSInteger)section {
     }
     
     if (newLevel > previousLevel) {
-        [self calculateFeedLocations:YES];
+        [self calculateFeedLocations:NO];
     }
     
     [self.feedTitlesTable beginUpdates];
@@ -582,6 +592,8 @@ viewForHeaderInSection:(NSInteger)section {
                                     withRowAnimation:UITableViewRowAnimationNone];
     }
     [self.feedTitlesTable endUpdates];
+
+    [self calculateFeedLocations:YES];
 }
 
 - (void)redrawUnreadCounts {
@@ -608,6 +620,8 @@ viewForHeaderInSection:(NSInteger)section {
                 [feedLocations addObject:location];
             } else {
                 int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+//                NSLog(@"Computing score for %@: %d in %d (markVisible: %d)", 
+//                        [feed objectForKey:@"feed_title"], maxScore, appDelegate.selectedIntelligence, markVisible);
                 if (maxScore >= appDelegate.selectedIntelligence) {
                     NSNumber *location = [NSNumber numberWithInt:f];
                     [feedLocations addObject:location];
@@ -654,6 +668,13 @@ viewForHeaderInSection:(NSInteger)section {
         NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feed_id];
         [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
         [appDelegate.dictFeeds setValue:feed forKey:feed_id];
+        
+        NSString *favicon = [feed objectForKey:@"favicon"];
+        if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
+            NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+            UIImage *faviconImage = [UIImage imageWithData:imageData];
+            [imageCache setObject:faviconImage forKey:feed_id];
+        }
     }
     
     [results release];
