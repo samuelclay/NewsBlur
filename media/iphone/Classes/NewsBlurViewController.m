@@ -14,6 +14,7 @@
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
+#import "Utilities.h"
 
 #define kTableViewRowHeight 40;
 
@@ -34,6 +35,7 @@
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
 @synthesize lastUpdate;
+@synthesize imageCache;
 
 #pragma mark -
 #pragma mark Globals
@@ -60,6 +62,8 @@
      name:UIApplicationWillEnterForegroundNotification
      object:nil];
     
+    imageCache = [[NSCache alloc] init];
+    [imageCache setDelegate:self];
     [addButton setWidth:40];
     
     [super viewDidLoad];
@@ -147,6 +151,7 @@
     [addButton release];
     [pull release];
     [lastUpdate release];
+    [imageCache release];
     
     [super dealloc];
 }
@@ -395,11 +400,19 @@
     
     NSString *favicon = [feed objectForKey:@"favicon"];
     if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-        NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-        cell.feedFavicon = [UIImage imageWithData:imageData];
-    } else {
-        cell.feedFavicon = [UIImage imageNamed:@"world.png"];
+        NSLog(@"Storing cache: %@ - %@", feedIdStr, favicon);
+        [imageCache setObject:favicon forKey:feedIdStr];
     }
+    UIImage *image;
+    NSString *cachedImage = [imageCache objectForKey:feedIdStr];
+    NSLog(@"Cache: %@ - %@", feedIdStr, cachedImage);
+    if (cachedImage) {
+        NSData *imageData = [NSData dataWithBase64EncodedString:cachedImage];
+        image = [UIImage imageWithData:imageData];
+    } else {
+        image = [UIImage imageNamed:@"world.png"];
+    }
+    cell.feedFavicon = image;
     
     cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];

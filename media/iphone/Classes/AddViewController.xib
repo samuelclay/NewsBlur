@@ -350,7 +350,7 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<bool key="IBUIAlwaysBounceVertical">YES</bool>
 								<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
-								<int key="IBUISeparatorStyle">2</int>
+								<int key="IBUISeparatorStyle">1</int>
 								<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
 								<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
 								<float key="IBUIRowHeight">44</float>
@@ -363,7 +363,7 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="919897576"/>
 						<string key="NSReuseIdentifierKey">_NS:174</string>
-						<object class="NSColor" key="IBUIBackgroundColor" id="321742317">
+						<object class="NSColor" key="IBUIBackgroundColor" id="333654850">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
@@ -4766,7 +4766,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								</object>
 							</object>
 						</object>
-						<reference key="NSColor" ref="321742317"/>
+						<reference key="NSColor" ref="333654850"/>
 					</object>
 					<string key="IBUIColorCocoaTouchKeyPath">scrollViewTexturedBackgroundColor</string>
 				</object>

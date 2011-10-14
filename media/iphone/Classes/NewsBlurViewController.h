@@ -25,6 +25,7 @@
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
+    NSCache *imageCache;
     
 	IBOutlet UITableView * feedTitlesTable;
 	IBOutlet UIToolbar * feedViewToolbar;
@@ -67,6 +68,7 @@
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, retain) PullToRefreshView *pull;
 @property (nonatomic, retain) NSDate *lastUpdate;
+@property (nonatomic, retain) NSCache *imageCache;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 
 @end
