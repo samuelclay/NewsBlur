@@ -1,5 +1,5 @@
 //
-//  LoginViewController.m
+//  AddViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 10/31/10.
@@ -17,7 +17,7 @@
 
 @synthesize appDelegate;
 @synthesize inFolderInput;
-@synthesize newFolderInput;
+@synthesize addFolderInput;
 @synthesize siteAddressInput;
 @synthesize addButton;
 @synthesize cancelButton;
@@ -51,8 +51,8 @@
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage release];
     UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
-    [newFolderInput setLeftView:folderImage2];
-    [newFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    [addFolderInput setLeftView:folderImage2];
+    [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage2 release];
     
     UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
@@ -62,7 +62,7 @@
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
-    newFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+    addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                       siteAddressInput.frame.origin.y, 
                                       siteAddressInput.frame.size.width, 
                                       siteAddressInput.frame.size.height);
@@ -95,7 +95,7 @@
 - (void)dealloc {
     [appDelegate release];
     [inFolderInput release];
-    [newFolderInput release];
+    [addFolderInput release];
     [siteAddressInput release];
     [addButton release];
     [cancelButton release];
@@ -123,7 +123,7 @@
 - (void)reload {
     [inFolderInput setText:@""];
     [siteAddressInput setText:@""];
-    [newFolderInput setText:@""];
+    [addFolderInput setText:@""];
     [folderPicker reloadAllComponents];
     
     folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, 
@@ -138,7 +138,7 @@
     [errorLabel setText:@""];
     if (textField == inFolderInput && ![inFolderInput isFirstResponder]) {
         [siteAddressInput resignFirstResponder];
-        [newFolderInput resignFirstResponder];
+        [addFolderInput resignFirstResponder];
         [inFolderInput setInputView:folderPicker];
         if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
             folderPicker.hidden = NO;
@@ -149,7 +149,7 @@
         return NO;
     } else if (textField == siteAddressInput) {
         [self hideFolderPicker];
-    } else if (textField == newFolderInput) {
+    } else if (textField == addFolderInput) {
         [self hideFolderPicker];
     }
     return YES;
@@ -159,8 +159,12 @@
     if (textField == inFolderInput) {
         
     } else if (textField == siteAddressInput) {
-        [self addSite];
-    } else if (textField == newFolderInput) {
+        if (siteAddressInput.returnKeyType == UIReturnKeySearch) {
+            [self checkSiteAddress];
+        } else {
+            [self addSite];            
+        }
+    } else if (textField == addFolderInput) {
         [self addFolder];
     }
 	return YES;
@@ -210,7 +214,7 @@
     [self.siteActivityIndicator stopAnimating];
     NSString *responseString = [request responseString];
     autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
-    NSLog(@"%@", autocompleteResults);
+//    NSLog(@"%@", autocompleteResults);
     [siteTable reloadData];
 }
 
@@ -269,7 +273,7 @@
 
 - (IBAction)addFolder {
     [self hideFolderPicker];
-    [newFolderInput resignFirstResponder];
+    [addFolderInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding Folder..."];
     [self.errorLabel setHidden:YES];
@@ -280,7 +284,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
     [request setPostValue:parent_folder forKey:@"parent_folder"]; 
-    [request setPostValue:[newFolderInput text] forKey:@"folder"]; 
+    [request setPostValue:[addFolderInput text] forKey:@"folder"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -326,13 +330,13 @@
 - (void)animateLoop {
     if ([self.addTypeControl selectedSegmentIndex] == 0) {
         [addButton setTitle:@"Add Site"];
-        [newFolderInput resignFirstResponder];
+        [addFolderInput resignFirstResponder];
         [UIView animateWithDuration:0.5 animations:^{
-            siteAddressInput.frame = CGRectMake(newFolderInput.frame.origin.x, 
+            siteAddressInput.frame = CGRectMake(addFolderInput.frame.origin.x, 
                                                 siteAddressInput.frame.origin.y, 
                                                 siteAddressInput.frame.size.width, 
                                                 siteAddressInput.frame.size.height);
-            newFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+            addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                               siteAddressInput.frame.origin.y, 
                                               siteAddressInput.frame.size.width, 
                                               siteAddressInput.frame.size.height);
@@ -340,12 +344,12 @@
     } else {
         [addButton setTitle:@"Add Folder"];
         [siteAddressInput resignFirstResponder];
-        newFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+        addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                           siteAddressInput.frame.origin.y, 
                                           siteAddressInput.frame.size.width, 
                                           siteAddressInput.frame.size.height);
         [UIView animateWithDuration:0.5 animations:^{
-            newFolderInput.frame = CGRectMake(siteAddressInput.frame.origin.x, 
+            addFolderInput.frame = CGRectMake(siteAddressInput.frame.origin.x, 
                                               siteAddressInput.frame.origin.y, 
                                               siteAddressInput.frame.size.width, 
                                               siteAddressInput.frame.size.height);

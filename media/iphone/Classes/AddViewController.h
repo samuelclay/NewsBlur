@@ -17,7 +17,7 @@
     NewsBlurAppDelegate *appDelegate;
     
     UITextField *inFolderInput;
-    UITextField *newFolderInput;
+    UITextField *addFolderInput;
     UITextField *siteAddressInput;
     NSMutableData *jsonString;
     NSMutableArray *autocompleteResults;
@@ -56,7 +56,7 @@
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITextField *inFolderInput;
-@property (nonatomic, retain) IBOutlet UITextField *newFolderInput;
+@property (nonatomic, retain) IBOutlet UITextField *addFolderInput;
 @property (nonatomic, retain) IBOutlet UITextField *siteAddressInput;
 
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *addButton;

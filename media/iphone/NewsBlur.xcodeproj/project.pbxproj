@@ -25,7 +25,6 @@
 		78095E3F128EF35400230C8E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E3E128EF35400230C8E /* CFNetwork.framework */; };
 		78095E43128EF37E00230C8E /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E42128EF37E00230C8E /* MobileCoreServices.framework */; };
 		78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E44128EF37E00230C8E /* SystemConfiguration.framework */; };
-		78095E47128EF37F00230C8E /* libz.1.2.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E46128EF37F00230C8E /* libz.1.2.3.dylib */; };
 		78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095EC7128F30B500230C8E /* OriginalStoryViewController.m */; };
 		78095ECA128F30B500230C8E /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78095EC8128F30B500230C8E /* OriginalStoryViewController.xib */; };
 		7842ECF811D44A530066CF9D /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailViewController.m */; };
@@ -78,7 +77,7 @@
 		FF79E11E13EB756A0095C852 /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11A13EB756A0095C852 /* arrow@2x.png */; };
 		FF79E11F13EB756A0095C852 /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = FF79E11C13EB756A0095C852 /* PullToRefreshView.m */; };
 		FF7DB4C413F58486008176BF /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = FF7DB4C313F58486008176BF /* folder.png */; };
-		FF9295DC1447462D001F76C6 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FF9295DB1447462D001F76C6 /* Utilities.m */; };
+		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
 		FFCE7AE813D49165009A98F6 /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFCE7AE613D49165009A98F6 /* FeedTableCell.m */; };
 		FFD2BB8B1401AD85004277DA /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FFD2BB8A1401AD85004277DA /* libTestFlight.a */; };
 		FFD53379143E60B100C5555D /* add_button.png in Resources */ = {isa = PBXBuildFile; fileRef = FFD53377143E60B100C5555D /* add_button.png */; };
@@ -209,8 +208,7 @@
 		FF79E11B13EB756A0095C852 /* PullToRefreshView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullToRefreshView.h; sourceTree = "<group>"; };
 		FF79E11C13EB756A0095C852 /* PullToRefreshView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PullToRefreshView.m; sourceTree = "<group>"; };
 		FF7DB4C313F58486008176BF /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
-		FF9295DA1447462D001F76C6 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
-		FF9295DB1447462D001F76C6 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
+		FFAD4970144A386100BA6919 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FFCE7AE513D49165009A98F6 /* FeedTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FeedTableCell.h; path = ../NewsBlur.xcodeproj/FeedTableCell.h; sourceTree = "<group>"; };
 		FFCE7AE613D49165009A98F6 /* FeedTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FeedTableCell.m; path = ../NewsBlur.xcodeproj/FeedTableCell.m; sourceTree = "<group>"; };
 		FFD2BB891401AD85004277DA /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
@@ -236,6 +234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -243,7 +242,6 @@
 				78095E3F128EF35400230C8E /* CFNetwork.framework in Frameworks */,
 				78095E43128EF37E00230C8E /* MobileCoreServices.framework in Frameworks */,
 				78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */,
-				78095E47128EF37F00230C8E /* libz.1.2.3.dylib in Frameworks */,
 				FFD2BB8B1401AD85004277DA /* libTestFlight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,8 +281,6 @@
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
 				78095EC8128F30B500230C8E /* OriginalStoryViewController.xib */,
-				FF9295DA1447462D001F76C6 /* Utilities.h */,
-				FF9295DB1447462D001F76C6 /* Utilities.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -300,6 +296,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FFAD4970144A386100BA6919 /* libz.dylib */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -481,7 +478,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = NewsBlur;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "NewsBlur" */;
@@ -595,7 +592,6 @@
 				FF56EC7B13F755E40009D8E0 /* MBProgressHUD.m in Sources */,
 				FF5EA47F143B691000B7563D /* AddViewController.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
-				FF9295DC1447462D001F76C6 /* Utilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -614,7 +610,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
@@ -641,14 +637,17 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "NewsBlur-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = NewsBlur;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -663,15 +662,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "~/code/three20/Build/Products/three20";
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -687,11 +683,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
 				SDKROOT = iphoneos;

@@ -123,7 +123,6 @@
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        [appDelegate showLogin];
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"username"]) {
             [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];   

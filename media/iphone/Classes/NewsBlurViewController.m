@@ -14,7 +14,6 @@
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
-#import "Utilities.h"
 
 #define kTableViewRowHeight 40;
 
@@ -72,7 +71,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
                                         animated:animated];
-    if (appDelegate.activeFeedIndexPath) {
+    if (appDelegate.activeFeedIndexPath && [appDelegate activeFeed]) {
         NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
@@ -169,7 +168,7 @@
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-    NSLog(@"fetchFeedList: %d %d", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController);
+//    NSLog(@"fetchFeedList: %d %d", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController);
     if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -375,7 +374,7 @@
     
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];    
     if (cell == nil) {
-        cell = [[[FeedTableCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"FeedCellIdentifier"] autorelease];
+        cell = [[[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:@"FeedCellIdentifier"] autorelease];
         cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
         
     }

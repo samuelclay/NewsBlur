@@ -85,7 +85,7 @@
 			[outputData increaseLengthBy:halfLength];
 		}
 		
-		zStream.next_out = [outputData mutableBytes] + zStream.total_out-bytesProcessedAlready;
+		zStream.next_out = (Bytef*)[outputData mutableBytes] + zStream.total_out-bytesProcessedAlready;
 		zStream.avail_out = (unsigned int)([outputData length] - (zStream.total_out-bytesProcessedAlready));
 		
 		status = inflate(&zStream, Z_NO_FLUSH);
@@ -181,12 +181,12 @@
 		}
 		
 		// Write the inflated data out to the destination file
-		[outputStream write:[outputData bytes] maxLength:[outputData length]];
+		[outputStream write:(Bytef*)[outputData bytes] maxLength:[outputData length]];
 		
 		// Make sure nothing went wrong
 		if ([inputStream streamStatus] == NSStreamEventErrorOccurred) {
 			if (err) {
-				*err = [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Decompression of %@ failed because we were unable to write to the destination data file at &@",sourcePath,destinationPath],NSLocalizedDescriptionKey,[outputStream streamError],NSUnderlyingErrorKey,nil]];
+				*err = [NSError errorWithDomain:NetworkRequestErrorDomain code:ASICompressionError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Decompression of %@ failed because we were unable to write to the destination data file at %@",sourcePath,destinationPath],NSLocalizedDescriptionKey,[outputStream streamError],NSUnderlyingErrorKey,nil]];
             }
 			[decompressor closeStream];
 			return NO;

@@ -16,7 +16,7 @@
 @interface NewsBlurViewController : UIViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
-            ASIHTTPRequestDelegate> {
+            ASIHTTPRequestDelegate, NSCacheDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;

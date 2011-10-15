@@ -109,6 +109,7 @@
 
 - (void)showAdd {
     UINavigationController *navController = self.navigationController;
+    [addViewController initWithNibName:nil bundle:nil];
     [navController presentModalViewController:addViewController animated:YES];
     [addViewController reload];
 }
