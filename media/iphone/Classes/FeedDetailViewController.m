@@ -140,7 +140,6 @@
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.feedPage = page;
         self.pageFetching = YES;
         int storyCount = appDelegate.storyCount;
@@ -175,8 +174,6 @@
 }
 
 - (void)failLoadingFeed:(ASIHTTPRequest *)request {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
 //    if (self.feedPage <= 1) {
 //        [appDelegate.navigationController 
 //         popToViewController:[appDelegate.navigationController.viewControllers 
@@ -245,8 +242,6 @@
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.2];
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -257,8 +252,6 @@
           [error localizedDescription]);
     
     self.pageFetching = NO;
-    
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
 	// User clicking on another link before the page loads is OK.
 	if ([error code] != NSURLErrorCancelled) {
@@ -515,7 +508,6 @@
     [request setTimeOutSeconds:60];
     [request startAsynchronous];
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [appDelegate setStories:nil];
     self.feedPage = 1;
     self.pageFetching = YES;

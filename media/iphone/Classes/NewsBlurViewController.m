@@ -175,7 +175,7 @@
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
     }
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+
     NSURL *urlFeedList = [NSURL URLWithString:
                           [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",
                            NEWSBLUR_URL]];
@@ -193,9 +193,7 @@
     [appDelegate setActiveFeedIndexPath:nil];
 }
 
-- (void)finishedWithError:(ASIHTTPRequest *)request {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
+- (void)finishedWithError:(ASIHTTPRequest *)request {    
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [pull finishedLoading];
     
@@ -218,7 +216,6 @@
     self.visibleFeeds = [NSMutableDictionary dictionary];
     [pull finishedLoading];
     [self loadFavicons];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
     appDelegate.activeUsername = [results objectForKey:@"user"];
     if (appDelegate.feedsViewController.view.window) {
@@ -226,29 +223,21 @@
     }
     appDelegate.dictFolders = [results objectForKey:@"flat_folders"];
     appDelegate.dictFeeds = [results objectForKey:@"feeds"];
-    //      NSLog(@"Received Feeds: %@", appDelegate.dictFolders);
-    //      NSSortDescriptor *sortDescriptor;
-    //      sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"feed_title"
-    //                                                    ascending:YES] autorelease];
-    //      NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
-    //      NSArray *sortedArray;
+    NSArray *sortedArray;
     
     appDelegate.dictFoldersArray = [NSMutableArray array];
     for (id f in appDelegate.dictFolders) {
-        //          NSString *folderTitle = [f 
-        //                                   stringByTrimmingCharactersInSet:
-        //                                   [NSCharacterSet whitespaceCharacterSet]];
         [appDelegate.dictFoldersArray addObject:f];
-        //          NSArray *folder = [appDelegate.dictFolders objectForKey:f];
-        //          NSLog(@"F: %@", f);
-        //          NSLog(@"F: %@", folder);
-        //          NSLog(@"F: %@", sortDescriptors);
-        //          sortedArray = [folder sortedArrayUsingDescriptors:sortDescriptors];
-        //          [sortedFolders setValue:sortedArray forKey:f];
+        NSArray *folder = [appDelegate.dictFolders objectForKey:f];
+        sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
+            return [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", id1]] objectForKey:@"feed_title"] 
+                    caseInsensitiveCompare:[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", id2]] objectForKey:@"feed_title"]];
+        }];
+        [sortedFolders setValue:sortedArray forKey:f];
     }
     
-    //      appDelegate.dictFolders = sortedFolders;
+    appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
     
     [self calculateFeedLocations:YES];
@@ -257,7 +246,6 @@
     [sortedFolders release];
     [results release];
 }
-
 
 - (IBAction)doLogoutButton {
     UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
