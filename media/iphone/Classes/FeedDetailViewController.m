@@ -72,15 +72,19 @@
 	}
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    //    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:titleImageView] autorelease];
     [titleLabel addSubview:titleImageView];
-//    [titleView addSubview:titleImageView];
     [titleImageView release];
     
     self.navigationItem.titleView = titleLabel;
-//    self.navigationItem.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
 	    
     [titleView release];
+
+    // Commenting out until training is ready...
+    //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
+    //    [trainBarButton setImage:[UIImage imageNamed:@"train.png"]];
+    //    [trainBarButton setEnabled:YES];
+    //    [self.navigationItem setRightBarButtonItem:trainBarButton animated:YES];
+    //    [trainBarButton release];
     
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (id i in appDelegate.recentlyReadStories) {
