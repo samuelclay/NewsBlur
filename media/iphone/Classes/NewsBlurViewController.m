@@ -180,6 +180,8 @@
                            NEWSBLUR_URL]];
 
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -288,10 +290,10 @@
     self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
     
     if (self.viewShowingAllFeeds) {
-        [self.sitesButton setImage:[UIImage imageNamed:@"network_icon_all.png"]];
+        [self.sitesButton setImage:[UIImage imageNamed:@"ellipses_half.png"]];
 //        [self.sitesButton setTitle:@"Unreads"];
     } else {
-        [self.sitesButton setImage:[UIImage imageNamed:@"network_icon.png"]];
+        [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
 //        [self.sitesButton setTitle:@"All Sites"];
     }
     
