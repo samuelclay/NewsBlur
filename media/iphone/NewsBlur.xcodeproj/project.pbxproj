@@ -98,6 +98,7 @@
 		FFD53391143E722000C5555D /* network_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = FFD5338F143E722000C5555D /* network_icon.png */; };
 		FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */; };
 		FFD887F11445F1E800385399 /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFD887EF1445F1E800385399 /* AddSiteAutocompleteCell.xib */; };
+		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -237,6 +238,8 @@
 		FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteAutocompleteCell.h; sourceTree = "<group>"; };
 		FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteAutocompleteCell.m; sourceTree = "<group>"; };
 		FFD887EF1445F1E800385399 /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
+		FFE5322D144C8AC300ACFDE0 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
+		FFE5322E144C8AC300ACFDE0 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -291,6 +294,8 @@
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
 				78095EC8128F30B500230C8E /* OriginalStoryViewController.xib */,
+				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
+				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -612,6 +617,7 @@
 				FF56EC7B13F755E40009D8E0 /* MBProgressHUD.m in Sources */,
 				FF5EA47F143B691000B7563D /* AddViewController.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
+				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

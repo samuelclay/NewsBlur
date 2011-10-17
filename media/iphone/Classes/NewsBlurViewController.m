@@ -14,6 +14,7 @@
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
+#import "Utilities.h"
 
 #define kTableViewRowHeight 40;
 
@@ -390,7 +391,7 @@
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     cell.feedTitle = [feed objectForKey:@"feed_title"];
     
-    UIImage *image = [imageCache objectForKey:feedIdStr];
+    UIImage *image = [Utilities getImage:feedIdStr];
     if (!image) {
         image = [UIImage imageNamed:@"world.png"];
     }
@@ -662,7 +663,8 @@ viewForHeaderInSection:(NSInteger)section {
         if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
             NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
             UIImage *faviconImage = [UIImage imageWithData:imageData];
-            [imageCache setObject:faviconImage forKey:feed_id];
+            [Utilities saveImage:faviconImage feedId:feed_id];
+//            [imageCache setObject:faviconImage forKey:feed_id];
         }
     }
     

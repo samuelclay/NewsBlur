@@ -10,4 +10,7 @@
 
 @interface Utilities : NSObject
 
++ (void)saveImage:(UIImage *)image feedId:(NSString *)filename;
++ (UIImage *)getImage:(NSString *)filename;
+
 @end
