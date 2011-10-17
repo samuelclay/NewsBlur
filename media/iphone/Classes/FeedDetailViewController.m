@@ -12,6 +12,7 @@
 #import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
+#import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
 
@@ -46,6 +47,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     UIView *titleView = [[UIView alloc] init];
     
@@ -492,6 +494,62 @@
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
 
+#pragma mark -
+#pragma mark Feed Actions
+
+- (IBAction)doOpenSettingsActionSheet {
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:[appDelegate.activeFeed objectForKey:@"feed_title"]
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
+    
+    NSArray *buttonTitles = [NSArray arrayWithObjects:@"Delete this site", nil];
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    
+    [options showInView:self.view];
+    [options release];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        [self confirmDeleteSite];
+    }
+}
+
+- (void)confirmDeleteSite {
+    UIAlertView *deleteConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+    [deleteConfirm show];
+    [deleteConfirm setTag:0];
+    [deleteConfirm release];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 0) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            [self deleteSite];
+        }
+    }
+}
+
+- (void)deleteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+
+    [appDelegate reloadFeedsView];
+    [appDelegate.navigationController 
+     popToViewController:[appDelegate.navigationController.viewControllers 
+                          objectAtIndex:0]  
+     animated:YES];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+}
 
 #pragma mark -
 #pragma mark PullToRefresh
