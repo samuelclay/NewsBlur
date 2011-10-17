@@ -12,7 +12,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
-
+#import "Utilities.h"
 
 @implementation StoryDetailViewController
 
@@ -355,14 +355,8 @@
 - (void)setActiveStory {
     self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
     
-    UIImage *titleImage;
-    NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
-	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-		titleImage = [UIImage imageWithData:imageData];
-	} else {
-		titleImage = [UIImage imageNamed:@"world.png"];
-	}
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    UIImage *titleImage = [Utilities getImage:feedIdStr];
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
     self.navigationItem.titleView = titleImageView;

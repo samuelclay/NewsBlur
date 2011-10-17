@@ -389,14 +389,9 @@
     id feedId = [feeds objectAtIndex:location];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-    cell.feedTitle = [feed objectForKey:@"feed_title"];
     
-    UIImage *image = [Utilities getImage:feedIdStr];
-    if (!image) {
-        image = [UIImage imageNamed:@"world.png"];
-    }
-    cell.feedFavicon = image;
-    
+    cell.feedTitle     = [feed objectForKey:@"feed_title"];
+    cell.feedFavicon   = [Utilities getImage:feedIdStr];
     cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
     cell.negativeCount = [[feed objectForKey:@"ng"] intValue];

@@ -37,7 +37,7 @@ static NSCache *imageCache;
     if (image) {  
         return image;
     } else {
-        return nil;
+        return [UIImage imageNamed:@"world.png"];
     }
 }
 
