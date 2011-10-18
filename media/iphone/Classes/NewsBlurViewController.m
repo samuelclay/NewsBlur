@@ -649,22 +649,28 @@ viewForHeaderInSection:(NSInteger)section {
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
-    for (id feed_id in results) {
-        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feed_id];
-        [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
-        [appDelegate.dictFeeds setValue:feed forKey:feed_id];
-        
-        NSString *favicon = [feed objectForKey:@"favicon"];
-        if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-            NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-            UIImage *faviconImage = [UIImage imageWithData:imageData];
-            [Utilities saveImage:faviconImage feedId:feed_id];
-//            [imageCache setObject:faviconImage forKey:feed_id];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_async(queue, ^{
+        for (id feed_id in results) {
+            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feed_id];
+            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
+            [appDelegate.dictFeeds setValue:feed forKey:feed_id];
+            
+            NSString *favicon = [feed objectForKey:@"favicon"];
+            if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
+                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                UIImage *faviconImage = [UIImage imageWithData:imageData];
+                [Utilities saveImage:faviconImage feedId:feed_id];
+            }
         }
-    }
+        [Utilities saveimagesToDisk];
+
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [results release];
+            [self.feedTitlesTable reloadData];
+        });
+    });
     
-    [results release];
-    [self.feedTitlesTable reloadData];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {

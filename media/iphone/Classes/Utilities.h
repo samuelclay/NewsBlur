@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Utilities : NSObject
+@interface Utilities : NSObject <NSCacheDelegate> {
+    NSCache *imageCache;
+}
 
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename;
 + (UIImage *)getImage:(NSString *)filename;
++ (void)saveimagesToDisk;
+
 
 @end

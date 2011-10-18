@@ -10,24 +10,25 @@
 
 @implementation Utilities
 
-static NSCache *imageCache;
+static NSMutableDictionary *imageCache;
 
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-    NSString *cacheDirectory = [paths objectAtIndex:0];
-    NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
+    if (!imageCache) {
+        imageCache = [[NSMutableDictionary dictionary] retain];
+    }
     
-    [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
-    
+    // Save image to memory-based cache, for performance when reading.
+//    NSLog(@"Saving %@", [imageCache allKeys]);
     [imageCache setObject:image forKey:filename];
 }
 
 + (UIImage *)getImage:(NSString *)filename {
     UIImage *image;
-    
     image = [imageCache objectForKey:filename];
+    
     if (!image) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        // Image not in cache, search on disk.
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *cacheDirectory = [paths objectAtIndex:0];
         NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
         
@@ -39,6 +40,22 @@ static NSCache *imageCache;
     } else {
         return [UIImage imageNamed:@"world.png"];
     }
+}
+
++ (void)saveimagesToDisk {
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+    
+    dispatch_async(queue, [[^{
+        for (id filename in imageCache) {
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *cacheDirectory = [paths objectAtIndex:0];
+            NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];
+            
+            // Save image to disk
+            UIImage *image = [imageCache objectForKey:filename];
+            [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
+        }
+    } copy] autorelease]);
 }
 
 @end
