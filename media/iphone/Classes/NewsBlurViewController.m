@@ -321,6 +321,8 @@
         [self calculateFeedLocations:NO];
     }
     
+//    NSLog(@"View showing all: %d and %@", self.viewShowingAllFeeds, self.stillVisibleFeeds);
+    
     for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
         NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
@@ -333,9 +335,11 @@
             NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
             
-            if (maxScore < intelligenceLevel && 
-                ![self.stillVisibleFeeds objectForKey:feedIdStr]) {
-                [indexPaths addObject:indexPath];
+            if (!self.viewShowingAllFeeds ||
+                (self.viewShowingAllFeeds && ![self.stillVisibleFeeds objectForKey:feedIdStr])) {
+                if (maxScore < intelligenceLevel) {
+                    [indexPaths addObject:indexPath];
+                }
             }
         }
     }
