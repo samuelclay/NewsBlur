@@ -36,7 +36,6 @@
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
-@synthesize activeFeedIndexPath;
 @synthesize readStories;
 
 @synthesize dictFolders;
@@ -80,7 +79,6 @@
     [activeStory release];
     [activeOriginalStoryURL release];
     [recentlyReadStories release];
-    [activeFeedIndexPath release];
     [readStories release];
     
     [dictFolders release];
@@ -304,29 +302,39 @@
     if (activeLocation == -1) {
         return;
     }
+    id feedId = [self.activeFeed objectForKey:@"id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
-    
+    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+    
     [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        int unreads = MAX(0, [[activeFeed objectForKey:@"ps"] intValue] - 1);
-        [self.activeFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+        int unreads = MAX(0, [[feed objectForKey:@"ps"] intValue] - 1);
+        [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
     } else if (score == 0) {
-        int unreads = MAX(0, [[activeFeed objectForKey:@"nt"] intValue] - 1);
-        [self.activeFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+        int unreads = MAX(0, [[feed objectForKey:@"nt"] intValue] - 1);
+        [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
     } else if (score < 0) {
-        int unreads = MAX(0, [[activeFeed objectForKey:@"ng"] intValue] - 1);
-        [self.activeFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+        int unreads = MAX(0, [[feed objectForKey:@"ng"] intValue] - 1);
+        [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
+    [self.dictFeeds setValue:feed forKey:feedIdStr];
+    
 //    NSLog(@"Marked read %d-%d: %@: %d", activeIndex, activeLocation, self.recentlyReadStories, score);
 }
 
 - (void)markActiveFeedAllRead {    
-    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
-    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
-    [self.activeFeed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
+    id feedId = [self.activeFeed objectForKey:@"id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];    
+    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    
+    [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
+    [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
+    [feed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
+    [self.dictFeeds setValue:feed forKey:feedIdStr];
 }
 
 - (void)calculateStoryLocations {

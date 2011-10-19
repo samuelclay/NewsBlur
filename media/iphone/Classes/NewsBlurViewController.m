@@ -72,12 +72,28 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
                                         animated:animated];
-    if (appDelegate.activeFeedIndexPath && [appDelegate activeFeed]) {
-        NSLog(@"Refreshing feed at %d / %d: %@", appDelegate.activeFeedIndexPath.section, appDelegate.activeFeedIndexPath.row, [appDelegate activeFeed]);
+    // If there is an active feed, we need to update its table row to match 
+    // the updated unread counts.
+    if ([appDelegate activeFeed]) {
+        NSMutableArray *indexPaths = [NSMutableArray array];
+        for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
+            NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+            NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+            NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+            for (int f=0; f < [activeFolderFeeds count]; f++) {
+                int location = [[activeFolderFeeds objectAtIndex:f] intValue];
+                id feedId = [originalFolder objectAtIndex:location];
+                if ([feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame) {
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
+                    [indexPaths addObject:indexPath];
+                }
+            }
+        }
+//        NSLog(@"Refreshing feed at %@: %@", indexPaths, [appDelegate activeFeed]);
+        
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
-         reloadRowsAtIndexPaths:[NSArray 
-                                 arrayWithObject:appDelegate.activeFeedIndexPath] 
+         reloadRowsAtIndexPaths:indexPaths
          withRowAnimation:UITableViewRowAnimationNone];
         [self.feedTitlesTable endUpdates];
         
@@ -106,7 +122,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    appDelegate.activeFeed = nil; 
+//    appDelegate.activeFeed = nil; 
     [super viewDidAppear:animated];
 }
 
@@ -160,7 +176,7 @@
 #pragma mark Initialization
 
 - (void)returnToApp {
-    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-10*60)];
+    NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
         [self fetchFeedList:YES];
@@ -169,7 +185,7 @@
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-//    NSLog(@"fetchFeedList: %d %d", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController);
+//    NSLog(@"fetchFeedList: %d %d %@", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController, [appDelegate activeFeed]);
     if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -192,7 +208,6 @@
     [request startAsynchronous];
     
     self.lastUpdate = [NSDate date];
-    [appDelegate setActiveFeedIndexPath:nil];
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -415,7 +430,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     [appDelegate setActiveFeed:feed];
-    [appDelegate setActiveFeedIndexPath:indexPath];
     appDelegate.readStories = [NSMutableArray array];
     
     [appDelegate loadFeedDetailView];

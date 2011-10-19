@@ -36,7 +36,6 @@
     int originalStoryCount;
     NSInteger selectedIntelligence;
     NSMutableArray * recentlyReadStories;
-    NSIndexPath * activeFeedIndexPath;
     NSMutableArray * readStories;
     
 	NSDictionary * dictFolders;
@@ -64,7 +63,6 @@
 @property (readwrite) int originalStoryCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
-@property (readwrite, retain) NSIndexPath * activeFeedIndexPath;
 @property (readwrite, retain) NSMutableArray * readStories;
 
 @property (nonatomic, retain) NSDictionary *dictFolders;
