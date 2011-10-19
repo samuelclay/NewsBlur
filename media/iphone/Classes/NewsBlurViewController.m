@@ -86,6 +86,7 @@
                 if ([feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame) {
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
                     [indexPaths addObject:indexPath];
+                    [self.stillVisibleFeeds setObject:indexPath forKey:[NSString stringWithFormat:@"%@", feedId]];
                 }
             }
         }
