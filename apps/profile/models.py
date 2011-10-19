@@ -178,9 +178,12 @@ post_save.connect(create_profile, sender=User)
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
     user = User.objects.get(username=ipn_obj.custom)
-    if not user.email:
-        user.email = ipn_obj.payer_email
-        user.save()
+    try:
+        if not user.email:
+            user.email = ipn_obj.payer_email
+            user.save()
+    except:
+        pass
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
 
