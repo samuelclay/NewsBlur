@@ -3762,6 +3762,7 @@
                     this.show_story_titles_above_intelligence_level({'animate': false});
                 }
             }
+            this.cache.story_pane_position = null;
         },
         
         // ==============
@@ -6206,7 +6207,10 @@
             }
 
             this.cache.mouse_position_y = e.pageY ;
-            this.$s.$mouse_indicator.css('top', this.cache.mouse_position_y - 8);
+            if (this.cache.story_pane_position == null) {
+                this.cache.story_pane_position = this.$s.$story_pane.offset().top;
+            }
+            this.$s.$mouse_indicator.css('top', this.cache.mouse_position_y - this.cache.story_pane_position - 8);
             
             if (this.flags['mousemove_timeout']) {
                 return;
