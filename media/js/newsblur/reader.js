@@ -3260,13 +3260,13 @@
                   if (story.story_content.indexOf('<del') != -1) story_has_modifications = true;
                 }
                 
-                river_same_feed = null;
+                river_same_feed = "";
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
-                  // river_same_feed = 'NB-feed-story-river-same-feed';
+                    river_same_feed = 'NB-feed-story-river-same-feed';
                 }
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
-                        $.make('div', { className: 'NB-feed-story-header-feed ' + river_same_feed }, [
+                        $.make('div', { className: 'NB-feed-story-header-feed' }, [
                             (options.river_stories && feed && // !river_same_feed
                                 $.make('div', { className: 'NB-feed-story-feed' }, [
                                    $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
@@ -3570,7 +3570,7 @@
         
         determine_feed_view_story_position: function($story, story) {
             if ($story && $story.is(':visible')) {
-                var position_original = parseInt($story.offset().top, 10);
+                var position_original = parseInt($story.position().top, 10);
                 var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
                 var position = position_original + position_offset;
                 this.cache.feed_view_story_positions[position] = story;
@@ -6208,7 +6208,7 @@
 
             this.cache.mouse_position_y = e.pageY ;
             if (this.cache.story_pane_position == null) {
-                this.cache.story_pane_position = this.$s.$story_pane.offset().top;
+                this.cache.story_pane_position = this.$s.$feed_stories.offsetParent().offset().top;
             }
             this.$s.$mouse_indicator.css('top', this.cache.mouse_position_y - this.cache.story_pane_position - 8);
             
@@ -6225,8 +6225,10 @@
                 && !this.flags.scrolling_by_selecting_story_title 
                 && this.story_view != 'story') {
                 var from_top = this.cache.mouse_position_y + this.$s.$feed_stories.scrollTop();
+                var offset = this.cache.story_pane_position;
+                var position = from_top - offset;
                 var positions = this.cache.feed_view_story_positions_keys;
-                var closest = $.closest(from_top, positions);
+                var closest = $.closest(position, positions);
                 var story = this.cache.feed_view_story_positions[positions[closest]];
                 this.flags['mousemove_timeout'] = true;
                 if (story == this.active_story) return;
@@ -6245,8 +6247,10 @@
                 !this.flags['scrolling_by_selecting_story_title'] &&
                 !this.model.preference('feed_view_single_story')) {
                 var from_top = this.cache.mouse_position_y + this.$s.$feed_stories.scrollTop();
+                var offset = this.cache.story_pane_position;
+                var position = from_top - offset;
                 var positions = this.cache.feed_view_story_positions_keys;
-                var closest = $.closest(from_top, positions);
+                var closest = $.closest(position, positions);
                 var story = this.cache.feed_view_story_positions[positions[closest]];
                 // NEWSBLUR.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
                 this.navigate_story_titles_to_story(story);
