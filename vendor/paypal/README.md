@@ -38,7 +38,7 @@ Using PayPal Payments Standard IPN:
 
         # views.py
         ...
-        from paypal.standard.forms import PayPalPaymentsForm
+        from vendor.paypal.standard.forms import PayPalPaymentsForm
         
         def view_that_asks_for_money(request):
         
@@ -95,7 +95,7 @@ Using PayPal Payments Standard IPN:
 
         # models.py
         ...
-        from paypal.standard.ipn.signals import payment_was_successful
+        from vendor.paypal.standard.ipn.signals import payment_was_successful
         
         def show_me_the_money(sender, **kwargs):
             ipn_obj = sender
@@ -206,7 +206,7 @@ Use this method to encrypt your button so sneaky gits don't try to hack it. Than
 1. Swap out your unencrypted button for a `PayPalEncryptedPaymentsForm`:
 
         # views.py
-        from paypal.standard.forms import PayPalEncryptedPaymentsForm
+        from vendor.paypal.standard.forms import PayPalEncryptedPaymentsForm
         
         def view_that_asks_for_money(request):
             ...
@@ -234,7 +234,7 @@ Use postbacks for validation if:
 1. Swap out your button for a `PayPalSharedSecretEncryptedPaymentsForm`:
 
         # views.py
-        from paypal.standard.forms import PayPalSharedSecretEncryptedPaymentsForm
+        from vendor.paypal.standard.forms import PayPalSharedSecretEncryptedPaymentsForm
         
         def view_that_asks_for_money(request):
             ...
@@ -261,7 +261,7 @@ apps. [There is an explanation of WPP in the PayPal Forums](http://www.pdncommun
         ...
         INSTALLED_APPS = (... 'paypal.standard', 'paypal.pro', ...)
         PAYPAL_TEST = True           # Testing mode on
-        PAYPAL_WPP_USER = "???"      # Get from PayPal
+        PAYPAL_WPP_USER = "???"      # Get from vendor.paypal
         PAYPAL_WPP_PASSWORD = "???"
         PAYPAL_WPP_SIGNATURE = "???"
 
@@ -270,7 +270,7 @@ apps. [There is an explanation of WPP in the PayPal Forums](http://www.pdncommun
 1. Write a wrapper view for `paypal.pro.views.PayPalPro`:
 
         # views.py
-        from paypal.pro.views import PayPalPro
+        from vendor.paypal.pro.views import PayPalPro
 
         def buy_my_item(request):
           item = {"amt": "10.00",             # amount to charge for item
@@ -307,7 +307,7 @@ apps. [There is an explanation of WPP in the PayPal Forums](http://www.pdncommun
     </form>
 
 1. Add your view to `urls.py`, and add the IPN endpoint to receive callbacks 
-   from PayPal:
+   from vendor.paypal:
 
         # urls.py
         ...

@@ -82,7 +82,7 @@ class PayPalNVP(models.Model):
 
     def process(self, request, item):
         """Do a direct payment."""
-        from paypal.pro.helpers import PayPalWPP
+        from vendor.paypal.pro.helpers import PayPalWPP
         wpp = PayPalWPP(request)
 
         # Change the model information into a dict that PayPal can understand.        

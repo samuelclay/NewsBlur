@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from south.db import db
-from paypal.standard.ipn.models import *
+from vendor.paypal.standard.ipn.models import *
 
 
 class Migration:    

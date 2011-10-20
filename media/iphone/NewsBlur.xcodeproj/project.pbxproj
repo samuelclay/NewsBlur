@@ -340,6 +340,8 @@
 				FF38DB1913F21B2C00251891 /* ABTableViewCell.m */,
 				FF4BBC1C13F7487A001EBEBD /* TransparentToolbar.h */,
 				FF4BBC1D13F7487A001EBEBD /* TransparentToolbar.m */,
+				8D1107310486CEB800E47090 /* NewsBlur-Info.plist */,
+				FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -383,9 +385,7 @@
 				7843F50C11EEB4EE00675F64 /* bullet_orange.png */,
 				7843F50D11EEB4EE00675F64 /* bullet_red.png */,
 				7843F50E11EEB4EE00675F64 /* bullet_yellow.png */,
-				8D1107310486CEB800E47090 /* NewsBlur-Info.plist */,
 				FFD5338C143E701400C5555D /* settings_icon@2x.png */,
-				FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -621,8 +621,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -650,8 +650,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
