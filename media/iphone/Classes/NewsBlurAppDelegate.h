@@ -27,6 +27,7 @@
     
     NSString * activeUsername;
     NSDictionary * activeFeed;
+    NSString * activeFolder;
     NSArray * activeFeedStories;
     NSMutableArray * activeFeedStoryLocations;
     NSMutableArray * activeFeedStoryLocationIds;
@@ -54,6 +55,7 @@
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (readwrite, retain) NSDictionary * activeFeed;
+@property (readwrite, retain) NSString * activeFolder;
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocations;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocationIds;

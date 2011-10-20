@@ -27,6 +27,7 @@
 
 @synthesize activeUsername;
 @synthesize activeFeed;
+@synthesize activeFolder;
 @synthesize activeFeedStories;
 @synthesize activeFeedStoryLocations;
 @synthesize activeFeedStoryLocationIds;
@@ -73,6 +74,7 @@
     [window release];
     [activeUsername release];
     [activeFeed release];
+    [activeFolder release];
     [activeFeedStories release];
     [activeFeedStoryLocations release];
     [activeFeedStoryLocationIds release];

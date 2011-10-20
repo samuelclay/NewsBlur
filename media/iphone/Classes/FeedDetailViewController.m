@@ -537,13 +537,29 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Deleting...";
-
-    [appDelegate reloadFeedsView];
-    [appDelegate.navigationController 
-     popToViewController:[appDelegate.navigationController.viewControllers 
-                          objectAtIndex:0]  
-     animated:YES];
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_feed", 
+                                  NEWSBLUR_URL];
+    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+    
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    [request setDelegate:self];
+    [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
+    [request addPostValue:[appDelegate activeFolder] forKey:@"in_folder"];
+    [request setFailedBlock:^(void) {
+        [self failLoadingFeed:request];
+    }];
+    [request setCompletionBlock:^(void) {
+        [appDelegate reloadFeedsView];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request setTimeOutSeconds:30];
+    [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
+    [request startAsynchronous];
 }
 
 #pragma mark -

@@ -435,6 +435,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     [appDelegate setActiveFeed:feed];
+    [appDelegate setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
     
     [appDelegate loadFeedDetailView];
