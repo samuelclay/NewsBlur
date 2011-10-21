@@ -5,10 +5,10 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.utils.http import urlencode
 
-from paypal.pro.forms import PaymentForm, ConfirmForm
-from paypal.pro.models import PayPalNVP
-from paypal.pro.helpers import PayPalWPP, TEST
-from paypal.pro.signals import payment_was_successful, payment_was_flagged
+from vendor.paypal.pro.forms import PaymentForm, ConfirmForm
+from vendor.paypal.pro.models import PayPalNVP
+from vendor.paypal.pro.helpers import PayPalWPP, TEST
+from vendor.paypal.pro.signals import payment_was_successful, payment_was_flagged
 
 
 # PayPal Edit IPN URL:
@@ -174,7 +174,7 @@ class PayPalPro(object):
     def render_confirm_form(self):
         """
         Second step of ExpressCheckout. Display an order confirmation form which
-        contains hidden fields with the token / PayerID from PayPal.
+        contains hidden fields with the token / PayerID from vendor.paypal.
         """
         initial = dict(token=self.request.GET['token'], PayerID=self.request.GET['PayerID'])
         self.context[self.form_context_name] = self.confirm_form_cls(initial=initial)

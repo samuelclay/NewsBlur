@@ -2,7 +2,7 @@
 
 from south.db import db
 from django.db import models
-from paypal.standard.pdt.models import *
+from vendor.paypal.standard.pdt.models import *
 
 class Migration:
     

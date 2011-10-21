@@ -249,10 +249,11 @@ def load_feeds_flat(request):
                 for folder_name in item:
                     folder = item[folder_name]
                     flat_folder_name = "%s%s%s" % (
-                        parent_folder,
+                        parent_folder if parent_folder and parent_folder != ' ' else "",
                         " - " if parent_folder and parent_folder != ' ' else "",
                         folder_name
                     )
+                    flat_folders[flat_folder_name] = []
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
@@ -665,16 +666,17 @@ def mark_story_as_read(request):
             continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story.story_guid)
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story_id)
         try:
             m.save()
         except OperationError:
             logging.user(request, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request, "~BRRead now date: %s, story_id: %s." % (m.read_date, story.story_guid))
+            logging.user(request, "~BRRead now date: %s, story_date: %s, story_id: %s." % (m.read_date, story.story_date, story.story_guid))
             logging.user(request, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request, "~BROriginal read date: %s, story id: %s" % (m.read_date, m.story_id))
+            logging.user(request, "~BROriginal read date: %s, story id: %s, story.id: %s" % (m.read_date, m.story_id, m.story.id))
+            m.story_id = story_id
             m.read_date = date
             m.save()
     
@@ -761,7 +763,7 @@ def add_url(request):
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST.get('parent_folder', '')
-    
+
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
     if folder:
@@ -780,6 +782,8 @@ def add_folder(request):
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', '')
+    if in_folder == ' ':
+        in_folder = ""
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_feed(feed_id, in_folder)

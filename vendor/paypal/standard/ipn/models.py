@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import urllib2
-from paypal.standard.models import PayPalStandardBase
-from paypal.standard.ipn.signals import *
+from vendor.paypal.standard.models import PayPalStandardBase
+from vendor.paypal.standard.ipn.signals import *
 
 
 class PayPalIPN(PayPalStandardBase):

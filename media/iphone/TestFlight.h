@@ -2,10 +2,11 @@
 //  TestFlight.h
 //  libTestFlight
 //
-//  Created by Colin Humber on 8/25/10.
-//  Copyright 2010 23 Divide Apps. All rights reserved.
+//  Created by Jonathan Janzen on 06/11/11.
+//  Copyright 2011 TestFlight. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#define TESTFLIGHT_SDK_VERSION @"0.7.2"
 
 @interface TestFlight : NSObject {
 

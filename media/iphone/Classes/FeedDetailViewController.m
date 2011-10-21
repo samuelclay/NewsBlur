@@ -12,15 +12,12 @@
 #import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
+#import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
+#import "Utilities.h"
 
 #define kTableViewRowHeight 65;
-
-#define UIColorFromRGB(rgbValue) [UIColor \
-colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
-green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
-blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @implementation FeedDetailViewController
 
@@ -41,7 +38,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
 	pull = [[PullToRefreshView alloc] initWithScrollView:self.storyTitlesTable];
     [pull setDelegate:self];
     [self.storyTitlesTable addSubview:pull];
@@ -51,6 +48,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     UIView *titleView = [[UIView alloc] init];
     
@@ -67,25 +65,23 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [titleLabel sizeToFit];
     
     
-    UIImage *titleImage;
-    NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
-	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-		titleImage = [UIImage imageWithData:imageData];
-	} else {
-		titleImage = [UIImage imageNamed:@"world.png"];
-	}
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    UIImage *titleImage = [Utilities getImage:feedIdStr];
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    //    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:titleImageView] autorelease];
     [titleLabel addSubview:titleImageView];
-//    [titleView addSubview:titleImageView];
     [titleImageView release];
     
     self.navigationItem.titleView = titleLabel;
-//    self.navigationItem.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
 	    
     [titleView release];
+
+    // Commenting out until training is ready...
+    //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
+    //    [trainBarButton setImage:[UIImage imageNamed:@"train.png"]];
+    //    [trainBarButton setEnabled:YES];
+    //    [self.navigationItem setRightBarButtonItem:trainBarButton animated:YES];
+    //    [trainBarButton release];
     
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (id i in appDelegate.recentlyReadStories) {
@@ -113,6 +109,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)viewDidAppear:(BOOL)animated {
 //    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    
 	[super viewDidAppear:animated];
 }
 
@@ -144,7 +141,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.feedPage = page;
         self.pageFetching = YES;
         int storyCount = appDelegate.storyCount;
@@ -179,14 +175,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)failLoadingFeed:(ASIHTTPRequest *)request {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
-    if (self.feedPage <= 1) {
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
-    }
+//    if (self.feedPage <= 1) {
+//        [appDelegate.navigationController 
+//         popToViewController:[appDelegate.navigationController.viewControllers 
+//                              objectAtIndex:0]  
+//         animated:YES];
+//    }
     
     [NewsBlurAppDelegate informError:[request error]];
 }
@@ -249,8 +243,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.2];
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -261,8 +253,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
           [error localizedDescription]);
     
     self.pageFetching = NO;
-    
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
 	// User clicking on another link before the page loads is OK.
 	if ([error code] != NSURLErrorCancelled) {
@@ -499,6 +489,78 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
 
+#pragma mark -
+#pragma mark Feed Actions
+
+- (IBAction)doOpenSettingsActionSheet {
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:[appDelegate.activeFeed objectForKey:@"feed_title"]
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
+    
+    NSArray *buttonTitles = [NSArray arrayWithObjects:@"Delete this site", nil];
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    
+    [options showInView:self.view];
+    [options release];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        [self confirmDeleteSite];
+    }
+}
+
+- (void)confirmDeleteSite {
+    UIAlertView *deleteConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+    [deleteConfirm show];
+    [deleteConfirm setTag:0];
+    [deleteConfirm release];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 0) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            [self deleteSite];
+        }
+    }
+}
+
+- (void)deleteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+    
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_feed", 
+                                  NEWSBLUR_URL];
+    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+    
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    [request setDelegate:self];
+    [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
+    [request addPostValue:[appDelegate activeFolder] forKey:@"in_folder"];
+    [request setFailedBlock:^(void) {
+        [self failLoadingFeed:request];
+    }];
+    [request setCompletionBlock:^(void) {
+        [appDelegate reloadFeedsView];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request setTimeOutSeconds:30];
+    [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
+    [request startAsynchronous];
+}
 
 #pragma mark -
 #pragma mark PullToRefresh
@@ -519,7 +581,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [request setTimeOutSeconds:60];
     [request startAsynchronous];
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [appDelegate setStories:nil];
     self.feedPage = 1;
     self.pageFetching = YES;

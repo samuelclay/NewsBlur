@@ -1,3 +1,4 @@
+{% load utils_tags %}
 <div class="NB-module-recommended NB-module {% if unmoderated %}NB-recommended-unmoderated{% endif %}">
   <h5 class="NB-module-header">
     {% if unmoderated %}
@@ -34,7 +35,7 @@
     <div class="NB-recommended-description">{{ description|safe }}</div>
     <div class="NB-modal-submit">
       <div class="NB-recommended-subscribers">
-        <b>{{ recommended_feed.feed.num_subscribers }}</b> subscriber{{ recommended_feed.feed.num_subscribers|pluralize }}
+        <b>{{ recommended_feed.feed.num_subscribers|commify }}</b> subscriber{{ recommended_feed.feed.num_subscribers|pluralize }}
         <br />
         <b>{{ recommended_feed.feed.average_stories_per_month }}</b> {{ recommended_feed.feed.average_stories_per_month|pluralize:"story,stories" }}  per month
       </div>

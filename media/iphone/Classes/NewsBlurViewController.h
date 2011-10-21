@@ -16,18 +16,16 @@
 @interface NewsBlurViewController : UIViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
-            ASIHTTPRequestDelegate> {
+            ASIHTTPRequestDelegate, NSCacheDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-	NSDictionary * dictFolders;
-    NSDictionary * dictFeeds;
-    NSMutableArray * dictFoldersArray;
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFeeds;
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
+    NSCache *imageCache;
     
 	IBOutlet UITableView * feedTitlesTable;
 	IBOutlet UIToolbar * feedViewToolbar;
@@ -35,6 +33,7 @@
     IBOutlet UIBarButtonItem * logoutButton;
     IBOutlet UISegmentedControl * intelligenceControl;
     IBOutlet UIBarButtonItem * sitesButton;
+    IBOutlet UIBarButtonItem * addButton;
 }
 
 - (void)returnToApp;
@@ -49,6 +48,7 @@
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
+- (IBAction)doAddButton;
 - (void)loadFavicons;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
@@ -61,15 +61,14 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
-@property (nonatomic, retain) NSMutableArray *dictFoldersArray;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * addButton;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
-@property (nonatomic, retain) NSDictionary *dictFolders;
-@property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, retain) PullToRefreshView *pull;
 @property (nonatomic, retain) NSDate *lastUpdate;
+@property (nonatomic, retain) NSCache *imageCache;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 
 @end

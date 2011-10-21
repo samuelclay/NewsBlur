@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% block head_js %}{% endblock head_js %}
-
 {% block content %}
 
 
@@ -19,13 +17,13 @@
         <div class="NB-import-signup" style="margin-top: 24px;">
           <form method="post" action="{% url import-signup %}">
             <div>
-              {{ signup_form.signup_username.label_tag }}
-              {{ signup_form.signup_username }}
+              {{ signup_form.username.label_tag }}
+              {{ signup_form.username }}
             </div>
             <div class="">
               <div class="NB-signup-optional">Optional</div>
-              {{ signup_form.signup_password.label_tag }}
-              {{ signup_form.signup_password }}
+              {{ signup_form.password.label_tag }}
+              {{ signup_form.password }}
             </div>
             <div class="">
               <div class="NB-signup-optional">Optional</div>
