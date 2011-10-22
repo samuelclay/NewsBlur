@@ -3720,6 +3720,12 @@ background: transparent;
     margin: 0 0 24px;
 }
 
+@media screen and (max-width: 1050px) {
+    .NB-modules-center {
+        display: none;
+    }
+}
+
 /* ============ */
 /* = Features = */
 /* ============ */
