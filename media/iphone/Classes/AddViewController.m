@@ -180,19 +180,18 @@
         return;
     }
     
-    int period_loc = [phrase rangeOfString:@"."].location;
-    if (period_loc != NSNotFound) {
+    int periodLoc = [phrase rangeOfString:@"."].location;
+    if (periodLoc != NSNotFound && siteAddressInput.returnKeyType != UIReturnKeyDone) {
         // URL
         [siteAddressInput setReturnKeyType:UIReturnKeyDone];
         [siteAddressInput resignFirstResponder];
         [siteAddressInput becomeFirstResponder];
-    } else {
+    } else if (periodLoc == NSNotFound && siteAddressInput.returnKeyType != UIReturnKeySearch) {
         // Search
         [siteAddressInput setReturnKeyType:UIReturnKeySearch];
         [siteAddressInput resignFirstResponder];
         [siteAddressInput becomeFirstResponder];
     }
-    
     
     [self.siteActivityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@",
@@ -205,16 +204,22 @@
 }
 
 - (void)autocompleteSite:(ASIHTTPRequest *)request {
-    if ([siteAddressInput.text length] > 0) {
+    NSString *responseString = [request responseString];
+    autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
+    
+    if ([siteAddressInput.text length] > 0 && [autocompleteResults count] > 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{
                              [siteScrollView setAlpha:1];
                          } completion:nil];
+    } else {
+        [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
+                         animations:^{
+                             [siteScrollView setAlpha:0];
+                         } completion:nil];
     }
+    
     [self.siteActivityIndicator stopAnimating];
-    NSString *responseString = [request responseString];
-    autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
-//    NSLog(@"%@", autocompleteResults);
     [siteTable reloadData];
 }
 
