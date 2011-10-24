@@ -485,6 +485,7 @@ def load_river_stories(request):
     original_feed_ids  = list(feed_ids)
     page               = int(request.REQUEST.get('page', 1))
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
+    new_flag           = request.REQUEST.get('new_flag', False)
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
@@ -580,6 +581,13 @@ def load_river_stories(request):
     classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
     classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
     
+    classifiers = {}
+    for feed_id in found_feed_ids:
+        classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
+                                                        classifier_authors[feed_id],
+                                                        classifier_titles[feed_id],
+                                                        classifier_tags[feed_id])
+    
     # Just need to format stories
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -605,7 +613,11 @@ def load_river_stories(request):
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), timediff))
     
-    return dict(stories=stories)
+    if new_flag:
+        return dict(stories=stories, classifiers=classifiers)
+    else:
+        logging.user(request, "~BR~FCNo new flag on river")
+        return dict(stories=stories)
     
     
 @ajax_login_required

@@ -3359,7 +3359,9 @@
         
         make_story_feed_title: function(story) {
             var title = story.story_title;
-            _.each(this.model.classifiers.titles, function(score, title_classifier) {
+            var feed_titles = this.model.classifiers[story.story_feed_id].titles;
+            
+            _.each(feed_titles, function(score, title_classifier) {
                 if (title.indexOf(title_classifier) != -1) {
                     title = title.replace(title_classifier, '<span class="NB-score-'+score+'">'+title_classifier+'</span>');
                 }
@@ -3368,7 +3370,7 @@
         },
         
         make_story_feed_author: function(story) {
-            var score = this.model.classifiers.authors[story.story_authors];
+            var score = this.model.classifiers[story.story_feed_id].authors[story.story_authors];
 
             return $.make('div', { 
                 className: 'NB-feed-story-author ' + (!!score && 'NB-score-'+score || '') 
@@ -3376,7 +3378,7 @@
         },
         
         make_story_feed_tags: function(story) {
-            var feed_tags = this.model.classifiers.tags;
+            var feed_tags = this.model.classifiers[story.story_feed_id].tags;
 
             return $.make('div', { className: 'NB-feed-story-tags' }, 
                 _.map(story.story_tags, function(tag) { 
@@ -3438,7 +3440,7 @@
                 data['dislike_'+type] = value;
             }
             
-            this.model.classifiers[type+'s'][value] = score;
+            this.model.classifiers[feed_id][type+'s'][value] = score;
             this.model.save_classifier(data, _.bind(function(resp) {
                 this.force_feeds_refresh(callback, true, feed_id);
             }, this));
