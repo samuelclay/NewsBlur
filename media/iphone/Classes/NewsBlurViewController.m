@@ -489,7 +489,8 @@ viewForHeaderInSection:(NSInteger)section {
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
-    [invisibleHeaderButton addTarget:self action:@selector(didSelectSectionHeader) forControlEvents:UIControlEventTouchUpInside];
+    invisibleHeaderButton.tag = section;
+    [invisibleHeaderButton addTarget:self action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:invisibleHeaderButton];
     
     return customView;
@@ -503,8 +504,16 @@ viewForHeaderInSection:(NSInteger)section {
     return 21;
 }
 
-- (void)didSelectSectionHeader {
-    NSLog(@"Touched");
+- (void)didSelectSectionHeader:(UIButton *)button {
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
+//    NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
+//    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+    
+    [appDelegate setActiveFolder:folderName];
+    appDelegate.readStories = [NSMutableArray array];
+    appDelegate.isRiverView = YES;
+    
+    [appDelegate loadFeedDetailView];
 }
 
 - (IBAction)selectIntelligence {
@@ -534,9 +543,9 @@ viewForHeaderInSection:(NSInteger)section {
         NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
         NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
         
-        if (s == 9) {
+//        if (s == 9) {
 //            NSLog(@"Section %d: %@. %d to %d", s, folderName, previousLevel, newLevel);
-        }
+//        }
         
         for (int f=0; f < [originalFolder count]; f++) {
             NSNumber *feedId = [originalFolder objectAtIndex:f];
@@ -544,12 +553,12 @@ viewForHeaderInSection:(NSInteger)section {
             NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
             
-            if (s == 9) {
+//            if (s == 9) {
 //                NSLog(@"MaxScore: %d for %@ (%@/%@/%@). Visible: %@", maxScore, 
 //                      [feed objectForKey:@"feed_title"],
 //                      [feed objectForKey:@"ng"], [feed objectForKey:@"nt"], [feed objectForKey:@"ng"],
 //                      [self.visibleFeeds objectForKey:feedIdStr]);
-            }
+//            }
             
             if ([self.visibleFeeds objectForKey:feedIdStr]) {
                 if (maxScore < newLevel) {

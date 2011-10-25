@@ -42,7 +42,7 @@
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 
 - (IBAction)doLogoutButton;
-- (void)didSelectSectionHeader;
+- (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations:(BOOL)markVisible;

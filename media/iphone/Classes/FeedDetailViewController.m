@@ -199,6 +199,47 @@
     [results release];
 }
 
+#pragma mark -
+#pragma mark River of News
+
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+    if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
+        self.feedPage = page;
+        self.pageFetching = YES;
+        int storyCount = appDelegate.storyCount;
+        if (storyCount == 0) {
+            [self.storyTitlesTable reloadData];
+            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        }
+        
+        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@?page=%d", 
+                                      NEWSBLUR_URL,
+                                      [appDelegate.activeFeed objectForKey:@"id"],
+                                      self.feedPage];
+        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+        
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [self failLoadingFeed:request];
+        }];
+        [request setCompletionBlock:^(void) {
+            [self finishedLoadingFeed:request];
+            if (callback) {
+                callback();
+            }
+        }];
+        [request setTimeOutSeconds:30];
+        [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
+        [request startAsynchronous];
+    }
+}
+
+#pragma mark - 
+#pragma mark Stories
+
 - (void)renderStories:(NSArray *)newStories {
     NSInteger existingStoriesCount = [[appDelegate activeFeedStoryLocations] count];
     NSInteger newStoriesCount = [newStories count];

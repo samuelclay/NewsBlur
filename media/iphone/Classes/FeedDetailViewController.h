@@ -34,6 +34,7 @@
 - (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)failLoadingFeed:(ASIHTTPRequest *)request;
 

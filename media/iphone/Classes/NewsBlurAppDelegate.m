@@ -133,7 +133,21 @@
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     [self showNavigationBar:YES];
     navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-//    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+}
+
+- (void)loadRiverFeedDetailView {
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
+    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+    [newBackButton release];
+    UINavigationController *navController = self.navigationController;
+    [self setStories:nil];
+    [navController pushViewController:feedDetailViewController animated:YES];
+    [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+    [self showNavigationBar:YES];
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
 }
 
 - (void)loadStoryDetailView {
