@@ -190,7 +190,7 @@ def import_signup(request):
                 login_user(request, new_user)
                 return HttpResponseRedirect(reverse('index'))
             else:
-                logging.info(request, "~BR~FW ***> Can't find user token during import/signup. Re-authenticating...")
+                logging.user(request, "~BR~FW ***> Can't find user token during import/signup. Re-authenticating...")
                 return HttpResponseRedirect(reverse('google-reader-authorize'))
     else:
         signup_form = SignupForm(prefix='signup')
