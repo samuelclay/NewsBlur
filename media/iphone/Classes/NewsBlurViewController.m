@@ -437,6 +437,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [appDelegate setActiveFeed:feed];
     [appDelegate setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
+    appDelegate.isRiverView = NO;
     
     [appDelegate loadFeedDetailView];
 }
@@ -485,6 +486,12 @@ viewForHeaderInSection:(NSInteger)section {
     [customView addSubview:folderImageView];
     [folderImageView release];
     
+    UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
+    invisibleHeaderButton.alpha = .1;
+    [invisibleHeaderButton addTarget:self action:@selector(didSelectSectionHeader) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:invisibleHeaderButton];
+    
     return customView;
 }
 
@@ -494,6 +501,10 @@ viewForHeaderInSection:(NSInteger)section {
         return 0;
     }
     return 21;
+}
+
+- (void)didSelectSectionHeader {
+    NSLog(@"Touched");
 }
 
 - (IBAction)selectIntelligence {

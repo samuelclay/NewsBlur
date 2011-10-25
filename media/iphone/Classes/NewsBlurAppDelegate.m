@@ -26,6 +26,7 @@
 @synthesize originalStoryViewController;
 
 @synthesize activeUsername;
+@synthesize isRiverView;
 @synthesize activeFeed;
 @synthesize activeFolder;
 @synthesize activeFeedStories;

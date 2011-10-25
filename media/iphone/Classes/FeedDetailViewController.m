@@ -18,6 +18,7 @@
 #import "Utilities.h"
 
 #define kTableViewRowHeight 65;
+#define kTableViewRiverRowHeight 85;
 
 @implementation FeedDetailViewController
 
@@ -311,16 +312,27 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *FeedDetailCellIdentifier = @"FeedDetailCellIdentifier";
-	    
-	FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedDetailCellIdentifier];
+    static NSString *cellIdentifier;
+
+    if (appDelegate.isRiverView) {
+        cellIdentifier = @"FeedDetailCellIdentifier";
+    } else {
+        cellIdentifier = @"FeedDetailCellIdentifier";
+    }
+
+    FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
+                                                        dequeueReusableCellWithIdentifier:cellIdentifier];
 	if (cell == nil) {
 		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedDetailTableCell"
                                                      owner:self
                                                    options:nil];
         for (id oneObject in nib) {
             if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
-                cell = (FeedDetailTableCell *)oneObject;
+                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !appDelegate.isRiverView) ||
+                    ([(FeedDetailTableCell *)oneObject tag] == 1 && appDelegate.isRiverView)) {
+                    cell = (FeedDetailTableCell *)oneObject;
+                }
+
             }
         }
 	}
@@ -349,6 +361,14 @@
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
     }
     
+    // River view
+    id feedId = [story objectForKey:@"story_feed_id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+
+    cell.feedTitle.text = [feed objectForKey:@"feed_title"];
+    cell.feedFavicon.image = [Utilities getImage:feedIdStr];
+    
     if ([[story objectForKey:@"read_status"] intValue] != 1) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
@@ -358,7 +378,9 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
-
+        cell.feedTitle.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
+        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+        cell.feedFavicon.alpha = 1;
     } else {
         // Read story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
@@ -368,6 +390,9 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
+        cell.feedTitle.textColor = [UIColor colorWithRed:0.4f green:0.4f blue:0.4f alpha:0.7];
+        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
+        cell.feedFavicon.alpha = 0.5f;
     }
 
 	return cell;
@@ -387,7 +412,11 @@
         if (self.pageFinished) return 16;
         else return kTableViewRowHeight;
     } else {
-        return kTableViewRowHeight;
+        if (appDelegate.isRiverView) {
+            return kTableViewRiverRowHeight;
+        } else {
+            return kTableViewRowHeight;
+        }
     }
 }
 
