@@ -170,18 +170,28 @@ def import_signup(request):
         signup_form = SignupForm(prefix='signup', data=request.POST)
         if signup_form.is_valid():
             new_user = signup_form.save()
-            try:
-                user_token = OAuthToken.objects.get(session_id=request.session.session_key)
-            except OAuthToken.DoesNotExist:
-                user_tokens = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
-                if user_tokens:
-                    user_token = user_tokens[0]
-                    user_token.session_id = request.session.session_key
-                    user_token.save()
-            user_token.user = new_user
-            user_token.save()
-            login_user(request, new_user)
-            return HttpResponseRedirect(reverse('index'))
+            
+            user_token = None
+            if not user_token:
+                user_uuid = request.COOKIES.get('newsblur_reader_uuid')
+                if user_uuid:
+                    user_token = OAuthToken.objects.filter(uuid=user_uuid).order_by('-created_date')
+            if not user_token:
+                if request.session.session_key:
+                    user_token = OAuthToken.objects.filter(session_id=request.session.session_key).order_by('-created_date')
+            if not user_token:
+                user_token = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
+
+            if user_token:
+                user_token = user_token[0]
+                user_token.session_id = request.session.session_key
+                user_token.user = new_user
+                user_token.save()
+                login_user(request, new_user)
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                logging.info(request, "~BR~FW ***> Can't find user token during import/signup. Re-authenticating...")
+                return HttpResponseRedirect(reverse('google-reader-authorize'))
     else:
         signup_form = SignupForm(prefix='signup')
 
