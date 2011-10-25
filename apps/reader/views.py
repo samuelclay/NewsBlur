@@ -528,7 +528,7 @@ def load_river_stories(request):
     mstories = MStory.objects(
         story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
-        story_date__gte=start - bottom_delta
+        # story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
             var d = feed_last_reads[this[~story_feed_id]];
             if (this[~story_date].getTime()/1000 > d) {

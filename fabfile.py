@@ -219,7 +219,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
     sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client-9.0')
