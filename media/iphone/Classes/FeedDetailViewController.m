@@ -56,7 +56,11 @@
     UIView *titleView = [[UIView alloc] init];
     
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
-    titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
+    if (appDelegate.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", appDelegate.activeFolder];        
+    } else {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
+    }
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = UITextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
@@ -69,7 +73,12 @@
     
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
-    UIImage *titleImage = [Utilities getImage:feedIdStr];
+    UIImage *titleImage;
+    if (appDelegate.isRiverView) {
+        titleImage = [UIImage imageNamed:@"folder.png"];
+    } else {
+        titleImage = [Utilities getImage:feedIdStr];
+    }
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
     [titleLabel addSubview:titleImageView];
