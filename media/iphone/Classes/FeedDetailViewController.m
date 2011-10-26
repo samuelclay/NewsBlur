@@ -195,7 +195,22 @@
     
     if (request.tag == [[results objectForKey:@"feed_id"] intValue]) {
         [pull finishedLoading];
-        [self renderStories:[results objectForKey:@"stories"]];
+        NSArray *newStories = [results objectForKey:@"stories"];
+        NSMutableArray *confirmedNewStories = [NSMutableArray array];
+        if ([appDelegate.activeFeedStories count]) {
+            NSMutableSet *storyIds = [NSMutableSet set];
+            for (id story in appDelegate.activeFeedStories) {
+                [storyIds addObject:[story objectForKey:@"id"]];
+            }
+            for (id story in newStories) {
+                if (![storyIds containsObject:[story objectForKey:@"id"]]) {
+                    [confirmedNewStories addObject:story];
+                }
+            }
+        } else {
+            confirmedNewStories = [[newStories copy] autorelease];
+        }
+        [self renderStories:confirmedNewStories];
     }
     
     [results release];
@@ -213,11 +228,20 @@
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
+        int readStoriesCount = 0;
+        if (self.feedPage > 1) {
+            for (id story in appDelegate.activeFeedStories) {
+                if ([[story objectForKey:@"read_status"] intValue] == 1) {
+                    readStoriesCount += 1;
+                }
+            }
+        }
         
-        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d", 
+        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
                                       NEWSBLUR_URL,
                                       [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
-                                      self.feedPage];
+                                      self.feedPage,
+                                      readStoriesCount];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         
         __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
@@ -418,6 +442,9 @@
         gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 27);
         unsigned int color = 0;
         NSString *favicon_color = [feed objectForKey:@"favicon_color"];
+        if ([favicon_color class] == [NSNull class]) {
+            favicon_color = @"505050";
+        }
         NSString *red = [favicon_color substringFrom:0 to:2];
         NSString *green = [favicon_color substringFrom:2 to:4];
         NSString *blue = [favicon_color substringFrom:4 to:6];
