@@ -15,6 +15,8 @@
 @synthesize storyAuthor;
 @synthesize storyDate;
 @synthesize storyUnreadIndicator;
+@synthesize feedTitle;
+@synthesize feedFavicon;
 
 - (id)initWithStyle:(UITableViewCellStyle)style 
     reuseIdentifier:(NSString *)reuseIdentifier {
@@ -36,6 +38,8 @@
     [storyAuthor release];
     [storyDate release];
     [storyUnreadIndicator release];
+    [feedTitle release];
+    [feedFavicon release];
     [super dealloc];
 }
 

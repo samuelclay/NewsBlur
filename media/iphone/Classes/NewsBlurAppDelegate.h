@@ -26,6 +26,7 @@
     OriginalStoryViewController *originalStoryViewController;
     
     NSString * activeUsername;
+    BOOL isRiverView;
     NSDictionary * activeFeed;
     NSString * activeFolder;
     NSArray * activeFeedStories;
@@ -54,6 +55,7 @@
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
+@property (nonatomic, readwrite) BOOL isRiverView;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
 @property (readwrite, retain) NSArray * activeFeedStories;
