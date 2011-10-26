@@ -29,6 +29,7 @@
     BOOL isRiverView;
     NSDictionary * activeFeed;
     NSString * activeFolder;
+    NSArray * activeFolderFeeds;
     NSArray * activeFeedStories;
     NSMutableArray * activeFeedStoryLocations;
     NSMutableArray * activeFeedStoryLocationIds;
@@ -58,6 +59,7 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
+@property (readwrite, retain) NSArray * activeFolderFeeds;
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocations;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocationIds;
@@ -76,6 +78,7 @@
 - (void)showLogin;
 - (void)showAdd;
 - (void)loadFeedDetailView;
+- (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)reloadFeedsView;
 - (void)hideNavigationBar:(BOOL)animated;

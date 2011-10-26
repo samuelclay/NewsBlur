@@ -6,6 +6,7 @@
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
@@ -15,6 +16,7 @@
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
+#import "StringHelper.h"
 #import "Utilities.h"
 
 #define kTableViewRowHeight 65;
@@ -203,7 +205,7 @@
 #pragma mark River of News
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
-    if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
+    if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
         int storyCount = appDelegate.storyCount;
@@ -212,9 +214,9 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
         
-        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@?page=%d", 
+        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d", 
                                       NEWSBLUR_URL,
-                                      [appDelegate.activeFeed objectForKey:@"id"],
+                                      [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
                                       self.feedPage];
         NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         
@@ -390,6 +392,7 @@
         cell.storyAuthor.text = @"";
     }
     
+    BOOL isStoryRead = [[story objectForKey:@"read_status"] intValue] == 1;
     NSString *title = [story objectForKey:@"story_title"];
     cell.storyTitle.text = [title stringByDecodingHTMLEntities];
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
@@ -403,14 +406,31 @@
     }
     
     // River view
-    id feedId = [story objectForKey:@"story_feed_id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    if (appDelegate.isRiverView) {
+        id feedId = [story objectForKey:@"story_feed_id"];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
 
-    cell.feedTitle.text = [feed objectForKey:@"feed_title"];
-    cell.feedFavicon.image = [Utilities getImage:feedIdStr];
-    
-    if ([[story objectForKey:@"read_status"] intValue] != 1) {
+        cell.feedTitle.text = [feed objectForKey:@"feed_title"];
+        cell.feedFavicon.image = [Utilities getImage:feedIdStr];
+        
+        CAGradientLayer *gradient = [CAGradientLayer layer];
+        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 27);
+        unsigned int color = 0;
+        NSString *favicon_color = [feed objectForKey:@"favicon_color"];
+        NSString *red = [favicon_color substringFrom:0 to:2];
+        NSString *green = [favicon_color substringFrom:2 to:4];
+        NSString *blue = [favicon_color substringFrom:4 to:6];
+        NSScanner *scanner = [NSScanner scannerWithString:favicon_color];
+        [scanner scanHexInt:&color];
+        gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[[UIColor blackColor] CGColor], nil];
+        if (isStoryRead) {
+            gradient.opacity = .15;
+        }
+        [cell.layer insertSublayer:gradient atIndex:0];
+    }
+        
+    if (!isStoryRead) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
         cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:13];
@@ -421,6 +441,7 @@
         cell.storyUnreadIndicator.alpha = 1;
         cell.feedTitle.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+        
         cell.feedFavicon.alpha = 1;
     } else {
         // Read story
@@ -470,7 +491,11 @@
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
     if (maximumOffset - currentOffset <= 60.0) {
-        [self fetchFeedDetail:self.feedPage+1 withCallback:nil];
+        if (appDelegate.isRiverView) {
+            [self fetchRiverPage:self.feedPage+1 withCallback:nil];
+        } else {
+            [self fetchFeedDetail:self.feedPage+1 withCallback:nil];   
+        }
     }
 }
 

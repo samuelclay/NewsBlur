@@ -29,6 +29,7 @@
 @synthesize isRiverView;
 @synthesize activeFeed;
 @synthesize activeFolder;
+@synthesize activeFolderFeeds;
 @synthesize activeFeedStories;
 @synthesize activeFeedStoryLocations;
 @synthesize activeFeedStoryLocationIds;

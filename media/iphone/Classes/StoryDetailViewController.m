@@ -355,7 +355,7 @@
 - (void)setActiveStory {
     self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
     
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     UIImage *titleImage = [Utilities getImage:feedIdStr];
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
