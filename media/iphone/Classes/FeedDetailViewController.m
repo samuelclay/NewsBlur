@@ -20,7 +20,7 @@
 #import "Utilities.h"
 
 #define kTableViewRowHeight 65;
-#define kTableViewRiverRowHeight 85;
+#define kTableViewRiverRowHeight 81;
 
 @implementation FeedDetailViewController
 
@@ -439,18 +439,22 @@
         cell.feedFavicon.image = [Utilities getImage:feedIdStr];
         
         CAGradientLayer *gradient = [CAGradientLayer layer];
-        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 27);
+        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 21);
         unsigned int color = 0;
+        unsigned int colorFade = 0;
         NSString *favicon_color = [feed objectForKey:@"favicon_color"];
         if ([favicon_color class] == [NSNull class]) {
             favicon_color = @"505050";
         }
-        NSString *red = [favicon_color substringFrom:0 to:2];
-        NSString *green = [favicon_color substringFrom:2 to:4];
-        NSString *blue = [favicon_color substringFrom:4 to:6];
+        NSString *favicon_fade = [feed objectForKey:@"favicon_fade"];
+        if ([favicon_fade class] == [NSNull class]) {
+            favicon_fade = @"303030";
+        }
         NSScanner *scanner = [NSScanner scannerWithString:favicon_color];
         [scanner scanHexInt:&color];
-        gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[[UIColor blackColor] CGColor], nil];
+        NSScanner *scannerFade = [NSScanner scannerWithString:favicon_fade];
+        [scannerFade scanHexInt:&colorFade];
+        gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
         if (isStoryRead) {
             gradient.opacity = .15;
         }
@@ -466,7 +470,7 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
-        cell.feedTitle.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
+        cell.feedTitle.textColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1.0];
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
         
         cell.feedFavicon.alpha = 1;
@@ -479,7 +483,7 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
-        cell.feedTitle.textColor = [UIColor colorWithRed:0.4f green:0.4f blue:0.4f alpha:0.7];
+        cell.feedTitle.textColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
         cell.feedFavicon.alpha = 0.5f;
     }

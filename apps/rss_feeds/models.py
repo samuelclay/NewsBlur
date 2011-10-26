@@ -77,8 +77,10 @@ class Feed(models.Model):
             'updated_seconds_ago': seconds_timesince(self.last_update),
             'subs': self.num_subscribers,
             'favicon_color': self.favicon_color,
+            'favicon_fade': self.favicon_fade(),
             'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
+        print self.favicon_color, self.favicon_fade()
         
         if include_favicon:
             try:
@@ -353,6 +355,17 @@ class Feed(models.Model):
     def count_stories(self, verbose=False):
         self.save_feed_stories_last_month(verbose)
         # self.save_feed_story_history_statistics()
+        
+    def favicon_fade(self):
+        color = self.favicon_color
+        if color:
+            splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
+            red, green, blue = splitter(color[:6], 2)
+            fade_red = hex(max(int(red, 16) - 60, 0))[2:].zfill(2)
+            fade_green = hex(max(int(green, 16) - 60, 0))[2:].zfill(2)
+            fade_blue = hex(max(int(blue, 16) - 60, 0))[2:].zfill(2)
+            return "%s%s%s" % (fade_red, fade_green, fade_blue)
+            
         
     def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
