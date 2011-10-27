@@ -70,8 +70,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
-                                        animated:animated];
+    NSLog(@"selected; %@", [feedTitlesTable indexPathForSelectedRow] );
     // If there is an active feed, we need to update its table row to match 
     // the updated unread counts.
     if ([appDelegate activeFeed]) {
@@ -120,6 +119,9 @@
     [self.intelligenceControl 
      setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     [appDelegate showNavigationBar:animated];
+    
+    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
+                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -450,10 +452,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (UIView *)tableView:(UITableView *)tableView 
 viewForHeaderInSection:(NSInteger)section {
     // create the parent view that will hold header Label
-    UIView* customView = [[[UIView alloc] 
-                           initWithFrame:CGRectMake(0.0, 0.0, 
-                                                    tableView.bounds.size.width, 21.0)] 
-                          autorelease];
+    UIControl* customView = [[[UIControl alloc] 
+                              initWithFrame:CGRectMake(0.0, 0.0, 
+                                                       tableView.bounds.size.width, 21.0)] 
+                             autorelease];
     
     
     UIView *borderBottom = [[[UIView alloc] 
@@ -485,7 +487,13 @@ viewForHeaderInSection:(NSInteger)section {
     folderImageView.frame = CGRectMake(14.0, 2.0, 16.0, 16.0);
     [customView addSubview:folderImageView];
     [folderImageView release];
-    
+
+    UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
+    UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
+    disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, 3.0, 9.0, 14.0);
+    [customView addSubview:disclosureImageView];
+    [disclosureImageView release];
+
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
@@ -493,7 +501,15 @@ viewForHeaderInSection:(NSInteger)section {
     [invisibleHeaderButton addTarget:self action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:invisibleHeaderButton];
     
+    [invisibleHeaderButton addTarget:self action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
+    
+    [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
+}
+
+- (IBAction)sectionTapped:(UIButton *)button {
+    NSLog(@"touch view: %@", button);
+    button.backgroundColor = [UIColor blackColor];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
