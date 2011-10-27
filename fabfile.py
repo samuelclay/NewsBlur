@@ -96,6 +96,12 @@ def restart_gunicorn():
             run('sudo supervisorctl restart gunicorn')
         
 @roles('web')
+def gunicorn_stop():
+    with cd(env.NEWSBLUR_PATH):
+        with settings(warn_only=True):
+            run('sudo supervisorctl stop gunicorn')
+        
+@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')

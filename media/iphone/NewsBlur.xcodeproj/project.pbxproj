@@ -75,6 +75,7 @@
 		FF56EC8413F795380009D8E0 /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF56EC8313F795380009D8E0 /* Background.png */; };
 		FF5EA47F143B691000B7563D /* AddViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddViewController.m */; };
 		FF5EA480143B691000B7563D /* AddViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF5EA47E143B691000B7563D /* AddViewController.xib */; };
+		FF70DD2D1457A76E0053CFB0 /* StringHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FF70DD2C1457A76E0053CFB0 /* StringHelper.m */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; };
 		FF79E11D13EB756A0095C852 /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = FF79E11913EB756A0095C852 /* arrow.png */; };
@@ -206,6 +207,8 @@
 		FF5EA47C143B691000B7563D /* AddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddViewController.h; sourceTree = "<group>"; };
 		FF5EA47D143B691000B7563D /* AddViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddViewController.m; sourceTree = "<group>"; };
 		FF5EA47E143B691000B7563D /* AddViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddViewController.xib; sourceTree = "<group>"; };
+		FF70DD2B1457A76E0053CFB0 /* StringHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringHelper.h; sourceTree = "<group>"; };
+		FF70DD2C1457A76E0053CFB0 /* StringHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringHelper.m; sourceTree = "<group>"; };
 		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
 		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
@@ -325,6 +328,8 @@
 				FFD2BB8A1401AD85004277DA /* libTestFlight.a */,
 				FF79E11B13EB756A0095C852 /* PullToRefreshView.h */,
 				FF79E11C13EB756A0095C852 /* PullToRefreshView.m */,
+				FF70DD2B1457A76E0053CFB0 /* StringHelper.h */,
+				FF70DD2C1457A76E0053CFB0 /* StringHelper.m */,
 				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
 				FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */,
 				FF38679F13D8916E00F8AB3A /* GTMDefines.h */,
@@ -610,6 +615,7 @@
 				FF5EA47F143B691000B7563D /* AddViewController.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
+				FF70DD2D1457A76E0053CFB0 /* StringHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

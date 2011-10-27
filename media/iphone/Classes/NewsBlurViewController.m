@@ -506,14 +506,20 @@ viewForHeaderInSection:(NSInteger)section {
 
 - (void)didSelectSectionHeader:(UIButton *)button {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
-//    NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
-//    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
     
     [appDelegate setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = YES;
-    
-    [appDelegate loadFeedDetailView];
+
+    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+    NSMutableArray *feeds = [NSMutableArray array];
+    for (int l=0; l < [activeFolderFeeds count]; l++) {
+        [feeds addObject:[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]]];
+    }
+    appDelegate.activeFolderFeeds = feeds;
+
+    [appDelegate loadRiverFeedDetailView];
 }
 
 - (IBAction)selectIntelligence {
