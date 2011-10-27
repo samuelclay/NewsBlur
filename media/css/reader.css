@@ -4965,18 +4965,18 @@ background: transparent;
     left: 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image {
-    top: -3px;
-    background: transparent url('../img/icons/hamburger_s.png') no-repeat 6px 0;
+    top: -8px;
+    background: transparent url('../img/reader/hamburgers.png') no-repeat 0 0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-2 .NB-feedchooser-dollar-image {
-    top: -6px;
-    background: transparent url('../img/icons/hamburger.png') no-repeat 3px 0;
+    top: -8px;
+    background: transparent url('../img/reader/hamburgers.png') no-repeat 0 -36px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-3 .NB-feedchooser-dollar-image {
     top: -10px;
-    background: transparent url('../img/icons/hamburger_l.png') no-repeat 0 0;
+    background: transparent url('../img/reader/hamburgers.png') no-repeat 0 -72px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-month {
