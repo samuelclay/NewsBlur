@@ -202,25 +202,28 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
-    if (request.tag == [[results objectForKey:@"feed_id"] intValue]) {
-        [pull finishedLoading];
-        NSArray *newStories = [results objectForKey:@"stories"];
-        NSMutableArray *confirmedNewStories = [NSMutableArray array];
-        if ([appDelegate.activeFeedStories count]) {
-            NSMutableSet *storyIds = [NSMutableSet set];
-            for (id story in appDelegate.activeFeedStories) {
-                [storyIds addObject:[story objectForKey:@"id"]];
-            }
-            for (id story in newStories) {
-                if (![storyIds containsObject:[story objectForKey:@"id"]]) {
-                    [confirmedNewStories addObject:story];
-                }
-            }
-        } else {
-            confirmedNewStories = [[newStories copy] autorelease];
-        }
-        [self renderStories:confirmedNewStories];
+    if (!appDelegate.isRiverView && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
+        [results release];
+        return;
     }
+    
+    [pull finishedLoading];
+    NSArray *newStories = [results objectForKey:@"stories"];
+    NSMutableArray *confirmedNewStories = [NSMutableArray array];
+    if ([appDelegate.activeFeedStories count]) {
+        NSMutableSet *storyIds = [NSMutableSet set];
+        for (id story in appDelegate.activeFeedStories) {
+            [storyIds addObject:[story objectForKey:@"id"]];
+        }
+        for (id story in newStories) {
+            if (![storyIds containsObject:[story objectForKey:@"id"]]) {
+                [confirmedNewStories addObject:story];
+            }
+        }
+    } else {
+        confirmedNewStories = [[newStories copy] autorelease];
+    }
+    [self renderStories:confirmedNewStories];
     
     [results release];
 }
@@ -267,7 +270,6 @@
             }
         }];
         [request setTimeOutSeconds:30];
-        [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
     }
 }
@@ -391,7 +393,7 @@
     static NSString *cellIdentifier;
 
     if (appDelegate.isRiverView) {
-        cellIdentifier = @"FeedDetailCellIdentifier";
+        cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
         cellIdentifier = @"FeedDetailCellIdentifier";
     }
@@ -418,6 +420,10 @@
     }
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    id feedId = [story objectForKey:@"story_feed_id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor.text = [[story objectForKey:@"story_authors"] 
                                  uppercaseString];
@@ -440,15 +446,12 @@
     
     // River view
     if (appDelegate.isRiverView) {
-        id feedId = [story objectForKey:@"story_feed_id"];
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
 
         cell.feedTitle.text = [feed objectForKey:@"feed_title"];
         cell.feedFavicon.image = [Utilities getImage:feedIdStr];
         
         CAGradientLayer *gradient = [CAGradientLayer layer];
-        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 21);
+        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 20);
         unsigned int color = 0;
         unsigned int colorFade = 0;
         NSString *favicon_color = [feed objectForKey:@"favicon_color"];
@@ -479,9 +482,7 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
-        cell.feedTitle.textColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1.0];
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
-        
         cell.feedFavicon.alpha = 1;
     } else {
         // Read story
@@ -492,9 +493,15 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
-        cell.feedTitle.textColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
         cell.feedFavicon.alpha = 0.5f;
+    }
+    if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
+        cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+                                    [UIColor whiteColor] :
+                                    [UIColor blackColor];            
+    } else {
+        cell.feedTitle.textColor = [UIColor whiteColor];
     }
 
 	return cell;

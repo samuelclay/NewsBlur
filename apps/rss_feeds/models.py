@@ -2,6 +2,7 @@ import difflib
 import datetime
 import random
 import re
+import math
 import mongoengine as mongo
 import zlib
 import urllib
@@ -78,6 +79,7 @@ class Feed(models.Model):
             'subs': self.num_subscribers,
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
+            'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
         print self.favicon_color, self.favicon_fade()
@@ -355,18 +357,66 @@ class Feed(models.Model):
     def count_stories(self, verbose=False):
         self.save_feed_stories_last_month(verbose)
         # self.save_feed_story_history_statistics()
-        
-    def favicon_fade(self):
+    
+    def _split_favicon_color(self):
         color = self.favicon_color
         if color:
             splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
             red, green, blue = splitter(color[:6], 2)
+            return red, green, blue
+        return None, None, None
+        
+    def favicon_fade(self):
+        red, green, blue = self._split_favicon_color()
+        if red and green and blue:
             fade_red = hex(max(int(red, 16) - 60, 0))[2:].zfill(2)
             fade_green = hex(max(int(green, 16) - 60, 0))[2:].zfill(2)
             fade_blue = hex(max(int(blue, 16) - 60, 0))[2:].zfill(2)
             return "%s%s%s" % (fade_red, fade_green, fade_blue)
             
-        
+    def favicon_text_color(self):
+        # Color format: {r: 1, g: .5, b: 0}
+        def contrast(color1, color2):
+            lum1 = luminosity(color1)
+            lum2 = luminosity(color2)
+            if lum1 > lum2:
+                return (lum1 + 0.05) / (lum2 + 0.05)
+            else:
+                return (lum2 + 0.05) / (lum1 + 0.05)
+
+        def luminosity(color):
+            r = color['red']
+            g = color['green']
+            b = color['blue']
+            val = lambda c: c/12.92 if c <= 0.02928 else math.pow(((c + 0.055)/1.055), 2.4)
+            red = val(r)
+            green = val(g)
+            blue = val(b)
+            return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+
+        red, green, blue = self._split_favicon_color()
+        if red and green and blue:
+            color = {
+                'red': int(red, 16) / 256.0,
+                'green': int(green, 16) / 256.0,
+                'blue': int(blue, 16) / 256.0,
+            }
+            white = {
+                'red': 1,
+                'green': 1,
+                'blue': 1,
+            }
+            grey = {
+                'red': 0.5,
+                'green': 0.5,
+                'blue': 0.5,
+            }
+            
+            if contrast(color, white) > contrast(color, grey):
+                return 'white'
+            else:
+                return 'black'
+    
     def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 

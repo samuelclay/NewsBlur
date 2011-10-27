@@ -141,8 +141,8 @@
         [request setPostValue:[appDelegate.activeStory 
                                objectForKey:@"id"] 
                        forKey:@"story_id"]; 
-        [request setPostValue:[appDelegate.activeFeed 
-                               objectForKey:@"id"] 
+        [request setPostValue:[appDelegate.activeStory 
+                               objectForKey:@"story_feed_id"] 
                        forKey:@"feed_id"]; 
         [request setDidFinishSelector:@selector(markedAsRead)];
         [request setDidFailSelector:@selector(markedAsRead)];
