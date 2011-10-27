@@ -6,9 +6,9 @@ import os
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.test import TestCase
-from paypal.standard.pdt.forms import PayPalPDTForm
-from paypal.standard.pdt.models import PayPalPDT
-from paypal.standard.pdt.signals import pdt_successful, pdt_failed
+from vendor.paypal.standard.pdt.forms import PayPalPDTForm
+from vendor.paypal.standard.pdt.models import PayPalPDT
+from vendor.paypal.standard.pdt.signals import pdt_successful, pdt_failed
 
 
 class DummyPayPalPDT(object):

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.conf import settings
-from paypal.standard.helpers import duplicate_txn_id, check_secret
-from paypal.standard.conf import RECEIVER_EMAIL, POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
+from vendor.paypal.standard.helpers import duplicate_txn_id, check_secret
+from vendor.paypal.standard.conf import RECEIVER_EMAIL, POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
 
 
 class PayPalStandardBase(models.Model):

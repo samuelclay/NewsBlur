@@ -58,9 +58,11 @@ static NSLock *readLock = nil;
 		}
 		[request performThrottling];
 	}
-	[ASIHTTPRequest incrementBandwidthUsedInLastSecond:toRead];
 	[readLock unlock];
-	return [stream read:buffer maxLength:toRead];
+	NSInteger rv = [stream read:buffer maxLength:toRead];
+	if (rv > 0)
+		[ASIHTTPRequest incrementBandwidthUsedInLastSecond:rv];
+	return rv;
 }
 
 /*

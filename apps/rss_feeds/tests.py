@@ -5,6 +5,7 @@ from django.core import management
 from django.core.urlresolvers import reverse
 from apps.rss_feeds.models import Feed, MStory
 
+
 class FeedTest(TestCase):
     fixtures = ['rss_feeds.json']
     
@@ -72,6 +73,9 @@ class FeedTest(TestCase):
     def test_load_feeds__slashdot(self):
         self.client.login(username='conesus', password='test')
         
+        old_story_guid = "{'original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss', 'gr:original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss'}"
+        new_story_guid = "{'original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss!!', 'gr:original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss!!'}"
+        
         management.call_command('loaddata', 'slashdot1.json', verbosity=0)
         
         feed = Feed.objects.get(feed_link__contains='slashdot')
@@ -82,6 +86,16 @@ class FeedTest(TestCase):
         
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 38)
+        
+        response = self.client.get(reverse('load-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds']['5']['nt'], 38)
+        
+        self.client.post(reverse('mark-story-as-read'), {'story_id': old_story_guid, 'feed_id': 5})
+        
+        response = self.client.get(reverse('refresh-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds']['5']['nt'], 37)
         
         management.call_command('loaddata', 'slashdot2.json', verbosity=0)
         management.call_command('refresh_feed', force=1, feed=5, single_threaded=True, daemonize=False)
@@ -97,6 +111,10 @@ class FeedTest(TestCase):
         
         # Test: 1 changed char in title
         self.assertEquals(len(feed['stories']), 12)
+        
+        response = self.client.get(reverse('refresh-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds']['5']['nt'], 37)
         
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')

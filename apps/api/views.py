@@ -23,7 +23,7 @@ def login(request):
             errors = form.errors
         if form.is_valid():
             login_user(request, form.get_user())
-            logging.user(form.get_user(), "~FG~BB~SKAPI Login~FW")
+            logging.user(request, "~FG~BB~SKAPI Login~FW")
             code = 1
 
     return dict(code=code, errors=errors)
@@ -40,7 +40,7 @@ def signup(request):
         if form.is_valid():
             new_user = form.save()
             login_user(request, new_user)
-            logging.user(new_user, "~FG~SB~BBAPI NEW SIGNUP~FW")
+            logging.user(request, "~FG~SB~BBAPI NEW SIGNUP~FW")
             code = 1
 
     return dict(code=code, errors=errors)

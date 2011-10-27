@@ -3,8 +3,8 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.http import require_GET
-from paypal.standard.pdt.models import PayPalPDT
-from paypal.standard.pdt.forms import PayPalPDTForm
+from vendor.paypal.standard.pdt.models import PayPalPDT
+from vendor.paypal.standard.pdt.forms import PayPalPDTForm
  
  
 @require_GET

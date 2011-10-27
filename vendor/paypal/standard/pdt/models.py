@@ -6,9 +6,9 @@ from django.db import models
 from django.conf import settings
 from django.http import QueryDict
 from django.utils.http import urlencode
-from paypal.standard.models import PayPalStandardBase
-from paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
-from paypal.standard.pdt.signals import pdt_successful, pdt_failed
+from vendor.paypal.standard.models import PayPalStandardBase
+from vendor.paypal.standard.conf import POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT
+from vendor.paypal.standard.pdt.signals import pdt_successful, pdt_failed
 
 # ### Todo: Move this logic to conf.py:
 # if paypal.standard.pdt is in installed apps
@@ -55,7 +55,7 @@ class PayPalPDT(PayPalStandardBase):
     
     def _verify_postback(self):
         # ### Now we don't really care what result was, just whether a flag was set or not.
-        from paypal.standard.pdt.forms import PayPalPDTForm
+        from vendor.paypal.standard.pdt.forms import PayPalPDTForm
         result = False
         response_list = self.response.split('\n')
         response_dict = {}

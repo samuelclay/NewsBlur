@@ -74,9 +74,12 @@ var classifier_prototype = {
     },
     
     runner_feed: function() {
+        if (!this.model.classifiers[this.feed_id]) {
+            this.model.classifiers[this.feed_id] = _.extend({}, this.model.defaults['classifiers']);
+        }
         
         if (this.options.feed_loaded) {
-            this.user_classifiers = this.model.classifiers;
+            this.user_classifiers = this.model.classifiers[this.feed_id];
         } else {
             this.user_classifiers = {};
         }
@@ -95,8 +98,12 @@ var classifier_prototype = {
     },
     
     runner_story: function() {
+        if (!this.model.classifiers[this.feed_id]) {
+            this.model.classifiers[this.feed_id] = _.extend({}, this.model.defaults['classifiers']);
+        }
+        
         if (this.options.feed_loaded) {
-            this.user_classifiers = this.model.classifiers;
+            this.user_classifiers = this.model.classifiers[this.feed_id];
         } else {
             this.user_classifiers = {};
         }
@@ -153,6 +160,11 @@ var classifier_prototype = {
         this.user_classifiers = trainer_data['classifiers'];
         this.feed.num_subscribers = trainer_data['num_subscribers'];
         this.options.feed_loaded = true;
+        
+        if (!this.model.classifiers[this.feed_id]) {
+            this.model.classifiers[this.feed_id] = _.extend({}, this.model.defaults['classifiers']);
+        }
+        
         if (this.feed_id in this.cache) {
             this.$modal = this.cache[this.feed_id];
         } else {
@@ -879,23 +891,23 @@ var classifier_prototype = {
         
             if (checked) {
                 if (name == 'tag') {
-                    self.model.classifiers.tags[value] = score;
+                    self.model.classifiers[feed_id].tags[value] = score;
                 } else if (name == 'title') {
-                    self.model.classifiers.titles[value] = score;
+                    self.model.classifiers[feed_id].titles[value] = score;
                 } else if (name == 'author') {
-                    self.model.classifiers.authors[value] = score;
+                    self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
-                    self.model.classifiers.feeds[feed_id] = score;
+                    self.model.classifiers[feed_id].feeds[feed_id] = score;
                 }
             } else {
-                if (name == 'tag' && self.model.classifiers.tags[value] == score) {
-                    delete self.model.classifiers.tags[value];
-                } else if (name == 'title' && self.model.classifiers.titles[value] == score) {
-                    delete self.model.classifiers.titles[value];
-                } else if (name == 'author' && self.model.classifiers.authors[value] == score) {
-                    delete self.model.classifiers.authors[value];
-                } else if (name == 'feed' && self.model.classifiers.feeds[feed_id] == score) {
-                    delete self.model.classifiers.feeds[feed_id];
+                if (name == 'tag' && self.model.classifiers[feed_id].tags[value] == score) {
+                    delete self.model.classifiers[feed_id].tags[value];
+                } else if (name == 'title' && self.model.classifiers[feed_id].titles[value] == score) {
+                    delete self.model.classifiers[feed_id].titles[value];
+                } else if (name == 'author' && self.model.classifiers[feed_id].authors[value] == score) {
+                    delete self.model.classifiers[feed_id].authors[value];
+                } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
+                    delete self.model.classifiers[feed_id].feeds[feed_id];
                 }
             }
         });

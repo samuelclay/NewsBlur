@@ -249,10 +249,11 @@ def load_feeds_flat(request):
                 for folder_name in item:
                     folder = item[folder_name]
                     flat_folder_name = "%s%s%s" % (
-                        parent_folder,
+                        parent_folder if parent_folder and parent_folder != ' ' else "",
                         " - " if parent_folder and parent_folder != ' ' else "",
                         folder_name
                     )
+                    flat_folders[flat_folder_name] = []
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
@@ -484,6 +485,7 @@ def load_river_stories(request):
     original_feed_ids  = list(feed_ids)
     page               = int(request.REQUEST.get('page', 1))
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
+    new_flag           = request.REQUEST.get('new_flag', False)
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
@@ -526,7 +528,7 @@ def load_river_stories(request):
     mstories = MStory.objects(
         story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
-        story_date__gte=start - bottom_delta
+        # story_date__gte=start - bottom_delta
     ).map_reduce("""function() {
             var d = feed_last_reads[this[~story_feed_id]];
             if (this[~story_date].getTime()/1000 > d) {
@@ -579,6 +581,13 @@ def load_river_stories(request):
     classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
     classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
     
+    classifiers = {}
+    for feed_id in found_feed_ids:
+        classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
+                                                        classifier_authors[feed_id],
+                                                        classifier_titles[feed_id],
+                                                        classifier_tags[feed_id])
+    
     # Just need to format stories
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -604,7 +613,11 @@ def load_river_stories(request):
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), timediff))
     
-    return dict(stories=stories)
+    if new_flag:
+        return dict(stories=stories, classifiers=classifiers)
+    else:
+        logging.user(request, "~BR~FCNo new flag on river")
+        return dict(stories=stories)
     
     
 @ajax_login_required
@@ -665,16 +678,17 @@ def mark_story_as_read(request):
             continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story.story_guid)
+        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story_id)
         try:
             m.save()
         except OperationError:
             logging.user(request, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request, "~BRRead now date: %s, story_id: %s." % (m.read_date, story.story_guid))
+            logging.user(request, "~BRRead now date: %s, story_date: %s, story_id: %s." % (m.read_date, story.story_date, story.story_guid))
             logging.user(request, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
                 usersub.mark_read_date, usersub.oldest_unread_story_date))
             m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request, "~BROriginal read date: %s, story id: %s" % (m.read_date, m.story_id))
+            logging.user(request, "~BROriginal read date: %s, story id: %s, story.id: %s" % (m.read_date, m.story_id, m.story.id))
+            m.story_id = story_id
             m.read_date = date
             m.save()
     
@@ -761,7 +775,7 @@ def add_url(request):
 def add_folder(request):
     folder = request.POST['folder']
     parent_folder = request.POST.get('parent_folder', '')
-    
+
     logging.user(request, "~FRAdding Folder: ~SB%s (in %s)" % (folder, parent_folder))
     
     if folder:
@@ -780,6 +794,8 @@ def add_folder(request):
 def delete_feed(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', '')
+    if in_folder == ' ':
+        in_folder = ""
     
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders.delete_feed(feed_id, in_folder)

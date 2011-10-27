@@ -3,9 +3,9 @@
 from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
-from paypal.standard.conf import *
-from paypal.standard.widgets import ValueHiddenInput, ReservedValueHiddenInput
-from paypal.standard.conf import (POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT, 
+from vendor.paypal.standard.conf import *
+from vendor.paypal.standard.widgets import ValueHiddenInput, ReservedValueHiddenInput
+from vendor.paypal.standard.conf import (POSTBACK_ENDPOINT, SANDBOX_POSTBACK_ENDPOINT, 
     RECEIVER_EMAIL)
 
 
@@ -189,7 +189,7 @@ class PayPalSharedSecretEncryptedPaymentsForm(PayPalEncryptedPaymentsForm):
     """
     def __init__(self, *args, **kwargs):
         "Make the secret from the form initial data and slip it into the form."
-        from paypal.standard.helpers import make_secret
+        from vendor.paypal.standard.helpers import make_secret
         super(PayPalSharedSecretEncryptedPaymentsForm, self).__init__(self, *args, **kwargs)
         # @@@ Attach the secret parameter in a way that is safe for other query params.
         secret_param = "?secret=%s" % make_secret(self)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from string import split as L
 from django.contrib import admin
-from paypal.pro.models import PayPalNVP
+from vendor.paypal.pro.models import PayPalNVP
 
 
 class PayPalNVPAdmin(admin.ModelAdmin):

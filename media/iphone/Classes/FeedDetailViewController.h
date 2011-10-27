@@ -13,7 +13,8 @@
 @class NewsBlurAppDelegate;
 
 @interface FeedDetailViewController : UIViewController 
-<UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate> {
+<UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate,
+ UIActionSheetDelegate, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
@@ -33,6 +34,7 @@
 - (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)failLoadingFeed:(ASIHTTPRequest *)request;
 
@@ -47,6 +49,10 @@
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)finishedRefreshingFeed:(ASIHTTPRequest *)request;
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request;
+
+- (IBAction)doOpenSettingsActionSheet;
+- (void)confirmDeleteSite;
+- (void)deleteSite;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

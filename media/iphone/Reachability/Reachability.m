@@ -214,12 +214,12 @@ static void logNetworkStatus_(const char *name, int line, NetworkStatus status) 
 } // dealloc
 
 
-- (Reachability *) initWithReachabilityRef: (SCNetworkReachabilityRef) ref {
-	
-	if (self = [super init]) {
-		
+- (Reachability *) initWithReachabilityRef: (SCNetworkReachabilityRef) ref 
+{
+    self = [super init];
+	if (self != nil) 
+    {
 		reachabilityRef = ref;
-		
 	}
 	
 	return self;

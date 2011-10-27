@@ -10,7 +10,7 @@ NEWSBLUR.Modal.prototype = {
   
     runner: function() {},
     
-    open_modal: function() {
+    open_modal: function(callback) {
         var self = this;
         
         this.$modal.modal({
