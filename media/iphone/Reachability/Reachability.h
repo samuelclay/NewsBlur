@@ -105,6 +105,7 @@
 
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <netinet/in.h>
 
 #define USE_DDG_EXTENSIONS 1 // Use DDG's Extensions to test network criteria.
 // Since NSAssert and NSCAssert are used in this code, 

@@ -6,21 +6,21 @@
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
 #import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
+#import "MBProgressHUD.h"
 #import "Base64.h"
 #import "JSON.h"
+#import "StringHelper.h"
+#import "Utilities.h"
 
 #define kTableViewRowHeight 65;
-
-#define UIColorFromRGB(rgbValue) [UIColor \
-colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
-green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
-blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define kTableViewRiverRowHeight 81;
 
 @implementation FeedDetailViewController
 
@@ -41,7 +41,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
 	pull = [[PullToRefreshView alloc] initWithScrollView:self.storyTitlesTable];
     [pull setDelegate:self];
     [self.storyTitlesTable addSubview:pull];
@@ -51,11 +51,16 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     UIView *titleView = [[UIView alloc] init];
     
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
-    titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
+    if (appDelegate.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", appDelegate.activeFolder];        
+    } else {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
+    }
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = UITextAlignmentLeft;
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
@@ -67,25 +72,28 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [titleLabel sizeToFit];
     
     
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
     UIImage *titleImage;
-    NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
-	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-		titleImage = [UIImage imageWithData:imageData];
-	} else {
-		titleImage = [UIImage imageNamed:@"world.png"];
-	}
+    if (appDelegate.isRiverView) {
+        titleImage = [UIImage imageNamed:@"folder.png"];
+    } else {
+        titleImage = [Utilities getImage:feedIdStr];
+    }
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    //    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView:titleImageView] autorelease];
     [titleLabel addSubview:titleImageView];
-//    [titleView addSubview:titleImageView];
     [titleImageView release];
     
     self.navigationItem.titleView = titleLabel;
-//    self.navigationItem.title = [appDelegate.activeFeed objectForKey:@"feed_title"];
 	    
     [titleView release];
+
+    // Commenting out until training is ready...
+    //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
+    //    [trainBarButton setImage:[UIImage imageNamed:@"train.png"]];
+    //    [trainBarButton setEnabled:YES];
+    //    [self.navigationItem setRightBarButtonItem:trainBarButton animated:YES];
+    //    [trainBarButton release];
     
     NSMutableArray *indexPaths = [NSMutableArray array];
     for (id i in appDelegate.recentlyReadStories) {
@@ -113,6 +121,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)viewDidAppear:(BOOL)animated {
 //    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    
 	[super viewDidAppear:animated];
 }
 
@@ -144,7 +153,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.feedPage = page;
         self.pageFetching = YES;
         int storyCount = appDelegate.storyCount;
@@ -179,14 +187,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)failLoadingFeed:(ASIHTTPRequest *)request {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    
-    if (self.feedPage <= 1) {
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
-    }
+//    if (self.feedPage <= 1) {
+//        [appDelegate.navigationController 
+//         popToViewController:[appDelegate.navigationController.viewControllers 
+//                              objectAtIndex:0]  
+//         animated:YES];
+//    }
     
     [NewsBlurAppDelegate informError:[request error]];
 }
@@ -196,13 +202,80 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
-    if (request.tag == [[results objectForKey:@"feed_id"] intValue]) {
-        [pull finishedLoading];
-        [self renderStories:[results objectForKey:@"stories"]];
+    if (!appDelegate.isRiverView && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
+        [results release];
+        return;
     }
+    
+    [pull finishedLoading];
+    NSArray *newStories = [results objectForKey:@"stories"];
+    NSMutableArray *confirmedNewStories = [NSMutableArray array];
+    if ([appDelegate.activeFeedStories count]) {
+        NSMutableSet *storyIds = [NSMutableSet set];
+        for (id story in appDelegate.activeFeedStories) {
+            [storyIds addObject:[story objectForKey:@"id"]];
+        }
+        for (id story in newStories) {
+            if (![storyIds containsObject:[story objectForKey:@"id"]]) {
+                [confirmedNewStories addObject:story];
+            }
+        }
+    } else {
+        confirmedNewStories = [[newStories copy] autorelease];
+    }
+    [self renderStories:confirmedNewStories];
     
     [results release];
 }
+
+#pragma mark -
+#pragma mark River of News
+
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+    if (!self.pageFetching && !self.pageFinished) {
+        self.feedPage = page;
+        self.pageFetching = YES;
+        int storyCount = appDelegate.storyCount;
+        if (storyCount == 0) {
+            [self.storyTitlesTable reloadData];
+            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        }
+        int readStoriesCount = 0;
+        if (self.feedPage > 1) {
+            for (id story in appDelegate.activeFeedStories) {
+                if ([[story objectForKey:@"read_status"] intValue] == 1) {
+                    readStoriesCount += 1;
+                }
+            }
+        }
+        
+        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
+                                      NEWSBLUR_URL,
+                                      [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
+                                      self.feedPage,
+                                      readStoriesCount];
+        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+        
+        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [self failLoadingFeed:request];
+        }];
+        [request setCompletionBlock:^(void) {
+            [self finishedLoadingFeed:request];
+            if (callback) {
+                callback();
+            }
+        }];
+        [request setTimeOutSeconds:30];
+        [request startAsynchronous];
+    }
+}
+
+#pragma mark - 
+#pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {
     NSInteger existingStoriesCount = [[appDelegate activeFeedStoryLocations] count];
@@ -249,8 +322,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.2];
-    
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -261,8 +332,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
           [error localizedDescription]);
     
     self.pageFetching = NO;
-    
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
 	// User clicking on another link before the page loads is OK.
 	if ([error code] != NSURLErrorCancelled) {
@@ -321,16 +390,27 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *FeedDetailCellIdentifier = @"FeedDetailCellIdentifier";
-	    
-	FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedDetailCellIdentifier];
+    static NSString *cellIdentifier;
+
+    if (appDelegate.isRiverView) {
+        cellIdentifier = @"FeedRiverDetailCellIdentifier";
+    } else {
+        cellIdentifier = @"FeedDetailCellIdentifier";
+    }
+
+    FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
+                                                        dequeueReusableCellWithIdentifier:cellIdentifier];
 	if (cell == nil) {
 		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedDetailTableCell"
                                                      owner:self
                                                    options:nil];
         for (id oneObject in nib) {
             if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
-                cell = (FeedDetailTableCell *)oneObject;
+                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !appDelegate.isRiverView) ||
+                    ([(FeedDetailTableCell *)oneObject tag] == 1 && appDelegate.isRiverView)) {
+                    cell = (FeedDetailTableCell *)oneObject;
+                }
+
             }
         }
 	}
@@ -340,6 +420,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     }
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    id feedId = [story objectForKey:@"story_feed_id"];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor.text = [[story objectForKey:@"story_authors"] 
                                  uppercaseString];
@@ -347,6 +431,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         cell.storyAuthor.text = @"";
     }
     
+    BOOL isStoryRead = [[story objectForKey:@"read_status"] intValue] == 1;
     NSString *title = [story objectForKey:@"story_title"];
     cell.storyTitle.text = [title stringByDecodingHTMLEntities];
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
@@ -359,7 +444,36 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
     }
     
-    if ([[story objectForKey:@"read_status"] intValue] != 1) {
+    // River view
+    if (appDelegate.isRiverView) {
+
+        cell.feedTitle.text = [feed objectForKey:@"feed_title"];
+        cell.feedFavicon.image = [Utilities getImage:feedIdStr];
+        
+        CAGradientLayer *gradient = [CAGradientLayer layer];
+        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 20);
+        unsigned int color = 0;
+        unsigned int colorFade = 0;
+        NSString *favicon_color = [feed objectForKey:@"favicon_color"];
+        if ([favicon_color class] == [NSNull class]) {
+            favicon_color = @"505050";
+        }
+        NSString *favicon_fade = [feed objectForKey:@"favicon_fade"];
+        if ([favicon_fade class] == [NSNull class]) {
+            favicon_fade = @"303030";
+        }
+        NSScanner *scanner = [NSScanner scannerWithString:favicon_color];
+        [scanner scanHexInt:&color];
+        NSScanner *scannerFade = [NSScanner scannerWithString:favicon_fade];
+        [scannerFade scanHexInt:&colorFade];
+        gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+        if (isStoryRead) {
+            gradient.opacity = .15;
+        }
+        [cell.layer insertSublayer:gradient atIndex:0];
+    }
+        
+    if (!isStoryRead) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
         cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:13];
@@ -368,7 +482,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
-
+        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+        cell.feedFavicon.alpha = 1;
     } else {
         // Read story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
@@ -378,6 +493,15 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
+        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
+        cell.feedFavicon.alpha = 0.5f;
+    }
+    if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
+        cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+                                    [UIColor whiteColor] :
+                                    [UIColor blackColor];            
+    } else {
+        cell.feedTitle.textColor = [UIColor whiteColor];
     }
 
 	return cell;
@@ -397,7 +521,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         if (self.pageFinished) return 16;
         else return kTableViewRowHeight;
     } else {
-        return kTableViewRowHeight;
+        if (appDelegate.isRiverView) {
+            return kTableViewRiverRowHeight;
+        } else {
+            return kTableViewRowHeight;
+        }
     }
 }
 
@@ -410,7 +538,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
     if (maximumOffset - currentOffset <= 60.0) {
-        [self fetchFeedDetail:self.feedPage+1 withCallback:nil];
+        if (appDelegate.isRiverView) {
+            [self fetchRiverPage:self.feedPage+1 withCallback:nil];
+        } else {
+            [self fetchFeedDetail:self.feedPage+1 withCallback:nil];   
+        }
     }
 }
 
@@ -499,6 +631,78 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return [appDelegate.activeFeedStories objectAtIndex:row];
 }
 
+#pragma mark -
+#pragma mark Feed Actions
+
+- (IBAction)doOpenSettingsActionSheet {
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:[appDelegate.activeFeed objectForKey:@"feed_title"]
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
+    
+    NSArray *buttonTitles = [NSArray arrayWithObjects:@"Delete this site", nil];
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    
+    [options showInView:self.view];
+    [options release];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        [self confirmDeleteSite];
+    }
+}
+
+- (void)confirmDeleteSite {
+    UIAlertView *deleteConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+    [deleteConfirm show];
+    [deleteConfirm setTag:0];
+    [deleteConfirm release];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 0) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            [self deleteSite];
+        }
+    }
+}
+
+- (void)deleteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+    
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_feed", 
+                                  NEWSBLUR_URL];
+    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+    
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    [request setDelegate:self];
+    [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
+    [request addPostValue:[appDelegate activeFolder] forKey:@"in_folder"];
+    [request setFailedBlock:^(void) {
+        [self failLoadingFeed:request];
+    }];
+    [request setCompletionBlock:^(void) {
+        [appDelegate reloadFeedsView];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request setTimeOutSeconds:30];
+    [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
+    [request startAsynchronous];
+}
 
 #pragma mark -
 #pragma mark PullToRefresh
@@ -519,7 +723,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [request setTimeOutSeconds:60];
     [request startAsynchronous];
     
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [appDelegate setStories:nil];
     self.feedPage = 1;
     self.pageFetching = YES;

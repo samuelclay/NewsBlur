@@ -15,7 +15,7 @@ COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title
 
 date = time.strftime('%Y-%m-%d-%H-%M')
 collections = COLLECTIONS.split(' ')
-db_name = settings.MONGO_DB.get('name')
+db_name = 'newsblur'
 dir_name = 'backup_mongo_%s' % date
 filename = '%s.tgz' % dir_name
 

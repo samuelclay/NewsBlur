@@ -11,7 +11,7 @@ from django.forms.models import fields_for_model
 from django.utils.datastructures import MergeDict
 from django.utils.http import urlencode
 
-from paypal.pro.models import PayPalNVP, L
+from vendor.paypal.pro.models import PayPalNVP, L
 
 
 TEST = settings.PAYPAL_TEST

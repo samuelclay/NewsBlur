@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from paypal.standard.ipn.forms import PayPalIPNForm
-from paypal.standard.ipn.models import PayPalIPN
+from vendor.paypal.standard.ipn.forms import PayPalIPNForm
+from vendor.paypal.standard.ipn.models import PayPalIPN
 
 
 @require_POST

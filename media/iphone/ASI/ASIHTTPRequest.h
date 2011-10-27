@@ -873,6 +873,11 @@ typedef void (^ASIDataBlock)(NSData *data);
 // And also by ASIS3Request
 + (NSString *)base64forData:(NSData *)theData;
 
+// Returns the expiration date for the request.
+// Calculated from the Expires response header property, unless maxAge is non-zero or
+// there exists a non-zero max-age property in the Cache-Control response header.
++ (NSDate *)expiryDateForRequest:(ASIHTTPRequest *)request maxAge:(NSTimeInterval)maxAge;
+
 // Returns a date from a string in RFC1123 format
 + (NSDate *)dateFromRFC1123String:(NSString *)string;
 

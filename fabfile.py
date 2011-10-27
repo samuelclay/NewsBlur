@@ -96,6 +96,12 @@ def restart_gunicorn():
             run('sudo supervisorctl restart gunicorn')
         
 @roles('web')
+def gunicorn_stop():
+    with cd(env.NEWSBLUR_PATH):
+        with settings(warn_only=True):
+            run('sudo supervisorctl stop gunicorn')
+        
+@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
@@ -135,11 +141,9 @@ def celery_start():
         run('tail logs/newsblur.log')
 
 @roles('task')
-def force_celery():
+def kill_celery():
     with cd(env.NEWSBLUR_PATH):
-        run('git pull')
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
-        # run('sudo supervisorctl start celery && tail logs/newsblur.log')
 
 def compress_media():
     with cd('media/js'):
@@ -221,7 +225,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
     sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client-9.0')

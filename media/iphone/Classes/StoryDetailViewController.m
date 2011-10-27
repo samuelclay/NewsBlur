@@ -12,7 +12,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
-
+#import "Utilities.h"
 
 @implementation StoryDetailViewController
 
@@ -141,8 +141,8 @@
         [request setPostValue:[appDelegate.activeStory 
                                objectForKey:@"id"] 
                        forKey:@"story_id"]; 
-        [request setPostValue:[appDelegate.activeFeed 
-                               objectForKey:@"id"] 
+        [request setPostValue:[appDelegate.activeStory 
+                               objectForKey:@"story_feed_id"] 
                        forKey:@"feed_id"]; 
         [request setDidFinishSelector:@selector(markedAsRead)];
         [request setDidFailSelector:@selector(markedAsRead)];
@@ -275,7 +275,6 @@
     [webView loadHTMLString:htmlString
                     baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
                                                   objectForKey:@"feed_link"]]];
-    
 }
 
 - (IBAction)doNextUnreadStory {
@@ -356,14 +355,8 @@
 - (void)setActiveStory {
     self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
     
-    UIImage *titleImage;
-    NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
-	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-		titleImage = [UIImage imageWithData:imageData];
-	} else {
-		titleImage = [UIImage imageNamed:@"world.png"];
-	}
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    UIImage *titleImage = [Utilities getImage:feedIdStr];
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
     self.navigationItem.titleView = titleImageView;

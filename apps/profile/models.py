@@ -47,10 +47,10 @@ class Profile(models.Model):
             print " ---> Profile not saved. Table isn't there yet."
     
     def activate_premium(self):
+        self.send_new_premium_email()
+        
         self.is_premium = True
         self.save()
-        
-        self.send_new_premium_email()
         
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
@@ -120,8 +120,11 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
-    def send_new_premium_email(self):
+    def send_new_premium_email(self, force=False):
         if not self.user.email or not self.send_emails:
+            return
+        
+        if self.is_premium and not force:
             return
         
         user    = self.user
@@ -178,6 +181,12 @@ post_save.connect(create_profile, sender=User)
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
     user = User.objects.get(username=ipn_obj.custom)
+    try:
+        if not user.email:
+            user.email = ipn_obj.payer_email
+            user.save()
+    except:
+        pass
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
 
