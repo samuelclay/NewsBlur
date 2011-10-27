@@ -13,6 +13,7 @@
 #import "LoginViewController.h"
 #import "AddViewController.h"
 #import "OriginalStoryViewController.h"
+#import "MBProgressHUD.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -152,12 +153,18 @@
 }
 
 - (void)loadStoryDetailView {
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:[activeFeed objectForKey:@"feed_title"] style: UIBarButtonItemStyleBordered target: nil action: nil];
+    NSString *feedTitle;
+    if (self.isRiverView) {
+        feedTitle = self.activeFolder;
+    } else {
+        feedTitle = [activeFeed objectForKey:@"feed_title"];
+    }
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
     [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
     [newBackButton release];
     UINavigationController *navController = self.navigationController;   
     [navController pushViewController:storyDetailViewController animated:YES];
-    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:[self.activeFeed objectForKey:@"feed_title"] style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
+    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
     navController.navigationItem.hidesBackButton = YES;
     navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
@@ -320,7 +327,7 @@
     if (activeLocation == -1) {
         return;
     }
-    id feedId = [self.activeFeed objectForKey:@"id"];
+    id feedId = [self.activeStory objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
@@ -387,15 +394,5 @@
     return score;
 }
 
-+ (void)informError:(NSError *)error {
-    NSString* localizedDescription = [error localizedDescription];
-    UIAlertView* alertView = [[UIAlertView alloc]
-                              initWithTitle:@"Error"
-                              message:localizedDescription delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-    [alertView show];
-    [alertView release];
-}
 
 @end

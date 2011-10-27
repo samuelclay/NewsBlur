@@ -194,7 +194,7 @@
 //         animated:YES];
 //    }
     
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
 }
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
@@ -335,7 +335,7 @@
     
 	// User clicking on another link before the page loads is OK.
 	if ([error code] != NSURLErrorCancelled) {
-		[NewsBlurAppDelegate informError:error];
+		[self informError:error];
 	}
 }
 
@@ -745,7 +745,7 @@
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request {
     NSLog(@"Fail: %@", request);
     self.pageRefreshing = NO;
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
     [pull finishedLoading];
     [self fetchFeedDetail:1 withCallback:nil];
 }

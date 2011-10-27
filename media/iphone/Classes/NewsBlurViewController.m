@@ -218,7 +218,7 @@
     [pull finishedLoading];
     
     // User clicking on another link before the page loads is OK.
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {

@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
+#import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 
-@interface FeedDetailViewController : UIViewController 
+@interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate,
  UIActionSheetDelegate, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;

@@ -272,9 +272,9 @@
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ <div class=\"NB-story\">%@</div>",
                             imgCssString, storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"]];
+    NSString *feed_link = [appDelegate.dictFeeds objectForKey:[appDelegate.activeStory objectForKey:@"story_feed_id"]];
     [webView loadHTMLString:htmlString
-                    baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
-                                                  objectForKey:@"feed_link"]]];
+                    baseURL:[NSURL URLWithString:feed_link]];
 }
 
 - (IBAction)doNextUnreadStory {
