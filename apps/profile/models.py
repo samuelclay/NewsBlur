@@ -116,7 +116,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send()
+        msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
@@ -135,7 +135,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send()
+        msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
     
@@ -156,7 +156,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send()
+        msg.send(fail_silently=True)
         
         user.set_password('')
         user.save()

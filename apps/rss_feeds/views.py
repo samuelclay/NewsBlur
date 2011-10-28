@@ -14,6 +14,7 @@ from utils.user_functions import ajax_login_required
 from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
+from utils.view_functions import get_argument_or_404
 
 
 @json.json_view
@@ -107,7 +108,7 @@ def load_feed_statistics(request, feed_id):
 @json.json_view
 def exception_retry(request):
     user = get_user(request)
-    feed_id = request.POST['feed_id']
+    feed_id = get_argument_or_404(request, 'feed_id')
     reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = get_object_or_404(Feed, pk=feed_id)
     
