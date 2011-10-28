@@ -456,16 +456,20 @@
                                 endColor:[feed objectForKey:@"favicon_fade"]];
         
         [cell.feedGradient addSubview:gradientView];
-//        [cell addSubview:gradientView];
     }
     
     if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
         cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
         [UIColor whiteColor] :
         [UIColor blackColor];            
+        cell.feedTitle.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+        UIColorFromRGB(0x202020):
+        UIColorFromRGB(0xe0e0e0);
     } else {
         cell.feedTitle.textColor = [UIColor whiteColor];
+        cell.feedTitle.shadowColor = [UIColor blackColor];
     }
+    cell.feedTitle.shadowOffset = CGSizeMake(0, 1);
         
     if (!isStoryRead) {
         // Unread story
@@ -489,6 +493,7 @@
         cell.storyUnreadIndicator.alpha = 0.15f;
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
         cell.feedTitle.textColor = [UIColor blackColor];
+        cell.feedTitle.shadowColor = nil;
         cell.feedFavicon.alpha = 0.5f;
         cell.feedGradient.alpha = 0.15f;
     }

@@ -299,15 +299,15 @@
                                 [UIColor blackColor];   
         titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
         titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-        [UIColor blackColor] :
-        [UIColor whiteColor]; 
-        titleLabel.shadowOffset = CGSizeMake(0, -1);     
-        titleLabel.frame = CGRectMake(20, 2, self.webView.frame.size.width-20, 20);
+        UIColorFromRGB(0x202020):
+        UIColorFromRGB(0xe0e0e0);
+        titleLabel.shadowOffset = CGSizeMake(0, 1);     
+        titleLabel.frame = CGRectMake(32, -1, self.webView.frame.size.width-20, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [Utilities getImage:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-        titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+        titleImageView.frame = CGRectMake(8, 2, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
         [titleImageView release];
         
@@ -323,8 +323,19 @@
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
-            theScrollView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0);
+            if (appDelegate.isRiverView) {
+                theScrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+            } else {
+                theScrollView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0);                
+            }
+            gradientView.tag = 12; // Not attached yet. Remove old gradients, first.
+            for (UIView *subview in theScrollView.subviews) {
+                if (subview.tag == 12) {
+                    [subview removeFromSuperview];
+                }
+            }
             [theScrollView addSubview:gradientView];
+            break;
         }
     }
 }
@@ -408,7 +419,9 @@
     self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    UIImage *titleImage = [Utilities getImage:feedIdStr];
+    UIImage *titleImage = appDelegate.isRiverView ?
+                          [UIImage imageNamed:@"folder.png"] :
+                          [Utilities getImage:feedIdStr];
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
     self.navigationItem.titleView = titleImageView;

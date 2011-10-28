@@ -297,10 +297,8 @@
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MC45Mzk5NzgyNDE5IDAuOTM4OTkxNjY1OCAwLjk3NDUzMTExNDEAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUIShadowColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MSAxIDEgMAA</bytes>
-								</object>
+								<reference key="IBUIShadowColor" ref="573631124"/>
+								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<float key="IBUIMinimumFontSize">12</float>
