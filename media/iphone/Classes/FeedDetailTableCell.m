@@ -17,6 +17,7 @@
 @synthesize storyUnreadIndicator;
 @synthesize feedTitle;
 @synthesize feedFavicon;
+@synthesize feedGradient;
 
 - (id)initWithStyle:(UITableViewCellStyle)style 
     reuseIdentifier:(NSString *)reuseIdentifier {
@@ -40,6 +41,7 @@
     [storyUnreadIndicator release];
     [feedTitle release];
     [feedFavicon release];
+    [feedGradient release];
     [super dealloc];
 }
 

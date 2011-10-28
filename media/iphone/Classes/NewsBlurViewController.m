@@ -70,7 +70,6 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"selected; %@", [feedTitlesTable indexPathForSelectedRow] );
     // If there is an active feed, we need to update its table row to match 
     // the updated unread counts.
     if ([appDelegate activeFeed]) {

@@ -171,7 +171,6 @@
 
 - (void)navigationController:(UINavigationController *)navController 
       willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    NSLog(@"willShow %@", viewController);
     if (viewController == feedDetailViewController) {
         UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
         UIButton *myBackButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
@@ -394,5 +393,26 @@
     return score;
 }
 
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
+    UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
+    
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    unsigned int color = 0;
+    unsigned int colorFade = 0;
+    if ([start class] == [NSNull class]) {
+        start = @"505050";
+    }
+    if ([end class] == [NSNull class]) {
+        end = @"303030";
+    }
+    NSScanner *scanner = [NSScanner scannerWithString:start];
+    [scanner scanHexInt:&color];
+    NSScanner *scannerFade = [NSScanner scannerWithString:end];
+    [scannerFade scanHexInt:&colorFade];
+    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+    [gradientView.layer addSublayer:gradient];
+    return gradientView;
+}
 
 @end

@@ -272,9 +272,29 @@
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ <div class=\"NB-story\">%@</div>",
                             imgCssString, storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"]];
-    NSString *feed_link = [appDelegate.dictFeeds objectForKey:[appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
+                                                                [appDelegate.activeStory 
+                                                                 objectForKey:@"story_feed_id"]]] 
+                           objectForKey:@"feed_link"];
+
     [webView loadHTMLString:htmlString
                     baseURL:[NSURL URLWithString:feed_link]];
+    
+    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
+                                                              [appDelegate.activeStory 
+                                                               objectForKey:@"story_feed_id"]]];
+    UIView *gradientView = [NewsBlurAppDelegate 
+                            makeGradientView:CGRectMake(0, -10, self.webView.frame.size.width, 10) 
+                            startColor:[feed objectForKey:@"favicon_color"] 
+                            endColor:[feed objectForKey:@"favicon_fade"]];
+    for (NSObject *aSubView in [self.webView subviews]) {
+        if ([aSubView isKindOfClass:[UIScrollView class]]) {
+            UIScrollView * theScrollView = (UIScrollView *)aSubView;
+            theScrollView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0);
+            [theScrollView addSubview:gradientView];
+        }
+    }
+
 }
 
 - (IBAction)doNextUnreadStory {

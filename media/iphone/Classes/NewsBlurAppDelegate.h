@@ -104,6 +104,7 @@
 - (void)markActiveFeedAllRead;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 
 @end
 

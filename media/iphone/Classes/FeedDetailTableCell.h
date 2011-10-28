@@ -28,5 +28,6 @@
 
 @property (nonatomic, retain) IBOutlet UILabel *feedTitle;
 @property (nonatomic, retain) IBOutlet UIImageView *feedFavicon;
+@property (nonatomic, retain) IBOutlet UIView *feedGradient;
 
 @end
