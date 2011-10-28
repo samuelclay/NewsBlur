@@ -82,7 +82,6 @@ class Feed(models.Model):
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
-        print self.favicon_color, self.favicon_fade()
         
         if include_favicon:
             try:

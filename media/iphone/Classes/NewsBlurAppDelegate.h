@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;
@@ -15,7 +16,7 @@
 @class AddViewController;
 @class OriginalStoryViewController;
 
-@interface NewsBlurAppDelegate : NSObject <UIApplicationDelegate> {
+@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
     UIWindow *window;
     UINavigationController *navigationController;
     NewsBlurViewController *feedsViewController;
@@ -103,7 +104,7 @@
 - (void)markActiveFeedAllRead;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
-+ (void)informError:(NSError *)error;
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 
 @end
 

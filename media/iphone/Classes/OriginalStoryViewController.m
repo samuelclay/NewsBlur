@@ -180,7 +180,7 @@
     
     // User clicking on another link before the page loads is OK.
     if ([error code] != NSURLErrorCancelled) {
-        [NewsBlurAppDelegate informError:error];   
+        [self informError:error];   
     }
 }
 - (void)updateTitle:(UIWebView*)aWebView

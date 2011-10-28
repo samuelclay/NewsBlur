@@ -13,6 +13,7 @@
 #import "LoginViewController.h"
 #import "AddViewController.h"
 #import "OriginalStoryViewController.h"
+#import "MBProgressHUD.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -152,19 +153,24 @@
 }
 
 - (void)loadStoryDetailView {
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:[activeFeed objectForKey:@"feed_title"] style: UIBarButtonItemStyleBordered target: nil action: nil];
+    NSString *feedTitle;
+    if (self.isRiverView) {
+        feedTitle = self.activeFolder;
+    } else {
+        feedTitle = [activeFeed objectForKey:@"feed_title"];
+    }
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
     [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
     [newBackButton release];
     UINavigationController *navController = self.navigationController;   
     [navController pushViewController:storyDetailViewController animated:YES];
-    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:[self.activeFeed objectForKey:@"feed_title"] style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
+    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
     navController.navigationItem.hidesBackButton = YES;
     navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)navigationController:(UINavigationController *)navController 
       willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    NSLog(@"willShow %@", viewController);
     if (viewController == feedDetailViewController) {
         UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
         UIButton *myBackButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
@@ -320,7 +326,7 @@
     if (activeLocation == -1) {
         return;
     }
-    id feedId = [self.activeFeed objectForKey:@"id"];
+    id feedId = [self.activeStory objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
@@ -387,15 +393,26 @@
     return score;
 }
 
-+ (void)informError:(NSError *)error {
-    NSString* localizedDescription = [error localizedDescription];
-    UIAlertView* alertView = [[UIAlertView alloc]
-                              initWithTitle:@"Error"
-                              message:localizedDescription delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-    [alertView show];
-    [alertView release];
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
+    UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
+    
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    unsigned int color = 0;
+    unsigned int colorFade = 0;
+    if ([start class] == [NSNull class]) {
+        start = @"505050";
+    }
+    if ([end class] == [NSNull class]) {
+        end = @"303030";
+    }
+    NSScanner *scanner = [NSScanner scannerWithString:start];
+    [scanner scanHexInt:&color];
+    NSScanner *scannerFade = [NSScanner scannerWithString:end];
+    [scannerFade scanHexInt:&colorFade];
+    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+    [gradientView.layer addSublayer:gradient];
+    return gradientView;
 }
 
 @end

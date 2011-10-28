@@ -194,7 +194,7 @@
 //         animated:YES];
 //    }
     
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
 }
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
@@ -335,7 +335,7 @@
     
 	// User clicking on another link before the page loads is OK.
 	if ([error code] != NSURLErrorCancelled) {
-		[NewsBlurAppDelegate informError:error];
+		[self informError:error];
 	}
 }
 
@@ -450,27 +450,21 @@
         cell.feedTitle.text = [feed objectForKey:@"feed_title"];
         cell.feedFavicon.image = [Utilities getImage:feedIdStr];
         
-        CAGradientLayer *gradient = [CAGradientLayer layer];
-        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 20);
-        unsigned int color = 0;
-        unsigned int colorFade = 0;
-        NSString *favicon_color = [feed objectForKey:@"favicon_color"];
-        if ([favicon_color class] == [NSNull class]) {
-            favicon_color = @"505050";
-        }
-        NSString *favicon_fade = [feed objectForKey:@"favicon_fade"];
-        if ([favicon_fade class] == [NSNull class]) {
-            favicon_fade = @"303030";
-        }
-        NSScanner *scanner = [NSScanner scannerWithString:favicon_color];
-        [scanner scanHexInt:&color];
-        NSScanner *scannerFade = [NSScanner scannerWithString:favicon_fade];
-        [scannerFade scanHexInt:&colorFade];
-        gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
-        if (isStoryRead) {
-            gradient.opacity = .15;
-        }
-        [cell.layer insertSublayer:gradient atIndex:0];
+        UIView *gradientView = [NewsBlurAppDelegate 
+                                makeGradientView:CGRectMake(0, 0, cell.frame.size.width, 20) 
+                                startColor:[feed objectForKey:@"favicon_color"] 
+                                endColor:[feed objectForKey:@"favicon_fade"]];
+        
+        [cell.feedGradient addSubview:gradientView];
+//        [cell addSubview:gradientView];
+    }
+    
+    if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
+        cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+        [UIColor whiteColor] :
+        [UIColor blackColor];            
+    } else {
+        cell.feedTitle.textColor = [UIColor whiteColor];
     }
         
     if (!isStoryRead) {
@@ -494,14 +488,9 @@
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
         cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
+        cell.feedTitle.textColor = [UIColor blackColor];
         cell.feedFavicon.alpha = 0.5f;
-    }
-    if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-        cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-                                    [UIColor whiteColor] :
-                                    [UIColor blackColor];            
-    } else {
-        cell.feedTitle.textColor = [UIColor whiteColor];
+        cell.feedGradient.alpha = 0.15f;
     }
 
 	return cell;
@@ -745,7 +734,7 @@
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request {
     NSLog(@"Fail: %@", request);
     self.pageRefreshing = NO;
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
     [pull finishedLoading];
     [self fetchFeedDetail:1 withCallback:nil];
 }
