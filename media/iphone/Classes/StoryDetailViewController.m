@@ -283,10 +283,43 @@
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
                                                               [appDelegate.activeStory 
                                                                objectForKey:@"story_feed_id"]]];
-    UIView *gradientView = [NewsBlurAppDelegate 
-                            makeGradientView:CGRectMake(0, -10, self.webView.frame.size.width, 10) 
-                            startColor:[feed objectForKey:@"favicon_color"] 
-                            endColor:[feed objectForKey:@"favicon_fade"]];
+    UIView *gradientView;
+    if (appDelegate.isRiverView) {
+        gradientView = [NewsBlurAppDelegate 
+                        makeGradientView:CGRectMake(0, -20, self.webView.frame.size.width, 20) 
+                        startColor:[feed objectForKey:@"favicon_color"] 
+                        endColor:[feed objectForKey:@"favicon_fade"]];
+        UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+        titleLabel.text = [feed objectForKey:@"feed_title"];
+        titleLabel.backgroundColor = [UIColor clearColor];
+        titleLabel.textAlignment = UITextAlignmentLeft;
+        titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12.0];
+        titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+                                [UIColor whiteColor] :
+                                [UIColor blackColor];   
+        titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+        [UIColor blackColor] :
+        [UIColor whiteColor]; 
+        titleLabel.shadowOffset = CGSizeMake(0, -1);     
+        titleLabel.frame = CGRectMake(20, 2, self.webView.frame.size.width-20, 20);
+        
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+        UIImage *titleImage = [Utilities getImage:feedIdStr];
+        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+        [titleLabel addSubview:titleImageView];
+        [titleImageView release];
+        
+        [gradientView addSubview:titleLabel];
+        [gradientView addSubview:titleImageView];
+    } else {
+        gradientView = [NewsBlurAppDelegate 
+                        makeGradientView:CGRectMake(0, -10, self.webView.frame.size.width, 10) 
+                        startColor:[feed objectForKey:@"favicon_color"] 
+                        endColor:[feed objectForKey:@"favicon_fade"]];
+    }
+    
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
@@ -294,7 +327,6 @@
             [theScrollView addSubview:gradientView];
         }
     }
-
 }
 
 - (IBAction)doNextUnreadStory {
