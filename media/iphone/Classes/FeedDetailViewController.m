@@ -446,31 +446,11 @@
     
     // River view
     if (appDelegate.isRiverView) {
-
-        cell.feedTitle.text = [feed objectForKey:@"feed_title"];
-        cell.feedFavicon.image = [Utilities getImage:feedIdStr];
-        
-        UIView *gradientView = [NewsBlurAppDelegate 
-                                makeGradientView:CGRectMake(0, 0, cell.frame.size.width, 20) 
-                                startColor:[feed objectForKey:@"favicon_color"] 
-                                endColor:[feed objectForKey:@"favicon_fade"]];
-        
+        UIView *gradientView = [appDelegate makeFeedTitleGradient:feed 
+                                withRect:CGRectMake(0, 0, cell.frame.size.width, 20)];
         [cell.feedGradient addSubview:gradientView];
     }
-    
-    if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-        cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-        [UIColor whiteColor] :
-        [UIColor blackColor];            
-        cell.feedTitle.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-        UIColorFromRGB(0x202020):
-        UIColorFromRGB(0xe0e0e0);
-    } else {
-        cell.feedTitle.textColor = [UIColor whiteColor];
-        cell.feedTitle.shadowColor = [UIColor blackColor];
-    }
-    cell.feedTitle.shadowOffset = CGSizeMake(0, 1);
-        
+            
     if (!isStoryRead) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
@@ -480,8 +460,6 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
-        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
-        cell.feedFavicon.alpha = 1;
     } else {
         // Read story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
@@ -491,10 +469,10 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
-        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
-        cell.feedTitle.textColor = [UIColor blackColor];
-        cell.feedTitle.shadowColor = nil;
-        cell.feedFavicon.alpha = 0.5f;
+//        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
+//        cell.feedTitle.textColor = [UIColor blackColor];
+//        cell.feedTitle.shadowColor = nil;
+//        cell.feedFavicon.alpha = 0.5f;
         cell.feedGradient.alpha = 0.15f;
     }
 

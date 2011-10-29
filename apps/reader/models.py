@@ -64,9 +64,12 @@ class UserSubscription(models.Model):
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
             duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
-            if duplicate_feed:
+            already_subscribed = UserSubscription.objects.filter(user=self.user, feed=duplicate_feed.feed)
+            if duplicate_feed and not already_subscribed:
                 self.feed = duplicate_feed[0].feed
                 super(UserSubscription, self).save(*args, **kwargs)
+            else:
+                self.delete()
                 
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):

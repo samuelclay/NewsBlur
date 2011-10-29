@@ -4561,6 +4561,7 @@ background: transparent;
 }
 .NB-modal-email label {
   float: left;
+  padding-top: 4px;
 }
 
 .NB-modal-email .NB-input {
@@ -4579,7 +4580,12 @@ background: transparent;
 }
 .NB-modal-email .NB-modal-email-feed .NB-modal-feed-title {
   margin-left: 0;
+  float: none;
   overflow: visible;
+}
+.NB-modal-email .NB-modal-email-story-title {
+    clear: both;
+    margin: 8px 0 4px;
 }
 .NB-modal-email .NB-modal-email-story-permalink {
   color: #808080;
@@ -4597,7 +4603,7 @@ background: transparent;
   line-height: 20px;
   padding: 8px 0 0 8px;
   margin: 0;
-  border: 1px solid #F0F0F0;
+  border: 1px solid #808080;
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-email .NB-modal-email-to-container,
