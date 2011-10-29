@@ -14,6 +14,7 @@
 #import "AddViewController.h"
 #import "OriginalStoryViewController.h"
 #import "MBProgressHUD.h"
+#import "Utilities.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -398,6 +399,7 @@
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    gradient.opacity = 0.65;
     unsigned int color = 0;
     unsigned int colorFade = 0;
     if ([start class] == [NSNull class]) {
@@ -411,7 +413,77 @@
     NSScanner *scannerFade = [NSScanner scannerWithString:end];
     [scannerFade scanHexInt:&colorFade];
     gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+    
+    CALayer *whiteBackground = [CALayer layer];
+    whiteBackground.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    whiteBackground.backgroundColor = [UIColor whiteColor].CGColor;
+    [gradientView.layer addSublayer:whiteBackground];
+    
     [gradientView.layer addSublayer:gradient];
+    
+    CALayer *topBorder = [CALayer layer];
+    topBorder.frame = CGRectMake(0, 0, rect.size.width, 1);
+    topBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
+    topBorder.opacity = 0.8;
+    [gradientView.layer addSublayer:topBorder];
+    
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
+    bottomBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
+    bottomBorder.opacity = 0.8;
+    [gradientView.layer addSublayer:bottomBorder];
+     
+    
+    gradientView.opaque = YES;
+    return gradientView;
+}
+
+- (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect {
+    UIView *gradientView;
+    if (self.isRiverView) {
+        gradientView = [NewsBlurAppDelegate 
+                        makeGradientView:rect
+                        startColor:[feed objectForKey:@"favicon_color"] 
+                        endColor:[feed objectForKey:@"favicon_fade"]];
+        
+        UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+        titleLabel.text = [feed objectForKey:@"feed_title"];
+        titleLabel.backgroundColor = [UIColor clearColor];
+        titleLabel.textAlignment = UITextAlignmentLeft;
+        titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
+        titleLabel.shadowOffset = CGSizeMake(0, 1);
+        if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
+            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+            [UIColor whiteColor] :
+            [UIColor blackColor];            
+            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+            UIColorFromRGB(0x202020):
+            UIColorFromRGB(0xe0e0e0);
+        } else {
+            titleLabel.textColor = [UIColor whiteColor];
+            titleLabel.shadowColor = [UIColor blackColor];
+        }
+        titleLabel.frame = CGRectMake(32, -1, window.frame.size.width-20, 20);
+        
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+        UIImage *titleImage = [Utilities getImage:feedIdStr];
+        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        titleImageView.frame = CGRectMake(8, 2, 16.0, 16.0);
+        [titleLabel addSubview:titleImageView];
+        [titleImageView release];
+        
+        [gradientView addSubview:titleLabel];
+        [gradientView addSubview:titleImageView];
+    } else {
+        gradientView = [NewsBlurAppDelegate 
+                        makeGradientView:CGRectMake(0, -10, window.frame.size.width, 10) 
+                        startColor:[feed objectForKey:@"favicon_color"] 
+                        endColor:[feed objectForKey:@"favicon_fade"]];
+    }
+    
+    gradientView.opaque = YES;
+    
     return gradientView;
 }
 
