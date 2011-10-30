@@ -59,8 +59,8 @@
 						<bool key="IBUIBouncesZoom">NO</bool>
 						<int key="IBUISeparatorStyle">1</int>
 						<object class="NSColor" key="IBUISeparatorColor">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MCAwAA</bytes>
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC44NzQ4NjczMjAxIDAuODc0NzA4OTUwNSAwLjg5NzYyOTk3NjMAA</bytes>
 						</object>
 						<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
 						<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
@@ -79,6 +79,7 @@
 								<string key="NSFrame">{{93, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="929039419"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>

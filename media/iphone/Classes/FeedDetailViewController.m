@@ -473,7 +473,7 @@
 //        cell.feedTitle.textColor = [UIColor blackColor];
 //        cell.feedTitle.shadowColor = nil;
 //        cell.feedFavicon.alpha = 0.5f;
-        cell.feedGradient.alpha = 0.15f;
+        cell.feedGradient.alpha = 0.25f;
     }
 
 	return cell;
