@@ -409,6 +409,7 @@
                 if (([(FeedDetailTableCell *)oneObject tag] == 0 && !appDelegate.isRiverView) ||
                     ([(FeedDetailTableCell *)oneObject tag] == 1 && appDelegate.isRiverView)) {
                     cell = (FeedDetailTableCell *)oneObject;
+                    break;
                 }
 
             }
@@ -445,7 +446,7 @@
     }
     
     // River view
-    if (appDelegate.isRiverView) {
+    if (appDelegate.isRiverView && cell) {
         UIView *gradientView = [appDelegate makeFeedTitleGradient:feed 
                                 withRect:CGRectMake(0, 0, cell.frame.size.width, 20)];
         [cell.feedGradient addSubview:gradientView];
