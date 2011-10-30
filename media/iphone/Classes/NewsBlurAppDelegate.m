@@ -399,7 +399,7 @@
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
-    gradient.opacity = 0.65;
+    gradient.opacity = 1;
     unsigned int color = 0;
     unsigned int colorFade = 0;
     if ([start class] == [NSNull class]) {
@@ -424,17 +424,15 @@
     CALayer *topBorder = [CALayer layer];
     topBorder.frame = CGRectMake(0, 0, rect.size.width, 1);
     topBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
-    topBorder.opacity = 0.8;
+    topBorder.opacity = 1;
     [gradientView.layer addSublayer:topBorder];
     
     CALayer *bottomBorder = [CALayer layer];
     bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
     bottomBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
-    bottomBorder.opacity = 0.8;
+    bottomBorder.opacity = 1;
     [gradientView.layer addSublayer:bottomBorder];
-     
     
-    gradientView.opaque = YES;
     return gradientView;
 }
 
@@ -464,7 +462,7 @@
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
         }
-        titleLabel.frame = CGRectMake(32, -1, window.frame.size.width-20, 20);
+        titleLabel.frame = CGRectMake(32, 0, window.frame.size.width-20, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [Utilities getImage:feedIdStr];
