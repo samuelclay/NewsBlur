@@ -475,7 +475,7 @@
         [gradientView addSubview:titleImageView];
     } else {
         gradientView = [NewsBlurAppDelegate 
-                        makeGradientView:CGRectMake(0, -10, window.frame.size.width, 10) 
+                        makeGradientView:CGRectMake(0, -1, window.frame.size.width, 10) 
                         startColor:[feed objectForKey:@"favicon_color"] 
                         endColor:[feed objectForKey:@"favicon_fade"]];
     }
