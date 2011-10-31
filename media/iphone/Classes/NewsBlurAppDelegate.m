@@ -294,19 +294,50 @@
 }
 
 - (int)unreadCount {
+    if (self.isRiverView) {
+        return [self unreadCountForFolder:nil];
+    } else { 
+        return [self unreadCountForFeed:nil];
+    }
+}
+
+- (int)unreadCountForFeed:(NSString *)feedId {
     int total = 0;
-    total += [[self.activeFeed objectForKey:@"ps"] intValue];
+    NSDictionary *feed;
+
+    if (feedId) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        feed = [self.dictFeeds objectForKey:feedIdStr];
+    } else {
+        feed = self.activeFeed;
+    }
+    
+    total += [[feed objectForKey:@"ps"] intValue];
     if ([self selectedIntelligence] <= 0) {
-        total += [[self.activeFeed objectForKey:@"nt"] intValue];
+        total += [[feed objectForKey:@"nt"] intValue];
     }
     if ([self selectedIntelligence] <= -1) {
-        total += [[self.activeFeed objectForKey:@"ng"] intValue];
+        total += [[feed objectForKey:@"ng"] intValue];
     }
+    
     return total;
 }
 
-- (int)visibleUnreadCount {
-    return 0;
+- (int)unreadCountForFolder:(NSString *)folderName {
+    int total = 0;
+    NSArray *folder;
+    
+    if (!folderName) {
+        folder = [self.dictFolders objectForKey:self.activeFolder];
+    } else {
+        folder = [self.dictFolders objectForKey:folderName];
+    }
+    
+    for (id feedId in folder) {
+        total += [self unreadCountForFeed:feedId];
+    }
+    
+    return total;
 }
 
 - (void)addStories:(NSArray *)stories {

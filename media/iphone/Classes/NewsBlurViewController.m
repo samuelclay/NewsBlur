@@ -28,8 +28,8 @@
 @synthesize logoutButton;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
-@synthesize stillVisibleFeeds;
 @synthesize visibleFeeds;
+@synthesize stillVisibleFeeds;
 @synthesize sitesButton;
 @synthesize addButton;
 @synthesize viewShowingAllFeeds;
@@ -163,8 +163,8 @@
     [logoutButton release];
     [intelligenceControl release];
     [activeFeedLocations release];
-    [stillVisibleFeeds release];
     [visibleFeeds release];
+    [stillVisibleFeeds release];
     [sitesButton release];
     [addButton release];
     [pull release];
@@ -507,7 +507,6 @@ viewForHeaderInSection:(NSInteger)section {
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    NSLog(@"touch view: %@", button);
     button.backgroundColor = [UIColor blackColor];
 }
 

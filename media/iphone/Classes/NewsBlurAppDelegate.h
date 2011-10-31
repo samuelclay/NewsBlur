@@ -36,6 +36,7 @@
     NSMutableArray * activeFeedStoryLocationIds;
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
+    
     int storyCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
@@ -99,7 +100,8 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)addStories:(NSArray *)stories;
 - (int)unreadCount;
-- (int)visibleUnreadCount;
+- (int)unreadCountForFeed:(NSString *)feedId;
+- (int)unreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
 - (void)markActiveFeedAllRead;
 - (void)calculateStoryLocations;

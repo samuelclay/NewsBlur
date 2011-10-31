@@ -133,7 +133,7 @@
         [buttonPrevious setTitle:@"Previous"];
     }
     
-    float unreads = [appDelegate unreadCount];
+    float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
 //    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
