@@ -3176,11 +3176,13 @@
         
         open_feed_intelligence_modal: function(score, feed_id, feed_loaded) {
             feed_id = feed_id || this.active_feed;
-
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {
-                'score': score,
-                'feed_loaded': feed_loaded
-            });
+            
+            if (feed_id) {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {
+                    'score': score,
+                    'feed_loaded': feed_loaded
+                });
+            }
         },
         
         open_trainer_modal: function(score) {
@@ -6373,14 +6375,6 @@
                 e.preventDefault();
                 self.page_in_story(0.4, -1);
             });
-            $document.bind('keydown', 'f', function(e) {
-                e.preventDefault();
-                if (self.flags['sidebar_closed']) {
-                    self.open_sidebar();
-                } else {
-                    self.close_sidebar();
-                }
-            });
             $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
                 if (self.flags['sidebar_closed']) {
@@ -6424,6 +6418,10 @@
             $document.bind('keypress', 't', function(e) {
                 e.preventDefault();
                 self.open_story_trainer();
+            });
+            $document.bind('keypress', 'f', function(e) {
+                e.preventDefault();
+                self.open_feed_intelligence_modal(1);
             });
         }
         
