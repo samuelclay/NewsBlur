@@ -25,6 +25,7 @@
 @synthesize buttonPrevious;
 @synthesize activity;
 @synthesize loadingIndicator;
+@synthesize feedTitleGradient;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -43,6 +44,7 @@
     [buttonPrevious release];
     [activity release];
     [loadingIndicator release];
+    [feedTitleGradient release];
     [super dealloc];
 }
 
@@ -283,24 +285,24 @@
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
                                                               [appDelegate.activeStory 
                                                                objectForKey:@"story_feed_id"]]];
-    UIView *feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
-                                 withRect:CGRectMake(-1, -20, self.webView.frame.size.width, 21)];
-    
+    [self.feedTitleGradient addSubview:[appDelegate makeFeedTitleGradient:feed 
+                         withRect:CGRectMake(-1, -21, self.webView.frame.size.width, 21)]];
+
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
             if (appDelegate.isRiverView) {
                 theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
             } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, -9, 0);                
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);                
             }
             feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
-            for (UIView *subview in theScrollView.subviews) {
-                if (subview.tag == 12) {
-                    [subview removeFromSuperview];
-                }
-            }
-            [theScrollView addSubview:feedTitleGradient];
+//            for (UIView *subview in theScrollView.subviews) {
+//                if (subview.tag == 12) {
+//                    [subview removeFromSuperview];
+//                }
+//            }
+//            [self.view addSubview:feedTitleGradient];
             break;
         }
     }

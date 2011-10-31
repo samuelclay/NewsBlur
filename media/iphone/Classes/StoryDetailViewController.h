@@ -34,6 +34,7 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
