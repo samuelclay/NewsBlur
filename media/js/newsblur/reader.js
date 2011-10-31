@@ -463,6 +463,12 @@
             return $current_story;
         },
         
+        get_current_story_id: function() {
+            var $story = this.get_current_story_from_story_titles();
+            
+            return $story && $story.data('story_id');
+        },
+        
         find_feed_in_feed_list: function(feed_id) {
             if (_.contains(this.cache.$feed_in_feed_list, feed_id)) {
                 return this.cache.$feed_in_feed_list[feed_id];
@@ -2449,11 +2455,14 @@
         },
         
         open_story_trainer: function(story_id, feed_id) {
-            feed_id = feed_id || this.model.get_story(story_id).story_feed_id;
+            story_id = story_id || this.get_current_story_id();
+            feed_id = feed_id || (story_id && this.model.get_story(story_id).story_feed_id);
             
-            NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
-                'feed_loaded': !this.flags['river_view']
-            });
+            if (story_id && feed_id) {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
+                    'feed_loaded': !this.flags['river_view']
+                });
+            }
         },
         
         mark_story_as_starred: function(story_id, $story) {
@@ -6411,6 +6420,10 @@
             $document.bind('keypress', 'd', function(e) {
                 e.preventDefault();
                 self.show_splash_page();
+            });
+            $document.bind('keypress', 't', function(e) {
+                e.preventDefault();
+                self.open_story_trainer();
             });
         }
         
