@@ -398,7 +398,7 @@
     UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     gradient.opacity = 1;
     unsigned int color = 0;
     unsigned int colorFade = 0;
@@ -415,14 +415,14 @@
     gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
     
     CALayer *whiteBackground = [CALayer layer];
-    whiteBackground.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     whiteBackground.backgroundColor = [UIColor whiteColor].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
     
     CALayer *topBorder = [CALayer layer];
-    topBorder.frame = CGRectMake(0, 0, rect.size.width, 1);
+    topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
     topBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
     topBorder.opacity = 1;
     [gradientView.layer addSublayer:topBorder];
@@ -462,12 +462,12 @@
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
         }
-        titleLabel.frame = CGRectMake(32, 0, window.frame.size.width-20, 20);
+        titleLabel.frame = CGRectMake(32, 1, window.frame.size.width-20, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [Utilities getImage:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-        titleImageView.frame = CGRectMake(8, 2, 16.0, 16.0);
+        titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
         [titleImageView release];
         

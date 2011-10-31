@@ -57,8 +57,12 @@
     
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     if (appDelegate.isRiverView) {
+        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.storyTitlesTable.separatorColor = [UIColor clearColor];
         titleLabel.text = [NSString stringWithFormat:@"     %@", appDelegate.activeFolder];        
     } else {
+        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
         titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
     }
     titleLabel.backgroundColor = [UIColor clearColor];
@@ -115,6 +119,7 @@
                          action:@selector(selectIntelligence)
                forControlEvents:UIControlEventValueChanged];
     [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
+    
 	[super viewWillAppear:animated];
 }
 
@@ -448,7 +453,7 @@
     // River view
     if (appDelegate.isRiverView && cell) {
         UIView *gradientView = [appDelegate makeFeedTitleGradient:feed 
-                                withRect:CGRectMake(0, 0, cell.frame.size.width, 20)];
+                                withRect:CGRectMake(0, 0, cell.frame.size.width, 21)];
         [cell.feedGradient addSubview:gradientView];
     }
             

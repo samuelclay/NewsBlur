@@ -284,15 +284,15 @@
                                                               [appDelegate.activeStory 
                                                                objectForKey:@"story_feed_id"]]];
     UIView *feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
-                                 withRect:CGRectMake(0, -20, self.webView.frame.size.width, 20)];
+                                 withRect:CGRectMake(-1, -20, self.webView.frame.size.width, 21)];
     
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
             if (appDelegate.isRiverView) {
-                theScrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
             } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0);                
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, -9, 0);                
             }
             feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
             for (UIView *subview in theScrollView.subviews) {
