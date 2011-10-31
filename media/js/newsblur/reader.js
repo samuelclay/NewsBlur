@@ -3538,7 +3538,6 @@
                     if (!$story || !$story.length || this.flags['feed_view_positions_calculated']) break;
                 }
             }
-            
             if (_.all(this.flags.feed_view_images_loaded) &&
                 (_.keys(this.flags.feed_view_images_loaded).length > 0 ||
                  this.cache.feed_view_story_positions_keys.length > 0)) {
