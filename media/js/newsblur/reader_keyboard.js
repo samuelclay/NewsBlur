@@ -157,6 +157,14 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                     't'
                 ])
               ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open story in new window'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'o'
+                ])
+              ])
             ])
         ]);
     },

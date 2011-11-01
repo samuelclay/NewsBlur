@@ -592,24 +592,28 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     margin-right: 2px;
 }
 
-.NB-feedlist .folder .folder_title .NB-feedlist-river-icon {
+.NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
     position: absolute;
     top: 3px;
     right: 4px;
     width: 16px;
     height: 16px;
-    background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/toggle_minus.png') no-repeat 0 0;
     opacity: .6;
     display: none;
 }
 
-.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon:hover {
+.NB-feedlist .folder.NB-folder-collapsed .folder_title .NB-feedlist-collapse-icon {
+    background-image: url('../img/icons/silk/toggle_plus.png');
+}
+
+.NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon:hover {
     opacity: 1;
 }
 
 
-.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon,
-.NB-feedlist .folder.NB-showing-menu > .folder_title .NB-feedlist-river-icon {
+.NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon {
+/*.NB-feedlist .folder.NB-showing-menu > .folder_title .NB-feedlist-collapse-icon {*/
     display: block;
     opacity: .6;
 }
@@ -622,10 +626,11 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: block;
 }
 
-.NB-feedlist .folder.NB-selected > .folder_title .NB-feedlist-river-icon {
+/*.NB-feedlist .folder.NB-selected > .folder_title .NB-feedlist-collapse-icon {
     display: block;
     opacity: 1;
 }
+*/
 .NB-feedlist .folder.NB-selected > .folder_title .feed_counts_floater {
     margin-right: 24px;
 }
@@ -5064,7 +5069,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/folder.png') no-repeat 2px 2px;
 }
 
-.NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-river-icon {
+.NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-collapse-icon {
   display: none !important;
 }
 

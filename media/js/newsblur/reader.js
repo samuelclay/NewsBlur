@@ -1104,7 +1104,7 @@
                         <li class="folder">\
                           <div class="folder_title <% if (depth == 0) { %>NB-toplevel<% } %>">\
                             <div class="NB-folder-icon"></div>\
-                            <div class="NB-feedlist-river-icon" title="River of News"></div>\
+                            <div class="NB-feedlist-collapse-icon" title="Collapse Folder"></div>\
                             <div class="NB-feedlist-manage-icon"></div>\
                             <span class="folder_title_text"><%= folder_title %></span>\
                           </div>\
@@ -1361,7 +1361,7 @@
             var $counts = $('.feed_counts_floater', $folder_title);
             $counts.remove();
             $children = $('li.feed', $children).not('.NB-feed-inactive');
-            var $river = $('.NB-feedlist-river-icon', $folder_title);
+            var $river = $('.NB-feedlist-collapse-icon', $folder_title);
             
             var positive_count = 0;
             var neutral_count = 0;
@@ -1394,7 +1394,7 @@
         
         hide_collapsed_folder_count: function($folder_title) {
             var $counts = $('.feed_counts_floater', $folder_title);
-            var $river = $('.NB-feedlist-river-icon', $folder_title);
+            var $river = $('.NB-feedlist-collapse-icon', $folder_title);
             
             $counts.animate({'opacity': 0}, {
                 'duration': 300 
@@ -3133,13 +3133,16 @@
             this.mark_feed_as_read(feed_id);
             var feed = this.model.get_feed(feed_id);
             window.open(feed['feed_link'], '_blank');
-            window.focus();
+            // window.focus();
         },
         
         open_story_in_new_tab: function(story_id, $t) {
-            var story = this.model.get_story(story_id);
-            window.open(story['story_permalink'], '_blank');
-            window.focus();
+            story_id = story_id || this.get_current_story_id();
+            if (story_id) {
+                var story = this.model.get_story(story_id);
+                window.open(story['story_permalink'], '_blank');
+                window.focus();
+            }
         },
         
         open_unread_stories_in_tabs: function(feed_id) {
@@ -5529,19 +5532,21 @@
                     }
                 }
             });
-            $.targetIs(e, { tagSelector: '#feed_list .folder_title .NB-feedlist-river-icon' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '#feed_list .folder_title .NB-feedlist-collapse-icon' }, function($t, $p){
                 e.preventDefault();
                 stopPropagation = true;
-                var $folder = $t.closest('li.folder');
-                var folder_title = $t.siblings('.folder_title_text').text();
-                self.open_river_stories($folder, folder_title);
-            });
-            if (stopPropagation) return;
-            $.targetIs(e, { tagSelector: '#feed_list .folder_title' }, function($folder, $p){
-                e.preventDefault();
+                var $folder = $t.closest('.folder_title');
+                console.log(["collapse", $t, $folder, self.flags['sorting_feed']]);
                 if (!self.flags['sorting_feed']) {
                     self.collapse_folder($folder);
                 }
+            });
+            if (stopPropagation) return;
+            $.targetIs(e, { tagSelector: '#feed_list .folder_title' }, function($t, $p){
+                e.preventDefault();
+                var $folder = $t.closest('li.folder');
+                var folder_title = $t.find('.folder_title_text').text();
+                self.open_river_stories($folder, folder_title);
             });
             
             // ============
@@ -6422,6 +6427,10 @@
             $document.bind('keypress', 'f', function(e) {
                 e.preventDefault();
                 self.open_feed_intelligence_modal(1);
+            });
+            $document.bind('keypress', 'o', function(e) {
+                e.preventDefault();
+                self.open_story_in_new_tab();
             });
         }
         
