@@ -321,6 +321,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Animations'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-folder-counts' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-folder-counts-1', type: 'radio', name: 'folder_counts', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-folder-counts-1' }, [
+                                    'Only show counts on collapsed folders'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-folder-counts-2', type: 'radio', name: 'folder_counts', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-folder-counts-2' }, [
+                                    'Always show unread counts on folders'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Folder unread counts'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -479,6 +498,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=animations]', this.$modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=folder_counts]', this.$modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.folder_counts) {
                 $(this).attr('checked', true);
                 return false;
             }

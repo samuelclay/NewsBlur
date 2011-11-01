@@ -1317,12 +1317,23 @@
         },
         
         count_collapsed_unread_stories: function() {
-            _.each(NEWSBLUR.Preferences.collapsed_folders, _.bind(function(folder) {
-                var $folder_title = $('.folder_title', this.$s.$feed_list).filter(function() {
-                    return $.trim($(this).text()) == folder;
+            var self = this;
+            if (this.model.preference('folder_counts')) {
+                var $folder_titles = $('.folder_title', this.$s.$feed_list);
+                $folder_titles.each(function() {
+                    var $folder_title = $(this);
+                    var $folder = $folder_title.parent('li.folder');
+                    var $children = $folder.children('ul.folder');
+                    self.show_collapsed_folder_count($folder_title, $children);
                 });
-                this.collapse_folder($folder_title, true);
-            }, this));
+            } else {
+                _.each(NEWSBLUR.Preferences.collapsed_folders, _.bind(function(folder) {
+                    var $folder_title = $('.folder_title', this.$s.$feed_list).filter(function() {
+                        return $.trim($(this).text()) == folder;
+                    });
+                    this.collapse_folder($folder_title, true);
+                }, this));
+            }
         },
         
         collapse_folder: function($folder_title, force_collapse) {
@@ -1355,7 +1366,9 @@
                        ($folder.data('collapsed') || !$children.eq(0).is(':visible'))) {
                 this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), false);
                 $folder.data('collapsed', false).removeClass('NB-folder-collapsed');
-                this.hide_collapsed_folder_count($folder_title);
+                if (!this.model.preference('folder_counts')) {
+                    this.hide_collapsed_folder_count($folder_title);
+                }
                 $children.css({'opacity': 0}).slideDown({
                     'duration': 240,
                     'easing': 'easeInOutCubic',
@@ -2375,11 +2388,9 @@
               }, 400);
             });
             
-            if (!$feed.is(':visible')) {
-                // NEWSBLUR.log(['Under collapsed folder', $feed, $feed.parents(':visible'),
-                //               $feed.parents(':visible').eq(0).children('.folder_title')]);
-                var $folder_title = $feed.closest(':visible').children('.folder_title');
-                var $children = $folder_title.closest('.folder').children('.folder, .feed');
+            if (!$feed.is(':visible') || this.model.preference('folder_counts')) {
+                var $folder_title = $feed.closest('li.folder:visible').children('.folder_title');
+                var $children = $folder_title.closest('li.folder').children('ul.folder, .feed');
                 this.show_collapsed_folder_count($folder_title, $children);
             }
             
@@ -2407,6 +2418,12 @@
 
             this.model.mark_feed_as_read([feed_id]);
             this.update_header_counts(true);
+            if (this.model.preference('folder_counts')) {
+                var $feed = this.find_feed_in_feed_list(feed_id);
+                var $folder_title = $feed.closest('li.folder:visible').children('.folder_title');
+                var $children = $folder_title.closest('li.folder').children('ul.folder, .feed');
+                this.show_collapsed_folder_count($folder_title, $children);
+            }
         },
         
         mark_folder_as_read: function(folder_name, $folder) {
@@ -5551,7 +5568,6 @@
                 e.preventDefault();
                 stopPropagation = true;
                 var $folder = $t.closest('.folder_title');
-                console.log(["collapse", $t, $folder, self.flags['sorting_feed']]);
                 if (!self.flags['sorting_feed']) {
                     self.collapse_folder($folder);
                 }
