@@ -79,7 +79,7 @@ def load_feed_statistics(request, feed_id):
     stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
     
     # Minutes between updates
-    update_interval_minutes, random_factor = feed.get_next_scheduled_update()
+    update_interval_minutes, random_factor = feed.get_next_scheduled_update(force=True)
     stats['update_interval_minutes'] = update_interval_minutes
     
     # Stories per month - average and month-by-month breakout
