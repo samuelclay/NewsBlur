@@ -2403,10 +2403,6 @@
         mark_feed_as_read: function(feed_id) {
             feed_id = feed_id || this.active_feed;
             
-            if (this.flags['river_view']) {
-                return;
-            }
-            
             this.mark_feed_as_read_update_counts(feed_id);
 
             this.model.mark_feed_as_read([feed_id]);
@@ -2425,15 +2421,18 @@
             this.model.mark_feed_as_read(feeds);
             this.update_header_counts(true);
             
-            $('.story:not(.read)', this.$s.$story_titles).addClass('read');
-            _.each(this.model.stories, _.bind(function(story) {
-                this.mark_story_as_read_in_feed_view(story);
-            }, this));
+            if (_.includes(this.active_feed, folder_name)) {
+                $('.story:not(.read)', this.$s.$story_titles).addClass('read');
+                _.each(this.model.stories, _.bind(function(story) {
+                    this.mark_story_as_read_in_feed_view(story);
+                }, this));
+            }
         },
         
         mark_feed_as_read_update_counts: function(feed_id, $folder) {
             if (feed_id) {
                 var feed = this.model.get_feed(feed_id);
+                if (!feed) return;
                 var $feed = this.find_feed_in_feed_list(feed_id);
                 var $feed_counts = $('.feed_counts_floater', $feed);
                 var $content_pane = this.$s.$content_pane;
@@ -6356,10 +6355,6 @@
                 e.preventDefault();
                 self.show_next_feed(-1);
             });
-            $document.bind('keydown', 'shift+a', function(e) {
-                e.preventDefault();
-                self.mark_feed_as_read();
-            });
             $document.bind('keydown', 'left', function(e) {
                 e.preventDefault();
                 self.switch_taskbar_view_direction(-1);
@@ -6450,7 +6445,6 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                console.log(["shift+a", e, self.flags.river_view]);
                 if (self.flags.river_view) {
                     self.mark_folder_as_read();
                 } else {
