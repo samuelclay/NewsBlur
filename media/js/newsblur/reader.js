@@ -1113,7 +1113,7 @@
                         <li class="folder">\
                           <div class="folder_title <% if (depth == 0) { %>NB-toplevel<% } %>">\
                             <div class="NB-folder-icon"></div>\
-                            <div class="NB-feedlist-collapse-icon" title="Collapse Folder"></div>\
+                            <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                             <div class="NB-feedlist-manage-icon"></div>\
                             <span class="folder_title_text"><%= folder_title %></span>\
                           </div>\
@@ -1318,21 +1318,27 @@
         
         count_collapsed_unread_stories: function() {
             var self = this;
+            
+            _.each(NEWSBLUR.Preferences.collapsed_folders, _.bind(function(folder) {
+                var $folder_title = $('.folder_title_text', this.$s.$feed_list).filter(function() {
+                    return $.trim($(this).text()) == $.trim(folder);
+                }).closest('.folder_title');
+                this.collapse_folder($folder_title, true);
+                var $folder = $folder_title.parent('li.folder');
+                var $children = $folder.children('ul.folder');
+                this.show_collapsed_folder_count($folder_title, $children, {'skip_animation': true});
+            }, this));
+            
             if (this.model.preference('folder_counts')) {
                 var $folder_titles = $('.folder_title', this.$s.$feed_list);
                 $folder_titles.each(function() {
                     var $folder_title = $(this);
-                    var $folder = $folder_title.parent('li.folder');
-                    var $children = $folder.children('ul.folder');
-                    self.show_collapsed_folder_count($folder_title, $children);
+                    if (!_.contains(NEWSBLUR.Preferences.collapsed_folders, $folder_title.text())) {
+                        var $folder = $folder_title.parent('li.folder');
+                        var $children = $folder.children('ul.folder');
+                        self.show_collapsed_folder_count($folder_title, $children, {'skip_animation': true});
+                    }
                 });
-            } else {
-                _.each(NEWSBLUR.Preferences.collapsed_folders, _.bind(function(folder) {
-                    var $folder_title = $('.folder_title', this.$s.$feed_list).filter(function() {
-                        return $.trim($(this).text()) == folder;
-                    });
-                    this.collapse_folder($folder_title, true);
-                }, this));
             }
         },
         
@@ -1379,7 +1385,8 @@
             }
         },
         
-        show_collapsed_folder_count: function($folder_title, $children) {
+        show_collapsed_folder_count: function($folder_title, $children, options) {
+            options = options || {};
             var $counts = $('.feed_counts_floater', $folder_title);
             $counts.remove();
             $children = $('li.feed', $children).not('.NB-feed-inactive');
@@ -1399,7 +1406,7 @@
             });
             
             if ($folder_title.hasClass('NB-hover')) {
-                $river.animate({'opacity': 0}, {'duration': 100});
+                $river.animate({'opacity': 0}, {'duration': options.skip_animation ? 0 : 100});
                 $folder_title.addClass('NB-feedlist-folder-title-recently-collapsed');
                 $folder_title.one('mouseover', function() {
                     $river.css({'opacity': ''});
@@ -1411,7 +1418,7 @@
             $folder_title.prepend($counts.css({
                 'opacity': 0
             }));
-            $counts.animate({'opacity': 1}, {'duration': 400});
+            $counts.animate({'opacity': 1}, {'duration': options.skip_animation ? 0 : 400});
         },
         
         hide_collapsed_folder_count: function($folder_title) {
@@ -4880,10 +4887,10 @@
             if (!NEWSBLUR.Globals.is_premium) {
                 refresh_interval *= 2;
             }
-            if (_.size(this.model.feeds) > 250) {
-                refresh_interval *= 4;
-            }
-            
+            // if (_.size(this.model.feeds) > 250) {
+            //     refresh_interval *= 4;
+            // }
+
             if (new_feeds) {
                 refresh_interval = (1000 * 60) * 1/10;
             }
@@ -4988,6 +4995,7 @@
             
             this.check_feed_fetch_progress();
             this.update_header_counts();
+            this.count_collapsed_unread_stories();
 
             this.flags['pause_feed_refreshing'] = false;
         },

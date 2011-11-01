@@ -557,7 +557,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
-            if (self.original_preferences['feed_order'] != form['feed_order']) {
+            if (self.original_preferences['feed_order'] != form['feed_order'] ||
+                self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.reader.make_feeds();
             }
             if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {
