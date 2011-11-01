@@ -827,6 +827,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   text-transform: uppercase;
   height: 14px;
 }
+#NB-progress.NB-progress-error .NB-progress-title {
+    height: auto;
+}
 
 #NB-progress .NB-progress-bar {
   height:6px;
@@ -855,7 +858,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 #NB-progress.NB-progress-error {
-  height: 120px;
+  height: 80px;
 }
 #NB-progress.NB-progress-big {
   height: 72px;
@@ -872,7 +875,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 #NB-progress.NB-progress-big .NB-progress-link {
-  margin: 14px 0 0;
+  margin: 6px 0 0;
 }
 
 #NB-progress.NB-progress-big .NB-progress-link a {
