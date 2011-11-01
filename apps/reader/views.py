@@ -39,6 +39,7 @@ from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
+from utils.view_functions import get_argument_or_404
 from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
@@ -644,7 +645,7 @@ def mark_all_as_read(request):
 @json.json_view
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
-    feed_id = int(request.REQUEST['feed_id'])
+    feed_id = int(get_argument_or_404(request, 'feed_id'))
 
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
