@@ -894,8 +894,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
-                                                   * (updates_per_month**1.5)))
+        updates_per_day_delay = 12 * 60 / max(.25, ((max(0, self.active_subscribers)**.35)
+                                                    * (updates_per_month**1.2)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates
@@ -904,7 +904,7 @@ class Feed(models.Model):
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         
@@ -920,7 +920,7 @@ class Feed(models.Model):
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor
+        return total, random_factor*2
         
     def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update(force=True)
