@@ -4883,16 +4883,22 @@
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;
+            var feed_count = _.size(this.model.feeds);
             
             if (!NEWSBLUR.Globals.is_premium) {
                 refresh_interval *= 2;
             }
-            // if (_.size(this.model.feeds) > 250) {
-            //     refresh_interval *= 4;
-            // }
+            if (feed_count > 250) {
+                refresh_interval *= 4;
+            }
+            if (feed_count > 500) {
+                refresh_interval *= 1.5;
+            }
 
-            if (new_feeds) {
+            if (new_feeds && feed_count < 250) {
                 refresh_interval = (1000 * 60) * 1/10;
+            } else if (new_feeds && feed_count < 500) {
+                refresh_interval = (1000 * 60) * 1/4;
             }
             
             clearInterval(this.flags.feed_refresh);
