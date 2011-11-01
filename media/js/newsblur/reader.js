@@ -859,6 +859,13 @@
             return $next_feed;
         },
         
+        get_current_folder: function() {
+            var $folder = $('.folder.NB-selected', this.$s.$feed_list);
+            if ($folder.length) {
+                return $folder.eq(0);
+            }
+        },
+        
         navigate_story_titles_to_story: function(story) {
             if (!story) return;
             var $next_story_title = this.find_story_in_story_titles(story.id);
@@ -883,7 +890,9 @@
             if (!story) return;
             options = options || {};
             $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story);
-            $story.addClass('read');
+            if ($story) {
+                $story.addClass('read');
+            }
 
             // This block animates the falling of the sentiment bullet. It's neat, 
             // but it stutters a fast scroll. Hence the delay.
@@ -2405,6 +2414,8 @@
         },
         
         mark_folder_as_read: function(folder_name, $folder) {
+            $folder = $folder || this.get_current_folder();
+            folder_name = folder_name || $('.folder_title_text', $folder).eq(0).text();
             var feeds = this.get_feed_ids_in_folder($folder);
             
             _.each(feeds, _.bind(function(feed_id) {
@@ -2413,6 +2424,11 @@
             this.mark_feed_as_read_update_counts(null, $folder);
             this.model.mark_feed_as_read(feeds);
             this.update_header_counts(true);
+            
+            $('.story:not(.read)', this.$s.$story_titles).addClass('read');
+            _.each(this.model.stories, _.bind(function(story) {
+                this.mark_story_as_read_in_feed_view(story);
+            }, this));
         },
         
         mark_feed_as_read_update_counts: function(feed_id, $folder) {
@@ -6431,6 +6447,15 @@
             $document.bind('keypress', 'o', function(e) {
                 e.preventDefault();
                 self.open_story_in_new_tab();
+            });
+            $document.bind('keydown', 'shift+a', function(e) {
+                e.preventDefault();
+                console.log(["shift+a", e, self.flags.river_view]);
+                if (self.flags.river_view) {
+                    self.mark_folder_as_read();
+                } else {
+                    self.mark_feed_as_read();
+                }
             });
         }
         

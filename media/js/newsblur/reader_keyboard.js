@@ -164,6 +164,14 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'o'
                 ])
+              ]),
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Mark site/folder as read'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'shift',
+                    $.make('span', '+'),
+                    'a'
+                ])
               ])
             ])
         ]);
