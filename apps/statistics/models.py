@@ -50,12 +50,8 @@ class MStatistics(mongo.Document):
         feeds_fetched = MFeedFetchHistory.objects(fetch_date__gte=last_day).count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
         
-        old_fetch_histories = MFeedFetchHistory.objects(fetch_date__lte=last_day)
-        for history in old_fetch_histories:
-            history.delete()
-        old_page_histories = MPageFetchHistory.objects(fetch_date__lte=last_day)
-        for history in old_page_histories:
-            history.delete()
+        MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
+        MPageFetchHistory.objects(fetch_date__lt=last_day).delete()
         
         return feeds_fetched
         
