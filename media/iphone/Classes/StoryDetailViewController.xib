@@ -4775,7 +4775,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">67</int>
+			<int key="maxID">71</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -5644,6 +5644,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>appDelegate</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
+							<string>feedTitleGradient</string>
 							<string>progressView</string>
 							<string>toolbar</string>
 							<string>webView</string>
@@ -5654,6 +5655,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>NewsBlurAppDelegate</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
+							<string>UIView</string>
 							<string>UIProgressView</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
@@ -5667,6 +5669,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>appDelegate</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
+							<string>feedTitleGradient</string>
 							<string>progressView</string>
 							<string>toolbar</string>
 							<string>webView</string>
@@ -5688,6 +5691,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">buttonPrevious</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedTitleGradient</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>

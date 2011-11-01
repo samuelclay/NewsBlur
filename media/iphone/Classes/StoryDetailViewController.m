@@ -25,6 +25,7 @@
 @synthesize buttonPrevious;
 @synthesize activity;
 @synthesize loadingIndicator;
+@synthesize feedTitleGradient;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -43,6 +44,7 @@
     [buttonPrevious release];
     [activity release];
     [loadingIndicator release];
+    [feedTitleGradient release];
     [super dealloc];
 }
 
@@ -56,7 +58,15 @@
     self.loadingIndicator = [[[UIActivityIndicatorView alloc] 
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
                              autorelease];
-
+    
+    UIScrollView* currentScrollView;
+    for (UIView* subView in self.webView.subviews) {
+        if ([subView isKindOfClass:[UIScrollView class]]) {
+            currentScrollView = (UIScrollView*)subView;
+            currentScrollView.delegate = self;
+        }
+    }
+    
     [super viewDidLoad];
 }
 
@@ -123,7 +133,7 @@
         [buttonPrevious setTitle:@"Previous"];
     }
     
-    float unreads = [appDelegate unreadCount];
+    float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
 //    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
@@ -283,27 +293,31 @@
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
                                                               [appDelegate.activeStory 
                                                                objectForKey:@"story_feed_id"]]];
-    UIView *feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
-                                 withRect:CGRectMake(0, -20, self.webView.frame.size.width, 20)];
+    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
+                                 withRect:CGRectMake(0, -1, self.webView.frame.size.width, 21)];
     
+    self.feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
+    for (UIView *subview in self.view.subviews) {
+        if (subview.tag == 12) {
+            [subview removeFromSuperview];
+        }
+    }
+    [self.view insertSubview:feedTitleGradient aboveSubview:self.webView];
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
             if (appDelegate.isRiverView) {
-                theScrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
             } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0);                
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0); 
             }
-            feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
-            for (UIView *subview in theScrollView.subviews) {
-                if (subview.tag == 12) {
-                    [subview removeFromSuperview];
-                }
-            }
-            [theScrollView addSubview:feedTitleGradient];
             break;
         }
     }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    self.feedTitleGradient.frame = CGRectMake(0, -1 * scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height, self.feedTitleGradient.frame.size.width, self.feedTitleGradient.frame.size.height);
 }
 
 - (IBAction)doNextUnreadStory {

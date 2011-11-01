@@ -144,7 +144,7 @@
 		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
 		78095EC8128F30B500230C8E /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
 		7842ECF511D44A530066CF9D /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
-		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryDetailViewController.m; sourceTree = "<group>"; };
+		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = StoryDetailViewController.m; sourceTree = "<group>"; };
 		7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
 		7843F4E811EEABDC00675F64 /* FeedDetailTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedDetailTableCell.xib; sourceTree = "<group>"; };
 		7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };

@@ -728,6 +728,8 @@ def mark_story_as_unread(request):
 @json.json_view
 def mark_feed_as_read(request):
     feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
+    feed_count = len(feed_ids)
+    multiple = feed_count > 1
     code = 0
     for feed_id in feed_ids:
         try:
@@ -744,7 +746,12 @@ def mark_feed_as_read(request):
         else:
             code = 1
         
-        logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
+        if not multiple:
+            logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
+            
+    if multiple:
+        logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % (feed_count,))
+        
     return dict(code=code)
 
 def _parse_user_info(user):

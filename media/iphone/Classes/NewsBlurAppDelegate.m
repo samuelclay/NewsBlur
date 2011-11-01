@@ -294,19 +294,50 @@
 }
 
 - (int)unreadCount {
+    if (self.isRiverView) {
+        return [self unreadCountForFolder:nil];
+    } else { 
+        return [self unreadCountForFeed:nil];
+    }
+}
+
+- (int)unreadCountForFeed:(NSString *)feedId {
     int total = 0;
-    total += [[self.activeFeed objectForKey:@"ps"] intValue];
+    NSDictionary *feed;
+
+    if (feedId) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        feed = [self.dictFeeds objectForKey:feedIdStr];
+    } else {
+        feed = self.activeFeed;
+    }
+    
+    total += [[feed objectForKey:@"ps"] intValue];
     if ([self selectedIntelligence] <= 0) {
-        total += [[self.activeFeed objectForKey:@"nt"] intValue];
+        total += [[feed objectForKey:@"nt"] intValue];
     }
     if ([self selectedIntelligence] <= -1) {
-        total += [[self.activeFeed objectForKey:@"ng"] intValue];
+        total += [[feed objectForKey:@"ng"] intValue];
     }
+    
     return total;
 }
 
-- (int)visibleUnreadCount {
-    return 0;
+- (int)unreadCountForFolder:(NSString *)folderName {
+    int total = 0;
+    NSArray *folder;
+    
+    if (!folderName) {
+        folder = [self.dictFolders objectForKey:self.activeFolder];
+    } else {
+        folder = [self.dictFolders objectForKey:folderName];
+    }
+    
+    for (id feedId in folder) {
+        total += [self unreadCountForFeed:feedId];
+    }
+    
+    return total;
 }
 
 - (void)addStories:(NSArray *)stories {
@@ -398,7 +429,7 @@
     UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     gradient.opacity = 1;
     unsigned int color = 0;
     unsigned int colorFade = 0;
@@ -415,14 +446,14 @@
     gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
     
     CALayer *whiteBackground = [CALayer layer];
-    whiteBackground.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
+    whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
     whiteBackground.backgroundColor = [UIColor whiteColor].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
     
     CALayer *topBorder = [CALayer layer];
-    topBorder.frame = CGRectMake(0, 0, rect.size.width, 1);
+    topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
     topBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
     topBorder.opacity = 1;
     [gradientView.layer addSublayer:topBorder];
@@ -462,12 +493,12 @@
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
         }
-        titleLabel.frame = CGRectMake(32, 0, window.frame.size.width-20, 20);
+        titleLabel.frame = CGRectMake(32, 1, window.frame.size.width-20, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [Utilities getImage:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-        titleImageView.frame = CGRectMake(8, 2, 16.0, 16.0);
+        titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
         [titleImageView release];
         
@@ -475,7 +506,7 @@
         [gradientView addSubview:titleImageView];
     } else {
         gradientView = [NewsBlurAppDelegate 
-                        makeGradientView:CGRectMake(0, -10, window.frame.size.width, 10) 
+                        makeGradientView:CGRectMake(0, -1, window.frame.size.width, 10) 
                         startColor:[feed objectForKey:@"favicon_color"] 
                         endColor:[feed objectForKey:@"favicon_fade"]];
     }
