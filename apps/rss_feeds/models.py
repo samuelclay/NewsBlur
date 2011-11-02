@@ -29,6 +29,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import pre_process_story
+from utils.story_functions import bunch
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -742,11 +743,19 @@ class Feed(models.Model):
                 # print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
-    def get_stories(self, offset=0, limit=25, force=False):
+    def get_stories(self, offset=0, limit=25, force=False, slave=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
         
         if not stories or force:
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+            if slave:
+                import pymongo
+                db = pymongo.Connection(['localhost:27017'], slave_okay=True, replicaset='nbset').newsblur
+                stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
+                stories_db = []
+                for story in stories_db_orig:
+                    stories_db.append(bunch(story))
+            else:
+                stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
             stories = Feed.format_stories(stories_db, self.pk)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         

@@ -335,7 +335,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
-    
+        
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         
@@ -350,7 +350,7 @@ def load_single_feed(request, feed_id):
         else:
             raise Http404
         
-    stories = feed.get_stories(offset, limit) 
+    stories = feed.get_stories(offset, limit, slave=True) 
         
     # Get intelligence classifier for user
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))

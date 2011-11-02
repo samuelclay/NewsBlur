@@ -55,12 +55,15 @@ class MStatistics(mongo.Document):
         feeds_fetched = MFeedFetchHistory.objects.count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
         
-        from utils.feed_functions import timelimit
+        from utils.feed_functions import timelimit, TimeoutError
         @timelimit(60)
         def delete_old_history():
             MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
             MPageFetchHistory.objects(fetch_date__lt=last_day).delete()
-        delete_old_history()
+        try:
+            delete_old_history()
+        except TimeoutError:
+            print "Timed out on deleting old history. Shit."
         
         return feeds_fetched
         
