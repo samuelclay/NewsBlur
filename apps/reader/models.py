@@ -349,7 +349,8 @@ class UserSubscriptionFolders(models.Model):
                                                                 feed=duplicate_feed[0].feed)
                     except Feed.DoesNotExist:
                         return
-            user_sub.delete()
+            if user_sub:
+                user_sub.delete()
             MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
 
     def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder):
