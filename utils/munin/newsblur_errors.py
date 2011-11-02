@@ -13,16 +13,11 @@ graph_config = {
 }
 
 def calculate_metrics():
-    import datetime
-    from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
-    
-    last_day = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    from apps.statistics.models import MStatistics
+    statistics = MStatistics.all()
     
     return {
-        'feed_errors': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
-        'feed_success': MFeedFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
-        'page_errors': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__nin=[200, 304]).count(),
-        'page_success': MPageFetchHistory.objects(fetch_date__gte=last_day, status_code__in=[200, 304]).count(),
+        'feed_success': statistics['feeds_fetched']
     }
 
 if __name__ == '__main__':
