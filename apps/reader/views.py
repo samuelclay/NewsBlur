@@ -350,7 +350,7 @@ def load_single_feed(request, feed_id):
         else:
             raise Http404
         
-    stories = feed.get_stories(offset, limit, slave=True) 
+    stories = feed.get_stories(offset, limit) 
         
     # Get intelligence classifier for user
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))

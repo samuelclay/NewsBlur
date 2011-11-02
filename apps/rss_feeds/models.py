@@ -749,7 +749,7 @@ class Feed(models.Model):
         if not stories or force:
             if slave:
                 import pymongo
-                db = pymongo.Connection(['localhost:27017'], slave_okay=True, replicaset='nbset').newsblur
+                db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
                 stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
                 stories_db = []
                 for story in stories_db_orig:
