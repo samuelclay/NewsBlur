@@ -1136,7 +1136,7 @@ class MFeedFetchHistory(mongo.Document):
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
         'ordering': ['-fetch_date'],
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', '-fetch_date')],
+        'indexes': ['-fetch_date', ('fetch_date', 'status_code'), ('feed_id', 'status_code')],
     }
     
     def save(self, *args, **kwargs):

@@ -208,6 +208,7 @@ def setup_db():
     setup_rabbitmq()
     setup_postgres()
     setup_mongo()
+    setup_gunicorn(supervisor=False)
 
 def setup_task():
     setup_common()
@@ -226,9 +227,9 @@ def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
     sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
-    sudo('add-apt-repository ppa:pitti/postgresql')
+    # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
-    sudo('apt-get -y install postgresql-client-9.0')
+    sudo('apt-get -y install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
@@ -288,7 +289,7 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber')
+    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -367,10 +368,10 @@ def setup_nginx():
         with settings(warn_only=True):
             sudo("groupadd nginx")
             sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://sysoev.ru/nginx/nginx-0.9.5.tar.gz')
-            run('tar -xzf nginx-0.9.5.tar.gz')
-            run('rm nginx-0.9.5.tar.gz')
-            with cd('nginx-0.9.5'):
+            run('wget http://nginx.org/download/nginx-1.1.7.tar.gz')
+            run('tar -xzf nginx-1.1.7.tar.gz')
+            run('rm nginx-1.1.7.tar.gz')
+            with cd('nginx-1.1.7'):
                 run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
                 run('make')
                 sudo('make install')
@@ -453,7 +454,7 @@ def setup_rabbitmq():
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
 def setup_postgres():
-    sudo('apt-get -y install postgresql-9.0 postgresql-client-9.0 postgresql-contrib-9.0 libpq-dev')
+    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')

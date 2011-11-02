@@ -36,11 +36,16 @@ class MStatistics(mongo.Document):
         
     @classmethod
     def collect_statistics(cls):
+        now = datetime.datetime.now()
         last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         cls.collect_statistics_feeds_fetched(last_day)
+        print "Feeds Fetched: %s" % datetime.datetime.now() - now
         cls.collect_statistics_premium_users(last_day)
+        print "Premiums: %s" % datetime.datetime.now() - now
         cls.collect_statistics_standard_users(last_day)
+        print "Standard users: %s" % datetime.datetime.now() - now
         cls.collect_statistics_sites_loaded(last_day)
+        print "Sites loaded: %s" % datetime.datetime.now() - now
         
     @classmethod
     def collect_statistics_feeds_fetched(cls, last_day=None):
