@@ -764,6 +764,38 @@
             this.show_next_unread_story();
         },
         
+        show_last_unread_story: function() {
+            var $story_titles = this.$s.$story_titles;
+            var $current_story = $('.selected', $story_titles);
+            var $next_story;
+            var unread_count = this.get_unread_count(true);
+            
+            NEWSBLUR.log(['show_last_unread_story', unread_count, $current_story]);
+            
+            if (unread_count) {
+                var unread_stories_visible = $('.story:not(.read):visible', $story_titles).length;
+                if (unread_stories_visible >= unread_count) {
+                    // Choose the last unread story
+                    $next_story = $('.story:not(.read):visible:last', $story_titles);
+                }
+                
+                if ($next_story && $next_story.length) {
+                    this.counts['find_last_unread_on_page_of_feed_stories_load'] = 0;
+                    var story_id = $next_story.data('story_id');
+                    if (story_id) {
+                        var story = this.model.get_story(story_id);
+                        this.push_current_story_on_history();
+                        this.open_story(story, $next_story);
+                        this.scroll_story_titles_to_show_selected_story_title($next_story);
+                    }
+                } else if (this.counts['find_last_unread_on_page_of_feed_stories_load'] < this.constants.FILL_OUT_PAGES) {
+                    // Nothing up, nothing down, but still unread. Load 1 page then find it.
+                    this.counts['find_last_unread_on_page_of_feed_stories_load'] += 1;
+                    this.load_page_of_feed_stories();
+                }
+            }
+        },
+        
         show_previous_story: function() {
             if (this.cache['previous_stories_stack'].length) {
                 var $previous_story = this.cache['previous_stories_stack'].pop();
@@ -1642,7 +1674,8 @@
             
             $.extend(this.counts, {
                 'page_fill_outs': 0,
-                'find_next_unread_on_page_of_feed_stories_load': 0
+                'find_next_unread_on_page_of_feed_stories_load': 0,
+                'find_last_unread_on_page_of_feed_stories_load': 0
             });
             
             this.active_feed = null;
@@ -1736,6 +1769,8 @@
             $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
             if (this.counts['find_next_unread_on_page_of_feed_stories_load']) {
                 this.show_next_unread_story(true);
+            } else if (this.counts['find_last_unread_on_page_of_feed_stories_load']) {
+                this.show_last_unread_story(true);
             }
             this.flags['story_titles_loaded'] = true;
             if (!first_load) {
@@ -1963,6 +1998,8 @@
                 this.flags['story_titles_loaded'] = true;
                 if (this.counts['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_unread_story(true);
+                } else if (this.counts['find_last_unread_on_page_of_feed_stories_load']) {
+                    this.show_last_unread_story(true);
                 }
                 this.fill_out_story_titles();
                 this.prefetch_story_locations_in_feed_view();
@@ -6441,6 +6478,10 @@
             $document.bind('keydown', 'n', function(e) {
                 e.preventDefault();
                 self.open_next_unread_story_across_feeds();
+            });
+            $document.bind('keydown', 'm', function(e) {
+                e.preventDefault();
+                self.show_last_unread_story();
             });
             $document.bind('keydown', 'b', function(e) {
                 e.preventDefault();
