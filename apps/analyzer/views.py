@@ -61,7 +61,7 @@ def save_classifier(request):
                     try:
                         classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
                     except OperationError:
-                        pass
+                        continue
                     if score == 0:
                         classifier.delete()
                     elif classifier.score != score:

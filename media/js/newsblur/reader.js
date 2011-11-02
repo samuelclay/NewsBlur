@@ -744,16 +744,24 @@
         },
         
         open_next_unread_story_across_feeds: function() {
-          var unread_count = this.active_feed && this.get_unread_count(true);
-          if (unread_count) {
+            var unread_count = this.active_feed && this.get_unread_count(true);
+            
+            if (!unread_count) {
+                if (this.flags.river_view && false) {
+                    // TODO: Make this work
+                    // var $next_folder = this.get_next_unread_folder(1);
+                    // var $folder = $next_folder.closest('li.folder');
+                    // var folder_title = $folder.find('.folder_title_text').text();
+                    // this.open_river_stories($folder, folder_title);
+                } else {
+                    // Find next feed with unreads
+                    var $next_feed = this.get_next_unread_feed(1);
+                    var next_feed_id = parseInt($next_feed.attr('data-id'), 10);
+                    this.open_feed(next_feed_id, true, $next_feed);
+                }
+            }
+            
             this.show_next_unread_story();
-          } else {
-            // Find next feed with unreads
-            var $next_feed = this.get_next_unread_feed(1);
-            var next_feed_id = parseInt($next_feed.attr('data-id'), 10);
-            this.open_feed(next_feed_id, true, $next_feed);
-            this.show_next_unread_story();
-          }
         },
         
         show_previous_story: function() {
