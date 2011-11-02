@@ -52,7 +52,7 @@ class MStatistics(mongo.Document):
         if not last_day:
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         
-        feeds_fetched = MFeedFetchHistory.count()
+        feeds_fetched = MFeedFetchHistory.objects.count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
         
         MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
