@@ -17,7 +17,8 @@ def calculate_metrics():
     statistics = MStatistics.all()
     
     return {
-        'feed_success': statistics['feeds_fetched']
+        'feed_success': statistics['feeds_fetched'],
+        'page_success': statistics['pages_fetched'],
     }
 
 if __name__ == '__main__':

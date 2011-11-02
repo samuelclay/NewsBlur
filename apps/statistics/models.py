@@ -54,6 +54,8 @@ class MStatistics(mongo.Document):
         
         feeds_fetched = MFeedFetchHistory.objects.count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
+        pages_fetched = MPageFetchHistory.objects.count()
+        cls.objects(key='pages_fetched').update_one(upsert=True, key='pages_fetched', value=pages_fetched)
         
         from utils.feed_functions import timelimit, TimeoutError
         @timelimit(60)
