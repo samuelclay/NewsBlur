@@ -39,13 +39,13 @@ class MStatistics(mongo.Document):
         now = datetime.datetime.now()
         last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         cls.collect_statistics_feeds_fetched(last_day)
-        print "Feeds Fetched: %s" % datetime.datetime.now() - now
+        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_premium_users(last_day)
-        print "Premiums: %s" % datetime.datetime.now() - now
+        print "Premiums: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_standard_users(last_day)
-        print "Standard users: %s" % datetime.datetime.now() - now
+        print "Standard users: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_sites_loaded(last_day)
-        print "Sites loaded: %s" % datetime.datetime.now() - now
+        print "Sites loaded: %s" % (datetime.datetime.now() - now)
         
     @classmethod
     def collect_statistics_feeds_fetched(cls, last_day=None):
@@ -55,8 +55,12 @@ class MStatistics(mongo.Document):
         feeds_fetched = MFeedFetchHistory.objects.count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
         
-        MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
-        MPageFetchHistory.objects(fetch_date__lt=last_day).delete()
+        from utils.feed_functions import timelimit
+        @timelimit(60)
+        def delete_old_history():
+            MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
+            MPageFetchHistory.objects(fetch_date__lt=last_day).delete()
+        delete_old_history()
         
         return feeds_fetched
         
