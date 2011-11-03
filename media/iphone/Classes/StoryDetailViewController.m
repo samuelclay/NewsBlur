@@ -297,12 +297,11 @@
                                  withRect:CGRectMake(0, -1, self.webView.frame.size.width, 21)];
     
     self.feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
-    for (UIView *subview in self.view.subviews) {
+    for (UIView *subview in self.webView.subviews) {
         if (subview.tag == 12) {
             [subview removeFromSuperview];
         }
     }
-    [self.view insertSubview:feedTitleGradient aboveSubview:self.webView];
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
@@ -311,6 +310,19 @@
             } else {
                 theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0); 
             }
+            [self.webView insertSubview:feedTitleGradient belowSubview:theScrollView];
+            
+            // Such a fucking hack. This hides the top shadow of the scroll view
+            // so the gradient doesn't look like ass when the view is dragged down.
+            NSArray *wsv = [NSArray arrayWithArray:[theScrollView subviews]];
+            [[wsv objectAtIndex:9] setHidden:YES]; // Scroll to header
+//            UIImageView *topShadow = [[UIImageView alloc] initWithImage:[[wsv objectAtIndex:9] image]];
+//            topShadow.frame = [[wsv objectAtIndex:9] frame];
+//            [self.webView addSubview:topShadow];
+//            [self.webView addSubview:[wsv objectAtIndex:9]];
+            // Oh my god, the above code is beyond hack. It's evil. And it's going
+            // to break, I swear to god. This shit deserves scorn.
+            
             break;
         }
     }

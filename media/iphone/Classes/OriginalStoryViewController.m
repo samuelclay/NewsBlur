@@ -155,7 +155,10 @@
 - (BOOL)webView:(UIWebView *)webView 
         shouldStartLoadWithRequest:(NSURLRequest *)request 
         navigationType:(UIWebViewNavigationType)navigationType {
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+    if ([[[request URL] scheme] isEqual:@"mailto"]) {
+        [[UIApplication sharedApplication] openURL:[request URL]];
+        return NO;
+    } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [self updateAddress:request];
         return NO;
     }

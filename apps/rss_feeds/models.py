@@ -929,7 +929,7 @@ class Feed(models.Model):
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor
+        return total, random_factor*2
         
     def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update(force=True)
