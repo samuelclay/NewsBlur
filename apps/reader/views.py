@@ -690,9 +690,9 @@ def mark_story_as_read(request):
             logging.user(request, "~BRMarked story as read: %s / %s" % (story_id, m.story.story_guid))
             logging.user(request, "~BROriginal story id:    %s / %s" % (original_m.story_id, original_m.story.story_guid))
             logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
-            m.story_id = story_id
-            m.read_date = date
-            m.save()
+            original_m.story_id = story_id
+            original_m.read_date = date
+            original_m.save()
     
     return data
     
