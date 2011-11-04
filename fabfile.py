@@ -73,9 +73,9 @@ def deploy():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
-        run('curl -s http://www.newsblur.com > /dev/null')
-        run('curl -s http://www.newsblur.com/m/ > /dev/null')
-        run('curl -s http://www.newsblur.com/api/add_site_load_script/ABCDEF > /dev/null')
+        run('curl -s http://%s > /dev/null' % env.host)
+        # run('curl -s http://%s/m/ > /dev/null' % env.host)
+        run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
         compress_media()
 
 @roles('web')

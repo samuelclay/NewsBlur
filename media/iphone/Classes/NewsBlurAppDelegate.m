@@ -41,6 +41,7 @@
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
+@synthesize recentlyReadFeeds;
 @synthesize readStories;
 
 @synthesize dictFolders;
@@ -85,6 +86,7 @@
     [activeStory release];
     [activeOriginalStoryURL release];
     [recentlyReadStories release];
+    [recentlyReadFeeds release];
     [readStories release];
     
     [dictFolders release];
@@ -349,7 +351,8 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
-    [self setRecentlyReadStories:[NSMutableArray array]];
+    self.recentlyReadStories = [NSMutableArray array];
+    self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
 }
 
@@ -366,6 +369,9 @@
     
     [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
+    if (![self.recentlyReadFeeds containsObject:[story objectForKey:@"story_feed_id"]]) {
+        [self.recentlyReadFeeds addObject:[story objectForKey:@"story_feed_id"]];
+    }
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
         int unreads = MAX(0, [[feed objectForKey:@"ps"] intValue] - 1);

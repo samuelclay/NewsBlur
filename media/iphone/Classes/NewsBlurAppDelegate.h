@@ -41,6 +41,7 @@
     int originalStoryCount;
     NSInteger selectedIntelligence;
     NSMutableArray * recentlyReadStories;
+    NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     
 	NSDictionary * dictFolders;
@@ -71,6 +72,7 @@
 @property (readwrite) int originalStoryCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
+@property (readwrite, retain) NSMutableSet * recentlyReadFeeds;
 @property (readwrite, retain) NSMutableArray * readStories;
 
 @property (nonatomic, retain) NSDictionary *dictFolders;
