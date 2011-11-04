@@ -58,6 +58,10 @@
 						<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
 						<bool key="IBUIBouncesZoom">NO</bool>
 						<int key="IBUISeparatorStyle">1</int>
+						<object class="NSColor" key="IBUISeparatorColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC44NzQ4NjczMjAxIDAuODc0NzA4OTUwNSAwLjg5NzYyOTk3NjMAA</bytes>
+						</object>
 						<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
 						<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
 						<float key="IBUIRowHeight">44</float>
@@ -628,8 +632,16 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">FeedDetailViewController</string>
+					<string key="className">BaseViewController</string>
 					<string key="superclassName">UIViewController</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/BaseViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">FeedDetailViewController</string>
+					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
@@ -864,7 +876,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NewsBlurAppDelegate</string>
-					<string key="superclassName">NSObject</string>
+					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
@@ -946,7 +958,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NewsBlurViewController</string>
-					<string key="superclassName">UIViewController</string>
+					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
@@ -954,6 +966,7 @@
 							<string>doAddButton</string>
 							<string>doLogoutButton</string>
 							<string>doSwitchSitesUnread</string>
+							<string>sectionTapped:</string>
 							<string>selectIntelligence</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -961,6 +974,7 @@
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
+							<string>UITapGestureRecognizer</string>
 							<string>id</string>
 						</object>
 					</object>
@@ -971,6 +985,7 @@
 							<string>doAddButton</string>
 							<string>doLogoutButton</string>
 							<string>doSwitchSitesUnread</string>
+							<string>sectionTapped:</string>
 							<string>selectIntelligence</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -986,6 +1001,10 @@
 							<object class="IBActionInfo">
 								<string key="name">doSwitchSitesUnread</string>
 								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">sectionTapped:</string>
+								<string key="candidateClassName">UITapGestureRecognizer</string>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">selectIntelligence</string>
@@ -1074,7 +1093,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">OriginalStoryViewController</string>
-					<string key="superclassName">UIViewController</string>
+					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">

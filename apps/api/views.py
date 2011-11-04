@@ -25,7 +25,9 @@ def login(request):
             login_user(request, form.get_user())
             logging.user(request, "~FG~BB~SKAPI Login~FW")
             code = 1
-
+    else:
+        errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
+        
     return dict(code=code, errors=errors)
     
 @json.json_view
@@ -42,6 +44,9 @@ def signup(request):
             login_user(request, new_user)
             logging.user(request, "~FG~SB~BBAPI NEW SIGNUP~FW")
             code = 1
+    else:
+        errors = dict(method="Invalid method. Use POST. You used %s" % request.method)
+        
 
     return dict(code=code, errors=errors)
         

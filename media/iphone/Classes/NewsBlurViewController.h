@@ -10,18 +10,19 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
+#import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 
-@interface NewsBlurViewController : UIViewController 
+@interface NewsBlurViewController : BaseViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
             ASIHTTPRequestDelegate, NSCacheDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
-    NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFeeds;
+    NSMutableDictionary *stillVisibleFeeds;
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
@@ -46,6 +47,7 @@
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations:(BOOL)markVisible;
+- (IBAction)sectionTapped:(UITapGestureRecognizer *)recognizer;
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
@@ -64,8 +66,8 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * addButton;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
-@property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
+@property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, retain) PullToRefreshView *pull;
 @property (nonatomic, retain) NSDate *lastUpdate;

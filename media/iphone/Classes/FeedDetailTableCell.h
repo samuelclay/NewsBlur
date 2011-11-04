@@ -17,8 +17,7 @@
     UIImageView *storyUnreadIndicator;
     
     // River view
-    UILabel *feedTitle;
-    UIImageView *feedFavicon;
+    UIView *feedGradient;
 }
 
 @property (nonatomic, retain) IBOutlet UILabel *storyTitle;
@@ -26,7 +25,6 @@
 @property (nonatomic, retain) IBOutlet UILabel *storyDate;
 @property (nonatomic, retain) IBOutlet UIImageView *storyUnreadIndicator;
 
-@property (nonatomic, retain) IBOutlet UILabel *feedTitle;
-@property (nonatomic, retain) IBOutlet UIImageView *feedFavicon;
+@property (nonatomic, retain) IBOutlet UIView *feedGradient;
 
 @end

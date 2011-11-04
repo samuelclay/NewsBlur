@@ -592,24 +592,28 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     margin-right: 2px;
 }
 
-.NB-feedlist .folder .folder_title .NB-feedlist-river-icon {
+.NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
     position: absolute;
     top: 3px;
     right: 4px;
     width: 16px;
     height: 16px;
-    background: transparent url('../img/icons/silk/images.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/toggle_minus.png') no-repeat 0 0;
     opacity: .6;
     display: none;
 }
 
-.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon:hover {
+.NB-feedlist .folder.NB-folder-collapsed .folder_title .NB-feedlist-collapse-icon {
+    background-image: url('../img/icons/silk/toggle_plus.png');
+}
+
+.NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon:hover {
     opacity: 1;
 }
 
 
-.NB-feedlist .folder .folder_title:hover .NB-feedlist-river-icon,
-.NB-feedlist .folder.NB-showing-menu > .folder_title .NB-feedlist-river-icon {
+.NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon {
+/*.NB-feedlist .folder.NB-showing-menu > .folder_title .NB-feedlist-collapse-icon {*/
     display: block;
     opacity: .6;
 }
@@ -622,10 +626,11 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: block;
 }
 
-.NB-feedlist .folder.NB-selected > .folder_title .NB-feedlist-river-icon {
+/*.NB-feedlist .folder.NB-selected > .folder_title .NB-feedlist-collapse-icon {
     display: block;
     opacity: 1;
 }
+*/
 .NB-feedlist .folder.NB-selected > .folder_title .feed_counts_floater {
     margin-right: 24px;
 }
@@ -822,6 +827,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   text-transform: uppercase;
   height: 14px;
 }
+#NB-progress.NB-progress-error .NB-progress-title {
+    height: auto;
+}
 
 #NB-progress .NB-progress-bar {
   height:6px;
@@ -850,7 +858,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 #NB-progress.NB-progress-error {
-  height: 120px;
+  height: 80px;
 }
 #NB-progress.NB-progress-big {
   height: 72px;
@@ -867,7 +875,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 #NB-progress.NB-progress-big .NB-progress-link {
-  margin: 14px 0 0;
+  margin: 6px 0 0;
 }
 
 #NB-progress.NB-progress-big .NB-progress-link a {
@@ -4561,6 +4569,7 @@ background: transparent;
 }
 .NB-modal-email label {
   float: left;
+  padding-top: 4px;
 }
 
 .NB-modal-email .NB-input {
@@ -4579,7 +4588,12 @@ background: transparent;
 }
 .NB-modal-email .NB-modal-email-feed .NB-modal-feed-title {
   margin-left: 0;
+  float: none;
   overflow: visible;
+}
+.NB-modal-email .NB-modal-email-story-title {
+    clear: both;
+    margin: 8px 0 4px;
 }
 .NB-modal-email .NB-modal-email-story-permalink {
   color: #808080;
@@ -4597,7 +4611,7 @@ background: transparent;
   line-height: 20px;
   padding: 8px 0 0 8px;
   margin: 0;
-  border: 1px solid #F0F0F0;
+  border: 1px solid #808080;
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-email .NB-modal-email-to-container,
@@ -5071,7 +5085,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/folder.png') no-repeat 2px 2px;
 }
 
-.NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-river-icon {
+.NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-collapse-icon {
   display: none !important;
 }
 

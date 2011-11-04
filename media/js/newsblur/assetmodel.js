@@ -75,7 +75,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.ajax[options['ajax_group']].clear(true);
         }
         
-        this.ajax[options['ajax_group']].add({
+        this.ajax[options['ajax_group']].add(_.extend({
             url: url,
             data: data,
             type: request_type,
@@ -103,7 +103,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     callback({'message': message});
                 }
             }
-        }); 
+        }, options)); 
         
     },
     
@@ -331,7 +331,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.feed_id = feed_id;
-                if (_.contains(feed_id, ':')) {
+                if (_.includes(feed_id, ':')) {
                     _.extend(this.classifiers, data.classifiers);
                 } else {
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
@@ -854,9 +854,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    send_story_email: function(data, callback) {
+    send_story_email: function(data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-          this.make_request('/reader/send_story_email', data, callback);
+          this.make_request('/reader/send_story_email', data, callback, error_callback, {'timeout': 6000});
         } else {
           callback({'code': -1, 'message': 'You must be logged in to send a story over email.'});
         }

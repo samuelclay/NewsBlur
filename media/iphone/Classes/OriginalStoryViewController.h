@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 
@@ -18,8 +19,8 @@ static const CGFloat kLabelFontSize = 12.0f;
 static const CGFloat kAddressHeight = 30.0f;
 static const CGFloat kButtonWidth   = 48.0f;
 
-@interface OriginalStoryViewController : UIViewController
-<UIActionSheetDelegate, UITextFieldDelegate> {
+@interface OriginalStoryViewController : BaseViewController
+<UIActionSheetDelegate, UITextFieldDelegate, UIWebViewDelegate> {
     
     NewsBlurAppDelegate *appDelegate;
     

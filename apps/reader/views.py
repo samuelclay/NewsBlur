@@ -39,6 +39,7 @@ from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
+from utils.view_functions import get_argument_or_404
 from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
@@ -334,7 +335,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
-    
+        
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         
@@ -644,7 +645,7 @@ def mark_all_as_read(request):
 @json.json_view
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
-    feed_id = int(request.REQUEST['feed_id'])
+    feed_id = int(get_argument_or_404(request, 'feed_id'))
 
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -676,21 +677,22 @@ def mark_story_as_read(request):
         except MStory.DoesNotExist:
             # Story has been deleted, probably by feed_fetcher.
             continue
+        except MStory.MultipleObjectsReturned:
+            continue
         now = datetime.datetime.utcnow()
         date = now if now > story.story_date else story.story_date # For handling future stories
         m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story_id)
         try:
             m.save()
-        except OperationError:
-            logging.user(request, "~BRMarked story as read: Duplicate Story -> %s" % (story_id))
-            logging.user(request, "~BRRead now date: %s, story_date: %s, story_id: %s." % (m.read_date, story.story_date, story.story_guid))
-            logging.user(request, "~BRSubscription mark_read_date: %s, oldest_unread_story_date: %s" % (
-                usersub.mark_read_date, usersub.oldest_unread_story_date))
-            m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request, "~BROriginal read date: %s, story id: %s, story.id: %s" % (m.read_date, m.story_id, m.story.id))
-            m.story_id = story_id
-            m.read_date = date
-            m.save()
+        except OperationError, e:
+            original_m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
+            logging.user(request, "~BRMarked story as read error: %s" % (e))
+            logging.user(request, "~BRMarked story as read: %s / %s" % (story_id, m.story.story_guid))
+            logging.user(request, "~BROriginal story id:    %s / %s" % (original_m.story_id, original_m.story.story_guid))
+            logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
+            original_m.story_id = story_id
+            original_m.read_date = date
+            original_m.save()
     
     return data
     
@@ -728,6 +730,8 @@ def mark_story_as_unread(request):
 @json.json_view
 def mark_feed_as_read(request):
     feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
+    feed_count = len(feed_ids)
+    multiple = feed_count > 1
     code = 0
     for feed_id in feed_ids:
         try:
@@ -744,7 +748,12 @@ def mark_feed_as_read(request):
         else:
             code = 1
         
-        logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
+        if not multiple:
+            logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
+            
+    if multiple:
+        logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % (feed_count,))
+        
     return dict(code=code)
 
 def _parse_user_info(user):

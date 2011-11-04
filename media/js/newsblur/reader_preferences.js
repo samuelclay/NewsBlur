@@ -321,6 +321,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Animations'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-folder-counts' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-folder-counts-1', type: 'radio', name: 'folder_counts', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-folder-counts-1' }, [
+                                    'Only show counts on collapsed folders'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-folder-counts-2', type: 'radio', name: 'folder_counts', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-folder-counts-2' }, [
+                                    'Always show unread counts on folders'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Folder unread counts'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-styling' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -483,6 +502,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=folder_counts]', this.$modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.folder_counts) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=show_tooltips]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_tooltips) {
                 $(this).attr('checked', true);
@@ -532,7 +557,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
-            if (self.original_preferences['feed_order'] != form['feed_order']) {
+            if (self.original_preferences['feed_order'] != form['feed_order'] ||
+                self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.reader.make_feeds();
             }
             if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {

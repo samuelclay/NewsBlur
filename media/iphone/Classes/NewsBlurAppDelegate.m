@@ -13,6 +13,8 @@
 #import "LoginViewController.h"
 #import "AddViewController.h"
 #import "OriginalStoryViewController.h"
+#import "MBProgressHUD.h"
+#import "Utilities.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -39,6 +41,7 @@
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
 @synthesize recentlyReadStories;
+@synthesize recentlyReadFeeds;
 @synthesize readStories;
 
 @synthesize dictFolders;
@@ -83,6 +86,7 @@
     [activeStory release];
     [activeOriginalStoryURL release];
     [recentlyReadStories release];
+    [recentlyReadFeeds release];
     [readStories release];
     
     [dictFolders release];
@@ -152,19 +156,24 @@
 }
 
 - (void)loadStoryDetailView {
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:[activeFeed objectForKey:@"feed_title"] style: UIBarButtonItemStyleBordered target: nil action: nil];
+    NSString *feedTitle;
+    if (self.isRiverView) {
+        feedTitle = self.activeFolder;
+    } else {
+        feedTitle = [activeFeed objectForKey:@"feed_title"];
+    }
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
     [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
     [newBackButton release];
     UINavigationController *navController = self.navigationController;   
     [navController pushViewController:storyDetailViewController animated:YES];
-    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:[self.activeFeed objectForKey:@"feed_title"] style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
+    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
     navController.navigationItem.hidesBackButton = YES;
     navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)navigationController:(UINavigationController *)navController 
       willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    NSLog(@"willShow %@", viewController);
     if (viewController == feedDetailViewController) {
         UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
         UIButton *myBackButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
@@ -287,19 +296,50 @@
 }
 
 - (int)unreadCount {
+    if (self.isRiverView) {
+        return [self unreadCountForFolder:nil];
+    } else { 
+        return [self unreadCountForFeed:nil];
+    }
+}
+
+- (int)unreadCountForFeed:(NSString *)feedId {
     int total = 0;
-    total += [[self.activeFeed objectForKey:@"ps"] intValue];
+    NSDictionary *feed;
+
+    if (feedId) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        feed = [self.dictFeeds objectForKey:feedIdStr];
+    } else {
+        feed = self.activeFeed;
+    }
+    
+    total += [[feed objectForKey:@"ps"] intValue];
     if ([self selectedIntelligence] <= 0) {
-        total += [[self.activeFeed objectForKey:@"nt"] intValue];
+        total += [[feed objectForKey:@"nt"] intValue];
     }
     if ([self selectedIntelligence] <= -1) {
-        total += [[self.activeFeed objectForKey:@"ng"] intValue];
+        total += [[feed objectForKey:@"ng"] intValue];
     }
+    
     return total;
 }
 
-- (int)visibleUnreadCount {
-    return 0;
+- (int)unreadCountForFolder:(NSString *)folderName {
+    int total = 0;
+    NSArray *folder;
+    
+    if (!folderName) {
+        folder = [self.dictFolders objectForKey:self.activeFolder];
+    } else {
+        folder = [self.dictFolders objectForKey:folderName];
+    }
+    
+    for (id feedId in folder) {
+        total += [self unreadCountForFeed:feedId];
+    }
+    
+    return total;
 }
 
 - (void)addStories:(NSArray *)stories {
@@ -311,7 +351,8 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = activeFeedStoriesValue;
     self.storyCount = [self.activeFeedStories count];
-    [self setRecentlyReadStories:[NSMutableArray array]];
+    self.recentlyReadStories = [NSMutableArray array];
+    self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
 }
 
@@ -320,7 +361,7 @@
     if (activeLocation == -1) {
         return;
     }
-    id feedId = [self.activeFeed objectForKey:@"id"];
+    id feedId = [self.activeStory objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
@@ -328,6 +369,9 @@
     
     [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
+    if (![self.recentlyReadFeeds containsObject:[story objectForKey:@"story_feed_id"]]) {
+        [self.recentlyReadFeeds addObject:[story objectForKey:@"story_feed_id"]];
+    }
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
         int unreads = MAX(0, [[feed objectForKey:@"ps"] intValue] - 1);
@@ -387,15 +431,95 @@
     return score;
 }
 
-+ (void)informError:(NSError *)error {
-    NSString* localizedDescription = [error localizedDescription];
-    UIAlertView* alertView = [[UIAlertView alloc]
-                              initWithTitle:@"Error"
-                              message:localizedDescription delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-    [alertView show];
-    [alertView release];
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
+    UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
+    
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
+    gradient.opacity = 1;
+    unsigned int color = 0;
+    unsigned int colorFade = 0;
+    if ([start class] == [NSNull class]) {
+        start = @"505050";
+    }
+    if ([end class] == [NSNull class]) {
+        end = @"303030";
+    }
+    NSScanner *scanner = [NSScanner scannerWithString:start];
+    [scanner scanHexInt:&color];
+    NSScanner *scannerFade = [NSScanner scannerWithString:end];
+    [scannerFade scanHexInt:&colorFade];
+    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
+    
+    CALayer *whiteBackground = [CALayer layer];
+    whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
+    whiteBackground.backgroundColor = [UIColor whiteColor].CGColor;
+    [gradientView.layer addSublayer:whiteBackground];
+    
+    [gradientView.layer addSublayer:gradient];
+    
+    CALayer *topBorder = [CALayer layer];
+    topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
+    topBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
+    topBorder.opacity = 1;
+    [gradientView.layer addSublayer:topBorder];
+    
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
+    bottomBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
+    bottomBorder.opacity = 1;
+    [gradientView.layer addSublayer:bottomBorder];
+    
+    return gradientView;
+}
+
+- (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect {
+    UIView *gradientView;
+    if (self.isRiverView) {
+        gradientView = [NewsBlurAppDelegate 
+                        makeGradientView:rect
+                        startColor:[feed objectForKey:@"favicon_color"] 
+                        endColor:[feed objectForKey:@"favicon_fade"]];
+        
+        UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+        titleLabel.text = [feed objectForKey:@"feed_title"];
+        titleLabel.backgroundColor = [UIColor clearColor];
+        titleLabel.textAlignment = UITextAlignmentLeft;
+        titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
+        titleLabel.shadowOffset = CGSizeMake(0, 1);
+        if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
+            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+            [UIColor whiteColor] :
+            [UIColor blackColor];            
+            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
+            UIColorFromRGB(0x202020):
+            UIColorFromRGB(0xe0e0e0);
+        } else {
+            titleLabel.textColor = [UIColor whiteColor];
+            titleLabel.shadowColor = [UIColor blackColor];
+        }
+        titleLabel.frame = CGRectMake(32, 1, window.frame.size.width-20, 20);
+        
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+        UIImage *titleImage = [Utilities getImage:feedIdStr];
+        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
+        [titleLabel addSubview:titleImageView];
+        [titleImageView release];
+        
+        [gradientView addSubview:titleLabel];
+        [gradientView addSubview:titleImageView];
+    } else {
+        gradientView = [NewsBlurAppDelegate 
+                        makeGradientView:CGRectMake(0, -1, window.frame.size.width, 10) 
+                        startColor:[feed objectForKey:@"favicon_color"] 
+                        endColor:[feed objectForKey:@"favicon_fade"]];
+    }
+    
+    gradientView.opaque = YES;
+    
+    return gradientView;
 }
 
 @end

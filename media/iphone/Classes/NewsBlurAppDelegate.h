@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;
@@ -15,7 +16,7 @@
 @class AddViewController;
 @class OriginalStoryViewController;
 
-@interface NewsBlurAppDelegate : NSObject <UIApplicationDelegate> {
+@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
     UIWindow *window;
     UINavigationController *navigationController;
     NewsBlurViewController *feedsViewController;
@@ -35,10 +36,12 @@
     NSMutableArray * activeFeedStoryLocationIds;
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
+    
     int storyCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
     NSMutableArray * recentlyReadStories;
+    NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     
 	NSDictionary * dictFolders;
@@ -69,6 +72,7 @@
 @property (readwrite) int originalStoryCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
+@property (readwrite, retain) NSMutableSet * recentlyReadFeeds;
 @property (readwrite, retain) NSMutableArray * readStories;
 
 @property (nonatomic, retain) NSDictionary *dictFolders;
@@ -98,12 +102,14 @@
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)addStories:(NSArray *)stories;
 - (int)unreadCount;
-- (int)visibleUnreadCount;
+- (int)unreadCountForFeed:(NSString *)feedId;
+- (int)unreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
 - (void)markActiveFeedAllRead;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
-+ (void)informError:(NSError *)error;
++ (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
+- (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 
 @end
 

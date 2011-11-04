@@ -63,10 +63,15 @@ class UserSubscription(models.Model):
         try:
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
-            duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
-            if duplicate_feed:
-                self.feed = duplicate_feed[0].feed
-                super(UserSubscription, self).save(*args, **kwargs)
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
+            for duplicate_feed in duplicate_feeds:
+                already_subscribed = UserSubscription.objects.filter(user=self.user, feed=duplicate_feed.feed)
+                if not already_subscribed:
+                    self.feed = duplicate_feed.feed
+                    super(UserSubscription, self).save(*args, **kwargs)
+                    break
+            else:
+                self.delete()
                 
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):
@@ -344,7 +349,8 @@ class UserSubscriptionFolders(models.Model):
                                                                 feed=duplicate_feed[0].feed)
                     except Feed.DoesNotExist:
                         return
-            user_sub.delete()
+            if user_sub:
+                user_sub.delete()
             MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
 
     def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder):

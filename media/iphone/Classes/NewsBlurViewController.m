@@ -28,8 +28,8 @@
 @synthesize logoutButton;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
-@synthesize stillVisibleFeeds;
 @synthesize visibleFeeds;
+@synthesize stillVisibleFeeds;
 @synthesize sitesButton;
 @synthesize addButton;
 @synthesize viewShowingAllFeeds;
@@ -70,11 +70,9 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self.feedTitlesTable deselectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
-                                        animated:animated];
-    // If there is an active feed, we need to update its table row to match 
-    // the updated unread counts.
-    if ([appDelegate activeFeed]) {
+    // If there is an active feed or a set of feeds readin the river, 
+    // we need to update its table row to match the updated unread counts.
+    if (appDelegate.activeFeed || appDelegate.isRiverView) {
         NSMutableArray *indexPaths = [NSMutableArray array];
         for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
             NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
@@ -83,14 +81,17 @@
             for (int f=0; f < [activeFolderFeeds count]; f++) {
                 int location = [[activeFolderFeeds objectAtIndex:f] intValue];
                 id feedId = [originalFolder objectAtIndex:location];
-                if ([feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame) {
+                if ((appDelegate.isRiverView &&
+                     [appDelegate.recentlyReadFeeds containsObject:feedId]) ||
+                    (appDelegate.activeFeed && 
+                     [feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame)) {
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
                     [indexPaths addObject:indexPath];
                     [self.stillVisibleFeeds setObject:indexPath forKey:[NSString stringWithFormat:@"%@", feedId]];
                 }
             }
         }
-//        NSLog(@"Refreshing feed at %@: %@", indexPaths, [appDelegate activeFeed]);
+//        NSLog(@"Refreshing feed at %@", indexPaths);
         
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
@@ -108,6 +109,7 @@
             [self redrawUnreadCounts];
         }
     }
+
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] 
                      forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] 
@@ -120,6 +122,9 @@
     [self.intelligenceControl 
      setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     [appDelegate showNavigationBar:animated];
+    
+    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
+                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -162,8 +167,8 @@
     [logoutButton release];
     [intelligenceControl release];
     [activeFeedLocations release];
-    [stillVisibleFeeds release];
     [visibleFeeds release];
+    [stillVisibleFeeds release];
     [sitesButton release];
     [addButton release];
     [pull release];
@@ -216,7 +221,7 @@
     [pull finishedLoading];
     
     // User clicking on another link before the page loads is OK.
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
@@ -450,10 +455,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (UIView *)tableView:(UITableView *)tableView 
 viewForHeaderInSection:(NSInteger)section {
     // create the parent view that will hold header Label
-    UIView* customView = [[[UIView alloc] 
-                           initWithFrame:CGRectMake(0.0, 0.0, 
-                                                    tableView.bounds.size.width, 21.0)] 
-                          autorelease];
+    UIControl* customView = [[[UIControl alloc] 
+                              initWithFrame:CGRectMake(0.0, 0.0, 
+                                                       tableView.bounds.size.width, 21.0)] 
+                             autorelease];
     
     
     UIView *borderBottom = [[[UIView alloc] 
@@ -485,7 +490,13 @@ viewForHeaderInSection:(NSInteger)section {
     folderImageView.frame = CGRectMake(14.0, 2.0, 16.0, 16.0);
     [customView addSubview:folderImageView];
     [folderImageView release];
-    
+
+    UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
+    UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
+    disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, 3.0, 9.0, 14.0);
+    [customView addSubview:disclosureImageView];
+    [disclosureImageView release];
+
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
@@ -493,7 +504,14 @@ viewForHeaderInSection:(NSInteger)section {
     [invisibleHeaderButton addTarget:self action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:invisibleHeaderButton];
     
+    [invisibleHeaderButton addTarget:self action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
+    
+    [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
+}
+
+- (IBAction)sectionTapped:(UIButton *)button {
+    button.backgroundColor = [UIColor blackColor];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

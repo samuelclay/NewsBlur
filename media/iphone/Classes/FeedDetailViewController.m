@@ -57,8 +57,12 @@
     
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     if (appDelegate.isRiverView) {
+        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.storyTitlesTable.separatorColor = [UIColor clearColor];
         titleLabel.text = [NSString stringWithFormat:@"     %@", appDelegate.activeFolder];        
     } else {
+        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
         titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
     }
     titleLabel.backgroundColor = [UIColor clearColor];
@@ -115,6 +119,7 @@
                          action:@selector(selectIntelligence)
                forControlEvents:UIControlEventValueChanged];
     [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
+    
 	[super viewWillAppear:animated];
 }
 
@@ -194,7 +199,7 @@
 //         animated:YES];
 //    }
     
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
 }
 
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
@@ -335,7 +340,7 @@
     
 	// User clicking on another link before the page loads is OK.
 	if ([error code] != NSURLErrorCancelled) {
-		[NewsBlurAppDelegate informError:error];
+		[self informError:error];
 	}
 }
 
@@ -409,6 +414,7 @@
                 if (([(FeedDetailTableCell *)oneObject tag] == 0 && !appDelegate.isRiverView) ||
                     ([(FeedDetailTableCell *)oneObject tag] == 1 && appDelegate.isRiverView)) {
                     cell = (FeedDetailTableCell *)oneObject;
+                    break;
                 }
 
             }
@@ -445,34 +451,12 @@
     }
     
     // River view
-    if (appDelegate.isRiverView) {
-
-        cell.feedTitle.text = [feed objectForKey:@"feed_title"];
-        cell.feedFavicon.image = [Utilities getImage:feedIdStr];
-        
-        CAGradientLayer *gradient = [CAGradientLayer layer];
-        gradient.frame = CGRectMake(0, 0, cell.frame.size.width, 20);
-        unsigned int color = 0;
-        unsigned int colorFade = 0;
-        NSString *favicon_color = [feed objectForKey:@"favicon_color"];
-        if ([favicon_color class] == [NSNull class]) {
-            favicon_color = @"505050";
-        }
-        NSString *favicon_fade = [feed objectForKey:@"favicon_fade"];
-        if ([favicon_fade class] == [NSNull class]) {
-            favicon_fade = @"303030";
-        }
-        NSScanner *scanner = [NSScanner scannerWithString:favicon_color];
-        [scanner scanHexInt:&color];
-        NSScanner *scannerFade = [NSScanner scannerWithString:favicon_fade];
-        [scannerFade scanHexInt:&colorFade];
-        gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(color) CGColor], (id)[UIColorFromRGB(colorFade) CGColor], nil];
-        if (isStoryRead) {
-            gradient.opacity = .15;
-        }
-        [cell.layer insertSublayer:gradient atIndex:0];
+    if (appDelegate.isRiverView && cell) {
+        UIView *gradientView = [appDelegate makeFeedTitleGradient:feed 
+                                withRect:CGRectMake(0, 0, cell.frame.size.width, 21)];
+        [cell.feedGradient addSubview:gradientView];
     }
-        
+            
     if (!isStoryRead) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
@@ -482,8 +466,6 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
-        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
-        cell.feedFavicon.alpha = 1;
     } else {
         // Read story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
@@ -493,15 +475,11 @@
         cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
         cell.storyUnreadIndicator.alpha = 0.15f;
-        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
-        cell.feedFavicon.alpha = 0.5f;
-    }
-    if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-        cell.feedTitle.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-                                    [UIColor whiteColor] :
-                                    [UIColor blackColor];            
-    } else {
-        cell.feedTitle.textColor = [UIColor whiteColor];
+//        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
+//        cell.feedTitle.textColor = [UIColor blackColor];
+//        cell.feedTitle.shadowColor = nil;
+//        cell.feedFavicon.alpha = 0.5f;
+        cell.feedGradient.alpha = 0.25f;
     }
 
 	return cell;
@@ -544,25 +522,6 @@
             [self fetchFeedDetail:self.feedPage+1 withCallback:nil];   
         }
     }
-}
-
-- (IBAction)markAllRead {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:nil];
-    [request startAsynchronous];
-    [appDelegate markActiveFeedAllRead];
-    [appDelegate.navigationController 
-     popToViewController:[appDelegate.navigationController.viewControllers 
-                          objectAtIndex:0]  
-     animated:YES];
-}
-
-- (void)markedAsRead {
-    
 }
 
 - (IBAction)selectIntelligence {
@@ -633,6 +592,49 @@
 
 #pragma mark -
 #pragma mark Feed Actions
+
+
+- (IBAction)markAllRead {
+    if (appDelegate.isRiverView) {
+        return [self doOpenMarkReadActionSheet:nil];
+    } else {
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        [appDelegate markActiveFeedAllRead];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    }
+}
+
+- (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:appDelegate.activeFolder
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
+    
+    int storyCount = [appDelegate storyCount];
+    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ %d stor%@ read", 
+                             storyCount == 1 ? @"this" : @"these", 
+                             storyCount, 
+                             storyCount == 1 ? @"y" : @"ies"];
+    NSArray *buttonTitles = [NSArray arrayWithObjects:visibleText, @"Mark entire folder read", nil];
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    
+    [options showInView:self.view];
+    [options release];
+}
 
 - (IBAction)doOpenSettingsActionSheet {
     UIActionSheet *options = [[UIActionSheet alloc] 
@@ -745,7 +747,7 @@
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request {
     NSLog(@"Fail: %@", request);
     self.pageRefreshing = NO;
-    [NewsBlurAppDelegate informError:[request error]];
+    [self informError:[request error]];
     [pull finishedLoading];
     [self fetchFeedDetail:1 withCallback:nil];
 }

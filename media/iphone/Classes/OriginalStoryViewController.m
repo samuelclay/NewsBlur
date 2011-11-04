@@ -155,7 +155,10 @@
 - (BOOL)webView:(UIWebView *)webView 
         shouldStartLoadWithRequest:(NSURLRequest *)request 
         navigationType:(UIWebViewNavigationType)navigationType {
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+    if ([[[request URL] scheme] isEqual:@"mailto"]) {
+        [[UIApplication sharedApplication] openURL:[request URL]];
+        return NO;
+    } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [self updateAddress:request];
         return NO;
     }
@@ -180,7 +183,7 @@
     
     // User clicking on another link before the page loads is OK.
     if ([error code] != NSURLErrorCancelled) {
-        [NewsBlurAppDelegate informError:error];   
+        [self informError:error];   
     }
 }
 - (void)updateTitle:(UIWebView*)aWebView

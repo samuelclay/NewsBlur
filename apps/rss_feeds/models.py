@@ -29,6 +29,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import pre_process_story
+from utils.story_functions import bunch
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -82,7 +83,6 @@ class Feed(models.Model):
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
-        print self.favicon_color, self.favicon_fade()
         
         if include_favicon:
             try:
@@ -743,11 +743,19 @@ class Feed(models.Model):
                 # print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
-    def get_stories(self, offset=0, limit=25, force=False):
+    def get_stories(self, offset=0, limit=25, force=False, slave=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
         
         if not stories or force:
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+            if slave:
+                import pymongo
+                db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
+                stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
+                stories_db = []
+                for story in stories_db_orig:
+                    stories_db.append(bunch(story))
+            else:
+                stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
             stories = Feed.format_stories(stories_db, self.pk)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
@@ -895,8 +903,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
-                                                   * (updates_per_month**1.5)))
+        updates_per_day_delay = 12 * 60 / max(.25, ((max(0, self.active_subscribers)**.35)
+                                                    * (updates_per_month**1.2)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates
@@ -905,7 +913,7 @@ class Feed(models.Model):
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         
@@ -921,7 +929,7 @@ class Feed(models.Model):
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor
+        return total, random_factor*2
         
     def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update(force=True)
@@ -1137,7 +1145,7 @@ class MFeedFetchHistory(mongo.Document):
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
         'ordering': ['-fetch_date'],
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', '-fetch_date')],
+        'indexes': ['-fetch_date', ('fetch_date', 'status_code'), ('feed_id', 'status_code')],
     }
     
     def save(self, *args, **kwargs):
