@@ -30,7 +30,7 @@
 #pragma mark utilities
 - (NSString*)encodeURL:(NSString *)string
 {
-	NSString *newString = NSMakeCollectable([(NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)string, NULL, CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`"), CFStringConvertNSStringEncodingToEncoding([self stringEncoding])) autorelease]);
+	NSString *newString = [NSMakeCollectable(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)string, NULL, CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`"), CFStringConvertNSStringEncodingToEncoding([self stringEncoding]))) autorelease];
 	if (newString) {
 		return newString;
 	}
@@ -49,6 +49,7 @@
 	self = [super initWithURL:newURL];
 	[self setPostFormat:ASIURLEncodedPostFormat];
 	[self setStringEncoding:NSUTF8StringEncoding];
+        [self setRequestMethod:@"POST"];
 	return self;
 }
 
@@ -207,7 +208,7 @@
 	[super buildPostBody];
 	
 #if DEBUG_FORM_DATA_REQUEST
-	NSLog(@"%@",[self debugBodyString]);
+	ASI_DEBUG_LOG(@"%@",[self debugBodyString]);
 	[self setDebugBodyString:nil];
 #endif
 }

@@ -14,6 +14,7 @@ static ASIDownloadCache *sharedCache = nil;
 
 static NSString *sessionCacheFolder = @"SessionStore";
 static NSString *permanentCacheFolder = @"PermanentStore";
+static NSArray *fileExtensionsToHandleAsHTML = nil;
 
 @interface ASIDownloadCache ()
 + (NSString *)keyForURL:(NSURL *)url;
@@ -21,6 +22,15 @@ static NSString *permanentCacheFolder = @"PermanentStore";
 @end
 
 @implementation ASIDownloadCache
+
++ (void)initialize
+{
+	if (self == [ASIDownloadCache class]) {
+		// Obviously this is not an exhaustive list, but hopefully these are the most commonly used and this will 'just work' for the widest range of people
+		// I imagine many web developers probably use url rewriting anyway
+		fileExtensionsToHandleAsHTML = [[NSArray alloc] initWithObjects:@"asp",@"aspx",@"jsp",@"php",@"rb",@"py",@"pl",@"cgi", nil];
+	}
+}
 
 - (id)init
 {
@@ -105,31 +115,7 @@ static NSString *permanentCacheFolder = @"PermanentStore";
 
 - (NSDate *)expiryDateForRequest:(ASIHTTPRequest *)request maxAge:(NSTimeInterval)maxAge
 {
-	NSMutableDictionary *responseHeaders = [NSMutableDictionary dictionaryWithDictionary:[request responseHeaders]];
-
-	// If we weren't given a custom max-age, lets look for one in the response headers
-	if (!maxAge) {
-		NSString *cacheControl = [[responseHeaders objectForKey:@"Cache-Control"] lowercaseString];
-		if (cacheControl) {
-			NSScanner *scanner = [NSScanner scannerWithString:cacheControl];
-			[scanner scanUpToString:@"max-age" intoString:NULL];
-			if ([scanner scanString:@"max-age" intoString:NULL]) {
-				[scanner scanString:@"=" intoString:NULL];
-				[scanner scanDouble:&maxAge];
-			}
-		}
-	}
-
-	// RFC 2612 says max-age must override any Expires header
-	if (maxAge) {
-		return [[NSDate date] addTimeInterval:maxAge];
-	} else {
-		NSString *expires = [responseHeaders objectForKey:@"Expires"];
-		if (expires) {
-			return [ASIHTTPRequest dateFromRFC1123String:expires];
-		}
-	}
-	return nil;
+  return [ASIHTTPRequest expiryDateForRequest:request maxAge:maxAge];
 }
 
 - (void)storeResponseForRequest:(ASIHTTPRequest *)request maxAge:(NSTimeInterval)maxAge
@@ -183,9 +169,14 @@ static NSString *permanentCacheFolder = @"PermanentStore";
 
 	if ([request responseData]) {
 		[[request responseData] writeToFile:dataPath atomically:NO];
-	} else if ([request downloadDestinationPath] && ![[request downloadDestinationPath] isEqualToString:dataPath]) {
+	} else if ([request downloadDestinationPath] && ![[request downloadDestinationPath] isEqualToString:dataPath]) {        
 		NSError *error = nil;
-		[[[[NSFileManager alloc] init] autorelease] copyItemAtPath:[request downloadDestinationPath] toPath:dataPath error:&error];
+        NSFileManager* manager = [[NSFileManager alloc] init];
+        if ([manager fileExistsAtPath:dataPath]) {
+            [manager removeItemAtPath:dataPath error:&error];
+        }
+        [manager copyItemAtPath:[request downloadDestinationPath] toPath:dataPath error:&error];
+        [manager release];
 	}
 	[[self accessLock] unlock];
 }
@@ -212,11 +203,20 @@ static NSString *permanentCacheFolder = @"PermanentStore";
 {
 	// Grab the file extension, if there is one. We do this so we can save the cached response with the same file extension - this is important if you want to display locally cached data in a web view 
 	NSString *extension = [[url path] pathExtension];
-	if (![extension length]) {
+
+	// If the url doesn't have an extension, we'll add one so a webview can read it when locally cached
+	// If the url has the extension of a common web scripting language, we'll change the extension on the cached path to html for the same reason
+	if (![extension length] || [[[self class] fileExtensionsToHandleAsHTML] containsObject:[extension lowercaseString]]) {
 		extension = @"html";
 	}
 	return [self pathToFile:[[[self class] keyForURL:url] stringByAppendingPathExtension:extension]];
 }
+
++ (NSArray *)fileExtensionsToHandleAsHTML
+{
+	return fileExtensionsToHandleAsHTML;
+}
+
 
 - (NSString *)pathToCachedResponseHeadersForURL:(NSURL *)url
 {
@@ -262,7 +262,10 @@ static NSString *permanentCacheFolder = @"PermanentStore";
 
 	// Grab the file extension, if there is one. We do this so we can save the cached response with the same file extension - this is important if you want to display locally cached data in a web view 
 	NSString *extension = [[[request url] path] pathExtension];
-	if (![extension length]) {
+
+	// If the url doesn't have an extension, we'll add one so a webview can read it when locally cached
+	// If the url has the extension of a common web scripting language, we'll change the extension on the cached path to html for the same reason
+	if (![extension length] || [[[self class] fileExtensionsToHandleAsHTML] containsObject:[extension lowercaseString]]) {
 		extension = @"html";
 	}
 	path =  [path stringByAppendingPathComponent:[[[self class] keyForURL:[request url]] stringByAppendingPathExtension:extension]];

@@ -30,7 +30,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.stories = {};
     this.story_keys = {};
     this.queued_read_stories = {};
-    this.classifiers = _.extend({}, this.defaults['classifiers']);
+    this.classifiers = {};
     this.starred_stories = [];
     this.starred_count = 0;
     this.read_stories_river_count = 0;
@@ -75,7 +75,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.ajax[options['ajax_group']].clear(true);
         }
         
-        this.ajax[options['ajax_group']].add({
+        this.ajax[options['ajax_group']].add(_.extend({
             url: url,
             data: data,
             type: request_type,
@@ -103,7 +103,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     callback({'message': message});
                 }
             }
-        }); 
+        }, options)); 
         
     },
     
@@ -331,7 +331,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.feed_id = feed_id;
-                this.classifiers = data.classifiers || this.defaults['classifiers'];
+                if (_.includes(feed_id, ':')) {
+                    _.extend(this.classifiers, data.classifiers);
+                } else {
+                    this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
+                }
                 this.starred_stories = data.starred_stories;
                 this.story_keys = {};
                 for (var s in data.stories) {
@@ -359,7 +363,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.feed_tags = data.feed_tags || {};
             this.feed_authors = data.feed_authors || {};
             this.feed_id = feed_id;
-            this.classifiers = data.classifiers || this.defaults['classifiers'];
+            this.classifiers[feed_id] = data.classifiers || this.defaults['classifiers'];
             callback && callback();
         }, this);
         
@@ -397,7 +401,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/river_stories', {
             feeds: feeds,
             page: page,
-            read_stories_count: this.read_stories_river_count
+            read_stories_count: this.read_stories_river_count,
+            // TODO: Remove new flag
+            new_flag: true
         }, pre_callback, $.noop, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -856,9 +862,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    send_story_email: function(data, callback) {
+    send_story_email: function(data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-          this.make_request('/reader/send_story_email', data, callback);
+          this.make_request('/reader/send_story_email', data, callback, error_callback, {'timeout': 6000});
         } else {
           callback({'code': -1, 'message': 'You must be logged in to send a story over email.'});
         }
@@ -872,7 +878,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         _.each(this.stories, _.bind(function(story, i) {
             if (story.story_feed_id != feed_id) return;
             this.stories[i].intelligence.title = 0;
-            _.each(this.classifiers.titles, _.bind(function(classifier_score, classifier_title) {
+            _.each(this.classifiers[feed_id].titles, _.bind(function(classifier_score, classifier_title) {
                 if (this.stories[i].intelligence.title <= 0 && 
                     story.story_title && story.story_title.indexOf(classifier_title) != -1) {
                     this.stories[i].intelligence.title = classifier_score;
@@ -880,7 +886,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }, this));
             
             this.stories[i].intelligence.author = 0;
-            _.each(this.classifiers.authors, _.bind(function(classifier_score, classifier_author) {
+            _.each(this.classifiers[feed_id].authors, _.bind(function(classifier_score, classifier_author) {
                 if (this.stories[i].intelligence.author <= 0 && 
                     story.story_authors && story.story_authors.indexOf(classifier_author) != -1) {
                     this.stories[i].intelligence.author = classifier_score;
@@ -888,7 +894,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }, this));
             
             this.stories[i].intelligence.tags = 0;
-            _.each(this.classifiers.tags, _.bind(function(classifier_score, classifier_tag) {
+            _.each(this.classifiers[feed_id].tags, _.bind(function(classifier_score, classifier_tag) {
                 if (this.stories[i].intelligence.tags <= 0 && 
                     story.story_tags && _.contains(story.story_tags, classifier_tag)) {
                     this.stories[i].intelligence.tags = classifier_score;
@@ -896,7 +902,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }, this));
             
             this.stories[i].intelligence.feed = 0;
-            _.each(this.classifiers.feeds, _.bind(function(classifier_score, classifier_feed_id) {
+            _.each(this.classifiers[feed_id].feeds, _.bind(function(classifier_score, classifier_feed_id) {
                 if (this.stories[i].intelligence.feed <= 0 && 
                     story.story_feed_id == classifier_feed_id) {
                     this.stories[i].intelligence.feed = classifier_score;

@@ -33,6 +33,16 @@
     opacity: 1;
 }
 
+.NB-modal .NB-modal-error {
+    float: right;
+    font-size: 11px;
+    font-weight: bold;
+    color: #7F080A;
+    line-height: 14px;
+    display: none;
+    max-width: 50%;
+}
+
 .NB-modal .NB-modal-loading,
 .NB-modal .NB-loading {
     width: 16px;

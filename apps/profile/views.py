@@ -8,7 +8,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from utils import json_functions as json
-from paypal.standard.forms import PayPalPaymentsForm
+from vendor.paypal.standard.forms import PayPalPaymentsForm
 from utils.user_functions import ajax_login_required
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
@@ -178,7 +178,7 @@ def profile_is_premium(request):
     total_subs = subs.count()
     activated_subs = subs.filter(active=True).count()
     
-    if retries > 30:
+    if retries >= 30:
         subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
         message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
         mail_admins(subject, message, fail_silently=True)

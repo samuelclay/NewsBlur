@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.test import TestCase
 from django.test.client import Client
 
-from paypal.standard.ipn.models import PayPalIPN
-from paypal.standard.ipn.signals import (payment_was_successful, 
+from vendor.paypal.standard.ipn.models import PayPalIPN
+from vendor.paypal.standard.ipn.signals import (payment_was_successful, 
     payment_was_flagged)
 
 

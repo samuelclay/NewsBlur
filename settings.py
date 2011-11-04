@@ -183,6 +183,7 @@ COMPRESS_JS = {
             'js/jquery.flot.js',
             'js/jquery.tipsy.js',
             'js/underscore.js',
+            'js/underscore.string.js',
             'js/newsblur/reader_utils.js',
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
@@ -212,6 +213,7 @@ COMPRESS_JS = {
             'js/mobile/jquery.mobile-1.0b1.js',
             'js/jquery.ajaxmanager.3.js',
             'js/underscore.js',
+            'js/underscore.string.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
@@ -287,7 +289,7 @@ COMPRESS_CSS_FILTERS = []
 # ==========================
 
 DAYS_OF_UNREAD          = 14
-SUBSCRIBER_EXPIRE       = 2
+SUBSCRIBER_EXPIRE       = 1
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
@@ -449,8 +451,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'mongodb://db01,db02/?slaveOk=true',
-    # 'tz_aware': True,
+    'host': 'mongodb://db01,db03/?slaveOk=true',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)

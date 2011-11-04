@@ -2,6 +2,7 @@ import difflib
 import datetime
 import random
 import re
+import math
 import mongoengine as mongo
 import zlib
 import urllib
@@ -28,6 +29,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import pre_process_story
+from utils.story_functions import bunch
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -77,6 +79,8 @@ class Feed(models.Model):
             'updated_seconds_ago': seconds_timesince(self.last_update),
             'subs': self.num_subscribers,
             'favicon_color': self.favicon_color,
+            'favicon_fade': self.favicon_fade(),
+            'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
         }
         
@@ -353,7 +357,66 @@ class Feed(models.Model):
     def count_stories(self, verbose=False):
         self.save_feed_stories_last_month(verbose)
         # self.save_feed_story_history_statistics()
+    
+    def _split_favicon_color(self):
+        color = self.favicon_color
+        if color:
+            splitter = lambda s, p: [s[i:i+p] for i in range(0, len(s), p)]
+            red, green, blue = splitter(color[:6], 2)
+            return red, green, blue
+        return None, None, None
         
+    def favicon_fade(self):
+        red, green, blue = self._split_favicon_color()
+        if red and green and blue:
+            fade_red = hex(max(int(red, 16) - 60, 0))[2:].zfill(2)
+            fade_green = hex(max(int(green, 16) - 60, 0))[2:].zfill(2)
+            fade_blue = hex(max(int(blue, 16) - 60, 0))[2:].zfill(2)
+            return "%s%s%s" % (fade_red, fade_green, fade_blue)
+            
+    def favicon_text_color(self):
+        # Color format: {r: 1, g: .5, b: 0}
+        def contrast(color1, color2):
+            lum1 = luminosity(color1)
+            lum2 = luminosity(color2)
+            if lum1 > lum2:
+                return (lum1 + 0.05) / (lum2 + 0.05)
+            else:
+                return (lum2 + 0.05) / (lum1 + 0.05)
+
+        def luminosity(color):
+            r = color['red']
+            g = color['green']
+            b = color['blue']
+            val = lambda c: c/12.92 if c <= 0.02928 else math.pow(((c + 0.055)/1.055), 2.4)
+            red = val(r)
+            green = val(g)
+            blue = val(b)
+            return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+
+        red, green, blue = self._split_favicon_color()
+        if red and green and blue:
+            color = {
+                'red': int(red, 16) / 256.0,
+                'green': int(green, 16) / 256.0,
+                'blue': int(blue, 16) / 256.0,
+            }
+            white = {
+                'red': 1,
+                'green': 1,
+                'blue': 1,
+            }
+            grey = {
+                'red': 0.5,
+                'green': 0.5,
+                'blue': 0.5,
+            }
+            
+            if contrast(color, white) > contrast(color, grey):
+                return 'white'
+            else:
+                return 'black'
+    
     def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
@@ -512,8 +575,9 @@ class Feed(models.Model):
             feed = Feed.objects.get(pk=self.pk)
         except Feed.DoesNotExist:
             # Feed has been merged after updating. Find the right feed.
-            duplicate_feed = DuplicateFeed.objects.get(duplicate_feed_id=self.pk)
-            feed = duplicate_feed.feed
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.pk)
+            if duplicate_feeds:
+                feed = duplicate_feeds[0].feed
             
         return feed
 
@@ -558,7 +622,7 @@ class Feed(models.Model):
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
-                
+                    story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -572,9 +636,10 @@ class Feed(models.Model):
                         story_content_diff = original_content
                     # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    if existing_story.story_title != story.get('title'):
-                        # logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-                        pass
+                    # if existing_story.story_title != story.get('title'):
+                    #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
+                    if existing_story.story_guid != story_guid:
+                        self.update_read_stories_with_new_guid(existing_story.story_guid, story_guid)
 
                     existing_story.story_feed = self.pk
                     existing_story.story_date = story.get('published')
@@ -583,7 +648,7 @@ class Feed(models.Model):
                     existing_story.story_original_content = original_content
                     existing_story.story_author_name = story.get('author')
                     existing_story.story_permalink = story.get('link')
-                    existing_story.story_guid = story.get('guid') or story.get('id') or story.get('link')
+                    existing_story.story_guid = story_guid
                     existing_story.story_tags = story_tags
                     try:
                         existing_story.save()
@@ -600,6 +665,13 @@ class Feed(models.Model):
                     # logging.debug("Unchanged story: %s " % story.get('title'))
             
         return ret_values
+    
+    def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
+        from apps.reader.models import MUserStory
+        read_stories = MUserStory.objects.filter(feed_id=self.pk, story_id=old_story_guid)
+        for story in read_stories:
+            story.story_id = new_story_guid
+            story.save()
         
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
@@ -671,11 +743,19 @@ class Feed(models.Model):
                 # print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
-    def get_stories(self, offset=0, limit=25, force=False):
+    def get_stories(self, offset=0, limit=25, force=False, slave=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
         
         if not stories or force:
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+            if slave:
+                import pymongo
+                db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
+                stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
+                stories_db = []
+                for story in stories_db_orig:
+                    stories_db.append(bunch(story))
+            else:
+                stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
             stories = Feed.format_stories(stories_db, self.pk)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
@@ -823,8 +903,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 2 * 60 / max(.25, ((max(0, self.active_subscribers)**.15)
-                                                   * (updates_per_month**1.5)))
+        updates_per_day_delay = 12 * 60 / max(.25, ((max(0, self.active_subscribers)**.35)
+                                                    * (updates_per_month**1.2)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates
@@ -833,7 +913,7 @@ class Feed(models.Model):
         # .5 hours for 2 subscribers.
         # .25 hours for 3 subscribers.
         # 1 min for 10 subscribers.
-        subscriber_bonus = 4 * 60 / max(.167, max(0, self.active_subscribers)**3)
+        subscriber_bonus = 6 * 60 / max(.167, max(0, self.active_subscribers)**3)
         if self.premium_subscribers > 0:
             subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         
@@ -849,7 +929,7 @@ class Feed(models.Model):
         # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
-        return total, random_factor
+        return total, random_factor*2
         
     def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update(force=True)
@@ -1065,7 +1145,7 @@ class MFeedFetchHistory(mongo.Document):
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
         'ordering': ['-fetch_date'],
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', '-fetch_date')],
+        'indexes': ['-fetch_date', ('fetch_date', 'status_code'), ('feed_id', 'status_code')],
     }
     
     def save(self, *args, **kwargs):

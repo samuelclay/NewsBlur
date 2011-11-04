@@ -11,11 +11,6 @@
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
 
-#define UIColorFromRGB(rgbValue) [UIColor \
-colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
-green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
-blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
-
 @implementation OriginalStoryViewController
 
 @synthesize appDelegate;
@@ -160,7 +155,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (BOOL)webView:(UIWebView *)webView 
         shouldStartLoadWithRequest:(NSURLRequest *)request 
         navigationType:(UIWebViewNavigationType)navigationType {
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+    if ([[[request URL] scheme] isEqual:@"mailto"]) {
+        [[UIApplication sharedApplication] openURL:[request URL]];
+        return NO;
+    } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [self updateAddress:request];
         return NO;
     }
@@ -185,7 +183,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     // User clicking on another link before the page loads is OK.
     if ([error code] != NSURLErrorCancelled) {
-        [NewsBlurAppDelegate informError:error];   
+        [self informError:error];   
     }
 }
 - (void)updateTitle:(UIWebView*)aWebView

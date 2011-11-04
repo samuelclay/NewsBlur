@@ -7,7 +7,7 @@ from django.db import models
 from django import forms
 from django.utils.translation import ugettext as _
 
-from paypal.pro.creditcard import verify_credit_card
+from vendor.paypal.pro.creditcard import verify_credit_card
 
 
 class CreditCardField(forms.CharField):

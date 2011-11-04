@@ -9,11 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
+#import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 
-@interface FeedDetailViewController : UIViewController 
-<UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate> {
+@interface FeedDetailViewController : BaseViewController 
+<UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate,
+ UIActionSheetDelegate, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
@@ -33,6 +35,7 @@
 - (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
 - (void)failLoadingFeed:(ASIHTTPRequest *)request;
 
@@ -42,11 +45,15 @@
 - (IBAction)selectIntelligence;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
-- (void)markedAsRead;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)finishedRefreshingFeed:(ASIHTTPRequest *)request;
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request;
+
+- (IBAction)doOpenMarkReadActionSheet:(id)sender;
+- (IBAction)doOpenSettingsActionSheet;
+- (void)confirmDeleteSite;
+- (void)deleteSite;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

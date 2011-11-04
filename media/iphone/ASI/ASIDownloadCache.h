@@ -35,6 +35,10 @@
 // A helper function that determines if the server has requested data should not be cached by looking at the request's response headers
 + (BOOL)serverAllowsResponseCachingForRequest:(ASIHTTPRequest *)request;
 
+// A list of file extensions that we know won't be readable by a webview when accessed locally
+// If we're asking for a path to cache a particular url and it has one of these extensions, we change it to '.html'
++ (NSArray *)fileExtensionsToHandleAsHTML;
+
 @property (assign, nonatomic) ASICachePolicy defaultCachePolicy;
 @property (retain, nonatomic) NSString *storagePath;
 @property (retain) NSRecursiveLock *accessLock;

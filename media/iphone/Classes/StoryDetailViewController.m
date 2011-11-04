@@ -12,7 +12,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
-
+#import "Utilities.h"
 
 @implementation StoryDetailViewController
 
@@ -25,6 +25,7 @@
 @synthesize buttonPrevious;
 @synthesize activity;
 @synthesize loadingIndicator;
+@synthesize feedTitleGradient;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -43,6 +44,7 @@
     [buttonPrevious release];
     [activity release];
     [loadingIndicator release];
+    [feedTitleGradient release];
     [super dealloc];
 }
 
@@ -56,7 +58,15 @@
     self.loadingIndicator = [[[UIActivityIndicatorView alloc] 
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
                              autorelease];
-
+    
+    UIScrollView* currentScrollView;
+    for (UIView* subView in self.webView.subviews) {
+        if ([subView isKindOfClass:[UIScrollView class]]) {
+            currentScrollView = (UIScrollView*)subView;
+            currentScrollView.delegate = self;
+        }
+    }
+    
     [super viewDidLoad];
 }
 
@@ -85,6 +95,7 @@
                                        ];
     self.navigationItem.rightBarButtonItem = originalButton;
     [originalButton release];
+    
 	[super viewDidAppear:animated];
 }
 
@@ -123,7 +134,7 @@
         [buttonPrevious setTitle:@"Previous"];
     }
     
-    float unreads = [appDelegate unreadCount];
+    float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
 //    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
@@ -141,8 +152,8 @@
         [request setPostValue:[appDelegate.activeStory 
                                objectForKey:@"id"] 
                        forKey:@"story_id"]; 
-        [request setPostValue:[appDelegate.activeFeed 
-                               objectForKey:@"id"] 
+        [request setPostValue:[appDelegate.activeStory 
+                               objectForKey:@"story_feed_id"] 
                        forKey:@"feed_id"]; 
         [request setDidFinishSelector:@selector(markedAsRead)];
         [request setDidFailSelector:@selector(markedAsRead)];
@@ -272,10 +283,63 @@
     NSString *htmlString = [NSString stringWithFormat:@"%@ %@ <div class=\"NB-story\">%@</div>",
                             imgCssString, storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"]];
+    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
+                                                                [appDelegate.activeStory 
+                                                                 objectForKey:@"story_feed_id"]]] 
+                           objectForKey:@"feed_link"];
+
     [webView loadHTMLString:htmlString
-                    baseURL:[NSURL URLWithString:[appDelegate.activeFeed 
-                                                  objectForKey:@"feed_link"]]];
+                    baseURL:[NSURL URLWithString:feed_link]];
     
+    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
+                                                              [appDelegate.activeStory 
+                                                               objectForKey:@"story_feed_id"]]];
+    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
+                                 withRect:CGRectMake(0, -1, self.webView.frame.size.width, 21)];
+    
+    self.feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
+    for (UIView *subview in self.webView.subviews) {
+        if (subview.tag == 12) {
+            [subview removeFromSuperview];
+        }
+    }
+    for (NSObject *aSubView in [self.webView subviews]) {
+        if ([aSubView isKindOfClass:[UIScrollView class]]) {
+            UIScrollView * theScrollView = (UIScrollView *)aSubView;
+            if (appDelegate.isRiverView) {
+                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
+            } else {
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0); 
+            }
+            [self.webView insertSubview:feedTitleGradient belowSubview:theScrollView];
+            [theScrollView setContentOffset:CGPointMake(0, appDelegate.isRiverView ? -19 : -9) animated:NO];
+            
+            // Such a fucking hack. This hides the top shadow of the scroll view
+            // so the gradient doesn't look like ass when the view is dragged down.
+            NSArray *wsv = [NSArray arrayWithArray:[theScrollView subviews]];
+            [[wsv objectAtIndex:7] setHidden:YES]; // Scroll to header
+            [[wsv objectAtIndex:9] setHidden:YES]; // Scroll to header
+            [[wsv objectAtIndex:3] setHidden:YES]; // Scroll to header
+            [[wsv objectAtIndex:5] setHidden:YES]; // Scroll to header
+//            UIImageView *topShadow = [[UIImageView alloc] initWithImage:[[wsv objectAtIndex:9] image]];
+//            topShadow.frame = [[wsv objectAtIndex:9] frame];
+//            [self.webView addSubview:topShadow];
+//            [self.webView addSubview:[wsv objectAtIndex:9]];
+            // Oh my god, the above code is beyond hack. It's evil. And it's going
+            // to break, I swear to god. This shit deserves scorn.
+            
+            break;
+        }
+    }
+    
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    NSLog(@"ContentOffset: %f %f", scrollView.contentOffset.x, scrollView.contentOffset.y);
+    self.feedTitleGradient.frame = CGRectMake(scrollView.contentOffset.x < 0 ? -1 * scrollView.contentOffset.x : 0, 
+                                              -1 * scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height, 
+                                              self.feedTitleGradient.frame.size.width, 
+                                              self.feedTitleGradient.frame.size.height);
 }
 
 - (IBAction)doNextUnreadStory {
@@ -356,14 +420,10 @@
 - (void)setActiveStory {
     self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
     
-    UIImage *titleImage;
-    NSString *favicon = [appDelegate.activeFeed objectForKey:@"favicon"];
-	if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-		NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-		titleImage = [UIImage imageWithData:imageData];
-	} else {
-		titleImage = [UIImage imageNamed:@"world.png"];
-	}
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    UIImage *titleImage = appDelegate.isRiverView ?
+                          [UIImage imageNamed:@"folder.png"] :
+                          [Utilities getImage:feedIdStr];
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
     self.navigationItem.titleView = titleImageView;

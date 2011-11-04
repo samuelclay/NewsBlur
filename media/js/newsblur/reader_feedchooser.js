@@ -105,18 +105,18 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-image' }),
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$1/month'),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($12/year)')
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$12/year'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($1/month)')
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-image' }),
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$2/month'),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($24/year)')
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$24/year'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($2/month)')
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-image' }),
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$3/month'),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($36/year)')
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$36/year'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($3/month)')
                       ])
                   ])
               ])

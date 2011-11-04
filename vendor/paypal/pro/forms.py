@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from paypal.pro.fields import CreditCardField, CreditCardExpiryField, CreditCardCVV2Field, CountryField
+from vendor.paypal.pro.fields import CreditCardField, CreditCardExpiryField, CreditCardCVV2Field, CountryField
 
 
 class PaymentForm(forms.Form):
@@ -20,7 +20,7 @@ class PaymentForm(forms.Form):
 
     def process(self, request, item):
         """Process a PayPal direct payment."""
-        from paypal.pro.helpers import PayPalWPP
+        from vendor.paypal.pro.helpers import PayPalWPP
         wpp = PayPalWPP(request) 
         params = self.cleaned_data
         params['creditcardtype'] = self.fields['acct'].card_type

@@ -1,7 +1,7 @@
 NEWSBLUR.ReaderSendEmail = function(story_id, options) {
     var defaults = {};
     
-    _.bindAll(this, 'close');
+    _.bindAll(this, 'close', 'save_callback', 'error');
 
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
@@ -31,6 +31,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal-email NB-modal' }, [
             $.make('span', { className: 'NB-modal-loading NB-spinner'}),
+            $.make('div', { className: 'NB-modal-error'}),
             $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('div', { className: 'NB-modal-email-feed' }, [
@@ -86,7 +87,9 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
         var to         = $('input[name=to]', this.$modal).val();
         var comments   = $('textarea', this.$modal).val();
         var $save      = $('input[type=submit]', this.$modal);
+        var $error     = $('.NB-modal-error', this.$modal);
         
+        $error.hide();
         $save.addClass('NB-disabled').val('Sending...');
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         this.model.preference('full_name', from_name);
@@ -100,7 +103,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
           from_email : from_email,
           to         : to,
           comments   : comments
-        }, _.bind(this.save_callback, this));
+        }, this.save_callback, this.error);
     },
     
     save_callback: function(data) {
@@ -113,6 +116,13 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
           $save.val('Sent!');
           this.close();
         }
+    },
+    
+    error: function(data) {
+        var $error = $('.NB-modal-error', this.$modal);
+        $error.show();
+        $error.text("There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be fixed soon. You should probably send this manually now.");
+        $('.NB-modal-loading', this.$modal).removeClass('NB-active');
     },
     
     // ===========

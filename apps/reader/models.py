@@ -63,10 +63,15 @@ class UserSubscription(models.Model):
         try:
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
-            duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
-            if duplicate_feed:
-                self.feed = duplicate_feed[0].feed
-                super(UserSubscription, self).save(*args, **kwargs)
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
+            for duplicate_feed in duplicate_feeds:
+                already_subscribed = UserSubscription.objects.filter(user=self.user, feed=duplicate_feed.feed)
+                if not already_subscribed:
+                    self.feed = duplicate_feed.feed
+                    super(UserSubscription, self).save(*args, **kwargs)
+                    break
+            else:
+                self.delete()
                 
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):
@@ -137,7 +142,8 @@ class UserSubscription(models.Model):
         self.save()
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
-        now = datetime.datetime.utcnow()
+        # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
+        now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
@@ -151,9 +157,7 @@ class UserSubscription(models.Model):
             self.needs_unread_recalc = False
             self.save()
             return
-
-        if not silent:
-            logging.info(' ---> [%s] Computing scores: %s' % (self.user, self.feed))
+            
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
         # Two weeks in age. If mark_read_date is older, mark old stories as read.
@@ -162,7 +166,7 @@ class UserSubscription(models.Model):
             date_delta = self.mark_read_date
         else:
             self.mark_read_date = date_delta
-            
+
         read_stories = MUserStory.objects(user_id=self.user.pk,
                                           feed_id=self.feed.pk,
                                           read_date__gte=self.mark_read_date)
@@ -170,10 +174,7 @@ class UserSubscription(models.Model):
         #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = []
         for us in read_stories:
-            if hasattr(us.story, 'story_guid') and isinstance(us.story.story_guid, unicode):
-                read_stories_ids.append(us.story.story_guid)
-            elif hasattr(us.story, 'id') and isinstance(us.story.id, unicode):
-                read_stories_ids.append(us.story.id) # TODO: Remove me after migration from story.id->guid
+            read_stories_ids.append(us.story_id)
         stories_db = stories_db or MStory.objects(story_feed_id=self.feed.pk,
                                                   story_date__gte=date_delta)
         # if not silent:
@@ -243,6 +244,9 @@ class UserSubscription(models.Model):
         
         cache.delete('usersub:%s' % self.user.id)
         
+        if not silent:
+            logging.info(' ---> [%s] Computing scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
+            
         return
         
     class Meta:
@@ -345,7 +349,8 @@ class UserSubscriptionFolders(models.Model):
                                                                 feed=duplicate_feed[0].feed)
                     except Feed.DoesNotExist:
                         return
-            user_sub.delete()
+            if user_sub:
+                user_sub.delete()
             MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
 
     def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder):

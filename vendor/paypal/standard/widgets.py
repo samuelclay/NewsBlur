@@ -9,7 +9,7 @@ from django.utils.encoding import force_unicode
 class ValueHiddenInput(forms.HiddenInput):
     """
     Widget that renders only if it has a value.
-    Used to remove unused fields from PayPal buttons.
+    Used to remove unused fields from vendor.paypal buttons.
     """
     def render(self, name, value, attrs=None):
         if value is None:

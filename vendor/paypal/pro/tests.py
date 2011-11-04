@@ -7,8 +7,8 @@ from django.http import QueryDict
 from django.test import TestCase
 from django.test.client import Client
 
-from paypal.pro.fields import CreditCardField
-from paypal.pro.helpers import PayPalWPP, PayPalError
+from vendor.paypal.pro.fields import CreditCardField
+from vendor.paypal.pro.helpers import PayPalWPP, PayPalError
 
 
 class RequestFactory(Client):
