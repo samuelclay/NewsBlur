@@ -45,12 +45,12 @@
 - (IBAction)selectIntelligence;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
-- (void)markedAsRead;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)finishedRefreshingFeed:(ASIHTTPRequest *)request;
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request;
 
+- (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet;
 - (void)confirmDeleteSite;
 - (void)deleteSite;

@@ -91,7 +91,7 @@
                 }
             }
         }
-        NSLog(@"Refreshing feed at %@", indexPaths);
+//        NSLog(@"Refreshing feed at %@", indexPaths);
         
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 

@@ -524,25 +524,6 @@
     }
 }
 
-- (IBAction)markAllRead {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:nil];
-    [request startAsynchronous];
-    [appDelegate markActiveFeedAllRead];
-    [appDelegate.navigationController 
-     popToViewController:[appDelegate.navigationController.viewControllers 
-                          objectAtIndex:0]  
-     animated:YES];
-}
-
-- (void)markedAsRead {
-    
-}
-
 - (IBAction)selectIntelligence {
     NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
     NSInteger previousLevel = [appDelegate selectedIntelligence];
@@ -611,6 +592,49 @@
 
 #pragma mark -
 #pragma mark Feed Actions
+
+
+- (IBAction)markAllRead {
+    if (appDelegate.isRiverView) {
+        return [self doOpenMarkReadActionSheet:nil];
+    } else {
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        [appDelegate markActiveFeedAllRead];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    }
+}
+
+- (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:appDelegate.activeFolder
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
+    
+    int storyCount = [appDelegate storyCount];
+    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ %d stor%@ read", 
+                             storyCount == 1 ? @"this" : @"these", 
+                             storyCount, 
+                             storyCount == 1 ? @"y" : @"ies"];
+    NSArray *buttonTitles = [NSArray arrayWithObjects:visibleText, @"Mark entire folder read", nil];
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    
+    [options showInView:self.view];
+    [options release];
+}
 
 - (IBAction)doOpenSettingsActionSheet {
     UIActionSheet *options = [[UIActionSheet alloc] 

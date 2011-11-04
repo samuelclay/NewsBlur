@@ -95,6 +95,7 @@
                                        ];
     self.navigationItem.rightBarButtonItem = originalButton;
     [originalButton release];
+    
 	[super viewDidAppear:animated];
 }
 
@@ -311,11 +312,15 @@
                 theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0); 
             }
             [self.webView insertSubview:feedTitleGradient belowSubview:theScrollView];
+            [theScrollView setContentOffset:CGPointMake(0, appDelegate.isRiverView ? -19 : -9) animated:NO];
             
             // Such a fucking hack. This hides the top shadow of the scroll view
             // so the gradient doesn't look like ass when the view is dragged down.
             NSArray *wsv = [NSArray arrayWithArray:[theScrollView subviews]];
+            [[wsv objectAtIndex:7] setHidden:YES]; // Scroll to header
             [[wsv objectAtIndex:9] setHidden:YES]; // Scroll to header
+            [[wsv objectAtIndex:3] setHidden:YES]; // Scroll to header
+            [[wsv objectAtIndex:5] setHidden:YES]; // Scroll to header
 //            UIImageView *topShadow = [[UIImageView alloc] initWithImage:[[wsv objectAtIndex:9] image]];
 //            topShadow.frame = [[wsv objectAtIndex:9] frame];
 //            [self.webView addSubview:topShadow];
@@ -326,10 +331,15 @@
             break;
         }
     }
+    
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    self.feedTitleGradient.frame = CGRectMake(0, -1 * scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height, self.feedTitleGradient.frame.size.width, self.feedTitleGradient.frame.size.height);
+    NSLog(@"ContentOffset: %f %f", scrollView.contentOffset.x, scrollView.contentOffset.y);
+    self.feedTitleGradient.frame = CGRectMake(scrollView.contentOffset.x < 0 ? -1 * scrollView.contentOffset.x : 0, 
+                                              -1 * scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height, 
+                                              self.feedTitleGradient.frame.size.width, 
+                                              self.feedTitleGradient.frame.size.height);
 }
 
 - (IBAction)doNextUnreadStory {
