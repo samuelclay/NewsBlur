@@ -742,7 +742,8 @@ def mark_feed_as_read(request):
     
         us = UserSubscription.objects.get(feed=feed, user=request.user)
         try:
-            us.mark_feed_read()
+            if us:
+                us.mark_feed_read()
         except IntegrityError:
             code = -1
         else:
