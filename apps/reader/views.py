@@ -17,7 +17,6 @@ from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from collections import defaultdict
 from operator import itemgetter
-from mongoengine.queryset import OperationError
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -659,42 +658,33 @@ def mark_story_as_read(request):
                 return dict(code=-1)
         else:
             return dict(code=-1)
-                
-    if not usersub.needs_unread_recalc:
-        usersub.needs_unread_recalc = True
-        usersub.save()
-        
-    data = dict(code=0, payload=story_ids)
     
-    if len(story_ids) > 1:
-        logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_ids), usersub.feed))
-    else:
-        logging.user(request, "~FYRead story in feed: %s" % (usersub.feed))
-        
-    for story_id in story_ids:
-        try:
-            story = MStory.objects.get(story_feed_id=feed_id, story_guid=story_id)
-        except MStory.DoesNotExist:
-            # Story has been deleted, probably by feed_fetcher.
-            continue
-        except MStory.MultipleObjectsReturned:
-            continue
-        now = datetime.datetime.utcnow()
-        date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story_id)
-        try:
-            m.save()
-        except OperationError, e:
-            original_m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request, "~BRMarked story as read error: %s" % (e))
-            logging.user(request, "~BRMarked story as read: %s / %s" % (story_id, m.story.story_guid))
-            logging.user(request, "~BROriginal story id:    %s / %s" % (original_m.story_id, original_m.story.story_guid))
-            logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
-            original_m.story_id = story_id
-            original_m.read_date = date
-            original_m.save()
+    data = usersub.mark_story_ids_as_read(story_ids, request=request)
     
     return data
+    
+@ajax_login_required
+@json.json_view
+def mark_feed_stories_as_read(request):
+    feeds_stories = request.REQUEST.get('feeds_stories', {})
+
+    for feed_id, story_ids in feeds_stories.items():
+        try:
+            usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+        except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+            if duplicate_feed:
+                try:
+                    usersub = UserSubscription.objects.get(user=request.user, 
+                                                           feed=duplicate_feed[0].feed)
+                except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+                    continue
+            else:
+                continue
+    
+        usersub.mark_story_ids_as_read(story_ids)
+    
+    return dict(code=1)
     
 @ajax_login_required
 @json.json_view

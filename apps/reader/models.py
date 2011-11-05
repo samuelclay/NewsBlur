@@ -6,6 +6,7 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from mongoengine.queryset import OperationError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -140,6 +141,48 @@ class UserSubscription(models.Model):
         MUserStory.delete_marked_as_read_stories(self.user.pk, self.feed.pk)
         
         self.save()
+        
+    def mark_story_ids_as_read(self, story_ids, request=None):
+        data = dict(code=0, payload=story_ids)
+        
+        if not request:
+            request = self.user
+    
+        if not self.needs_unread_recalc:
+            self.needs_unread_recalc = True
+            self.save()
+    
+        if len(story_ids) > 1:
+            logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_ids), self.feed))
+        else:
+            logging.user(request, "~FYRead story in feed: %s" % (self.feed))
+        
+        for story_id in story_ids:
+            try:
+                story = MStory.objects.get(story_feed_id=self.feed.pk, story_guid=story_id)
+            except MStory.DoesNotExist:
+                # Story has been deleted, probably by feed_fetcher.
+                continue
+            except MStory.MultipleObjectsReturned:
+                continue
+            now = datetime.datetime.utcnow()
+            date = now if now > story.story_date else story.story_date # For handling future stories
+            m = MUserStory(story=story, user_id=self.user.pk, feed_id=self.feed.pk, read_date=date, story_id=story_id)
+            try:
+                m.save()
+            except OperationError, e:
+                original_m = MUserStory.objects.get(story=story, user_id=self.user.pk, feed_id=self.feed.pk)
+                logging.user(request, "~BRMarked story as read error: %s" % (e))
+                logging.user(request, "~BRMarked story as read: %s" % (story_id))
+                logging.user(request, "~BROrigin story as read: %s" % (m.story.story_guid))
+                logging.user(request, "~BRMarked story id:   %s" % (original_m.story_id))
+                logging.user(request, "~BROrigin story guid: %s" % (original_m.story.story_guid))
+                logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
+                original_m.story_id = story_id
+                original_m.read_date = date
+                original_m.save()
+
+        return data
     
     def calculate_feed_scores(self, silent=False, stories_db=None):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")

@@ -21,6 +21,8 @@
 
 #define kTableViewRowHeight 65;
 #define kTableViewRiverRowHeight 81;
+#define kMarkReadActionSheet 1;
+#define kSettingsActionSheet 2;
 
 @implementation FeedDetailViewController
 
@@ -613,6 +615,10 @@
     }
 }
 
+- (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
+    
+}
+
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
     UIActionSheet *options = [[UIActionSheet alloc] 
                               initWithTitle:appDelegate.activeFolder
@@ -621,17 +627,18 @@
                               destructiveButtonTitle:nil
                               otherButtonTitles:nil];
     
-    int storyCount = [appDelegate storyCount];
-    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ %d stor%@ read", 
-                             storyCount == 1 ? @"this" : @"these", 
-                             storyCount, 
-                             storyCount == 1 ? @"y" : @"ies"];
+    int unreadCount = [[appDelegate activeFeedStoryLocations] count];
+    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                             unreadCount == 1 ? 
+                             @"this story as" : 
+                             [NSString stringWithFormat:@"these %d stories", unreadCount]];
     NSArray *buttonTitles = [NSArray arrayWithObjects:visibleText, @"Mark entire folder read", nil];
     for (id title in buttonTitles) {
         [options addButtonWithTitle:title];
     }
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     
+    options.tag = kMarkReadActionSheet;
     [options showInView:self.view];
     [options release];
 }
@@ -650,13 +657,22 @@
     }
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     
+    options.tag = kSettingsActionSheet;
     [options showInView:self.view];
     [options release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        [self confirmDeleteSite];
+    if (actionSheet.tag == 1) {
+        if (buttonIndex == 0) {
+            [self markFeedsReadWithAllStories:NO];
+        } else if (buttonIndex == 1) {
+            [self markFeedsReadWithAllStories:YES];
+        }   
+    } else if (actionSheet.tag == 2) {
+        if (buttonIndex == 0) {
+            [self confirmDeleteSite];
+        }
     }
 }
 
