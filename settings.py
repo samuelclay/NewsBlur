@@ -2,6 +2,7 @@ import sys
 import logging
 import os
 from mongoengine import connect
+import redis
 
 # ===========================
 # = Directory Declaractions =
@@ -421,6 +422,14 @@ class MasterSlaveRouter(object):
         "Explicitly put all models on all databases."
         return True
         
+# =========
+# = Redis =
+# =========
+
+REDIS = {
+    'host': 'db01',
+}
+
 # ==================
 # = Configurations =
 # ==================
@@ -455,3 +464,9 @@ MONGO_DB_DEFAULTS = {
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
+# =========
+# = Redis =
+# =========
+
+REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)

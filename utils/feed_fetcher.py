@@ -17,6 +17,7 @@ import traceback
 import multiprocessing
 import urllib2
 import xml.sax
+import redis
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -379,6 +380,9 @@ class Dispatcher:
             except IntegrityError:
                 logging.debug("   ---> [%-30s] IntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
             
+            if ret_entries[ENTRY_NEW] or True:
+                self.publish_to_subscribers(feed)
+                
             done_msg = (u'%2s ---> [%-30s] Processed in %s (%s) [%s]' % (
                 identity, feed.feed_title[:30], unicode(delta),
                 feed.pk, self.feed_trans[ret_feed],))
@@ -390,6 +394,15 @@ class Dispatcher:
         
         # time_taken = datetime.datetime.utcnow() - self.time_start
     
+    def publish_to_subscribers(self, feed):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            listeners_count = r.publish(str(feed.pk), 'story:new')
+            if listeners_count or True:
+                logging.debug("   ---> [%-30s] Published to %s subscribers" % (unicode(feed)[:30], listeners_count))
+        except redis.ConnectionError:
+            logging.debug("   ***> [%-30s] Redis is unavailable for real-time." % (unicode(feed)[:30],))
+        
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
