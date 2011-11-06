@@ -6538,6 +6538,10 @@
                     self.mark_feed_as_read();
                 }
             });
+            $document.bind('keydown', 'shift+e', function(e) {
+                e.preventDefault();
+                self.open_river_stories();
+            });
         }
         
     };
