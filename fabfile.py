@@ -444,6 +444,8 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.250.0/24 to any port 27017') # MongoDB
     sudo('ufw allow from 199.15.253.0/24 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
+    sudo('ufw allow from 199.15.250.0/24 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.253.0/24 to any port 6379 ') # Redis
     sudo('ufw --force enable')
     
 def setup_db_motd():
