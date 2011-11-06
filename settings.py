@@ -422,13 +422,21 @@ class MasterSlaveRouter(object):
     def allow_syncdb(self, db, model):
         "Explicitly put all models on all databases."
         return True
-        
+
 # =========
 # = Redis =
 # =========
 
 REDIS = {
     'host': 'db02',
+}
+
+# ===========
+# = MongoDB =
+# ===========
+
+MONGODB_SLAVE = {
+    'host': 'db01'
 }
 
 # ==================
