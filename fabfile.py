@@ -209,6 +209,7 @@ def setup_db():
     setup_postgres()
     setup_mongo()
     setup_gunicorn(supervisor=False)
+    setup_redis()
 
 def setup_task():
     setup_common()
@@ -468,6 +469,19 @@ def setup_mongo():
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
+
+def setup_redis():
+    with cd(env.VENDOR_PATH):
+        run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
+        run('tar -xzf redis-2.4.2.tar.gz')
+        run('rm redis-2.4.2.tar.gz')
+        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+            sudo('make install')
+    put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/redis')
+    put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
+    sudo('mkdir -p /var/lib/redis')
+    sudo('update-rc.d redis defaults')
     
 # ================
 # = Setup - Task =

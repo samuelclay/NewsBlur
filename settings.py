@@ -428,7 +428,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db01',
+    'host': 'db02',
 }
 
 # ==================
