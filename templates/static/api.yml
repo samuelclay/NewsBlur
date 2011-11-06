@@ -228,6 +228,22 @@
           required: true
           example: "42"
   
+    - url: /reader/mark_feed_stories_as_read
+      method: POST
+      short_desc: "Mark stories from multiple feeds as read."
+      long_desc: 
+        - "Marks multiple stories as read."
+        - "Multiple story ids can be sent at once."
+        - "Multiple feeds can be sent."
+      tips:
+        - "Throttle requests to this endpoint. You don't need to send one request per story."
+        - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
+      params:
+        - key: feeds_stories
+          desc: "Dictionary of feed_ids to an array of story_ids."
+          required: true
+          example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
+    
     - url: /reader/mark_story_as_starred
       method: POST
       short_desc: "Mark a story as starred (saved)."

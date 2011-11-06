@@ -129,6 +129,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $paypal = $('.NB-feedchooser-paypal', this.$modal);
         $.get('/profile/paypal_form', function(response) {
           $paypal.html(response);
+          self.choose_dollar_amount(2);
         });
     },
     

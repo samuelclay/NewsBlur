@@ -1,5 +1,5 @@
-(function($) {
     
+(function($) {
     NEWSBLUR.Reader = function() {
         var self = this;
         
@@ -2104,6 +2104,7 @@
                         // So just assume story not found.
                         this.switch_to_correct_view(false);
                         feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
+                        this.show_stories_preference_in_feed_view(true);
                     } else {
                         iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
                         this.switch_to_correct_view(iframe_position);
@@ -4855,7 +4856,8 @@
                 }
             }
             
-            if (this.story_view == 'feed' && this.model.preference('feed_view_single_story')) {
+            if ((this.story_view == 'feed' || this.flags.page_view_showing_feed_view) && 
+                this.model.preference('feed_view_single_story')) {
                 // No need to show/hide feed view stories under single_story preference. 
                 // If the user switches to feed/page, then no animation is happening 
                 // and this will work anyway.
