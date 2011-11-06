@@ -3400,7 +3400,7 @@
                                 $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date))
                         ])
                     ]),
-                    $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
+                    $.make('div', { className: 'NB-feed-story-content' }, this.make_story_content(story.story_content))
                 ]).data('story', story.id).data('story_id', story.id).data('feed_id', story.story_feed_id);
                 
                 if (story_has_modifications && this.model.preference('show_tooltips')) {
@@ -3454,6 +3454,11 @@
             this.append_feed_view_story_endbar();
             this.hover_story_feed_titles();
             if (first_load) this.show_stories_preference_in_feed_view(true);
+        },
+        
+        make_story_content: function(story_content) {
+            var $story_content = $('<div>').html(story_content).autolink();
+            return $story_content;
         },
         
         make_story_feed_title: function(story) {
