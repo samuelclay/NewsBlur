@@ -380,7 +380,7 @@ class Dispatcher:
             except IntegrityError:
                 logging.debug("   ---> [%-30s] IntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
             
-            if ret_entries[ENTRY_NEW] or True:
+            if ret_entries[ENTRY_NEW]:
                 self.publish_to_subscribers(feed)
                 
             done_msg = (u'%2s ---> [%-30s] Processed in %s (%s) [%s]' % (
@@ -398,7 +398,7 @@ class Dispatcher:
         try:
             r = redis.Redis(connection_pool=settings.REDIS_POOL)
             listeners_count = r.publish(str(feed.pk), 'story:new')
-            if listeners_count or True:
+            if listeners_count:
                 logging.debug("   ---> [%-30s] Published to %s subscribers" % (unicode(feed)[:30], listeners_count))
         except redis.ConnectionError:
             logging.debug("   ***> [%-30s] Redis is unavailable for real-time." % (unicode(feed)[:30],))
