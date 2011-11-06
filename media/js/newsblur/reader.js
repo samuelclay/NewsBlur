@@ -6468,11 +6468,11 @@
             });
             $document.bind('keydown', 'space', function(e) {
                 e.preventDefault();
-                self.page_in_story(0.2, 1);
+                self.page_in_story(0.4, 1);
             });
             $document.bind('keydown', 'shift+space', function(e) {
                 e.preventDefault();
-                self.page_in_story(0.4, -1);
+                self.page_in_story(0.6, -1);
             });
             $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
