@@ -34,7 +34,7 @@ class JammitAssets:
         `use_compressed_assets` profile setting.
         """
         tags = []
-        if settings.DEBUG:
+        if not settings.DEBUG:
             if asset_type == 'javascripts':
                 asset_type_ext = 'js'
             elif asset_type == 'stylesheets':
@@ -75,7 +75,7 @@ class JammitAssets:
         return '<script src="%s" type="text/javascript" charset="utf-8"></script>' % path
     
     def javascript_tag_compressed(self, asset_package, asset_type_ext):
-        filename = 'static/assets/%s.%s' % (asset_package, asset_type_ext)
+        filename = 'static/%s.%s' % (asset_package, asset_type_ext)
         asset_mtime = int(os.path.getmtime(filename))
         path = '/%s?%s' % (filename, asset_mtime)
         return self.javascript_tag(path)
@@ -84,8 +84,8 @@ class JammitAssets:
         return '<link rel="stylesheet" href="%s" type="text/css" charset="utf-8">' % path
 
     def stylesheet_tag_compressed(self, asset_package, asset_type_ext):
-        datauri_filename = 'static/assets/%s-datauri.%s' % (asset_package, asset_type_ext)
-        original_filename = 'static/assets/%s.%s' % (asset_package, asset_type_ext)
+        datauri_filename = 'static/%s-datauri.%s' % (asset_package, asset_type_ext)
+        original_filename = 'static/%s.%s' % (asset_package, asset_type_ext)
         asset_mtime = int(os.path.getmtime(datauri_filename))
         datauri_path = '/%s?%s' % (datauri_filename, asset_mtime)
         original_path = '/%s?%s' % (original_filename, asset_mtime)

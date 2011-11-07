@@ -13,6 +13,7 @@ CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
+STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
 VENDOR_ROOT   = os.path.join(CURRENT_DIR, 'vendor')
 LOG_FILE      = os.path.join(CURRENT_DIR, 'logs/newsblur.log')
@@ -480,5 +481,5 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 
-jammit = jammit.JammitAssets()
-print jammit
+JAMMIT = jammit.JammitAssets()
+print JAMMIT
