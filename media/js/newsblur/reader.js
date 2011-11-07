@@ -4934,7 +4934,7 @@
         },
         
         setup_socket_realtime_unread_counts: function() {
-            if (!this.socket && NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.username = 'samuel') {
+            if (!this.socket && NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.username == 'samuel') {
                 this.socket = this.socket || io.connect('http://' + window.location.hostname + ':8888');
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
