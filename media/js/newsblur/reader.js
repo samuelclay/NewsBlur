@@ -1051,6 +1051,7 @@
             this.add_url_from_querystring();
             _.defer(_.bind(function() {
               this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.flags['has_chosen_feeds']);
+              this.setup_socket_realtime_unread_counts();
             }, this));
         },
         
@@ -4932,6 +4933,25 @@
             this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed));
         },
         
+        setup_socket_realtime_unread_counts: function() {
+            if (!this.socket && NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.username == 'samuel') {
+                this.socket = this.socket || io.connect('http://' + window.location.hostname + ':8888');
+                
+                // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
+                
+                this.socket.on('connect', _.bind(function() {
+                    this.socket.emit('subscribe:feeds', _.keys(this.model.feeds));
+                    this.socket.on('feed:update', _.bind(function(feed_id, message) {
+                        console.log(['Feed update', feed_id, message]);
+                        this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
+                    }, this));
+                
+                    this.flags.feed_refreshing_in_realtime = true;
+                    this.setup_feed_refresh();
+                }, this));
+            }
+        },
+        
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;
@@ -4945,6 +4965,9 @@
             }
             if (feed_count > 500) {
                 refresh_interval *= 1.5;
+            }
+            if (this.flags.feed_refreshing_in_realtime) {
+                refresh_interval *= 20;
             }
 
             if (new_feeds && feed_count < 250) {

@@ -7,6 +7,7 @@ from utils import feed_fetcher
 from utils.management_functions import daemonize
 import socket
 import datetime
+import redis
 
 
 class Command(BaseCommand):

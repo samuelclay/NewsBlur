@@ -13,7 +13,7 @@ class UpdateFeeds(Task):
             feed_pks = [feed_pks]
             
         import pymongo
-        db = pymongo.Connection(settings.MONGODB_SLAVE['host'], slave_okay=True, replicaset='nbset').newsblur
+        db = pymongo.Connection(settings.MONGODB_SLAVE['host'], slave_okay=True).newsblur
 
         for feed_pk in feed_pks:
             try:
