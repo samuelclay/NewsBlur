@@ -3,6 +3,7 @@ import logging
 import os
 from mongoengine import connect
 import redis
+from utils import jammit
 
 # ===========================
 # = Directory Declaractions =
@@ -329,7 +330,6 @@ INSTALLED_APPS = (
     'djcelery',
     # 'seacucumber',
     'django_ses',
-    'compress',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -479,3 +479,6 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 # =========
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+
+jammit = jammit.JammitAssets()
+print jammit

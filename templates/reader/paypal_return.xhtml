@@ -3,8 +3,8 @@
 {% load typogrify_tags compressed %}
 
 {% block extra_head_js %}
-  {% compressed_css 'paypal' %}
-  {% compressed_js 'paypal' %}
+  {% include_stylehseets "paypal" %}
+  {% include_javascripts "paypal" %}
 {% endblock %}
 
 {% block content %}

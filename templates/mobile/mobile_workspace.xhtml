@@ -32,9 +32,9 @@
     };
   </script>
     
-  {% compressed_css 'mobile' %}
+  {% include_stylehseets "mobile" %}
   {% block head_js %}
-    {% compressed_js 'mobile' %}
+    {% include_javascripts "mobile" %}
   {% endblock head_js %}
   {% block extra_head_js %}
   {% endblock extra_head_js %}

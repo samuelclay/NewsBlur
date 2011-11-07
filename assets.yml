@@ -1,0 +1,29 @@
+# Assets for Jammit -- http://documentcloud.github.com/jammit/
+
+# Use the Google Closure Compiler to minify JavaScript
+javascript_compressor: closure
+
+# Compile JavaScript templates (JSTs) and wrap with this Underscore.js 
+# micro-templating string function.
+template_function: _.template
+
+# Location of static assets relative to CWD.
+public_root: .
+
+# Package data-uri and mhtml variants of stylesheets, with whitelisted 
+# images embedded inline.
+embed_assets: datauri
+
+# Minify JS+CSS. Turn `off` to have uncompressed but concatenated files.
+# Turning this off also makes compile-time near negligible, so it's useful
+# for testing.
+compress_assets: on
+
+
+javascripts:
+    common:
+        - media/js/jquery-*.js
+    
+stylesheets:
+    common:
+        - media/css/*.css

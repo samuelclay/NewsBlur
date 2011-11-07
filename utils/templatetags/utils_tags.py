@@ -1,5 +1,6 @@
 from django.contrib.sites.models import Site
 from django import template
+from django.conf import settings
 from utils.user_functions import get_user
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -76,3 +77,21 @@ def commify(n):
     if cents:
         out += '.' + cents
     return out
+
+
+@register.simple_tag
+def include_javascripts():
+    """Prints out a template of <script> tags based on an asset package name."""
+    
+    def render(self, asset_package):
+        asset_type = 'javascripts'
+        return settings.jammit.render_tags(asset_type, asset_package)
+        
+        
+@register.simple_tag
+def include_stylesheets():
+    """Prints out a template of <link> tags based on an asset package name."""
+    
+    def render(self, asset_package):
+        asset_type = 'stylesheets'
+        return settings.jammit.render_tags(asset_type, asset_package)
