@@ -159,6 +159,7 @@ def load_feeds(request):
     not_yet_fetched  = False
     include_favicons = request.REQUEST.get('include_favicons', False)
     flat             = request.REQUEST.get('flat', False)
+    update_counts    = request.REQUEST.get('update_counts', False)
     
     if flat: return load_feeds_flat(request)
     
@@ -175,6 +176,8 @@ def load_feeds(request):
     
     for sub in user_subs:
         pk = sub.feed.pk
+        if update_counts:
+            sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if feeds[pk].get('not_yet_fetched'):
             not_yet_fetched = True

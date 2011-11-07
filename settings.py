@@ -183,7 +183,7 @@ COMPRESS_JS = {
             'js/jquery.fieldselection.js',
             'js/jquery.flot.js',
             'js/jquery.tipsy.js',
-            'js/socket.io-client.0.8.7.js',
+            # 'js/socket.io-client.0.8.7.js',
             'js/underscore.js',
             'js/underscore.string.js',
             'js/newsblur/reader_utils.js',
