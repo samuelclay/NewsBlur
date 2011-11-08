@@ -2,6 +2,7 @@ import sys
 import logging
 import os
 from mongoengine import connect
+import redis
 
 # ===========================
 # = Directory Declaractions =
@@ -182,6 +183,7 @@ COMPRESS_JS = {
             'js/jquery.fieldselection.js',
             'js/jquery.flot.js',
             'js/jquery.tipsy.js',
+            # 'js/socket.io-client.0.8.7.js',
             'js/underscore.js',
             'js/underscore.string.js',
             'js/newsblur/reader_utils.js',
@@ -420,7 +422,23 @@ class MasterSlaveRouter(object):
     def allow_syncdb(self, db, model):
         "Explicitly put all models on all databases."
         return True
-        
+
+# =========
+# = Redis =
+# =========
+
+REDIS = {
+    'host': 'db02',
+}
+
+# ===========
+# = MongoDB =
+# ===========
+
+MONGODB_SLAVE = {
+    'host': 'db01'
+}
+
 # ==================
 # = Configurations =
 # ==================
@@ -455,3 +473,9 @@ MONGO_DB_DEFAULTS = {
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
+# =========
+# = Redis =
+# =========
+
+REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
