@@ -352,11 +352,13 @@ class UserSubscriptionFolders(models.Model):
         self.folders = json.encode(user_sub_folders)
         self.save()
         
-    def delete_feed(self, feed_id, in_folder):
+    def delete_feed(self, feed_id, in_folder, commit_delete=True):
         def _find_feed_in_folders(old_folders, folder_name='', multiples_found=False, deleted=False):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
+                    if folder == 1128:
+                        print folder_name, feed_id, type(feed_id), folder == feed_id, folder_name == in_folder, deleted
                     if (folder == feed_id and (
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
@@ -381,7 +383,7 @@ class UserSubscriptionFolders(models.Model):
         self.folders = json.encode(user_sub_folders)
         self.save()
 
-        if not multiples_found and deleted:
+        if not multiples_found and deleted and commit_delete:
             try:
                 user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
             except Feed.DoesNotExist:
@@ -442,6 +444,18 @@ class UserSubscriptionFolders(models.Model):
         user_sub_folders = _find_folder_in_folders(user_sub_folders, '')
         self.folders = json.encode(user_sub_folders)
         self.save()
+        
+    def move_feed_to_folder(self, feed_id, in_folder=None, to_folder=None):
+        print "%s: %s %s" % (feed_id, in_folder, to_folder)
+        user_sub_folders = json.decode(self.folders)
+        self.delete_feed(feed_id, in_folder, commit_delete=False)
+        user_sub_folders = json.decode(self.folders)
+        user_sub_folders = add_object_to_folder(int(feed_id), to_folder, user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
+        
+        return self
+        
 
 class Feature(models.Model):
     """

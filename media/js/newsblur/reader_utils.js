@@ -99,7 +99,7 @@ NEWSBLUR.utils = {
         var $option = $.make('option', { value: '' }, "Top Level");
         $options.append($option);
 
-        $options = this.make_folder_options($options, folders, '-');
+        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;');
         
         return $options;
     },
@@ -112,7 +112,7 @@ NEWSBLUR.utils = {
                     var folder = item[o];
                     var $option = $.make('option', { value: o }, depth + ' ' + o);
                     $options.append($option);
-                    $options = this.make_folder_options($options, folder, depth+'-');
+                    $options = this.make_folder_options($options, folder, depth+'&nbsp;&nbsp;&nbsp;');
                 }
             }
         }

@@ -4452,7 +4452,7 @@
                 $('.NB-task-manage').tipsy('enable');
             }
             
-            $item.removeClass('NB-showing-menu');
+            if ($item) $item.removeClass('NB-showing-menu');
             
             if (animate) {
                 $manage_menu_container.stop().animate({
@@ -4617,15 +4617,26 @@
             $feed          = $feed || this.find_feed_in_feed_list(feed_id);
             var $parent    = $feed.closest('li.folder');
             var in_folder  = '';
-            var new_folder = $('.NB-menu-manage-feed-move-confirm select').val();
-            
-            if (new_folder.length <= 0) return this.hide_confirm_move_menu_item();
+            var to_folder  = $('.NB-menu-manage-feed-move-confirm select').val();
             
             if ($parent.length) {
                 in_folder = $feed.eq(0).closest('li.folder').find('.folder_title_text').eq(0).text();
             }
+
+            if (to_folder == in_folder) return this.hide_confirm_move_menu_item();
             
-            this.model.move_feed_to_folder(feed_id, in_folder, new_folder, function() {});
+            this.model.move_feed_to_folder(feed_id, in_folder, to_folder, _.bind(function() {
+                _.delay(_.bind(function() {
+                    this.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                        'duration': 100, 
+                        'complete': _.bind(function() {
+                            this.make_feeds();
+                        }, this)
+                    });
+                }, this), 250);
+
+                this.hide_manage_menu('feed', $feed, true);
+            }, this));
 
             this.hide_confirm_move_menu_item(true);
         },
@@ -4635,14 +4646,24 @@
             var in_folder  = '';
             var $parent    = $folder.closest('li.folder');
             var new_folder = $('.NB-menu-manage-folder-move-confirm select').val();
-
-            if (new_folder.length <= 0) return this.hide_confirm_move_menu_item();
             
             if ($parent.length) {
                 in_folder = $parent.find('.folder_title_text').eq(0).text();
             }
         
-            this.model.move_folder_to_folder(folder, new_folder, in_folder, function() {});
+            if (new_folder == in_folder) return this.hide_confirm_move_menu_item();
+            
+            this.model.move_folder_to_folder(folder, new_folder, in_folder, function() {
+                _.delay(_.bind(function() {
+                    this.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                        'duration': 100, 
+                        'complete': _.bind(function() {
+                            this.make_feeds();
+                        }, this)
+                    });
+                }, this), 250);
+                this.hide_manage_menu('folder', $folder, true);
+            });
             this.hide_confirm_move_menu_item(true);
         },
         
@@ -4732,7 +4753,6 @@
         
             this.model.rename_folder(folder, new_folder_name, in_folder, function() {
             });
-            NEWSBLUR.log(['rename', $folder, new_folder_name]);
             $('.folder_title_text', $folder).text(new_folder_name);
             this.hide_confirm_rename_menu_item(true);
             
@@ -5959,7 +5979,7 @@
                 e.stopPropagation();
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
-                self.manage_menu_rename_folder(folder_name, $folder);
+                self.manage_menu_move_folder(folder_name, $folder);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-save' }, function($t, $p){
                 e.preventDefault();
