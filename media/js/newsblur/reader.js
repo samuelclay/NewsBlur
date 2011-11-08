@@ -4644,16 +4644,24 @@
         manage_menu_move_folder: function(folder, $folder) {
             var self       = this;
             var in_folder  = '';
-            var $parent    = $folder.closest('li.folder');
-            var new_folder = $('.NB-menu-manage-folder-move-confirm select').val();
-            
+            var $parent    = $folder.parents('li.folder').eq(0);
+            var to_folder = $('.NB-menu-manage-folder-move-confirm select').val();
+            var folder_name = $folder.find('.folder_title_text').eq(0).text();
+            var child_folders = $folder.find('.folder_title_text').map(function() {
+                return $(this).text();
+            }).get();
+
             if ($parent.length) {
                 in_folder = $parent.find('.folder_title_text').eq(0).text();
             }
         
-            if (new_folder == in_folder) return this.hide_confirm_move_menu_item();
+            if (to_folder == in_folder || 
+                to_folder == folder_name ||
+                 _.contains(child_folders, to_folder)) {
+                return this.hide_confirm_move_menu_item();
+            }
             
-            this.model.move_folder_to_folder(folder, new_folder, in_folder, function() {
+            this.model.move_folder_to_folder(folder, in_folder, to_folder, _.bind(function() {
                 _.delay(_.bind(function() {
                     this.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
                         'duration': 100, 
@@ -4662,8 +4670,10 @@
                         }, this)
                     });
                 }, this), 250);
-                this.hide_manage_menu('folder', $folder, true);
-            });
+                
+                this.hide_manage_menu('folder', $parent, true);
+            }, this));
+            
             this.hide_confirm_move_menu_item(true);
         },
         

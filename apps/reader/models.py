@@ -357,8 +357,6 @@ class UserSubscriptionFolders(models.Model):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
-                    if folder == 1128:
-                        print folder_name, feed_id, type(feed_id), folder == feed_id, folder_name == in_folder, deleted
                     if (folder == feed_id and (
                         (folder_name != in_folder) or
                         (folder_name == in_folder and deleted))):
@@ -398,8 +396,8 @@ class UserSubscriptionFolders(models.Model):
                 user_sub.delete()
             MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
 
-    def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder):
-        def _find_folder_in_folders(old_folders, folder_name, feeds_to_delete):
+    def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder, commit_delete=True):
+        def _find_folder_in_folders(old_folders, folder_name, feeds_to_delete, deleted_folder=None):
             new_folders = []
             for k, folder in enumerate(old_folders):
                 if isinstance(folder, int):
@@ -410,18 +408,22 @@ class UserSubscriptionFolders(models.Model):
                     for f_k, f_v in folder.items():
                         if f_k == folder_to_delete and folder_name == in_folder:
                             logging.user(self.user, "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder))
+                            deleted_folder = folder
                         else:
-                            nf, feeds_to_delete = _find_folder_in_folders(f_v, f_k, feeds_to_delete)
+                            nf, feeds_to_delete, deleted_folder = _find_folder_in_folders(f_v, f_k, feeds_to_delete, deleted_folder)
                             new_folders.append({f_k: nf})
     
-            return new_folders, feeds_to_delete
+            return new_folders, feeds_to_delete, deleted_folder
             
         user_sub_folders = json.decode(self.folders)
-        user_sub_folders, feeds_to_delete = _find_folder_in_folders(user_sub_folders, '', feed_ids_in_folder)
+        user_sub_folders, feeds_to_delete, deleted_folder = _find_folder_in_folders(user_sub_folders, '', feed_ids_in_folder)
         self.folders = json.encode(user_sub_folders)
         self.save()
         
-        UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
+        if commit_delete:
+          UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
+          
+        return deleted_folder
         
     def rename_folder(self, folder_to_rename, new_folder_name, in_folder):
         def _find_folder_in_folders(old_folders, folder_name):
@@ -446,11 +448,20 @@ class UserSubscriptionFolders(models.Model):
         self.save()
         
     def move_feed_to_folder(self, feed_id, in_folder=None, to_folder=None):
-        print "%s: %s %s" % (feed_id, in_folder, to_folder)
         user_sub_folders = json.decode(self.folders)
         self.delete_feed(feed_id, in_folder, commit_delete=False)
         user_sub_folders = json.decode(self.folders)
         user_sub_folders = add_object_to_folder(int(feed_id), to_folder, user_sub_folders)
+        self.folders = json.encode(user_sub_folders)
+        self.save()
+        
+        return self
+
+    def move_folder_to_folder(self, folder_name, in_folder=None, to_folder=None):
+        user_sub_folders = json.decode(self.folders)
+        deleted_folder = self.delete_folder(folder_name, in_folder, [], commit_delete=False)
+        user_sub_folders = json.decode(self.folders)
+        user_sub_folders = add_object_to_folder(deleted_folder, to_folder, user_sub_folders)
         self.folders = json.encode(user_sub_folders)
         self.save()
         
