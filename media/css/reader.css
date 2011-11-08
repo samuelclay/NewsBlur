@@ -4174,9 +4174,6 @@ background: transparent;
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 1px;   
     font-weight: bold; 
 }
-.NB-menu-manage .NB-menu-manage-move {
-    display: none;
-}
 .NB-menu-manage .NB-menu-manage-move .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/arrow_branch.png') no-repeat  0px 2px;  
 }

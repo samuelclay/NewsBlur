@@ -853,6 +853,30 @@ def rename_folder(request):
 
     return dict(code=1)
     
+@ajax_login_required
+@json.json_view
+def move_feed_to_folder(request):
+    feed_id = int(request.POST['feed_id'])
+    in_folder = request.POST.get('in_folder', '')
+    to_folder = request.POST.get('to_folder', '')
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    
+@ajax_login_required
+@json.json_view
+def move_folder_to_folder(request):
+    folder_name = request.POST['folder_name']
+    in_folder = request.POST.get('in_folder', '')
+    to_folder = request.POST.get('to_folder', '')
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    
 @login_required
 def add_feature(request):
     if not request.user.is_staff:
