@@ -4207,6 +4207,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
+                    (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
+                    ])),
                     $.make('li', { className: 'NB-menu-manage-story-thirdparty' }, [
                         (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
@@ -4273,11 +4277,6 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ])
-                    // (story.read_status && $.make('li', { className: 'NB-menu-separator' })),
-                    // (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
-                    // ]))
                 ]);
                 $manage_menu.data('feed_id', feed_id);
                 $manage_menu.data('story_id', story_id);

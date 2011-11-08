@@ -39,6 +39,7 @@ from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
 from utils.view_functions import get_argument_or_404
+from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
@@ -152,6 +153,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def load_feeds(request):
     user             = get_user(request)
@@ -263,6 +265,7 @@ def load_feeds_flat(request):
     data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username)
     return data
 
+@ratelimit(minutes=1, requests=4)
 @json.json_view
 def refresh_feeds(request):
     start = datetime.datetime.utcnow()
