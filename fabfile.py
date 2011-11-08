@@ -206,6 +206,7 @@ def setup_db():
     setup_db_firewall()
     setup_db_motd()
     setup_rabbitmq()
+    setup_memcached()
     setup_postgres()
     setup_mongo()
     setup_gunicorn(supervisor=False)
@@ -227,7 +228,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -446,6 +447,8 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.250.0/24 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.253.0/24 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.250.0/24 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.253.0/24 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -461,6 +464,9 @@ def setup_rabbitmq():
     sudo('rabbitmqctl add_user newsblur newsblur')
     sudo('rabbitmqctl add_vhost newsblurvhost')
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
+
+def setup_memcached():
+    sudo('apt-get -y install memcached')
 
 def setup_postgres():
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
