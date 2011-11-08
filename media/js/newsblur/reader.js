@@ -2665,6 +2665,38 @@
             this.mark_story_as_read(story_id);
         },
         
+        send_story_to_pinboard: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://pinboard.in/add/?';
+            var pinboard_url = [
+              url,
+              'url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title),
+              '&tags=',
+              encodeURIComponent(story.story_tags.join(', '))
+            ].join('');
+            window.open(pinboard_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_googleplus: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://plusone.google.com/_/+1/confirm'; //?hl=en&url=${url}
+            var googleplus_url = [
+              url,
+              '?hl=en&url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title),
+              '&tags=',
+              encodeURIComponent(story.story_tags.join(', '))
+            ].join('');
+            window.open(googleplus_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
         send_story_to_email: function(story_id) {
             NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story_id);
             this.mark_story_as_read(story_id);
@@ -4191,6 +4223,16 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-pinboard');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_googleplus'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-googleplus'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Google+').parent().addClass('NB-menu-manage-highlight-googleplus');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-googleplus');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_email'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to email').parent().addClass('NB-menu-manage-highlight-email');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -4215,6 +4257,10 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
                           this.send_story_to_readability(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
+                          this.send_story_to_pinboard(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
+                          this.send_story_to_googleplus(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-email')) {
                           this.send_story_to_email(story.id);
                       } else {

@@ -400,6 +400,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-instapaper', name: 'story_share_instapaper' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-instapaper' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Pinboard.in' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinboard', name: 'story_share_pinboard' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-pinboard' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Google+' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-googleplus', name: 'story_share_googleplus' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-googleplus' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Read It Later' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
