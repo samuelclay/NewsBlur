@@ -711,7 +711,7 @@ def mark_story_as_unread(request):
     
     if story.story_date < usersub.mark_read_date:
         # Story is outside the mark as read range, so invert all stories before.
-        newer_stories = MStory.objects(story_feed_id=story.story_feed_id, 
+        newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,
                                        story_date__lte=usersub.mark_read_date
                                        ).only('story_guid')

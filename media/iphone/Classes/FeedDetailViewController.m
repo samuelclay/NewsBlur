@@ -596,11 +596,38 @@
 #pragma mark Feed Actions
 
 
-- (IBAction)markAllRead {
-    if (appDelegate.isRiverView) {
-        return [self doOpenMarkReadActionSheet:nil];
-    } else {
+- (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
+    if (appDelegate.isRiverView && includeHidden) {
+        // Mark folder as read
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_folder_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:appDelegate.activeFolder forKey:@"folder_name"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        [appDelegate markActiveFeedAllRead];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    } else if (!appDelegate.isRiverView && includeHidden) {
+        // Mark feed as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        [appDelegate markActiveFeedAllRead];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    } else {
+        // Mark visible stories as read
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
@@ -615,24 +642,41 @@
     }
 }
 
-- (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
-    
-}
-
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    NSString *title = appDelegate.isRiverView ? 
+                      appDelegate.activeFolder : 
+                      [appDelegate.activeFeed objectForKey:@"feed_title"];
     UIActionSheet *options = [[UIActionSheet alloc] 
-                              initWithTitle:appDelegate.activeFolder
+                              initWithTitle:title
                               delegate:self
                               cancelButtonTitle:nil
                               destructiveButtonTitle:nil
                               otherButtonTitles:nil];
     
-    int unreadCount = [[appDelegate activeFeedStoryLocations] count];
-    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
-                             unreadCount == 1 ? 
-                             @"this story as" : 
-                             [NSString stringWithFormat:@"these %d stories", unreadCount]];
-    NSArray *buttonTitles = [NSArray arrayWithObjects:visibleText, @"Mark entire folder read", nil];
+    int visibleUnreadCount = appDelegate.visibleUnreadCount;
+    int totalUnreadCount = [appDelegate unreadCount];
+    NSArray *buttonTitles = nil;
+    if (visibleUnreadCount >= totalUnreadCount) {        
+        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                                 appDelegate.isRiverView ? 
+                                 @"entire folder" : 
+                                 @"this site"];
+        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
+        options.destructiveButtonIndex = 0;
+    } else {
+        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                                 visibleUnreadCount == 1 ? 
+                                 @"this story as" : 
+                                 [NSString stringWithFormat:@"these %d stories", 
+                                  visibleUnreadCount]];        
+        NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
+                                appDelegate.isRiverView ? 
+                                @"entire folder" : 
+                                @"this site"];
+        buttonTitles = [NSArray arrayWithObjects:visibleText, entireText, nil];
+        options.destructiveButtonIndex = 1;
+    }
+    
     for (id title in buttonTitles) {
         [options addButtonWithTitle:title];
     }
@@ -656,19 +700,28 @@
         [options addButtonWithTitle:title];
     }
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-    
+
     options.tag = kSettingsActionSheet;
     [options showInView:self.view];
     [options release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    NSLog(@"Action option #%d", buttonIndex);
     if (actionSheet.tag == 1) {
-        if (buttonIndex == 0) {
-            [self markFeedsReadWithAllStories:NO];
-        } else if (buttonIndex == 1) {
-            [self markFeedsReadWithAllStories:YES];
-        }   
+        int visibleUnreadCount = appDelegate.visibleUnreadCount;
+        int totalUnreadCount = [appDelegate unreadCount];
+        if (visibleUnreadCount >= totalUnreadCount) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:YES];
+            }
+        } else {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:NO];
+            } else if (buttonIndex == 1) {
+                [self markFeedsReadWithAllStories:YES];
+            }               
+        }
     } else if (actionSheet.tag == 2) {
         if (buttonIndex == 0) {
             [self confirmDeleteSite];

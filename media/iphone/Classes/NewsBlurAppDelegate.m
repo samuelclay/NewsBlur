@@ -37,6 +37,7 @@
 @synthesize activeFeedStoryLocationIds;
 @synthesize activeStory;
 @synthesize storyCount;
+@synthesize visibleUnreadCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
@@ -64,6 +65,7 @@
 
 - (void)viewDidLoad {
     self.selectedIntelligence = 1;
+    self.visibleUnreadCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
@@ -368,6 +370,7 @@
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     
     [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    self.visibleUnreadCount -= 1;
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     if (![self.recentlyReadFeeds containsObject:[story objectForKey:@"story_feed_id"]]) {
         [self.recentlyReadFeeds addObject:[story objectForKey:@"story_feed_id"]];
@@ -399,7 +402,20 @@
     [self.dictFeeds setValue:feed forKey:feedIdStr];
 }
 
+- (void)markActiveFolderAllRead {    
+    for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+        
+        [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
+        [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
+        [feed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
+        [self.dictFeeds setValue:feed forKey:feedIdStr];
+    }
+}
+
 - (void)calculateStoryLocations {
+    self.visibleUnreadCount = 0;
     self.activeFeedStoryLocations = [NSMutableArray array];
     self.activeFeedStoryLocationIds = [NSMutableArray array];
     for (int i=0; i < self.storyCount; i++) {
@@ -409,6 +425,9 @@
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
             [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"id"]];
+            if ([[story objectForKey:@"read_status"] intValue] == 0) {
+                self.visibleUnreadCount += 1;
+            }
         }
     }
 }

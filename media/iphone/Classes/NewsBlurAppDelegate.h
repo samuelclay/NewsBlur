@@ -40,6 +40,7 @@
     int storyCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
+    int visibleUnreadCount;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -70,6 +71,7 @@
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
 @property (readwrite) int originalStoryCount;
+@property (readwrite) int visibleUnreadCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
 @property (readwrite, retain) NSMutableSet * recentlyReadFeeds;
@@ -106,6 +108,7 @@
 - (int)unreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
 - (void)markActiveFeedAllRead;
+- (void)markActiveFolderAllRead;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
