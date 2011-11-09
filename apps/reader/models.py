@@ -181,7 +181,10 @@ class UserSubscription(models.Model):
                 original_m.story_id = story_id
                 original_m.read_date = date
                 original_m.save()
-
+            except OperationError, e:
+                logging.user(request, "~BRCan't even save: %s" % (origin_m.story_id))
+                pass
+                
         return data
     
     def calculate_feed_scores(self, silent=False, stories_db=None):

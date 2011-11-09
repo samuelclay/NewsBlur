@@ -265,7 +265,7 @@ def load_feeds_flat(request):
     data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username)
     return data
 
-@ratelimit(minutes=1, requests=4)
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def refresh_feeds(request):
     start = datetime.datetime.utcnow()
@@ -698,16 +698,7 @@ def mark_story_as_unread(request):
     story_id = request.POST['story_id']
     feed_id = int(request.POST['feed_id'])
 
-    try:
-        usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-    except Feed.DoesNotExist:
-        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
-        if duplicate_feed:
-            try:
-                usersub = UserSubscription.objects.get(user=request.user, 
-                                                       feed=duplicate_feed[0].feed)
-            except Feed.DoesNotExist:
-                return dict(code=-1)
+    usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
                 
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
@@ -715,9 +706,25 @@ def mark_story_as_unread(request):
         
     data = dict(code=0, payload=dict(story_id=story_id))
     logging.user(request, "~FY~SBUnread~SN story in feed: %s" % (usersub.feed))
-        
+    
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-    m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
+    
+    if story.story_date < usersub.mark_read_date:
+        # Story is outside the mark as read range, so invert all stories before.
+        newer_stories = MStory.objects(story_feed_id=story.story_feed_id, 
+                                       story_date__gte=story.story_date,
+                                       story_date__lte=usersub.mark_read_date
+                                       ).only('story_guid')
+        newer_stories = [s.story_guid for s in newer_stories]
+        usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
+        usersub.needs_unread_recalc = True
+        usersub.save()
+        
+        # Mark stories as read only after the mark_read_date has been moved, otherwise
+        # these would be ignored.
+        data = usersub.mark_story_ids_as_read(newer_stories, request=request)
+        
+    m = MUserStory.objects(story_id=story_id, user_id=request.user.pk, feed_id=feed_id)
     m.delete()
     
     return data

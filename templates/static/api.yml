@@ -253,6 +253,21 @@
           required: true
           example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
     
+    - url: /reader/mark_story_as_unread
+      method: POST
+      short_desc: "Mark a story as unread."
+      long_desc: 
+        - "Mark a story as unread."
+      params:
+        - key: story_id
+          desc: "Story id to mark unread."
+          required: true
+          example: "http://www.ofbrooklyn.com/story-title"
+        - key: feed_id
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
+  
     - url: /reader/mark_story_as_starred
       method: POST
       short_desc: "Mark a story as starred (saved)."
