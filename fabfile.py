@@ -206,9 +206,11 @@ def setup_db():
     setup_db_firewall()
     setup_db_motd()
     setup_rabbitmq()
+    setup_memcached()
     setup_postgres()
     setup_mongo()
     setup_gunicorn(supervisor=False)
+    setup_redis()
 
 def setup_task():
     setup_common()
@@ -226,7 +228,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -289,7 +291,7 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine')
+    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -385,6 +387,12 @@ def configure_nginx():
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
+
+def configure_node():
+    sudo("apt-get install node")
+    sudo("curl http://npmjs.org/install.sh | sudo sh")
+    sudo("npm install -g redis")
+    sudo("npm install -g socket.io")
     
 # ===============
 # = Setup - App =
@@ -437,6 +445,10 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.250.0/24 to any port 27017') # MongoDB
     sudo('ufw allow from 199.15.253.0/24 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
+    sudo('ufw allow from 199.15.250.0/24 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.253.0/24 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.250.0/24 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.253.0/24 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -453,6 +465,9 @@ def setup_rabbitmq():
     sudo('rabbitmqctl add_vhost newsblurvhost')
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
+def setup_memcached():
+    sudo('apt-get -y install memcached')
+
 def setup_postgres():
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
 
@@ -462,6 +477,19 @@ def setup_mongo():
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
+
+def setup_redis():
+    with cd(env.VENDOR_PATH):
+        run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
+        run('tar -xzf redis-2.4.2.tar.gz')
+        run('rm redis-2.4.2.tar.gz')
+        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+            sudo('make install')
+    put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/redis')
+    put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
+    sudo('mkdir -p /var/lib/redis')
+    sudo('update-rc.d redis defaults')
     
 # ================
 # = Setup - Task =

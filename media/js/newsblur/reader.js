@@ -1,5 +1,5 @@
-(function($) {
     
+(function($) {
     NEWSBLUR.Reader = function() {
         var self = this;
         
@@ -1051,6 +1051,7 @@
             this.add_url_from_querystring();
             _.defer(_.bind(function() {
               this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.flags['has_chosen_feeds']);
+              this.setup_socket_realtime_unread_counts();
             }, this));
         },
         
@@ -2104,6 +2105,7 @@
                         // So just assume story not found.
                         this.switch_to_correct_view(false);
                         feed_position = this.scroll_to_story_in_story_feed(story, $feed_story);
+                        this.show_stories_preference_in_feed_view(true);
                     } else {
                         iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
                         this.switch_to_correct_view(iframe_position);
@@ -2660,6 +2662,38 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(facebook_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_pinboard: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://pinboard.in/add/?';
+            var pinboard_url = [
+              url,
+              'url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title),
+              '&tags=',
+              encodeURIComponent(story.story_tags.join(', '))
+            ].join('');
+            window.open(pinboard_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_googleplus: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://plusone.google.com/_/+1/confirm'; //?hl=en&url=${url}
+            var googleplus_url = [
+              url,
+              '?hl=en&url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title),
+              '&tags=',
+              encodeURIComponent(story.story_tags.join(', '))
+            ].join('');
+            window.open(googleplus_url, '_blank');
             this.mark_story_as_read(story_id);
         },
         
@@ -3399,7 +3433,7 @@
                                 $.make('span', { className: 'NB-feed-story-starred-date' }, story.starred_date))
                         ])
                     ]),
-                    $.make('div', { className: 'NB-feed-story-content' }, story.story_content)                
+                    $.make('div', { className: 'NB-feed-story-content' }, this.make_story_content(story.story_content))
                 ]).data('story', story.id).data('story_id', story.id).data('feed_id', story.story_feed_id);
                 
                 if (story_has_modifications && this.model.preference('show_tooltips')) {
@@ -3453,6 +3487,11 @@
             this.append_feed_view_story_endbar();
             this.hover_story_feed_titles();
             if (first_load) this.show_stories_preference_in_feed_view(true);
+        },
+        
+        make_story_content: function(story_content) {
+            var $story_content = $('<div>').html(story_content).autolink();
+            return $story_content;
         },
         
         make_story_feed_title: function(story) {
@@ -4172,6 +4211,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
+                    (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
+                    ])),
                     $.make('li', { className: 'NB-menu-manage-story-thirdparty' }, [
                         (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
@@ -4187,6 +4230,16 @@
                             $(e.target).siblings('.NB-menu-manage-title').text('Read It Later').parent().addClass('NB-menu-manage-highlight-readitlater');
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-readitlater');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-pinboard');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_googleplus'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-googleplus'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Google+').parent().addClass('NB-menu-manage-highlight-googleplus');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Send to Instapaper').parent().removeClass('NB-menu-manage-highlight-googleplus');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_email'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Send to email').parent().addClass('NB-menu-manage-highlight-email');
@@ -4212,6 +4265,10 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
                           this.send_story_to_readability(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
+                          this.send_story_to_pinboard(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
+                          this.send_story_to_googleplus(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-email')) {
                           this.send_story_to_email(story.id);
                       } else {
@@ -4224,11 +4281,6 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ])
-                    // (story.read_status && $.make('li', { className: 'NB-menu-separator' })),
-                    // (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
-                    // ]))
                 ]);
                 $manage_menu.data('feed_id', feed_id);
                 $manage_menu.data('story_id', story_id);
@@ -4403,7 +4455,7 @@
                 $('.NB-task-manage').tipsy('enable');
             }
             
-            $item.removeClass('NB-showing-menu');
+            if ($item) $item.removeClass('NB-showing-menu');
             
             if (animate) {
                 $manage_menu_container.stop().animate({
@@ -4569,15 +4621,26 @@
             $feed          = $feed || this.find_feed_in_feed_list(feed_id);
             var $parent    = $feed.closest('li.folder');
             var in_folder  = '';
-            var new_folder = $('.NB-menu-manage-feed-move-confirm select').val();
-            
-            if (new_folder.length <= 0) return this.hide_confirm_move_menu_item();
+            var to_folder  = $('.NB-menu-manage-feed-move-confirm select').val();
             
             if ($parent.length) {
                 in_folder = $feed.eq(0).closest('li.folder').find('.folder_title_text').eq(0).text();
             }
+
+            if (to_folder == in_folder) return this.hide_confirm_move_menu_item();
             
-            this.model.move_feed_to_folder(feed_id, new_folder, function() {});
+            this.model.move_feed_to_folder(feed_id, in_folder, to_folder, _.bind(function() {
+                _.delay(_.bind(function() {
+                    this.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                        'duration': 100, 
+                        'complete': _.bind(function() {
+                            this.make_feeds();
+                        }, this)
+                    });
+                }, this), 250);
+
+                this.hide_manage_menu('feed', $feed, true);
+            }, this));
 
             this.hide_confirm_move_menu_item(true);
         },
@@ -4585,16 +4648,36 @@
         manage_menu_move_folder: function(folder, $folder) {
             var self       = this;
             var in_folder  = '';
-            var $parent    = $folder.closest('li.folder');
-            var new_folder = $('.NB-menu-manage-folder-move-confirm select').val();
+            var $parent    = $folder.parents('li.folder').eq(0);
+            var to_folder = $('.NB-menu-manage-folder-move-confirm select').val();
+            var folder_name = $folder.find('.folder_title_text').eq(0).text();
+            var child_folders = $folder.find('.folder_title_text').map(function() {
+                return $(this).text();
+            }).get();
 
-            if (new_folder.length <= 0) return this.hide_confirm_move_menu_item();
-            
             if ($parent.length) {
                 in_folder = $parent.find('.folder_title_text').eq(0).text();
             }
         
-            this.model.move_folder_to_folder(folder, new_folder, in_folder, function() {});
+            if (to_folder == in_folder || 
+                to_folder == folder_name ||
+                 _.contains(child_folders, to_folder)) {
+                return this.hide_confirm_move_menu_item();
+            }
+            
+            this.model.move_folder_to_folder(folder, in_folder, to_folder, _.bind(function() {
+                _.delay(_.bind(function() {
+                    this.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                        'duration': 100, 
+                        'complete': _.bind(function() {
+                            this.make_feeds();
+                        }, this)
+                    });
+                }, this), 250);
+                
+                this.hide_manage_menu('folder', $parent, true);
+            }, this));
+            
             this.hide_confirm_move_menu_item(true);
         },
         
@@ -4684,7 +4767,6 @@
         
             this.model.rename_folder(folder, new_folder_name, in_folder, function() {
             });
-            NEWSBLUR.log(['rename', $folder, new_folder_name]);
             $('.folder_title_text', $folder).text(new_folder_name);
             this.hide_confirm_rename_menu_item(true);
             
@@ -4860,7 +4942,8 @@
                 }
             }
             
-            if (this.story_view == 'feed' && this.model.preference('feed_view_single_story')) {
+            if ((this.story_view == 'feed' || this.flags.page_view_showing_feed_view) && 
+                this.model.preference('feed_view_single_story')) {
                 // No need to show/hide feed view stories under single_story preference. 
                 // If the user switches to feed/page, then no animation is happening 
                 // and this will work anyway.
@@ -4930,6 +5013,25 @@
             this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed));
         },
         
+        setup_socket_realtime_unread_counts: function(force) {
+            if (force && !this.socket) {
+                this.socket = this.socket || io.connect('http://' + window.location.hostname + ':8888');
+                
+                // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
+                
+                this.socket.on('connect', _.bind(function() {
+                    this.socket.emit('subscribe:feeds', _.keys(this.model.feeds));
+                    this.socket.on('feed:update', _.bind(function(feed_id, message) {
+                        console.log(['Feed update', feed_id, message]);
+                        this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
+                    }, this));
+                
+                    this.flags.feed_refreshing_in_realtime = true;
+                    this.setup_feed_refresh();
+                }, this));
+            }
+        },
+        
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;
@@ -4943,6 +5045,9 @@
             }
             if (feed_count > 500) {
                 refresh_interval *= 1.5;
+            }
+            if (this.flags.feed_refreshing_in_realtime) {
+                refresh_interval *= 20;
             }
 
             if (new_feeds && feed_count < 250) {
@@ -5895,7 +6000,7 @@
                 e.stopPropagation();
                 var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
-                self.manage_menu_rename_folder(folder_name, $folder);
+                self.manage_menu_move_folder(folder_name, $folder);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-save' }, function($t, $p){
                 e.preventDefault();
@@ -6473,11 +6578,11 @@
             });
             $document.bind('keydown', 'space', function(e) {
                 e.preventDefault();
-                self.page_in_story(0.2, 1);
+                self.page_in_story(0.4, 1);
             });
             $document.bind('keydown', 'shift+space', function(e) {
                 e.preventDefault();
-                self.page_in_story(0.4, -1);
+                self.page_in_story(0.6, -1);
             });
             $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
@@ -6542,6 +6647,10 @@
                 } else {
                     self.mark_feed_as_read();
                 }
+            });
+            $document.bind('keydown', 'shift+e', function(e) {
+                e.preventDefault();
+                self.open_river_stories();
             });
         }
         

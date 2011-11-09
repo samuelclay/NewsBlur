@@ -4,11 +4,11 @@ import random
 import re
 import math
 import mongoengine as mongo
+import redis
 import zlib
 import urllib
 from collections import defaultdict
 from operator import itemgetter
-from BeautifulSoup import BeautifulStoneSoup
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -550,7 +550,7 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, force=False, single_threaded=True, compute_scores=True):
+    def update(self, force=False, single_threaded=True, compute_scores=True, slave_db=None):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -566,6 +566,7 @@ class Feed(models.Model):
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
+            'slave_db': slave_db,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -624,6 +625,7 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                     story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
+                    existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
                     elif existing_story.story_content_z:
@@ -903,8 +905,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 12 * 60 / max(.25, ((max(0, self.active_subscribers)**.35)
-                                                    * (updates_per_month**1.2)))
+        updates_per_day_delay = 6 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
+                                                    * (updates_per_month**0.25)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates

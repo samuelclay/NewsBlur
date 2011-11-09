@@ -17,7 +17,6 @@ from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from collections import defaultdict
 from operator import itemgetter
-from mongoengine.queryset import OperationError
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -40,6 +39,7 @@ from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
 from utils.view_functions import get_argument_or_404
+from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
@@ -153,6 +153,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def load_feeds(request):
     user             = get_user(request)
@@ -160,6 +161,7 @@ def load_feeds(request):
     not_yet_fetched  = False
     include_favicons = request.REQUEST.get('include_favicons', False)
     flat             = request.REQUEST.get('flat', False)
+    update_counts    = request.REQUEST.get('update_counts', False)
     
     if flat: return load_feeds_flat(request)
     
@@ -176,6 +178,8 @@ def load_feeds(request):
     
     for sub in user_subs:
         pk = sub.feed.pk
+        if update_counts:
+            sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if feeds[pk].get('not_yet_fetched'):
             not_yet_fetched = True
@@ -261,6 +265,7 @@ def load_feeds_flat(request):
     data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username)
     return data
 
+@ratelimit(minutes=1, requests=10)
 @json.json_view
 def refresh_feeds(request):
     start = datetime.datetime.utcnow()
@@ -659,42 +664,33 @@ def mark_story_as_read(request):
                 return dict(code=-1)
         else:
             return dict(code=-1)
-                
-    if not usersub.needs_unread_recalc:
-        usersub.needs_unread_recalc = True
-        usersub.save()
-        
-    data = dict(code=0, payload=story_ids)
     
-    if len(story_ids) > 1:
-        logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_ids), usersub.feed))
-    else:
-        logging.user(request, "~FYRead story in feed: %s" % (usersub.feed))
-        
-    for story_id in story_ids:
-        try:
-            story = MStory.objects.get(story_feed_id=feed_id, story_guid=story_id)
-        except MStory.DoesNotExist:
-            # Story has been deleted, probably by feed_fetcher.
-            continue
-        except MStory.MultipleObjectsReturned:
-            continue
-        now = datetime.datetime.utcnow()
-        date = now if now > story.story_date else story.story_date # For handling future stories
-        m = MUserStory(story=story, user_id=request.user.pk, feed_id=feed_id, read_date=date, story_id=story_id)
-        try:
-            m.save()
-        except OperationError, e:
-            original_m = MUserStory.objects.get(story=story, user_id=request.user.pk, feed_id=feed_id)
-            logging.user(request, "~BRMarked story as read error: %s" % (e))
-            logging.user(request, "~BRMarked story as read: %s / %s" % (story_id, m.story.story_guid))
-            logging.user(request, "~BROriginal story id:    %s / %s" % (original_m.story_id, original_m.story.story_guid))
-            logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
-            original_m.story_id = story_id
-            original_m.read_date = date
-            original_m.save()
+    data = usersub.mark_story_ids_as_read(story_ids, request=request)
     
     return data
+    
+@ajax_login_required
+@json.json_view
+def mark_feed_stories_as_read(request):
+    feeds_stories = request.REQUEST.get('feeds_stories', {})
+
+    for feed_id, story_ids in feeds_stories.items():
+        try:
+            usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+        except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+            duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+            if duplicate_feed:
+                try:
+                    usersub = UserSubscription.objects.get(user=request.user, 
+                                                           feed=duplicate_feed[0].feed)
+                except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+                    continue
+            else:
+                continue
+    
+        usersub.mark_story_ids_as_read(story_ids)
+    
+    return dict(code=1)
     
 @ajax_login_required
 @json.json_view
@@ -702,16 +698,7 @@ def mark_story_as_unread(request):
     story_id = request.POST['story_id']
     feed_id = int(request.POST['feed_id'])
 
-    try:
-        usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-    except Feed.DoesNotExist:
-        duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
-        if duplicate_feed:
-            try:
-                usersub = UserSubscription.objects.get(user=request.user, 
-                                                       feed=duplicate_feed[0].feed)
-            except Feed.DoesNotExist:
-                return dict(code=-1)
+    usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
                 
     if not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
@@ -719,9 +706,25 @@ def mark_story_as_unread(request):
         
     data = dict(code=0, payload=dict(story_id=story_id))
     logging.user(request, "~FY~SBUnread~SN story in feed: %s" % (usersub.feed))
-        
+    
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
-    m = MUserStory.objects(story=story, user_id=request.user.pk, feed_id=feed_id)
+    
+    if story.story_date < usersub.mark_read_date:
+        # Story is outside the mark as read range, so invert all stories before.
+        newer_stories = MStory.objects(story_feed_id=story.story_feed_id, 
+                                       story_date__gte=story.story_date,
+                                       story_date__lte=usersub.mark_read_date
+                                       ).only('story_guid')
+        newer_stories = [s.story_guid for s in newer_stories]
+        usersub.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
+        usersub.needs_unread_recalc = True
+        usersub.save()
+        
+        # Mark stories as read only after the mark_read_date has been moved, otherwise
+        # these would be ignored.
+        data = usersub.mark_story_ids_as_read(newer_stories, request=request)
+        
+    m = MUserStory.objects(story_id=story_id, user_id=request.user.pk, feed_id=feed_id)
     m.delete()
     
     return data
@@ -742,7 +745,8 @@ def mark_feed_as_read(request):
     
         us = UserSubscription.objects.get(feed=feed, user=request.user)
         try:
-            us.mark_feed_read()
+            if us:
+                us.mark_feed_read()
         except IntegrityError:
             code = -1
         else:
@@ -858,6 +862,30 @@ def rename_folder(request):
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
 
     return dict(code=1)
+    
+@ajax_login_required
+@json.json_view
+def move_feed_to_folder(request):
+    feed_id = int(request.POST['feed_id'])
+    in_folder = request.POST.get('in_folder', '')
+    to_folder = request.POST.get('to_folder', '')
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    
+@ajax_login_required
+@json.json_view
+def move_folder_to_folder(request):
+    folder_name = request.POST['folder_name']
+    in_folder = request.POST.get('in_folder', '')
+    to_folder = request.POST.get('to_folder', '')
+    
+    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+    user_sub_folders = user_sub_folders.move_folder_to_folder(folder_name, in_folder=in_folder, to_folder=to_folder)
+
+    return dict(code=1, folders=json.decode(user_sub_folders.folders))
     
 @login_required
 def add_feature(request):

@@ -84,6 +84,15 @@
           optional: true
           default: "false"
           example: "true/false"
+        - key: update_counts
+          desc: >
+            Forces recalculation of unread counts on all feeds. The preferred method is
+            to call this endpoint without updated counts, then call refresh_feeds to get
+            updated counts. That way you can quickly show the user's feeds, then update
+            the counts. Turning this option on will lead to a slower load-time.
+          optional: true
+          default: "false"
+          example: "true/false"
         
     - url: /reader/favicons
       method: GET
@@ -228,6 +237,37 @@
           required: true
           example: "42"
   
+    - url: /reader/mark_feed_stories_as_read
+      method: POST
+      short_desc: "Mark stories from multiple feeds as read."
+      long_desc: 
+        - "Marks multiple stories as read."
+        - "Multiple story ids can be sent at once."
+        - "Multiple feeds can be sent."
+      tips:
+        - "Throttle requests to this endpoint. You don't need to send one request per story."
+        - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
+      params:
+        - key: feeds_stories
+          desc: "Dictionary of feed_ids to an array of story_ids."
+          required: true
+          example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
+    
+    - url: /reader/mark_story_as_unread
+      method: POST
+      short_desc: "Mark a story as unread."
+      long_desc: 
+        - "Mark a story as unread."
+      params:
+        - key: story_id
+          desc: "Story id to mark unread."
+          required: true
+          example: "http://www.ofbrooklyn.com/story-title"
+        - key: feed_id
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
+  
     - url: /reader/mark_story_as_starred
       method: POST
       short_desc: "Mark a story as starred (saved)."
@@ -245,17 +285,17 @@
   
     - url: /reader/mark_feed_as_read
       method: POST
-      short_desc: "Mark all stories in a feed as read."
+      short_desc: "Mark a list of feeds as read."
       long_desc: 
-        - "Mark all stories in a feed or list of feeds as read."
+        - "Mark a list of feeds as read."
+      params:
+        - key: feed_id
+          desc: "List of feed ids to mark as read."
+          required: true
+          example: "[12, 24, 36]"
       tips:
         - "To mark a folder as read, send the ids of each feed inside the folder."
-      params:
-        - key: feed_ids
-          desc: "List of feed ids to mark as read."
-          optional: true
-          example: "[12, 24, 36]"
-  
+    
     - url: /reader/mark_all_as_read
       method: POST
       short_desc: "Mark all stories from all feeds as read."
@@ -303,6 +343,52 @@
           default: "[Top Level]"
           example: "All Blogs"
   
+    - url: /reader/move_feed_to_folder
+      method: POST
+      short_desc: "Move a feed into a different folder."
+      long_desc: 
+        - "Move a feed into a different folder."
+      params:
+        - key: feed_id
+          desc: "Feed id."
+          required: true
+          example: 12
+        - key: in_folder
+          desc: >
+            Current folder the feed is in. Necessary to disambiguate if a feed is in 
+            multiple folders.
+          required: true
+          example: "Blogs"
+        - key: in_folder
+          desc: "Folder the feed is going into."
+          required: true
+          example: "Tumblrs"
+      tips:
+        - "Leave folder names blank to specify Top Level."
+
+    - url: /reader/move_folder_to_folder
+      method: POST
+      short_desc: "Move a folder into a different folder."
+      long_desc: 
+        - "Move a folder into a different folder."
+      params:
+        - key: folder_name
+          desc: "Name of folder being moved."
+          required: true
+          example: "Tumblrs"
+        - key: in_folder
+          desc: >
+            Current folder the folder is in. Necessary to disambiguate if a folder 
+            name is in multiple folders. (Please don't let this happen.)
+          required: true
+          example: "Blogs"
+        - key: in_folder
+          desc: "New folder the existing folder is going into."
+          required: true
+          example: "Daily Blogs"
+      tips:
+        - "Leave folder names blank to specify Top Level."
+
     - url: /reader/rename_feed
       method: POST
       short_desc: "Rename a feed title."
@@ -374,17 +460,7 @@
           desc: "List of feed ids in the folder that's being deleted. These feeds also get removed."
           optional: true
           example: "[12, 24, 36]"
-  
-    - url: /reader/mark_feed_as_read
-      method: POST
-      short_desc: "Mark a list of feeds as read."
-      long_desc: 
-        - "Mark a list of feeds as read."
-      params:
-        - key: feed_id
-          desc: "List of feed ids to mark as read."
-          required: true
-          example: "[12, 24, 36]"
+
   
     - url: /reader/save_feed_order
       method: POST
