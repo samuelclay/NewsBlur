@@ -4267,7 +4267,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/color_swatch.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-image {
-    background: transparent url('../img/reader/instapaper.png') no-repeat 0 1px;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 1px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
     width: 16px;
@@ -4336,11 +4336,11 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-googleplus {
   opacity: 1;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-image,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-icon {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-icon {
   opacity: .2;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-instapaper {
   opacity: 1;
 }
 
@@ -5498,7 +5498,7 @@ background: transparent;
     background: transparent url('../img/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('../img/reader/email.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;
