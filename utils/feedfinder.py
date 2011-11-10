@@ -73,7 +73,7 @@ class URLGatekeeper:
     def __init__(self):
         self.rpcache = {} # a dictionary of RobotFileParser objects, by domain
         self.urlopener = urllib.FancyURLopener()
-        self.urlopener.version = "NewsBlur Feed Finder"
+        self.urlopener.version = "NewsBlur Feed Finder (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)"
         _debuglog(self.urlopener.version)
         self.urlopener.addheaders = [('User-agent', self.urlopener.version)]
         robotparser.URLopener.version = self.urlopener.version
