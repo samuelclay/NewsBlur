@@ -369,9 +369,47 @@
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     
+    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
+    [self markStoryRead:story feed:feed];
+//    NSLog(@"Marked read %d-%d: %@: %d", activeIndex, activeLocation, self.recentlyReadStories, score);
+}
+
+- (NSDictionary *)markVisibleStoriesRead {
+    NSMutableDictionary *feedsStories = [NSMutableDictionary dictionary];
+    for (NSDictionary *story in self.activeFeedStories) {
+        if ([[story objectForKey:@"read_status"] intValue] != 0) {
+            continue;
+        }
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",[story objectForKey:@"story_feed_id"]];
+        NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+        if (![feedsStories objectForKey:feedIdStr]) {
+            [feedsStories setObject:[NSMutableArray array] forKey:feedIdStr];
+        }
+        NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
+        [stories addObject:[story objectForKey:@"id"]];
+        [self markStoryRead:story feed:feed];
+    }   
+    NSLog(@"feedsStories: %@", feedsStories);
+    return feedsStories;
+}
+
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    NSDictionary *story = nil;
+    for (NSDictionary *s in self.activeFeedStories) {
+        if ([[s objectForKey:@"story_guid"] isEqualToString:storyId]) {
+            story = s;
+            break;
+        }
+    }
+    [self markStoryRead:story feed:feed];
+}
+
+- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
     self.visibleUnreadCount -= 1;
-    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     if (![self.recentlyReadFeeds containsObject:[story objectForKey:@"story_feed_id"]]) {
         [self.recentlyReadFeeds addObject:[story objectForKey:@"story_feed_id"]];
     }
@@ -387,31 +425,28 @@
         [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
     [self.dictFeeds setValue:feed forKey:feedIdStr];
-    
-//    NSLog(@"Marked read %d-%d: %@: %d", activeIndex, activeLocation, self.recentlyReadStories, score);
+
 }
 
 - (void)markActiveFeedAllRead {    
     id feedId = [self.activeFeed objectForKey:@"id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];    
+    [self markFeedAllRead:feedId];
+}
+
+- (void)markActiveFolderAllRead {    
+    for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
+        [self markFeedAllRead:feedId];
+    }
+}
+
+- (void)markFeedAllRead:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
-    [self.dictFeeds setValue:feed forKey:feedIdStr];
-}
-
-- (void)markActiveFolderAllRead {    
-    for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-        NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-        
-        [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
-        [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
-        [feed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
-        [self.dictFeeds setValue:feed forKey:feedIdStr];
-    }
+    [self.dictFeeds setValue:feed forKey:feedIdStr];    
 }
 
 - (void)calculateStoryLocations {

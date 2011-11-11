@@ -606,7 +606,8 @@
         [request setPostValue:appDelegate.activeFolder forKey:@"folder_name"]; 
         [request setDelegate:nil];
         [request startAsynchronous];
-        [appDelegate markActiveFeedAllRead];
+        
+        [appDelegate markActiveFolderAllRead];
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
@@ -620,6 +621,7 @@
         [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
         [request setDelegate:nil];
         [request startAsynchronous];
+        
         [appDelegate markActiveFeedAllRead];
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
@@ -627,14 +629,15 @@
          animated:YES];
     } else {
         // Mark visible stories as read
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
+        NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_stories_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"]; 
         [request setDelegate:nil];
         [request startAsynchronous];
-        [appDelegate markActiveFeedAllRead];
+        
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
@@ -656,7 +659,7 @@
     int visibleUnreadCount = appDelegate.visibleUnreadCount;
     int totalUnreadCount = [appDelegate unreadCount];
     NSArray *buttonTitles = nil;
-    if (visibleUnreadCount >= totalUnreadCount) {        
+    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {        
         NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
                                  appDelegate.isRiverView ? 
                                  @"entire folder" : 
@@ -711,7 +714,7 @@
     if (actionSheet.tag == 1) {
         int visibleUnreadCount = appDelegate.visibleUnreadCount;
         int totalUnreadCount = [appDelegate unreadCount];
-        if (visibleUnreadCount >= totalUnreadCount) {
+        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {
             if (buttonIndex == 0) {
                 [self markFeedsReadWithAllStories:YES];
             }

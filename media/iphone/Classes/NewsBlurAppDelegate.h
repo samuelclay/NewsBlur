@@ -107,8 +107,12 @@
 - (int)unreadCountForFeed:(NSString *)feedId;
 - (int)unreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
+- (NSDictionary *)markVisibleStoriesRead;
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markActiveFeedAllRead;
 - (void)markActiveFolderAllRead;
+- (void)markFeedAllRead:(id)feedId;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;

@@ -76,9 +76,10 @@
 							<object class="IBUISegmentedControl" id="122945842">
 								<reference key="NSNextResponder" ref="929039419"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{93, 8}, {161, 30}}</string>
+								<string key="NSFrame">{{79, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="929039419"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
@@ -133,8 +134,9 @@
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIBarButtonItem" id="625055884">
-								<string key="IBUITitle">All Read</string>
+								<string key="IBUITitle">Read</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">48</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="929039419"/>
 							</object>
@@ -159,7 +161,7 @@
 									<string key="NSResourceName">settings_icon.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">42</float>
+								<float key="IBUIWidth">48</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="929039419"/>
 							</object>
@@ -647,12 +649,10 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doOpenMarkReadActionSheet:</string>
 							<string>doOpenSettingsActionSheet</string>
-							<string>markAllRead</string>
 							<string>selectIntelligence</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -664,7 +664,6 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doOpenMarkReadActionSheet:</string>
 							<string>doOpenSettingsActionSheet</string>
-							<string>markAllRead</string>
 							<string>selectIntelligence</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -675,10 +674,6 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doOpenSettingsActionSheet</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">markAllRead</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
