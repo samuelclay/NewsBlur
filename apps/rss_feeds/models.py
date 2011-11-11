@@ -626,12 +626,13 @@ class Feed(models.Model):
                     story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
                     try:
-                        existing_story = MStory.objects.get(id=existing_story.id)
+                        if existing_story and existing_story.id:
+                            existing_story = MStory.objects.get(id=existing_story.id)
+                        else:
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
                     except MStory.DoesNotExist:
-                        existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
-                    # except MStory.DoesNotExist:
-                    #     ret_values[ENTRY_ERR] += 1
-                    #     continue
+                        ret_values[ENTRY_ERR] += 1
+                        continue
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
                     elif existing_story.story_content_z:
