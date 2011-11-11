@@ -182,7 +182,7 @@ class UserSubscription(models.Model):
                 original_m.read_date = date
                 original_m.save()
             except OperationError, e:
-                logging.user(request, "~BRCan't even save: %s" % (origin_m.story_id))
+                logging.user(request, "~BRCan't even save: %s" % (original_m.story_id))
                 pass
                 
         return data
@@ -308,6 +308,7 @@ class MUserStory(mongo.Document):
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField()
+    # story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, unique_with=('user_id', 'feed_id'))
     
     meta = {

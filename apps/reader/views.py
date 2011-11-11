@@ -672,9 +672,10 @@ def mark_story_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):
-    feeds_stories = request.REQUEST.get('feeds_stories', {})
-
+    feeds_stories = request.REQUEST.get('feeds_stories', "{}")
+    feeds_stories = json.decode(feeds_stories)
     for feed_id, story_ids in feeds_stories.items():
+        feed_id = int(feed_id)
         try:
             usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
         except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
@@ -687,7 +688,6 @@ def mark_feed_stories_as_read(request):
                     continue
             else:
                 continue
-    
         usersub.mark_story_ids_as_read(story_ids)
     
     return dict(code=1)

@@ -625,7 +625,13 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                     story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
-                    existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                    try:
+                        existing_story = MStory.objects.get(id=existing_story.id)
+                    except MStory.DoesNotExist:
+                        existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                    # except MStory.DoesNotExist:
+                    #     ret_values[ENTRY_ERR] += 1
+                    #     continue
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
                     elif existing_story.story_content_z:
