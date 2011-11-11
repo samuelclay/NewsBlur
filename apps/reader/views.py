@@ -1094,6 +1094,7 @@ def send_story_email(request):
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
+        subject = subject.replace('\n', ' ')
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % from_address,
                                          to=[to_address], 
