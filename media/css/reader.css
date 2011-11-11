@@ -5399,6 +5399,12 @@ background: transparent;
   clear: both;
   float: left;
 }
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=radio] {
+  margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=checkbox] {
+  margin-top: 5px;
+}
 .NB-modal-preferences .NB-preference .NB-preference-options label {
   padding-left: 4px;
   margin: 0 0 4px 0;

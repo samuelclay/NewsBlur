@@ -1847,7 +1847,7 @@
         // = Feed Header =
         // ===============
         
-        update_header_counts: function(skip_sites) {
+        update_header_counts: function(skip_sites, unread_view) {
             if (!skip_sites) {
                 var feeds_count = _.select(this.model.feeds, function(f) {
                   return f.active;
@@ -1866,10 +1866,28 @@
                 return m;
             }, {'positive': 0, 'negative': 0, 'neutral': 0});
             _(['positive', 'neutral', 'negative']).each(function(level) {
+                // This is for .NB-feeds-header-count
                 var $count = $('.NB-feeds-header-'+level);
                 $count.text(unread_counts[level]);
                 $count.toggleClass('NB-empty', unread_counts[level] == 0);
             });
+            
+            if (this.model.preference('show_unread_counts_in_title')) {
+                var title = 'NewsBlur (';
+                var counts = [];
+                var unread_view = _.isNumber(unread_view) && unread_view || this.model.preference('unread_view');
+                if (unread_view <= -1) {
+                    counts.push(unread_counts['negative']);
+                }
+                if (unread_view <= 0) {
+                    counts.push(unread_counts['neutral']);
+                }
+                if (unread_view <= 1) {
+                    counts.push(unread_counts['positive']);
+                }
+                title += counts.join('/') + ')';
+                document.title = title;
+            }
         },
         
         update_starred_count: function() {
@@ -4802,6 +4820,7 @@
             this.switch_feed_view_unread_view(value);
             this.show_feed_hidden_story_title_indicator();
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+            this.update_header_counts(true);
         },
         
         move_intelligence_slider: function(direction) {
@@ -4847,6 +4866,8 @@
                                   .removeClass('unread_threshold_neutral')
                                   .removeClass('unread_threshold_negative')
                                   .addClass('unread_threshold_'+unread_view_name);
+            
+            this.update_header_counts(true, unread_view);
         },
         
         get_unread_view_name: function(unread_view) {
