@@ -2812,7 +2812,7 @@
             
             $story_titles.hover(function() {
                 var $this = $(this);
-                var menu_height = $this.hasClass('story') ? 150 : 270;
+                var menu_height = $this.hasClass('story') ? 190 : 270;
 
                 if ($this.offset().top > $(window).height() - menu_height) {
                     $this.addClass('NB-hover-inverse');

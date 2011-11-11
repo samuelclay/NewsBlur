@@ -1726,6 +1726,10 @@ background: transparent;
     text-shadow: 1px 1px 0 #e8e8e8;
 }
 
+#story_pane .read a.NB-feed-story-title {
+    color: #3C415F;
+}
+
 #story_pane a.NB-feed-story-title:hover,
 #story_pane a.NB-feed-story-title:hover .NB-score-1,
 #story_pane a.NB-feed-story-title:hover .NB-score--1 {
@@ -1740,6 +1744,9 @@ background: transparent;
     margin: 4px 24px 0 0;
     text-shadow: 1px 1px 0 #F0F0F0;
     cursor: pointer;
+}
+#story_pane .read .NB-feed-story-author {
+    color: #A0A0A0;
 }
 #story_pane .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -1794,6 +1801,10 @@ background: transparent;
     -webkit-border-radius: 4px;
     cursor: pointer;
 } 
+
+#story_pane .read .NB-feed-story-tag {
+    color: #B1ADA3;
+}
 #story_pane .NB-feed-story-tag.NB-score-1 {
     /* Green */
     background-color: #34912E;
