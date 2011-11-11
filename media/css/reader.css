@@ -1889,6 +1889,7 @@ background: transparent;
 #story_pane .NB-feed-story-content {
     margin: 0 140px 32px 28px;
     padding: 12px 0px;
+    max-width: 700px;
 }
 
 #story_pane .NB-feed-story-endbar {
