@@ -41,7 +41,6 @@
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
-- (IBAction)markAllRead;
 - (IBAction)selectIntelligence;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;

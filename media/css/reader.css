@@ -1726,6 +1726,10 @@ background: transparent;
     text-shadow: 1px 1px 0 #e8e8e8;
 }
 
+#story_pane .read a.NB-feed-story-title {
+    color: #3C415F;
+}
+
 #story_pane a.NB-feed-story-title:hover,
 #story_pane a.NB-feed-story-title:hover .NB-score-1,
 #story_pane a.NB-feed-story-title:hover .NB-score--1 {
@@ -1740,6 +1744,9 @@ background: transparent;
     margin: 4px 24px 0 0;
     text-shadow: 1px 1px 0 #F0F0F0;
     cursor: pointer;
+}
+#story_pane .read .NB-feed-story-author {
+    color: #A0A0A0;
 }
 #story_pane .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -1794,6 +1801,10 @@ background: transparent;
     -webkit-border-radius: 4px;
     cursor: pointer;
 } 
+
+#story_pane .read .NB-feed-story-tag {
+    color: #B1ADA3;
+}
 #story_pane .NB-feed-story-tag.NB-score-1 {
     /* Green */
     background-color: #34912E;
@@ -1889,6 +1900,7 @@ background: transparent;
 #story_pane .NB-feed-story-content {
     margin: 0 140px 32px 28px;
     padding: 12px 0px;
+    max-width: 700px;
 }
 
 #story_pane .NB-feed-story-endbar {
@@ -4267,7 +4279,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/color_swatch.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-image {
-    background: transparent url('../img/reader/instapaper.png') no-repeat 0 1px;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 1px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
     width: 16px;
@@ -4336,11 +4348,11 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-googleplus {
   opacity: 1;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-image,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-icon {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-icon {
   opacity: .2;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-instapaper {
   opacity: 1;
 }
 
@@ -5400,6 +5412,12 @@ background: transparent;
   clear: both;
   float: left;
 }
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=radio] {
+  margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=checkbox] {
+  margin-top: 5px;
+}
 .NB-modal-preferences .NB-preference .NB-preference-options label {
   padding-left: 4px;
   margin: 0 0 4px 0;
@@ -5511,7 +5529,7 @@ background: transparent;
     background: transparent url('../img/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('../img/reader/email.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;

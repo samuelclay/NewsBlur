@@ -672,9 +672,10 @@ def mark_story_as_read(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):
-    feeds_stories = request.REQUEST.get('feeds_stories', {})
-
+    feeds_stories = request.REQUEST.get('feeds_stories', "{}")
+    feeds_stories = json.decode(feeds_stories)
     for feed_id, story_ids in feeds_stories.items():
+        feed_id = int(feed_id)
         try:
             usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
         except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
@@ -687,7 +688,6 @@ def mark_feed_stories_as_read(request):
                     continue
             else:
                 continue
-    
         usersub.mark_story_ids_as_read(story_ids)
     
     return dict(code=1)
@@ -711,7 +711,7 @@ def mark_story_as_unread(request):
     
     if story.story_date < usersub.mark_read_date:
         # Story is outside the mark as read range, so invert all stories before.
-        newer_stories = MStory.objects(story_feed_id=story.story_feed_id, 
+        newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,
                                        story_date__lte=usersub.mark_read_date
                                        ).only('story_guid')
@@ -1094,6 +1094,7 @@ def send_story_email(request):
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
+        subject = subject.replace('\n', ' ')
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % from_address,
                                          to=[to_address], 

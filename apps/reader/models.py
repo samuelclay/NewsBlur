@@ -167,7 +167,9 @@ class UserSubscription(models.Model):
                 continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m = MUserStory(story=story, user_id=self.user.pk, feed_id=self.feed.pk, read_date=date, story_id=story_id)
+            m = MUserStory(story=story, user_id=self.user.pk, 
+                           feed_id=self.feed.pk, read_date=date, 
+                           story_id=story_id, story_date=story.story_date)
             try:
                 m.save()
             except OperationError, e:
@@ -180,9 +182,10 @@ class UserSubscription(models.Model):
                 logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
                 original_m.story_id = story_id
                 original_m.read_date = date
+                original_m.story_date = story.story_date
                 original_m.save()
             except OperationError, e:
-                logging.user(request, "~BRCan't even save: %s" % (origin_m.story_id))
+                logging.user(request, "~BRCan't even save: %s" % (original_m.story_id))
                 pass
                 
         return data
@@ -284,9 +287,10 @@ class UserSubscription(models.Model):
         
         self.save()
 
-        # if (self.unread_count_positive == 0 and 
-        #     self.unread_count_neutral == 0):
-        #     self.mark_feed_read()
+        if (self.unread_count_positive == 0 and 
+            self.unread_count_neutral == 0 and
+            self.unread_count_negative == 0):
+            self.mark_feed_read()
         
         cache.delete('usersub:%s' % self.user.id)
         
@@ -308,6 +312,7 @@ class MUserStory(mongo.Document):
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField()
+    story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, unique_with=('user_id', 'feed_id'))
     
     meta = {

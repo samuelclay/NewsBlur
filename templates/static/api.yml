@@ -249,7 +249,7 @@
         - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
       params:
         - key: feeds_stories
-          desc: "Dictionary of feed_ids to an array of story_ids."
+          desc: "JSON serialized dictionary of feed_ids to an array of story_ids."
           required: true
           example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
     
