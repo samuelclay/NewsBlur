@@ -314,7 +314,7 @@ def feed(uri):
     #todo: give preference to certain feed formats
     feedlist = feeds(uri)
     if feedlist:
-        feeds_no_comments = filter(lambda f: not 'comments' in f, feedlist)
+        feeds_no_comments = filter(lambda f: 'comments' not in f.lower(), feedlist)
         if feeds_no_comments:
             return feeds_no_comments[0]
         return feedlist[0]

@@ -237,6 +237,7 @@ class Feed(models.Model):
                     # %s - %s - %s
                     # """ % (feed_address, self.__dict__, pprint(self.__dict__))
                     # mail_admins('Wierdo alert', message, fail_silently=True)
+                    logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
                     return False
                 try:
                     self.feed_address = feed_address
