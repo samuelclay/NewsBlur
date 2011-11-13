@@ -82,31 +82,10 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
-                $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 2:'),
-                    'Change Website Address'
-                ]),
-                $.make('div', { className: 'NB-fieldset-fields' }, [
-                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
-                        $.make('div', { className: 'NB-loading' }),
-                        $.make('label', { 'for': 'NB-exception-input-link', className: 'NB-exception-label' }, [
-                            $.make('div', { className: 'NB-folder-icon' }),
-                            'Website URL: '
-                        ]),
-                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed['feed_link'] })
-                    ]),
-                    $.make('div', { className: 'NB-exception-submit-wrapper' }, [
-                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
-                        $.make('div', { className: 'NB-error' })
-                    ])
-                ])
-            ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-feed NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-meta' }),
-                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 3:'),
+                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 2:'),
                     'Change RSS Feed Address'
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -120,6 +99,27 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ]),
                     $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
+                        $.make('div', { className: 'NB-error' })
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
+                $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-meta' }),
+                    $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 3:'),
+                    'Change Website Address'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('label', { 'for': 'NB-exception-input-link', className: 'NB-exception-label' }, [
+                            $.make('div', { className: 'NB-folder-icon' }),
+                            'Website URL: '
+                        ]),
+                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed['feed_link'] })
+                    ]),
+                    $.make('div', { className: 'NB-exception-submit-wrapper' }, [
+                        $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
                         $.make('div', { className: 'NB-error' })
                     ])
                 ])

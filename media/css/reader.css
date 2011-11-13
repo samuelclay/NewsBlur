@@ -5436,7 +5436,7 @@ background: transparent;
   height: 31px;
   min-width: 50px;
 }
-.NB-modal-preferences .NB-preference-view input {
+.NB-modal-preferences .NB-preference-view .NB-preference-options input[type="radio"] {
   margin-top: 10px;
 }
 .NB-modal-preferences .NB-preference-story-pane-position input {
