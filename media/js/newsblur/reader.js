@@ -4120,7 +4120,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Feed settings')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [

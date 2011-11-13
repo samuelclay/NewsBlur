@@ -106,6 +106,17 @@ def load_feed_statistics(request, feed_id):
     return stats
 
 @json.json_view
+def load_feed_settings(request, feed_id):
+    stats = dict()
+    feed = get_object_or_404(Feed, pk=feed_id)
+    
+    stats['duplicate_addresses'] = feed.duplicate_addresses.all()
+    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
+    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
+    
+    return stats
+    
+@json.json_view
 def exception_retry(request):
     user = get_user(request)
     feed_id = get_argument_or_404(request, 'feed_id')

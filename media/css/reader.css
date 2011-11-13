@@ -4434,12 +4434,6 @@ background: transparent;
   width: 524px;
   height: 180px;
 }
-.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container {
-  margin: 3px 0 12px;
-}
-.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-  margin: 0 0 12px;
-}
 
 .NB-modal-statistics .NB-modal-loading {
   margin: 6px 8px 0;
@@ -4546,12 +4540,6 @@ background: transparent;
 /* = Feed Recommendation Modal = */
 /* ============================= */
 
-.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container {
-  margin: 3px 0 12px;
-}
-.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-  margin: 0 0 12px;
-}
 .NB-modal-recommend .NB-modal-loading {
   margin: 6px 8px 0;
 }
@@ -4826,6 +4814,16 @@ background: transparent;
 /* = Feed Exceptions Modal = */
 /* ========================= */
 
+.NB-modal-exception .NB-exception-only {
+    display: inline;
+}
+.NB-modal-exception .NB-exception-block-only {
+    display: block;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-only,
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
 .NB-modal-exception .NB-exception-explanation {
     color: #606060;
     font-size: 12px;

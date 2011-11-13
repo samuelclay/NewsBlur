@@ -212,24 +212,6 @@ reader, and feed importer. To run the test suite:
     ./manage.py test --settings=utils.test-settings
 
 
-## Roadmap
-
-### Recently completed ###
-
- * River of News - completed
- * Starred stories - completed
-
-### Summer 2011 ###
- 
- * iPhone app
- * Mobile web app - [http://www.newsblur.com/m](http://www.newsblur.com/m)
- 
-### Fall 2011 ###
-
- * Social features
- * Implicit sorting in River of News
-
-
 ## Author
 
  * Created by [Samuel Clay](http://www.samuelclay.com).
