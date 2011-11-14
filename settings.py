@@ -291,7 +291,7 @@ COMPRESS_CSS_FILTERS = []
 # ==========================
 
 DAYS_OF_UNREAD          = 14
-SUBSCRIBER_EXPIRE       = 1
+SUBSCRIBER_EXPIRE       = 2
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
