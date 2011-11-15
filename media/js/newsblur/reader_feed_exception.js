@@ -39,6 +39,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         } else {
             this.$modal.addClass('NB-modal-feed-settings');
         }
+        
+        this.resize();
     },
     
     get_feed_settings: function() {
@@ -52,7 +54,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.removeClass('NB-active');
-        
+        this.resize();
     },
     
     make_modal: function() {
@@ -63,10 +65,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 this.make_feed_chooser()
             ]),
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title' }, 'Fix a misbehaving site'),
+            $.make('h2', { className: 'NB-modal-title NB-exception-block-only' }, 'Fix a misbehaving site'),
+            $.make('h2', { className: 'NB-modal-title' }, 'Site settings'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
-                $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
+                $.make('div', { className: 'NB-modal-feed-heading' }, [
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit NB-exception-block-only' }, [
                 $.make('h5', [

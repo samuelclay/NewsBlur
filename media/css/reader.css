@@ -4820,8 +4820,20 @@ background: transparent;
 .NB-modal-exception .NB-exception-block-only {
     display: block;
 }
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-title {
+    display: block;
+}
+.NB-modal-exception .NB-modal-title.NB-exception-block-only {
+    display: block;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
 .NB-modal-exception.NB-modal-feed-settings .NB-exception-only,
 .NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
+.NB-modal-exception .NB-modal-title {
     display: none;
 }
 .NB-modal-exception .NB-exception-explanation {
