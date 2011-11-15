@@ -368,6 +368,10 @@
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+    if (self.activeFeed != feed) {
+//        NSLog(@"activeFeed; %@, feed: %@", activeFeed, feed);
+        self.activeFeed = feed;
+    }
     
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];

@@ -137,7 +137,7 @@
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-//    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
+    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
     [progressView setProgress:progress];
 }
 
