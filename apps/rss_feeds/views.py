@@ -214,14 +214,15 @@ def exception_change_feed_link(request):
         feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
         if feed.pk != original_feed.pk:
             feed.branch_from_feed = original_feed
+            feed.feed_link_locked = True
             feed.save()
 
     feed.update()
-        
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
+    usersub.switch_feed(feed, original_feed)
     usersub.calculate_feed_scores(silent=False)
     
-    feeds = {feed.pk: usersub.canonical(full=True)}
+    feeds = {original_feed.pk: usersub.canonical(full=True)}
     return {'code': code, 'feeds': feeds}
 
 @login_required

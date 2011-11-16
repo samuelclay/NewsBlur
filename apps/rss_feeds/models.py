@@ -1237,7 +1237,7 @@ class DuplicateFeed(models.Model):
         return "%s: %s" % (self.feed, self.duplicate_address)
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
-    from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
+    from apps.reader.models import UserSubscription, MUserStory
     from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
     if original_feed_id > duplicate_feed_id and not force:
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
@@ -1255,26 +1255,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
     for user_sub in user_subs:
-        # Rewrite feed in subscription folders
-        try:
-            user_sub_folders = UserSubscriptionFolders.objects.get(user=user_sub.user)
-        except Exception, e:
-            logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
-            continue
-    
-        # Switch to original feed for the user subscription
-        logging.info("      ===> %s " % user_sub.user)
-        user_sub.feed = original_feed
-        user_sub.needs_unread_recalc = True
-        try:
-            user_sub.save()
-            folders = json.decode(user_sub_folders.folders)
-            folders = rewrite_folders(folders, original_feed, duplicate_feed)
-            user_sub_folders.folders = json.encode(folders)
-            user_sub_folders.save()
-        except (IntegrityError, OperationError):
-            logging.info("      !!!!> %s already subscribed" % user_sub.user)
-            user_sub.delete()
+        user_sub.switch_feed(original_feed, duplicate_feed)
 
     # Switch read stories
     user_stories = MUserStory.objects(feed_id=duplicate_feed.pk)
@@ -1342,19 +1323,3 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     duplicate_feed.delete()
     original_feed.count_subscribers()
     
-                    
-def rewrite_folders(folders, original_feed, duplicate_feed):
-    new_folders = []
-    
-    for k, folder in enumerate(folders):
-        if isinstance(folder, int):
-            if folder == duplicate_feed.pk:
-                # logging.info("              ===> Rewrote %s'th item: %s" % (k+1, folders))
-                new_folders.append(original_feed.pk)
-            else:
-                new_folders.append(folder)
-        elif isinstance(folder, dict):
-            for f_k, f_v in folder.items():
-                new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})
-
-    return new_folders

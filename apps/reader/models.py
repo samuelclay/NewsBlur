@@ -298,7 +298,27 @@ class UserSubscription(models.Model):
             logging.info(' ---> [%s] Computing scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
         return
-        
+    
+    def switch_feed(self, new_feed, old_feed):
+        # Rewrite feed in subscription folders
+        try:
+            user_sub_folders = UserSubscriptionFolders.objects.get(user=self.user)
+        except Exception, e:
+            logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
+            return
+    
+        # Switch to original feed for the user subscription
+        logging.info("      ===> %s " % self.user)
+        self.feed = new_feed
+        self.needs_unread_recalc = True
+        try:
+            self.save()
+            user_sub_folders.rewrite_feed(new_feed, old_feed)
+        except (IntegrityError, OperationError):
+            logging.info("      !!!!> %s already subscribed" % self.user)
+            self.delete()
+            
+            
     class Meta:
         unique_together = ("user", "feed")
         
@@ -474,7 +494,29 @@ class UserSubscriptionFolders(models.Model):
         self.save()
         
         return self
-        
+    
+    def rewrite_feed(self, original_feed, duplicate_feed):
+        def rewrite_folders(folders, original_feed, duplicate_feed):
+            new_folders = []
+    
+            for k, folder in enumerate(folders):
+                if isinstance(folder, int):
+                    if folder == duplicate_feed.pk:
+                        # logging.info("              ===> Rewrote %s'th item: %s" % (k+1, folders))
+                        new_folders.append(original_feed.pk)
+                    else:
+                        new_folders.append(folder)
+                elif isinstance(folder, dict):
+                    for f_k, f_v in folder.items():
+                        new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})
+
+            return new_folders
+            
+        folders = json.decode(self.folders)
+        folders = rewrite_folders(folders, original_feed, duplicate_feed)
+        self.folders = json.encode(folders)
+        self.save()
+
 
 class Feature(models.Model):
     """
