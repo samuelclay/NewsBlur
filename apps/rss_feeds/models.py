@@ -124,7 +124,9 @@ class Feed(models.Model):
             self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
             self.queued_date = datetime.datetime.utcnow()
-        self.hash_address_and_link = hashlib.sha1(self.feed_address+self.feed_link).hexdigest()
+        feed_address = self.feed_address or ""
+        feed_link = self.feed_link or ""
+        self.hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
             
         max_feed_title = Feed._meta.get_field('feed_title').max_length
         if len(self.feed_title) > max_feed_title:
