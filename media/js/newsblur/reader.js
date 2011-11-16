@@ -519,15 +519,15 @@
             return $story_title;
         },
         
-        find_story_in_feed_view: function(story) {
-            if (!story) return;
+        find_story_in_feed_view: function(story_id) {
+            if (!story_id) return;
             
             var $feed_view = this.$s.$feed_view;
             var $stories = $('.NB-feed-story', $feed_view);
             var $story;
             
             for (var s=0, s_count = $stories.length; s < s_count; s++) {
-                if ($stories.eq(s).data('story') == story.id) {
+                if ($stories.eq(s).data('story') == story_id) {
                     $story = $stories.eq(s);
                     break;
                 }
@@ -929,7 +929,7 @@
         mark_story_as_read_in_feed_view: function(story, options) {
             if (!story) return;
             options = options || {};
-            $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story);
+            $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story.id);
             if ($story) {
                 $story.addClass('read');
             }
@@ -2154,7 +2154,7 @@
                 }
                 
                 // User clicks on story, scroll them to it.
-                var $feed_story = this.find_story_in_feed_view(story);
+                var $feed_story = this.find_story_in_feed_view(story.id);
                 
                 if (this.story_view == 'page') {
                     var $iframe_story = this.find_story_in_feed_iframe(story);
@@ -2446,6 +2446,7 @@
             var $feed                 = this.find_feed_in_feed_list(feed_id);
             var $feed_counts          = this.cache.$feed_counts_in_feed_list[feed_id] || $('.feed_counts_floater', $feed);
             var $story_title          = this.find_story_in_story_titles(story_id);
+            var $story                = this.find_story_in_feed_view(story_id);
             var $content_pane         = this.$s.$content_pane;
             var $floater              = $('.feed_counts_floater', $content_pane);
             var unread_view           = this.get_unread_view_name();
@@ -2453,6 +2454,7 @@
             this.cache.$feed_counts_in_feed_list[feed_id] = $feed_counts;
 
             $story_title.toggleClass('read', !unread);
+            $story.toggleClass('read', !unread);
             // NEWSBLUR.log(['marked read', feed.ps, feed.nt, feed.ng, $story_title.is('.NB-story-positive'), $story_title.is('.NB-story-neutral'), $story_title.is('.NB-story-negative')]);
             
             if ($story_title.is('.NB-story-positive')) {
@@ -3653,7 +3655,7 @@
             
             if (story && this.cache.feed_title_floater_feed_id != story.story_feed_id) {
                 var $feed_floater = this.$s.$feed_floater;
-                $story = this.find_story_in_feed_view(story);
+                $story = this.find_story_in_feed_view(story.id);
                 $header = $('.NB-feed-story-header-feed', $story);
                 var $new_header = $header.clone();
                 
@@ -3674,7 +3676,7 @@
             }
               
             if (story && this.cache.feed_title_floater_story_id != story.id) {
-                $story = $story || this.find_story_in_feed_view(story);
+                $story = $story || this.find_story_in_feed_view(story.id);
                 $header = $header || $('.NB-feed-story-header-feed', $story);
                 $('.NB-floater').removeClass('NB-floater');
                 $header.addClass('NB-floater');
@@ -3878,7 +3880,7 @@
                 });
             } else if (view == 'feed') {
                 if (this.active_story) {
-                    var $feed_story = this.find_story_in_feed_view(this.active_story);
+                    var $feed_story = this.find_story_in_feed_view(this.active_story.id);
                     this.scroll_to_story_in_story_feed(this.active_story, $feed_story, true);
                 }
                 
@@ -5239,7 +5241,7 @@
                 for (var s in this.model.stories) {
                     var story = this.model.stories[s];
                     var $story = this.find_story_in_story_titles(story.id);
-                    var $feed_story = this.find_story_in_feed_view(story);
+                    var $feed_story = this.find_story_in_feed_view(story.id);
                     
                     if ($story && $story.length) {
                         // Just update intelligence
