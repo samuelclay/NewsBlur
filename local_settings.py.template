@@ -16,6 +16,10 @@ MONGO_DB = {
     'port': 27017
 }
 
+MONGODB_SLAVE = {
+    'host': '127.0.0.1'
+}
+
 DEBUG = True
 
 MEDIA_URL = '/media/'
