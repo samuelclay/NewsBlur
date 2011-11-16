@@ -629,8 +629,10 @@ class Feed(models.Model):
                     try:
                         if existing_story and existing_story.id:
                             existing_story = MStory.objects.get(id=existing_story.id)
-                        else:
+                        elif existing_story and existing_story.story_guid:
                             existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                        else:
+                            raise MStory.DoesNotExist
                     except MStory.DoesNotExist:
                         ret_values[ENTRY_ERR] += 1
                         continue

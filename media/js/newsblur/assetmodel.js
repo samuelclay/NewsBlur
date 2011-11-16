@@ -293,7 +293,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/favicons', data, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
-    load_feed: function(feed_id, page, first_load, callback) {
+    load_feed: function(feed_id, page, first_load, callback, error_callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -309,7 +309,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     page: page,
                     feed_address: this.feeds[feed_id].feed_address
                 }, pre_callback,
-                $.noop,
+                error_callback,
                 {
                     'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
                     'request_type': 'GET'
@@ -370,7 +370,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {request_type: 'GET'});
     },
     
-    fetch_starred_stories: function(page, callback, first_load) {
+    fetch_starred_stories: function(page, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -381,13 +381,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         this.make_request('/reader/starred_stories', {
             page: page
-        }, pre_callback, $.noop, {
+        }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });
     },
     
-    fetch_river_stories: function(feed_id, feeds, page, callback, first_load) {
+    fetch_river_stories: function(feed_id, feeds, page, callback, error_callback, first_load) {
         var self = this;
         
         if (first_load || !page) this.read_stories_river_count = 0;
@@ -404,7 +404,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             read_stories_count: this.read_stories_river_count,
             // TODO: Remove new flag
             new_flag: true
-        }, pre_callback, $.noop, {
+        }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });

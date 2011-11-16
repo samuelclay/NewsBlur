@@ -73,7 +73,7 @@ RESOLVE_RELATIVE_URIS = 1
 
 # If you want feedparser to automatically sanitize all potentially unsafe
 # HTML content, set this to 1.
-SANITIZE_HTML = 0
+SANITIZE_HTML = 1
 
 # ---------- Python 3 modules (make it work if possible) ----------
 try:
@@ -2563,7 +2563,8 @@ class _HTMLSanitizer(_BaseHTMLProcessor):
         'p', 'pre', 'progress', 'q', 's', 'samp', 'section', 'select',
         'small', 'sound', 'source', 'spacer', 'span', 'strike', 'strong',
         'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'time', 'tfoot',
-        'th', 'thead', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'noscript']
+        'th', 'thead', 'tr', 'tt', 'u', 'ul', 'var', 'video', 'noscript',
+        'object', 'embed', 'iframe', 'param']
 
     acceptable_attributes = ['abbr', 'accept', 'accept-charset', 'accesskey',
       'action', 'align', 'alt', 'autocomplete', 'autofocus', 'axis',
