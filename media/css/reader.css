@@ -1945,6 +1945,35 @@ background: transparent;
   height: 8px;
 }
 
+/* ============== */
+/* = Feed Error = */
+/* ============== */
+
+#story_taskbar .NB-feed-error {
+  position: absolute;
+  top: 0;
+  margin: 2px 0 0 0;
+  width: 120px;
+  height: 20px;
+}
+
+#story_taskbar .NB-feed-error .NB-feed-error-text {
+  text-transform: uppercase;
+  font-size: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #4E0A0B;
+  text-shadow: 1px 1px 0 #D8D8D8;
+}
+
+#story_taskbar .NB-feed-error .NB-feed-error-icon {
+    margin: 3px 0 0 0;
+    width: 24px;
+    height: 19px;
+    background: transparent url('../img/reader/warning.png') no-repeat 0 0;
+    float: left;
+}
+
 /* ======================= */
 /* = Story Modifications = */
 /* ======================= */

@@ -15,6 +15,7 @@ from django.conf import settings
 from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
+from pymongo.helpers import OperationFailure
 from collections import defaultdict
 from operator import itemgetter
 from apps.recommendations.models import RecommendedFeed
@@ -153,7 +154,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=20)
 @json.json_view
 def load_feeds(request):
     user             = get_user(request)
@@ -340,7 +341,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
-        
+
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         
@@ -523,7 +524,7 @@ def load_river_stories(request):
         # if feed_counts[feed_id] > max_feed_count:
         #     max_feed_count = feed_counts[feed_id]
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
-    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:50]
+    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:40]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids
                             if feed_id in feed_last_reads])
@@ -549,7 +550,10 @@ def load_river_stories(request):
             'feed_last_reads': feed_last_reads
         }
     )
-    mstories = [story.value for story in mstories if story and story.value]
+    try:
+        mstories = [story.value for story in mstories if story and story.value]
+    except OperationFailure, e:
+        raise e
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
 

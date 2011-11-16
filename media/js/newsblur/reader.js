@@ -1726,7 +1726,8 @@
 
                 _.delay(_.bind(function() {
                     if (!delay || feed_id == self.next_feed) {
-                        this.model.load_feed(feed_id, 1, true, $.rescope(this.post_open_feed, this));
+                        this.model.load_feed(feed_id, 1, true, $.rescope(this.post_open_feed, this), 
+                                             _.bind(this.show_stories_error, this));
                     }
                 }, this), delay || 0);
 
@@ -1933,7 +1934,8 @@
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             
-            this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), true);
+            this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), 
+                                             _.bind(this.show_stories_error, this), true);
         },
         
         post_open_starred_stories: function(data, first_load) {
@@ -1995,11 +1997,15 @@
             this.cache['river_feeds_with_unreads'] = feeds;
             this.show_stories_progress_bar(feeds.length);
             this.model.fetch_river_stories(this.active_feed, feeds, 1, 
-                _.bind(this.post_open_river_stories, this), true);
+                _.bind(this.post_open_river_stories, this), _.bind(this.show_stories_error, this), true);
         },
         
         post_open_river_stories: function(data, first_load) {
             // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed]);
+            if (!data) {
+              return this.show_stories_error();
+            }
+            
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
                 if (!NEWSBLUR.Globals.is_premium &&
                     NEWSBLUR.Globals.is_authenticated &&
@@ -2056,6 +2062,8 @@
         },
         
         show_stories_progress_bar: function(feeds_loading) {
+            this.hide_stories_error();
+            
             var $progress = $.make('div', { className: 'NB-river-progress' }, [
                 $.make('div', { className: 'NB-river-progress-text' }),
                 $.make('div', { className: 'NB-river-progress-bar' })
@@ -2086,6 +2094,38 @@
               'queue': false, 
               'complete': function() {
                 $progress.remove();
+              }
+            });
+        },
+        
+        show_stories_error: function() {
+            this.hide_stories_progress_bar();
+            
+            var $error = $.make('div', { className: 'NB-feed-error' }, [
+                $.make('div', { className: 'NB-feed-error-icon' }),
+                $.make('div', { className: 'NB-feed-error-text' }, 'Oh no! There was an error!')
+            ]).css({'opacity': 0});
+            
+            this.$s.$story_taskbar.append($error);
+            
+            $error.animate({'opacity': 1}, {'duration': 500, 'queue': false});
+            // Center the progress bar
+            var i_width = $error.width();
+            var o_width = this.$s.$story_taskbar.width();
+            var left = (o_width / 2.0) - (i_width / 2.0);
+            $error.css({'left': left});
+            
+            this.story_titles_clear_loading_endbar();
+            this.append_story_titles_endbar();
+        },
+        
+        hide_stories_error: function() {
+            var $error = $('.NB-feed-error', this.$s.$story_taskbar);
+            $error.animate({'opacity': 0}, {
+              'duration': 250, 
+              'queue': false, 
+              'complete': function() {
+                $error.remove();
               }
             });
         },
@@ -3081,14 +3121,15 @@
                 if (!hide_loading) this.show_feedbar_loading();
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
-                    this.model.fetch_starred_stories(page+1, 
-                        _.bind(this.post_open_starred_stories, this), false);
+                    this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
+                                                     _.bind(this.show_stories_error, this), false);
                 } else if (this.flags['river_view']) {
                     this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
-                        page+1, _.bind(this.post_open_river_stories, this), false);
+                                                   page+1, _.bind(this.post_open_river_stories, this),
+                                                   _.bind(this.show_stories_error, this), false);
                 } else {
                     this.model.load_feed(feed_id, page+1, false, 
-                                         $.rescope(this.post_open_feed, this));                                 
+                                         $.rescope(this.post_open_feed, this), _.bind(this.show_stories_error, this));                                 
                 }
             }
         },
