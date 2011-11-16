@@ -190,6 +190,7 @@ def exception_change_feed_link(request):
     
     if feed.has_page_exception or feed.has_feed_exception:
         # Fix broken feed
+        logging.user(request, "~FRFixing feed exception by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
         feed_address = feedfinder.feed(feed_link)
         if feed_address:
             code = 1
@@ -207,16 +208,15 @@ def exception_change_feed_link(request):
                 original_feed.has_page_exception = False
                 original_feed.active = True
                 original_feed.save()
-    
-        logging.user(request, "~FRFixing feed exception by link: ~SB%s" % (feed.feed_link))
-        feed.update()
     else:
         # Branch good feed
+        logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
         feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
         if feed.pk != original_feed.pk:
-            feed.branch_from_feed_id = original_feed.pk
+            feed.branch_from_feed = original_feed
             feed.save()
-        feed = feed.update()
+
+    feed.update()
         
     usersub = UserSubscription.objects.get(user=request.user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
