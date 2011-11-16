@@ -184,37 +184,41 @@ def exception_change_feed_address(request):
 def exception_change_feed_link(request):
     feed_id = request.POST['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
+    original_feed = feed
     feed_link = request.POST['feed_link']
     code = -1
     
-    if not feed.has_page_exception and not feed.has_feed_exception:
-        logging.info(" ***> [%s] ~BRIncorrect feed link change: ~SB%s" % (request.user, feed))
-        # This Forbidden-403 throws an error, which sounds pretty good to me right now
-        return HttpResponseForbidden()
+    if feed.has_page_exception or feed.has_feed_exception:
+        # Fix broken feed
+        feed_address = feedfinder.feed(feed_link)
+        if feed_address:
+            code = 1
+            feed.has_page_exception = False
+            feed.active = True
+            feed.fetched_once = False
+            feed.feed_link = feed_link
+            feed.feed_address = feed_address
+            feed.next_scheduled_update = datetime.datetime.utcnow()
+            duplicate_feed_id = feed.save()
+            if duplicate_feed_id:
+                original_feed = Feed.objects.get(pk=duplicate_feed_id)
+                feed = original_feed
+                original_feed.next_scheduled_update = datetime.datetime.utcnow()
+                original_feed.has_page_exception = False
+                original_feed.active = True
+                original_feed.save()
     
-    retry_feed = feed
-    feed_address = feedfinder.feed(feed_link)
-    if feed_address:
-        code = 1
-        feed.has_page_exception = False
-        feed.active = True
-        feed.fetched_once = False
-        feed.feed_link = feed_link
-        feed.feed_address = feed_address
-        feed.next_scheduled_update = datetime.datetime.utcnow()
-        duplicate_feed_id = feed.save()
-        if duplicate_feed_id:
-            original_feed = Feed.objects.get(pk=duplicate_feed_id)
-            retry_feed = original_feed
-            original_feed.next_scheduled_update = datetime.datetime.utcnow()
-            original_feed.has_page_exception = False
-            original_feed.active = True
-            original_feed.save()
-    
-    logging.user(request, "~FRFixing feed exception by link: ~SB%s" % (retry_feed.feed_link))
-    retry_feed.update()
-    
-    usersub = UserSubscription.objects.get(user=request.user, feed=retry_feed)
+        logging.user(request, "~FRFixing feed exception by link: ~SB%s" % (feed.feed_link))
+        feed.update()
+    else:
+        # Branch good feed
+        feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
+        if feed.pk != original_feed.pk:
+            feed.branch_from_feed_id = original_feed.pk
+            feed.save()
+        feed = feed.update()
+        
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
     feeds = {feed.pk: usersub.canonical(full=True)}
