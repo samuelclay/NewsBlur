@@ -21,6 +21,8 @@
 
 #define kTableViewRowHeight 65;
 #define kTableViewRiverRowHeight 81;
+#define kMarkReadActionSheet 1;
+#define kSettingsActionSheet 2;
 
 @implementation FeedDetailViewController
 
@@ -524,25 +526,6 @@
     }
 }
 
-- (IBAction)markAllRead {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-    [request setDelegate:nil];
-    [request startAsynchronous];
-    [appDelegate markActiveFeedAllRead];
-    [appDelegate.navigationController 
-     popToViewController:[appDelegate.navigationController.viewControllers 
-                          objectAtIndex:0]  
-     animated:YES];
-}
-
-- (void)markedAsRead {
-    
-}
-
 - (IBAction)selectIntelligence {
     NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
     NSInteger previousLevel = [appDelegate selectedIntelligence];
@@ -612,6 +595,101 @@
 #pragma mark -
 #pragma mark Feed Actions
 
+
+- (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
+    if (appDelegate.isRiverView && includeHidden) {
+        // Mark folder as read
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_folder_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:appDelegate.activeFolder forKey:@"folder_name"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        
+        [appDelegate markActiveFolderAllRead];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    } else if (!appDelegate.isRiverView && includeHidden) {
+        // Mark feed as read
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        
+        [appDelegate markActiveFeedAllRead];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    } else {
+        // Mark visible stories as read
+        NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_stories_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"]; 
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+    }
+}
+
+- (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    NSString *title = appDelegate.isRiverView ? 
+                      appDelegate.activeFolder : 
+                      [appDelegate.activeFeed objectForKey:@"feed_title"];
+    UIActionSheet *options = [[UIActionSheet alloc] 
+                              initWithTitle:title
+                              delegate:self
+                              cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                              otherButtonTitles:nil];
+    
+    int visibleUnreadCount = appDelegate.visibleUnreadCount;
+    int totalUnreadCount = [appDelegate unreadCount];
+    NSArray *buttonTitles = nil;
+    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {        
+        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                                 appDelegate.isRiverView ? 
+                                 @"entire folder" : 
+                                 @"this site"];
+        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
+        options.destructiveButtonIndex = 0;
+    } else {
+        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                                 visibleUnreadCount == 1 ? 
+                                 @"this story as" : 
+                                 [NSString stringWithFormat:@"these %d stories", 
+                                  visibleUnreadCount]];        
+        NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
+                                appDelegate.isRiverView ? 
+                                @"entire folder" : 
+                                @"this site"];
+        buttonTitles = [NSArray arrayWithObjects:visibleText, entireText, nil];
+        options.destructiveButtonIndex = 1;
+    }
+    
+    for (id title in buttonTitles) {
+        [options addButtonWithTitle:title];
+    }
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+    
+    options.tag = kMarkReadActionSheet;
+    [options showInView:self.view];
+    [options release];
+}
+
 - (IBAction)doOpenSettingsActionSheet {
     UIActionSheet *options = [[UIActionSheet alloc] 
                               initWithTitle:[appDelegate.activeFeed objectForKey:@"feed_title"]
@@ -625,14 +703,32 @@
         [options addButtonWithTitle:title];
     }
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-    
+
+    options.tag = kSettingsActionSheet;
     [options showInView:self.view];
     [options release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        [self confirmDeleteSite];
+    NSLog(@"Action option #%d", buttonIndex);
+    if (actionSheet.tag == 1) {
+        int visibleUnreadCount = appDelegate.visibleUnreadCount;
+        int totalUnreadCount = [appDelegate unreadCount];
+        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:YES];
+            }
+        } else {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:NO];
+            } else if (buttonIndex == 1) {
+                [self markFeedsReadWithAllStories:YES];
+            }               
+        }
+    } else if (actionSheet.tag == 2) {
+        if (buttonIndex == 0) {
+            [self confirmDeleteSite];
+        }
     }
 }
 

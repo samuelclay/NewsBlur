@@ -5,6 +5,8 @@ if (typeof NEWSBLUR.Globals == 'undefined') NEWSBLUR.Globals = {};
 /* = Core NewsBlur Javascript = */
 /* ============================= */
 
+var URL_REGEX = /((https?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi;
+
 NEWSBLUR.log = function(msg) {
     try {
         if (typeof o == "object")
@@ -31,6 +33,36 @@ NEWSBLUR.log = function(msg) {
 
     $.fn.extend({
         
+        autolink: function() {
+            return this.each(function(){
+                var desc = $(this);
+                desc.textNodes().each(function(){
+                    var text = $(this);
+                    if(text && text.parent() && text.parent()[0] && text.parent()[0].nodeName != 'A') {
+                        text.replaceWith(this.data.replace(URL_REGEX, function($0, $1) {
+                            return '<a href="' + $0 +'">' + $0 + '</a>';
+                        }));
+                    }
+                });
+            });
+        },
+
+        textNodes: function() {
+            var ret = [];
+
+            (function(el){
+                if (!el) return;
+                if ((el.nodeType == 3)) {
+                    ret.push(el);
+                } else {
+                    for (var i=0; i < el.childNodes.length; ++i) {
+                        arguments.callee(el.childNodes[i]);
+                    }
+                }
+            })(this[0]);
+            return $(ret);
+        },
+    
         isScrollVisible: function($elem) {
             var docViewTop = 0; // $(this).scrollTop();
             var docViewBottom = docViewTop + $(this).height();

@@ -11,12 +11,14 @@ from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
+from utils.story_functions import bunch
 import time
 import datetime
 import traceback
 import multiprocessing
 import urllib2
 import xml.sax
+import redis
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -44,9 +46,10 @@ class FetchFeed:
         Uses feedparser to download the feed. Will be parsed later.
         """
         identity = self.get_identity()
-        log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
+        log_msg = u'%2s ---> [%-30s] Fetching feed (%d), last update: %s' % (identity,
                                                             unicode(self.feed)[:30],
-                                                            self.feed.id)
+                                                            self.feed.id,
+                                                            datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
                                                  
         self.feed.set_next_scheduled_update()
@@ -57,7 +60,7 @@ class FetchFeed:
             modified = None
             etag = None
             
-        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s' % (
+        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
             URL
@@ -147,8 +150,8 @@ class ProcessFeed:
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
+            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
-                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
@@ -157,7 +160,7 @@ class ProcessFeed:
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
+            logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
@@ -214,11 +217,24 @@ class ProcessFeed:
             # if story.get('published') > end_date:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
-        existing_stories = list(MStory.objects(
-            # story_guid__in=story_guids,
-            story_date__gte=start_date,
-            story_feed_id=self.feed.pk
-        ).limit(len(story_guids)))
+        
+        if self.options['slave_db']:
+            slave_db = self.options['slave_db']
+            stories_db_orig = slave_db.stories.find({
+                "story_feed_id": self.feed.pk,
+                "story_date": {
+                    "$gte": start_date,
+                },
+            }).limit(len(story_guids))
+            existing_stories = []
+            for story in stories_db_orig:
+                existing_stories.append(bunch(story))
+        else:
+            existing_stories = list(MStory.objects(
+                # story_guid__in=story_guids,
+                story_date__gte=start_date,
+                story_feed_id=self.feed.pk
+            ).limit(len(story_guids)))
         
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
@@ -227,10 +243,9 @@ class ProcessFeed:
         # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
         
-        logging.debug(u'   ---> [%-30s] Parsed Feed: %s' % (
+        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new~FG=~FG~SB%s~SN~FY up~FG=~FY~SB%s~SN same~FG=~FY%s err~FG=~FR~SB%s' % (
                       unicode(self.feed)[:30], 
-                      u' '.join(u'%s=%d' % (self.entry_trans[key],
-                              ret_values[key]) for key in self.entry_keys),))
+                      ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
         self.feed.update_all_statistics()
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
@@ -379,6 +394,9 @@ class Dispatcher:
             except IntegrityError:
                 logging.debug("   ---> [%-30s] IntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
             
+            if ret_entries[ENTRY_NEW]:
+                self.publish_to_subscribers(feed)
+                
             done_msg = (u'%2s ---> [%-30s] Processed in %s (%s) [%s]' % (
                 identity, feed.feed_title[:30], unicode(delta),
                 feed.pk, self.feed_trans[ret_feed],))
@@ -390,6 +408,15 @@ class Dispatcher:
         
         # time_taken = datetime.datetime.utcnow() - self.time_start
     
+    def publish_to_subscribers(self, feed):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            listeners_count = r.publish(str(feed.pk), 'story:new')
+            if listeners_count:
+                logging.debug("   ---> [%-30s] Published to %s subscribers" % (unicode(feed)[:30], listeners_count))
+        except redis.ConnectionError:
+            logging.debug("   ***> [%-30s] Redis is unavailable for real-time." % (unicode(feed)[:30],))
+        
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -401,8 +428,21 @@ class Dispatcher:
                       unicode(feed)[:30], user_subs.count(),
                       feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
         
-        stories_db = MStory.objects(story_feed_id=feed.pk,
-                                    story_date__gte=UNREAD_CUTOFF)
+        if self.options['slave_db']:
+            slave_db = self.options['slave_db']
+
+            stories_db_orig = slave_db.stories.find({
+                "story_feed_id": feed.pk,
+                "story_date": {
+                    "$gte": UNREAD_CUTOFF,
+                },
+            })
+            stories_db = []
+            for story in stories_db_orig:
+                stories_db.append(bunch(story))
+        else:
+            stories_db = MStory.objects(story_feed_id=feed.pk,
+                                        story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
             cache.delete('usersub:%s' % sub.user_id)
             sub.needs_unread_recalc = True

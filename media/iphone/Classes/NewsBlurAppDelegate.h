@@ -40,7 +40,9 @@
     int storyCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
+    int visibleUnreadCount;
     NSMutableArray * recentlyReadStories;
+    NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
     
 	NSDictionary * dictFolders;
@@ -69,8 +71,10 @@
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
 @property (readwrite) int storyCount;
 @property (readwrite) int originalStoryCount;
+@property (readwrite) int visibleUnreadCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite, retain) NSMutableArray * recentlyReadStories;
+@property (readwrite, retain) NSMutableSet * recentlyReadFeeds;
 @property (readwrite, retain) NSMutableArray * readStories;
 
 @property (nonatomic, retain) NSDictionary *dictFolders;
@@ -103,7 +107,12 @@
 - (int)unreadCountForFeed:(NSString *)feedId;
 - (int)unreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
+- (NSDictionary *)markVisibleStoriesRead;
+- (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markActiveFeedAllRead;
+- (void)markActiveFolderAllRead;
+- (void)markFeedAllRead:(id)feedId;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;

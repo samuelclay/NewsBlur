@@ -36,26 +36,36 @@ class MStatistics(mongo.Document):
         
     @classmethod
     def collect_statistics(cls):
+        now = datetime.datetime.now()
         last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         cls.collect_statistics_feeds_fetched(last_day)
+        print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_premium_users(last_day)
+        print "Premiums: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_standard_users(last_day)
+        print "Standard users: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_sites_loaded(last_day)
+        print "Sites loaded: %s" % (datetime.datetime.now() - now)
         
     @classmethod
     def collect_statistics_feeds_fetched(cls, last_day=None):
         if not last_day:
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         
-        feeds_fetched = MFeedFetchHistory.objects(fetch_date__gte=last_day).count()
+        feeds_fetched = MFeedFetchHistory.objects.count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
+        pages_fetched = MPageFetchHistory.objects.count()
+        cls.objects(key='pages_fetched').update_one(upsert=True, key='pages_fetched', value=pages_fetched)
         
-        old_fetch_histories = MFeedFetchHistory.objects(fetch_date__lte=last_day)
-        for history in old_fetch_histories:
-            history.delete()
-        old_page_histories = MPageFetchHistory.objects(fetch_date__lte=last_day)
-        for history in old_page_histories:
-            history.delete()
+        from utils.feed_functions import timelimit, TimeoutError
+        @timelimit(60)
+        def delete_old_history():
+            MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
+            MPageFetchHistory.objects(fetch_date__lt=last_day).delete()
+        try:
+            delete_old_history()
+        except TimeoutError:
+            print "Timed out on deleting old history. Shit."
         
         return feeds_fetched
         

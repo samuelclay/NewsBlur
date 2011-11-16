@@ -157,9 +157,13 @@ def import_from_google_reader(request):
 
     if request.user.is_authenticated():
         reader_importer = GoogleReaderImporter(request.user)
-        reader_importer.import_feeds()
-        reader_importer.import_starred_items()
-        code = 1
+        try:
+            reader_importer.import_feeds()
+            reader_importer.import_starred_items()
+        except AssertionError:
+            code = -1
+        else:
+            code = 1
         if 'import_from_google_reader' in request.session:
             del request.session['import_from_google_reader']
 

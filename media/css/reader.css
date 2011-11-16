@@ -827,6 +827,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   text-transform: uppercase;
   height: 14px;
 }
+#NB-progress.NB-progress-error .NB-progress-title {
+    height: auto;
+}
 
 #NB-progress .NB-progress-bar {
   height:6px;
@@ -855,7 +858,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 #NB-progress.NB-progress-error {
-  height: 120px;
+  height: 80px;
 }
 #NB-progress.NB-progress-big {
   height: 72px;
@@ -872,7 +875,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 #NB-progress.NB-progress-big .NB-progress-link {
-  margin: 14px 0 0;
+  margin: 6px 0 0;
 }
 
 #NB-progress.NB-progress-big .NB-progress-link a {
@@ -1597,9 +1600,36 @@ background: transparent;
     font-size: 16px;
     padding: 0 250px 0 28px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.36, rgba(212, 212, 212, 250)),
+        color-stop(0.84, rgba(244, 244, 244, 250))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(212, 212, 212) 36%,
+        rgb(244, 244, 244) 84%
+    );
     border-bottom: 1px solid #ADADAD;
     position: relative;
     overflow: hidden;
+}
+
+#story_pane .read .NB-feed-story-header-info {
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.36, rgba(214, 214, 214, 250)),
+        color-stop(0.84, rgba(230, 230, 230, 250))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(212, 212, 212) 36%,
+        rgb(244, 244, 244) 84%
+    );
 }
 
 #story_pane .NB-feed-story-header-feed {
@@ -1723,6 +1753,10 @@ background: transparent;
     text-shadow: 1px 1px 0 #e8e8e8;
 }
 
+#story_pane .read a.NB-feed-story-title {
+    color: #1C212F;
+}
+
 #story_pane a.NB-feed-story-title:hover,
 #story_pane a.NB-feed-story-title:hover .NB-score-1,
 #story_pane a.NB-feed-story-title:hover .NB-score--1 {
@@ -1737,6 +1771,9 @@ background: transparent;
     margin: 4px 24px 0 0;
     text-shadow: 1px 1px 0 #F0F0F0;
     cursor: pointer;
+}
+#story_pane .read .NB-feed-story-author {
+    color: #A0A0A0;
 }
 #story_pane .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -1791,6 +1828,10 @@ background: transparent;
     -webkit-border-radius: 4px;
     cursor: pointer;
 } 
+
+#story_pane .read .NB-feed-story-tag {
+    color: #B1ADA3;
+}
 #story_pane .NB-feed-story-tag.NB-score-1 {
     /* Green */
     background-color: #34912E;
@@ -1886,6 +1927,7 @@ background: transparent;
 #story_pane .NB-feed-story-content {
     margin: 0 140px 32px 28px;
     padding: 12px 0px;
+    max-width: 700px;
 }
 
 #story_pane .NB-feed-story-endbar {
@@ -1928,6 +1970,35 @@ background: transparent;
 #story_taskbar .NB-river-progress .NB-river-progress-bar {
   width: 150px;
   height: 8px;
+}
+
+/* ============== */
+/* = Feed Error = */
+/* ============== */
+
+#story_taskbar .NB-feed-error {
+  position: absolute;
+  top: 0;
+  margin: 2px 0 0 0;
+  width: 120px;
+  height: 20px;
+}
+
+#story_taskbar .NB-feed-error .NB-feed-error-text {
+  text-transform: uppercase;
+  font-size: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #4E0A0B;
+  text-shadow: 1px 1px 0 #D8D8D8;
+}
+
+#story_taskbar .NB-feed-error .NB-feed-error-icon {
+    margin: 3px 0 0 0;
+    width: 24px;
+    height: 19px;
+    background: transparent url('../img/reader/warning.png') no-repeat 0 0;
+    float: left;
 }
 
 /* ======================= */
@@ -4171,9 +4242,6 @@ background: transparent;
     background: transparent url('../img/icons/silk/exclamation.png') no-repeat  0 1px;   
     font-weight: bold; 
 }
-.NB-menu-manage .NB-menu-manage-move {
-    display: none;
-}
 .NB-menu-manage .NB-menu-manage-move .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/arrow_branch.png') no-repeat  0px 2px;  
 }
@@ -4267,7 +4335,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/color_swatch.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-image {
-    background: transparent url('../img/reader/instapaper.png') no-repeat 0 1px;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 1px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
     width: 16px;
@@ -4281,6 +4349,12 @@ background: transparent;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
     background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
+    background: transparent url('../img/reader/pinboard.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-googleplus {
+    background: transparent url('../img/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readability {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;
@@ -4316,11 +4390,25 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
   opacity: 1;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-image,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-icon {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-thirdparty-icon {
   opacity: .2;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-thirdparty-pinboard {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-googleplus {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-instapaper {
   opacity: 1;
 }
 
@@ -5367,6 +5455,12 @@ background: transparent;
   clear: both;
   float: left;
 }
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=radio] {
+  margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=checkbox] {
+  margin-top: 5px;
+}
 .NB-modal-preferences .NB-preference .NB-preference-options label {
   padding-left: 4px;
   margin: 0 0 4px 0;
@@ -5471,8 +5565,14 @@ background: transparent;
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
     background: transparent url('../img/reader/readitlater.png') no-repeat 0 0;
 }
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
+    background: transparent url('../img/reader/pinboard.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-googleplus] {
+    background: transparent url('../img/reader/googleplus.png') no-repeat 0 0;
+}
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('../img/reader/email.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;

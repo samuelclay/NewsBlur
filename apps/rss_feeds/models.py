@@ -4,11 +4,11 @@ import random
 import re
 import math
 import mongoengine as mongo
+import redis
 import zlib
 import urllib
 from collections import defaultdict
 from operator import itemgetter
-from BeautifulSoup import BeautifulStoneSoup
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -29,6 +29,7 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import pre_process_story
+from utils.story_functions import bunch
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -236,6 +237,7 @@ class Feed(models.Model):
                     # %s - %s - %s
                     # """ % (feed_address, self.__dict__, pprint(self.__dict__))
                     # mail_admins('Wierdo alert', message, fail_silently=True)
+                    logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
                     return False
                 try:
                     self.feed_address = feed_address
@@ -549,7 +551,7 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, force=False, single_threaded=True, compute_scores=True):
+    def update(self, force=False, single_threaded=True, compute_scores=True, slave_db=None):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -565,6 +567,7 @@ class Feed(models.Model):
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
+            'slave_db': slave_db,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -623,6 +626,16 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                     story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
+                    try:
+                        if existing_story and existing_story.id:
+                            existing_story = MStory.objects.get(id=existing_story.id)
+                        elif existing_story and existing_story.story_guid:
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                        else:
+                            raise MStory.DoesNotExist
+                    except MStory.DoesNotExist:
+                        ret_values[ENTRY_ERR] += 1
+                        continue
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
                     elif existing_story.story_content_z:
@@ -742,11 +755,19 @@ class Feed(models.Model):
                 # print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
-    def get_stories(self, offset=0, limit=25, force=False):
+    def get_stories(self, offset=0, limit=25, force=False, slave=False):
         stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
         
         if not stories or force:
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+            if slave:
+                import pymongo
+                db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
+                stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
+                stories_db = []
+                for story in stories_db_orig:
+                    stories_db.append(bunch(story))
+            else:
+                stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
             stories = Feed.format_stories(stories_db, self.pk)
             cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
         
@@ -894,8 +915,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 12 * 60 / max(.25, ((max(0, self.active_subscribers)**.35)
-                                                    * (updates_per_month**1.2)))
+        updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
+                                                    * (updates_per_month**0.35)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates
@@ -1136,7 +1157,7 @@ class MFeedFetchHistory(mongo.Document):
         'collection': 'feed_fetch_history',
         'allow_inheritance': False,
         'ordering': ['-fetch_date'],
-        'indexes': [('fetch_date', 'status_code'), ('feed_id', 'status_code'), ('feed_id', '-fetch_date')],
+        'indexes': ['-fetch_date', ('fetch_date', 'status_code'), ('feed_id', 'status_code')],
     }
     
     def save(self, *args, **kwargs):

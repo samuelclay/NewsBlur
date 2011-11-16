@@ -70,9 +70,9 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    // If there is an active feed, we need to update its table row to match 
-    // the updated unread counts.
-    if ([appDelegate activeFeed]) {
+    // If there is an active feed or a set of feeds readin the river, 
+    // we need to update its table row to match the updated unread counts.
+    if (appDelegate.activeFeed || appDelegate.isRiverView) {
         NSMutableArray *indexPaths = [NSMutableArray array];
         for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
             NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
@@ -81,14 +81,17 @@
             for (int f=0; f < [activeFolderFeeds count]; f++) {
                 int location = [[activeFolderFeeds objectAtIndex:f] intValue];
                 id feedId = [originalFolder objectAtIndex:location];
-                if ([feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame) {
+                if ((appDelegate.isRiverView &&
+                     [appDelegate.recentlyReadFeeds containsObject:feedId]) ||
+                    (appDelegate.activeFeed && 
+                     [feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame)) {
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
                     [indexPaths addObject:indexPath];
                     [self.stillVisibleFeeds setObject:indexPath forKey:[NSString stringWithFormat:@"%@", feedId]];
                 }
             }
         }
-//        NSLog(@"Refreshing feed at %@: %@", indexPaths, [appDelegate activeFeed]);
+//        NSLog(@"Refreshing feed at %@", indexPaths);
         
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
@@ -106,6 +109,7 @@
             [self redrawUnreadCounts];
         }
     }
+
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] 
                      forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] 

@@ -1,6 +1,7 @@
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
+from mongoengine.queryset import OperationError
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -57,8 +58,10 @@ def save_classifier(request):
                     }
                     if content_type in ('author', 'tag', 'title'):
                         classifier_dict.update({content_type: post_content})
-                    
-                    classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
+                    try:
+                        classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
+                    except OperationError:
+                        continue
                     if score == 0:
                         classifier.delete()
                     elif classifier.score != score:
