@@ -7,6 +7,7 @@ import mongoengine as mongo
 import redis
 import zlib
 import urllib
+import hashlib
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -36,8 +37,10 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
+    feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
+    hash_address_and_link = models.CharField(max_length=64, blank=True, null=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
@@ -61,6 +64,11 @@ class Feed(models.Model):
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
+
+    class Meta:
+        db_table="feeds"
+        ordering=["feed_title"]
+        # unique_together=[('feed_address', 'feed_link')]
     
     def __unicode__(self):
         if not self.feed_title:
@@ -116,6 +124,7 @@ class Feed(models.Model):
             self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
             self.queued_date = datetime.datetime.utcnow()
+        self.hash_address_and_link = hashlib.sha1(self.feed_address+self.feed_link).hexdigest()
             
         max_feed_title = Feed._meta.get_field('feed_title').max_length
         if len(self.feed_title) > max_feed_title:
@@ -992,10 +1001,6 @@ class Feed(models.Model):
     #     phrases = [' '.join(phrase) for phrase in best]
     #     
     #     return phrases
-        
-    class Meta:
-        db_table="feeds"
-        ordering=["feed_title"]
 
 # class FeedCollocations(models.Model):
 #     feed = models.ForeignKey(Feed)
