@@ -213,14 +213,21 @@ def exception_change_feed_link(request):
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
         feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
         if feed.pk != original_feed.pk:
-            feed.branch_from_feed = original_feed
+            try:
+                feed.branch_from_feed = original_feed.branch_from_feed or original_feed
+            except Feed.DoesNotExist:
+                feed.branch_from_feed = original_feed
             feed.feed_link_locked = True
             feed.save()
 
     feed.update()
+    feed = Feed.objects.get(pk=feed.pk)
+
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
     usersub.switch_feed(feed, original_feed)
     usersub.calculate_feed_scores(silent=False)
+    
+    feed.update_all_statistics()
     
     feeds = {original_feed.pk: usersub.canonical(full=True)}
     return {'code': code, 'feeds': feeds}

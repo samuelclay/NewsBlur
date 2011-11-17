@@ -227,7 +227,7 @@ class Feed(models.Model):
         self.count_subscribers()
         self.set_next_scheduled_update()
         
-    def check_feed_address_for_feed_link(self):
+    def check_feed_link_for_feed_address(self):
         @timelimit(10)
         def _1():
             feed_address = None
@@ -266,6 +266,9 @@ class Feed(models.Model):
                     merge_feeds(original_feed.pk, self.pk)
             return feed_address
         
+        if self.feed_address_locked:
+            return
+            
         try:
             feed_address = _1()
         except TimeoutError:
