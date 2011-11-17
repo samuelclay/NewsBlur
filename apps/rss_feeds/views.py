@@ -148,35 +148,48 @@ def exception_retry(request):
 def exception_change_feed_address(request):
     feed_id = request.POST['feed_id']
     feed = get_object_or_404(Feed, pk=feed_id)
+    original_feed = feed
     feed_address = request.POST['feed_address']
     
-    if not feed.has_feed_exception and not feed.has_page_exception:
-        logging.info(" ***> [%s] ~BRIncorrect feed address change: ~SB%s" % (request.user, feed))
-        return HttpResponseForbidden()
-        
-    feed.has_feed_exception = False
-    feed.active = True
-    feed.fetched_once = False
-    feed.feed_address = feed_address
-    feed.next_scheduled_update = datetime.datetime.utcnow()
-    retry_feed = feed
-    duplicate_feed_id = feed.save()
-    if duplicate_feed_id:
-        original_feed = Feed.objects.get(pk=duplicate_feed_id)
-        retry_feed = original_feed
-        original_feed.next_scheduled_update = datetime.datetime.utcnow()
-        original_feed.has_feed_exception = False
-        original_feed.active = True
-        original_feed.save()
-        merge_feeds(original_feed.pk, feed.pk)
-    
-    logging.user(request, "~FRFixing feed exception by address: ~SB%s" % (retry_feed.feed_address))
-    retry_feed.update()
-    
-    usersub = UserSubscription.objects.get(user=request.user, feed=retry_feed)
+    if feed.has_page_exception or feed.has_feed_exception:
+        # Fix broken feed
+        logging.user(request, "~FRFixing feed exception by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
+        feed.has_feed_exception = False
+        feed.active = True
+        feed.fetched_once = False
+        feed.feed_address = feed_address
+        feed.next_scheduled_update = datetime.datetime.utcnow()
+        duplicate_feed_id = feed.save()
+        if duplicate_feed_id:
+            new_feed = Feed.objects.get(pk=duplicate_feed_id)
+            feed = new_feed
+            new_feed.next_scheduled_update = datetime.datetime.utcnow()
+            new_feed.has_feed_exception = False
+            new_feed.active = True
+            new_feed.save()
+            merge_feeds(new_feed.pk, feed.pk)
+    else:
+        # Branch good feed
+        logging.user(request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
+        feed, _ = Feed.objects.get_or_create(feed_address=feed_address, feed_link=feed.feed_link)
+        if feed.pk != original_feed.pk:
+            try:
+                feed.branch_from_feed = original_feed.branch_from_feed or original_feed
+            except Feed.DoesNotExist:
+                feed.branch_from_feed = original_feed
+            feed.feed_address_locked = True
+            feed.save()
+
+    feed = feed.update()
+    feed = Feed.objects.get(pk=feed.pk)
+
+    usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
+    usersub.switch_feed(feed, original_feed)
     usersub.calculate_feed_scores(silent=False)
     
-    feeds = {feed.pk: usersub.canonical(full=True)}
+    feed.update_all_statistics()
+    
+    feeds = {original_feed.pk: usersub.canonical(full=True)}
     return {'code': 1, 'feeds': feeds}
     
 @ajax_login_required
@@ -202,12 +215,12 @@ def exception_change_feed_link(request):
             feed.next_scheduled_update = datetime.datetime.utcnow()
             duplicate_feed_id = feed.save()
             if duplicate_feed_id:
-                original_feed = Feed.objects.get(pk=duplicate_feed_id)
-                feed = original_feed
-                original_feed.next_scheduled_update = datetime.datetime.utcnow()
-                original_feed.has_page_exception = False
-                original_feed.active = True
-                original_feed.save()
+                new_feed = Feed.objects.get(pk=duplicate_feed_id)
+                feed = new_feed
+                new_feed.next_scheduled_update = datetime.datetime.utcnow()
+                new_feed.has_page_exception = False
+                new_feed.active = True
+                new_feed.save()
     else:
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
@@ -220,7 +233,7 @@ def exception_change_feed_link(request):
             feed.feed_link_locked = True
             feed.save()
 
-    feed.update()
+    feed = feed.update()
     feed = Feed.objects.get(pk=feed.pk)
 
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
