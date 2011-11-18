@@ -46,7 +46,7 @@ class Feed(models.Model):
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
-    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True)
+    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -341,18 +341,26 @@ class Feed(models.Model):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         from apps.reader.models import UserSubscription
         
-        subs = UserSubscription.objects.filter(feed=self)
+        if self.branch_from_feed:
+            original_feed_id = self.branch_from_feed.pk
+        else:
+            original_feed_id = self.pk
+        feed_ids = [f['id'] for f in Feed.objects.filter(branch_from_feed=original_feed_id).values('id')]
+        feed_ids.append(original_feed_id)
+        feed_ids = list(set(feed_ids))
+
+        subs = UserSubscription.objects.filter(feed__in=feed_ids)
         self.num_subscribers = subs.count()
         
         active_subs = UserSubscription.objects.filter(
-            feed=self, 
+            feed__in=feed_ids, 
             active=True,
             user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
         )
         self.active_subscribers = active_subs.count()
         
         premium_subs = UserSubscription.objects.filter(
-            feed=self, 
+            feed__in=feed_ids, 
             active=True,
             user__profile__is_premium=True
         )
