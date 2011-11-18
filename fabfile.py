@@ -471,13 +471,14 @@ def setup_redis():
         run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
         run('tar -xzf redis-2.4.2.tar.gz')
         run('rm redis-2.4.2.tar.gz')
-        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
-            sudo('make install')
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis start')
     
 # ================
 # = Setup - Task =
