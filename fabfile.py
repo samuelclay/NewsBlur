@@ -34,7 +34,7 @@ env.roledefs ={
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com', 'db02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
 # ================
@@ -78,7 +78,6 @@ def deploy():
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
         compress_media()
 
-@roles('web')
 def deploy_full():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -89,19 +88,16 @@ def deploy_full():
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl restart gunicorn')
         
-@roles('web')
 def gunicorn_stop():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl stop gunicorn')
         
-@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
@@ -110,7 +106,6 @@ def staging():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
@@ -120,27 +115,23 @@ def staging_full():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('task')
 def celery():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
     celery_stop()
     celery_start()
 
-@roles('task')
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
             run('./utils/kill_celery.sh')
 
-@roles('task')
 def celery_start():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl start celery')
         run('tail logs/newsblur.log')
 
-@roles('task')
 def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
@@ -160,12 +151,10 @@ def compress_media():
 # = Backups =
 # ===========
 
-@roles('app')
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./mongo_backup.sh')
 
-@roles('db')
 def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./postgresql_backup.sh')
@@ -423,7 +412,6 @@ def update_gunicorn():
         run('git pull')
         sudo('python setup.py develop')
 
-@roles('web')
 def setup_staging():
     run('git clone https://github.com/samuelclay/NewsBlur.git staging')
     with cd('~/staging'):
