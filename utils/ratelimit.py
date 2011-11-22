@@ -1,7 +1,8 @@
 from django.http import HttpResponseForbidden
 from django.core.cache import cache
 from datetime import datetime, timedelta
-import functools, sha
+import functools
+import hashlib
 
 class ratelimit(object):
     "Instances of this class can be used as decorators"
@@ -101,6 +102,6 @@ class ratelimit_post(ratelimit):
         # IP address and key_field (if it is set)
         extra = super(ratelimit_post, self).key_extra(request)
         if self.key_field:
-            value = sha.new(request.POST.get(self.key_field, '')).hexdigest()
+            value = hashlib.sha1(request.POST.get(self.key_field, '')).hexdigest()
             extra += '-' + value
         return extra
