@@ -93,6 +93,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             },
             error: function(e, textStatus, errorThrown) {
                 NEWSBLUR.log(['AJAX Error', textStatus, errorThrown]);
+                if (errorThrown == 'abort') {
+                    return;
+                }
+                
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 } else if ($.isFunction(callback)) {

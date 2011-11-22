@@ -2099,6 +2099,7 @@
         },
         
         show_stories_error: function() {
+            console.log(["show_stories_error", arguments]);
             this.hide_stories_progress_bar();
             
             var $error = $.make('div', { className: 'NB-feed-error' }, [
