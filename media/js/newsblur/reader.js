@@ -904,6 +904,8 @@
             if ($folder.length) {
                 return $folder.eq(0);
             }
+            
+            return this.$s.$feed_list;
         },
         
         navigate_story_titles_to_story: function(story) {
@@ -2503,7 +2505,7 @@
               }, 400);
             });
             
-            if (!$feed.is(':visible') || this.model.preference('folder_counts')) {
+            if (this.model.preference('folder_counts') || !$feed.is(':visible')) {
                 var $folder_title = $feed.closest('li.folder:visible').children('.folder_title');
                 var $children = $folder_title.closest('li.folder').children('ul.folder, .feed');
                 this.show_collapsed_folder_count($folder_title, $children);
@@ -2545,7 +2547,7 @@
             $folder = $folder || this.get_current_folder();
             folder_name = folder_name || $('.folder_title_text', $folder).eq(0).text();
             var feeds = this.get_feed_ids_in_folder($folder);
-            
+
             _.each(feeds, _.bind(function(feed_id) {
                 this.mark_feed_as_read_update_counts(feed_id);
             }, this));
