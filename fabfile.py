@@ -33,7 +33,7 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
+    'db': ['db01.newsblur.com', 'db03.newsblur.com'],
     'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
@@ -78,7 +78,6 @@ def deploy():
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
         compress_media()
 
-@roles('web')
 def deploy_full():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -89,19 +88,16 @@ def deploy_full():
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl restart gunicorn')
         
-@roles('web')
 def gunicorn_stop():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl stop gunicorn')
         
-@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
@@ -110,7 +106,6 @@ def staging():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
@@ -156,16 +151,23 @@ def compress_media():
 # = Backups =
 # ===========
 
-@roles('app')
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./mongo_backup.sh')
 
-@roles('db')
 def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./postgresql_backup.sh')
 
+# ===============
+# = Calibration =
+# ===============
+
+def sync_time():
+    sudo("/etc/init.d/ntp stop")
+    sudo("ntpdate pool.ntp.org")
+    sudo("/etc/init.d/ntp start")
+    
 # =============
 # = Bootstrap =
 # =============
@@ -419,7 +421,6 @@ def update_gunicorn():
         run('git pull')
         sudo('python setup.py develop')
 
-@roles('web')
 def setup_staging():
     run('git clone https://github.com/samuelclay/NewsBlur.git staging')
     with cd('~/staging'):
@@ -479,13 +480,14 @@ def setup_redis():
         run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
         run('tar -xzf redis-2.4.2.tar.gz')
         run('rm redis-2.4.2.tar.gz')
-        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
-            sudo('make install')
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis start')
     
 # ================
 # = Setup - Task =

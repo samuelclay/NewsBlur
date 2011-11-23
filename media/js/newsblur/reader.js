@@ -1874,7 +1874,7 @@
             });
             
             if (this.model.preference('show_unread_counts_in_title')) {
-                var title = 'NewsBlur (';
+                var title = '(';
                 var counts = [];
                 var unread_view = _.isNumber(unread_view) && unread_view || this.model.preference('unread_view');
                 if (unread_view <= -1) {
@@ -1886,7 +1886,7 @@
                 if (unread_view <= 1) {
                     counts.push(unread_counts['positive']);
                 }
-                title += counts.join('/') + ')';
+                title += counts.join('/') + ') NewsBlur';
                 document.title = title;
             }
         },
@@ -2099,6 +2099,7 @@
         },
         
         show_stories_error: function() {
+            console.log(["show_stories_error", arguments]);
             this.hide_stories_progress_bar();
             
             var $error = $.make('div', { className: 'NB-feed-error' }, [

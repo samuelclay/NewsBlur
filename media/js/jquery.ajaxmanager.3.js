@@ -2,7 +2,7 @@
  * project-site: http://plugins.jquery.com/project/AjaxManager
  * repository: http://github.com/aFarkas/Ajaxmanager
  * @author Alexander Farkas
- * @version 3.11
+ * @version 3.12
  * Copyright 2010, Alexander Farkas
  * Dual licensed under the MIT or GPL Version 2 licenses.
  */
@@ -40,7 +40,7 @@
 		this.name = name;
 		this.qName = name;
 		
-		this.opts = $.extend({}, $.ajaxSettings, $.manageAjax.defaults, opts);
+		this.opts = $.extend({}, $.manageAjax.defaults, opts);
 		if(opts && opts.queue && opts.queue !== true && typeof opts.queue === 'string' && opts.queue !== 'clear'){
 			this.qName = opts.queue;
 		}
@@ -315,6 +315,7 @@
 		abortIsNoSuccess: true,
 		maxRequests: 1,
 		cacheResponse: false,
+		async: true,
 		domCompleteTrigger: false,
 		domSuccessTrigger: false,
 		preventDoubleRequests: true,

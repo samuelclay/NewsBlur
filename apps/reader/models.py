@@ -157,7 +157,7 @@ class UserSubscription(models.Model):
         else:
             logging.user(request, "~FYRead story in feed: %s" % (self.feed))
         
-        for story_id in story_ids:
+        for story_id in set(story_ids):
             try:
                 story = MStory.objects.get(story_feed_id=self.feed.pk, story_guid=story_id)
             except MStory.DoesNotExist:
