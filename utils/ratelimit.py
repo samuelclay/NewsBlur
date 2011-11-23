@@ -46,7 +46,7 @@ class ratelimit(object):
             # add first, to ensure the key exists
             cache.add(key, 0, self.expire_after())
             cache.incr(key)
-        except AttributeError:
+        except (AttributeError, ValueError):
             cache.set(key, cache.get(key, 0) + 1, self.expire_after())
     
     def should_ratelimit(self, request):
