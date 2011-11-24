@@ -562,7 +562,7 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, force=False, single_threaded=True, compute_scores=True, slave_db=None):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, slave_db=None):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -573,7 +573,7 @@ class Feed(models.Model):
         self.set_next_scheduled_update()
         
         options = {
-            'verbose': 1 if not force else 2,
+            'verbose': verbose,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
@@ -594,7 +594,7 @@ class Feed(models.Model):
             
         return feed
 
-    def add_update_stories(self, stories, existing_stories):
+    def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -629,9 +629,10 @@ class Feed(models.Model):
                         s.save()
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except (IntegrityError, OperationError):
+                    except (IntegrityError, OperationError), e:
                         ret_values[ENTRY_ERR] += 1
-                        # logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        if verbose:
+                            logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
@@ -644,8 +645,10 @@ class Feed(models.Model):
                             existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
                         else:
                             raise MStory.DoesNotExist
-                    except (MStory.DoesNotExist, OperationError):
+                    except (MStory.DoesNotExist, OperationError), e:
                         ret_values[ENTRY_ERR] += 1
+                        if verbose:
+                            logging.info('Saving existing story, OperationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                         continue
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -679,10 +682,12 @@ class Feed(models.Model):
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
-                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                        if verbose:
+                            logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                     except ValidationError, e:
                         ret_values[ENTRY_ERR] += 1
-                        logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        if verbose:
+                            logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
