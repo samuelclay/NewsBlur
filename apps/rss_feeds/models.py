@@ -7,6 +7,7 @@ import mongoengine as mongo
 import redis
 import zlib
 import urllib
+import hashlib
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -36,8 +37,10 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
+    feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
+    hash_address_and_link = models.CharField(max_length=64, blank=True, null=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
@@ -61,6 +64,11 @@ class Feed(models.Model):
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
+
+    class Meta:
+        db_table="feeds"
+        ordering=["feed_title"]
+        # unique_together=[('feed_address', 'feed_link')]
     
     def __unicode__(self):
         if not self.feed_title:
@@ -116,6 +124,9 @@ class Feed(models.Model):
             self.next_scheduled_update = datetime.datetime.utcnow()
         if not self.queued_date:
             self.queued_date = datetime.datetime.utcnow()
+        feed_address = self.feed_address or ""
+        feed_link = self.feed_link or ""
+        self.hash_address_and_link = hashlib.sha1(feed_address+feed_link).hexdigest()
             
         max_feed_title = Feed._meta.get_field('feed_title').max_length
         if len(self.feed_title) > max_feed_title:
@@ -237,6 +248,7 @@ class Feed(models.Model):
                     # %s - %s - %s
                     # """ % (feed_address, self.__dict__, pprint(self.__dict__))
                     # mail_admins('Wierdo alert', message, fail_silently=True)
+                    logging.debug("  ---> Feed points to 'Wierdo', ignoring.")
                     return False
                 try:
                     self.feed_address = feed_address
@@ -625,7 +637,16 @@ class Feed(models.Model):
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
                     story_guid = story.get('guid') or story.get('id') or story.get('link')
                     original_content = None
-                    existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                    try:
+                        if existing_story and existing_story.id:
+                            existing_story = MStory.objects.get(id=existing_story.id)
+                        elif existing_story and existing_story.story_guid:
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                        else:
+                            raise MStory.DoesNotExist
+                    except (MStory.DoesNotExist, OperationError):
+                        ret_values[ENTRY_ERR] += 1
+                        continue
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
                     elif existing_story.story_content_z:
@@ -905,8 +926,8 @@ class Feed(models.Model):
         # 2 subscribers:
         #   1 update per day = 1 hours
         #   10 updates = 20 minutes
-        updates_per_day_delay = 12 * 60 / max(.25, ((max(0, self.active_subscribers)**.35)
-                                                    * (updates_per_month**1.2)))
+        updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
+                                                    * (updates_per_month**0.35)))
         if self.premium_subscribers > 0:
             updates_per_day_delay /= min(self.active_subscribers+self.premium_subscribers, 5)
         # Lots of subscribers = lots of updates
@@ -982,10 +1003,6 @@ class Feed(models.Model):
     #     phrases = [' '.join(phrase) for phrase in best]
     #     
     #     return phrases
-        
-    class Meta:
-        db_table="feeds"
-        ordering=["feed_title"]
 
 # class FeedCollocations(models.Model):
 #     feed = models.ForeignKey(Feed)

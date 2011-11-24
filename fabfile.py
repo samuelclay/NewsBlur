@@ -33,8 +33,8 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com', 'db02.newsblur.com'],
+    'db': ['db01.newsblur.com', 'db03.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
 # ================
@@ -78,7 +78,6 @@ def deploy():
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
         compress_media()
 
-@roles('web')
 def deploy_full():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -89,19 +88,16 @@ def deploy_full():
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl restart gunicorn')
         
-@roles('web')
 def gunicorn_stop():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl stop gunicorn')
         
-@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
@@ -110,7 +106,6 @@ def staging():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
@@ -120,27 +115,23 @@ def staging_full():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('task')
 def celery():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
     celery_stop()
     celery_start()
 
-@roles('task')
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
             run('./utils/kill_celery.sh')
 
-@roles('task')
 def celery_start():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl start celery')
         run('tail logs/newsblur.log')
 
-@roles('task')
 def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
@@ -160,16 +151,23 @@ def compress_media():
 # = Backups =
 # ===========
 
-@roles('app')
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./mongo_backup.sh')
 
-@roles('db')
 def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./postgresql_backup.sh')
 
+# ===============
+# = Calibration =
+# ===============
+
+def sync_time():
+    sudo("/etc/init.d/ntp stop")
+    sudo("ntpdate pool.ntp.org")
+    sudo("/etc/init.d/ntp start")
+    
 # =============
 # = Bootstrap =
 # =============
@@ -206,6 +204,7 @@ def setup_db():
     setup_db_firewall()
     setup_db_motd()
     setup_rabbitmq()
+    setup_memcached()
     setup_postgres()
     setup_mongo()
     setup_gunicorn(supervisor=False)
@@ -227,7 +226,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 memcached python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -422,7 +421,6 @@ def update_gunicorn():
         run('git pull')
         sudo('python setup.py develop')
 
-@roles('web')
 def setup_staging():
     run('git clone https://github.com/samuelclay/NewsBlur.git staging')
     with cd('~/staging'):
@@ -446,6 +444,8 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.250.0/24 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.253.0/24 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.250.0/24 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.253.0/24 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -462,6 +462,9 @@ def setup_rabbitmq():
     sudo('rabbitmqctl add_vhost newsblurvhost')
     sudo('rabbitmqctl set_permissions -p newsblurvhost newsblur ".*" ".*" ".*"')
 
+def setup_memcached():
+    sudo('apt-get -y install memcached')
+
 def setup_postgres():
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
 
@@ -477,13 +480,14 @@ def setup_redis():
         run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
         run('tar -xzf redis-2.4.2.tar.gz')
         run('rm redis-2.4.2.tar.gz')
-        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
-            sudo('make install')
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis start')
     
 # ================
 # = Setup - Task =

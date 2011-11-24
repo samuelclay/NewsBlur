@@ -255,6 +255,19 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Site sidebar order'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-showunreadcountsintitle' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showunreadcountsintitle-1', type: 'checkbox', name: 'show_unread_counts_in_title', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showunreadcountsintitle-1' }, [
+                                    'Show unread counts in the window title'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Window title'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -400,6 +413,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-instapaper', name: 'story_share_instapaper' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-instapaper' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Pinboard.in' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinboard', name: 'story_share_pinboard' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-pinboard' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Google+' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-googleplus', name: 'story_share_googleplus' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-googleplus' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Read It Later' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
@@ -484,6 +505,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_unread_counts_in_title]', this.$modal).each(function() {
+            if (NEWSBLUR.Preferences.show_unread_counts_in_title) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=hide_story_changes]', this.$modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
                 $(this).attr('checked', true);
@@ -557,6 +584,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
             NEWSBLUR.reader.show_stories_preference_in_feed_view();
+            NEWSBLUR.reader.update_header_counts();
             if (self.original_preferences['feed_order'] != form['feed_order'] ||
                 self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.reader.make_feeds();

@@ -46,9 +46,10 @@ class FetchFeed:
         Uses feedparser to download the feed. Will be parsed later.
         """
         identity = self.get_identity()
-        log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
+        log_msg = u'%2s ---> [%-30s] Fetching feed (%d), last update: %s' % (identity,
                                                             unicode(self.feed)[:30],
-                                                            self.feed.id)
+                                                            self.feed.id,
+                                                            datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
                                                  
         self.feed.set_next_scheduled_update()
@@ -59,7 +60,7 @@ class FetchFeed:
             modified = None
             etag = None
             
-        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s' % (
+        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
             URL
@@ -149,8 +150,8 @@ class ProcessFeed:
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
+            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
-                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
@@ -159,7 +160,7 @@ class ProcessFeed:
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
+            logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
                 fixed_feed = self.feed.check_feed_address_for_feed_link()
                 if not fixed_feed:

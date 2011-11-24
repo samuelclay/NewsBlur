@@ -137,7 +137,7 @@
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-//    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
+    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
     [progressView setProgress:progress];
 }
 
@@ -335,7 +335,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    NSLog(@"ContentOffset: %f %f", scrollView.contentOffset.x, scrollView.contentOffset.y);
+//    NSLog(@"ContentOffset: %f %f", scrollView.contentOffset.x, scrollView.contentOffset.y);
     self.feedTitleGradient.frame = CGRectMake(scrollView.contentOffset.x < 0 ? -1 * scrollView.contentOffset.x : 0, 
                                               -1 * scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height, 
                                               self.feedTitleGradient.frame.size.width, 

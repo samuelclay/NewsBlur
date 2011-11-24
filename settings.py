@@ -293,7 +293,7 @@ COMPRESS_CSS_FILTERS = []
 # ==========================
 
 DAYS_OF_UNREAD          = 14
-SUBSCRIBER_EXPIRE       = 1
+SUBSCRIBER_EXPIRE       = 2
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
@@ -382,7 +382,7 @@ CELERY_QUEUES = {
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
 BROKER_BACKEND       = "amqplib"
-BROKER_HOST          = "db02.newsblur.com"
+BROKER_HOST          = "db01.newsblur.com"
 BROKER_PORT          = 5672
 BROKER_USER          = "newsblur"
 BROKER_PASSWORD      = "newsblur"
@@ -429,7 +429,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db02',
+    'host': 'db01',
 }
 
 # ===========

@@ -76,7 +76,7 @@
 							<object class="IBUISegmentedControl" id="122945842">
 								<reference key="NSNextResponder" ref="929039419"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{93, 8}, {161, 30}}</string>
+								<string key="NSFrame">{{79, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="929039419"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -134,8 +134,9 @@
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUIBarButtonItem" id="625055884">
-								<string key="IBUITitle">All Read</string>
+								<string key="IBUITitle">Read</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<float key="IBUIWidth">48</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="929039419"/>
 							</object>
@@ -160,7 +161,7 @@
 									<string key="NSResourceName">settings_icon.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<float key="IBUIWidth">42</float>
+								<float key="IBUIWidth">48</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="929039419"/>
 							</object>
@@ -241,11 +242,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">markAllRead</string>
+						<string key="label">doOpenMarkReadActionSheet:</string>
 						<reference key="source" ref="625055884"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
-					<int key="connectionID">51</int>
+					<int key="connectionID">62</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -400,7 +401,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">61</int>
+			<int key="maxID">62</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -646,8 +647,8 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doOpenMarkReadActionSheet:</string>
 							<string>doOpenSettingsActionSheet</string>
-							<string>markAllRead</string>
 							<string>selectIntelligence</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -661,18 +662,18 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doOpenMarkReadActionSheet:</string>
 							<string>doOpenSettingsActionSheet</string>
-							<string>markAllRead</string>
 							<string>selectIntelligence</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBActionInfo">
-								<string key="name">doOpenSettingsActionSheet</string>
+								<string key="name">doOpenMarkReadActionSheet:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">markAllRead</string>
+								<string key="name">doOpenSettingsActionSheet</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -1269,6 +1270,7 @@
 							<string>appDelegate</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
+							<string>feedTitleGradient</string>
 							<string>progressView</string>
 							<string>toolbar</string>
 							<string>webView</string>
@@ -1279,6 +1281,7 @@
 							<string>NewsBlurAppDelegate</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
+							<string>UIView</string>
 							<string>UIProgressView</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
@@ -1292,6 +1295,7 @@
 							<string>appDelegate</string>
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
+							<string>feedTitleGradient</string>
 							<string>progressView</string>
 							<string>toolbar</string>
 							<string>webView</string>
@@ -1313,6 +1317,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">buttonPrevious</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedTitleGradient</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>
