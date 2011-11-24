@@ -615,7 +615,6 @@ class Feed(models.Model):
                     story_content = story.get('summary')
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
-                story_guid = story.get('guid') or story.get('id') or story.get('link') or str(story.get('published'))
                 if existing_story is None:
                     s = MStory(story_feed_id = self.pk,
                            story_date = story.get('published'),
@@ -623,7 +622,7 @@ class Feed(models.Model):
                            story_content = story_content,
                            story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
-                           story_guid = story_guid,
+                           story_guid = story.get('guid'),
                            story_tags = story_tags
                     )
                     try:
@@ -665,8 +664,8 @@ class Feed(models.Model):
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
                     # if existing_story.story_title != story.get('title'):
                     #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-                    if existing_story.story_guid != story_guid:
-                        self.update_read_stories_with_new_guid(existing_story.story_guid, story_guid)
+                    if existing_story.story_guid != story.get('guid'):
+                        self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
 
                     existing_story.story_feed = self.pk
                     existing_story.story_date = story.get('published')
@@ -675,7 +674,7 @@ class Feed(models.Model):
                     existing_story.story_original_content = original_content
                     existing_story.story_author_name = story.get('author')
                     existing_story.story_permalink = story.get('link')
-                    existing_story.story_guid = story_guid
+                    existing_story.story_guid = story.get('guid')
                     existing_story.story_tags = story_tags
                     try:
                         existing_story.save()

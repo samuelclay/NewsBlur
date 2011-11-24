@@ -67,6 +67,18 @@ def pre_process_story(entry):
         entry['link'] = urlquote(entry_link)
     if isinstance(entry.get('guid'), dict):
         entry['guid'] = unicode(entry['guid'])
+    
+    if entry.get('media_content') and 'audio controls' not in entry['content'][0]['value']:
+        media_url = entry['media_content'][0]['url']
+        media_type = entry['media_content'][0]['type']
+        entry['content'][0]['value'] += """<br><br>
+            <audio controls="controls">
+                <source src="%(media_url)s" type="%(media_type)s" />
+                <a href="%(media_url)s">%(media_url)s</a>
+            </audio>""" % {'media_url': media_url, 'media_type': media_type}
+    
+    entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
+    
     return entry
     
 class bunch(dict):
