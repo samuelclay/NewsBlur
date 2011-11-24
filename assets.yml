@@ -97,4 +97,12 @@ javascripts:
 
 stylesheets:
     common:
+        - media/css/reader.css
+        - media/css/modals.css
+        - media/css/status.css
+        - media/css/jquery-ui/jquery.theme.css
+        - media/css/jquery.tipsy.css
         - media/css/*.css
+    bookmarklet:
+        - media/css/bookmarklet/reset.css
+        - media/css/modals.css

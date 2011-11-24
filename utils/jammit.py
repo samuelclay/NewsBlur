@@ -26,7 +26,7 @@ class JammitAssets:
         """
         f = open(self.ASSET_FILENAME, 'r')
         return yaml.load(f.read())
-
+    
     def render_tags(self, asset_type, asset_package):
         """
         Returns rendered <script> and <link> tags for the given package name. Will
@@ -57,6 +57,23 @@ class JammitAssets:
         tags = self.uniquify(tags)
         return '\n'.join(tags)
     
+    def render_code(self, asset_type, asset_package):
+        text = []
+        patterns = self.assets[asset_type][asset_package]
+        
+        for pattern in patterns:
+            paths = FileFinder.filefinder(pattern)
+            for path in paths:
+                newsblur_dir = settings.NEWSBLUR_DIR
+                abs_filename = os.path.join(newsblur_dir, path)
+                f = open(abs_filename, 'r')
+                code = f.read()
+                if asset_type == 'stylesheets':
+                    code = code.replace('\"', '\\"').replace('\n', ' ')
+                text.append(code)
+        
+        return ''.join(text)
+    
     def uniquify(self, tags):
         """
         Returns a uniquified list of script/link tags, preserving order.
@@ -68,11 +85,11 @@ class JammitAssets:
             if tag not in seen:
                 unique.append(tag)
                 seen.add(tag)
-        
+
         return unique
     
     def javascript_tag(self, path):
-        return '<script src="%s" type="text/javascript" charset="utf-8"></script>' % path
+        return '<script src="/%s" type="text/javascript" charset="utf-8"></script>' % path
     
     def javascript_tag_compressed(self, asset_package, asset_type_ext):
         filename = 'static/%s.%s' % (asset_package, asset_type_ext)
@@ -81,7 +98,7 @@ class JammitAssets:
         return self.javascript_tag(path)
     
     def stylesheet_tag(self, path):
-        return '<link rel="stylesheet" href="%s" type="text/css" charset="utf-8">' % path
+        return '<link rel="stylesheet" href="/%s" type="text/css" charset="utf-8">' % path
 
     def stylesheet_tag_compressed(self, asset_package, asset_type_ext):
         datauri_filename = 'static/%s-datauri.%s' % (asset_package, asset_type_ext)
@@ -107,12 +124,12 @@ class FileFinder:
         if '**' in pattern:
             folder, wild, pattern = pattern.partition('/**/')
             for f in cls.recursive_find_files(folder, pattern):
-                paths.append('/'+f)
+                paths.append(f)
         else:
             folder, pattern = os.path.split(pattern)
             for f in cls.find_files(folder, pattern):
                 # print f, paths
-                paths.append('/'+f)
+                paths.append(f)
         return paths
 
     @classmethod
