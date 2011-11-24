@@ -615,6 +615,7 @@ class Feed(models.Model):
                     story_content = story.get('summary')
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+                story_guid = story.get('guid') or story.get('id') or story.get('link') or story.get('published')
                 if existing_story is None:
                     s = MStory(story_feed_id = self.pk,
                            story_date = story.get('published'),
@@ -622,7 +623,7 @@ class Feed(models.Model):
                            story_content = story_content,
                            story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
-                           story_guid = story.get('guid') or story.get('id') or story.get('link'),
+                           story_guid = story_guid,
                            story_tags = story_tags
                     )
                     try:
@@ -636,7 +637,7 @@ class Feed(models.Model):
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
-                    story_guid = story.get('guid') or story.get('id') or story.get('link')
+                    
                     original_content = None
                     try:
                         if existing_story and existing_story.id:
