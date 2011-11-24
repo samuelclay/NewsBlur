@@ -48,7 +48,7 @@ javascripts:
         - media/js/jquery.fieldselection.js
         - media/js/jquery.flot.js
         - media/js/jquery.tipsy.js
-        # media/'js/socket.io-client.0.8.7.js',
+        - media/js/socket.io-client.0.8.7.js
         - media/js/inflector.js
         - media/js/underscore.js
         - media/js/underscore.string.js

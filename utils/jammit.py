@@ -94,7 +94,7 @@ class JammitAssets:
     def javascript_tag_compressed(self, asset_package, asset_type_ext):
         filename = 'static/%s.%s' % (asset_package, asset_type_ext)
         asset_mtime = int(os.path.getmtime(filename))
-        path = '/%s?%s' % (filename, asset_mtime)
+        path = '%s?%s' % (filename, asset_mtime)
         return self.javascript_tag(path)
     
     def stylesheet_tag(self, path):
@@ -104,8 +104,8 @@ class JammitAssets:
         datauri_filename = 'static/%s-datauri.%s' % (asset_package, asset_type_ext)
         original_filename = 'static/%s.%s' % (asset_package, asset_type_ext)
         asset_mtime = int(os.path.getmtime(datauri_filename))
-        datauri_path = '/%s?%s' % (datauri_filename, asset_mtime)
-        original_path = '/%s?%s' % (original_filename, asset_mtime)
+        datauri_path = '%s?%s' % (datauri_filename, asset_mtime)
+        original_path = '%s?%s' % (original_filename, asset_mtime)
         
         return '\n'.join([
             DATA_URI_START,

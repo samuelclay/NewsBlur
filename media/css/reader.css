@@ -1627,8 +1627,8 @@ background: transparent;
     );
     background-image: -moz-linear-gradient(
         center bottom,
-        rgb(212, 212, 212) 36%,
-        rgb(244, 244, 244) 84%
+        rgb(214, 214, 214) 36%,
+        rgb(230, 230, 230) 84%
     );
 }
 

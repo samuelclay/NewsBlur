@@ -482,4 +482,3 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 
 JAMMIT = jammit.JammitAssets()
-print JAMMIT
