@@ -268,11 +268,11 @@
 
 .NB-modal .NB-modal-feed-chooser-container {
     float: right;
-    margin: 16px 0 0;
+    margin: 3px 0 12px;
 }
-
 .NB-modal .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
     width: 250px;
+    margin: 0 0 12px;
 }
 
 /* ===================== */
