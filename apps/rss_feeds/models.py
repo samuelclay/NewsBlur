@@ -615,7 +615,7 @@ class Feed(models.Model):
                     story_content = story.get('summary')
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
-                story_guid = story.get('guid') or story.get('id') or story.get('link') or story.get('published')
+                story_guid = story.get('guid') or story.get('id') or story.get('link') or str(story.get('published'))
                 if existing_story is None:
                     s = MStory(story_feed_id = self.pk,
                            story_date = story.get('published'),
