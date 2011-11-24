@@ -804,7 +804,7 @@ class Feed(models.Model):
         story['story_content']    = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
         story['story_feed_id']    = feed_id or story_db.story_feed_id
-        story['id']               = story_db.story_guid
+        story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
         if text:
@@ -814,8 +814,7 @@ class Feed(models.Model):
             text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)
             story['text'] = text
-            
-
+        
         return story
                 
     def get_tags(self, entry):
