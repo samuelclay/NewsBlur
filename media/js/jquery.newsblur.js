@@ -35,13 +35,16 @@ NEWSBLUR.log = function(msg) {
         
         autolink: function() {
             return this.each(function(){
-                var desc = $(this);
-                desc.textNodes().each(function(){
+                var $desc = $(this);
+                $desc.textNodes().each(function(){
                     var text = $(this);
                     if(text && text.parent() && text.parent()[0] && text.parent()[0].nodeName != 'A') {
-                        text.replaceWith(this.data.replace(URL_REGEX, function($0, $1) {
-                            return '<a href="' + $0 +'">' + $0 + '</a>';
-                        }));
+                        if (this.data.indexOf('http') != -1) {
+                            text.replaceWith(this.data.replace(URL_REGEX, function($0, $1) {
+                                console.log(["Replacing text link", $0]);
+                                return '<a href="' + $0 +'">' + $0 + '</a>';
+                            }));
+                        }
                     }
                 });
             });
