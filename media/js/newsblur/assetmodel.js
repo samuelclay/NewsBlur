@@ -405,9 +405,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/river_stories', {
             feeds: feeds,
             page: page,
-            read_stories_count: this.read_stories_river_count,
-            // TODO: Remove new flag
-            new_flag: true
+            read_stories_count: this.read_stories_river_count
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
