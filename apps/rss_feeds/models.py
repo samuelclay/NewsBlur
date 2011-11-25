@@ -575,7 +575,7 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, force=False, single_threaded=True, compute_scores=True, slave_db=None):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, slave_db=None):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -586,7 +586,7 @@ class Feed(models.Model):
         self.set_next_scheduled_update()
         
         options = {
-            'verbose': 1 if not force else 2,
+            'verbose': verbose,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
@@ -607,7 +607,7 @@ class Feed(models.Model):
             
         return feed
 
-    def add_update_stories(self, stories, existing_stories):
+    def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = {
             ENTRY_NEW:0,
             ENTRY_UPDATED:0,
@@ -635,20 +635,21 @@ class Feed(models.Model):
                            story_content = story_content,
                            story_author_name = story.get('author'),
                            story_permalink = story.get('link'),
-                           story_guid = story.get('guid') or story.get('id') or story.get('link'),
+                           story_guid = story.get('guid'),
                            story_tags = story_tags
                     )
                     try:
                         s.save()
                         ret_values[ENTRY_NEW] += 1
                         cache.set('updated_feed:%s' % self.id, 1)
-                    except (IntegrityError, OperationError):
+                    except (IntegrityError, OperationError), e:
                         ret_values[ENTRY_ERR] += 1
-                        # logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        if verbose:
+                            logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 elif existing_story and story_has_changed:
                     # update story
                     # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
-                    story_guid = story.get('guid') or story.get('id') or story.get('link')
+                    
                     original_content = None
                     try:
                         if existing_story and existing_story.id:
@@ -657,8 +658,10 @@ class Feed(models.Model):
                             existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
                         else:
                             raise MStory.DoesNotExist
-                    except (MStory.DoesNotExist, OperationError):
+                    except (MStory.DoesNotExist, OperationError), e:
                         ret_values[ENTRY_ERR] += 1
+                        if verbose:
+                            logging.info('Saving existing story, OperationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                         continue
                     if existing_story.story_original_content_z:
                         original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -674,8 +677,8 @@ class Feed(models.Model):
                     # logging.debug("\t\tDiff content: %s" % diff.getDiff())
                     # if existing_story.story_title != story.get('title'):
                     #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-                    if existing_story.story_guid != story_guid:
-                        self.update_read_stories_with_new_guid(existing_story.story_guid, story_guid)
+                    if existing_story.story_guid != story.get('guid'):
+                        self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
 
                     existing_story.story_feed = self.pk
                     existing_story.story_date = story.get('published')
@@ -684,7 +687,7 @@ class Feed(models.Model):
                     existing_story.story_original_content = original_content
                     existing_story.story_author_name = story.get('author')
                     existing_story.story_permalink = story.get('link')
-                    existing_story.story_guid = story_guid
+                    existing_story.story_guid = story.get('guid')
                     existing_story.story_tags = story_tags
                     try:
                         existing_story.save()
@@ -692,10 +695,12 @@ class Feed(models.Model):
                         cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
-                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                        if verbose:
+                            logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
                     except ValidationError, e:
                         ret_values[ENTRY_ERR] += 1
-                        logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        if verbose:
+                            logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
                 else:
                     ret_values[ENTRY_SAME] += 1
                     # logging.debug("Unchanged story: %s " % story.get('title'))
@@ -817,7 +822,7 @@ class Feed(models.Model):
         story['story_content']    = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
         story['story_feed_id']    = feed_id or story_db.story_feed_id
-        story['id']               = story_db.story_guid
+        story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
         if text:
@@ -827,8 +832,7 @@ class Feed(models.Model):
             text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)
             story['text'] = text
-            
-
+        
         return story
                 
     def get_tags(self, entry):
@@ -1334,3 +1338,18 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     duplicate_feed.delete()
     original_feed.count_subscribers()
     
+def rewrite_folders(folders, original_feed, duplicate_feed):
+    new_folders = []
+    
+    for k, folder in enumerate(folders):
+        if isinstance(folder, int):
+            if folder == duplicate_feed.pk:
+                # logging.info("              ===> Rewrote %s'th item: %s" % (k+1, folders))
+                new_folders.append(original_feed.pk)
+            else:
+                new_folders.append(folder)
+        elif isinstance(folder, dict):
+            for f_k, f_v in folder.items():
+                new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})
+
+    return new_folders
