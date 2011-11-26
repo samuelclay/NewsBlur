@@ -23,7 +23,6 @@ import redis
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-URL = 'http://www.newsblur.com/'
 SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
@@ -63,7 +62,7 @@ class FetchFeed:
         USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
-            URL
+            settings.NEWSBLUR_URL
         )
 
         self.fpf = feedparser.parse(self.feed.feed_address,
