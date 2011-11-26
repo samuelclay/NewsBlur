@@ -5,7 +5,6 @@ from apps.rss_feeds.models import Feed
 from optparse import make_option
 from utils import feed_fetcher
 from utils.management_functions import daemonize
-import django
 import socket
 import datetime
 import redis
@@ -76,14 +75,12 @@ class Command(BaseCommand):
         feeds_queue = []
         for _ in range(num_workers):
             feeds_queue.append([])
-        
+            
         i = 0
         for feed in feeds:
             feeds_queue[i%num_workers].append(feed.pk)
             i += 1
         disp.add_jobs(feeds_queue, i)
-        
-        django.db.connection.close()
         
         print " ---> Fetching %s feeds..." % feeds.count()
         disp.run_jobs()
