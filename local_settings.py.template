@@ -1,46 +1,5 @@
 import logging
 
-# ===================
-# = Server Settings =
-# ===================
-
-ADMINS                = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
-)
-
-SERVER_EMAIL          = 'server@newsblur.com'
-HELLO_EMAIL           = 'hello@newsblur.com'
-NEWSBLUR_URL          = 'http://www.newsblur.com'
-
-# ==================
-# = Global Settngs =
-# ==================
-
-DEBUG = True
-MEDIA_URL = '/media/'
-SECRET_KEY = 'YOUR SECRET KEY'
-
-CACHE_BACKEND = 'dummy:///'
-# CACHE_BACKEND = 'locmem:///'
-# CACHE_BACKEND = 'memcached://127.0.0.1:11211'
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Set this to the username that is shown on the homepage to unauthenticated users.
-HOMEPAGE_USERNAME = 'conesus'
-
-# Google Reader OAuth API Keys
-OAUTH_KEY = 'www.example.com'
-OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'
-
-S3_ACCESS_KEY = 'XXX'
-S3_SECRET = 'SECRET'
-S3_BACKUP_BUCKET = 'newsblur_backups'
-
-# =============
-# = Databases =
-# =============
-
 DATABASES = {
     'default': {
         'NAME': 'newsblur',
@@ -60,6 +19,25 @@ MONGO_DB = {
 MONGODB_SLAVE = {
     'host': '127.0.0.1'
 }
+
+DEBUG = True
+
+MEDIA_URL = '/media/'
+
+SECRET_KEY = 'YOUR SECRET KEY'
+
+CACHE_BACKEND = 'dummy:///'
+# CACHE_BACKEND = 'locmem:///'
+# CACHE_BACKEND = 'memcached://127.0.0.1:11211'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Set this to the username that is shown on the homepage to unauthenticated users.
+HOMEPAGE_USERNAME = 'conesus'
+
+# Google Reader OAuth API Keys
+OAUTH_KEY = 'www.example.com'
+OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'
 
 # Celery RabbitMQ Broker
 BROKER_HOST = "127.0.0.1"
@@ -81,3 +59,7 @@ if len(logging._handlerList) < 1:
                             format='%(asctime)-12s: %(message)s',
                             datefmt='%b %d %H:%M:%S',
                             handler=logging.StreamHandler)
+
+S3_ACCESS_KEY = 'XXX'
+S3_SECRET = 'SECRET'
+S3_BACKUP_BUCKET = 'newsblur_backups'

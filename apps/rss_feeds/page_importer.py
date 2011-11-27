@@ -1,13 +1,17 @@
-import requests
+import urllib2, httplib
 import re
 import urlparse
 import traceback
 import feedparser
 import time
-from django.conf import settings
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, mail_feed_error_to_admin
+
+HEADERS = {
+    'User-Agent': 'NewsBlur Page Fetcher - http://www.newsblur.com',
+    'Connection': 'close',
+}
 
 BROKEN_PAGES = [
     'tag:', 
@@ -22,18 +26,6 @@ class PageImporter(object):
     def __init__(self, url, feed):
         self.url = url
         self.feed = feed
-        self.setup_headers()
-        
-    def setup_headers(self):
-        s = requests.session()
-        s.config['keep_alive'] = False
-        self.headers = {
-            'User-Agent': 'NewsBlur Page Fetcher (%s subscriber%s) - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)' % (
-                self.feed.num_subscribers,
-                's' if self.feed.num_subscribers != 1 else '',
-                settings.NEWSBLUR_URL
-            ),
-        }
     
     @timelimit(15)
     def fetch_page(self):
@@ -43,9 +35,10 @@ class PageImporter(object):
         
         try:
             if self.url.startswith('http'):
-                response = requests.get(self.url, headers=self.headers)
+                request = urllib2.Request(self.url, headers=HEADERS)
+                response = urllib2.urlopen(request)
                 time.sleep(0.01) # Grrr, GIL.
-                data = response.content
+                data = response.read()
             elif any(self.url.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
                 return
@@ -53,17 +46,17 @@ class PageImporter(object):
                 data = open(self.url, 'r').read()
             html = self.rewrite_page(data)
             self.save_page(html)
-        # except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
-        #     self.feed.save_page_history(401, "Bad URL", e)
-        #     fp = feedparser.parse(self.feed.feed_address)
-        #     self.feed.feed_link = fp.feed.get('link', "")
-        #     self.feed.save()
-        # except (urllib2.HTTPError), e:
-        #     self.feed.save_page_history(e.code, e.msg, e.fp.read())
-        #     return
-        # except (httplib.IncompleteRead), e:
-        #     self.feed.save_page_history(500, "IncompleteRead", e)
-        #     return
+        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
+            self.feed.save_page_history(401, "Bad URL", e)
+            fp = feedparser.parse(self.feed.feed_address)
+            self.feed.feed_link = fp.feed.get('link', "")
+            self.feed.save()
+        except (urllib2.HTTPError), e:
+            self.feed.save_page_history(e.code, e.msg, e.fp.read())
+            return
+        except (httplib.IncompleteRead), e:
+            self.feed.save_page_history(500, "IncompleteRead", e)
+            return
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
