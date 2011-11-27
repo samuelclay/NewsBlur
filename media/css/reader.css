@@ -4202,8 +4202,8 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }
-.NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
+.NB-menu-manage .NB-menu-manage-feed-settings .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/calculator.png') no-repeat  0 1px;    
 }
 .NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/car.png') no-repeat  0 1px;    
@@ -4490,12 +4490,6 @@ background: transparent;
   width: 524px;
   height: 180px;
 }
-.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container {
-  margin: 3px 0 12px;
-}
-.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-  margin: 0 0 12px;
-}
 
 .NB-modal-statistics .NB-modal-loading {
   margin: 6px 8px 0;
@@ -4602,12 +4596,6 @@ background: transparent;
 /* = Feed Recommendation Modal = */
 /* ============================= */
 
-.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container {
-  margin: 3px 0 12px;
-}
-.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-  margin: 0 0 12px;
-}
 .NB-modal-recommend .NB-modal-loading {
   margin: 6px 8px 0;
 }
@@ -4882,6 +4870,28 @@ background: transparent;
 /* = Feed Exceptions Modal = */
 /* ========================= */
 
+.NB-modal-exception .NB-exception-only {
+    display: inline;
+}
+.NB-modal-exception .NB-exception-block-only {
+    display: block;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-title {
+    display: block;
+}
+.NB-modal-exception .NB-modal-title.NB-exception-block-only {
+    display: block;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-only,
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
+.NB-modal-exception .NB-modal-title {
+    display: none;
+}
 .NB-modal-exception .NB-exception-explanation {
     color: #606060;
     font-size: 12px;
@@ -4908,11 +4918,24 @@ background: transparent;
   margin-bottom: 6px;
 }
 
-.NB-modal-exception input[type=text] {
-  width: 200px;
-  margin: 0 10px;
+.NB-modal-exception .NB-exception-input-wrapper {
+    position: relative;
+    margin: 4px 0 0;
+}
+.NB-modal-exception .NB-exception-label {
+    position: absolute;
+    top: 2px;
+    left: 0;
 }
 
+.NB-modal-exception input[type=text] {
+  width: 400px;
+  margin: 0 0 12px 104px;
+}
+
+.NB-modal-exception .NB-exception-submit-wrapper {
+    margin: 0 0 2px 100px;
+}
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */
@@ -5481,7 +5504,7 @@ background: transparent;
   height: 31px;
   min-width: 50px;
 }
-.NB-modal-preferences .NB-preference-view input {
+.NB-modal-preferences .NB-preference-view .NB-preference-options input[type="radio"] {
   margin-top: 10px;
 }
 .NB-modal-preferences .NB-preference-story-pane-position input {

@@ -36,16 +36,17 @@ from utils.diff import HTMLDiff
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
-    feed_address = models.URLField(max_length=255, verify_exists=True, unique=True)
+    feed_address = models.URLField(max_length=255, verify_exists=True)
     feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
-    hash_address_and_link = models.CharField(max_length=64, blank=True, null=True)
+    hash_address_and_link = models.CharField(max_length=64, unique=True, db_index=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
+    branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
@@ -137,15 +138,16 @@ class Feed(models.Model):
         
         try:
             super(Feed, self).save(*args, **kwargs)
+            return self
         except IntegrityError, e:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
             if duplicate_feed:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
-                return duplicate_feed[0].pk
+                return duplicate_feed[0]
             # Feed has been deleted. Just ignore it.
-            pass
+            return
     
     @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
@@ -225,7 +227,7 @@ class Feed(models.Model):
         self.count_subscribers()
         self.set_next_scheduled_update()
         
-    def check_feed_address_for_feed_link(self):
+    def check_feed_link_for_feed_address(self):
         @timelimit(10)
         def _1():
             feed_address = None
@@ -264,6 +266,9 @@ class Feed(models.Model):
                     merge_feeds(original_feed.pk, self.pk)
             return feed_address
         
+        if self.feed_address_locked:
+            return
+            
         try:
             feed_address = _1()
         except TimeoutError:
@@ -336,18 +341,26 @@ class Feed(models.Model):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
         from apps.reader.models import UserSubscription
         
-        subs = UserSubscription.objects.filter(feed=self)
+        if self.branch_from_feed:
+            original_feed_id = self.branch_from_feed.pk
+        else:
+            original_feed_id = self.pk
+        feed_ids = [f['id'] for f in Feed.objects.filter(branch_from_feed=original_feed_id).values('id')]
+        feed_ids.append(original_feed_id)
+        feed_ids = list(set(feed_ids))
+
+        subs = UserSubscription.objects.filter(feed__in=feed_ids)
         self.num_subscribers = subs.count()
         
         active_subs = UserSubscription.objects.filter(
-            feed=self, 
+            feed__in=feed_ids, 
             active=True,
             user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
         )
         self.active_subscribers = active_subs.count()
         
         premium_subs = UserSubscription.objects.filter(
-            feed=self, 
+            feed__in=feed_ids, 
             active=True,
             user__profile__is_premium=True
         )
@@ -1234,7 +1247,7 @@ class DuplicateFeed(models.Model):
         return "%s: %s" % (self.feed, self.duplicate_address)
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
-    from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory
+    from apps.reader.models import UserSubscription, MUserStory
     from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
     if original_feed_id > duplicate_feed_id and not force:
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
@@ -1252,26 +1265,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
     for user_sub in user_subs:
-        # Rewrite feed in subscription folders
-        try:
-            user_sub_folders = UserSubscriptionFolders.objects.get(user=user_sub.user)
-        except Exception, e:
-            logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
-            continue
-    
-        # Switch to original feed for the user subscription
-        logging.info("      ===> %s " % user_sub.user)
-        user_sub.feed = original_feed
-        user_sub.needs_unread_recalc = True
-        try:
-            user_sub.save()
-            folders = json.decode(user_sub_folders.folders)
-            folders = rewrite_folders(folders, original_feed, duplicate_feed)
-            user_sub_folders.folders = json.encode(folders)
-            user_sub_folders.save()
-        except (IntegrityError, OperationError):
-            logging.info("      !!!!> %s already subscribed" % user_sub.user)
-            user_sub.delete()
+        user_sub.switch_feed(original_feed, duplicate_feed)
 
     # Switch read stories
     user_stories = MUserStory.objects(feed_id=duplicate_feed.pk)
@@ -1339,7 +1333,6 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     duplicate_feed.delete()
     original_feed.count_subscribers()
     
-                    
 def rewrite_folders(folders, original_feed, duplicate_feed):
     new_folders = []
     
