@@ -432,7 +432,8 @@ def load_single_feed(request, feed_id):
                 feed_authors=feed_authors, 
                 classifiers=classifiers,
                 last_update=last_update,
-                feed_id=feed.pk)
+                feed_id=feed.pk,
+                elapsed_time=round(float(timediff), 2))
     
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
@@ -486,13 +487,12 @@ def load_starred_stories(request):
 def load_river_stories(request):
     limit              = 18
     offset             = 0
-    start              = datetime.datetime.utcnow()
+    start              = time.time()
     user               = get_user(request)
     feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     original_feed_ids  = list(feed_ids)
     page               = int(request.REQUEST.get('page', 1))
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
-    new_flag           = request.REQUEST.get('new_flag', False)
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
@@ -615,19 +615,15 @@ def load_river_stories(request):
             'tags':   apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
             'title':  apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
         }
-    
-    diff = datetime.datetime.utcnow() - start
-    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+
+    diff = time.time() - start
+    timediff = round(float(diff), 2)
     logging.user(request, "~FCLoading river stories: page %s - ~SB%s/%s "
                                "stories ~SN(%s/%s/%s feeds) ~FB(%s seconds)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), timediff))
     
-    if new_flag:
-        return dict(stories=stories, classifiers=classifiers)
-    else:
-        logging.user(request, "~BR~FCNo new flag on river")
-        return dict(stories=stories)
+    return dict(stories=stories, classifiers=classifiers, elapsed_time=timediff)
     
     
 @ajax_login_required

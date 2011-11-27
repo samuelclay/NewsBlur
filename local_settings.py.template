@@ -42,6 +42,14 @@ OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'
 # Celery RabbitMQ Broker
 BROKER_HOST = "127.0.0.1"
 
+REDIS = {
+    'host': '127.0.0.1',
+}
+
+# ===========
+# = Logging =
+# ===========
+
 # Logging (setup for development)
 LOG_TO_STREAM = True
 

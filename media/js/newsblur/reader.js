@@ -974,9 +974,9 @@
             }
             // NEWSBLUR.log(['page_in_story', this.$s.$story_pane, direction, page_height, scroll_height]);
             if (this.story_view == 'page') {
-                this.$s.$feed_iframe.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 260);
+                this.$s.$feed_iframe.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 230, {queue: false});
             } else if (this.story_view == 'feed') {
-                this.$s.$feed_stories.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 370);
+                this.$s.$feed_stories.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 340, {queue: false});
             }
         },
         
@@ -6649,7 +6649,7 @@
             });
             $document.bind('keydown', 'shift+space', function(e) {
                 e.preventDefault();
-                self.page_in_story(0.6, -1);
+                self.page_in_story(0.65, -1);
             });
             $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
