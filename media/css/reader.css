@@ -4936,6 +4936,9 @@ background: transparent;
 .NB-modal-exception .NB-exception-submit-wrapper {
     margin: 0 0 2px 100px;
 }
+.NB-modal-exception .NB-modal-loading {
+    margin: 6px 8px 0;
+}
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */

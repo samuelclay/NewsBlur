@@ -247,7 +247,7 @@ class ProcessFeed:
         # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, verbose=self.options['verbose'])
         
-        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new~FG=~FG~SB%s~SN~FY up~FG=~FY~SB%s~SN same~FG=~FY%s err~FG=~FR~SB%s' % (
+        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
                       unicode(self.feed)[:30], 
                       ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
         self.feed.update_all_statistics()

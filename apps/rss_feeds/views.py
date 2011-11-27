@@ -159,9 +159,9 @@ def exception_change_feed_address(request):
         feed.fetched_once = False
         feed.feed_address = feed_address
         feed.next_scheduled_update = datetime.datetime.utcnow()
-        duplicate_feed_id = feed.save()
-        if duplicate_feed_id:
-            new_feed = Feed.objects.get(pk=duplicate_feed_id)
+        duplicate_feed = feed.save()
+        if duplicate_feed:
+            new_feed = Feed.objects.get(pk=duplicate_feed.pk)
             feed = new_feed
             new_feed.next_scheduled_update = datetime.datetime.utcnow()
             new_feed.has_feed_exception = False
@@ -213,9 +213,9 @@ def exception_change_feed_link(request):
             feed.feed_link = feed_link
             feed.feed_address = feed_address
             feed.next_scheduled_update = datetime.datetime.utcnow()
-            duplicate_feed_id = feed.save()
-            if duplicate_feed_id:
-                new_feed = Feed.objects.get(pk=duplicate_feed_id)
+            duplicate_feed = feed.save()
+            if duplicate_feed:
+                new_feed = Feed.objects.get(pk=duplicate_feed.pk)
                 feed = new_feed
                 new_feed.next_scheduled_update = datetime.datetime.utcnow()
                 new_feed.has_page_exception = False

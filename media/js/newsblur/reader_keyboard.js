@@ -88,7 +88,7 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                 ])
               ]),        
               $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open Site'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Story view'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'enter'
                 ]),
@@ -166,11 +166,41 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Mark site/folder as read'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Mark all as read'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),
                     'a'
+                ])
+              ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Return to dashboard'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'd'
+                ])
+              ]),
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open Everything'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'shift',
+                    $.make('span', '+'),
+                    'e'
+                ])
+              ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'View keyboard shortcuts'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    '?'
+                ])
+              ]),
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Find oldest unread story'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'm'
                 ])
               ])
             ])

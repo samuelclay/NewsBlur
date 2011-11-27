@@ -619,13 +619,8 @@ class Feed(models.Model):
             story = pre_process_story(story)
             
             if story.get('title'):
-                story_contents = story.get('content')
+                story_content = story.get('story_content')
                 story_tags = self.get_tags(story)
-                
-                if story_contents is not None:
-                    story_content = story_contents[0]['value']
-                else:
-                    story_content = story.get('summary')
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
                 if existing_story is None:
