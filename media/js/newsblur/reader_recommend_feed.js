@@ -10,8 +10,11 @@ NEWSBLUR.ReaderRecommendFeed = function(feed_id, options) {
     this.runner();
 };
 
-NEWSBLUR.ReaderRecommendFeed.prototype = {
-    
+NEWSBLUR.ReaderRecommendFeed.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderRecommendFeed.prototype.constructor = NEWSBLUR.ReaderRecommendFeed;
+
+_.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
+        
     runner: function() {
         this.make_modal();
         this.open_modal();
@@ -59,23 +62,6 @@ NEWSBLUR.ReaderRecommendFeed.prototype = {
         ]);
     },
     
-    make_feed_chooser: function() {
-        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
-        
-        for (var f in this.feeds) {
-            var feed = this.feeds[f];
-            var $option = $.make('option', { value: feed.id }, feed.feed_title);
-            $option.appendTo($chooser);
-            
-            if (feed.id == this.feed_id) {
-                $option.attr('selected', true);
-            }
-        }
-        
-        $('option', $chooser).tsort();
-        return $chooser;
-    },
-    
     get_tagline: function() {
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
@@ -97,15 +83,6 @@ NEWSBLUR.ReaderRecommendFeed.prototype = {
         }
     },
         
-    initialize_feed: function(feed_id) {
-        this.feed_id = feed_id;
-        this.feed = this.model.get_feed(feed_id);
-        
-        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed.favicon));
-        $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
-        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers));
-    },
-    
     open_modal: function() {
         var self = this;
         
@@ -181,4 +158,4 @@ NEWSBLUR.ReaderRecommendFeed.prototype = {
         });
     }
     
-};
+});
