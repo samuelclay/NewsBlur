@@ -678,6 +678,14 @@
             return feeds;
         },
         
+        compute_story_score: function(story) {
+            if (this.active_feed == 'starred') {
+                return 1;
+            } else {
+                return NEWSBLUR.utils.compute_story_score(story);
+            }
+        },
+        
         // ==============
         // = Navigation =
         // ==============
@@ -2821,7 +2829,7 @@
             var read = story.read_status
                 ? ' read '
                 : '';
-            var score = NEWSBLUR.utils.compute_story_score(story);
+            var score = this.compute_story_score(story);
             var score_color = 'neutral';
             var starred = story.starred ? ' NB-story-starred ' : '';
             if (options.river_stories) {
@@ -2903,7 +2911,7 @@
             var replace_stories = _.bind(function($story, story_id) {
                 var story = this.model.get_story(story_id);
                 if (story.story_feed_id != feed_id) return;
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
                 $story.removeClass('NB-story-positive')
                       .removeClass('NB-story-neutral')
                       .removeClass('NB-story-negative');
@@ -3214,7 +3222,7 @@
             var unread_view_name = this.get_unread_view_name();
             var $indicator = $('.NB-story-title-indicator', $story_titles);
             var hidden_stories = _.any(this.model.stories, _.bind(function(story) {
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
 
                 if (unread_view_name == 'positive') return score <= 0;
                 else if (unread_view_name == 'neutral') return score < 0;
@@ -3272,14 +3280,14 @@
                                    'positive' :
                                    'neutral';
             var hidden_stories_at_threshold = _.any(this.model.stories, _.bind(function(story) {
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
 
                 if (unread_view_name == 'positive') return score == 0;
                 else if (unread_view_name == 'neutral') return score < 0;
             }, this));
             var hidden_stories_below_threshold = unread_view_name == 'positive' && 
                                                  _.any(this.model.stories, _.bind(function(story) {
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
                 return score < 0;
             }, this));
             
@@ -3444,7 +3452,7 @@
                 var read = story.read_status
                     ? ' read '
                     : '';
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
                 var score_color = 'neutral';
                 var river_stories = options['river_stories']
                     ? ' NB-river-story '
@@ -5248,7 +5256,7 @@
                     
                     if ($story && $story.length) {
                         // Just update intelligence
-                        var score = NEWSBLUR.utils.compute_story_score(story);
+                        var score = this.compute_story_score(story);
                         $story.removeClass('NB-story-neutral')
                               .removeClass('NB-story-negative')
                               .removeClass('NB-story-positive');
