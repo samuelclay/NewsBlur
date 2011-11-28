@@ -4818,9 +4818,9 @@
             this.model.rename_feed(feed_id, new_title, function() {
             });
 
-            $('.feed_title', $feed).text(new_title);
+            $('.feed_title', $feed).eq(0).text(new_title);
             if (feed_id == this.active_feed) {
-                $('.feed_title', this.$s.$story_titles).text(new_title);
+                $('.feed_title', this.$s.$story_titles).eq(0).text(new_title);
             }
             this.hide_confirm_rename_menu_item(true);
         },
@@ -4839,7 +4839,7 @@
         
             this.model.rename_folder(folder, new_folder_name, in_folder, function() {
             });
-            $('.folder_title_text', $folder).text(new_folder_name);
+            $('.folder_title_text', $folder).eq(0).text(new_folder_name);
             this.hide_confirm_rename_menu_item(true);
             
             $('.NB-menu-manage-folder-rename').parents('.NB-menu-manage').data('folder_name', new_folder_name);
