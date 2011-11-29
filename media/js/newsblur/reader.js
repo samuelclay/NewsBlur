@@ -5145,21 +5145,23 @@
             }, refresh_interval);
         },
         
-        force_feed_refresh: function(feed_id, $feed) {
+        force_feed_refresh: function(feed_id, $feed, new_feed_id) {
             var self = this;
             feed_id  = feed_id || this.active_feed;
             $feed    = $feed || this.find_feed_in_feed_list(feed_id);
+            new_feed_id = new_feed_id || feed_id;
 
             this.force_feeds_refresh(function(feeds) {
-                var $new_feed = $(self.make_feed_title_template(feeds[feed_id], 'feed'));
+                var $new_feed = $(self.make_feed_title_template(feeds[new_feed_id], 'feed'));
                 if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
                 $feed.replaceWith($new_feed);
                 self.cache.$feed_in_feed_list[feed_id] = null;
+                self.cache.$feed_in_feed_list[new_feed_id] = null;
                 self.hover_over_feed_titles($new_feed);
-                if (self.active_feed == feed_id) {
-                    self.open_feed(feed_id, true, $new_feed);
+                if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
+                    self.open_feed(new_feed_id, true, $new_feed);
                 }
-            }, false, feed_id);
+            }, true, new_feed_id);
         },
         
         force_feeds_refresh: function(callback, replace_active_feed, feed_id) {
@@ -5171,7 +5173,6 @@
 
             this.flags['pause_feed_refreshing'] = true;
             
-                  console.log(["force feed refresh", this.flags['has_unfetched_feeds']]);
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
               this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
             }, this), this.flags['has_unfetched_feeds'], feed_id);

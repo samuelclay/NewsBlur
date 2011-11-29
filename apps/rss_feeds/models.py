@@ -1110,6 +1110,7 @@ class MStory(mongo.Document):
     meta = {
         'collection': 'stories',
         'indexes': [('story_feed_id', '-story_date')],
+        'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
     }
@@ -1247,8 +1248,10 @@ class DuplicateFeed(models.Model):
         return "%s: %s" % (self.feed, self.duplicate_address)
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
-    from apps.reader.models import UserSubscription, MUserStory
-    from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+    from apps.reader.models import UserSubscription
+    if original_feed_id == duplicate_feed_id:
+        logging.info(" ***> Merging the same feed. Ignoring...")
+        return
     if original_feed_id > duplicate_feed_id and not force:
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
     try:
@@ -1267,52 +1270,14 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     for user_sub in user_subs:
         user_sub.switch_feed(original_feed, duplicate_feed)
 
-    # Switch read stories
-    user_stories = MUserStory.objects(feed_id=duplicate_feed.pk)
-    logging.info(" ---> %s read stories" % user_stories.count())
-    for user_story in user_stories:
-        user_story.feed_id = original_feed.pk
-        duplicate_story = user_story.story
-        story_guid = duplicate_story.story_guid if hasattr(duplicate_story, 'story_guid') else duplicate_story.id
-        original_story = MStory.objects(story_feed_id=original_feed.pk,
-                                        story_guid=story_guid)
-        
-        if original_story:
-            user_story.story = original_story[0]
-            try:
-                user_story.save()
-            except OperationError:
-                # User read the story in the original feed, too. Ugh, just ignore it.
-                pass
-        else:
-            logging.info(" ***> Can't find original story: %s" % duplicate_story.id)
-            user_story.delete()
-
     def delete_story_feed(model, feed_field='feed_id'):
         duplicate_stories = model.objects(**{feed_field: duplicate_feed.pk})
         # if duplicate_stories.count():
         #     logging.info(" ---> Deleting %s %s" % (duplicate_stories.count(), model))
         duplicate_stories.delete()
         
-    def switch_feed(model):
-        duplicates = model.objects(feed_id=duplicate_feed.pk)
-        if duplicates.count():
-            logging.info(" ---> Switching %s %s" % (duplicates.count(), model))
-        for duplicate in duplicates:
-            duplicate.feed_id = original_feed.pk
-            try:
-                duplicate.save()
-                pass
-            except (IntegrityError, OperationError):
-                logging.info("      !!!!> %s already exists" % duplicate)
-                duplicate.delete()
-        
     delete_story_feed(MStory, 'story_feed_id')
     delete_story_feed(MFeedPage, 'feed_id')
-    switch_feed(MClassifierTitle)
-    switch_feed(MClassifierAuthor)
-    switch_feed(MClassifierFeed)
-    switch_feed(MClassifierTag)
 
     try:
         DuplicateFeed.objects.create(
