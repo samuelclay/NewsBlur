@@ -1152,8 +1152,8 @@
                     var $feed = this.make_feed_title_template(feed, 'feed', depth);
                     $feeds += $feed;
                     
-                    if (feed.not_yet_fetched) {
-                        // NEWSBLUR.log(['Feed not fetched', feed]);
+                    if (feed.not_yet_fetched && feed.active) {
+                        NEWSBLUR.log(['Feed not fetched', feed]);
                         this.flags['has_unfetched_feeds'] = true;
                     }
                 } else if (typeof item == "object" && item) {
@@ -5095,7 +5095,9 @@
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 
                 this.socket.on('connect', _.bind(function() {
-                    this.socket.emit('subscribe:feeds', _.keys(this.model.feeds));
+                    var active_feeds = _.compact(_.map(this.model.feeds, function(feed) { return feed.active && feed.id; }));
+                    console.log(["Connecting to pubsub", this.socket, active_feeds.length]);
+                    this.socket.emit('subscribe:feeds', active_feeds);
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         console.log(['Feed update', feed_id, message]);
                         this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
@@ -5135,6 +5137,7 @@
             
             this.flags.feed_refresh = setInterval(function() {
                 if (!self.flags['pause_feed_refreshing']) {
+                  console.log(["setup feed refresh", self.flags['has_unfetched_feeds']]);
                   self.model.refresh_feeds(_.bind(function(updated_feeds) {
                       self.post_feed_refresh(updated_feeds);
                   }, self), self.flags['has_unfetched_feeds']);
@@ -5168,6 +5171,7 @@
 
             this.flags['pause_feed_refreshing'] = true;
             
+                  console.log(["force feed refresh", this.flags['has_unfetched_feeds']]);
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
               this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
             }, this), this.flags['has_unfetched_feeds'], feed_id);

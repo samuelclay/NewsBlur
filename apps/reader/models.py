@@ -136,7 +136,8 @@ class UserSubscription(models.Model):
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
-        self.unread_count_updated = latest_story_date
+        self.unread_count_updated = now
+        self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
         MUserStory.delete_marked_as_read_stories(self.user.pk, self.feed.pk)
         
@@ -297,7 +298,7 @@ class UserSubscription(models.Model):
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
-        return
+        return self
     
     def switch_feed(self, new_feed, old_feed):
         # Rewrite feed in subscription folders

@@ -280,13 +280,13 @@ def refresh_feeds(request):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
-    
-    for sub in user_subs:
+
+    for i, sub in enumerate(user_subs):
         pk = sub.feed.pk
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
-            sub.calculate_feed_scores(silent=True)
+            sub = sub.calculate_feed_scores(silent=True)
         feeds[pk] = {
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
@@ -306,6 +306,8 @@ def refresh_feeds(request):
             feeds[pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
                                                       feed_icons[sub.feed.pk].data))
     
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    
     if favicons_fetching:
         sub_feed_ids = [s.feed.pk for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
@@ -315,10 +317,10 @@ def refresh_feeds(request):
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
         
-    if settings.DEBUG:
+    if settings.DEBUG or request.REQUEST.get('check_fetch_status') or favicons_fetching:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))
     
     return {'feeds': feeds}
 
@@ -965,10 +967,11 @@ def save_feed_chooser(request):
     for sub in usersubs:
         try:
             if sub.feed.pk in approved_feeds:
-                sub.active = True
                 activated += 1
-                sub.save()
-                sub.feed.count_subscribers()
+                if not sub.active:
+                    sub.active = True
+                    sub.save()
+                    sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()
