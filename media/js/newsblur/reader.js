@@ -678,6 +678,14 @@
             return feeds;
         },
         
+        compute_story_score: function(story) {
+            if (this.active_feed == 'starred') {
+                return 1;
+            } else {
+                return NEWSBLUR.utils.compute_story_score(story);
+            }
+        },
+        
         // ==============
         // = Navigation =
         // ==============
@@ -2822,7 +2830,7 @@
             var read = story.read_status
                 ? ' read '
                 : '';
-            var score = NEWSBLUR.utils.compute_story_score(story);
+            var score = this.compute_story_score(story);
             var score_color = 'neutral';
             var starred = story.starred ? ' NB-story-starred ' : '';
             if (options.river_stories) {
@@ -2904,7 +2912,7 @@
             var replace_stories = _.bind(function($story, story_id) {
                 var story = this.model.get_story(story_id);
                 if (story.story_feed_id != feed_id) return;
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
                 $story.removeClass('NB-story-positive')
                       .removeClass('NB-story-neutral')
                       .removeClass('NB-story-negative');
@@ -3215,7 +3223,7 @@
             var unread_view_name = this.get_unread_view_name();
             var $indicator = $('.NB-story-title-indicator', $story_titles);
             var hidden_stories = _.any(this.model.stories, _.bind(function(story) {
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
 
                 if (unread_view_name == 'positive') return score <= 0;
                 else if (unread_view_name == 'neutral') return score < 0;
@@ -3273,14 +3281,14 @@
                                    'positive' :
                                    'neutral';
             var hidden_stories_at_threshold = _.any(this.model.stories, _.bind(function(story) {
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
 
                 if (unread_view_name == 'positive') return score == 0;
                 else if (unread_view_name == 'neutral') return score < 0;
             }, this));
             var hidden_stories_below_threshold = unread_view_name == 'positive' && 
                                                  _.any(this.model.stories, _.bind(function(story) {
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
                 return score < 0;
             }, this));
             
@@ -3445,7 +3453,7 @@
                 var read = story.read_status
                     ? ' read '
                     : '';
-                var score = NEWSBLUR.utils.compute_story_score(story);
+                var score = this.compute_story_score(story);
                 var score_color = 'neutral';
                 var river_stories = options['river_stories']
                     ? ' NB-river-story '
@@ -4811,9 +4819,9 @@
             this.model.rename_feed(feed_id, new_title, function() {
             });
 
-            $('.feed_title', $feed).text(new_title);
+            $('.feed_title', $feed).eq(0).text(new_title);
             if (feed_id == this.active_feed) {
-                $('.feed_title', this.$s.$story_titles).text(new_title);
+                $('.feed_title', this.$s.$story_titles).eq(0).text(new_title);
             }
             this.hide_confirm_rename_menu_item(true);
         },
@@ -4832,7 +4840,7 @@
         
             this.model.rename_folder(folder, new_folder_name, in_folder, function() {
             });
-            $('.folder_title_text', $folder).text(new_folder_name);
+            $('.folder_title_text', $folder).eq(0).text(new_folder_name);
             this.hide_confirm_rename_menu_item(true);
             
             $('.NB-menu-manage-folder-rename').parents('.NB-menu-manage').data('folder_name', new_folder_name);
@@ -5249,7 +5257,7 @@
                     
                     if ($story && $story.length) {
                         // Just update intelligence
-                        var score = NEWSBLUR.utils.compute_story_score(story);
+                        var score = this.compute_story_score(story);
                         $story.removeClass('NB-story-neutral')
                               .removeClass('NB-story-negative')
                               .removeClass('NB-story-positive');

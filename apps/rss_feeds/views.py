@@ -184,12 +184,19 @@ def exception_change_feed_address(request):
     feed = Feed.objects.get(pk=feed.pk)
 
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
-    usersub.switch_feed(feed, original_feed)
+    if usersub:
+        usersub.switch_feed(feed, original_feed)
+    elif not usersub:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+        
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
     
-    feeds = {original_feed.pk: usersub.canonical(full=True)}
+    feeds = {
+        original_feed.pk: usersub.canonical(full=True), 
+        feed.pk: usersub.canonical(full=True),
+    }
     return {'code': 1, 'feeds': feeds}
     
 @ajax_login_required
@@ -237,12 +244,19 @@ def exception_change_feed_link(request):
     feed = Feed.objects.get(pk=feed.pk)
 
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
-    usersub.switch_feed(feed, original_feed)
+    if usersub:
+        usersub.switch_feed(feed, original_feed)
+    elif not usersub:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+        
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
     
-    feeds = {original_feed.pk: usersub.canonical(full=True)}
+    feeds = {
+        original_feed.pk: usersub.canonical(full=True), 
+        feed.pk: usersub.canonical(full=True),
+    }
     return {'code': code, 'feeds': feeds}
 
 @login_required
