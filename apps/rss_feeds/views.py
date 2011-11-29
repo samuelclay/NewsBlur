@@ -150,6 +150,7 @@ def exception_change_feed_address(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_address = request.POST['feed_address']
+    code = -1
     
     if feed.has_page_exception or feed.has_feed_exception:
         # Fix broken feed
@@ -160,6 +161,7 @@ def exception_change_feed_address(request):
         feed.feed_address = feed_address
         feed.next_scheduled_update = datetime.datetime.utcnow()
         duplicate_feed = feed.save()
+        code = 1
         if duplicate_feed:
             new_feed = Feed.objects.get(pk=duplicate_feed.pk)
             feed = new_feed

@@ -287,6 +287,7 @@ def refresh_feeds(request):
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
             sub = sub.calculate_feed_scores(silent=True)
+        if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
         feeds[pk] = {
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
