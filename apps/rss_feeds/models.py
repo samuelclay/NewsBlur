@@ -1151,7 +1151,8 @@ class MStarredStory(mongo.Document):
 
     meta = {
         'collection': 'starred_stories',
-        'indexes': [('user_id', '-starred_date'), 'story_feed_id'],
+        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'user_id', 'story_feed_id'],
+        'index_drop_dups': True,
         'ordering': ['-starred_date'],
         'allow_inheritance': False,
     }

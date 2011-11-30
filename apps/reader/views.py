@@ -576,12 +576,16 @@ def load_river_stories(request):
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     
     # Find starred stories
-    starred_stories = MStarredStory.objects(
-        user_id=user.pk,
-        story_feed_id__in=found_feed_ids
-    ).only('story_guid', 'starred_date')
-    starred_stories = dict([(story.story_guid, story.starred_date) 
-                            for story in starred_stories])
+    try:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk,
+            story_feed_id__in=found_feed_ids
+        ).only('story_guid', 'starred_date')
+        starred_stories = dict([(story.story_guid, story.starred_date) 
+                                for story in starred_stories])
+    except OperationFailure:
+        logging.info(" ***> Starred stories failure")
+        starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
     def sort_by_feed(classifiers):
@@ -589,17 +593,20 @@ def load_river_stories(request):
         for classifier in classifiers:
             feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
-    classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    
     classifiers = {}
-    for feed_id in found_feed_ids:
-        classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
-                                                        classifier_authors[feed_id],
-                                                        classifier_titles[feed_id],
-                                                        classifier_tags[feed_id])
+    try:
+        classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+    except OperationFailure:
+        logging.info(" ***> Classifiers failure")
+    else:
+        for feed_id in found_feed_ids:
+            classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
+                                                            classifier_authors[feed_id],
+                                                            classifier_titles[feed_id],
+                                                            classifier_tags[feed_id])
     
     # Just need to format stories
     for story in stories:
@@ -735,6 +742,7 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
+    print request.REQUEST
     feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     feed_count = len(feed_ids)
     multiple = feed_count > 1

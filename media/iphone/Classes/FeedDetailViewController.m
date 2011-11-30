@@ -597,13 +597,16 @@
 
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
+    NSLog(@"mark feeds read: %d %d", appDelegate.isRiverView, includeHidden);
     if (appDelegate.isRiverView && includeHidden) {
         // Mark folder as read
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_folder_as_read",
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:appDelegate.activeFolder forKey:@"folder_name"]; 
+        for (id feed_id in [appDelegate.dictFolders objectForKey:appDelegate.activeFolder]) {
+            [request addPostValue:feed_id forKey:@"feed_id"];
+        }
         [request setDelegate:nil];
         [request startAsynchronous];
         
@@ -646,6 +649,12 @@
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    // Individual sites just get marked as read, no action sheet needed.
+    if (!appDelegate.isRiverView) {
+        [self markFeedsReadWithAllStories:YES];
+        return;
+    }
+    
     NSString *title = appDelegate.isRiverView ? 
                       appDelegate.activeFolder : 
                       [appDelegate.activeFeed objectForKey:@"feed_title"];
@@ -710,10 +719,11 @@
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSLog(@"Action option #%d", buttonIndex);
+    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
     if (actionSheet.tag == 1) {
         int visibleUnreadCount = appDelegate.visibleUnreadCount;
         int totalUnreadCount = [appDelegate unreadCount];
+        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
         if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {
             if (buttonIndex == 0) {
                 [self markFeedsReadWithAllStories:YES];
