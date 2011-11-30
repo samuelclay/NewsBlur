@@ -832,7 +832,7 @@ def delete_feed(request):
 @ajax_login_required
 @json.json_view
 def delete_folder(request):
-    folder_to_delete = request.POST['folder_name']
+    folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
     in_folder = request.POST.get('in_folder', '')
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     
@@ -861,17 +861,21 @@ def rename_feed(request):
 @ajax_login_required
 @json.json_view
 def rename_folder(request):
-    folder_to_rename = request.POST['folder_name']
+    folder_to_rename = request.POST.get('folder_name') or request.POST.get('folder_to_rename')
     new_folder_name = request.POST['new_folder_name']
     in_folder = request.POST.get('in_folder', '')
+    code = 0
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # renames all, but only in the same folder parent. But nobody should be doing that, right?
-    if new_folder_name:
+    if folder_to_rename and new_folder_name:
         user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
-
-    return dict(code=1)
+        code = 1
+    else:
+        code = -1
+        
+    return dict(code=code)
     
 @ajax_login_required
 @json.json_view
