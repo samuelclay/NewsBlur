@@ -136,6 +136,7 @@ class OPMLImporter(Importer):
                     feed_data['active_subscribers'] = 1
                     feed_data['num_subscribers'] = 1
                     feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
+                                                            feed_link=feed_link,
                                                             defaults=dict(**feed_data))
                     
                 us, _ = UserSubscription.objects.get_or_create(

@@ -93,6 +93,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             },
             error: function(e, textStatus, errorThrown) {
                 NEWSBLUR.log(['AJAX Error', textStatus, errorThrown]);
+                if (errorThrown == 'abort') {
+                    return;
+                }
+                
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 } else if ($.isFunction(callback)) {
@@ -401,9 +405,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/river_stories', {
             feeds: feeds,
             page: page,
-            read_stories_count: this.read_stories_river_count,
-            // TODO: Remove new flag
-            new_flag: true
+            read_stories_count: this.read_stories_river_count
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -806,6 +808,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
+    get_feed_settings: function(feed_id, callback) {
+        this.make_request('/rss_feeds/feed_settings/'+feed_id, {}, callback, callback, {
+            'ajax_group': 'statistics',
+            'request_type': 'GET'
+        });
+    },
+    
     start_import_from_google_reader: function(callback) {
         this.make_request('/import/import_from_google_reader/', {}, callback);
     },
@@ -838,7 +847,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
             self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id);
+            NEWSBLUR.reader.force_feed_refresh(feed_id, null, data.new_feed_id);
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {
@@ -857,7 +866,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
             self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id);
+            NEWSBLUR.reader.force_feed_refresh(feed_id, null, data.new_feed_id);
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {

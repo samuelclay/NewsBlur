@@ -381,7 +381,7 @@ CELERY_QUEUES = {
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
 BROKER_BACKEND       = "amqplib"
-BROKER_HOST          = "db02.newsblur.com"
+BROKER_HOST          = "db01.newsblur.com"
 BROKER_PORT          = 5672
 BROKER_USER          = "newsblur"
 BROKER_PASSWORD      = "newsblur"
@@ -428,7 +428,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db02',
+    'host': 'db01',
 }
 
 # ===========

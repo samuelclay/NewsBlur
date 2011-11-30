@@ -280,13 +280,14 @@ def refresh_feeds(request):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
-    
-    for sub in user_subs:
+
+    for i, sub in enumerate(user_subs):
         pk = sub.feed.pk
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
-            sub.calculate_feed_scores(silent=True)
+            sub = sub.calculate_feed_scores(silent=True)
+        if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
         feeds[pk] = {
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
@@ -306,6 +307,8 @@ def refresh_feeds(request):
             feeds[pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
                                                       feed_icons[sub.feed.pk].data))
     
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    
     if favicons_fetching:
         sub_feed_ids = [s.feed.pk for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
@@ -315,10 +318,10 @@ def refresh_feeds(request):
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
         
-    if settings.DEBUG:
+    if settings.DEBUG or request.REQUEST.get('check_fetch_status') or favicons_fetching:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))
     
     return {'feeds': feeds}
 
@@ -341,7 +344,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
-
+    
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         
@@ -432,7 +435,8 @@ def load_single_feed(request, feed_id):
                 feed_authors=feed_authors, 
                 classifiers=classifiers,
                 last_update=last_update,
-                feed_id=feed.pk)
+                feed_id=feed.pk,
+                elapsed_time=round(float(timediff), 2))
     
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
@@ -486,13 +490,12 @@ def load_starred_stories(request):
 def load_river_stories(request):
     limit              = 18
     offset             = 0
-    start              = datetime.datetime.utcnow()
+    start              = time.time()
     user               = get_user(request)
     feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     original_feed_ids  = list(feed_ids)
     page               = int(request.REQUEST.get('page', 1))
     read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
-    new_flag           = request.REQUEST.get('new_flag', False)
     bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
@@ -573,12 +576,16 @@ def load_river_stories(request):
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     
     # Find starred stories
-    starred_stories = MStarredStory.objects(
-        user_id=user.pk,
-        story_feed_id__in=found_feed_ids
-    ).only('story_guid', 'starred_date')
-    starred_stories = dict([(story.story_guid, story.starred_date) 
-                            for story in starred_stories])
+    try:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk,
+            story_feed_id__in=found_feed_ids
+        ).only('story_guid', 'starred_date')
+        starred_stories = dict([(story.story_guid, story.starred_date) 
+                                for story in starred_stories])
+    except OperationFailure:
+        logging.info(" ***> Starred stories failure")
+        starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
     def sort_by_feed(classifiers):
@@ -586,17 +593,20 @@ def load_river_stories(request):
         for classifier in classifiers:
             feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
-    classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    
     classifiers = {}
-    for feed_id in found_feed_ids:
-        classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
-                                                        classifier_authors[feed_id],
-                                                        classifier_titles[feed_id],
-                                                        classifier_tags[feed_id])
+    try:
+        classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+    except OperationFailure:
+        logging.info(" ***> Classifiers failure")
+    else:
+        for feed_id in found_feed_ids:
+            classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
+                                                            classifier_authors[feed_id],
+                                                            classifier_titles[feed_id],
+                                                            classifier_tags[feed_id])
     
     # Just need to format stories
     for story in stories:
@@ -615,19 +625,15 @@ def load_river_stories(request):
             'tags':   apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
             'title':  apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
         }
-    
-    diff = datetime.datetime.utcnow() - start
-    timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
+
+    diff = time.time() - start
+    timediff = round(float(diff), 2)
     logging.user(request, "~FCLoading river stories: page %s - ~SB%s/%s "
                                "stories ~SN(%s/%s/%s feeds) ~FB(%s seconds)" % 
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids), timediff))
     
-    if new_flag:
-        return dict(stories=stories, classifiers=classifiers)
-    else:
-        logging.user(request, "~BR~FCNo new flag on river")
-        return dict(stories=stories)
+    return dict(stories=stories, classifiers=classifiers, elapsed_time=timediff)
     
     
 @ajax_login_required
@@ -736,6 +742,7 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
+    print request.REQUEST
     feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     feed_count = len(feed_ids)
     multiple = feed_count > 1
@@ -969,10 +976,11 @@ def save_feed_chooser(request):
     for sub in usersubs:
         try:
             if sub.feed.pk in approved_feeds:
-                sub.active = True
                 activated += 1
-                sub.save()
-                sub.feed.count_subscribers()
+                if not sub.active:
+                    sub.active = True
+                    sub.save()
+                    sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()

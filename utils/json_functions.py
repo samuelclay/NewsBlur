@@ -6,6 +6,7 @@ from django.utils.encoding import force_unicode
 import cjson
 from decimal import Decimal
 from django.core import serializers
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
@@ -123,11 +124,14 @@ def json_view(func):
                 request_repr,
                 )
             # print message
-            mail_admins(subject, message, fail_silently=True)
+            if not settings.DEBUG:
+                mail_admins(subject, message, fail_silently=True)
 
-            response = {'result': 'error',
-                        'text': unicode(e)}
-            code = 500
+                response = {'result': 'error',
+                            'text': unicode(e)}
+                code = 500
+            else:
+                raise
 
         if isinstance(response, HttpResponseForbidden):
             return response

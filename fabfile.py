@@ -33,7 +33,7 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
+    'db': ['db01.newsblur.com', 'db03.newsblur.com'],
     'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
@@ -159,6 +159,15 @@ def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         run('./postgresql_backup.sh')
 
+# ===============
+# = Calibration =
+# ===============
+
+def sync_time():
+    sudo("/etc/init.d/ntp stop")
+    sudo("ntpdate pool.ntp.org")
+    sudo("/etc/init.d/ntp start")
+    
 # =============
 # = Bootstrap =
 # =============
@@ -280,7 +289,7 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis')
+    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -471,13 +480,14 @@ def setup_redis():
         run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
         run('tar -xzf redis-2.4.2.tar.gz')
         run('rm redis-2.4.2.tar.gz')
-        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
-            sudo('make install')
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis start')
     
 # ================
 # = Setup - Task =

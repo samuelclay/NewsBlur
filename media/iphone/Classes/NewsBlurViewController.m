@@ -72,30 +72,10 @@
 - (void)viewWillAppear:(BOOL)animated {
     // If there is an active feed or a set of feeds readin the river, 
     // we need to update its table row to match the updated unread counts.
-    if (appDelegate.activeFeed || appDelegate.isRiverView) {
-        NSMutableArray *indexPaths = [NSMutableArray array];
-        for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
-            NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
-            NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-            NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-            for (int f=0; f < [activeFolderFeeds count]; f++) {
-                int location = [[activeFolderFeeds objectAtIndex:f] intValue];
-                id feedId = [originalFolder objectAtIndex:location];
-                if ((appDelegate.isRiverView &&
-                     [appDelegate.recentlyReadFeeds containsObject:feedId]) ||
-                    (appDelegate.activeFeed && 
-                     [feedId compare:[appDelegate.activeFeed objectForKey:@"id"]] == NSOrderedSame)) {
-                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
-                    [indexPaths addObject:indexPath];
-                    [self.stillVisibleFeeds setObject:indexPath forKey:[NSString stringWithFormat:@"%@", feedId]];
-                }
-            }
-        }
-//        NSLog(@"Refreshing feed at %@", indexPaths);
-        
+    if (appDelegate.activeFeed || appDelegate.isRiverView) {        
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
-         reloadRowsAtIndexPaths:indexPaths
+         reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
          withRowAnimation:UITableViewRowAnimationNone];
         [self.feedTitlesTable endUpdates];
         
