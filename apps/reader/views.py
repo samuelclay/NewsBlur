@@ -344,7 +344,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
-    
+
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         
@@ -742,7 +742,6 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
-    print request.REQUEST
     feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     feed_count = len(feed_ids)
     multiple = feed_count > 1

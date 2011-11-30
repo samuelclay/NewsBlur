@@ -172,14 +172,14 @@
                                       NEWSBLUR_URL,
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
-        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
-
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        
+        [self cancelRequests];
+        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            [self failLoadingFeed:request];
+            [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
             [self finishedLoadingFeed:request];
@@ -193,22 +193,23 @@
     }
 }
 
-- (void)failLoadingFeed:(ASIHTTPRequest *)request {
-//    if (self.feedPage <= 1) {
-//        [appDelegate.navigationController 
-//         popToViewController:[appDelegate.navigationController.viewControllers 
-//                              objectAtIndex:0]  
-//         animated:YES];
-//    }
-    
-    [self informError:[request error]];
-}
-
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] >= 500) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
+                       dispatch_get_current_queue(), ^{
+            [appDelegate.navigationController 
+             popToViewController:[appDelegate.navigationController.viewControllers 
+                                  objectAtIndex:0]  
+             animated:YES];
+        });
+        [self informError:@"The server barfed!"];
+        
+        return;
+    }
+    
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    
     if (!appDelegate.isRiverView && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         [results release];
         return;
@@ -261,14 +262,14 @@
                                       [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
                                       self.feedPage,
                                       readStoriesCount];
-        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        [self cancelRequests];
+        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            [self failLoadingFeed:request];
+            [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
             [self finishedLoadingFeed:request];
@@ -773,7 +774,7 @@
     [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
     [request addPostValue:[appDelegate activeFolder] forKey:@"in_folder"];
     [request setFailedBlock:^(void) {
-        [self failLoadingFeed:request];
+        [self informError:[request error]];
     }];
     [request setCompletionBlock:^(void) {
         [appDelegate reloadFeedsView];
@@ -797,8 +798,8 @@
                            stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
                            NEWSBLUR_URL,
                            [appDelegate.activeFeed objectForKey:@"id"]];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [self cancelRequests];
+    __block ASIHTTPRequest *request = [self requestWithURL:urlString];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];

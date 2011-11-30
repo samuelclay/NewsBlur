@@ -206,7 +206,10 @@
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
-       return [appDelegate showLogin];
+        return [appDelegate showLogin];
+    } else if ([request responseStatusCode] >= 500) {
+        [pull finishedLoading];
+        return [self informError:@"The server barfed!"];
     }
     
     NSString *responseString = [request responseString];
