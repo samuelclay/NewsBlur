@@ -452,6 +452,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }));
             if (favicons_fetching.length) {
                 data['favicons_fetching'] = favicons_fetching;
+            } else {
+                this.flags['favicons_fetching'] = false;
             }
         }
         if (feed_id) {
