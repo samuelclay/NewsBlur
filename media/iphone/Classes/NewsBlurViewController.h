@@ -47,7 +47,8 @@
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations:(BOOL)markVisible;
-- (IBAction)sectionTapped:(UITapGestureRecognizer *)recognizer;
+- (IBAction)sectionTapped:(UIButton *)button;
+- (IBAction)sectionUntapped:(UIButton *)button;
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;

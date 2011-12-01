@@ -460,17 +460,17 @@
     headerLabel.highlightedTextColor = [UIColor whiteColor];
     headerLabel.font = [UIFont boldSystemFontOfSize:11];
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, 20.0);
+    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
+    headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
-        customView.backgroundColor = [UIColorFromRGB(0xA7CDE6)
-                                      colorWithAlphaComponent:0.8];
         headerLabel.text = @"EVERYTHING";
+        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
+                                      colorWithAlphaComponent:0.8];
     } else {
+        headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
         customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
                                       colorWithAlphaComponent:0.8];
-        headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     }
-    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
-    headerLabel.shadowOffset = CGSizeMake(1.0, 1.0);
     [customView addSubview:headerLabel];
     [headerLabel release];
     
@@ -494,13 +494,21 @@
     [customView addSubview:invisibleHeaderButton];
     
     [invisibleHeaderButton addTarget:self action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
+    [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpOutside];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    button.backgroundColor = [UIColor blackColor];
+    button.backgroundColor =[UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
+}
+- (IBAction)sectionUntapped:(UIButton *)button {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
+                   dispatch_get_current_queue(), ^{
+        button.backgroundColor = [UIColor clearColor];
+   });
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -547,12 +547,14 @@
         titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-            [UIColor whiteColor] :
-            [UIColor blackColor];            
-            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-            UIColorFromRGB(0x202020):
-            UIColorFromRGB(0xe0e0e0);
+            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] 
+                                    isEqualToString:@"white"] ?
+                [UIColor whiteColor] :
+                [UIColor blackColor];            
+            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] 
+                                      isEqualToString:@"white"] ?
+                UIColorFromRGB(0x202020) :
+                UIColorFromRGB(0xd0d0d0);
         } else {
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
