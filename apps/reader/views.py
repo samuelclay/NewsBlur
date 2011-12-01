@@ -318,7 +318,7 @@ def refresh_feeds(request):
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
         
-    if settings.DEBUG or request.REQUEST.get('check_fetch_status') or favicons_fetching:
+    if settings.DEBUG or request.REQUEST.get('check_fetch_status') or favicons_fetching or True:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
         logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))
