@@ -304,8 +304,7 @@ def refresh_feeds(request):
         if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
             feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
             feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
-            feeds[pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
-                                                      feed_icons[sub.feed.pk].data))
+            feeds[pk]['favicon_fetching'] = sub.feed.favicon_fetching
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
     
@@ -318,7 +317,7 @@ def refresh_feeds(request):
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
         
-    if settings.DEBUG or request.REQUEST.get('check_fetch_status') or favicons_fetching:
+    if settings.DEBUG or request.REQUEST.get('check_fetch_status') or favicons_fetching or True:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
         logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))

@@ -90,7 +90,7 @@ class Feed(models.Model):
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
             'favicon_text_color': self.favicon_text_color(),
-            'favicon_fetching': bool(not (self.favicon_not_found or self.favicon_color))
+            'favicon_fetching': self.favicon_fetching,
         }
         
         if include_favicon:
@@ -149,6 +149,10 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             return
     
+    @property
+    def favicon_fetching(self):
+        return bool(not (self.favicon_not_found or self.favicon_color))
+        
     @classmethod
     def get_feed_from_url(cls, url, create=True, aggressive=False, fetch=True, offset=0):
         feed = None
