@@ -304,7 +304,7 @@ def refresh_feeds(request):
         if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
             feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
             feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
-            feeds[pk]['favicon_fetching'] = bool(not (sub.feed.favicon_fetching))
+            feeds[pk]['favicon_fetching'] = sub.feed.favicon_fetching
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
     
