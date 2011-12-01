@@ -53,15 +53,27 @@
 #pragma mark -
 #pragma mark View methods
 
-- (void)informError:(NSError *)error {
-    NSString* localizedDescription = [error localizedDescription];
+- (void)informError:(id)error {
+    NSLog(@"Error: %@", error);
+    NSString *errorMessage;
+    if ([error isKindOfClass:[NSString class]]) {
+        errorMessage = error;
+    } else {
+        errorMessage = [error localizedDescription];
+        if ([error code] == 4 && 
+            [errorMessage rangeOfString:@"cancelled"].location != NSNotFound) {
+            return;
+        }
+    }
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [HUD setCustomView:[[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"warning.gif"]] autorelease]];
+    [HUD setCustomView:[[[UIImageView alloc] 
+                         initWithImage:[UIImage imageNamed:@"warning.gif"]] autorelease]];
     [HUD setMode:MBProgressHUDModeCustomView];
-    HUD.labelText = localizedDescription;
+    HUD.labelText = errorMessage;
     [HUD hide:YES afterDelay:1];
+    
 //    UIAlertView* alertView = [[UIAlertView alloc]
 //                              initWithTitle:@"Error"
 //                              message:localizedDescription delegate:nil

@@ -206,7 +206,10 @@
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
-       return [appDelegate showLogin];
+        return [appDelegate showLogin];
+    } else if ([request responseStatusCode] >= 500) {
+        [pull finishedLoading];
+        return [self informError:@"The server barfed!"];
     }
     
     NSString *responseString = [request responseString];
@@ -377,7 +380,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+                     cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *FeedCellIdentifier = @"FeedCellIdentifier";
     
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];    
@@ -405,7 +408,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView 
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+        didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
@@ -428,12 +431,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView 
-heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+           heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kTableViewRowHeight;
 }
 
 - (UIView *)tableView:(UITableView *)tableView 
-viewForHeaderInSection:(NSInteger)section {
+            viewForHeaderInSection:(NSInteger)section {
     // create the parent view that will hold header Label
     UIControl* customView = [[[UIControl alloc] 
                               initWithFrame:CGRectMake(0.0, 0.0, 
@@ -450,8 +453,6 @@ viewForHeaderInSection:(NSInteger)section {
     [customView addSubview:borderBottom];
     
     UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-                                  colorWithAlphaComponent:0.8];
     customView.opaque = NO;
     headerLabel.backgroundColor = [UIColor clearColor];
     headerLabel.opaque = NO;
@@ -459,9 +460,17 @@ viewForHeaderInSection:(NSInteger)section {
     headerLabel.highlightedTextColor = [UIColor whiteColor];
     headerLabel.font = [UIFont boldSystemFontOfSize:11];
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, 20.0);
-    headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
-    headerLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+    headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+    if (section == 0) {
+        headerLabel.text = @"EVERYTHING";
+        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
+                                      colorWithAlphaComponent:0.8];
+    } else {
+        headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
+        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+                                      colorWithAlphaComponent:0.8];
+    }
     [customView addSubview:headerLabel];
     [headerLabel release];
     
@@ -485,35 +494,56 @@ viewForHeaderInSection:(NSInteger)section {
     [customView addSubview:invisibleHeaderButton];
     
     [invisibleHeaderButton addTarget:self action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
+    [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpOutside];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    button.backgroundColor = [UIColor blackColor];
+    button.backgroundColor =[UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
+}
+- (IBAction)sectionUntapped:(UIButton *)button {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
+                   dispatch_get_current_queue(), ^{
+        button.backgroundColor = [UIColor clearColor];
+   });
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    NSString *folder = [appDelegate.dictFoldersArray objectAtIndex:section];
-    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
-        return 0;
-    }
+//    NSString *folder = [appDelegate.dictFoldersArray objectAtIndex:section];
+//    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+//        return 0;
+//    }
     return 21;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
-    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
     
-    [appDelegate setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = YES;
-
-    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
     NSMutableArray *feeds = [NSMutableArray array];
-    for (int l=0; l < [activeFolderFeeds count]; l++) {
-        [feeds addObject:[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]]];
+
+    if (button.tag == 0) {
+        [appDelegate setActiveFolder:@"Everything"];
+        for (NSString *folderName in self.activeFeedLocations) {
+            NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+            NSArray *folderFeeds = [self.activeFeedLocations objectForKey:folderName];
+            for (int l=0; l < [folderFeeds count]; l++) {
+                [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+            }
+        }
+    } else {
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
+        
+        [appDelegate setActiveFolder:folderName];
+        NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+        NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+        for (int l=0; l < [activeFolderFeeds count]; l++) {
+            [feeds addObject:[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]]];
+        }
+
     }
     appDelegate.activeFolderFeeds = feeds;
 
