@@ -164,6 +164,10 @@ def load_feeds(request):
     flat             = request.REQUEST.get('flat', False)
     update_counts    = request.REQUEST.get('update_counts', False)
     
+    if include_favicons == 'false': include_favicons = False
+    if update_counts == 'false': update_counts = False
+    if flat == 'false': flat = False
+    
     if flat: return load_feeds_flat(request)
     
     try:
