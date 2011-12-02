@@ -141,6 +141,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 //    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    [pull refreshLastUpdatedDate];
     
 	[super viewDidAppear:animated];
 }
@@ -855,7 +856,7 @@
 
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
-    NSLog(@"Updated; %@", [appDelegate.activeFeed objectForKey:@"updated_seconds_ago"]);
+//    NSLog(@"Updated; %@", [appDelegate.activeFeed objectForKey:@"updated_seconds_ago"]);
     int seconds = -1 * [[appDelegate.activeFeed objectForKey:@"updated_seconds_ago"] intValue];
     return [[[NSDate alloc] initWithTimeIntervalSinceNow:seconds] autorelease];
 }
