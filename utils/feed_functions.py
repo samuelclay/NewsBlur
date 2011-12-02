@@ -47,16 +47,16 @@ def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """
     if not tstr:
-        return ''
+        return u''
     # this is _not_ pretty, but it works
     try:
-        return tstr.encode('utf-8', "xmlcharrefreplace")
+        return unicode(tstr.encode('utf-8', "xmlcharrefreplace"))
     except UnicodeDecodeError:
         # it's already UTF8.. sigh
         try:
-            return tstr.decode('utf-8').encode('utf-8')
+            return unicode(tstr.decode('utf-8').encode('utf-8'))
         except UnicodeDecodeError:
-            return ''
+            return u''
 
 # From: http://www.poromenos.org/node/87
 def levenshtein_distance(first, second):
