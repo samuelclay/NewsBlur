@@ -1,0 +1,91 @@
+"Email" = "E-post";
+"Username" = "Brukernavn";
+"Password" = "Passord";
+"Follow %@" = "Følg %@";
+"Continue" = "Fortsett";
+"Share" = "Del";
+"More..." = "Mer...";
+"Cancel" = "Avbryt";
+"Slug" = "Prefiks";
+"Private" = "Privat";
+"Public" = "Offentlig";
+"Caption" = "Overskrift";
+"Title" = "Tittel";
+"Tags" = "Stikkord";
+"Close" = "Lukk";
+"Notes" = "Notater";
+"Note" = "Notat";
+"Share" = "Del";
+"Shared" = "Delt";
+"Edit" = "Endre";
+"Actions" = "Handlinger";
+"Services" = "Tjenester";
+"Send to %@" = "Send til %@";
+"Copy" = "Kopier";
+"Copied!" = "Kopiert!";
+"Saving to %@" = "Lagrer til %@";
+"Saved!" = "Lagret!";
+"Offline" = "Offline";
+"Error" = "Feil";
+"Login" = "Logg inn";
+"Logging In..." = "Logger inn...";
+"Login Error" = "Feil ved innlogging";
+"Connecting..." = "Kobler til...";
+
+"Shortening URL..." = "Forkorter URL...";
+"Shorten URL Error" = "Feil ved forkorting av URL";
+"We could not shorten the URL." = "Kunne ikke forkorte URL.";
+
+"Create a free account at %@" = "Opprett en gratis konto hos %@";
+"Create an account at %@" = "Opprett en konto hos %@";
+
+"Send to Twitter" = "Send til Twitter";
+
+"Message is too long" = "Meldingen er for lang";
+"Twitter posts can only be 140 characters in length." = "Twitter meldinger kan ikke inneholde mer enn 140 tegn.";
+"Message is empty" = "Meldingen er tom";
+"You must enter a message in order to post." = "Du må skrive en melding for å kunne poste.";
+
+"Enter your message:" = "Fyll inn din melding:";
+
+"Invalid email or password." = "Ugyldig e-post eller passord.";
+"The service encountered an error. Please try again later." = "Det har oppstått en feil med denne tjenesten. Vennligst prøv igjen senere.";
+"There was a sending your post to Tumblr." = "Det oppstod en feil ved sending av ditt innlegg til Tumblr.";
+
+"There was an error saving to Pinboard" = "Det oppstod en feil ved lagring til Pinboard.";
+
+"Sorry, Instapaper did not accept your credentials. Please try again." = "Beklager, Instapaper aksepterte ikke innlogginsdetaljene dine.";
+"Sorry, Instapaper encountered an error. Please try again." = "Beklager, det oppstod en feil med Instapaper. Vennligst prøv igjen.";
+"There was a problem saving to Instapaper." = "Det oppstod et problem med lagring til Instapaper.";
+
+"Incorrect username and password" = "Feil brukernavn og passord";
+"There was an error logging into Google Reader" = "Det oppstod en feil under innlogging til Google Reader";
+"There was a problem authenticating your account." = "Det oppstod et problem med autorisering av din konto.";
+"There was a problem saving your note." = "Det oppstod en feil ved lagring av ditt notat.";
+
+"There was a problem saving to Delicious." = "Det oppstod et problem med lagring til Delicious.";
+
+"Open in Safari" = "Åpne i Safari";
+"Attached: %@" = "Vedlagt: %@";
+
+"You must be online to login to %@" = "Du må være online for å kunne logge på %@";
+
+"Auto Share" = "Automatisk deling";
+"Enable auto share to skip this step in the future." = "Aktiver automatisk deling for å hoppe over dette steget i fremtiden.";
+
+"You must be online in order to share with %@" = "Du må være online for å kunne dele med %@";
+"There was an error while sharing" = "Det oppstod en feil under deling";
+
+"Could not authenticate you. Please relogin." = "Kunne ikke autorisere deg. Vennligst logg inn på nytt.";
+"There was a problem requesting authorization from %@" = "Det oppstod et problem ved henting av autorisasjon fra %@";
+"Request Error" = "Feil ved etterspørsel";
+"There was an error while sharing" = "Det oppstod en feil under deling";
+
+"Authorize Error" = "Autoriseringsfeil";
+"There was an error while authorizing" = "Det oppstod en feil under autorisasjonen";
+
+"Authenticating..." = "Autoriserer...";
+"There was a problem requesting access from %@" = "Det oppstod et problem ved forespørsel om tilgang fra %@";
+
+"Access Error" = "Tilgangsfeil";
+"There was an error while sharing" = "Det oppstod en feil under deling";

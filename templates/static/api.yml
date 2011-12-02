@@ -75,7 +75,7 @@
             you can optionally turn them off. Use /api/v1/feeds/favicons/ to 
             retrieve the favicons in a separate request.
           optional: true
-          default: "true"
+          default: "false"
           example: "true/false"
         - key: flat
           desc: >

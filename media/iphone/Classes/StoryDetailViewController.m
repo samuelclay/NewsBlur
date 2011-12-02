@@ -23,9 +23,13 @@
 @synthesize toolbar;
 @synthesize buttonNext;
 @synthesize buttonPrevious;
+@synthesize buttonAction;
 @synthesize activity;
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
+
+#pragma mark -
+#pragma mark View boilerplate
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -42,6 +46,7 @@
     [toolbar release];
     [buttonNext release];
     [buttonPrevious release];
+    [buttonAction release];
     [activity release];
     [loadingIndicator release];
     [feedTitleGradient release];
@@ -108,63 +113,8 @@
     }
 }
 
-- (void)setNextPreviousButtons {
-    int nextIndex = [appDelegate indexOfNextStory];
-    int unreadCount = [appDelegate unreadCount];
-    if (nextIndex == -1 && unreadCount > 0) {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];        
-    } else if (nextIndex == -1) {
-        [buttonNext setStyle:UIBarButtonItemStyleDone];
-        [buttonNext setTitle:@"Done"];
-    } else {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];
-    }
-    
-    int readStoryCount = [appDelegate.readStories count];
-    if (readStoryCount == 0 || 
-        (readStoryCount == 1 && 
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            
-        [buttonPrevious setStyle:UIBarButtonItemStyleDone];
-        [buttonPrevious setTitle:@"Done"];
-    } else {
-        [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-        [buttonPrevious setTitle:@"Previous"];
-    }
-    
-    float unreads = (float)[appDelegate unreadCount];
-    float total = [appDelegate originalStoryCount];
-    float progress = (total - unreads) / total;
-    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
-    [progressView setProgress:progress];
-}
-
-- (void)markStoryAsRead {
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
-        [appDelegate markActiveStoryRead];
-        
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeStory 
-                               objectForKey:@"id"] 
-                       forKey:@"story_id"]; 
-        [request setPostValue:[appDelegate.activeStory 
-                               objectForKey:@"story_feed_id"] 
-                       forKey:@"feed_id"]; 
-        [request setDidFinishSelector:@selector(markedAsRead)];
-        [request setDidFailSelector:@selector(markedAsRead)];
-        [request setDelegate:self];
-        [request startAsynchronous];
-    }
-}
-
-- (void)markedAsRead {
-    
-}
+#pragma mark -
+#pragma mark Story layout
 
 - (void)showStory {
 //    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
@@ -342,11 +292,109 @@
                                               self.feedTitleGradient.frame.size.height);
 }
 
+- (void)setActiveStory {
+    self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
+    
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    UIImage *titleImage = appDelegate.isRiverView ?
+    [UIImage imageNamed:@"folder.png"] :
+    [Utilities getImage:feedIdStr];
+	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+    self.navigationItem.titleView = titleImageView;
+    [titleImageView release];
+}
+
+- (BOOL)webView:(UIWebView *)webView 
+shouldStartLoadWithRequest:(NSURLRequest *)request 
+ navigationType:(UIWebViewNavigationType)navigationType {
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        NSURL *url = [request URL];
+        [appDelegate showOriginalStory:url];
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+}
+
+#pragma mark -
+#pragma mark Actions
+
+- (void)setNextPreviousButtons {
+    int nextIndex = [appDelegate indexOfNextStory];
+    int unreadCount = [appDelegate unreadCount];
+    if (nextIndex == -1 && unreadCount > 0) {
+        [buttonNext setStyle:UIBarButtonItemStyleBordered];
+        [buttonNext setTitle:@"Next Unread"];        
+    } else if (nextIndex == -1) {
+        [buttonNext setStyle:UIBarButtonItemStyleDone];
+        [buttonNext setTitle:@"Done"];
+    } else {
+        [buttonNext setStyle:UIBarButtonItemStyleBordered];
+        [buttonNext setTitle:@"Next Unread"];
+    }
+    
+    int readStoryCount = [appDelegate.readStories count];
+    if (readStoryCount == 0 || 
+        (readStoryCount == 1 && 
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+            
+            [buttonPrevious setStyle:UIBarButtonItemStyleDone];
+            [buttonPrevious setTitle:@"Done"];
+        } else {
+            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
+            [buttonPrevious setTitle:@"Previous"];
+        }
+    
+    float unreads = (float)[appDelegate unreadCount];
+    float total = [appDelegate originalStoryCount];
+    float progress = (total - unreads) / total;
+    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
+    [progressView setProgress:progress];
+}
+
+- (void)markStoryAsRead {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+        [appDelegate markActiveStoryRead];
+        
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:[appDelegate.activeStory 
+                               objectForKey:@"id"] 
+                       forKey:@"story_id"]; 
+        [request setPostValue:[appDelegate.activeStory 
+                               objectForKey:@"story_feed_id"] 
+                       forKey:@"feed_id"]; 
+        [request setDidFinishSelector:@selector(markedAsRead)];
+        [request setDidFailSelector:@selector(markedAsRead)];
+        [request setDelegate:self];
+        [request startAsynchronous];
+    }
+}
+
+- (void)markedAsRead {
+    
+}
+
 - (IBAction)doNextUnreadStory {
     int nextIndex = [appDelegate indexOfNextStory];
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
-
+    
+    NSLog(@"doNextUnreadStory: %d/%d", nextIndex, unreadCount);
+    
+    if (self.appDelegate.feedDetailViewController.pageFetching) {
+        return;
+    }
+    
     if (nextIndex == -1 && unreadCount > 0 && 
         self.appDelegate.feedDetailViewController.feedPage < 50 &&
         !self.appDelegate.feedDetailViewController.pageFinished &&
@@ -415,44 +463,6 @@
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
                                        objectForKey:@"story_permalink"]];
     [appDelegate showOriginalStory:url];
-}
-
-- (void)setActiveStory {
-    self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
-    
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    UIImage *titleImage = appDelegate.isRiverView ?
-                          [UIImage imageNamed:@"folder.png"] :
-                          [Utilities getImage:feedIdStr];
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    self.navigationItem.titleView = titleImageView;
-    [titleImageView release];
-}
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	self.activeStoryId = nil;
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (BOOL)webView:(UIWebView *)webView 
-    shouldStartLoadWithRequest:(NSURLRequest *)request 
-    navigationType:(UIWebViewNavigationType)navigationType {
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        NSURL *url = [request URL];
-        [appDelegate showOriginalStory:url];
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
 }
 
 @end

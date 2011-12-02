@@ -331,14 +331,20 @@
     int total = 0;
     NSArray *folder;
     
-    if (!folderName) {
-        folder = [self.dictFolders objectForKey:self.activeFolder];
+    if (!folderName && self.activeFolder == @"Everything") {
+        for (id feedId in self.dictFeeds) {
+            total += [self unreadCountForFeed:feedId];
+        }
     } else {
-        folder = [self.dictFolders objectForKey:folderName];
-    }
+        if (!folderName) {
+            folder = [self.dictFolders objectForKey:self.activeFolder];
+        } else {
+            folder = [self.dictFolders objectForKey:folderName];
+        }
     
-    for (id feedId in folder) {
-        total += [self unreadCountForFeed:feedId];
+        for (id feedId in folder) {
+            total += [self unreadCountForFeed:feedId];
+        }
     }
     
     return total;
@@ -437,9 +443,17 @@
     [self markFeedAllRead:feedId];
 }
 
-- (void)markActiveFolderAllRead {    
-    for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
-        [self markFeedAllRead:feedId];
+- (void)markActiveFolderAllRead {
+    if (self.activeFolder == @"Everything") {
+        for (NSString *folderName in self.dictFoldersArray) {
+            for (id feedId in [self.dictFolders objectForKey:folderName]) {
+                [self markFeedAllRead:feedId];
+            }        
+        }
+    } else {
+        for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
+            [self markFeedAllRead:feedId];
+        }
     }
 }
 
