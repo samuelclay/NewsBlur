@@ -123,6 +123,19 @@
     [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     
 	[super viewWillAppear:animated];
+    
+    BOOL pullFound = NO;
+    for (UIView *view in self.storyTitlesTable.subviews) {
+        if ([view isKindOfClass:[PullToRefreshView class]]) {
+            pullFound = YES;
+            if (appDelegate.isRiverView) {
+                [view removeFromSuperview];
+            }
+        }
+    }
+    if (!appDelegate.isRiverView && !pullFound) {
+        [self.storyTitlesTable addSubview:pull];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -793,7 +806,12 @@
 #pragma mark PullToRefresh
 
 // called when the user pulls-to-refresh
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {    
+    if (appDelegate.isRiverView) {
+        [pull finishedLoading];
+        return;
+    }
+    
     NSString *urlString = [NSString 
                            stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
                            NEWSBLUR_URL,
