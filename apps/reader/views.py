@@ -227,6 +227,8 @@ def load_feeds_flat(request):
     include_favicons = request.REQUEST.get('include_favicons', False)
     feeds = {}
     
+    if include_favicons == 'false': include_favicons = False
+    
     if not user.is_authenticated():
         return HttpResponseForbidden()
     
