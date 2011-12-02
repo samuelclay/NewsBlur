@@ -1,0 +1,113 @@
+"Email" = "Email";
+"Username" = "Užívatelské jméno";
+"Password" = "Heslo";
+"Follow %@" = "Sledovat %@";
+"Continue" = "Pokračovat";
+"Share" = "Sdílet";
+"More..." = "Více...";
+"Cancel" = "Zrušit";
+"Slug" = "Slug";
+"Private" = "Soukromé";
+"Public" = "Veřejné";
+"Caption" = "Záhlaví";
+"Title" = "Nadpis";
+"Tags" = "Tagy";
+"Close" = "Zavřít";
+"Notes" = "Poznámky";
+"Note" = "Poznámka";
+"Share" = "Sdílet";
+"Shared" = "Sdíleno";
+"Edit" = "Upravit";
+"Actions" = "Akce";
+"Services" = "Služby";
+"Send to %@" = "Odeslat na %@";
+"Copy" = "Kopírovat";
+"Copied!" = "Skopírováno!";
+"Saving to %@" = "Ukládám na %@";
+"Saved!" = "Uloženo!";
+"Offline" = "Offline";
+"Error" = "Chyba";
+"Login" = "Přihlášení";
+"Logging In..." = "Přihlašuji...";
+"Login Error" = "Chyba přihlášení";
+"Connecting..." = "Připojuji...";
+
+"Shortening URL..." = "Skracuji URL...";
+"Shorten URL Error" = "Chyba skrácení URL";
+"We could not shorten the URL." = "Nepodařilo se skrátit URL.";
+
+"Create a free account at %@" = "Vytvořit bezplatné konto na %@";
+"Create an account at %@" = "Vytvořit konto na %@";
+
+"Send to Twitter" = "Odeslat na Twitter";
+
+"Message is too long" = "Správa je příliš dlouhá";
+"Twitter posts can only be 140 characters in length." = "Správy na Twitter mohou mít nejvíce 140 znaků.";
+"Message is empty" = "Správa je prázdná";
+"You must enter a message in order to post." = "Před odesláním musíte zadat správu.";
+
+"Enter your message:" = "Zadejte Vaši zprávu:";
+
+"Invalid email or password." = "Neplatný email nebo heslo.";
+"The service encountered an error. Please try again later." = "Na službě se vyskytla chyba. Zkuste později, prosím.";
+"There was an error sending your post to Tumblr." = "Během odesílání na Tumblr nastala chyba.";
+
+"There was an error saving to Pinboard" = "Během odesílání na Pinboard nastala chyba";
+
+"Sorry, Instapaper did not accept your credentials. Please try again." = "Je mi líto, Instapaper neakceptoval Vaše přihlašovací údaje. Zkuste znovu, prosím.";
+"Sorry, Instapaper encountered an error. Please try again." = "Je mi líto, na službě Instapaper se vyskytla chyba. Zkuste znovu, prosím.";
+"There was a problem saving to Instapaper." = "Během odesílání na Instapaper nastala chyba.";
+
+"Incorrect username and password" = "Nesprávné jméno nebo heslo";
+"There was an error logging into Google Reader" = "Během přihlašování na Google Reader nastala chyba";
+"There was a problem authenticating your account." = "Během autorizace Vašeho konta nastal problém.";
+"There was a problem saving your note." = "Během ukládání Vašeho záznamu nastal problém.";
+
+"There was a problem saving to Delicious." = "Během odesílání na Delicious nastala chyba.";
+
+"Open in Safari" = "Otevřít v Safari";
+"Attached: %@" = "Připojeno: %@";
+
+"You must be online to login to %@" = "Pro přihlášení na %@ musíte být online";
+
+"Auto Share" = "Automatické sdílení";
+"Enable auto share to skip this step in the future." = "Pro vynechání této volby v budoucnu zapněte automatické sdílení.";
+
+"You must be online in order to share with %@" = "Pro sdílení na %@ musíte být online";
+"There was an error while sharing" = "Během sdílení nastala chyba";
+
+"Could not authenticate you. Please relogin." = "Přihlášení se nepodařilo. Zkuste znovu, prosím.";
+"There was a problem requesting authorization from %@" = "Během žádosti o přístup na %@ nastala chyba";
+"Request Error" = "Chyba žádosti";
+"There was an error while sharing" = "Během sdílení nastala chyba";
+
+"Authorize Error" = "Chyba autorizace";
+"There was an error while authorizing" = "Během autorizace nastala chyba";
+
+"Authenticating..." = "Probíhá přihlašování...";
+"There was a problem requesting access from %@" = "Během žádosti o přístup na %@ nastala chyba";
+
+"Access Error" = "Chyba přístupu";
+"There was an error while sharing" = "Během sdílení nastala chyba";
+"Logout" = "Odhlášení";
+"Sharing a Link" = "Sdílet link";
+"Sharing an Image" = "Sdílet obrázek";
+"Sharing Text" = "Sdílet text";
+"Sharing a File" = "Sdílet soubor";
+"Are you sure you want to logout of all share services?" = "Doopravdy si přejete odhlásit se ze všech služeb?";
+"Examples" = "Příklady";
+"EDMA Error" = "Chyba EDMA";
+"EDMA Version is too old." = "Verze EDMA je příliš stará.";
+"Your username and password did not match" = "Nesprávné jméno nebo heslo";
+"Untitled" = "Bez názvu";
+"There was a problem sharing with Evernote" = "Nastal problém během sdílení přes Evernote";
+"Get" = "";
+"Description" = "Popis";
+"Tag (space) Tag" = "Tag (mezera) Tag";
+"Is Public" = "Veřejné";
+"Is Friend" = "Pro přátele";
+"Is Family" = "Pro rodinu";
+"Logged Out!" = "Odhlášeno!";
+"Sent from %@" = "Odesláno z %@";
+"Save to Photo Album" = "Uložit do Photo Albumu";
+"Tag,Tag" = "Tag,Tag";

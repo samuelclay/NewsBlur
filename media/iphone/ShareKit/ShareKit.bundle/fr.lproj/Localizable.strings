@@ -1,0 +1,96 @@
+"Email" = "E-mail";
+"Username" = "Identifiant";
+"Password" = "Mot de passe";
+"Follow %@" = "Suivre %@";
+"Continue" = "Continuer";
+"Share" = "Partager";
+"More..." = "Autres...";
+"Cancel" = "Annuler";
+"Slug" = "Description";
+"Private" = "Privé";
+"Public" = "Public";
+"Caption" = "Titre";
+"Title" = "Titre";
+"Tags" = "Tags";
+"Close" = "Fermer";
+"Notes" = "Notes";
+"Note" = "Note";
+"Share" = "Partage";
+"Shared" = "Partagé";
+"Edit" = "Modifier";
+"Actions" = "Actions";
+"Services" = "Services";
+"Send to %@" = "Envoyer sur %@";
+"Sent from %@" = "Envoyé depuis %@";
+"Copy" = "Copier";
+"Copied!" = "Copié!";
+"Saving to %@" = "Envoi sur %@";
+"Saved!" = "Envoyé!";
+"Offline" = "Hors ligne";
+"Error" = "Erreur";
+"Login" = "Connexion";
+"Logging In..." = "Connexion...";
+"Login Error" = "Erreur de connexion";
+"Connecting..." = "Connexion...";
+
+"Shortening URL..." = "Réduction d'URL...";
+"Shorten URL Error" = "Erreur de réduction d'URL";
+"We could not shorten the URL." = "L'URL n'a pu être réduite.";
+
+"Create a free account at %@" = "Créer un compte gratuitement sur %@";
+"Create an account at %@" = "Créer un compte sur %@";
+
+"Send to Twitter" = "Envoyer sur Twitter";
+
+"Message is too long" = "Message trop long";
+"Twitter posts can only be 140 characters in length." = "Les messages Twitter ne peuvent dépasser 140 caractères.";
+"Message is empty" = "Message vide";
+"You must enter a message in order to post." = "Veuillez taper un message afin de l'envoyer.";
+
+"Enter your message:" = "Tapez votre message:";
+
+"Invalid email or password." = "E-mail ou mot de passe incorrect";
+"The service encountered an error. Please try again later." = "Ce service n'est pas disponible actuellement. Veuillez réessayer ultérieurement.";
+"There was an error sending your post to Tumblr." = "Votre message n'a pas pu être envoyé sur Tumblr.";
+
+"There was an error saving to Pinboard" = "Erreur d'envoi sur Pinboard";
+
+"Sorry, Instapaper did not accept your credentials. Please try again." = "Désolé, Instapaper n'a pas accepté vos informations de connexion. Veuillez réessayer .";
+"Sorry, Instapaper encountered an error. Please try again." = "Désolé, une erreur est survenue sur Instapaper.  Veuillez réessayer ultérieurement.";
+"There was a problem saving to Instapaper." = "Erreur d'envoi sur Instapaper.";
+
+"Incorrect username and password" = "Nom d'utilisateur ou mot de passe incorrect";
+"There was an error logging into Google Reader" = "Une erreur est survenue lors de la connexion à votre compte Google Reader";
+"There was a problem authenticating your account." = "Votre compte n'a pas pu être authentifié.";
+"There was a problem saving your note." = "Votre note n'a pas pu être sauvegardée.";
+
+"There was a problem saving to Delicious." = "Erreur d'envoi sur Delicious.";
+
+"Open in Safari" = "Ouvrir dans Safari";
+"Attached: %@" = "Pièce jointe: %@";
+
+"You must be online to login to %@" = "Vous devez être connecter à internet pour vous connecter sur %@";
+
+"Auto Share" = "Partage Automatique";
+"Enable auto share to skip this step in the future." = "Autoriser le partage automatique afin de sauter cette étape la prochaine fois.";
+
+"You must be online in order to share with %@" = "Vous devez être connecté à internet pour partager with %@";
+
+"Could not authenticate you. Please relogin." = "L'identification a échouée. Veuillez vous reconnecter.";
+"There was a problem requesting authorization from %@" = "Une erreur est survenue lors de la demande d'autorisation sur %@";
+"Request Error" = "Erreur lors de la requête";
+"There was an error while sharing" = "Une erreur est survenue lors du partage";
+
+"Authorize Error" = "Erreur d'autorisation";
+"There was an error while authorizing" = "Une erreur est survenue lors de l'autorisation.";
+
+"Authenticating..." = "Authentification...";
+"There was a problem requesting access from %@" = "Une erreur est survenue lors de la demande d'accès sur %@";
+
+"Access Error" = "Erreur d'accès";
+
+"Sharing a Link" = "Partager un lien";
+"Sharing an Image" = "Partager une image";
+"Sharing Text" = "Partager un texte";
+"Sharing a File" = "Partager un fichier";
+"Logout of All Services" = "Déconnexion de tous les services";

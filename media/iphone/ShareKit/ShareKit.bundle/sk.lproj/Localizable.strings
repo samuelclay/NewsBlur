@@ -1,0 +1,114 @@
+"Email" = "Email";
+"Username" = "Užívateľské meno";
+"Password" = "Heslo";
+"Follow %@" = "Sledovať %@";
+"Continue" = "Pokračovať";
+"Share" = "Zdieľať";
+"More..." = "Viac...";
+"Cancel" = "Zrušiť";
+"Slug" = "Slug";
+"Private" = "Súkromné";
+"Public" = "Verejné";
+"Caption" = "Záhlavie";
+"Title" = "Nadpis";
+"Tags" = "Tagy";
+"Close" = "Zatvoriť";
+"Notes" = "Poznámky";
+"Note" = "Poznámka";
+"Share" = "Zdieľať";
+"Shared" = "Zdieľané";
+"Edit" = "Upraviť";
+"Actions" = "Akcie";
+"Services" = "Služby";
+"Send to %@" = "Odoslať na %@";
+"Copy" = "Kopírovať";
+"Copied!" = "Skopírované!";
+"Saving to %@" = "Ukladám na %@";
+"Saved!" = "Uložené!";
+"Offline" = "Nie je sieť";
+"Error" = "Chyba";
+"Login" = "Prihlásenie";
+"Logging In..." = "Prihlasujem...";
+"Login Error" = "Chyba prihlásenia";
+"Connecting..." = "Pripájam sa...";
+
+"Shortening URL..." = "Skracujem URL...";
+"Shorten URL Error" = "Chyba skrátenia URL";
+"We could not shorten the URL." = "Nemohli sme skrátiť URL.";
+
+"Create a free account at %@" = "Vytvorte bezplatné konto na %@";
+"Create an account at %@" = "Vytvorte konto na %@";
+
+"Send to Twitter" = "Odoslať na Twitter";
+
+"Message is too long" = "Správa je príliš dlhá";
+"Twitter posts can only be 140 characters in length." = "Správy na Twitter môžu mať najviac 140 znakov.";
+"Message is empty" = "Správa je prázdna";
+"You must enter a message in order to post." = "Pred odoslaním musíte zadať správu.";
+
+"Enter your message:" = "Zadajte Vašu správu:";
+
+"Invalid email or password." = "Neplatný email alebo heslo.";
+"The service encountered an error. Please try again later." = "Na službe sa vyskytla chyba. Skúste neskôr, prosím.";
+"There was an error sending your post to Tumblr." = "Počas odosielania na Tumblr sa vyskytla chyba.";
+
+"There was an error saving to Pinboard" = "Počas odosielania na Pinboard sa vyskytla chyba";
+
+"Sorry, Instapaper did not accept your credentials. Please try again." = "Prepáčte, Instapaper neakceptoval Vaše prihlasovacie údaje. Skúste znova, prosím.";
+"Sorry, Instapaper encountered an error. Please try again." = "Prepáčte, na službe Instapaper sa vyskytla chyba. Skúste znova, prosím.";
+"There was a problem saving to Instapaper." = "Počas odosielania na Instapaper sa vyskytla chyba.";
+
+"Incorrect username and password" = "Nesprávne meno a heslo";
+"There was an error logging into Google Reader" = "Počas prihlasovania na Google Reader nastala chyba";
+"There was a problem authenticating your account." = "Nastal problém pri autorizácii Vášho konta.";
+"There was a problem saving your note." = "Nastal problém pri odosielaní Vášho záznamu.";
+
+"There was a problem saving to Delicious." = "Pri odosielaní na Delicious nastal problém.";
+
+"Open in Safari" = "Otvoriť v Safari";
+"Attached: %@" = "Pripojené: %@";
+
+"You must be online to login to %@" = "Pre prihlásenie na %@ musíte byť online";
+
+"Auto Share" = "Automatické zdieľanie";
+"Enable auto share to skip this step in the future." = "Aby ste nemuseli v budúcnosti túto voľbu opakovať, zapnite automatické zdieľanie.";
+
+"You must be online in order to share with %@" = "Pre zdieľanie na %@ musíte byť online";
+"There was an error while sharing" = "Počas zdieľania nastala chyba";
+
+"Could not authenticate you. Please relogin." = "Prihlásenie sa nepodarilo. Prosím skúste znova.";
+"There was a problem requesting authorization from %@" = "Počas autorizácie na %@ nastal problém";
+"Request Error" = "Chyba požiadavky";
+"There was an error while sharing" = "Počas zdieľania nastala chyba";
+
+"Authorize Error" = "Chyba autorizácie";
+"There was an error while authorizing" = "Počas autorizácie nastala chyba";
+
+"Authenticating..." = "Prebieha prihlasovanie...";
+"There was a problem requesting access from %@" = "Nastala chyba počas žiadosti o prístup na %@";
+
+"Access Error" = "Chyba prístupu";
+"There was an error while sharing" = "Počas zdieľania nastala chyba";
+
+"Logout" = "Odhlásenie";
+"Sharing a Link" = "Zdieľať linku";
+"Sharing an Image" = "Zdieľať obrázok";
+"Sharing Text" = "Zdieľať text";
+"Sharing a File" = "Zdieľať súbor";
+"Are you sure you want to logout of all share services?" = "Naozaj si želáte odhlásiť sa zo všetkých služieb?";
+"Examples" = "Príklady";
+"EDMA Error" = "Chyba EDMA";
+"EDMA Version is too old." = "Verzia EDMA je príliš stará.";
+"Your username and password did not match" = "Nesprávne meno alebo heslo";
+"Untitled" = "Bez názvu";
+"There was a problem sharing with Evernote" = "Nastal problém počas zdieľania cez Evernote";
+"Get" = "";
+"Description" = "Popis";
+"Tag (space) Tag" = "Tag (medzera) Tag";
+"Is Public" = "Verejné";
+"Is Friend" = "Pre priateľov";
+"Is Family" = "Pre rodinu";
+"Logged Out!" = "Odhlásené!";
+"Sent from %@" = "Odoslané z %@";
+"Save to Photo Album" = "Uložiť do Photo Albumu";
+"Tag,Tag" = "Tag,Tag";

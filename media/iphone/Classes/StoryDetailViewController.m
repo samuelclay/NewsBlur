@@ -23,6 +23,7 @@
 @synthesize toolbar;
 @synthesize buttonNext;
 @synthesize buttonPrevious;
+@synthesize buttonAction;
 @synthesize activity;
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
@@ -45,6 +46,7 @@
     [toolbar release];
     [buttonNext release];
     [buttonPrevious release];
+    [buttonAction release];
     [activity release];
     [loadingIndicator release];
     [feedTitleGradient release];

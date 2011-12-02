@@ -1,0 +1,94 @@
+"Email" = "电子邮件";
+"Username" = "用户名";
+"Password" = "密码";
+"Follow %@" = "关注%@";
+"Continue" = "继续";
+"Share" = "分享";
+"More..." = "更多…";
+"Cancel" = "取消";
+"Slug" = "Slug";
+"Private" = "私有";
+"Public" = "公开";
+"Caption" = "标题";
+"Title" = "标题";
+"Tags" = "标签";
+"Close" = "关闭";
+"Notes" = "笔记";
+"Note" = "笔记";
+"Share" = "分享";
+"Shared" = "已分享";
+"Edit" = "编辑";
+"Actions" = "动作";
+"Services" = "服务";
+"Send to %@" = "发送到 %@";
+"Copy" = "复制";
+"Copied!" = "已复制！";
+"Saving to %@" = "保存至%@";
+"Saved!" = "已保存！";
+"Offline" = "离线";
+"Error" = "错误";
+"Login" = "登录";
+"Logging In..." = "登录中…";
+"Login Error" = "登录出错";
+"Connecting..." = "连接中…";
+
+
+"Shortening URL..." = "缩短网址…";
+"Shorten URL Error" = "缩短网址出错";
+"We could not shorten the URL." = "我们无法缩短网址。";
+
+"Create a free account at %@" = "在 %@ 上创建一个免费账户";
+"Create an account at %@" = "在 %@ 上创建一个账户";
+
+"Send to Twitter" = "发送到 Twitter";
+
+"Message is too long" = "消息太长了";
+"Twitter posts can only be 140 characters in length." = "Twitter 消息不能超过 140 个字符。";
+"Message is empty" = "消息为空";
+"You must enter a message in order to post." = "你必须先输入一条消息。";
+
+"Enter your message:" = "输入你的消息：";
+
+"Invalid email or password." = "Email 或密码不正确。";
+"The service encountered an error. Please try again later." = "此服务碰到了一点错误，请稍后重试。";
+"There was an error sending your post to Tumblr." = "发送至 Tumblr 的过程中出错。";
+
+"There was an error saving to Pinboard" = "保存到 Pinboard 的过程中出错";
+
+"Sorry, Instapaper did not accept your credentials. Please try again." = "抱歉，Instapaper 无法验证您的账号，请重试。";
+"Sorry, Instapaper encountered an error. Please try again." = "抱歉，Instapaper 碰到了一个问题，请重试。";
+"There was a problem saving to Instapaper." = "保存到 Instapaper 的过程中出错。";
+
+"Incorrect username and password" = "用户名或密码不正确";
+"There was an error logging into Google Reader" = "登录到 Google Reader 的过程中出错";
+"There was a problem authenticating your account." = "验证您账户的过程中出错。";
+"There was a problem saving your note." = "保存您笔记的过程中出错。";
+
+"There was a problem saving to Delicious." = "保存到 Delicious 的过程中出错。";
+
+"Open in Safari" = "在 Safari 中打开";
+"Attached: %@" = "附件： %@";
+
+"You must be online to login to %@" = "要登录到 %@ 上您必须在线";
+
+"Auto Share" = "自动分享";
+"Enable auto share to skip this step in the future." = "启动自动分享，在以后可以跳过此步。";
+
+"You must be online in order to share with %@" = "要分享 %@ 的话您必须在线。";
+"There was an error while sharing" = "分享过程中出错";
+
+"Could not authenticate you. Please relogin." = "无法验证，请重新登录。";
+"There was a problem requesting authorization from %@" = "在向 %@ 请求验证的过程中出错";
+"Request Error" = "请求错误";
+"There was an error while sharing" = "分享过程中出错";
+
+"Authorize Error" = "验证错误";
+"There was an error while authorizing" = "验证的过程中出错";
+
+"Authenticating..." = "验证中…";
+"There was a problem requesting access from %@" = "从 %@ 获取口令出错";
+
+"Access Error" = "访问错误";
+"There was an error while sharing" = "在分享的过程中出错";
+
+"Save to Photo Album" = "保存到相簿";

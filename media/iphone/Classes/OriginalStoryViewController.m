@@ -10,6 +10,7 @@
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
+#import "SHK.h"
 
 @implementation OriginalStoryViewController
 
@@ -230,41 +231,49 @@
 }
 
 - (IBAction)doOpenActionSheet {
-    UIActionSheet *options = [[UIActionSheet alloc] 
-                              initWithTitle:[appDelegate.activeStory objectForKey:@"story_title"]
-                              delegate:self
-                              cancelButtonTitle:nil
-                              destructiveButtonTitle:nil
-                              otherButtonTitles:nil];
+//    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
+    NSURL *url = [NSURL URLWithString:self.pageUrl.text];
+    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory 
+                                            objectForKey:@"story_title"]];
+    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
+    [actionSheet showInView:self.view];
 
-    NSArray *buttonTitles;
-    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-        buttonTitles = [NSArray arrayWithObjects:@"Open Story in Safari", nil];
-    } else {
-        buttonTitles = [NSArray arrayWithObjects:@"Open this Page in Safari", @"Open Original in Safari", nil];
-    }
-    for (id title in buttonTitles) {
-        [options addButtonWithTitle:title];
-    }
-    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-
-    [options showInView:self.view];
-    [options release];
+//    UIActionSheet *options = [[UIActionSheet alloc] 
+//                              initWithTitle:[appDelegate.activeStory objectForKey:@"story_title"]
+//                              delegate:self
+//                              cancelButtonTitle:nil
+//                              destructiveButtonTitle:nil
+//                              otherButtonTitles:nil];
+//
+//    NSArray *buttonTitles;
+//    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
+//        buttonTitles = [NSArray arrayWithObjects:@"Open Story in Safari", nil];
+//    } else {
+//        buttonTitles = [NSArray arrayWithObjects:@"Open this Page in Safari", 
+//                                                 @"Open Original in Safari", nil];
+//    }
+//    for (id title in buttonTitles) {
+//        [options addButtonWithTitle:title];
+//    }
+//    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
+//
+//    [options showInView:self.view];
+//    [options release];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-
-    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
-        if (buttonIndex == 0) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
-        }
-    } else {
-        if (buttonIndex == 0) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
-        } else if (buttonIndex == 1) {
-            [[UIApplication sharedApplication] openURL:appDelegate.activeOriginalStoryURL];
-        }
-    }
-}
+//- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+//
+//    if ([[appDelegate.activeOriginalStoryURL absoluteString] isEqualToString:self.pageUrl.text]) {
+//        if (buttonIndex == 0) {
+//            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
+//        }
+//    } else {
+//        if (buttonIndex == 0) {
+//            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.pageUrl.text]];
+//        } else if (buttonIndex == 1) {
+//            [[UIApplication sharedApplication] openURL:appDelegate.activeOriginalStoryURL];
+//        }
+//    }
+//}
 
 @end
