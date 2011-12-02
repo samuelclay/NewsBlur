@@ -263,7 +263,7 @@ class Feed(models.Model):
                     self.active = True
                     self.save()
                 except IntegrityError:
-                    original_feed = Feed.objects.get(feed_address=feed_address)
+                    original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
                     original_feed.has_feed_exception = False
                     original_feed.active = True
                     original_feed.save()
