@@ -11,7 +11,8 @@
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "LoginViewController.h"
-#import "AddViewController.h"
+#import "AddSiteViewController.h"
+#import "MoveSiteViewController.h"
 #import "OriginalStoryViewController.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
@@ -24,7 +25,8 @@
 @synthesize feedDetailViewController;
 @synthesize storyDetailViewController;
 @synthesize loginViewController;
-@synthesize addViewController;
+@synthesize addSiteViewController;
+@synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
 
 @synthesize activeUsername;
@@ -75,7 +77,8 @@
     [feedDetailViewController release];
     [storyDetailViewController release];
     [loginViewController release];
-    [addViewController release];
+    [addSiteViewController release];
+    [moveSiteViewController release];
     [originalStoryViewController release];
     [navigationController release];
     [window release];
@@ -117,9 +120,16 @@
 
 - (void)showAdd {
     UINavigationController *navController = self.navigationController;
-    [addViewController initWithNibName:nil bundle:nil];
-    [navController presentModalViewController:addViewController animated:YES];
-    [addViewController reload];
+    [addSiteViewController initWithNibName:nil bundle:nil];
+    [navController presentModalViewController:addSiteViewController animated:YES];
+    [addSiteViewController reload];
+}
+
+- (void)showMoveSite {
+    UINavigationController *navController = self.navigationController;
+    [moveSiteViewController initWithNibName:nil bundle:nil];
+    [navController presentModalViewController:moveSiteViewController animated:YES];
+    [moveSiteViewController reload];
 }
 
 - (void)reloadFeedsView {
@@ -594,6 +604,41 @@
     gradientView.opaque = YES;
     
     return gradientView;
+}
+
+- (UIView *)makeFeedTitle:(NSDictionary *)feed {
+    
+    UIView *titleView = [[[UIView alloc] init] autorelease];
+    
+    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+    if (self.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];        
+    } else {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+    }
+    titleLabel.backgroundColor = [UIColor clearColor];
+    titleLabel.textAlignment = UITextAlignmentLeft;
+    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    titleLabel.shadowColor = [UIColor blackColor];
+    titleLabel.shadowOffset = CGSizeMake(0, -1);
+    titleLabel.center = CGPointMake(28, -2);
+    [titleLabel sizeToFit];
+    
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    UIImage *titleImage;
+    if (self.isRiverView) {
+        titleImage = [UIImage imageNamed:@"folder.png"];
+    } else {
+        titleImage = [Utilities getImage:feedIdStr];
+    }
+	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+    [titleLabel addSubview:titleImageView];
+    [titleImageView release];
+
+    return titleView;
 }
 
 @end

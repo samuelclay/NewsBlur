@@ -13,7 +13,8 @@
 @class FeedDetailViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
-@class AddViewController;
+@class AddSiteViewController;
+@class MoveSiteViewController;
 @class OriginalStoryViewController;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
@@ -23,7 +24,8 @@
     FeedDetailViewController *feedDetailViewController;
     StoryDetailViewController *storyDetailViewController;
     LoginViewController *loginViewController;
-    AddViewController *addViewController;
+    AddSiteViewController *addSiteViewController;
+    MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
     
     NSString * activeUsername;
@@ -56,7 +58,8 @@
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
-@property (nonatomic, retain) IBOutlet AddViewController *addViewController;
+@property (nonatomic, retain) IBOutlet AddSiteViewController *addSiteViewController;
+@property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
@@ -117,6 +120,7 @@
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
+- (UIView *)makeFeedTitle:(NSDictionary *)feed;
 
 @end
 

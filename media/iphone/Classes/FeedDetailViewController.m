@@ -55,44 +55,16 @@
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    UIView *titleView = [[UIView alloc] init];
-    
-    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     if (appDelegate.isRiverView) {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.storyTitlesTable.separatorColor = [UIColor clearColor];
-        titleLabel.text = [NSString stringWithFormat:@"     %@", appDelegate.activeFolder];        
     } else {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-        titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
     }
-    titleLabel.backgroundColor = [UIColor clearColor];
-    titleLabel.textAlignment = UITextAlignmentLeft;
-    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
-    titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
-    titleLabel.shadowColor = [UIColor blackColor];
-    titleLabel.shadowOffset = CGSizeMake(0, -1);
-    titleLabel.center = CGPointMake(28, -2);
-    [titleLabel sizeToFit];
     
-    
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
-    UIImage *titleImage;
-    if (appDelegate.isRiverView) {
-        titleImage = [UIImage imageNamed:@"folder.png"];
-    } else {
-        titleImage = [Utilities getImage:feedIdStr];
-    }
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    [titleLabel addSubview:titleImageView];
-    [titleImageView release];
-    
+    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     self.navigationItem.titleView = titleLabel;
-	    
-    [titleView release];
 
     // Commenting out until training is ready...
     //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
