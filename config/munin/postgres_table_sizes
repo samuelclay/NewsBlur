@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+
+""" Monitors the total table size (data + indexes)
+    for all tables in the specified database."""
+
+from munin.postgres import MuninPostgresPlugin
+
+class PostgresTableSizes(MuninPostgresPlugin):
+    vlabel = "Table Size"
+    title = "Table Sizes"
+
+    @property
+    def fields(self):
+        return [(table, {"label": table}) for table in self.tables()]
+
+    def execute(self):
+        tables = {}
+        for table in self.tables():
+            cursor = self.cursor()
+            cursor.execute("SELECT pg_total_relation_size(%s);", (table,))
+            tables[table] = cursor.fetchone()[0]
+        return tables
+
+if __name__ == "__main__":
+    PostgresTableSizes().run()
+

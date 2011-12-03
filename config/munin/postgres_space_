@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Based on a plugin by BjØrn Ruberg and Moses Moore.
+
+Plugin to monitor PostgreSQL disk usage.
+"""
+
+from munin.postgres import MuninPostgresPlugin
+
+class MuninPostgresSpacePlugin(MuninPostgresPlugin):
+    dbname_in_args = True
+    args = "-l 0 --base 1024"
+    vlabel = "bytes"
+    info = "Size of database"
+    fields = (
+        ('size', dict(
+            label = "Database size (bytes)",
+            info = "Database size",
+            type = "GAUGE",
+            draw = "AREA",
+        )),
+        ('indexsize', dict(
+            label = "Index size (bytes)",
+            info = "Index size",
+            type = "GAUGE",
+            draw = "AREA",
+        )),
+        ('metasize', dict(
+            label = "Meta size (bytes)",
+            info = "Meta size",
+            type = "GAUGE",
+            draw = "AREA",
+        )),
+        ('metaindexsize', dict(
+            label = "Meta Index size (bytes)",
+            info = "Meta Index size",
+            type = "GAUGE",
+            draw = "AREA",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "Postgres size of database %s" % self.dbname
+
+    def execute(self):
+        c = self.cursor()
+
+        namespaces = {}
+        c.execute("SELECT oid, nspname FROM pg_namespace")
+        for row in c.fetchall():
+            namespaces[row[0]] = row[1]
+
+        query = (
+            "SELECT relname, relnamespace, relkind, relfilenode, relpages"
+            " FROM pg_class WHERE relkind IN ('r', 'i')")
+
+        database_pages = 0
+        database_indexes = 0
+        metadatabase_pages = 0
+        metadatabase_indexes = 0
+
+        c.execute(query)
+        for row in c.fetchall():
+            relname, relnamespace, relkind, relfilenode, relpages = row
+            ns = namespaces[relnamespace]
+            if ns.startswith('pg_toast'):
+                continue
+
+            meta = ns.startswith('pg_') or ns == "information_schema"
+
+            c2 = self.cursor()
+            c2.execute("SELECT SUM(relpages) FROM pg_class WHERE relname IN (%s, %s)",  
+                ("pg_toast_%s" % relfilenode, "pg_toast_%s_index" % relfilenode))
+            relpages2 = int(c2.fetchone()[0] or '0')
+
+            if relkind == "r":  # Regular table
+                if meta:
+                    metadatabase_pages += int(relpages) + relpages2
+                else:
+                    database_pages += int(relpages) + relpages2
+            elif relkind == "i": # Index
+                if meta:
+                    metadatabase_indexes += int(relpages) + relpages2
+                else:
+                    database_indexes += int(relpages) + relpages2
+
+        return dict(
+            size = database_pages * 8192,
+            indexsize = database_indexes * 8192,
+            metasize = metadatabase_pages * 8192,
+            metaindexsize = metadatabase_indexes * 8192,
+        )
+
+if __name__ == "__main__":
+    MuninPostgresSpacePlugin().run()

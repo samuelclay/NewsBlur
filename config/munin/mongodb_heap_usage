@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBHeapUsagePlugin(MuninMongoDBPlugin):
+    args = "-l 0 --base 1024"
+    vlabel = "bytes"
+    title = "MongoDB heap usage"
+    info = "Heap usage"
+    fields = (
+        ('heap_usage', dict(
+            label = "heap usage",
+            info = "heap usage",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        try:
+            value = status['extra_info']['heap_usage_bytes']
+        except KeyError:
+            value = "U"
+        return dict(heap_usage=value)
+
+if __name__ == "__main__":
+    MongoDBHeapUsagePlugin().run()

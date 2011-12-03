@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Based on a Perl plugin by an unknown author.
+
+Show postgres lock statistics.
+"""
+
+from munin.postgres import MuninPostgresPlugin
+
+class MuninPostgresLocksPlugin(MuninPostgresPlugin):
+    dbname_in_args = False
+    title = "Postgres locks"
+    args = "--base 1000"
+    vlabel = "Locks"
+    info = "Shows Postgresql locks"
+    fields = (
+        ('locks', dict(
+            label = "Locks",
+            info = "Locks",
+            type = "GAUGE",
+            warning = 10,
+            critical = 20,
+        )),
+        ('exlocks', dict(
+            label = "Exclusive locks",
+            info = "Exclusive locks",
+            type = "GAUGE",
+            warning = 5,
+            critical = 10,
+        )),
+    )
+
+    def execute(self):
+        c = self.cursor()
+        c.execute("SELECT mode, COUNT(mode) FROM pg_locks GROUP BY mode ORDER BY mode")
+        locks = 0
+        exlocks = 0
+        for row in c.fetchall():
+            if 'exclusive' in row[0].lower():
+                exlocks += row[1]
+            locks += row[1]
+        return dict(
+            locks = locks,
+            exlocks = exlocks,
+        )
+
+if __name__ == "__main__":
+    MuninPostgresLocksPlugin().run()

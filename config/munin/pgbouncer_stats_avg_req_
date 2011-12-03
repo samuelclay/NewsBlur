@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.pgbouncer import MuninPgBouncerPlugin
+
+class MuninPgBouncerStatsRequestsServerPlugin(MuninPgBouncerPlugin):
+    command = "SHOW STATS"
+    vlabel = "Requests"
+    info = "Shows average requests per second"
+
+    fields = (
+        ('avg_req', dict(
+            label = "requests per second",
+            info = "average requests per second",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "PgBouncer average requests per second on %s" % self.dbwatched
+
+if __name__ == "__main__":
+    MuninPgBouncerStatsRequestsServerPlugin().run()
+
