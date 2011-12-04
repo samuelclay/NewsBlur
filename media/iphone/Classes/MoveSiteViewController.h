@@ -22,7 +22,9 @@
 - (IBAction)moveFolder;
 - (IBAction)doCancelButton;
 - (IBAction)doMoveButton;
-- (NSString *)extractParentFolder:(NSString *)folderName;
+- (NSArray *)pickerFolders;
+- (NSString *)extractFolderName:(NSString *)folderName;
+- (NSString *)extractParentFolderName:(NSString *)folderName;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITextField *fromFolderInput;
@@ -37,5 +39,7 @@
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, retain) IBOutlet UILabel *movingLabel;
 @property (nonatomic, retain) IBOutlet UILabel *errorLabel;
+
+@property (nonatomic, retain) NSMutableArray *folders;
 
 @end

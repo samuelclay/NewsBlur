@@ -518,6 +518,8 @@ class UserSubscriptionFolders(models.Model):
         self.save()
         
     def move_feed_to_folder(self, feed_id, in_folder=None, to_folder=None):
+        logging.user(self.user, "~FBMoving feed '~SB%s~SN' in '%s' to: ~SB%s" % (
+                     feed_id, in_folder, to_folder))
         user_sub_folders = json.decode(self.folders)
         self.delete_feed(feed_id, in_folder, commit_delete=False)
         user_sub_folders = json.decode(self.folders)
@@ -528,6 +530,8 @@ class UserSubscriptionFolders(models.Model):
         return self
 
     def move_folder_to_folder(self, folder_name, in_folder=None, to_folder=None):
+        logging.user(self.user, "~FBMoving folder '~SB%s~SN' in '%s' to: ~SB%s" % (
+                     folder_name, in_folder, to_folder))
         user_sub_folders = json.decode(self.folders)
         deleted_folder = self.delete_folder(folder_name, in_folder, [], commit_delete=False)
         user_sub_folders = json.decode(self.folders)

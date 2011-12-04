@@ -1094,8 +1094,8 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b)) {
-                // console.log(['a b 1', a, b]);
+              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b) && a && b) {
+                // console.log(['a b 1', a, b, feedA, feedB]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;

@@ -26,6 +26,7 @@
 @synthesize activityIndicator;
 @synthesize movingLabel;
 @synthesize errorLabel;
+@synthesize folders;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -78,20 +79,30 @@
     [cancelButton release];
     [folderPicker release];
     [navBar release];
+    [folders release];
     [super dealloc];
 }
+
 - (void)reload {
-    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
-    NSString *fromFolderName = isTopLevel ? 
-                                @"- Top Level -" : 
-                                appDelegate.activeFolder;
     [toFolderInput setText:@""];
-    [fromFolderInput setText:fromFolderName];
+    if (appDelegate.isRiverView) {
+        [fromFolderInput setText:[self extractParentFolderName:appDelegate.activeFolder]];
+    } else {
+        [fromFolderInput setText:appDelegate.activeFolder];
+    }
+    self.folders = [NSMutableArray array];
     [folderPicker reloadAllComponents];
     
-    int row = isTopLevel ? 
-                0 :
-                [[appDelegate dictFoldersArray] indexOfObject:fromFolderName];
+    int row = 0;
+    if (appDelegate.isRiverView) {
+        row = [[self pickerFolders] 
+               indexOfObject:[self extractParentFolderName:appDelegate.activeFolder]];
+    } else {
+        BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
+        row = isTopLevel ? 
+                    0 :
+                    [[self pickerFolders] indexOfObject:appDelegate.activeFolder];
+    }
     [folderPicker selectRow:row inComponent:0 animated:NO];
     
     moveButton.enabled = NO;
@@ -121,8 +132,8 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *fromFolder = [self extractParentFolder:[fromFolderInput text]];
-    NSString *toFolder = [self extractParentFolder:[toFolderInput text]];
+    NSString *fromFolder = [self extractFolderName:[fromFolderInput text]];
+    NSString *toFolder = [self extractFolderName:[toFolderInput text]];
     [request setPostValue:fromFolder forKey:@"in_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
     [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
@@ -155,7 +166,23 @@
     [results release];
 }
 
-- (NSString *)extractParentFolder:(NSString *)folderName {
+- (NSString *)extractParentFolderName:(NSString *)folderName {
+    if ([folderName containsString:@"Top Level"]) {
+        folderName = @"";
+    }
+    
+    if ([folderName containsString:@" - "]) {
+        int lastFolderLoc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+//        int secondLastFolderLoc = [[folderName substringToIndex:lastFolderLoc] rangeOfString:@" - " options:NSBackwardsSearch].location;
+        folderName = [folderName substringToIndex:lastFolderLoc];
+    } else {
+        folderName = @"— Top Level —";
+    }
+    
+    return folderName;
+}
+
+- (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"]) {
         folderName = @"";
     }
@@ -180,11 +207,12 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *fromFolder = [self extractParentFolder:[fromFolderInput text]];
-    NSString *toFolder = [self extractParentFolder:[toFolderInput text]];
-    [request setPostValue:fromFolder forKey:@"from_folder"]; 
+    NSString *folderName = [self extractFolderName:appDelegate.activeFolder];
+    NSString *fromFolder = [self extractFolderName:[fromFolderInput text]];
+    NSString *toFolder = [self extractFolderName:[toFolderInput text]];
+    [request setPostValue:fromFolder forKey:@"in_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
-    [request setPostValue:toFolder forKey:@"folder_to_move"]; 
+    [request setPostValue:folderName forKey:@"folder_name"];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishMoveFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -223,35 +251,45 @@
 #pragma mark -
 #pragma mark Folder Picker
 
+- (NSArray *)pickerFolders {
+    if ([self.folders count]) return self.folders;
+    
+    self.folders = [NSMutableArray array];
+    [self.folders addObject:@"— Top Level —"];
+    
+    for (NSString *folder in appDelegate.dictFoldersArray) {
+        if ([[folder trim] isEqualToString:@""]) continue;
+        if (appDelegate.isRiverView) {
+            if (![folder containsString:appDelegate.activeFolder]) {
+                [self.folders addObject:folder];
+            }
+        } else {
+            [self.folders addObject:folder];
+        }
+    }
+    
+    return self.folders;
+}
+
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
     return 1;
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView
 numberOfRowsInComponent:(NSInteger)component {
-    return [[appDelegate dictFoldersArray] count];
+    return [[self pickerFolders] count];
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView
              titleForRow:(NSInteger)row
             forComponent:(NSInteger)component {
-    if (row == 0) {
-        return @"— Top Level —";
-    } else {
-        return [[appDelegate dictFoldersArray] objectAtIndex:row];
-    }
+    return [[self pickerFolders] objectAtIndex:row];
 }
 
 - (void)pickerView:(UIPickerView *)pickerView 
       didSelectRow:(NSInteger)row 
        inComponent:(NSInteger)component {
-    NSString *folder_title;
-    if (row == 0) {
-        folder_title = @"- Top Level -";
-    } else {
-        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row];        
-    }
-    [toFolderInput setText:folder_title];
+    [toFolderInput setText:[[self pickerFolders] objectAtIndex:row]];
     moveButton.enabled = YES;
 }
 

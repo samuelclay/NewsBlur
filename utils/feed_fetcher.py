@@ -387,7 +387,9 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e)
-                
+            else:
+                logging.debug(u'   ---> [%-30s] Skipping page fetch: %s (%s on %s stories) %s' % (unicode(feed)[:30], unicode(feed.feed_link)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
+            
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
             
