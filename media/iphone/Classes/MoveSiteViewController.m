@@ -11,11 +11,13 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "JSON.h"
+#import "StringHelper.h"
 
 @implementation MoveSiteViewController
 
 @synthesize appDelegate;
 @synthesize toFolderInput;
+@synthesize fromFolderInput;
 @synthesize titleLabel;
 @synthesize moveButton;
 @synthesize cancelButton;
@@ -36,9 +38,15 @@
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
     [toFolderInput setLeftView:folderImage];
     [toFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
+    [fromFolderInput setLeftView:folderImage2];
+    [fromFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage release];
+    [folderImage2 release];
         
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     [super viewDidLoad];
 }
@@ -46,12 +54,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
     [self.movingLabel setHidden:YES];
-    [self.folderPicker setHidden:YES];
     [self.activityIndicator stopAnimating];
     
-    UIView *titleLabelView = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-    self.titleLabel = titleLabelView;
-    
+    for (UIView *subview in [self.titleLabel subviews]) {
+        [subview removeFromSuperview];
+    }
+    [self.titleLabel addSubview:[appDelegate makeFeedTitle:appDelegate.activeFeed]];
+    [self reload];
     [super viewWillAppear:animated];
 }
 
@@ -60,17 +69,10 @@
     [super viewDidAppear:animated];
 }
 
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
 - (void)dealloc {
     [appDelegate release];
     [toFolderInput release];
+    [fromFolderInput release];
     [titleLabel release];
     [moveButton release];
     [cancelButton release];
@@ -78,65 +80,52 @@
     [navBar release];
     [super dealloc];
 }
+- (void)reload {
+    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
+    NSString *fromFolderName = isTopLevel ? 
+                                @"- Top Level -" : 
+                                appDelegate.activeFolder;
+    [toFolderInput setText:@""];
+    [fromFolderInput setText:fromFolderName];
+    [folderPicker reloadAllComponents];
+    
+    int row = isTopLevel ? 
+                0 :
+                [[appDelegate dictFoldersArray] indexOfObject:fromFolderName];
+    [folderPicker selectRow:row inComponent:0 animated:NO];
+    
+    moveButton.enabled = NO;
+}
 
 - (IBAction)doCancelButton {
     [appDelegate.moveSiteViewController dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)doMoveButton {
-
-}
-
-- (void)reload {
-    [toFolderInput setText:@""];
-    [folderPicker reloadAllComponents];
-    
-    folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, 
-                                    folderPicker.frame.size.width, 
-                                    folderPicker.frame.size.height);
+    if (appDelegate.isRiverView) {
+        [self moveFolder];
+    } else {
+        [self moveSite];
+    }
 }
 
 #pragma mark -
 #pragma mark Move Site
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    [errorLabel setText:@""];
-    if (textField == toFolderInput && ![toFolderInput isFirstResponder]) {
-        [toFolderInput setInputView:folderPicker];
-        if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
-            folderPicker.hidden = NO;
-            [UIView animateWithDuration:.35 animations:^{
-                folderPicker.frame = CGRectMake(0, 
-                                                self.view.bounds.size.height - 
-                                                folderPicker.frame.size.height, 
-                                                folderPicker.frame.size.width, 
-                                                folderPicker.frame.size.height);            
-            }];
-        }
-        return NO;
-    }
-    return YES;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    return YES;
-}
-
 - (IBAction)moveSite {
-    [self hideFolderPicker];
     [self.movingLabel setHidden:NO];
     [self.movingLabel setText:@"Moving site..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/move_site_to_folder",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/move_feed_to_folder",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *fromFolder = [self extractParentFolder:[toFolderInput text]];
+    NSString *fromFolder = [self extractParentFolder:[fromFolderInput text]];
     NSString *toFolder = [self extractParentFolder:[toFolderInput text]];
-    [request setPostValue:fromFolder forKey:@"from_folder"]; 
+    [request setPostValue:fromFolder forKey:@"in_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
-    [request setPostValue:[appDelegate.activeFeed objectForKey:@"feed_id"] forKey:@"feed_id"]; 
+    [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -144,6 +133,10 @@
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] >= 500) {
+        return [self requestFailed:request];
+    }
+    
     [self.movingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
@@ -155,18 +148,23 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
+        appDelegate.activeFolder = [toFolderInput text];
         [appDelegate.moveSiteViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView];
+        [appDelegate reloadFeedsView:NO];
     }
-    
     [results release];
 }
 
 - (NSString *)extractParentFolder:(NSString *)folderName {
-    int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
-    if ([folderName length] && folder_loc != NSNotFound) {
+    if ([folderName containsString:@"Top Level"]) {
+        folderName = @"";
+    }
+    
+    if ([folderName containsString:@" - "]) {
+        int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
         folderName = [folderName substringFromIndex:(folder_loc + 3)];
     }
+    
     return folderName;
 }
 
@@ -174,16 +172,15 @@
 #pragma mark Move Folder
 
 - (IBAction)moveFolder {
-    [self hideFolderPicker];
     [self.movingLabel setHidden:NO];
     [self.movingLabel setText:@"Moving Folder..."];
     [self.errorLabel setHidden:YES];
     [self.activityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/move_folder_to_folder",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *fromFolder = [self extractParentFolder:[toFolderInput text]];
+    NSString *fromFolder = [self extractParentFolder:[fromFolderInput text]];
     NSString *toFolder = [self extractParentFolder:[toFolderInput text]];
     [request setPostValue:fromFolder forKey:@"from_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
@@ -207,19 +204,19 @@
         [self.errorLabel setHidden:NO];
     } else {
         [appDelegate.moveSiteViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView];
+        [appDelegate reloadFeedsView:NO];
     }
     
     [results release];    
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
+- (void)requestFailed:(ASIHTTPRequest *)request {
     [self.movingLabel setHidden:YES];
     [self.errorLabel setHidden:NO];
     [self.activityIndicator stopAnimating];
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+    NSLog(@"Error: %@", [request responseString]);
     [self.errorLabel setText:error.localizedDescription];
 }
 
@@ -255,12 +252,19 @@ numberOfRowsInComponent:(NSInteger)component {
         folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row];        
     }
     [toFolderInput setText:folder_title];
+    moveButton.enabled = YES;
 }
 
-- (void)hideFolderPicker {
-    [UIView animateWithDuration:.35 animations:^{
-        folderPicker.frame = CGRectMake(0, self.view.bounds.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);          
-    }];
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    [errorLabel setText:@""];
+    if (textField == toFolderInput && ![toFolderInput isFirstResponder]) {
+        [toFolderInput setInputView:folderPicker];
+    }
+    return NO;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    return YES;
 }
 
 @end

@@ -51,6 +51,10 @@
 @synthesize dictFeeds;
 @synthesize dictFoldersArray;
 
++ (NewsBlurAppDelegate*) sharedAppDelegate {
+	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
 //    [TestFlight takeOff:@"101dd20fb90f7355703b131d9af42633_MjQ0NTgyMDExLTA4LTIxIDIzOjU3OjEzLjM5MDcyOA"];
@@ -129,12 +133,10 @@
     UINavigationController *navController = self.navigationController;
     [moveSiteViewController initWithNibName:nil bundle:nil];
     [navController presentModalViewController:moveSiteViewController animated:YES];
-    [moveSiteViewController reload];
 }
 
-- (void)reloadFeedsView {
-    [self setTitle:@"NewsBlur"];
-    [feedsViewController fetchFeedList:YES];
+- (void)reloadFeedsView:(BOOL)showLoader {
+    [feedsViewController fetchFeedList:showLoader];
     [loginViewController dismissModalViewControllerAnimated:YES];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
@@ -608,8 +610,6 @@
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
     
-    UIView *titleView = [[[UIView alloc] init] autorelease];
-    
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     if (self.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];        
@@ -638,7 +638,7 @@
     [titleLabel addSubview:titleImageView];
     [titleImageView release];
 
-    return titleView;
+    return titleLabel;
 }
 
 @end

@@ -494,9 +494,6 @@
 				FF5EA47C143B691000B7563D /* AddSiteViewController.h */,
 				FF5EA47D143B691000B7563D /* AddSiteViewController.m */,
 				FF5EA47E143B691000B7563D /* AddSiteViewController.xib */,
-				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
-				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
-				FF2D8CE414893BC000057B80 /* MoveSiteViewController.xib */,
 				FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */,
 				FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */,
 				FFD887EF1445F1E800385399 /* AddSiteAutocompleteCell.xib */,
@@ -506,6 +503,9 @@
 				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
 				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
 				7843F4E811EEABDC00675F64 /* FeedDetailTableCell.xib */,
+				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
+				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
+				FF2D8CE414893BC000057B80 /* MoveSiteViewController.xib */,
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				7842ECF711D44A530066CF9D /* StoryDetailViewController.xib */,
@@ -529,7 +529,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				FF2D8C6B1487F05100057B80 /* Twitter.framework */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -622,6 +621,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FF2D8C6B1487F05100057B80 /* Twitter.framework */,
 				FF2D8CAC1488633A00057B80 /* Reachability */,
 				FF2D8C6D1487F11500057B80 /* facebook */,
 				FF2D8B481487EFF000057B80 /* ShareKit */,

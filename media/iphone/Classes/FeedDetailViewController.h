@@ -52,6 +52,7 @@
 - (IBAction)doOpenSettingsActionSheet;
 - (void)confirmDeleteSite;
 - (void)deleteSite;
+- (void)openMoveView;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

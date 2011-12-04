@@ -1,19 +1,19 @@
 //
-//  AddViewController.m
+//  AddSiteViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 10/31/10.
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
-#import "AddViewController.h"
+#import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "JSON.h"
 
-@implementation AddViewController
+@implementation AddSiteViewController
 
 @synthesize appDelegate;
 @synthesize inFolderInput;
@@ -32,11 +32,6 @@
 @synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
-@synthesize usernameLabel;
-@synthesize usernameOrEmailLabel;
-@synthesize passwordLabel;
-@synthesize emailLabel;
-@synthesize passwordOptionalLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -109,7 +104,7 @@
 }
 
 - (IBAction)doCancelButton {
-    [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
+    [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)doAddButton {
@@ -256,8 +251,8 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView];
+        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+        [appDelegate reloadFeedsView:YES];
     }
     
     [results release];
@@ -308,8 +303,8 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView];
+        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+        [appDelegate reloadFeedsView:YES];
     }
     
     [results release];    

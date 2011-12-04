@@ -59,7 +59,7 @@ class MuninPostgresBlockReadPlugin(MuninPostgresPlugin):
         values = {}
         for row in c.fetchall():
             values['from_disk'] = row[0]
-        	values['from_memory'] = row[1]
+            values['from_memory'] = row[1]
         return values
 
 if __name__ == "__main__":

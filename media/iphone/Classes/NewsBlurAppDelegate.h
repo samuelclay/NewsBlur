@@ -84,12 +84,15 @@
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 
++ (NewsBlurAppDelegate*) sharedAppDelegate;
+
 - (void)showLogin;
 - (void)showAdd;
+- (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
-- (void)reloadFeedsView;
+- (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
 - (void)setTitle:(NSString *)title;
