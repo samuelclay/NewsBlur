@@ -445,7 +445,7 @@ class UserSubscriptionFolders(models.Model):
                         new_folders.append({f_k: nf})
     
             return new_folders, multiples_found, deleted
-        
+        print "In folder: %s" % in_folder
         user_sub_folders = json.decode(self.folders)
         user_sub_folders, multiples_found, deleted = _find_feed_in_folders(user_sub_folders)
         self.folders = json.encode(user_sub_folders)

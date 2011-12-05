@@ -23,8 +23,6 @@
 - (IBAction)doCancelButton;
 - (IBAction)doMoveButton;
 - (NSArray *)pickerFolders;
-- (NSString *)extractFolderName:(NSString *)folderName;
-- (NSString *)extractParentFolderName:(NSString *)folderName;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITextField *fromFolderInput;

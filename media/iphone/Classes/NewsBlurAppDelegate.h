@@ -121,6 +121,8 @@
 - (void)markFeedAllRead:(id)feedId;
 - (void)calculateStoryLocations;
 + (int)computeStoryScore:(NSDictionary *)intelligence;
+- (NSString *)extractFolderName:(NSString *)folderName;
+- (NSString *)extractParentFolderName:(NSString *)folderName;
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;

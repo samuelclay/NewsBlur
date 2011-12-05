@@ -16,6 +16,7 @@
 #import "OriginalStoryViewController.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
+#import "StringHelper.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -515,6 +516,40 @@
     return score;
 }
 
+
+
+- (NSString *)extractParentFolderName:(NSString *)folderName {
+    if ([folderName containsString:@"Top Level"]) {
+        folderName = @"";
+    }
+    
+    if ([folderName containsString:@" - "]) {
+        int lastFolderLoc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+        //        int secondLastFolderLoc = [[folderName substringToIndex:lastFolderLoc] rangeOfString:@" - " options:NSBackwardsSearch].location;
+        folderName = [folderName substringToIndex:lastFolderLoc];
+    } else {
+        folderName = @"— Top Level —";
+    }
+    
+    return folderName;
+}
+
+- (NSString *)extractFolderName:(NSString *)folderName {
+    if ([folderName containsString:@"Top Level"]) {
+        folderName = @"";
+    }
+    
+    if ([folderName containsString:@" - "]) {
+        int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+        folderName = [folderName substringFromIndex:(folder_loc + 3)];
+    }
+    
+    return folderName;
+}
+
+#pragma mark -
+#pragma mark Feed Templates
+
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
     UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
     
@@ -570,6 +605,7 @@
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.textAlignment = UITextAlignmentLeft;
         titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        titleLabel.numberOfLines = 1;
         titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
@@ -585,7 +621,7 @@
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
         }
-        titleLabel.frame = CGRectMake(32, 1, window.frame.size.width-20, 20);
+        titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [Utilities getImage:feedIdStr];
@@ -621,6 +657,7 @@
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    titleLabel.numberOfLines = 1;
     titleLabel.shadowColor = [UIColor blackColor];
     titleLabel.shadowOffset = CGSizeMake(0, -1);
     titleLabel.center = CGPointMake(28, -2);

@@ -60,7 +60,13 @@
     for (UIView *subview in [self.titleLabel subviews]) {
         [subview removeFromSuperview];
     }
-    [self.titleLabel addSubview:[appDelegate makeFeedTitle:appDelegate.activeFeed]];
+    UIView *label = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+    label.frame = CGRectMake(label.frame.origin.x, 
+                             label.frame.origin.y, 
+                             self.titleLabel.frame.size.width - 
+                             (self.titleLabel.frame.origin.x-label.frame.origin.x), 
+                             label.frame.size.height);
+    [self.titleLabel addSubview:label];
     [self reload];
     [super viewWillAppear:animated];
 }
@@ -84,11 +90,12 @@
 }
 
 - (void)reload {
+    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
     [toFolderInput setText:@""];
     if (appDelegate.isRiverView) {
-        [fromFolderInput setText:[self extractParentFolderName:appDelegate.activeFolder]];
+        [fromFolderInput setText:[appDelegate extractParentFolderName:appDelegate.activeFolder]];
     } else {
-        [fromFolderInput setText:appDelegate.activeFolder];
+        fromFolderInput.text = isTopLevel ? @"— Top Level —" : appDelegate.activeFolder;
     }
     self.folders = [NSMutableArray array];
     [folderPicker reloadAllComponents];
@@ -96,9 +103,8 @@
     int row = 0;
     if (appDelegate.isRiverView) {
         row = [[self pickerFolders] 
-               indexOfObject:[self extractParentFolderName:appDelegate.activeFolder]];
+               indexOfObject:[appDelegate extractParentFolderName:appDelegate.activeFolder]];
     } else {
-        BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
         row = isTopLevel ? 
                     0 :
                     [[self pickerFolders] indexOfObject:appDelegate.activeFolder];
@@ -132,8 +138,8 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *fromFolder = [self extractFolderName:[fromFolderInput text]];
-    NSString *toFolder = [self extractFolderName:[toFolderInput text]];
+    NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
+    NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
     [request setPostValue:fromFolder forKey:@"in_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
     [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
@@ -166,35 +172,6 @@
     [results release];
 }
 
-- (NSString *)extractParentFolderName:(NSString *)folderName {
-    if ([folderName containsString:@"Top Level"]) {
-        folderName = @"";
-    }
-    
-    if ([folderName containsString:@" - "]) {
-        int lastFolderLoc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
-//        int secondLastFolderLoc = [[folderName substringToIndex:lastFolderLoc] rangeOfString:@" - " options:NSBackwardsSearch].location;
-        folderName = [folderName substringToIndex:lastFolderLoc];
-    } else {
-        folderName = @"— Top Level —";
-    }
-    
-    return folderName;
-}
-
-- (NSString *)extractFolderName:(NSString *)folderName {
-    if ([folderName containsString:@"Top Level"]) {
-        folderName = @"";
-    }
-    
-    if ([folderName containsString:@" - "]) {
-        int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
-        folderName = [folderName substringFromIndex:(folder_loc + 3)];
-    }
-    
-    return folderName;
-}
-
 #pragma mark -
 #pragma mark Move Folder
 
@@ -207,9 +184,9 @@
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSString *folderName = [self extractFolderName:appDelegate.activeFolder];
-    NSString *fromFolder = [self extractFolderName:[fromFolderInput text]];
-    NSString *toFolder = [self extractFolderName:[toFolderInput text]];
+    NSString *folderName = [appDelegate extractFolderName:appDelegate.activeFolder];
+    NSString *fromFolder = [appDelegate extractFolderName:[fromFolderInput text]];
+    NSString *toFolder = [appDelegate extractFolderName:[toFolderInput text]];
     [request setPostValue:fromFolder forKey:@"in_folder"]; 
     [request setPostValue:toFolder forKey:@"to_folder"]; 
     [request setPostValue:folderName forKey:@"folder_name"];

@@ -772,7 +772,7 @@
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
-    [request addPostValue:[appDelegate activeFolder] forKey:@"in_folder"];
+    [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] forKey:@"in_folder"];
     [request setFailedBlock:^(void) {
         [self informError:[request error]];
     }];
