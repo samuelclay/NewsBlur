@@ -91,27 +91,26 @@
 
 - (void)reload {
     BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
+    int row = 0;
     [toFolderInput setText:@""];
+    
     if (appDelegate.isRiverView) {
-        [fromFolderInput setText:[appDelegate extractParentFolderName:appDelegate.activeFolder]];
+        NSString *parentFolderName = [appDelegate extractParentFolderName:appDelegate.activeFolder];
+        row = [[self pickerFolders] 
+               indexOfObject:parentFolderName];
+        fromFolderInput.text = parentFolderName;
     } else {
         fromFolderInput.text = isTopLevel ? @"— Top Level —" : appDelegate.activeFolder;
+        row = isTopLevel ? 
+                0 :
+                [[self pickerFolders] indexOfObject:appDelegate.activeFolder];
     }
     self.folders = [NSMutableArray array];
     [folderPicker reloadAllComponents];
-    
-    int row = 0;
-    if (appDelegate.isRiverView) {
-        row = [[self pickerFolders] 
-               indexOfObject:[appDelegate extractParentFolderName:appDelegate.activeFolder]];
-    } else {
-        row = isTopLevel ? 
-                    0 :
-                    [[self pickerFolders] indexOfObject:appDelegate.activeFolder];
-    }
     [folderPicker selectRow:row inComponent:0 animated:NO];
     
     moveButton.enabled = NO;
+    moveButton.title = appDelegate.isRiverView ? @"Move Folder to Folder" : @"Move Site to Folder";
 }
 
 - (IBAction)doCancelButton {

@@ -755,7 +755,11 @@
         if (buttonIndex == 0) {
             return;
         } else {
-            [self deleteSite];
+            if (appDelegate.isRiverView) {
+                [self deleteFolder];
+            } else {
+                [self deleteSite];
+            }
         }
     }
 }
@@ -786,6 +790,36 @@
     }];
     [request setTimeOutSeconds:30];
     [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
+    [request startAsynchronous];
+}
+
+- (void)deleteFolder {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+    
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_folder", 
+                                  NEWSBLUR_URL];
+    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+    
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    [request setDelegate:self];
+    [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] 
+                   forKey:@"folder_to_delete"];
+    [request addPostValue:[appDelegate extractFolderName:[appDelegate extractParentFolderName:appDelegate.activeFolder]] 
+                   forKey:@"in_folder"];
+    [request setFailedBlock:^(void) {
+        [self informError:[request error]];
+    }];
+    [request setCompletionBlock:^(void) {
+        [appDelegate reloadFeedsView:YES];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request setTimeOutSeconds:30];
     [request startAsynchronous];
 }
 
