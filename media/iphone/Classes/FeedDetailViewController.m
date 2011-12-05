@@ -27,6 +27,7 @@
 @implementation FeedDetailViewController
 
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
+@synthesize settingsButton;
 @synthesize stories;
 @synthesize appDelegate;
 @synthesize feedPage;
@@ -108,6 +109,12 @@
     if (!appDelegate.isRiverView && !pullFound) {
         [self.storyTitlesTable addSubview:pull];
     }
+    
+    if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"Everything"]) {
+        settingsButton.enabled = NO;
+    } else {
+        settingsButton.enabled = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -123,6 +130,7 @@
     [feedViewToolbar release];
     [feedScoreSlider release];
     [feedMarkReadButton release];
+    [settingsButton release];
     [stories release];
     [appDelegate release];
     [intelligenceControl release];

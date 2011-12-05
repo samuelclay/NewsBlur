@@ -60,6 +60,7 @@
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * settingsButton;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 @property (nonatomic, retain) PullToRefreshView *pull;
 
