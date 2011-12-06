@@ -663,25 +663,27 @@
     int visibleUnreadCount = appDelegate.visibleUnreadCount;
     int totalUnreadCount = [appDelegate unreadCount];
     NSArray *buttonTitles = nil;
-    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {        
-        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
-                                 appDelegate.isRiverView ? 
-                                 @"entire folder" : 
-                                 @"this site"];
-        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
-        options.destructiveButtonIndex = 0;
-    } else {
-        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
-                                 visibleUnreadCount == 1 ? 
-                                 @"this story as" : 
-                                 [NSString stringWithFormat:@"these %d stories", 
-                                  visibleUnreadCount]];        
-        NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
-                                appDelegate.isRiverView ? 
-                                @"entire folder" : 
-                                @"this site"];
+    BOOL showVisible = YES;
+    BOOL showEntire = YES;
+    if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
+    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;  
+    NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
+                            appDelegate.isRiverView ? 
+                            @"entire folder" : 
+                            @"this site"];
+    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                             visibleUnreadCount == 1 ? @"this story as" : 
+                                [NSString stringWithFormat:@"these %d stories", 
+                                 visibleUnreadCount]];
+    if (showVisible && showEntire) {
         buttonTitles = [NSArray arrayWithObjects:visibleText, entireText, nil];
         options.destructiveButtonIndex = 1;
+    } else if (showVisible && !showEntire) {
+        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
+        options.destructiveButtonIndex = -1;
+    } else if (!showVisible && showEntire) {
+        buttonTitles = [NSArray arrayWithObjects:entireText, nil];
+        options.destructiveButtonIndex = 0;
     }
     
     for (id title in buttonTitles) {
@@ -695,8 +697,6 @@
 }
 
 - (IBAction)doOpenSettingsActionSheet {
-    
-    
     NSString *title = appDelegate.isRiverView ? 
                       appDelegate.activeFolder : 
                       [appDelegate.activeFeed objectForKey:@"feed_title"];
@@ -730,17 +730,28 @@
     if (actionSheet.tag == 1) {
         int visibleUnreadCount = appDelegate.visibleUnreadCount;
         int totalUnreadCount = [appDelegate unreadCount];
+        BOOL showVisible = YES;
+        BOOL showEntire = YES;
+        if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
+        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
 //        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
-        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {
+
+        if (showVisible && showEntire) {
+            if (buttonIndex == 0) {
+                if (buttonIndex == 0) {
+                    [self markFeedsReadWithAllStories:NO];
+                } else if (buttonIndex == 1) {
+                    [self markFeedsReadWithAllStories:YES];
+                }               
+            }
+        } else if (showVisible && !showEntire) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:NO];
+            }   
+        } else if (!showVisible && showEntire) {
             if (buttonIndex == 0) {
                 [self markFeedsReadWithAllStories:YES];
             }
-        } else {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:NO];
-            } else if (buttonIndex == 1) {
-                [self markFeedsReadWithAllStories:YES];
-            }               
         }
     } else if (actionSheet.tag == 2) {
         if (buttonIndex == 0) {
