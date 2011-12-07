@@ -5969,13 +5969,14 @@ background: transparent;
 
 .NB-static-iphone .NB-iphone-features {
     margin: 12px 36px 0;
+    text-align: center;
 }
 .NB-static-iphone .NB-iphone-download {
     padding: 4px 10px;
     letter-spacing: -0.03em;
     text-align: center;
     background-color: #3A8FCE;
-        background-image: -webkit-gradient(
+    background-image: -webkit-gradient(
         linear,
         left bottom,
         left top,
@@ -5999,6 +6000,7 @@ background: transparent;
 }
 .NB-static-iphone .NB-iphone-download a {
     color: white;
+    display: block;
 }
 .NB-static-iphone .NB-iphone-download .NB-big {
     font-size: 1.45em;
@@ -6020,4 +6022,19 @@ background: transparent;
 }
 .NB-static-iphone .NB-iphone-download:hover a {
     color: white;
+}
+.NB-static-iphone .NB-iphone-download:active {
+    background-color: #3A8FCE;
+        background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.14, #568CDF),
+        color-stop(0.86, #3161A8)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #568CDF 14%,
+        #3161A8 86%
+    );
 }
