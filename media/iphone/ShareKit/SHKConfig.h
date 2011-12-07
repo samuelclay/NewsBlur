@@ -52,12 +52,12 @@
 // 
 //    Your CFBundleURLSchemes entry: fb555funk
 #define SHKFacebookUseSessionProxy  NO 
-#define SHKFacebookAppID      @""
+#define SHKFacebookAppID      @"230426707030569"
 #define SHKFacebookLocalAppID      @""
 #define SHKFacebookSessionProxyURL  @""
 
 // Read It Later - http://readitlaterlist.com/api/?shk
-#define SHKReadItLaterKey			@""
+#define SHKReadItLaterKey			@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9"
 
 // Twitter - http://dev.twitter.com/apps/new
 /*
@@ -75,11 +75,11 @@
  2. 'Application Type' should be set to BROWSER (not client)
  3. 'Callback URL' should match whatever you enter in SHKTwitterCallbackUrl.  The callback url doesn't have to be an actual existing url.  The user will never get to it because ShareKit intercepts it before the user is redirected.  It just needs to match.
  */
-#define SHKTwitterConsumerKey		@""
-#define SHKTwitterSecret			@""
-#define SHKTwitterCallbackUrl		@"" // You need to set this if using OAuth, see note above (xAuth users can skip it)
+#define SHKTwitterConsumerKey		@"oLLSBFQ7iuObz6VHCNQsw"
+#define SHKTwitterSecret			@"DEf5AFMNo49XyPQCMtK46txTLdqQsWgJC7yRanGtcg"
+#define SHKTwitterCallbackUrl		@"http://www.newsblur.com" // You need to set this if using OAuth, see note above (xAuth users can skip it)
 #define SHKTwitterUseXAuth			0 // To use xAuth, set to 1
-#define SHKTwitterUsername			@"" // Enter your app's twitter account if you'd like to ask the user to follow it when logging in. (Only for xAuth)
+#define SHKTwitterUsername			@"newsblur" // Enter your app's twitter account if you'd like to ask the user to follow it when logging in. (Only for xAuth)
 
 // Evernote - http://www.evernote.com/about/developer/api/
 /*	You need to set to sandbox until you get approved by evernote
@@ -97,8 +97,8 @@
 #define SHKEvernoteNetStoreURLBase	@""
 
 // Bit.ly (for shortening URLs on Twitter) - http://bit.ly/account/register - after signup: http://bit.ly/a/your_api_key
-#define SHKBitLyLogin				@""
-#define SHKBitLyKey					@""
+#define SHKBitLyLogin				@"samuelclay"
+#define SHKBitLyKey					@"R_0b9169c480c4616a6118bdb8e08a5c71"
 
 // Flickr - http://www.flickr.com/services/apps/create/
 /*

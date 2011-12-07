@@ -82,7 +82,6 @@
 		FF2D8C3F1487EFF000057B80 /* SHKSafari.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BA71487EFF000057B80 /* SHKSafari.m */; };
 		FF2D8C401487EFF000057B80 /* SHKPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BAA1487EFF000057B80 /* SHKPhotoAlbum.m */; };
 		FF2D8C411487EFF000057B80 /* SHKTextMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BAD1487EFF000057B80 /* SHKTextMessage.m */; };
-		FF2D8C421487EFF000057B80 /* SHKDelicious.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BB11487EFF000057B80 /* SHKDelicious.m */; };
 		FF2D8C531487EFF000057B80 /* SHKFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BDE1487EFF000057B80 /* SHKFacebook.m */; };
 		FF2D8C541487EFF000057B80 /* SHKFacebookForm.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BE01487EFF000057B80 /* SHKFacebookForm.m */; };
 		FF2D8C5C1487EFF000057B80 /* SHKInstapaper.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8BF51487EFF000057B80 /* SHKInstapaper.m */; };
@@ -298,8 +297,6 @@
 		FF2D8BAA1487EFF000057B80 /* SHKPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHKPhotoAlbum.m; sourceTree = "<group>"; };
 		FF2D8BAC1487EFF000057B80 /* SHKTextMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHKTextMessage.h; sourceTree = "<group>"; };
 		FF2D8BAD1487EFF000057B80 /* SHKTextMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHKTextMessage.m; sourceTree = "<group>"; };
-		FF2D8BB01487EFF000057B80 /* SHKDelicious.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHKDelicious.h; sourceTree = "<group>"; };
-		FF2D8BB11487EFF000057B80 /* SHKDelicious.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHKDelicious.m; sourceTree = "<group>"; };
 		FF2D8BDD1487EFF000057B80 /* SHKFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHKFacebook.h; sourceTree = "<group>"; };
 		FF2D8BDE1487EFF000057B80 /* SHKFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHKFacebook.m; sourceTree = "<group>"; };
 		FF2D8BDF1487EFF000057B80 /* SHKFacebookForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHKFacebookForm.h; sourceTree = "<group>"; };
@@ -861,7 +858,6 @@
 		FF2D8BAE1487EFF000057B80 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				FF2D8BAF1487EFF000057B80 /* Delicious */,
 				FF2D8BDC1487EFF000057B80 /* Facebook */,
 				FF2D8BF31487EFF000057B80 /* Instapaper */,
 				FF2D8BF61487EFF000057B80 /* Pinboard */,
@@ -870,15 +866,6 @@
 				FF2D8BFF1487EFF000057B80 /* Twitter */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		FF2D8BAF1487EFF000057B80 /* Delicious */ = {
-			isa = PBXGroup;
-			children = (
-				FF2D8BB01487EFF000057B80 /* SHKDelicious.h */,
-				FF2D8BB11487EFF000057B80 /* SHKDelicious.m */,
-			);
-			path = Delicious;
 			sourceTree = "<group>";
 		};
 		FF2D8BDC1487EFF000057B80 /* Facebook */ = {
@@ -1225,7 +1212,6 @@
 				FF2D8C3F1487EFF000057B80 /* SHKSafari.m in Sources */,
 				FF2D8C401487EFF000057B80 /* SHKPhotoAlbum.m in Sources */,
 				FF2D8C411487EFF000057B80 /* SHKTextMessage.m in Sources */,
-				FF2D8C421487EFF000057B80 /* SHKDelicious.m in Sources */,
 				FF2D8C531487EFF000057B80 /* SHKFacebook.m in Sources */,
 				FF2D8C541487EFF000057B80 /* SHKFacebookForm.m in Sources */,
 				FF2D8C5C1487EFF000057B80 /* SHKInstapaper.m in Sources */,

@@ -5652,7 +5652,7 @@ background: transparent;
   position: fixed;
   height: 55px;
   font-size: 36px;
-  line-height: 78px;
+  line-height: 68px;
   margin: 0 2px 12px 0;
   text-shadow: 1px 1px 0 #F6F6F6;
   color: #1A008D;
@@ -5953,4 +5953,71 @@ background: transparent;
 .NB-static-api .NB-api-endpoint-param-desc {
   width: 100%;
   white-space: normal;
+}
+
+/* =============== */
+/* = iPhone Page = */
+/* =============== */
+
+.NB-static-iphone .NB-iphone-mockup {
+    float: right;
+    margin: 12px 48px 0 0;
+    width: 384px;
+    height: 576px;
+    border: 1px solid #7F2021;
+}
+
+.NB-static-iphone .NB-iphone-features {
+    margin: 12px 36px 0;
+}
+.NB-static-iphone .NB-iphone-download {
+    padding: 4px 10px;
+    letter-spacing: -0.03em;
+    text-align: center;
+    background-color: #3A8FCE;
+        background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #438ED3),
+        color-stop(0.84, #6EB5FA)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #438ED3 16%,
+        #6EB5FA 84%
+    );
+    color: white;
+    text-shadow: 0 -1px 2px #2063AB !important;
+    border: 1px solid #2F6EA7;
+    border-color: #508FCD #4483BF #2F6EA7 #3F7EB9;
+    border-radius: 6px;
+    font-size: 1.14em;
+    line-height: 1.73em;
+    margin: 0 auto;
+    cursor: pointer;
+}
+.NB-static-iphone .NB-iphone-download a {
+    color: white;
+}
+.NB-static-iphone .NB-iphone-download .NB-big {
+    font-size: 1.45em;
+}
+.NB-static-iphone .NB-iphone-download:hover {
+    background-color: #3A8FCE;
+        background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #3161A8),
+        color-stop(0.84, #568CDF)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #3161A8 16%,
+        #568CDF 84%
+    );
+}
+.NB-static-iphone .NB-iphone-download:hover a {
+    color: white;
 }
