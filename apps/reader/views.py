@@ -269,7 +269,7 @@ def load_feeds_flat(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username)
+    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version="1.2")
     return data
 
 @ratelimit(minutes=1, requests=10)
