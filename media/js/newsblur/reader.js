@@ -1821,7 +1821,6 @@
                 this.show_tryfeed_add_button();
             }
             this.make_content_pane_feed_counter(feed_id);
-            this.scroll_story_titles_to_show_selected_story_title();
         },
         
         setup_mousemove_on_views: function() {
