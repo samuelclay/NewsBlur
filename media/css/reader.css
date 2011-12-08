@@ -5963,8 +5963,10 @@ background: transparent;
     margin: 24px 36px 0;
     text-align: center;
 }
-
 .NB-static-iphone .NB-iphone-download {
+    margin-left: -48px;
+}
+.NB-static-iphone .NB-iphone-download button {
     padding: 4px 20px 4px 10px;
     letter-spacing: -0.03em;
     text-align: center;
@@ -5992,15 +5994,15 @@ background: transparent;
     cursor: pointer;
 
 }
-.NB-static-iphone .NB-iphone-download a {
-    color: white;
-    display: block;
-}
 .NB-static-iphone .NB-iphone-download .NB-big {
     font-size: 1.45em;
     font-weight: bold;
 }
-.NB-static-iphone .NB-iphone-download:hover {
+.NB-static-iphone .NB-iphone-download img {
+    float: left;
+    margin: 0 8px 0 0;
+}
+.NB-static-iphone .NB-iphone-download button:hover {
     background-color: #3A8FCE;
         background-image: -webkit-gradient(
         linear,
@@ -6014,27 +6016,21 @@ background: transparent;
         #182A42 6%,
         #516A83 94%
     );
+    color: #C0D7E7;
 }
-.NB-static-iphone .NB-iphone-download img {
-    float: left;
-    margin: 0 8px 0 0;
-}
-.NB-static-iphone .NB-iphone-download:hover a {
-    color: white;
-}
-.NB-static-iphone .NB-iphone-download:active {
+.NB-static-iphone .NB-iphone-download button:active {
     background-color: #3A8FCE;
         background-image: -webkit-gradient(
         linear,
         left bottom,
         left top,
-        color-stop(0.14, #568CDF),
-        color-stop(0.86, #3161A8)
+        color-stop(0.06, #516A83),
+        color-stop(0.94, #182A42)
     );
     background-image: -moz-linear-gradient(
         center bottom,
-        #568CDF 14%,
-        #3161A8 86%
+        #516A83 6%
+        #182A42 94%,
     );
 }
 
@@ -6042,7 +6038,7 @@ background: transparent;
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
-    margin: 12px auto 0;
+    margin: 12px 0 0 -48px;
     padding: 0;
     font-size: 16px;
     text-align: center;
@@ -6074,11 +6070,20 @@ background: transparent;
 .NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-subtitle {
     margin: 8px 0 0;
 }
-
-
+.NB-static-iphone .NB-iphone-main .NB-iphone-feature {
+    -webkit-transition: all .32s ease-out;
+    -moz-transition: all .32s ease-out;
+    -o-transition: all .32s ease-out;
+    -ms-transition: all .32s ease-out;
+    border-radius: 4px;
+    border: 2px solid transparent;
+}
+.NB-static-iphone .NB-iphone-feature.NB-active {
+    border: 2px solid #39518B;
+}
 .NB-static-iphone .NB-iphone-mockup {
     float: right;
-    margin: 132px 48px 0 0;
+    margin: 132px 96px 0 0;
     width: 320px;
     height: 460px;
     position: relative;
