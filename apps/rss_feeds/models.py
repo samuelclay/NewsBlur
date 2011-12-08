@@ -625,6 +625,7 @@ class Feed(models.Model):
             if story.get('title'):
                 story_content = story.get('story_content')
                 story_tags = self.get_tags(story)
+                story_link = self.get_permalink(story)
                     
                 existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
                 if existing_story is None:
@@ -633,14 +634,13 @@ class Feed(models.Model):
                            story_title = story.get('title'),
                            story_content = story_content,
                            story_author_name = story.get('author'),
-                           story_permalink = story.get('link'),
+                           story_permalink = story_link,
                            story_guid = story.get('guid'),
                            story_tags = story_tags
                     )
                     try:
                         s.save()
                         ret_values[ENTRY_NEW] += 1
-                        cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError), e:
                         ret_values[ENTRY_ERR] += 1
                         if verbose:
@@ -678,20 +678,19 @@ class Feed(models.Model):
                     #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                     if existing_story.story_guid != story.get('guid'):
                         self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
-
+                    
                     existing_story.story_feed = self.pk
                     existing_story.story_date = story.get('published')
                     existing_story.story_title = story.get('title')
                     existing_story.story_content = story_content_diff
                     existing_story.story_original_content = original_content
                     existing_story.story_author_name = story.get('author')
-                    existing_story.story_permalink = story.get('link')
+                    existing_story.story_permalink = story_link
                     existing_story.story_guid = story.get('guid')
                     existing_story.story_tags = story_tags
                     try:
                         existing_story.save()
                         ret_values[ENTRY_UPDATED] += 1
-                        cache.set('updated_feed:%s' % self.id, 1)
                     except (IntegrityError, OperationError):
                         ret_values[ENTRY_ERR] += 1
                         if verbose:
@@ -784,20 +783,16 @@ class Feed(models.Model):
                 userstories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False, slave=False):
-        stories = cache.get('feed_stories:%s-%s-%s' % (self.id, offset, limit), [])
-        
-        if not stories or force:
-            if slave:
-                import pymongo
-                db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
-                stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
-                stories_db = []
-                for story in stories_db_orig:
-                    stories_db.append(bunch(story))
-            else:
-                stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
-            stories = Feed.format_stories(stories_db, self.pk)
-            cache.set('feed_stories:%s-%s-%s' % (self.id, offset, limit), stories)
+        if slave:
+            import pymongo
+            db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
+            stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
+            stories_db = []
+            for story in stories_db_orig:
+                stories_db.append(bunch(story))
+        else:
+            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+        stories = Feed.format_stories(stories_db, self.pk)
         
         return stories
     
@@ -859,7 +854,15 @@ class Feed(models.Model):
                     fcat.append(tagname)
         fcat = [t[:250] for t in fcat]
         return fcat[:12]
-
+    
+    def get_permalink(self, entry):
+        link = entry.get('link')
+        if not link:
+            links = entry.get('links')
+            if links:
+                link = links[0]['href']
+        return link
+    
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
         story_in_system = None
         story_has_changed = False
@@ -874,11 +877,12 @@ class Feed(models.Model):
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
                 (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
+                story_link = self.get_permalink(story)
                 if isinstance(existing_story.id, unicode):
                     existing_story.story_guid = existing_story.id
                 if story.get('guid') and story.get('guid') == existing_story.story_guid:
                     story_in_system = existing_story
-                elif story.get('link') and story.get('link') == existing_story.story_permalink:
+                elif story_link == existing_story.story_permalink:
                     story_in_system = existing_story
                 
                 # Title distance + content distance, checking if story changed
@@ -917,7 +921,10 @@ class Feed(models.Model):
                 if story_in_system:
                     if story_content != existing_story_content:
                         story_has_changed = True
+                    if story_link != existing_story.story_permalink:
+                        story_has_changed = True
                     break
+                
         
         # if story_has_changed or not story_in_system:
             # print 'New/updated story: %s' % (story), 
