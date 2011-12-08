@@ -860,7 +860,9 @@ class Feed(models.Model):
         if not link:
             links = entry.get('links')
             if links:
-                link = links[0]['href']
+                link = links[0].get('href')
+        if not link:
+            link = entry.get('id')
         return link
     
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
