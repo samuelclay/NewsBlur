@@ -11,9 +11,10 @@
   </div>
 
   <div class="NB-iphone-mockup">
-    <ul class="NB-iphone-features">
+      <div class="NB-iphone-skeleton"></div>
+      <ul class="NB-iphone-features">
         
-    </ul>
+      </ul>
   </div>
   
   <div class="NB-iphone-main">
@@ -28,34 +29,34 @@
         <li class="NB-iphone-feature NB-first" data-screenshot="1">
             <img src="{{ MEDIA_URL }}img/iphone/v1.1 - Screenshot 1.png" />
             <div class="NB-iphone-feature-title">All your sites</div>
-            <div class="NB-iphone-feature-subtitle">Read</div>
+            {# <div class="NB-iphone-feature-subtitle">Read</div> #}
         </li>
         <li class="NB-iphone-feature" data-screenshot="2">
             <img src="{{ MEDIA_URL }}img/iphone/v1.2 - iPhone Screenshot 2.png" />
-            <div class="NB-iphone-feature-title">All your sites</div>
-            <div class="NB-iphone-feature-subtitle">Read</div>
+            <div class="NB-iphone-feature-title">River of News</div>
+            {# <div class="NB-iphone-feature-subtitle">Read</div> #}
         </li>
         <li class="NB-iphone-feature NB-last" data-screenshot="3">
             <img src="{{ MEDIA_URL }}img/iphone/v1.2 - iPhone Screenshot 3.png" />
-            <div class="NB-iphone-feature-title">All your sites</div>
-            <div class="NB-iphone-feature-subtitle">Read</div>
+            <div class="NB-iphone-feature-title">Story Navigation</div>
+            {# <div class="NB-iphone-feature-subtitle">Read</div> #}
         </li>
     </ul>
     <ul class="NB-iphone-features">
         <li class="NB-iphone-feature NB-first" data-screenshot="4">
             <img src="{{ MEDIA_URL }}img/iphone/v1.2 - iPhone Screenshot 4.png" />
-            <div class="NB-iphone-feature-title">All your sites</div>
-            <div class="NB-iphone-feature-subtitle">Read</div>
+            <div class="NB-iphone-feature-title">Original sites</div>
+            {# <div class="NB-iphone-feature-subtitle">Read</div> #}
         </li>
         <li class="NB-iphone-feature" data-screenshot="5">
             <img src="{{ MEDIA_URL }}img/iphone/v1.2 - iPhone Screenshot 5.png" />
-            <div class="NB-iphone-feature-title">All your sites</div>
-            <div class="NB-iphone-feature-subtitle">Read</div>
+            <div class="NB-iphone-feature-title">Add &amp; manage sites</div>
+            {# <div class="NB-iphone-feature-subtitle">Read</div> #}
         </li>
         <li class="NB-iphone-feature NB-last" data-screenshot="6">
             <img src="{{ MEDIA_URL }}img/iphone/Default.png" />
-            <div class="NB-iphone-feature-title">All your sites</div>
-            <div class="NB-iphone-feature-subtitle">Read</div>
+            <div class="NB-iphone-feature-title">NewsBlur iPhone App</div>
+            {# <div class="NB-iphone-feature-subtitle">Read</div> #}
         </li>
     </ul>
 
@@ -79,17 +80,19 @@ $(document).ready(function() {
             $mockup.each(function() {
                 var $this = $(this);
                 var screenshot_filtered = _.contains(screenshots, $this.data('screenshot'));
-                if (screenshot_filtered) {                    
-                    $this.animate({'left': -384}, {'duration': 300, 'queue': false, 'easing': 'easeInOutQuad'});
+                var left = -320;
+                if (screenshot_filtered) {  
+                    if (parseInt($this.css('left'), 10) > 0) left = 320;
+                    // $this.css('z-index', 1);
+                    $this.animate({'left': left}, {'duration': 320, 'queue': false, 'easing': 'easeInOutQuad'});
                 } else if (!screenshot_filtered) {
-                    if (parseInt($this.css('left'), 10) == -384) {
+                    if (parseInt($this.css('left'), 10) <= -320) {
                         $this.css({
-                            'opacity': 1,
-                            'z-index': 1,
-                            'left': 384
+                            'left': 320
                         });
                     }
-                    $this.animate({'left': 0}, {'duration': 300, 'queue': false, 'easing': 'easeInOutQuad'});
+                    // $this.css('z-index', 2);
+                    $this.animate({'left': 0}, {'duration': 320, 'queue': false, 'easing': 'easeInOutQuad'});
                 }
             });
         });

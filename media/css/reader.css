@@ -5960,7 +5960,7 @@ background: transparent;
 /* =============== */
 
 .NB-static-iphone .NB-iphone-main {
-    margin: 12px 36px 0;
+    margin: 24px 36px 0;
     text-align: center;
 }
 
@@ -5974,12 +5974,12 @@ background: transparent;
         left bottom,
         left top,
         color-stop(0.06, #1E3C54),
-        color-stop(0.84, #648295)
+        color-stop(0.94, #648295)
     );
     background-image: -moz-linear-gradient(
         center bottom,
         #1E3C54 6%,
-        #648295 84%
+        #648295 94%
     );
     color: white;
     text-shadow: 0 -1px 0px #101C3B;
@@ -5988,7 +5988,7 @@ background: transparent;
     border-radius: 6px;
     font-size: 1.14em;
     line-height: 1.73em;
-    margin: 0 auto;
+    margin: 0 auto 24px;
     cursor: pointer;
 
 }
@@ -6007,12 +6007,12 @@ background: transparent;
         left bottom,
         left top,
         color-stop(0.06, #182A42),
-        color-stop(0.84, #516A83)
+        color-stop(0.94, #516A83)
     );
     background-image: -moz-linear-gradient(
         center bottom,
         #182A42 6%,
-        #516A83 84%
+        #516A83 94%
     );
 }
 .NB-static-iphone .NB-iphone-download img {
@@ -6042,12 +6042,13 @@ background: transparent;
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
-    margin: 24px auto 0;
+    margin: 12px auto 0;
     padding: 0;
     font-size: 16px;
     text-align: center;
     clear: left;
     overflow: hidden;
+    display: inline-block;
 }
 .NB-static-iphone .NB-iphone-features li {
     list-style-image: none;
@@ -6056,13 +6057,9 @@ background: transparent;
 }
 
 .NB-static-iphone .NB-iphone-features .NB-iphone-feature {
-    margin: 0 24px 24px 0;
+    padding: 12px 12px 12px 12px;
     float: left;
-}
-.NB-static-iphone .NB-iphone-features .NB-iphone-feature.NB-last {
-    margin-right: 0;
-}
-.NB-static-iphone .NB-iphone-features .NB-iphone-feature.NB-first {
+    width: 160px;
 }
 .NB-static-iphone .NB-iphone-features .NB-iphone-feature img {
     width: 128px;
@@ -6081,20 +6078,41 @@ background: transparent;
 
 .NB-static-iphone .NB-iphone-mockup {
     float: right;
-    margin: 12px 48px 0 0;
-    width: 384px;
-    height: 576px;
-    border: 1px solid #7F2021;
+    margin: 132px 48px 0 0;
+    width: 320px;
+    height: 460px;
     position: relative;
-    overflow: hidden;
 }
-
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-skeleton {
+    position: absolute;
+    top: -140px;
+    left: -32px;
+    width: 381px;
+    height: 729px;
+    background: transparent url('../img/iphone/skeleton.png') no-repeat 0 0;
+    z-index: 0;
+}
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-features {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    width: 320px;
+    height: 460px;
+    display: block;
+    position: relative;
+}
 .NB-static-iphone .NB-iphone-mockup .NB-iphone-feature {
     position: absolute;
     top: 0;
     left: 0;
+    padding: 0;
+    border: none;
 }
 .NB-static-iphone .NB-iphone-mockup .NB-iphone-feature img {
-    width: 384px;
-    height: 576px;
+    width: 320px;
+    height: 460px;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-right: 1px solid #505050;
 }
