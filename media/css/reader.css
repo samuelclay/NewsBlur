@@ -5959,20 +5959,13 @@ background: transparent;
 /* = iPhone Page = */
 /* =============== */
 
-.NB-static-iphone .NB-iphone-mockup {
-    float: right;
-    margin: 12px 48px 0 0;
-    width: 384px;
-    height: 576px;
-    border: 1px solid #7F2021;
-}
-
-.NB-static-iphone .NB-iphone-features {
+.NB-static-iphone .NB-iphone-main {
     margin: 12px 36px 0;
     text-align: center;
 }
+
 .NB-static-iphone .NB-iphone-download {
-    padding: 4px 10px;
+    padding: 4px 20px 4px 10px;
     letter-spacing: -0.03em;
     text-align: center;
     background-color: #3A8FCE;
@@ -5980,16 +5973,16 @@ background: transparent;
         linear,
         left bottom,
         left top,
-        color-stop(0.16, #438ED3),
-        color-stop(0.84, #6EB5FA)
+        color-stop(0.06, #1E3C54),
+        color-stop(0.84, #648295)
     );
     background-image: -moz-linear-gradient(
         center bottom,
-        #438ED3 16%,
-        #6EB5FA 84%
+        #1E3C54 6%,
+        #648295 84%
     );
     color: white;
-    text-shadow: 0 -1px 2px #2063AB !important;
+    text-shadow: 0 -1px 0px #101C3B;
     border: 1px solid #2F6EA7;
     border-color: #508FCD #4483BF #2F6EA7 #3F7EB9;
     border-radius: 6px;
@@ -5997,6 +5990,7 @@ background: transparent;
     line-height: 1.73em;
     margin: 0 auto;
     cursor: pointer;
+
 }
 .NB-static-iphone .NB-iphone-download a {
     color: white;
@@ -6004,6 +5998,7 @@ background: transparent;
 }
 .NB-static-iphone .NB-iphone-download .NB-big {
     font-size: 1.45em;
+    font-weight: bold;
 }
 .NB-static-iphone .NB-iphone-download:hover {
     background-color: #3A8FCE;
@@ -6011,14 +6006,18 @@ background: transparent;
         linear,
         left bottom,
         left top,
-        color-stop(0.16, #3161A8),
-        color-stop(0.84, #568CDF)
+        color-stop(0.06, #182A42),
+        color-stop(0.84, #516A83)
     );
     background-image: -moz-linear-gradient(
         center bottom,
-        #3161A8 16%,
-        #568CDF 84%
+        #182A42 6%,
+        #516A83 84%
     );
+}
+.NB-static-iphone .NB-iphone-download img {
+    float: left;
+    margin: 0 8px 0 0;
 }
 .NB-static-iphone .NB-iphone-download:hover a {
     color: white;
@@ -6037,4 +6036,65 @@ background: transparent;
         #568CDF 14%,
         #3161A8 86%
     );
+}
+
+.NB-static-iphone .NB-iphone-features {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 24px auto 0;
+    padding: 0;
+    font-size: 16px;
+    text-align: center;
+    clear: left;
+    overflow: hidden;
+}
+.NB-static-iphone .NB-iphone-features li {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+}
+
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature {
+    margin: 0 24px 24px 0;
+    float: left;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature.NB-last {
+    margin-right: 0;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature.NB-first {
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature img {
+    width: 128px;
+    height: 184px;
+    border: 1px solid #202020;
+    border-color: #909090 #808080 #505050 #606060;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-title {
+    font-weight: bold;
+    margin: 8px 0 0;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-subtitle {
+    margin: 8px 0 0;
+}
+
+
+.NB-static-iphone .NB-iphone-mockup {
+    float: right;
+    margin: 12px 48px 0 0;
+    width: 384px;
+    height: 576px;
+    border: 1px solid #7F2021;
+    position: relative;
+    overflow: hidden;
+}
+
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-feature {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-feature img {
+    width: 384px;
+    height: 576px;
 }

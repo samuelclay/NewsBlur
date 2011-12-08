@@ -77,6 +77,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
+    [self showFolderPicker];
 }
 
 
@@ -132,15 +133,7 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     [errorLabel setText:@""];
     if (textField == inFolderInput && ![inFolderInput isFirstResponder]) {
-        [siteAddressInput resignFirstResponder];
-        [addFolderInput resignFirstResponder];
-        [inFolderInput setInputView:folderPicker];
-        if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
-            folderPicker.hidden = NO;
-            [UIView animateWithDuration:.35 animations:^{
-                folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
-            }];
-        }
+        [self showFolderPicker];
         return NO;
     } else if (textField == siteAddressInput) {
         [self hideFolderPicker];
@@ -395,6 +388,18 @@ numberOfRowsInComponent:(NSInteger)component {
         folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row];        
     }
     [inFolderInput setText:folder_title];
+}
+
+- (void)showFolderPicker {
+    [siteAddressInput resignFirstResponder];
+    [addFolderInput resignFirstResponder];
+    [inFolderInput setInputView:folderPicker];
+    if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
+        folderPicker.hidden = NO;
+        [UIView animateWithDuration:.35 animations:^{
+            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
+        }];
+    }
 }
 
 - (void)hideFolderPicker {

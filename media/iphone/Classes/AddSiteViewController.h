@@ -45,6 +45,7 @@
 - (IBAction)doAddButton;
 - (NSString *)extractParentFolder;
 - (void)animateLoop;
+- (void)showFolderPicker;
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
 
