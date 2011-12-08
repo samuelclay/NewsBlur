@@ -5652,7 +5652,7 @@ background: transparent;
   position: fixed;
   height: 55px;
   font-size: 36px;
-  line-height: 68px;
+  line-height: 60px;
   margin: 0 2px 12px 0;
   text-shadow: 1px 1px 0 #F6F6F6;
   color: #1A008D;
@@ -5960,7 +5960,7 @@ background: transparent;
 /* =============== */
 
 .NB-static-iphone .NB-iphone-main {
-    margin: 24px 36px 0;
+    margin: 24px 36px 72px;
     text-align: center;
 }
 .NB-static-iphone .NB-iphone-download {
@@ -6120,4 +6120,15 @@ background: transparent;
     border-top: none;
     border-bottom: none;
     border-right: 1px solid #505050;
+}
+@media screen and (max-width: 1050px) {
+    .NB-static-iphone .NB-iphone-mockup {
+        margin-right: 36px;
+    }
+    .NB-static-iphone .NB-iphone-features .NB-iphone-feature {
+        padding: 4px;
+    }
+    .NB-static-iphone .NB-iphone-main {
+        margin-bottom: 108px;
+    }
 }
