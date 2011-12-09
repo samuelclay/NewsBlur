@@ -5960,11 +5960,28 @@ background: transparent;
 /* =============== */
 
 .NB-static-iphone .NB-iphone-main {
-    margin: 24px 36px 72px;
+    margin: 24px 36px 24px -36px;
     text-align: center;
 }
-.NB-static-iphone .NB-iphone-download {
-    margin-left: -48px;
+.NB-static-iphone .NB-iphone-title {
+    font-size: 20px;
+    margin: 0 0 24px;
+}
+.NB-static-iphone .NB-iphone-subtitle {
+    font-size: 16px;
+    margin: 8px 0 0;
+    color: #6D7D88;
+}
+.NB-static-iphone .NB-iphone-stripe-wrapper {
+    border-top: 1px solid #505050;
+    border-bottom: 1px solid #505050;    
+    margin-right: -36px;
+}
+.NB-static-iphone .NB-iphone-stripe {
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    padding: 12px 0;
+    background: #F0F0F0 url('../img/reader/stripe_background.png');
 }
 .NB-static-iphone .NB-iphone-download button {
     padding: 4px 20px 4px 10px;
@@ -5990,7 +6007,7 @@ background: transparent;
     border-radius: 6px;
     font-size: 1.14em;
     line-height: 1.73em;
-    margin: 0 auto 24px;
+    margin: 0 auto;
     cursor: pointer;
 
 }
@@ -6038,7 +6055,7 @@ background: transparent;
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
-    margin: 12px 0 0 -48px;
+    margin: 0 0 0 0;
     padding: 0;
     font-size: 16px;
     text-align: center;
@@ -6129,6 +6146,6 @@ background: transparent;
         padding: 4px;
     }
     .NB-static-iphone .NB-iphone-main {
-        margin-bottom: 108px;
+        margin-bottom: 54px;
     }
 }
