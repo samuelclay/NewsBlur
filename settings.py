@@ -2,7 +2,6 @@ import sys
 import logging
 import os
 from mongoengine import connect
-import pymongo
 import redis
 
 # ===========================
@@ -462,9 +461,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'mongodb://db01,db03/?slaveOk=true',
-    'read_preference': pymongo.ReadPreference.PRIMARY,
-    'replica_set': 'nbset',
+    'host': 'db01,db03',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
