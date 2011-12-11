@@ -579,7 +579,7 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, slave_db=None):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
         try:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -595,7 +595,6 @@ class Feed(models.Model):
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
-            'slave_db': slave_db,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])

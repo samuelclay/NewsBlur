@@ -12,13 +12,10 @@ class UpdateFeeds(Task):
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
             
-        import pymongo
-        db = pymongo.Connection(settings.MONGODB_SLAVE['host'], slave_okay=True).newsblur
-
         for feed_pk in feed_pks:
             try:
                 feed = Feed.objects.get(pk=feed_pk)
-                feed.update(slave_db=db)
+                feed.update()
             except Feed.DoesNotExist:
                 logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)
             # logging.debug(' Updating: [%s] %s' % (feed_pks, feed))
