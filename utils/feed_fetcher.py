@@ -222,23 +222,11 @@ class ProcessFeed:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
         
-        if self.options['slave_db']:
-            slave_db = self.options['slave_db']
-            stories_db_orig = slave_db.stories.find({
-                "story_feed_id": self.feed.pk,
-                "story_date": {
-                    "$gte": start_date,
-                },
-            }).limit(len(story_guids))
-            existing_stories = []
-            for story in stories_db_orig:
-                existing_stories.append(bunch(story))
-        else:
-            existing_stories = list(MStory.objects(
-                # story_guid__in=story_guids,
-                story_date__gte=start_date,
-                story_feed_id=self.feed.pk
-            ).limit(len(story_guids)))
+        existing_stories = list(MStory.objects(
+            # story_guid__in=story_guids,
+            story_date__gte=start_date,
+            story_feed_id=self.feed.pk
+        ).limit(len(story_guids)))
         
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
@@ -434,21 +422,8 @@ class Dispatcher:
                       unicode(feed)[:30], user_subs.count(),
                       feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
         
-        if self.options['slave_db']:
-            slave_db = self.options['slave_db']
-
-            stories_db_orig = slave_db.stories.find({
-                "story_feed_id": feed.pk,
-                "story_date": {
-                    "$gte": UNREAD_CUTOFF,
-                },
-            })
-            stories_db = []
-            for story in stories_db_orig:
-                stories_db.append(bunch(story))
-        else:
-            stories_db = MStory.objects(story_feed_id=feed.pk,
-                                        story_date__gte=UNREAD_CUTOFF)
+        stories_db = MStory.objects(story_feed_id=feed.pk,
+                                    story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
             cache.delete('usersub:%s' % sub.user_id)
             sub.needs_unread_recalc = True
