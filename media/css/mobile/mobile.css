@@ -52,13 +52,13 @@ body {
   opacity: .2;
 }
 .NB-story.NB-score-positive .NB-icon-score {
-    background: transparent url('../../img/icons/silk/bullet_green.png') no-repeat 0 0;
+    background: transparent url('..//media/img/icons/silk/bullet_green.png') no-repeat 0 0;
 }
 .NB-story.NB-score-neutral .NB-icon-score {
-    background: transparent url('../../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+    background: transparent url('..//media/img/icons/silk/bullet_yellow.png') no-repeat 0 0;
 }
 .NB-story.NB-score-negative .NB-icon-score {
-    background: transparent url('../../img/icons/silk/bullet_red.png') no-repeat 0 0;
+    background: transparent url('..//media/img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 .NB-story .NB-story-title {
   clear: left;
@@ -287,11 +287,11 @@ body {
   top: 17px;
 }
 #NB-page-story.NB-score-positive .NB-icon-score {
-    background: transparent url('../../img/icons/silk/bullet_green.png') no-repeat 0 0;
+    background: transparent url('..//media/img/icons/silk/bullet_green.png') no-repeat 0 0;
 }
 #NB-page-story.NB-score-neutral .NB-icon-score {
-    background: transparent url('../../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
+    background: transparent url('..//media/img/icons/silk/bullet_yellow.png') no-repeat 0 0;
 }
 #NB-page-story.NB-score-negative .NB-icon-score {
-    background: transparent url('../../img/icons/silk/bullet_red.png') no-repeat 0 0;
+    background: transparent url('..//media/img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
