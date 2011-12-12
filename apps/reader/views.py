@@ -493,15 +493,15 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    limit              = 18
-    offset             = 0
-    start              = time.time()
-    user               = get_user(request)
-    feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
-    original_feed_ids  = list(feed_ids)
-    page               = int(request.REQUEST.get('page', 1))
-    read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
-    bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    limit                = 18
+    offset               = int(request.REQUEST.get('offset', 0))
+    start                = time.time()
+    user                 = get_user(request)
+    feed_ids             = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
+    original_feed_ids    = list(feed_ids)
+    page                 = int(request.REQUEST.get('page', 1))
+    read_stories_count   = int(request.REQUEST.get('read_stories_count', 0))
+    days_to_keep_unreads = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
         logging.user(request, "~FCLoading empty river stories: page %s" % (page))
@@ -517,7 +517,6 @@ def load_river_stories(request):
     read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
-    # max_feed_count     = 0
     feed_counts     = {}
     feed_last_reads = {}
     for feed_id in feed_ids:
@@ -529,9 +528,8 @@ def load_river_stories(request):
         feed_counts[feed_id] = (usersub.unread_count_negative * 1 + 
                                 usersub.unread_count_neutral * 10 +
                                 usersub.unread_count_positive * 20)
-        # if feed_counts[feed_id] > max_feed_count:
-        #     max_feed_count = feed_counts[feed_id]
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
+
     feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:40]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids
@@ -543,7 +541,7 @@ def load_river_stories(request):
     mstories = MStory.objects(
         story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
-        # story_date__gte=start - bottom_delta
+        # story_date__gte=start - days_to_keep_unreads
     ).map_reduce("""function() {
             var d = feed_last_reads[this[~story_feed_id]];
             if (this[~story_date].getTime()/1000 > d) {
@@ -563,8 +561,10 @@ def load_river_stories(request):
     except OperationFailure, e:
         raise e
 
-    mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
+    mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, days_to_keep_unreads), 
+                                                     story_score(x, days_to_keep_unreads)))
 
+    # Prune the river to only include a set number of stories per feed
     # story_feed_counts = defaultdict(int)
     # mstories_pruned = []
     # for story in mstories:
