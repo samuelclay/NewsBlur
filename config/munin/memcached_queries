@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+from munin.memcached import MuninMemcachedPlugin
+
+class MuninMemcachedQueriesPlugin(MuninMemcachedPlugin):
+    title = "Memcached query stats"
+    args = "--base 1000"
+    vlabel = "queries per ${graph_period}"
+    info = "get/set stats"
+    fields = (
+        ('cmd_get', dict(
+            label = "Gets",
+            info = "Gets",
+            type = "DERIVE",
+            min = "0",
+        )),
+        ('cmd_set', dict(
+            label = "Sets",
+            info = "Sets",
+            type = "DERIVE",
+            min = "0",
+        )),
+        ('get_hits', dict(
+            label = "Get hits",
+            info = "Get hits",
+            type = "DERIVE",
+            min = "0",
+        )),
+        ('get_misses', dict(
+            label = "Get misses",
+            info = "Get misses",
+            type = "DERIVE",
+            min = "0",
+        )),
+        ('evictions', dict(
+            label = "Evictions",
+            info = "Evictions",
+            type = "DERIVE",
+            min = "0",
+        )),
+    )
+
+if __name__ == "__main__":
+    MuninMemcachedQueriesPlugin().run()

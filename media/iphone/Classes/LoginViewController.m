@@ -131,7 +131,7 @@
         }
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate reloadFeedsView];
+        [appDelegate reloadFeedsView:YES];
     }
     
     [results release];
@@ -178,7 +178,7 @@
         }
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate reloadFeedsView];
+        [appDelegate reloadFeedsView:YES];
     }
     
     [results release];    

@@ -501,7 +501,7 @@
         },
         
         find_story_in_story_titles: function(story_id) {
-            var story = this.model.get_story(story_id);
+            var story = story_id && this.model.get_story(story_id) || this.active_story;
             var $stories = $('.story', this.$s.$story_titles);
             var $story_title;
             
@@ -822,6 +822,8 @@
         },
         
         scroll_story_titles_to_show_selected_story_title: function($story) {
+            var $story = $story || this.find_story_in_story_titles();
+            if (!$story) return;
             var $story_titles = this.$s.$story_titles;
             var story_title_visisble = $story_titles.isScrollVisible($story);
             if (!story_title_visisble) {
@@ -1095,8 +1097,8 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b)) {
-                // console.log(['a b 1', a, b]);
+              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b) && a && b) {
+                // console.log(['a b 1', a, b, feedA, feedB]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
@@ -1153,8 +1155,8 @@
                     var $feed = this.make_feed_title_template(feed, 'feed', depth);
                     $feeds += $feed;
                     
-                    if (feed.not_yet_fetched) {
-                        // NEWSBLUR.log(['Feed not fetched', feed]);
+                    if (feed.not_yet_fetched && feed.active) {
+                        NEWSBLUR.log(['Feed not fetched', feed]);
                         this.flags['has_unfetched_feeds'] = true;
                     }
                 } else if (typeof item == "object" && item) {
@@ -3182,6 +3184,14 @@
                 $feedbar.animate({'backgroundColor': '#5C89C9'}, {'duration': 750})
                         .animate({'backgroundColor': '#E1EBFF'}, 750);
             }, 1500);
+            
+            $story_titles.scrollTo($feedbar, { 
+                duration: 0,
+                axis: 'y', 
+                easing: 'easeInOutQuint', 
+                offset: 0, 
+                queue: false
+            });
         },
         
         show_feed_title_in_stories: function(feed_id) {
@@ -5096,7 +5106,9 @@
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 console.log(["Connecting to pubsub", this.socket]);
                 this.socket.on('connect', _.bind(function() {
-                    this.socket.emit('subscribe:feeds', _.keys(this.model.feeds));
+                    var active_feeds = _.compact(_.map(this.model.feeds, function(feed) { return feed.active && feed.id; }));
+                    console.log(["Connecting to pubsub", this.socket, active_feeds.length]);
+                    this.socket.emit('subscribe:feeds', active_feeds);
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         console.log(['Feed update', feed_id, message]);
                         this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
@@ -5136,6 +5148,7 @@
             
             this.flags.feed_refresh = setInterval(function() {
                 if (!self.flags['pause_feed_refreshing']) {
+                  console.log(["setup feed refresh", self.flags['has_unfetched_feeds']]);
                   self.model.refresh_feeds(_.bind(function(updated_feeds) {
                       self.post_feed_refresh(updated_feeds);
                   }, self), self.flags['has_unfetched_feeds']);
@@ -5143,21 +5156,23 @@
             }, refresh_interval);
         },
         
-        force_feed_refresh: function(feed_id, $feed) {
+        force_feed_refresh: function(feed_id, $feed, new_feed_id) {
             var self = this;
             feed_id  = feed_id || this.active_feed;
             $feed    = $feed || this.find_feed_in_feed_list(feed_id);
+            new_feed_id = new_feed_id || feed_id;
 
             this.force_feeds_refresh(function(feeds) {
-                var $new_feed = $(self.make_feed_title_template(feeds[feed_id], 'feed'));
+                var $new_feed = $(self.make_feed_title_template(feeds[new_feed_id], 'feed'));
                 if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
                 $feed.replaceWith($new_feed);
                 self.cache.$feed_in_feed_list[feed_id] = null;
+                self.cache.$feed_in_feed_list[new_feed_id] = null;
                 self.hover_over_feed_titles($new_feed);
-                if (self.active_feed == feed_id) {
-                    self.open_feed(feed_id, true, $new_feed);
+                if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
+                    self.open_feed(new_feed_id, true, $new_feed);
                 }
-            }, false, feed_id);
+            }, true, new_feed_id);
         },
         
         force_feeds_refresh: function(callback, replace_active_feed, feed_id) {

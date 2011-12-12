@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.mongodb import MuninMongoDBPlugin
+
+PRIMARY_STATE = 1
+SECONDARY_STATE = 2
+
+class MongoReplicaSetLag(MuninMongoDBPlugin):
+
+    vlabel = "seconds"
+    title = "MongoDB Replica Set Lag"
+    fields = [("optimeLag", {'label': "Oldest secondary lag"}), ("oplogLength", {"label": "Primary oplog length" })]
+
+    def _get_oplog_length(self):
+        oplog = self.connection['local'].oplog.rs
+        last_op = oplog.find({}, {'ts': 1}).sort([('$natural', -1)]).limit(1)[0]['ts'].time
+        first_op = oplog.find({}, {'ts': 1}).sort([('$natural', 1)]).limit(1)[0]['ts'].time
+        oplog_length = last_op - first_op
+        return oplog_length
+
+    def _get_max_replication_lag(self):
+        status = self.connection.admin.command('replSetGetStatus')
+        members = status['members']
+        primary_optime = None
+        oldest_secondary_optime = None
+        for member in members:
+            member_state = member['state']
+            optime = member['optime']
+            if member_state == PRIMARY_STATE:
+                primary_optime = optime.time
+            elif member_state == SECONDARY_STATE:
+                if not oldest_secondary_optime or optime.time < oldest_secondary_optime.time:
+                    oldest_secondary_optime = optime.time
+
+        if not primary_optime or not oldest_secondary_optime:
+            raise Exception("Replica set is not healthy")
+
+        return primary_optime - oldest_secondary_optime
+
+    def execute(self):
+        oplog_length = self._get_oplog_length()
+        replication_lag = self._get_max_replication_lag()
+
+        return {
+            "optimeLag": replication_lag,
+            "oplogLength": oplog_length
+        }
+
+if __name__ == "__main__":
+    MongoReplicaSetLag().run()

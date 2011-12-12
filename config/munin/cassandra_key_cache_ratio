@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import os
+from munin.cassandra import MuninCassandraPlugin
+
+class CassandraKeyCacheRatioPlugin(MuninCassandraPlugin):
+    title = "key cache hit ratio"
+    args = "--base 1000 -l 0"
+    vlabel = "ratio"
+    scale = False
+
+    @property
+    def fields(self):
+        fs = []
+        cfstats = self.cfstats()
+        for kf, kfstats in cfstats.items():
+            if not self.keyspaces or kf not in self.keyspaces:
+                continue
+            for cf, cfstats in kfstats['cf'].items():
+                name = "%s_%s" % (kf, cf)
+                label = "%s.%s" % (kf, cf)
+                fs.append((name, dict(
+                        label = label,
+                        info = label,
+                        type = "GAUGE",
+                        max = "1",
+                        min = "0",
+                    )))
+        return fs
+
+    def execute(self):
+        cfstats = self.cfstats()
+        values = {}
+        for kf, kfstats in cfstats.items():
+            if not self.keyspaces or kf not in self.keyspaces:
+                continue
+            for cf, cfstats in kfstats['cf'].items():
+                if cfstats['Key cache hit rate'] != 'NaN':
+                    values["%s_%s" % (kf, cf)] = cfstats['Key cache hit rate']
+                else:
+                    values["%s_%s" % (kf, cf)] = "U"
+        return values
+
+if __name__ == "__main__":
+    CassandraKeyCacheRatioPlugin().run()

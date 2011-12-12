@@ -37,7 +37,6 @@
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request;
-- (void)failLoadingFeed:(ASIHTTPRequest *)request;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
@@ -53,12 +52,15 @@
 - (IBAction)doOpenSettingsActionSheet;
 - (void)confirmDeleteSite;
 - (void)deleteSite;
+- (void)deleteFolder;
+- (void)openMoveView;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * settingsButton;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
 @property (nonatomic, retain) PullToRefreshView *pull;
 

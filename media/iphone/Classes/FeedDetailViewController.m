@@ -27,6 +27,7 @@
 @implementation FeedDetailViewController
 
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
+@synthesize settingsButton;
 @synthesize stories;
 @synthesize appDelegate;
 @synthesize feedPage;
@@ -55,44 +56,16 @@
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    UIView *titleView = [[UIView alloc] init];
-    
-    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     if (appDelegate.isRiverView) {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.storyTitlesTable.separatorColor = [UIColor clearColor];
-        titleLabel.text = [NSString stringWithFormat:@"     %@", appDelegate.activeFolder];        
     } else {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-        titleLabel.text = [NSString stringWithFormat:@"     %@", [appDelegate.activeFeed objectForKey:@"feed_title"]];
     }
-    titleLabel.backgroundColor = [UIColor clearColor];
-    titleLabel.textAlignment = UITextAlignmentLeft;
-    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
-    titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
-    titleLabel.shadowColor = [UIColor blackColor];
-    titleLabel.shadowOffset = CGSizeMake(0, -1);
-    titleLabel.center = CGPointMake(28, -2);
-    [titleLabel sizeToFit];
     
-    
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
-    UIImage *titleImage;
-    if (appDelegate.isRiverView) {
-        titleImage = [UIImage imageNamed:@"folder.png"];
-    } else {
-        titleImage = [Utilities getImage:feedIdStr];
-    }
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    [titleLabel addSubview:titleImageView];
-    [titleImageView release];
-    
+    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     self.navigationItem.titleView = titleLabel;
-	    
-    [titleView release];
 
     // Commenting out until training is ready...
     //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
@@ -123,11 +96,31 @@
     [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     
 	[super viewWillAppear:animated];
+    
+    BOOL pullFound = NO;
+    for (UIView *view in self.storyTitlesTable.subviews) {
+        if ([view isKindOfClass:[PullToRefreshView class]]) {
+            pullFound = YES;
+            if (appDelegate.isRiverView) {
+                [view removeFromSuperview];
+            }
+        }
+    }
+    if (!appDelegate.isRiverView && !pullFound) {
+        [self.storyTitlesTable addSubview:pull];
+    }
+    
+    if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"Everything"]) {
+        settingsButton.enabled = NO;
+    } else {
+        settingsButton.enabled = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 //    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    [pull refreshLastUpdatedDate];
     
 	[super viewDidAppear:animated];
 }
@@ -137,6 +130,7 @@
     [feedViewToolbar release];
     [feedScoreSlider release];
     [feedMarkReadButton release];
+    [settingsButton release];
     [stories release];
     [appDelegate release];
     [intelligenceControl release];
@@ -172,14 +166,14 @@
                                       NEWSBLUR_URL,
                                       [appDelegate.activeFeed objectForKey:@"id"],
                                       self.feedPage];
-        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
-
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        
+        [self cancelRequests];
+        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            [self failLoadingFeed:request];
+            [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
             [self finishedLoadingFeed:request];
@@ -193,22 +187,23 @@
     }
 }
 
-- (void)failLoadingFeed:(ASIHTTPRequest *)request {
-//    if (self.feedPage <= 1) {
-//        [appDelegate.navigationController 
-//         popToViewController:[appDelegate.navigationController.viewControllers 
-//                              objectAtIndex:0]  
-//         animated:YES];
-//    }
-    
-    [self informError:[request error]];
-}
-
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] >= 500) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
+                       dispatch_get_current_queue(), ^{
+            [appDelegate.navigationController 
+             popToViewController:[appDelegate.navigationController.viewControllers 
+                                  objectAtIndex:0]  
+             animated:YES];
+        });
+        [self informError:@"The server barfed!"];
+        
+        return;
+    }
+    
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    
     if (!appDelegate.isRiverView && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         [results release];
         return;
@@ -261,14 +256,14 @@
                                       [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
                                       self.feedPage,
                                       readStoriesCount];
-        NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
         
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedDetail];
+        [self cancelRequests];
+        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
-            [self failLoadingFeed:request];
+            [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
             [self finishedLoadingFeed:request];
@@ -597,13 +592,16 @@
 
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
+    NSLog(@"mark feeds read: %d %d", appDelegate.isRiverView, includeHidden);
     if (appDelegate.isRiverView && includeHidden) {
         // Mark folder as read
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_folder_as_read",
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:appDelegate.activeFolder forKey:@"folder_name"]; 
+        for (id feed_id in [appDelegate.dictFolders objectForKey:appDelegate.activeFolder]) {
+            [request addPostValue:feed_id forKey:@"feed_id"];
+        }
         [request setDelegate:nil];
         [request startAsynchronous];
         
@@ -646,6 +644,12 @@
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    // Individual sites just get marked as read, no action sheet needed.
+    if (!appDelegate.isRiverView) {
+        [self markFeedsReadWithAllStories:YES];
+        return;
+    }
+    
     NSString *title = appDelegate.isRiverView ? 
                       appDelegate.activeFolder : 
                       [appDelegate.activeFeed objectForKey:@"feed_title"];
@@ -659,25 +663,27 @@
     int visibleUnreadCount = appDelegate.visibleUnreadCount;
     int totalUnreadCount = [appDelegate unreadCount];
     NSArray *buttonTitles = nil;
-    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {        
-        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
-                                 appDelegate.isRiverView ? 
-                                 @"entire folder" : 
-                                 @"this site"];
-        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
-        options.destructiveButtonIndex = 0;
-    } else {
-        NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
-                                 visibleUnreadCount == 1 ? 
-                                 @"this story as" : 
-                                 [NSString stringWithFormat:@"these %d stories", 
-                                  visibleUnreadCount]];        
-        NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
-                                appDelegate.isRiverView ? 
-                                @"entire folder" : 
-                                @"this site"];
+    BOOL showVisible = YES;
+    BOOL showEntire = YES;
+    if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
+    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;  
+    NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
+                            appDelegate.isRiverView ? 
+                            @"entire folder" : 
+                            @"this site"];
+    NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
+                             visibleUnreadCount == 1 ? @"this story as" : 
+                                [NSString stringWithFormat:@"these %d stories", 
+                                 visibleUnreadCount]];
+    if (showVisible && showEntire) {
         buttonTitles = [NSArray arrayWithObjects:visibleText, entireText, nil];
         options.destructiveButtonIndex = 1;
+    } else if (showVisible && !showEntire) {
+        buttonTitles = [NSArray arrayWithObjects:visibleText, nil];
+        options.destructiveButtonIndex = -1;
+    } else if (!showVisible && showEntire) {
+        buttonTitles = [NSArray arrayWithObjects:entireText, nil];
+        options.destructiveButtonIndex = 0;
     }
     
     for (id title in buttonTitles) {
@@ -691,43 +697,67 @@
 }
 
 - (IBAction)doOpenSettingsActionSheet {
+    NSString *title = appDelegate.isRiverView ? 
+                      appDelegate.activeFolder : 
+                      [appDelegate.activeFeed objectForKey:@"feed_title"];
     UIActionSheet *options = [[UIActionSheet alloc] 
-                              initWithTitle:[appDelegate.activeFeed objectForKey:@"feed_title"]
+                              initWithTitle:title
                               delegate:self
                               cancelButtonTitle:nil
                               destructiveButtonTitle:nil
                               otherButtonTitles:nil];
     
-    NSArray *buttonTitles = [NSArray arrayWithObjects:@"Delete this site", nil];
-    for (id title in buttonTitles) {
-        [options addButtonWithTitle:title];
+    if (![title isEqualToString:@"Everything"]) {
+        NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
+                                appDelegate.isRiverView ? 
+                                @"this entire folder" : 
+                                @"this site"];
+        [options addButtonWithTitle:deleteText];
+        options.destructiveButtonIndex = 0;
+        
+        NSString *moveText = @"Move to another folder";
+        [options addButtonWithTitle:moveText];
     }
-    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
 
+    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     options.tag = kSettingsActionSheet;
     [options showInView:self.view];
     [options release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSLog(@"Action option #%d", buttonIndex);
+//    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
     if (actionSheet.tag == 1) {
         int visibleUnreadCount = appDelegate.visibleUnreadCount;
         int totalUnreadCount = [appDelegate unreadCount];
-        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) {
+        BOOL showVisible = YES;
+        BOOL showEntire = YES;
+        if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
+        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
+//        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
+
+        if (showVisible && showEntire) {
+            if (buttonIndex == 0) {
+                if (buttonIndex == 0) {
+                    [self markFeedsReadWithAllStories:NO];
+                } else if (buttonIndex == 1) {
+                    [self markFeedsReadWithAllStories:YES];
+                }               
+            }
+        } else if (showVisible && !showEntire) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:NO];
+            }   
+        } else if (!showVisible && showEntire) {
             if (buttonIndex == 0) {
                 [self markFeedsReadWithAllStories:YES];
             }
-        } else {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:NO];
-            } else if (buttonIndex == 1) {
-                [self markFeedsReadWithAllStories:YES];
-            }               
         }
     } else if (actionSheet.tag == 2) {
         if (buttonIndex == 0) {
             [self confirmDeleteSite];
+        } else if (buttonIndex == 1) {
+            [self openMoveView];
         }
     }
 }
@@ -744,7 +774,11 @@
         if (buttonIndex == 0) {
             return;
         } else {
-            [self deleteSite];
+            if (appDelegate.isRiverView) {
+                [self deleteFolder];
+            } else {
+                [self deleteSite];
+            }
         }
     }
 }
@@ -761,12 +795,12 @@
     __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
-    [request addPostValue:[appDelegate activeFolder] forKey:@"in_folder"];
+    [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] forKey:@"in_folder"];
     [request setFailedBlock:^(void) {
-        [self failLoadingFeed:request];
+        [self informError:[request error]];
     }];
     [request setCompletionBlock:^(void) {
-        [appDelegate reloadFeedsView];
+        [appDelegate reloadFeedsView:YES];
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
@@ -778,17 +812,56 @@
     [request startAsynchronous];
 }
 
+- (void)deleteFolder {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Deleting...";
+    
+    NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/delete_folder", 
+                                  NEWSBLUR_URL];
+    NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
+    
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    [request setDelegate:self];
+    [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] 
+                   forKey:@"folder_to_delete"];
+    [request addPostValue:[appDelegate extractFolderName:[appDelegate extractParentFolderName:appDelegate.activeFolder]] 
+                   forKey:@"in_folder"];
+    [request setFailedBlock:^(void) {
+        [self informError:[request error]];
+    }];
+    [request setCompletionBlock:^(void) {
+        [appDelegate reloadFeedsView:YES];
+        [appDelegate.navigationController 
+         popToViewController:[appDelegate.navigationController.viewControllers 
+                              objectAtIndex:0]  
+         animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+}
+
+- (void)openMoveView {
+    [appDelegate showMoveSite];
+}
+
 #pragma mark -
 #pragma mark PullToRefresh
 
 // called when the user pulls-to-refresh
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {    
+    if (appDelegate.isRiverView) {
+        [pull finishedLoading];
+        return;
+    }
+    
     NSString *urlString = [NSString 
                            stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
                            NEWSBLUR_URL,
                            [appDelegate.activeFeed objectForKey:@"id"]];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [self cancelRequests];
+    __block ASIHTTPRequest *request = [self requestWithURL:urlString];
     [request setDelegate:self];
     [request setResponseEncoding:NSUTF8StringEncoding];
     [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -826,7 +899,7 @@
 
 // called when the date shown needs to be updated, optional
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
-    NSLog(@"Updated; %@", [appDelegate.activeFeed objectForKey:@"updated_seconds_ago"]);
+//    NSLog(@"Updated; %@", [appDelegate.activeFeed objectForKey:@"updated_seconds_ago"]);
     int seconds = -1 * [[appDelegate.activeFeed objectForKey:@"updated_seconds_ago"] intValue];
     return [[[NSDate alloc] initWithTimeIntervalSinceNow:seconds] autorelease];
 }

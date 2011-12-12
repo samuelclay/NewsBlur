@@ -164,6 +164,10 @@ def load_feeds(request):
     flat             = request.REQUEST.get('flat', False)
     update_counts    = request.REQUEST.get('update_counts', False)
     
+    if include_favicons == 'false': include_favicons = False
+    if update_counts == 'false': update_counts = False
+    if flat == 'false': flat = False
+    
     if flat: return load_feeds_flat(request)
     
     try:
@@ -223,6 +227,8 @@ def load_feeds_flat(request):
     include_favicons = request.REQUEST.get('include_favicons', False)
     feeds = {}
     
+    if include_favicons == 'false': include_favicons = False
+    
     if not user.is_authenticated():
         return HttpResponseForbidden()
     
@@ -263,7 +269,7 @@ def load_feeds_flat(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username)
+    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version="1.2")
     return data
 
 @ratelimit(minutes=1, requests=10)
@@ -280,13 +286,14 @@ def refresh_feeds(request):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
-    
-    for sub in user_subs:
+
+    for i, sub in enumerate(user_subs):
         pk = sub.feed.pk
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
-            sub.calculate_feed_scores(silent=True)
+            sub = sub.calculate_feed_scores(silent=True)
+        if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
         feeds[pk] = {
             'ps': sub.unread_count_positive,
             'nt': sub.unread_count_neutral,
@@ -303,8 +310,9 @@ def refresh_feeds(request):
         if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
             feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
             feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
-            feeds[pk]['favicon_fetching'] = bool(not (feed_icons[sub.feed.pk].not_found or
-                                                      feed_icons[sub.feed.pk].data))
+            feeds[pk]['favicon_fetching'] = sub.feed.favicon_fetching
+    
+    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
     
     if favicons_fetching:
         sub_feed_ids = [s.feed.pk for s in user_subs]
@@ -315,10 +323,10 @@ def refresh_feeds(request):
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
         
-    if settings.DEBUG:
+    if settings.DEBUG or request.REQUEST.get('check_fetch_status'):
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request, "~FBRefreshing %s feeds (%s seconds)" % (user_subs.count(), timediff))
+        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))
     
     return {'feeds': feeds}
 
@@ -341,7 +349,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
-    
+
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         
@@ -485,15 +493,15 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    limit              = 18
-    offset             = 0
-    start              = time.time()
-    user               = get_user(request)
-    feed_ids           = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
-    original_feed_ids  = list(feed_ids)
-    page               = int(request.REQUEST.get('page', 1))
-    read_stories_count = int(request.REQUEST.get('read_stories_count', 0))
-    bottom_delta       = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    limit                = 18
+    offset               = int(request.REQUEST.get('offset', 0))
+    start                = time.time()
+    user                 = get_user(request)
+    feed_ids             = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
+    original_feed_ids    = list(feed_ids)
+    page                 = int(request.REQUEST.get('page', 1))
+    read_stories_count   = int(request.REQUEST.get('read_stories_count', 0))
+    days_to_keep_unreads = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if not feed_ids: 
         logging.user(request, "~FCLoading empty river stories: page %s" % (page))
@@ -509,7 +517,6 @@ def load_river_stories(request):
     read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
-    # max_feed_count     = 0
     feed_counts     = {}
     feed_last_reads = {}
     for feed_id in feed_ids:
@@ -521,9 +528,8 @@ def load_river_stories(request):
         feed_counts[feed_id] = (usersub.unread_count_negative * 1 + 
                                 usersub.unread_count_neutral * 10 +
                                 usersub.unread_count_positive * 20)
-        # if feed_counts[feed_id] > max_feed_count:
-        #     max_feed_count = feed_counts[feed_id]
         feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
+
     feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:40]
     feed_ids = [f[0] for f in feed_counts]
     feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids
@@ -535,7 +541,7 @@ def load_river_stories(request):
     mstories = MStory.objects(
         story_guid__nin=read_stories,
         story_feed_id__in=feed_ids,
-        # story_date__gte=start - bottom_delta
+        # story_date__gte=start - days_to_keep_unreads
     ).map_reduce("""function() {
             var d = feed_last_reads[this[~story_feed_id]];
             if (this[~story_date].getTime()/1000 > d) {
@@ -555,8 +561,10 @@ def load_river_stories(request):
     except OperationFailure, e:
         raise e
 
-    mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, bottom_delta), story_score(x, bottom_delta)))
+    mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, days_to_keep_unreads), 
+                                                     story_score(x, days_to_keep_unreads)))
 
+    # Prune the river to only include a set number of stories per feed
     # story_feed_counts = defaultdict(int)
     # mstories_pruned = []
     # for story in mstories:
@@ -573,12 +581,16 @@ def load_river_stories(request):
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     
     # Find starred stories
-    starred_stories = MStarredStory.objects(
-        user_id=user.pk,
-        story_feed_id__in=found_feed_ids
-    ).only('story_guid', 'starred_date')
-    starred_stories = dict([(story.story_guid, story.starred_date) 
-                            for story in starred_stories])
+    try:
+        starred_stories = MStarredStory.objects(
+            user_id=user.pk,
+            story_feed_id__in=found_feed_ids
+        ).only('story_guid', 'starred_date')
+        starred_stories = dict([(story.story_guid, story.starred_date) 
+                                for story in starred_stories])
+    except OperationFailure:
+        logging.info(" ***> Starred stories failure")
+        starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
     def sort_by_feed(classifiers):
@@ -586,17 +598,20 @@ def load_river_stories(request):
         for classifier in classifiers:
             feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
-    classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    
     classifiers = {}
-    for feed_id in found_feed_ids:
-        classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
-                                                        classifier_authors[feed_id],
-                                                        classifier_titles[feed_id],
-                                                        classifier_tags[feed_id])
+    try:
+        classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+        classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
+    except OperationFailure:
+        logging.info(" ***> Classifiers failure")
+    else:
+        for feed_id in found_feed_ids:
+            classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
+                                                            classifier_authors[feed_id],
+                                                            classifier_titles[feed_id],
+                                                            classifier_tags[feed_id])
     
     # Just need to format stories
     for story in stories:
@@ -822,7 +837,7 @@ def delete_feed(request):
 @ajax_login_required
 @json.json_view
 def delete_folder(request):
-    folder_to_delete = request.POST['folder_name']
+    folder_to_delete = request.POST.get('folder_name') or request.POST.get('folder_to_delete')
     in_folder = request.POST.get('in_folder', '')
     feed_ids_in_folder = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
     
@@ -851,17 +866,21 @@ def rename_feed(request):
 @ajax_login_required
 @json.json_view
 def rename_folder(request):
-    folder_to_rename = request.POST['folder_name']
+    folder_to_rename = request.POST.get('folder_name') or request.POST.get('folder_to_rename')
     new_folder_name = request.POST['new_folder_name']
     in_folder = request.POST.get('in_folder', '')
+    code = 0
     
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
     # renames all, but only in the same folder parent. But nobody should be doing that, right?
-    if new_folder_name:
+    if folder_to_rename and new_folder_name:
         user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
-
-    return dict(code=1)
+        code = 1
+    else:
+        code = -1
+        
+    return dict(code=code)
     
 @ajax_login_required
 @json.json_view
@@ -869,7 +888,7 @@ def move_feed_to_folder(request):
     feed_id = int(request.POST['feed_id'])
     in_folder = request.POST.get('in_folder', '')
     to_folder = request.POST.get('to_folder', '')
-    
+
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
     user_sub_folders = user_sub_folders.move_feed_to_folder(feed_id, in_folder=in_folder, to_folder=to_folder)
 
@@ -965,10 +984,11 @@ def save_feed_chooser(request):
     for sub in usersubs:
         try:
             if sub.feed.pk in approved_feeds:
-                sub.active = True
                 activated += 1
-                sub.save()
-                sub.feed.count_subscribers()
+                if not sub.active:
+                    sub.active = True
+                    sub.save()
+                    sub.feed.count_subscribers()
             elif sub.active:
                 sub.active = False
                 sub.save()

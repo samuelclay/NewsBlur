@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+import os
+from munin.cassandra import MuninCassandraPlugin
+
+class CassandraLatencyPlugin(MuninCassandraPlugin):
+    title = "read/write latency"
+    args = "--base 1000 -l 0"
+    vlabel = "seconds"
+
+    @property
+    def fields(self):
+        fs = []
+        cfstats = self.cfstats()
+        for kf, kfstats in cfstats.items():
+            if not self.keyspaces or kf not in self.keyspaces:
+                continue
+            for cf, cfstats in kfstats['cf'].items():
+                name = "%s_%s_read" % (kf, cf)
+                label = "%s.%s read latency" % (kf, cf)
+                fs.append((name, dict(
+                        label = label,
+                        info = label,
+                        type = "GAUGE",
+                        min = "0",
+                    )))
+                name = "%s_%s_write" % (kf, cf)
+                label = "%s.%s write latency" % (kf, cf)
+                fs.append((name, dict(
+                        label = label,
+                        info = label,
+                        type = "GAUGE",
+                        min = "0",
+                    )))
+        return fs
+
+    def execute(self):
+        cfstats = self.cfstats()
+        values = {}
+        for kf, kfstats in cfstats.items():
+            if not self.keyspaces or kf not in self.keyspaces:
+                continue
+            for cf, cfstats in kfstats['cf'].items():
+                name = "%s_%s" % (kf, cf)
+                for k, n in (('read', 'Read Latency'), ('write', 'Write Latency')):
+                    latency = cfstats[n].split(' ')[0]
+                    if latency == 'NaN':
+                        latency = 'U'
+                    else:
+                        latency = float(latency) / 1000
+                    values["%s_%s" % (name, k)] = latency
+        return values
+
+if __name__ == "__main__":
+    CassandraLatencyPlugin().run()

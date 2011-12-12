@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+import os
+from munin.gearman import MuninGearmanPlugin
+
+class MuninGearmanQueuesPlugin(MuninGearmanPlugin):
+    title = "Gearman Queues"
+    args = "--base 1000"
+    vlabel = "tasks"
+
+    _info_keys = ('total', 'running', 'workers')
+
+    def __init__(self):
+        super(MuninGearmanQueuesPlugin, self).__init__()
+        self.queues = os.environ['GEARMAN_QUEUES'].split(',')
+
+    @property
+    def fields(self):
+        fs = []
+        for q in self.queues:
+            for k in self._info_keys:
+                label = "%s %s" % (q, k)
+                fs.append(("%s_%s" % (q.replace('.', '_'), k), dict(
+                        label = label,
+                        info = label,
+                        type = "GAUGE",
+                    )))
+        return fs
+
+    def execute(self):
+        status = self.get_status()
+        values = {}
+        for q in self.queues:
+            if q in status:
+                for k in self._info_keys:
+                    values["%s_%s" % (q.replace('.', '_'), k)] = status[q][k]
+        return values
+
+if __name__ == "__main__":
+    MuninGearmanQueuesPlugin().run()

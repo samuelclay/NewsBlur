@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+
+from munin import MuninPlugin
+
+class MuninTokyoCabinetSizePlugin(MuninPlugin):
+    title = "Size of Tokyo Cabinet database"
+    args = "--base 1024"
+    vlabel = "bytes"
+    fields = (
+        ("size", dict(
+            label = "Size",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    environ = {
+        'PATH': "/usr/bin:/usr/local/bin",
+    }
+
+    def __init__(self):
+        super(MuninTokyoCabinetSizePlugin, self).__init__()
+        path = os.environ['TC_PATH']
+        if path.startswith('tt://'):
+            self.path = None
+            self.port = None
+            self.host = path[5:]
+            if ':' in self.host:
+                self.host, self.port = path[5:].split(':')
+        else:
+            self.path = path
+            self.host = None
+            self.port = None
+
+    def inform(self):
+        if self.path:
+            raise NotImplementedError()
+        else:
+            args = ["tcrmgr", "inform"]
+            if self.port:
+                args += ["-port", str(self.port)]
+            args.append(self.host)
+            p = subprocess.Popen(args, env=self.environ, stdout=subprocess.PIPE)
+            res = p.communicate()[0]
+        res = res.split('\n')
+        return {
+            'records': int(res[0].split(':')[-1]),
+            'size': int(res[1].split(':')[-1]),
+        }
+
+    def execute(self):
+        info = self.inform()
+        return dict(size=info['size'])
+
+if __name__ == "__main__":
+    MuninTokyoCabinetSizePlugin().run()

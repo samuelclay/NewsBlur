@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import os
+from munin.cassandra import MuninCassandraPlugin
+
+class CassandraLoadPlugin(MuninCassandraPlugin):
+    title = "load (data stored in node)"
+    args = "--base 1024 -l 0"
+    vlabel = "bytes"
+    fields = [
+        ('load', dict(
+            label = "load",
+            info = "data stored in node",
+            type = "GAUGE",
+            min = "0",
+        )),
+    ]
+    
+    def execute(self):
+        info = self.cinfo()
+        return dict(load = info['Load'])
+
+if __name__ == "__main__":
+    CassandraLoadPlugin().run()

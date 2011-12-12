@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+from munin import MuninPlugin
+
+class PathSizePlugin(MuninPlugin):
+    args = "--base 1024 -l 0"
+    vlabel = "bytes"
+    scale = True
+    category = "other"
+    fields = (
+        ('size', dict(
+            label = "size",
+            info = "Size",
+            type = "GAUGE",
+        )),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(PathSizePlugin, self).__init__(*args, **kwargs)
+        self.path = os.environ["PATHSIZE_PATH"]
+
+    @property
+    def title(self):
+        return "Size of %s" % self.path
+
+    def execute(self):
+        p = subprocess.Popen("du -sk " + self.path, shell=True, stdout=subprocess.PIPE)
+        du = p.communicate()[0]
+        size = int(du.split('\t')[0].strip()) * 1024
+        return dict(size=size)
+
+if __name__ == "__main__":
+    PathSizePlugin().run()

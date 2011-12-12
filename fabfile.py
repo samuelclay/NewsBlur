@@ -344,14 +344,17 @@ def setup_pymongo_repo():
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         with settings(warn_only=True):
-            run('git remote add github http://github.com/samuelclay/mongoengine')
-            run('git checkout dev')
-            run('git pull github dev')
+            run('git checkout master')
+            run('git branch -D dev')
+            run('git remote add sclay git://github.com/samuelclay/mongoengine.git')
+            run('git fetch sclay')
+            run('git checkout -b dev sclay/dev')
+            run('git pull sclay dev')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git co dev')
-        run('git pull github dev --force')
+        run('git pull sclay dev --force')
         # run('git checkout .')
         # run('git checkout master')
         # run('get branch -D dev')

@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import os
+import re
+import urllib
+from munin.nginx import MuninNginxPlugin
+
+class MuninNginxConnectionsPlugin(MuninNginxPlugin):
+    title = "Nginx Connections"
+    args = "--base 1000"
+    vlabel = "Connections"
+    fields = (
+        ('total', dict(
+            label = "Active connections",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+        ('reading', dict(
+            label = "Reading",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+        ('writing', dict(
+            label = "Writing",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+        ('waiting', dict(
+            label = "Waiting",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.get_status()
+        return dict(
+            total = status['active'],
+            reading = status['reading'],
+            writing = status['writing'],
+            waiting = status['waiting'],
+        )
+
+if __name__ == "__main__":
+    MuninNginxConnectionsPlugin().run()

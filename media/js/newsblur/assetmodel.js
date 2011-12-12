@@ -452,6 +452,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }));
             if (favicons_fetching.length) {
                 data['favicons_fetching'] = favicons_fetching;
+            } else {
+                this.flags['favicons_fetching'] = false;
             }
         }
         if (feed_id) {
@@ -847,7 +849,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
             self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id);
+            NEWSBLUR.reader.force_feed_refresh(feed_id, null, data.new_feed_id);
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {
@@ -866,7 +868,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
             self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id);
+            NEWSBLUR.reader.force_feed_refresh(feed_id, null, data.new_feed_id);
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {

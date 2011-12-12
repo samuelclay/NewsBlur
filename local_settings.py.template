@@ -1,4 +1,5 @@
 import logging
+import pymongo
 
 DATABASES = {
     'default': {
@@ -13,11 +14,8 @@ DATABASES = {
 MONGO_DB = {
     'name': 'newsblur',
     'host': '127.0.0.1',
-    'port': 27017
-}
-
-MONGODB_SLAVE = {
-    'host': '127.0.0.1'
+    'port': 27017,
+    'read_preference': pymongo.ReadPreference.PRIMARY,
 }
 
 DEBUG = True
@@ -45,6 +43,14 @@ BROKER_HOST = "127.0.0.1"
 REDIS = {
     'host': '127.0.0.1',
 }
+
+# AMQP - RabbitMQ server
+BROKER_HOST     = "db01.newsblur.com"
+BROKER_PORT     = 5672
+BROKER_USER     = "newsblur"
+BROKER_PASSWORD = "newsblur"
+BROKER_VHOST    = "newsblurvhost"
+
 
 # ===========
 # = Logging =

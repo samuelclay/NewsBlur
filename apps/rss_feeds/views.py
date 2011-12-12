@@ -150,6 +150,7 @@ def exception_change_feed_address(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_address = request.POST['feed_address']
+    code = -1
     
     if feed.has_page_exception or feed.has_feed_exception:
         # Fix broken feed
@@ -160,6 +161,7 @@ def exception_change_feed_address(request):
         feed.feed_address = feed_address
         feed.next_scheduled_update = datetime.datetime.utcnow()
         duplicate_feed = feed.save()
+        code = 1
         if duplicate_feed:
             new_feed = Feed.objects.get(pk=duplicate_feed.pk)
             feed = new_feed
@@ -179,6 +181,7 @@ def exception_change_feed_address(request):
                 feed.branch_from_feed = original_feed
             feed.feed_address_locked = True
             feed.save()
+            code = 1
 
     feed = feed.update()
     feed = Feed.objects.get(pk=feed.pk)
@@ -186,18 +189,21 @@ def exception_change_feed_address(request):
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
     if usersub:
         usersub.switch_feed(feed, original_feed)
-    elif not usersub:
-        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
         
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
+    classifiers = get_classifiers_for_user(usersub.user, usersub.feed.pk)
     
     feeds = {
-        original_feed.pk: usersub.canonical(full=True), 
-        feed.pk: usersub.canonical(full=True),
+        original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
     }
-    return {'code': 1, 'feeds': feeds}
+    return {
+        'code': code, 
+        'feeds': feeds, 
+        'new_feed_id': usersub.feed.pk,
+    }
     
 @ajax_login_required
 @json.json_view
@@ -239,6 +245,7 @@ def exception_change_feed_link(request):
                 feed.branch_from_feed = original_feed
             feed.feed_link_locked = True
             feed.save()
+            code = 1
 
     feed = feed.update()
     feed = Feed.objects.get(pk=feed.pk)
@@ -246,18 +253,21 @@ def exception_change_feed_link(request):
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
     if usersub:
         usersub.switch_feed(feed, original_feed)
-    elif not usersub:
-        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
         
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
+    classifiers = get_classifiers_for_user(usersub.user, usersub.feed.pk)
     
     feeds = {
-        original_feed.pk: usersub.canonical(full=True), 
-        feed.pk: usersub.canonical(full=True),
+        original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
     }
-    return {'code': code, 'feeds': feeds}
+    return {
+        'code': code, 
+        'feeds': feeds, 
+        'new_feed_id': usersub.feed.pk,
+    }
 
 @login_required
 def status(request):
