@@ -6,14 +6,14 @@
 
 Stay up to date and in touch with me, yr. developer, in a few different ways:
 
-    * Follow @samuelclay on Twitter: http://twitter.com/samuelclay
-    * Follow @newsblur on Twitter: http://twitter.com/newsblur
-    * Follow the constantly evolving source code on GitHub: http://github.com/samuelclay
+    * Follow @samuelclay on Twitter: http://twitter.com/samuelclay/
+    * Follow @newsblur on Twitter: http://twitter.com/newsblur/
+    * Follow the constantly evolving source code on GitHub: http://github.com/samuelclay/
 
 {% block resources_header %}There are a few resources you can use if you end up loving NewsBlur:{% endblock resources_header %}
 
     * Read the NewsBlur Blog: http://blog.newsblur.com
-    * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur
+    * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur/
 
 There's plenty of ways to use NewsBlur beyond the website:
 
