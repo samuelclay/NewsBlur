@@ -1202,7 +1202,7 @@ background: transparent;
 }
 
 #story_titles .NB-feed-story-premium-only .NB-feed-story-premium-only-divider {
-  background: transparent url(../img/reader/separator_small.png) no-repeat 50% 100%;
+  background: transparent url('../img/reader/separator_small.png') no-repeat 50% 100%;
   height: 20px;
   width: 100%;
   margin: 4px 0 0;
@@ -1681,7 +1681,9 @@ background: transparent;
 #story_pane .NB-feed-stories .NB-feed-story img {
   max-width: 120%;
 }
-
+#story_pane .NB-feed-story {
+    position: relative;
+}
 #story_pane .NB-feed-story .NB-feed-story-sentiment {
     position: absolute;
     top: 1px;
@@ -1930,6 +1932,61 @@ background: transparent;
     max-width: 700px;
 }
 
+#story_pane .NB-feed-story-sideoptions-container {
+    position: absolute;
+    right: 12px;
+    bottom: 32px;
+    text-align: center;
+}
+
+#story_pane .NB-feed-story-sideoptions-container {
+    
+}
+#story_pane .NB-sideoption {
+    cursor: pointer;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #000;
+}
+#story_pane .NB-sideoption .NB-sideoption-icon {
+    width: 24px;
+    padding: 4px;
+    height: 100%;
+    float: right;
+    background: #EBF6DA url('../img/reader/star_blue.png') no-repeat 8px 4px;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+#story_pane .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
+    background-image: url('../img/icons/silk/bricks.png');
+}
+#story_pane .NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
+    background-image: url('../img/icons/silk/rainbow.png');
+}
+
+#story_pane .NB-sideoption .NB-sideoption-title {
+    padding: 4px 36px 4px 6px;
+    color: white;
+    text-shadow: none;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+#story_pane .NB-sideoption:hover {
+    cursor: pointer;
+}
+#story_pane .NB-sideoption:hover .NB-sideoption-icon,
+#story_pane .NB-sideoption:hover .NB-sideoption-title {
+    background-color: #2B478C;
+    color: #D7DDF7;
+    opacity: 1;
+}
 #story_pane .NB-feed-story-endbar {
     height: 8px;
     border-top: 1px solid #404040;
@@ -2947,17 +3004,17 @@ a.NB-splash-link:hover {
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-negative {
     right: 94px;
-    background: transparent url(../img/icons/silk/bullet_red.png) no-repeat 0 0;
+    background: transparent url('../img/icons/silk/bullet_red.png') no-repeat 0 0;
 }
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-neutral {
     right: 45px;
-    background: transparent url(../img/icons/silk/bullet_yellow.png) no-repeat 0 0;
+    background: transparent url('../img/icons/silk/bullet_yellow.png') no-repeat 0 0;
 }
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-positive {
     right: -4px;
-    background: transparent url(../img/icons/silk/bullet_green.png) no-repeat 0 0;
+    background: transparent url('../img/icons/silk/bullet_green.png') no-repeat 0 0;
 }
 
 .NB-intelligence-slider {
@@ -3949,7 +4006,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     cursor: pointer;
-    background: transparent url(../img/icons/silk/bricks.png) no-repeat 50% 50%;
+    background: transparent url('../img/icons/silk/bricks.png') no-repeat 50% 50%;
   }
   .NB-module-recommended .NB-recommended-statistics {
     margin: 2px 0 0 0;
@@ -3957,7 +4014,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     cursor: pointer;
-    background: transparent url(../img/icons/silk/chart_curve.png) no-repeat 50% 50%;
+    background: transparent url('../img/icons/silk/chart_curve.png') no-repeat 50% 50%;
   }
   .NB-module-recommended .NB-recommended-favicon {
     width: 16px;
