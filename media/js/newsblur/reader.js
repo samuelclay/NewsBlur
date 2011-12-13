@@ -2668,6 +2668,51 @@
             this.update_starred_count();
         },
         
+        open_feed_story_share: function(story_id, feed_id) {
+            var $feed_story = this.find_story_in_feed_view(story_id);
+            var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
+            var $share = $('.NB-sideoption-share-wrapper', $feed_story);
+            var $story_content = $('.NB-feed-story-content', $feed_story);
+            
+            if ($sideoption.hasClass('NB-active')) {
+                $share.animate({
+                    'height': 0
+                }, {
+                    'duration': 300,
+                    'easing': 'easeInOutQuint',
+                    'queue': false
+                });
+                $sideoption.removeClass('NB-active');
+                return;
+            }
+            
+            $sideoption.addClass('NB-active');
+            var $share_clone = $share.clone();
+            var full_height = $share_clone.css({
+                'height': 'auto',
+                'position': 'absolute',
+                'visibility': 'hidden'
+            }).appendTo($share.parent()).height();
+            $share_clone.remove();
+            $share.animate({
+                'height': full_height
+            }, {
+                'duration': 350,
+                'easing': 'easeInOutQuint',
+                'queue': false
+            });
+            
+            if ($('.NB-feed-story-sideoptions-container', $feed_story).height() + full_height > $story_content.height()) {
+                $story_content.animate({
+                    'height': $('.NB-feed-story-sideoptions-container', $feed_story).height() + full_height
+                }, {
+                    'duration': 350,
+                    'easing': 'easeInOutQuint',
+                    'queue': false
+                });
+            }
+        },
+        
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.instapaper.com/edit';
@@ -3528,6 +3573,14 @@
                         $.make('div', { className: 'NB-sideoption NB-feed-story-share' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
                             $.make('div', { className: 'NB-sideoption-title'}, 'Share this story')
+                        ]),
+                        $.make('div', { className: 'NB-sideoption-share-wrapper' }, [
+                            $.make('div', { className: 'NB-sideoption-share' }, [
+                                $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
+                                $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
+                                $.make('textarea', { className: 'NB-sideoption-share-comments' }),
+                                $.make('div', { className: 'NB-sideoption-share-save NB-modal-submit-green NB-modal-submit-button' }, 'Share')
+                            ])
                         ])
                     ])
                 ]).data('story', story.id).data('story_id', story.id).data('feed_id', story.story_feed_id);
@@ -5990,7 +6043,7 @@
                 var $story = $t.closest('.NB-feed-story');
                 var feed_id = $story.data('feed_id');
                 var story_id = $story.data('story_id');
-                self.open_story_trainer(story_id, feed_id);
+                self.open_feed_story_share(story_id, feed_id);
             });
             
             

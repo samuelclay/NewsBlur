@@ -1927,7 +1927,7 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-content {
-    margin: 0 140px 32px 28px;
+    margin: 0 200px 32px 28px;
     padding: 12px 0px;
     max-width: 700px;
 }
@@ -1937,6 +1937,7 @@ background: transparent;
     right: 12px;
     bottom: 32px;
     text-align: center;
+    width: 172px;
 }
 
 #story_pane .NB-feed-story-sideoptions-container {
@@ -1977,16 +1978,63 @@ background: transparent;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 #story_pane .NB-sideoption:hover {
     cursor: pointer;
 }
 #story_pane .NB-sideoption:hover .NB-sideoption-icon,
-#story_pane .NB-sideoption:hover .NB-sideoption-title {
+#story_pane .NB-sideoption:hover .NB-sideoption-title,
+#story_pane .NB-sideoption.NB-active .NB-sideoption-icon,
+#story_pane .NB-sideoption.NB-active .NB-sideoption-title {
     background-color: #2B478C;
     color: #D7DDF7;
     opacity: 1;
+    text-shadow: 0 1px 0 #101010;
 }
+#story_pane .NB-sideoption-share-wrapper {
+    background-color: #EBF6DA;
+    height: 0;
+    overflow: hidden;
+}
+#story_pane .NB-sideoption-share {
+    padding: 4px 12px 6px;
+}
+#story_pane .NB-sideoption-share .NB-sideoption-share-title {
+    text-transform: uppercase;
+    font-size: 10px;
+    text-align: left;
+    text-shadow: 0 1px 0 #F6F6F6;
+}
+#story_pane .NB-sideoption-share .NB-sideoption-share-optional {
+    text-transform: uppercase;
+    float: right;
+    color: #808080;
+    font-size: 10px;
+    text-shadow: 0 1px 0 #F6F6F6;
+}
+#story_pane .NB-sideoption-share .NB-sideoption-share-comments {
+    width: 100%;
+}
+#story_pane .NB-sideoption-share .NB-sideoption-share-save {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  padding: 2px 6px;
+  margin: 2px auto;
+  width: 90%;
+  background-color: #639510;
+  cursor: pointer;
+  -moz-box-shadow:2px 2px 0 #95AB76;
+  -webkit-box-shadow:2px 2px 0 #95AB76;
+  box-shadow:2px 2px 0 #95AB76;
+  text-shadow: 0 1px 0 #101010;
+}
+
 #story_pane .NB-feed-story-endbar {
     height: 8px;
     border-top: 1px solid #404040;
