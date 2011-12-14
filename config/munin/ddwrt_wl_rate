@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+from munin.ddwrt import DDWrtPlugin
+
+class DDWrtWirelessRate(DDWrtPlugin):
+    title = "Wireless rate"
+    args = "--base 1000 -l 0"
+    vlabel = "Mbps"
+    info = "rate"
+    fields = (
+        ('rate', dict(
+            label = "rate",
+            info = "rate",
+            type = "GAUGE",
+        )),
+    )
+
+    def execute(self):
+        info = self.get_info()
+        return dict(rate=info['wl_rate'].split(' ')[0])
+
+if __name__ == "__main__":
+    DDWrtWirelessRate().run()

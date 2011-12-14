@@ -501,7 +501,7 @@
         },
         
         find_story_in_story_titles: function(story_id) {
-            var story = this.model.get_story(story_id);
+            var story = story_id && this.model.get_story(story_id) || this.active_story;
             var $stories = $('.story', this.$s.$story_titles);
             var $story_title;
             
@@ -822,6 +822,8 @@
         },
         
         scroll_story_titles_to_show_selected_story_title: function($story) {
+            var $story = $story || this.find_story_in_story_titles();
+            if (!$story) return;
             var $story_titles = this.$s.$story_titles;
             var story_title_visisble = $story_titles.isScrollVisible($story);
             if (!story_title_visisble) {
@@ -1094,8 +1096,8 @@
                 return -1;
               } else if (!feedA && feedB) {
                 return 1;
-              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b)) {
-                // console.log(['a b 1', a, b]);
+              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b) && a && b) {
+                // console.log(['a b 1', a, b, feedA, feedB]);
                 var folderA = _.keys(a)[0];
                 var folderB = _.keys(b)[0];
                 return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
@@ -3181,6 +3183,14 @@
                 $feedbar.animate({'backgroundColor': '#5C89C9'}, {'duration': 750})
                         .animate({'backgroundColor': '#E1EBFF'}, 750);
             }, 1500);
+            
+            $story_titles.scrollTo($feedbar, { 
+                duration: 0,
+                axis: 'y', 
+                easing: 'easeInOutQuint', 
+                offset: 0, 
+                queue: false
+            });
         },
         
         show_feed_title_in_stories: function(feed_id) {

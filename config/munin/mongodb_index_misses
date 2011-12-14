@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.mongodb import MuninMongoDBPlugin
+
+class MongoDBIndexMissesPlugin(MuninMongoDBPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "misses"
+    title = "MongoDB index misses"
+    info = "Number of index cache misses"
+    fields = (
+        ('misses', dict(
+            label = "misses",
+            info = "Index cache misses",
+            type = "DERIVE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.connection.admin.command('serverStatus')
+        try:
+            value = status['indexCounters']['btree']['misses']
+        except KeyError:
+            value = "U"
+        return dict(misses=value)
+
+if __name__ == "__main__":
+    MongoDBIndexMissesPlugin().run()

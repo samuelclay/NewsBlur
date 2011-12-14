@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.pgbouncer import MuninPgBouncerPlugin
+
+class MuninPgBouncerStatsBytesServerPlugin(MuninPgBouncerPlugin):
+    command = "SHOW STATS"
+    vlabel = "Bytes"
+    info = "Shows average bytes per second"
+
+    fields = (
+        ('avg_recv', dict(
+            label = "received",
+            info = "Average bytes received per second",
+            type = "GAUGE",
+            min = "0",
+        )),
+        ('avg_sent', dict(
+            label = "sent",
+            info = "Average bytes sent per second",
+            type = "GAUGE",
+            min = "0",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "PgBouncer bytes per second on %s" % self.dbwatched
+
+if __name__ == "__main__":
+    MuninPgBouncerStatsBytesServerPlugin().run()
+

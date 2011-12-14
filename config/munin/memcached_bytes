@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+
+from munin.memcached import MuninMemcachedPlugin
+
+class MuninMemcachedBytesPlugin(MuninMemcachedPlugin):
+    title = "Memcached bytes read/written stats"
+    args = "--base 1024"
+    vlabel = "bytes read (-) / written (+) per ${graph_period}"
+    info = "bytes read/writter stats"
+    order = ("bytes_read", "bytes_written")
+    fields = (
+        ('bytes_read', dict(
+            label = "bytes read",
+            type = "COUNTER",
+            graph = "no",
+        )),
+        ('bytes_written', dict(
+            label = "Bps",
+            info = "Bytes read/written",
+            type = "COUNTER",
+            negative = "bytes_read",
+        )),
+    )
+
+if __name__ == "__main__":
+    MuninMemcachedBytesPlugin().run()

@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+import os
+import re
+import urllib
+from munin.nginx import MuninNginxPlugin
+
+class MuninNginxRequestsPlugin(MuninNginxPlugin):
+    title = "Nginx Requests"
+    args = "--base 1000"
+    vlabel = "Requests per second"
+    fields = (
+        ('request', dict(
+            label = "Requests",
+            type = "DERIVE",
+            min = "0",
+            draw = "LINE2",
+        )),
+    )
+
+    def execute(self):
+        return dict(
+            request = self.get_status()['requests'],
+        )
+
+if __name__ == "__main__":
+    MuninNginxRequestsPlugin().run()

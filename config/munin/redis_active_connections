@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+from munin.redis import MuninRedisPlugin
+
+class MuninRedisActiveConnectionsPlugin(MuninRedisPlugin):
+    title = "Redis active connections"
+    args = "--base 1000"
+    vlabel = "Connections"
+    info = "active connections"
+    fields = (
+        ('connected_clients', dict(
+            label = "connections",
+            info = "connections",
+            type = "GAUGE",
+        )),
+    )
+
+if __name__ == "__main__":
+    MuninRedisActiveConnectionsPlugin().run()

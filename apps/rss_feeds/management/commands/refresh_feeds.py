@@ -64,12 +64,6 @@ class Command(BaseCommand):
         
         options['compute_scores'] = True
         
-            
-        import pymongo
-        db = pymongo.Connection(settings.MONGODB_SLAVE['host'], slave_okay=True, replicaset='nbset').newsblur
-        
-        options['slave_db'] = db
-        
         disp = feed_fetcher.Dispatcher(options, num_workers)        
         
         feeds_queue = []

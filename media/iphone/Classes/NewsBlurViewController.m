@@ -249,6 +249,17 @@
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
     
+    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];
+    NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    if (![currentiPhoneVersion isEqualToString:serveriPhoneVersion]) {
+        NSLog(@"Version: %@ - %@", serveriPhoneVersion, currentiPhoneVersion);
+        NSString *title = [NSString stringWithFormat:@"You should download the new version of NewsBlur.\n\nNew version: v%@.\nYou have: v%@.", serveriPhoneVersion, currentiPhoneVersion];
+        UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Upgrade!", nil];
+        [upgradeConfirm show];
+        [upgradeConfirm setTag:2];
+        [upgradeConfirm release];
+    }
+    
     [sortedFolders release];
     [results release];
 }
@@ -256,38 +267,48 @@
 - (IBAction)doLogoutButton {
     UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
     [logoutConfirm show];
+    [logoutConfirm setTag:1];
     [logoutConfirm release];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        return;
-    } else {
-        NSLog(@"Logging out...");
-        NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
-                          NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlS];
-        
-        __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [self finishedWithError:request];
-        }];
-        [request setCompletionBlock:^(void) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [appDelegate showLogin];
-        }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
-        
-        [ASIHTTPRequest setSessionCookies:nil];
+    if (alertView.tag == 1) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            NSLog(@"Logging out...");
+            NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
+                              NEWSBLUR_URL];
+            NSURL *url = [NSURL URLWithString:urlS];
+            
+            __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setDelegate:self];
+            [request setResponseEncoding:NSUTF8StringEncoding];
+            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+            [request setFailedBlock:^(void) {
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [self finishedWithError:request];
+            }];
+            [request setCompletionBlock:^(void) {
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [appDelegate showLogin];
+            }];
+            [request setTimeOutSeconds:30];
+            [request startAsynchronous];
+            
+            [ASIHTTPRequest setSessionCookies:nil];
 
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        HUD.labelText = @"Logging out...";
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            HUD.labelText = @"Logging out...";
+        }
+    } else if (alertView.tag == 2) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            NSURL *url = [NSURL URLWithString:@"http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=463981119&mt=8"];
+            [[UIApplication sharedApplication] openURL:url];
+        }
     }
 }
 
