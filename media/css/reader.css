@@ -1989,7 +1989,9 @@ background: transparent;
 #story_pane .NB-sideoption:hover .NB-sideoption-icon,
 #story_pane .NB-sideoption:hover .NB-sideoption-title,
 #story_pane .NB-sideoption.NB-active .NB-sideoption-icon,
-#story_pane .NB-sideoption.NB-active .NB-sideoption-title {
+#story_pane .NB-sideoption.NB-active .NB-sideoption-title,
+#story_pane .NB-sideoption.NB-shared .NB-sideoption-icon,
+#story_pane .NB-sideoption.NB-shared .NB-sideoption-title {
     background-color: #2B478C;
     color: #D7DDF7;
     opacity: 1;
@@ -2033,6 +2035,9 @@ background: transparent;
   -webkit-box-shadow:2px 2px 0 #95AB76;
   box-shadow:2px 2px 0 #95AB76;
   text-shadow: 0 1px 0 #101010;
+}
+#story_pane .NB-sideoption-share .NB-sideoption-share-save.NB-saving {
+    background-color: #b5b4bB;
 }
 
 #story_pane .NB-feed-story-endbar {

@@ -2752,6 +2752,21 @@
             });
         },
         
+        save_shared_story: function($story) {
+            var story_id = $story.data('story_id');
+            var feed_id = $story.data('feed_id');
+            var comments = $('.NB-sideoption-share-comments', $story).val();
+            var $share_button = $('.NB-sideoption-share-save', $story);
+            var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $story);
+            
+            $share_button.addClass('NB-saving').text('Sharing...');
+            this.model.save_shared_story(story_id, feed_id, comments, _.bind(function() {
+                this.open_feed_story_share(story_id, feed_id);
+                $share_button.removeClass('NB-saving').text('Share');
+                $share_sideoption.text('Shared').closest('.NB-sideoption').addClass('NB-shared');
+            }, this));
+        },
+        
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.instapaper.com/edit';
@@ -3605,10 +3620,16 @@
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
                             $.make('div', { className: 'NB-sideoption-title'}, 'Train this story')
                         ]),
-                        $.make('div', { className: 'NB-sideoption NB-feed-story-save' }, [
-                            $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
-                            $.make('div', { className: 'NB-sideoption-title'}, 'Save this story')
-                        ]),
+                        (story.starred_date &&
+                            $.make('div', { className: 'NB-sideoption NB-feed-story-save NB-active' }, [
+                                $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
+                                $.make('div', { className: 'NB-sideoption-title'}, 'Saved')
+                            ])),
+                        (!story.starred_date &&
+                            $.make('div', { className: 'NB-sideoption NB-feed-story-save' }, [
+                                $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
+                                $.make('div', { className: 'NB-sideoption-title'}, 'Save this story')
+                            ])),
                         $.make('div', { className: 'NB-sideoption NB-feed-story-share' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
                             $.make('div', { className: 'NB-sideoption-title'}, 'Share this story')
@@ -3618,7 +3639,7 @@
                                 $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
                                 $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
                                 $.make('textarea', { className: 'NB-sideoption-share-comments' }),
-                                $.make('div', { className: 'NB-sideoption-share-save NB-modal-submit-green NB-modal-submit-button' }, 'Share')
+                                $.make('div', { className: 'NB-sideoption-share-save NB-modal-submit-button' }, 'Share')
                             ])
                         ])
                     ])
@@ -6025,6 +6046,11 @@
                   self.mark_story_as_starred(story_id, $story);
                 }
                 story_prevent_bubbling = true;
+            });
+            $.targetIs(e, { tagSelector: '.NB-sideoption-share-save' }, function($t, $p){
+                e.preventDefault();
+                var $story = $t.closest('.NB-feed-story');
+                self.save_shared_story($story);
             });
             $.targetIs(e, { tagSelector: '.NB-feed-story-hide-changes' }, function($t, $p){
                 e.preventDefault();
