@@ -221,11 +221,12 @@ class Feed(models.Model):
 
         publisher.connection.close()
 
-    def update_all_statistics(self):
+    def update_all_statistics(self, full=True):
         self.count_subscribers()
         self.count_stories()
-        self.save_popular_authors()
-        self.save_popular_tags()
+        if full:
+            self.save_popular_authors()
+            self.save_popular_tags()
     
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
