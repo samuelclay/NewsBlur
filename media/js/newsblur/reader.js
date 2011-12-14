@@ -2673,6 +2673,7 @@
             var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
             var $share = $('.NB-sideoption-share-wrapper', $feed_story);
             var $story_content = $('.NB-feed-story-content', $feed_story);
+            var $comments = $('.NB-sideoption-share-comments', $share);
             
             if ($sideoption.hasClass('NB-active')) {
                 $share.animate({
@@ -2683,6 +2684,17 @@
                     'queue': false
                 });
                 $sideoption.removeClass('NB-active');
+                if ($story_content.data('original_height')) {
+                    $story_content.animate({
+                        'height': $story_content.data('original_height')
+                    }, {
+                        'duration': 300,
+                        'easing': 'easeInOutQuint',
+                        'queue': false,
+                        'complete': _.bind(this.fetch_story_locations_in_feed_view, this)
+                    });
+                    $story_content.removeData('original_height');
+                }
                 return;
             }
             
@@ -2699,18 +2711,45 @@
             }, {
                 'duration': 350,
                 'easing': 'easeInOutQuint',
-                'queue': false
+                'queue': false,
+                'complete': function() {
+                    $comments.focus();
+                }
             });
             
-            if ($('.NB-feed-story-sideoptions-container', $feed_story).height() + full_height > $story_content.height()) {
+            var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight();
+            if (sideoptions_height + full_height > $story_content.innerHeight()) {
+                // console.log(["heights", $story_content.innerHeight(), full_height, sideoptions_height]);
+                // this.$s.$feed_stories.scrollTo(this.$s.$feed_stories.scrollTop() + sideoptions_height, {
+                //     'duration': 350,
+                //     'queue': false,
+                //     'easing': 'easeInOutQuint'
+                // });
+                var original_height = $story_content.height();
                 $story_content.animate({
-                    'height': $('.NB-feed-story-sideoptions-container', $feed_story).height() + full_height
+                    'height': full_height + sideoptions_height
                 }, {
                     'duration': 350,
                     'easing': 'easeInOutQuint',
-                    'queue': false
-                });
+                    'queue': false,
+                    'complete': _.bind(this.fetch_story_locations_in_feed_view, this)
+                }).data('original_height', original_height);
             }
+            
+            this.attach_handlers_to_share_comments($share);
+        },
+        
+        attach_handlers_to_share_comments: function($share) {
+            var $comments = $('.NB-sideoption-share-comments', $share);
+            var $share_button = $('.NB-sideoption-share-save', $share);
+            
+            $comments.bind('keyup', function() {
+                if ($comments.val().length) {
+                    $share_button.text('Share with comment');
+                } else {
+                    $share_button.text('Share');
+                }
+            });
         },
         
         send_story_to_instapaper: function(story_id) {
