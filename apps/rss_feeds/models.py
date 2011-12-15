@@ -221,11 +221,12 @@ class Feed(models.Model):
 
         publisher.connection.close()
 
-    def update_all_statistics(self):
+    def update_all_statistics(self, full=True):
         self.count_subscribers()
         self.count_stories()
-        self.save_popular_authors()
-        self.save_popular_tags()
+        if full:
+            self.save_popular_authors()
+            self.save_popular_tags()
     
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
@@ -772,7 +773,11 @@ class Feed(models.Model):
         if stories.count() > trim_cutoff:
             if verbose:
                 print 'Found %s stories in %s. Trimming to %s...' % (stories.count(), self, trim_cutoff)
-            story_trim_date = stories[trim_cutoff].story_date
+            try:
+                story_trim_date = stories[trim_cutoff].story_date
+            except IndexError, e:
+                logging.debug(' ***> [%-30s] Error trimming feed: %s' % (self, e))
+                return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories.delete()
             # print "Deleted stories, %s left." % MStory.objects(story_feed_id=self.pk).count()
