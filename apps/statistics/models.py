@@ -1,6 +1,7 @@
 import datetime
 import mongoengine as mongo
 import urllib2
+import random
 from django.db.models import Avg, Count
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, FeedLoadtime
 from apps.profile.models import Profile
@@ -32,6 +33,18 @@ class MStatistics(mongo.Document):
             elif key in ('latest_avg_time_taken', 'max_avg_time_taken'):
                 values[key] = float(value)
                 
+        return values
+    
+    @classmethod
+    def user(cls, user):
+        share_reads = [random.randint(0, 30) for x in xrange(30)]
+        values = {
+            'followers': random.randint(0, 1200),
+            'following': random.randint(0, 300),
+            'shared_stories': random.randint(0, 5000),
+            'share_reads': share_reads,
+            'max_share_reads': max(share_reads),
+        }
         return values
         
     @classmethod

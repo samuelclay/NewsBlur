@@ -1779,6 +1779,7 @@
             this.make_story_feed_entries(stories, first_load);
             this.show_feed_hidden_story_title_indicator(true);
             this.show_story_titles_above_intelligence_level({'animate': false});
+            this.scroll_story_titles_to_show_selected_story_title();
             this.fill_out_story_titles();
             $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
             if (this.counts['find_next_unread_on_page_of_feed_stories_load']) {
@@ -1961,6 +1962,7 @@
                 // $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
                 this.flags['story_titles_loaded'] = true;
                 this.prefetch_story_locations_in_feed_view();
+                this.scroll_story_titles_to_show_selected_story_title();
                 this.fill_out_story_titles();
             }
         },
@@ -2038,6 +2040,7 @@
                 } else if (this.counts['find_last_unread_on_page_of_feed_stories_load']) {
                     this.show_last_unread_story(true);
                 }
+                this.scroll_story_titles_to_show_selected_story_title();
                 this.fill_out_story_titles();
                 this.prefetch_story_locations_in_feed_view();
                 this.hide_stories_progress_bar();
@@ -2624,10 +2627,18 @@
             }
         },
         
-        mark_story_as_starred: function(story_id, $story) {
+        mark_story_as_starred: function(story_id) {
             var story = this.model.get_story(story_id);
-            var $star = $('.NB-storytitles-star', $story);
-            $story.addClass('NB-story-starred');
+            var $story_title = this.find_story_in_story_titles(story_id);
+            var $feed_story = this.find_story_in_feed_view(story_id);
+            var $star = $('.NB-storytitles-star', $story_title);
+            var $sideoption_title = $('.NB-feed-story-save .NB-sideoption-title', $feed_story);
+            
+            this.scroll_story_titles_to_show_selected_story_title($story_title);
+            
+            $feed_story.addClass('NB-story-starred');
+            $story_title.addClass('NB-story-starred');
+            $sideoption_title.text('Saved');
             $star.attr({'title': 'Saved!'});
             $star.tipsy({
                 gravity: 'sw',
@@ -2641,16 +2652,31 @@
                 $star.tipsy('hide');
                 $star.tipsy('disable');
             }, 850);
+            
             this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {});
             this.update_starred_count();
         },
         
-        mark_story_as_unstarred: function(story_id, $story) {
-            var $star = $('.NB-storytitles-star', $story);
-            $story.one('mouseout', function() {
-                $story.removeClass('NB-unstarred');
+        mark_story_as_unstarred: function(story_id) {
+            var $story_title = this.find_story_in_story_titles(story_id);
+            var $feed_story = this.find_story_in_feed_view(story_id);
+            var $star = $('.NB-storytitles-star', $story_title);
+            var $sideoption_title = $('.NB-feed-story-save .NB-sideoption-title', $feed_story);
+            
+            this.scroll_story_titles_to_show_selected_story_title($story_title);
+            
+            $story_title.one('mouseout', function() {
+                $story_title.removeClass('NB-unstarred');
             });
             $star.attr({'title': 'Removed'});
+            $sideoption_title.text('Removed');
+            $sideoption_title.one('mouseleave', function() {
+                _.delay(function() {
+                    if (!$feed_story.hasClass('NB-story-starred')) {
+                        $sideoption_title.text('Share this story');
+                    }
+                }, 200);
+            });
             $star.tipsy({
                 gravity: 'sw',
                 fade: true,
@@ -2663,12 +2689,15 @@
                 $star.tipsy('hide');
                 $star.tipsy('disable');
             }, 850);
-            $story.removeClass('NB-story-starred');
+            
+            $story_title.removeClass('NB-story-starred');
+            $feed_story.removeClass('NB-story-starred');
+            
             this.model.mark_story_as_unstarred(story_id, function() {});
             this.update_starred_count();
         },
         
-        open_feed_story_share: function(story_id, feed_id) {
+        toggle_feed_story_share_dialog: function(story_id, feed_id) {
             var $feed_story = this.find_story_in_feed_view(story_id);
             var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
             var $share = $('.NB-sideoption-share-wrapper', $feed_story);
@@ -2752,18 +2781,20 @@
             });
         },
         
-        save_shared_story: function($story) {
-            var story_id = $story.data('story_id');
-            var feed_id = $story.data('feed_id');
-            var comments = $('.NB-sideoption-share-comments', $story).val();
+        mark_story_as_shared: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var $story_title = this.find_story_in_story_titles(story_id);
+            var $feed_story = this.find_story_in_feed_view(story_id);
             var $share_button = $('.NB-sideoption-share-save', $story);
             var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $story);
+            var comments = $('.NB-sideoption-share-comments', $story).val();
             
             $share_button.addClass('NB-saving').text('Sharing...');
-            this.model.save_shared_story(story_id, feed_id, comments, _.bind(function() {
-                this.open_feed_story_share(story_id, feed_id);
+            this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function() {
+                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id);
                 $share_button.removeClass('NB-saving').text('Share');
-                $share_sideoption.text('Shared').closest('.NB-sideoption').addClass('NB-shared');
+                $share_sideoption.text('Shared').closest('.NB-sideoption');
+                $feed_story.addClass('NB-story-shared');
             }, this));
         },
         
@@ -3557,6 +3588,7 @@
                 
                 var story = stories[s];
                 var story_has_modifications = false;
+                var starred = story.starred ? ' NB-story-starred ' : '';
                 if (options.river_stories) feed = this.model.get_feed(story.story_feed_id);
                 var read = story.read_status
                     ? ' read '
@@ -3577,7 +3609,7 @@
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
                     river_same_feed = 'NB-feed-story-river-same-feed';
                 }
-                var $story = $.make('li', { className: 'NB-feed-story ' + read + river_stories + ' NB-story-' + score_color }, [
+                var $story = $.make('li', { className: 'NB-feed-story ' + read + starred + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-header-feed' }, [
                             (options.river_stories && feed && // !river_same_feed
@@ -3620,16 +3652,10 @@
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
                             $.make('div', { className: 'NB-sideoption-title'}, 'Train this story')
                         ]),
-                        (story.starred_date &&
-                            $.make('div', { className: 'NB-sideoption NB-feed-story-save NB-active' }, [
-                                $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
-                                $.make('div', { className: 'NB-sideoption-title'}, 'Saved')
-                            ])),
-                        (!story.starred_date &&
-                            $.make('div', { className: 'NB-sideoption NB-feed-story-save' }, [
-                                $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
-                                $.make('div', { className: 'NB-sideoption-title'}, 'Save this story')
-                            ])),
+                        $.make('div', { className: 'NB-sideoption NB-feed-story-save' }, [
+                            $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
+                            $.make('div', { className: 'NB-sideoption-title'}, story.starred_date ? 'Saved' : 'Save this story')
+                        ]),
                         $.make('div', { className: 'NB-sideoption NB-feed-story-share' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
                             $.make('div', { className: 'NB-sideoption-title'}, 'Share this story')
@@ -6041,16 +6067,16 @@
                 var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
                 var $story = self.find_story_in_story_titles(story_id);
                 if ($story.hasClass('NB-story-starred')) {
-                  self.mark_story_as_unstarred(story_id, $story);
+                  self.mark_story_as_unstarred(story_id);
                 } else {
-                  self.mark_story_as_starred(story_id, $story);
+                  self.mark_story_as_starred(story_id);
                 }
                 story_prevent_bubbling = true;
             });
             $.targetIs(e, { tagSelector: '.NB-sideoption-share-save' }, function($t, $p){
                 e.preventDefault();
-                var $story = $t.closest('.NB-feed-story');
-                self.save_shared_story($story);
+                var story_id = $t.closest('.NB-feed-story').data('story_id');
+                self.mark_story_as_shared(story_id);
             });
             $.targetIs(e, { tagSelector: '.NB-feed-story-hide-changes' }, function($t, $p){
                 e.preventDefault();
@@ -6093,13 +6119,12 @@
             
             $.targetIs(e, { tagSelector: '.NB-feed-story-save' }, function($t, $p){
                 e.preventDefault();
-                var $feed_story = $t.closest('.NB-feed-story');
-                var story_id = $feed_story.data('story_id');
+                var story_id = $t.closest('.NB-feed-story').data('story_id');
                 var $story = self.find_story_in_story_titles(story_id);
                 if ($story.hasClass('NB-story-starred')) {
-                  self.mark_story_as_unstarred(story_id, $story);
+                  self.mark_story_as_unstarred(story_id);
                 } else {
-                  self.mark_story_as_starred(story_id, $story);
+                  self.mark_story_as_starred(story_id);
                 }
             });
             
@@ -6108,7 +6133,7 @@
                 var $story = $t.closest('.NB-feed-story');
                 var feed_id = $story.data('feed_id');
                 var story_id = $story.data('story_id');
-                self.open_feed_story_share(story_id, feed_id);
+                self.toggle_feed_story_share_dialog(story_id, feed_id);
             });
             
             
@@ -6861,9 +6886,9 @@
                     var story_id = self.active_story.id;
                     var $story = self.find_story_in_story_titles(story_id);
                     if ($story.hasClass('NB-story-starred')) {
-                      self.mark_story_as_unstarred(story_id, $story);
+                      self.mark_story_as_unstarred(story_id);
                     } else {
-                      self.mark_story_as_starred(story_id, $story);
+                      self.mark_story_as_starred(story_id);
                     }
                 }
             });

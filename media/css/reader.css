@@ -1930,6 +1930,7 @@ background: transparent;
     margin: 0 200px 32px 28px;
     padding: 12px 0px;
     max-width: 700px;
+    min-height: 66px;
 }
 
 #story_pane .NB-feed-story-sideoptions-container {
@@ -1990,8 +1991,10 @@ background: transparent;
 #story_pane .NB-sideoption:hover .NB-sideoption-title,
 #story_pane .NB-sideoption.NB-active .NB-sideoption-icon,
 #story_pane .NB-sideoption.NB-active .NB-sideoption-title,
-#story_pane .NB-sideoption.NB-shared .NB-sideoption-icon,
-#story_pane .NB-sideoption.NB-shared .NB-sideoption-title {
+#story_pane .NB-story-starred .NB-sideoption.NB-feed-story-save .NB-sideoption-icon,
+#story_pane .NB-story-starred .NB-sideoption.NB-feed-story-save .NB-sideoption-title,
+#story_pane .NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-icon,
+#story_pane .NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-title {
     background-color: #2B478C;
     color: #D7DDF7;
     opacity: 1;
@@ -3722,6 +3725,18 @@ background: transparent;
     display: none;
 }
 
+.NB-account .NB-module.NB-module-account .NB-module-account-stats {
+    min-height: 0;
+}
+.NB-account .NB-module.NB-module-account .NB-module-stats-count {
+    margin: 0;
+}
+.NB-account .NB-module.NB-module-account .NB-module-stats-count-graph {
+    width: 33%;
+    margin: 0 0 0 72px;
+    clear: none;
+}
+
 /* ======================= */
 /* = How it Works Module = */
 /* ======================= */
@@ -3840,7 +3855,6 @@ background: transparent;
   text-transform: uppercase;
   font-size: 12px;
 }
-
 .NB-module-stats .NB-module-stats-count-number {
   clear: both;
   font-size: 18px;
@@ -3852,6 +3866,7 @@ background: transparent;
 .NB-module-stats .NB-module-stats-count-description {
   margin: 4px 0 0 0;
   color: #808080;
+  clear: both;
 }
 
 .NB-module-stats .NB-module-stats-count-graph {

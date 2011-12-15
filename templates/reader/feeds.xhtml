@@ -266,7 +266,7 @@ $(document).ready(function() {
       
     {% else %}
       
-      <div class="NB-module">
+      <div class="NB-module NB-module-account">
         <h5 class="NB-module-header">
           Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
           <div class="NB-module-header-right">
@@ -325,6 +325,32 @@ $(document).ready(function() {
                 <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
               </div>
           </div>
+        </div>
+        
+        <h3 class="NB-module-content-header">
+            Your statistics
+        </h3>
+
+        <div class="NB-module-item NB-module-stats NB-module-account-stats">
+            <div class="NB-module-stats-count">
+                <div class="NB-module-stats-count-number">{{ user_statistics.following|commify }}</div>
+                <div class="NB-module-stats-count-description">Following</div>
+            </div>
+            <div class="NB-module-stats-count">
+                <div class="NB-module-stats-count-number">{{ user_statistics.followers|commify }}</div>
+                <div class="NB-module-stats-count-description">Follower{{ user_statistics.followers|pluralize }}</div>
+            </div>
+            <div class="NB-module-stats-count">
+                <div class="NB-module-stats-count-number">{{ user_statistics.shared_stories|commify }}</div>
+                <div class="NB-module-stats-count-description">Shared stor{{ user_statistics.shared_stories|pluralize:"y,ies" }}</div>
+            </div>
+            {# <div class="NB-module-stats-count NB-module-stats-count-graph"> #}
+            {#     {% for i in user_statistics.share_reads %}<div class="NB-graph-value"> #}
+            {#         <div class="NB-graph-label">{{ i|commify }}</div> #}
+            {#         <div class="NB-graph-bar" style="height:{{ i|format_graph:user_statistics.max_share_reads }}px"></div> #}
+            {#     </div>{% endfor %} #}
+            {#     <div class="NB-module-stats-count-description">Your shared stories<br />read by others<br />this month</div> #}
+            {# </div> #}
         </div>
       </div>
       

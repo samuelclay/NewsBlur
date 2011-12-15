@@ -193,8 +193,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback);
     },
     
-    save_shared_story: function(story_id, feed_id, comments, callback, error_callback) {
-        this.make_request('/social/save_shared_story', {
+    mark_story_as_shared: function(story_id, feed_id, comments, callback, error_callback) {
+        this.make_request('/social/mark_story_as_shared', {
             story_id: story_id,
             feed_id: feed_id,
             comments: comments

@@ -58,17 +58,23 @@ def index(request):
         login_form  = LoginForm(prefix='login')
         signup_form = SignupForm(prefix='signup')
     
-    user         = get_user(request)
-    authed       = request.user.is_authenticated()
-    features     = Feature.objects.all()[:3]
-    feature_form = FeatureForm() if request.user.is_staff else None
-    feed_count   = UserSubscription.objects.filter(user=request.user).count() if authed else 0
-    active_count = UserSubscription.objects.filter(user=request.user, active=True).count() if authed else 0
-    train_count  = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False, feed__stories_last_month__gte=1).count() if authed else 0
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True, approved_date__lte=datetime.datetime.now()).select_related('feed')[:2]
-    unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False, declined_date__isnull=True).select_related('feed')[:2]
-    statistics   = MStatistics.all()
-    feedbacks    = MFeedback.all()
+    user              = get_user(request)
+    authed            = request.user.is_authenticated()
+    features          = Feature.objects.all()[:3]
+    feature_form      = FeatureForm() if request.user.is_staff else None
+    feed_count        = UserSubscription.objects.filter(user=request.user).count() if authed else 0
+    active_count      = UserSubscription.objects.filter(user=request.user, active=True).count() if authed else 0
+    train_count       = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False,
+                                                        feed__stories_last_month__gte=1).count() if authed else 0
+    recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
+                                                       approved_date__lte=datetime.datetime.now())\
+                                                       .select_related('feed')[:2]
+    unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
+                                                       declined_date__isnull=True).select_related('feed')[:2]
+    statistics        = MStatistics.all()
+    user_statistics   = MStatistics.user(request.user)
+    feedbacks         = MFeedback.all()
+
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
     if start_import_from_google_reader:
         del request.session['import_from_google_reader']
@@ -86,6 +92,7 @@ def index(request):
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
+        'user_statistics'   : user_statistics,
         'feedbacks'         : feedbacks,
         'start_import_from_google_reader': start_import_from_google_reader,
     }, context_instance=RequestContext(request))
