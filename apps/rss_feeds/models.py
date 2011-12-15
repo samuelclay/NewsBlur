@@ -221,11 +221,12 @@ class Feed(models.Model):
 
         publisher.connection.close()
 
-    def update_all_statistics(self):
+    def update_all_statistics(self, full=True):
         self.count_subscribers()
         self.count_stories()
-        self.save_popular_authors()
-        self.save_popular_tags()
+        if full:
+            self.save_popular_authors()
+            self.save_popular_tags()
     
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
@@ -770,15 +771,19 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
-            if verbose:
-                print 'Found %s stories in %s. Trimming to %s...' % (stories.count(), self, trim_cutoff)
-            story_trim_date = stories[trim_cutoff].story_date
+            logging.debug(' ---> [%-30s] Found %s stories. Trimming to %s...' % (self, stories.count(), trim_cutoff))
+            try:
+                story_trim_date = stories[trim_cutoff].story_date
+            except IndexError, e:
+                logging.debug(' ***> [%-30s] Error trimming feed: %s' % (self, e))
+                return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
+            extra_stories_count = extra_stories.count()
             extra_stories.delete()
-            # print "Deleted stories, %s left." % MStory.objects(story_feed_id=self.pk).count()
-            userstories = MUserStory.objects(feed_id=self.pk, read_date__lte=story_trim_date)
+            print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
+            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=story_trim_date)
             if userstories.count():
-                # print "Found %s user stories. Deleting..." % userstories.count()
+                print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False, slave=False):
@@ -869,6 +874,7 @@ class Feed(models.Model):
         story_has_changed = False
         story_pub_date = story.get('published')
         story_published_now = story.get('published_now', False)
+        story_link = self.get_permalink(story)
         start_date = story_pub_date - datetime.timedelta(hours=8)
         end_date = story_pub_date + datetime.timedelta(hours=8)
         
@@ -878,23 +884,22 @@ class Feed(models.Model):
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
                 (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
-                story_link = self.get_permalink(story)
-                if isinstance(existing_story.id, unicode):
-                    existing_story.story_guid = existing_story.id
-                if story.get('guid') and story.get('guid') == existing_story.story_guid:
-                    story_in_system = existing_story
-                elif story_link == existing_story.story_permalink:
-                    story_in_system = existing_story
                 
-                # Title distance + content distance, checking if story changed
-                story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story.story_title)
                 if 'story_content_z' in existing_story:
                     existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
                 elif 'story_content' in existing_story:
                     existing_story_content = existing_story.story_content
                 else:
                     existing_story_content = u''
+                    
+                if isinstance(existing_story.id, unicode):
+                    existing_story.story_guid = existing_story.id
+                if story.get('guid') and story.get('guid') == existing_story.story_guid:
+                    story_in_system = existing_story
+                
+                # Title distance + content distance, checking if story changed
+                story_title_difference = levenshtein_distance(story.get('title'),
+                                                              existing_story.story_title)
                 
                 seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
                 
@@ -918,7 +923,7 @@ class Feed(models.Model):
                     story_in_system = existing_story
                     story_has_changed = True
                     break
-                                        
+                    
                 if story_in_system:
                     if story_content != existing_story_content:
                         story_has_changed = True
