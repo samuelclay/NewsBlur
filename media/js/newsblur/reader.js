@@ -1510,7 +1510,7 @@
                     var $this = $(this);
                     // _.defer(function() { $('.NB-hover', $folder).not($this).removeClass('NB-hover'); });
                     // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                    if ($this.offset().top > $(window).height() - 270) {
+                    if ($this.offset().top > $(window).height() - 314) {
                         $this.addClass('NB-hover-inverse');
                     } 
                 }
