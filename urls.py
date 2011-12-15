@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import include, url, patterns
 from django.conf import settings
 from apps.reader import views as reader_views
 from apps.static import views as static_views
@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     (r'^api/',              include('apps.api.urls')),
     (r'^recommendations/',  include('apps.recommendations.urls')),
     (r'^statistics/',       include('apps.statistics.urls')),
+    (r'^social/',           include('apps.social.urls')),
     (r'^mobile/',           include('apps.mobile.urls')),
     (r'^m/',                include('apps.mobile.urls')),
     url(r'^about/?',        static_views.about, name='about'),

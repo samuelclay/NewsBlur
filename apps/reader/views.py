@@ -31,6 +31,7 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
+from apps.social.models import MSharedStory
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -391,7 +392,13 @@ def load_single_feed(request, feed_id):
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed_id, 
                                                 story_guid__in=story_ids).only('story_guid', 'starred_date')
+        shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                              story_feed_id=feed_id, 
+                                              story_guid__in=story_ids)\
+                                     .only('story_guid', 'shared_date', 'comments')
         starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
+        shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
+                               for story in shared_stories])
         userstories = set(us.story_id for us in userstories_db)
             
     checkpoint2 = time.time()
@@ -412,6 +419,11 @@ def load_single_feed(request, feed_id):
                 story['starred'] = True
                 starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
                 story['starred_date'] = format_story_link_date__long(starred_date, now)
+            if story['id'] in shared_stories:
+                story['shared'] = True
+                shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'], user.profile.timezone)
+                story['shared_date'] = format_story_link_date__long(shared_date, now)
+                story['shared_comments'] = shared_stories[story['id']]['comments']
         else:
             story['read_status'] = 1
         story['intelligence'] = {

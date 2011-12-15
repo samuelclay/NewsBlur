@@ -339,6 +339,7 @@ INSTALLED_APPS = (
     'apps.statistics',
     'apps.static',
     'apps.mobile',
+    'apps.social',
     'south',
     'utils',
     'vendor',

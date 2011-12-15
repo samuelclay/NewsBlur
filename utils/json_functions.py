@@ -123,7 +123,6 @@ def json_view(func):
                 '\n'.join(traceback.format_exception(*exc_info)),
                 request_repr,
                 )
-            # print message
             if not settings.DEBUG:
                 mail_admins(subject, message, fail_silently=True)
 
@@ -131,7 +130,8 @@ def json_view(func):
                             'text': unicode(e)}
                 code = 500
             else:
-                raise
+                print message
+                raise e
 
         if isinstance(response, HttpResponseForbidden):
             return response

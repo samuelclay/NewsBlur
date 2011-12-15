@@ -194,7 +194,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     mark_story_as_shared: function(story_id, feed_id, comments, callback, error_callback) {
-        this.make_request('/social/mark_story_as_shared', {
+        this.make_request('/social/share_story', {
             story_id: story_id,
             feed_id: feed_id,
             comments: comments

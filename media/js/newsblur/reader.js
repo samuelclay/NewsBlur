@@ -3589,6 +3589,7 @@
                 var story = stories[s];
                 var story_has_modifications = false;
                 var starred = story.starred ? ' NB-story-starred ' : '';
+                var shared = story.shared ? ' NB-story-shared ' : '';
                 if (options.river_stories) feed = this.model.get_feed(story.story_feed_id);
                 var read = story.read_status
                     ? ' read '
@@ -3609,7 +3610,7 @@
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
                     river_same_feed = 'NB-feed-story-river-same-feed';
                 }
-                var $story = $.make('li', { className: 'NB-feed-story ' + read + starred + river_stories + ' NB-story-' + score_color }, [
+                var $story = $.make('li', { className: 'NB-feed-story ' + read + starred + shared + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-header-feed' }, [
                             (options.river_stories && feed && // !river_same_feed
@@ -3658,13 +3659,13 @@
                         ]),
                         $.make('div', { className: 'NB-sideoption NB-feed-story-share' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
-                            $.make('div', { className: 'NB-sideoption-title'}, 'Share this story')
+                            $.make('div', { className: 'NB-sideoption-title'}, story.shared_date ? 'Shared' : 'Share this story')
                         ]),
                         $.make('div', { className: 'NB-sideoption-share-wrapper' }, [
                             $.make('div', { className: 'NB-sideoption-share' }, [
                                 $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
                                 $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
-                                $.make('textarea', { className: 'NB-sideoption-share-comments' }),
+                                $.make('textarea', { className: 'NB-sideoption-share-comments' }, story.shared_comments),
                                 $.make('div', { className: 'NB-sideoption-share-save NB-modal-submit-button' }, 'Share')
                             ])
                         ])
