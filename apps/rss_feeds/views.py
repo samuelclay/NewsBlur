@@ -135,7 +135,7 @@ def exception_retry(request):
         feed.fetched_once = True
     feed.save()
     
-    feed = feed.update(force=True, compute_scores=False)
+    feed = feed.update(force=True, compute_scores=False, verbose=True)
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
