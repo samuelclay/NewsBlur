@@ -41,13 +41,17 @@ def load_single_feed(request, feed_id):
     
 @json.json_view
 def feed_autocomplete(request):
-    query = request.GET['term']
+    query = request.GET.get('term')
+    if not query:
+        return dict(code=-1, message="Specify a search 'term'.")
+        
     feeds = []
     for field in ['feed_address', 'feed_link', 'feed_title']:
         if not feeds:
             feeds = Feed.objects.filter(**{
                 '%s__icontains' % field: query,
                 'num_subscribers__gt': 1,
+                'branch_from_feed__isnull': True,
             }).exclude(
                 Q(**{'%s__icontains' % field: 'token'}) |
                 Q(**{'%s__icontains' % field: 'private'})
