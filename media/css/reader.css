@@ -1932,7 +1932,80 @@ background: transparent;
     max-width: 700px;
     min-height: 66px;
 }
+#story_pane .NB-feed-story-comments {
+    margin: -24px 200px 32px 28px;
+    padding: 1px 0 0;
+    max-width: 700px;
+    border-top: 2px solid #353535;
+    border-bottom: 1px solid #353535;
+}
+#story_pane .NB-story-comment {
+    border-top: 1px solid #A6A6A6;
+    background-color: #FCFCFC;
+    position: relative;
+    padding: 0 12px 0 54px;
+    line-height: 20px;
+    overflow: hidden;
+}
+#story_pane .NB-story-comment .NB-user-avatar {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+}
+#story_pane .NB-story-comment .NB-user-avatar img {
+    border: 1px solid #A6A6A6;
+    width: 36px;
+    height: 36px;
+}
+#story_pane .NB-story-comment .NB-story-comment-author-container {
+    overflow: hidden;
+    margin: 6px 0 0;
+}
+#story_pane .NB-story-comment .NB-story-comment-username {
+    float: left;
+    font-size: 11px;
+    color: #1D4BA6;
+    font-weight: bold;
+    margin: 0 10px 0 0;
+    text-shadow: 0 -1px 0 #F0F0F0;
+}
+#story_pane .NB-story-comment .NB-story-comment-date {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #9D9D9D;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 #F0F0F0;
+}
+#story_pane .NB-story-comment .NB-story-comment-content {
+    float: left;
+    color: #505050;
+}
+#story_pane .NB-story-comments-public-teaser-wrapper {
+    border-top: 1px solid #353535;
+    padding: 1px 0;
+    cursor: pointer;
+}
+#story_pane .NB-story-comments-public-teaser {
+    background-color: #B1B6B4;
+    color: white;
+    text-shadow: 0 1px 0 black;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 2px 12px;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
 
+#story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
+    background-color: #2B478C;
+    background-image: none;
+}
+#story_pane .NB-story-comment .NB-story-comment-content {
+    clear: both;
+    padding: 0 0 6px 0;
+}
 #story_pane .NB-feed-story-sideoptions-container {
     position: absolute;
     right: 12px;
