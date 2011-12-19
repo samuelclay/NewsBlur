@@ -104,6 +104,7 @@
         this.apply_tipsy_titles();
         this.load_recommended_feeds();
         this.setup_dashboard_graphs();
+        this.setup_feedback_table();
         this.setup_howitworks_hovers();
         this.load_url_next_param();
     };
@@ -5761,15 +5762,37 @@
           clearInterval(this.locks.load_dashboard_graphs);
           this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
               this.load_dashboard_graphs();
-          }, this), 10*60*1000);
+          }, this), NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000);
         },
         
-        load_dashboard_graphs: function(direction, refresh) {
+        load_dashboard_graphs: function() {
             var self = this;
             var $module = $('.NB-module-stats');
             $module.addClass('NB-loading');
             
             this.model.load_dashboard_graphs(function(resp) {
+                if (!resp) return;
+                $module.removeClass('NB-loading');
+                $module.replaceWith(resp);
+                self.load_javascript_elements_on_page();
+            }, $.noop);
+        },
+        
+        
+        setup_feedback_table: function() {
+          // Reload feedback module every 10 minutes.
+          clearInterval(this.locks.load_feedback_table);
+          this.locks.load_feedback_table = setInterval(_.bind(function() {
+              this.load_feedback_table();
+          }, this), NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000);
+        },
+        
+        load_feedback_table: function() {
+            var self = this;
+            var $module = $('.NB-feedback-table');
+            $module.addClass('NB-loading');
+            
+            this.model.load_feedback_table(function(resp) {
                 if (!resp) return;
                 $module.removeClass('NB-loading');
                 $module.replaceWith(resp);
