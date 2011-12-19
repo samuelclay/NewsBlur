@@ -6,6 +6,7 @@ class MSharedStory(mongo.Document):
     user_id                  = mongo.IntField()
     shared_date              = mongo.DateTimeField()
     comments                 = mongo.StringField()
+    has_comments             = mongo.BooleanField(default=False)
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
