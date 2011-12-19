@@ -2,7 +2,7 @@ import os
 import sys
 import shutil
 
-CURRENT_DIR  = os.path.dirname(__file__)
+CURRENT_DIR  = os.path.dirname(os.getcwd())
 NEWSBLUR_DIR = ''.join([CURRENT_DIR, '/../../'])
 sys.path.insert(0, NEWSBLUR_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'

@@ -153,11 +153,13 @@ def compress_media():
 
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('./mongo_backup.sh')
+        # run('./mongo_backup.sh')
+        run('python backup_mongo.py')
 
 def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('./postgresql_backup.sh')
+        # run('./postgresql_backup.sh')
+        run('python backup_psql.py')
 
 # ===============
 # = Calibration =
