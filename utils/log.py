@@ -26,6 +26,8 @@ def user(u, msg):
             platform = 'Chrome'
         elif 'Safari' in user_agent:
             platform = 'Safari'
+        elif 'MeeGo' in user_agent:
+            platform = 'MeeGo'
         elif 'Firefox' in user_agent:
             platform = 'FF'
         elif 'Opera' in user_agent:
