@@ -696,10 +696,45 @@
     [options release];
 }
 
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+//    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
+    if (actionSheet.tag == 1) {
+        int visibleUnreadCount = appDelegate.visibleUnreadCount;
+        int totalUnreadCount = [appDelegate unreadCount];
+        BOOL showVisible = YES;
+        BOOL showEntire = YES;
+        if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
+        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
+//        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
+
+        if (showVisible && showEntire) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:NO];
+            } else if (buttonIndex == 1) {
+                [self markFeedsReadWithAllStories:YES];
+            }               
+        } else if (showVisible && !showEntire) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:NO];
+            }   
+        } else if (!showVisible && showEntire) {
+            if (buttonIndex == 0) {
+                [self markFeedsReadWithAllStories:YES];
+            }
+        }
+    } else if (actionSheet.tag == 2) {
+        if (buttonIndex == 0) {
+            [self confirmDeleteSite];
+        } else if (buttonIndex == 1) {
+            [self openMoveView];
+        }
+    }
+}
+
 - (IBAction)doOpenSettingsActionSheet {
     NSString *title = appDelegate.isRiverView ? 
-                      appDelegate.activeFolder : 
-                      [appDelegate.activeFeed objectForKey:@"feed_title"];
+    appDelegate.activeFolder : 
+    [appDelegate.activeFeed objectForKey:@"feed_title"];
     UIActionSheet *options = [[UIActionSheet alloc] 
                               initWithTitle:title
                               delegate:self
@@ -718,48 +753,11 @@
         NSString *moveText = @"Move to another folder";
         [options addButtonWithTitle:moveText];
     }
-
+    
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     options.tag = kSettingsActionSheet;
     [options showInView:self.view];
     [options release];
-}
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-//    NSLog(@"Action option #%d on %d", buttonIndex, actionSheet.tag);
-    if (actionSheet.tag == 1) {
-        int visibleUnreadCount = appDelegate.visibleUnreadCount;
-        int totalUnreadCount = [appDelegate unreadCount];
-        BOOL showVisible = YES;
-        BOOL showEntire = YES;
-        if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
-        if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
-//        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
-
-        if (showVisible && showEntire) {
-            if (buttonIndex == 0) {
-                if (buttonIndex == 0) {
-                    [self markFeedsReadWithAllStories:NO];
-                } else if (buttonIndex == 1) {
-                    [self markFeedsReadWithAllStories:YES];
-                }               
-            }
-        } else if (showVisible && !showEntire) {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:NO];
-            }   
-        } else if (!showVisible && showEntire) {
-            if (buttonIndex == 0) {
-                [self markFeedsReadWithAllStories:YES];
-            }
-        }
-    } else if (actionSheet.tag == 2) {
-        if (buttonIndex == 0) {
-            [self confirmDeleteSite];
-        } else if (buttonIndex == 1) {
-            [self openMoveView];
-        }
-    }
 }
 
 - (void)confirmDeleteSite {
