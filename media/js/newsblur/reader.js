@@ -5961,7 +5961,7 @@
         
         load_dashboard_graphs: function() {
             var self = this;
-            var $module = $('.NB-module-stats');
+            var $module = $('.NB-module-site-stats');
             $module.addClass('NB-loading');
             
             this.model.load_dashboard_graphs(function(resp) {

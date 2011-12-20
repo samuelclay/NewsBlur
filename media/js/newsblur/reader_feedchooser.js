@@ -70,28 +70,29 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                 $.make('li', { className: 'NB-1' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Sites are updated 10x more often.'
+                  'Sites are updated 2-10x more often'
                 ]),
                 $.make('li', { className: 'NB-2' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Unlimited number of sites.'
+                  'Unlimited number of sites'
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Access to the premium-only River of News.'
+                  'Access to the premium-only River of News: ',
+                  'stories from multiple sites in a single feed'
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Access to the future premium-only features like searching and visualizations.'
+                  'Access to future premium-only features like searching, archives, and [top secret]'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed my poor, hungry dog for 6 days!',
+                  'You feed my poor, hungry dog for 6 days',
                   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
                 ]),
                 $.make('li', { className: 'NB-6' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You are supporting an indie developer.'
+                  'You are supporting an indie developer'
                 ]),
                 $.make('li', { className: 'NB-7' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -115,8 +116,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-image' }),
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$36/year'),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($3/month)')
+                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, '$48/year'),
+                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($4/month)')
                       ])
                   ])
               ])
@@ -395,7 +396,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         } else if (step == 2) {
             $input.val(24);
         } else if (step == 3) {
-            $input.val(36);
+            $input.val(48);
         }
     },
     
