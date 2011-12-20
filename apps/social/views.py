@@ -1,14 +1,21 @@
 import datetime
 import zlib
+import urllib
+import urlparse
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.conf import settings
 from apps.rss_feeds.models import MStory
-from apps.social.models import MSharedStory
+from apps.social.models import MSharedStory, MSocialServices
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
+from vendor import facebook
+from vendor import tweepy
 
 
 @ajax_login_required
@@ -85,3 +92,59 @@ def shared_stories_public(request, username):
     shared_stories = MSharedStory.objects.filter(user_id=user.pk)
         
     return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
+    
+@login_required
+def twitter_connect(request):
+    tweepy
+    pass
+    
+@login_required
+def facebook_connect(request):
+    facebook_app_id = settings.FACEBOOK_APP_ID
+    facebook_secret = settings.FACEBOOK_SECRET
+    
+    args = {
+        "client_id": facebook_app_id,
+        "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
+        "scope": "offline_access",
+        "display": "popup",
+    }
+    
+    verification_code = request.REQUEST.get('code')
+    if verification_code:
+        args["client_secret"] = facebook_secret
+        args["code"] = verification_code
+        uri = "https://graph.facebook.com/oauth/access_token?" + \
+                urllib.urlencode(args)
+        response_text = urllib.urlopen(uri).read()
+        response = urlparse.parse_qs(response_text)
+
+        if "access_token" not in response:
+            return json.json_response(request, dict(error="Facebook has returned an error. Try connecting again."))
+
+        access_token = response["access_token"][-1]
+
+        # Get the user's profile.
+        graph = facebook.GraphAPI(access_token)
+        profile = graph.get_object("me")
+        uid = profile["id"]
+
+        # Be sure that two people aren't using the same Facebook account.
+        existing_user = MSocialServices.objects.filter(facebook_uid=uid)
+        if existing_user and existing_user[0].user_id != request.user.pk:
+            return json.json_response(request, dict(error=("Another user (%s, %s) has "
+                               "already connected with those Facebook credentials."
+                               % (existing_user[0].username, existing_user[0].email_address))))
+
+        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services.facebook_uid = uid
+        social_services.facebook_access_token = access_token
+        social_services.save()
+        social_services.sync_facebook_friends()
+        return json.json_response(request, dict(code=1))
+    elif request.REQUEST.get('error'):
+        pass
+    else:
+        # Start the OAuth process
+        url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode(args)
+        return HttpResponseRedirect(url)

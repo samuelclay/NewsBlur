@@ -95,52 +95,54 @@ def json_encode(data, *args, **kwargs):
 
 def json_view(func):
     def wrap(request, *a, **kw):
-        response = None
-        code = 200
-        try:
-            response = func(request, *a, **kw)
-            if isinstance(response, dict):
-                response = dict(response)
-                if 'result' not in response:
-                    response['result'] = 'ok'
-                authenticated = request.user.is_authenticated()
-                response['authenticated'] = authenticated
-        except KeyboardInterrupt:
-            # Allow keyboard interrupts through for debugging.
-            raise
-        except Http404:
-            raise Http404
-        except Exception, e:
-            # Mail the admins with the error
-            exc_info = sys.exc_info()
-            subject = 'JSON view error: %s' % request.path
-            try:
-                request_repr = repr(request)
-            except:
-                request_repr = 'Request repr() unavailable'
-            import traceback
-            message = 'Traceback:\n%s\n\nRequest:\n%s' % (
-                '\n'.join(traceback.format_exception(*exc_info)),
-                request_repr,
-                )
-            if not settings.DEBUG:
-                mail_admins(subject, message, fail_silently=True)
-
-                response = {'result': 'error',
-                            'text': unicode(e)}
-                code = 500
-            else:
-                print message
-                raise e
-
-        if isinstance(response, HttpResponseForbidden):
-            return response
-        json = json_encode(response)
-        return HttpResponse(json, mimetype='application/json', status=code)
+        response = func(request, *a, **kw)
+        return json_response(request, response)
     if isinstance(func, HttpResponse):
         return func
     else:
         return wrap
+        
+def json_response(request, response=None):
+    code = 200
+    try:
+        if isinstance(response, dict):
+            response = dict(response)
+            if 'result' not in response:
+                response['result'] = 'ok'
+            authenticated = request.user.is_authenticated()
+            response['authenticated'] = authenticated
+    except KeyboardInterrupt:
+        # Allow keyboard interrupts through for debugging.
+        raise
+    except Http404:
+        raise Http404
+    except Exception, e:
+        # Mail the admins with the error
+        exc_info = sys.exc_info()
+        subject = 'JSON view error: %s' % request.path
+        try:
+            request_repr = repr(request)
+        except:
+            request_repr = 'Request repr() unavailable'
+        import traceback
+        message = 'Traceback:\n%s\n\nRequest:\n%s' % (
+            '\n'.join(traceback.format_exception(*exc_info)),
+            request_repr,
+            )
+        if not settings.DEBUG:
+            mail_admins(subject, message, fail_silently=True)
+
+            response = {'result': 'error',
+                        'text': unicode(e)}
+            code = 500
+        else:
+            print message
+            raise e
+
+    if isinstance(response, HttpResponseForbidden):
+        return response
+    json = json_encode(response)
+    return HttpResponse(json, mimetype='application/json', status=code)
 
 def main():
     test = {1: True, 2: u"string", 3: 30}
