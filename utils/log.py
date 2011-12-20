@@ -1,6 +1,8 @@
 import logging
 import re
+import string
 from django.core.handlers.wsgi import WSGIRequest
+from django.conf import settings
 
 class NullHandler(logging.Handler): #exists in python 3.1
     def emit(self, record):
@@ -33,7 +35,16 @@ def user(u, msg):
         elif 'Opera' in user_agent:
             platform = 'Opera'
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
-    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, u, premium, msg))
+    username = cipher(u.__unicode__()) if settings.CIPHER_USERNAMES else u
+    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, username, premium, msg))
+
+def cipher(msg):
+    shift = len(msg)
+    in_alphabet = unicode(string.ascii_lowercase)
+    out_alphabet = in_alphabet[shift:] + in_alphabet[:shift]
+    translation_table = dict((ord(ic), oc) for ic, oc in zip(in_alphabet, out_alphabet))
+
+    return msg.translate(translation_table)
     
 def debug(msg):
     logger = getlogger()
