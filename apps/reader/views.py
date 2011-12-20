@@ -530,7 +530,8 @@ def load_river_stories(request):
     # Fetch all stories at and before the page number.
     # Not a single page, because reading stories can move them up in the unread order.
     # `read_stories_count` is an optimization, works best when all 25 stories before have been read.
-    limit = limit * page - read_stories_count
+    offset = (page-1) * limit - read_stories_count
+    limit = page * limit - read_stories_count
     
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story_id')
@@ -592,10 +593,11 @@ def load_river_stories(request):
     #     if story_feed_counts[story['story_feed_id']] >= 3: continue
     #     mstories_pruned.append(story)
     #     story_feed_counts[story['story_feed_id']] += 1
+    
     stories = []
     for i, story in enumerate(mstories):
         if i < offset: continue
-        if i >= offset + limit: break
+        if i >= limit: break
         stories.append(bunch(story))
     stories = Feed.format_stories(stories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
