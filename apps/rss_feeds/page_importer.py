@@ -83,7 +83,8 @@ class PageImporter(object):
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
             mail_feed_error_to_admin(self.feed, e, locals())
-            self.fetch_page(urllib_fallback=True)
+            if not urllib_fallback:
+                self.fetch_page(urllib_fallback=True)
         else:
             self.feed.save_page_history(200, "OK")
 
