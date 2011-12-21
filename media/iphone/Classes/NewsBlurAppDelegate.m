@@ -11,10 +11,12 @@
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "LoginViewController.h"
-#import "AddViewController.h"
+#import "AddSiteViewController.h"
+#import "MoveSiteViewController.h"
 #import "OriginalStoryViewController.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
+#import "StringHelper.h"
 
 @implementation NewsBlurAppDelegate
 
@@ -24,7 +26,8 @@
 @synthesize feedDetailViewController;
 @synthesize storyDetailViewController;
 @synthesize loginViewController;
-@synthesize addViewController;
+@synthesize addSiteViewController;
+@synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
 
 @synthesize activeUsername;
@@ -48,6 +51,10 @@
 @synthesize dictFolders;
 @synthesize dictFeeds;
 @synthesize dictFoldersArray;
+
++ (NewsBlurAppDelegate*) sharedAppDelegate {
+	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
@@ -75,7 +82,8 @@
     [feedDetailViewController release];
     [storyDetailViewController release];
     [loginViewController release];
-    [addViewController release];
+    [addSiteViewController release];
+    [moveSiteViewController release];
     [originalStoryViewController release];
     [navigationController release];
     [window release];
@@ -117,14 +125,19 @@
 
 - (void)showAdd {
     UINavigationController *navController = self.navigationController;
-    [addViewController initWithNibName:nil bundle:nil];
-    [navController presentModalViewController:addViewController animated:YES];
-    [addViewController reload];
+    [addSiteViewController initWithNibName:nil bundle:nil];
+    [navController presentModalViewController:addSiteViewController animated:YES];
+    [addSiteViewController reload];
 }
 
-- (void)reloadFeedsView {
-    [self setTitle:@"NewsBlur"];
-    [feedsViewController fetchFeedList:YES];
+- (void)showMoveSite {
+    UINavigationController *navController = self.navigationController;
+    [moveSiteViewController initWithNibName:nil bundle:nil];
+    [navController presentModalViewController:moveSiteViewController animated:YES];
+}
+
+- (void)reloadFeedsView:(BOOL)showLoader {
+    [feedsViewController fetchFeedList:showLoader];
     [loginViewController dismissModalViewControllerAnimated:YES];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
@@ -331,14 +344,20 @@
     int total = 0;
     NSArray *folder;
     
-    if (!folderName) {
-        folder = [self.dictFolders objectForKey:self.activeFolder];
+    if (!folderName && self.activeFolder == @"Everything") {
+        for (id feedId in self.dictFeeds) {
+            total += [self unreadCountForFeed:feedId];
+        }
     } else {
-        folder = [self.dictFolders objectForKey:folderName];
-    }
+        if (!folderName) {
+            folder = [self.dictFolders objectForKey:self.activeFolder];
+        } else {
+            folder = [self.dictFolders objectForKey:folderName];
+        }
     
-    for (id feedId in folder) {
-        total += [self unreadCountForFeed:feedId];
+        for (id feedId in folder) {
+            total += [self unreadCountForFeed:feedId];
+        }
     }
     
     return total;
@@ -437,9 +456,17 @@
     [self markFeedAllRead:feedId];
 }
 
-- (void)markActiveFolderAllRead {    
-    for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
-        [self markFeedAllRead:feedId];
+- (void)markActiveFolderAllRead {
+    if (self.activeFolder == @"Everything") {
+        for (NSString *folderName in self.dictFoldersArray) {
+            for (id feedId in [self.dictFolders objectForKey:folderName]) {
+                [self markFeedAllRead:feedId];
+            }        
+        }
+    } else {
+        for (id feedId in [self.dictFolders objectForKey:self.activeFolder]) {
+            [self markFeedAllRead:feedId];
+        }
     }
 }
 
@@ -488,6 +515,40 @@
 //    NSLog(@"%d/%d -- %d: %@", score_max, score_min, score, intelligence);
     return score;
 }
+
+
+
+- (NSString *)extractParentFolderName:(NSString *)folderName {
+    if ([folderName containsString:@"Top Level"]) {
+        folderName = @"";
+    }
+    
+    if ([folderName containsString:@" - "]) {
+        int lastFolderLoc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+        //        int secondLastFolderLoc = [[folderName substringToIndex:lastFolderLoc] rangeOfString:@" - " options:NSBackwardsSearch].location;
+        folderName = [folderName substringToIndex:lastFolderLoc];
+    } else {
+        folderName = @"— Top Level —";
+    }
+    
+    return folderName;
+}
+
+- (NSString *)extractFolderName:(NSString *)folderName {
+    if ([folderName containsString:@"Top Level"]) {
+        folderName = @"";
+    }
+    
+    if ([folderName containsString:@" - "]) {
+        int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
+        folderName = [folderName substringFromIndex:(folder_loc + 3)];
+    }
+    
+    return folderName;
+}
+
+#pragma mark -
+#pragma mark Feed Templates
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
     UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
@@ -544,20 +605,23 @@
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.textAlignment = UITextAlignmentLeft;
         titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        titleLabel.numberOfLines = 1;
         titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
         titleLabel.shadowOffset = CGSizeMake(0, 1);
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
-            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-            [UIColor whiteColor] :
-            [UIColor blackColor];            
-            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] isEqualToString:@"white"] ?
-            UIColorFromRGB(0x202020):
-            UIColorFromRGB(0xe0e0e0);
+            titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] 
+                                    isEqualToString:@"white"] ?
+                [UIColor whiteColor] :
+                [UIColor blackColor];            
+            titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] 
+                                      isEqualToString:@"white"] ?
+                UIColorFromRGB(0x202020) :
+                UIColorFromRGB(0xd0d0d0);
         } else {
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
         }
-        titleLabel.frame = CGRectMake(32, 1, window.frame.size.width-20, 20);
+        titleLabel.frame = CGRectMake(32, 1, rect.size.width-32, 20);
         
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage = [Utilities getImage:feedIdStr];
@@ -578,6 +642,40 @@
     gradientView.opaque = YES;
     
     return gradientView;
+}
+
+- (UIView *)makeFeedTitle:(NSDictionary *)feed {
+    
+    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+    if (self.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];        
+    } else {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+    }
+    titleLabel.backgroundColor = [UIColor clearColor];
+    titleLabel.textAlignment = UITextAlignmentLeft;
+    titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:15.0];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    titleLabel.numberOfLines = 1;
+    titleLabel.shadowColor = [UIColor blackColor];
+    titleLabel.shadowOffset = CGSizeMake(0, -1);
+    titleLabel.center = CGPointMake(28, -2);
+    [titleLabel sizeToFit];
+    
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    UIImage *titleImage;
+    if (self.isRiverView) {
+        titleImage = [UIImage imageNamed:@"folder.png"];
+    } else {
+        titleImage = [Utilities getImage:feedIdStr];
+    }
+	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+    [titleLabel addSubview:titleImageView];
+    [titleImageView release];
+
+    return titleLabel;
 }
 
 @end

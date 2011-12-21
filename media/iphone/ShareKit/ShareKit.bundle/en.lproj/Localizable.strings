@@ -1,0 +1,111 @@
+"Email" = "Email";
+"Username" = "Username";
+"Password" = "Password";
+"Follow %@" = "Follow %@";
+"Continue" = "Continue";
+"Share" = "Share";
+"More..." = "More...";
+"Cancel" = "Cancel";
+"Slug" = "Slug";
+"Private" = "Private";
+"Public" = "Public";
+"Caption" = "Caption";
+"Title" = "Title";
+"Tags" = "Tags";
+"Close" = "Close";
+"Notes" = "Notes";
+"Note" = "Note";
+"Shared" = "Shared";
+"Edit" = "Edit";
+"Actions" = "Actions";
+"Services" = "Services";
+"Send to %@" = "Send to %@";
+"Copy" = "Copy";
+"Copied!" = "Copied!";
+"Saving to %@" = "Saving to %@";
+"Saved!" = "Saved!";
+"Offline" = "Offline";
+"Error" = "Error";
+"Login" = "Login";
+"Logging In..." = "Logging In...";
+"Login Error" = "Login Error";
+"Connecting..." = "Connecting...";
+
+"Shortening URL..." = "Shortening URL...";
+"Shorten URL Error" = "Shorten URL Error";
+"We could not shorten the URL." = "We could not shorten the URL.";
+
+"Create a free account at %@" = "Create a free account at %@";
+"Create an account at %@" = "Create an account at %@";
+
+"Send to Twitter" = "Send to Twitter";
+
+"Message is too long" = "Message is too long";
+"Twitter posts can only be 140 characters in length." = "Twitter posts can only be 140 characters in length.";
+"Message is empty" = "Message is empty";
+"You must enter a message in order to post." = "You must enter a message in order to post.";
+
+"Enter your message:" = "Enter your message:";
+
+"Invalid email or password." = "Invalid email or password.";
+"The service encountered an error. Please try again later." = "The service encountered an error. Please try again later.";
+"There was an error sending your post to Tumblr." = "There was an error sending your post to Tumblr.";
+
+"There was an error saving to Pinboard" = "There was an error saving to Pinboard";
+
+"Sorry, Instapaper did not accept your credentials. Please try again." = "Sorry, Instapaper did not accept your credentials. Please try again.";
+"Sorry, Instapaper encountered an error. Please try again." = "Sorry, Instapaper encountered an error. Please try again.";
+"There was a problem saving to Instapaper." = "There was a problem saving to Instapaper.";
+
+"Incorrect username and password" = "Incorrect username and password";
+"There was an error logging into Google Reader" = "There was an error logging into Google Reader";
+"There was a problem authenticating your account." = "There was a problem authenticating your account.";
+"There was a problem saving your note." = "There was a problem saving your note.";
+
+"There was a problem saving to Delicious." = "There was a problem saving to Delicious.";
+
+"Open in Safari" = "Open in Safari";
+"Attached: %@" = "Attached: %@";
+
+"You must be online to login to %@" = "You must be online to login to %@";
+
+"Auto Share" = "Auto Share";
+"Enable auto share to skip this step in the future." = "Enable auto share to skip this step in the future.";
+
+"You must be online in order to share with %@" = "You must be online in order to share with %@";
+
+"Could not authenticate you. Please relogin." = "Could not authenticate you. Please relogin.";
+"There was a problem requesting authorization from %@" = "There was a problem requesting authorization from %@";
+"Request Error" = "Request Error";
+"There was an error while sharing" = "There was an error while sharing";
+
+"Authorize Error" = "Authorize Error";
+"There was an error while authorizing" = "There was an error while authorizing";
+
+"Authenticating..." = "Authenticating...";
+"There was a problem requesting access from %@" = "There was a problem requesting access from %@";
+
+"Access Error" = "Access Error";
+
+"Logout" = "Logout";
+"Sharing a Link" = "Sharing a Link";
+"Sharing an Image" = "Sharing an Image";
+"Sharing Text" = "Sharing Text";
+"Sharing a File" = "Sharing a File";
+"Are you sure you want to logout of all share services?" = "Are you sure you want to logout of all share services?";
+"Examples" = "Examples";
+"EDMA Error" = "EDMA Error";
+"EDMA Version is too old." = "EDMA Version is too old.";
+"Your username and password did not match" = "Your username and password did not match";
+"Untitled" = "Untitled";
+"There was a problem sharing with Evernote" = "There was a problem sharing with Evernote";
+"Get" = "Get";
+"Description" = "Description";
+"Tag (space) Tag" = "Tag (space) Tag";
+"Is Public" = "Is Public";
+"Is Friend" = "Is Friend";
+"Is Family" = "Is Family";
+"Logged Out!" = "Logged Out!";
+"Sent from %@" = "Sent from %@";
+"Save to Photo Album" = "Save to Photo Album";
+"Tag,Tag" = "Tag,Tag";

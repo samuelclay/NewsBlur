@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.mysql import MuninMySQLPlugin
+
+class MuninMySQLDBSizePlugin(MuninMySQLPlugin):
+    dbname_in_args = True
+    args = "-l 0 --base 1024"
+    vlabel = "bytes"
+    info = "Size of database"
+    fields = (
+        ('datasize', dict(
+            label = "Data size (bytes)",
+            info = "Data size",
+            type = "GAUGE",
+            draw = "AREA",
+        )),
+        ('indexsize', dict(
+            label = "Index size (bytes)",
+            info = "Index size",
+            type = "GAUGE",
+            draw = "AREA",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "MySQL size of database %s" % self.dbname
+
+    def execute(self):
+        c = self.cursor()
+
+        c.execute("SELECT sum(data_length), sum(index_length) FROM information_schema.TABLES WHERE table_schema = %s", (self.dbname,))
+        row = c.fetchone()
+        return dict(
+            datasize = row[0],
+            indexsize = row[1],
+        )
+
+if __name__ == "__main__":
+    MuninMySQLDBSizePlugin().run()

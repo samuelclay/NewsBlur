@@ -1,4 +1,5 @@
 import logging
+import pymongo
 
 # ===================
 # = Server Settings =
@@ -67,6 +68,14 @@ BROKER_HOST = "127.0.0.1"
 REDIS = {
     'host': '127.0.0.1',
 }
+
+# AMQP - RabbitMQ server
+BROKER_HOST     = "db01.newsblur.com"
+BROKER_PORT     = 5672
+BROKER_USER     = "newsblur"
+BROKER_PASSWORD = "newsblur"
+BROKER_VHOST    = "newsblurvhost"
+
 
 # ===========
 # = Logging =

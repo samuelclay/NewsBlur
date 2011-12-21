@@ -66,17 +66,7 @@ $(document).ready(function() {
         Community Feedback
       </h3>
 
-      <table class="" cellpadding="0" cellspacing="0">
-        {% for feedback in feedbacks %}
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %}">
-            <td class="NB-module-feature-date">{{ feedback.date }}</td>
-            <td class="NB-module-feature-description">
-              <span class="NB-module-feature-tag NB-tag-{{ feedback.style }}">{{ feedback.style }}</span>
-              <a href="{{ feedback.url }}">{{ feedback.subject|typogrify }}</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
+      {% render_feedback_table feedbacks %}
 
     </div>
     
@@ -376,8 +366,7 @@ $(document).ready(function() {
             </h3>
             <div class="NB-module-item-title">
                 <span class="NB-raquo">&raquo;</span>
-                <!-- <a href="#" class="NB-splash-link">Download NewsBlur on the App Store</a> --> 
-                <span class="NB-module-mobile-freeforpremium">Approved, but not Good Enough. Working on v1.2.</span>
+                <a href="/iphone/" class="NB-splash-link">See the free NewsBlur iPhone App</a>
             </div>
           </div>
           <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">

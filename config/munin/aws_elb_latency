@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import datetime
+import os
+import sys
+
+import boto
+from boto.ec2.cloudwatch import CloudWatchConnection
+
+from munin import MuninPlugin
+
+class AWSCloudWatchELBLatencyPlugin(MuninPlugin):
+    category = "AWS"
+    args = "-l 0 --base 1000"
+    vlabel = "Seconds"
+    info = "Show latency for requests"
+
+    @property
+    def title(self):
+        return "Seconds of latency for ELBs"
+
+    @property
+    def fields(self):
+        return [
+            ("maximum", dict(
+                label = "Maximum latency",
+                type = "GAUGE",
+            )),
+            ("minimum", dict(
+                label = "Minimum latency",
+                type = "GAUGE",
+            )),
+            ("average", dict(
+                label = "Average latency",
+                type = "GAUGE",
+            )),
+        ]
+
+    def __init__(self):
+        self.api_key = os.environ['AWS_KEY']
+        self.secret_key = os.environ['AWS_SECRET']
+
+    def execute(self):
+        minutes = 5
+        end_date = datetime.datetime.utcnow()
+        start_date = end_date - datetime.timedelta(minutes=minutes)
+        cw = CloudWatchConnection(self.api_key, self.secret_key)
+        metrics = cw.get_metric_statistics(5*60, start_date, end_date, "Latency", "AWS/ELB", ["Average", "Minimum", "Maximum"])
+        m = metrics[0]
+        return dict(
+            maximum = m['Maximum'],
+            minimum = m['Minimum'],
+            average = m['Average'],
+        )
+
+if __name__ == "__main__":
+    AWSCloudWatchELBLatencyPlugin().run()

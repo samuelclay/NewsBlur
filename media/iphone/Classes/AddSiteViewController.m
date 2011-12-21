@@ -1,19 +1,19 @@
 //
-//  AddViewController.m
+//  AddSiteViewController.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 10/31/10.
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
-#import "AddViewController.h"
+#import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "JSON.h"
 
-@implementation AddViewController
+@implementation AddSiteViewController
 
 @synthesize appDelegate;
 @synthesize inFolderInput;
@@ -32,11 +32,6 @@
 @synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
-@synthesize usernameLabel;
-@synthesize usernameOrEmailLabel;
-@synthesize passwordLabel;
-@synthesize emailLabel;
-@synthesize passwordOptionalLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -82,6 +77,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
+    [self showFolderPicker];
 }
 
 
@@ -109,7 +105,7 @@
 }
 
 - (IBAction)doCancelButton {
-    [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
+    [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)doAddButton {
@@ -137,15 +133,7 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     [errorLabel setText:@""];
     if (textField == inFolderInput && ![inFolderInput isFirstResponder]) {
-        [siteAddressInput resignFirstResponder];
-        [addFolderInput resignFirstResponder];
-        [inFolderInput setInputView:folderPicker];
-        if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
-            folderPicker.hidden = NO;
-            [UIView animateWithDuration:.35 animations:^{
-                folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
-            }];
-        }
+        [self showFolderPicker];
         return NO;
     } else if (textField == siteAddressInput) {
         [self hideFolderPicker];
@@ -256,8 +244,8 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView];
+        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+        [appDelegate reloadFeedsView:YES];
     }
     
     [results release];
@@ -308,8 +296,8 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate.addViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView];
+        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+        [appDelegate reloadFeedsView:YES];
     }
     
     [results release];    
@@ -400,6 +388,18 @@ numberOfRowsInComponent:(NSInteger)component {
         folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row];        
     }
     [inFolderInput setText:folder_title];
+}
+
+- (void)showFolderPicker {
+    [siteAddressInput resignFirstResponder];
+    [addFolderInput resignFirstResponder];
+    [inFolderInput setInputView:folderPicker];
+    if (folderPicker.frame.origin.y >= self.view.bounds.size.height) {
+        folderPicker.hidden = NO;
+        [UIView animateWithDuration:.35 animations:^{
+            folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
+        }];
+    }
 }
 
 - (void)hideFolderPicker {

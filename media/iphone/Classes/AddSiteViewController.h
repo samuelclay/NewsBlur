@@ -1,5 +1,5 @@
 //
-//  AddViewController.h
+//  AddSiteViewController.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 10/04/2011.
@@ -12,7 +12,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface AddViewController : UIViewController 
+@interface AddSiteViewController : UIViewController 
 <UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource, ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
@@ -34,12 +34,6 @@
     UILabel *addingLabel;
     UILabel *errorLabel;
     UISegmentedControl *addTypeControl;
-    
-    UILabel *usernameLabel;
-    UILabel *usernameOrEmailLabel;
-    UILabel *passwordLabel;
-    UILabel *emailLabel;
-    UILabel *passwordOptionalLabel;
 }
 
 - (void)reload;
@@ -51,6 +45,7 @@
 - (IBAction)doAddButton;
 - (NSString *)extractParentFolder;
 - (void)animateLoop;
+- (void)showFolderPicker;
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
 
@@ -73,11 +68,5 @@
 @property (nonatomic, retain) IBOutlet UILabel *addingLabel;
 @property (nonatomic, retain) IBOutlet UILabel *errorLabel;
 @property (nonatomic, retain) IBOutlet UISegmentedControl *addTypeControl;
-
-@property (nonatomic, retain) IBOutlet UILabel *usernameLabel;
-@property (nonatomic, retain) IBOutlet UILabel *usernameOrEmailLabel;
-@property (nonatomic, retain) IBOutlet UILabel *passwordLabel;
-@property (nonatomic, retain) IBOutlet UILabel *emailLabel;
-@property (nonatomic, retain) IBOutlet UILabel *passwordOptionalLabel;
 
 @end

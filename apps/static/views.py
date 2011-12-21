@@ -34,3 +34,7 @@ def press(request):
 def feedback(request):
     return render_to_response('static/feedback.xhtml', {}, 
                               context_instance=RequestContext(request))
+
+def iphone(request):
+    return render_to_response('static/iphone.xhtml', {}, 
+                              context_instance=RequestContext(request))

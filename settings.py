@@ -57,6 +57,7 @@ LOGIN_URL             = '/reader/login'
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
+CIPHER_USERNAMES      = False
 
 
 # ===============
@@ -437,14 +438,6 @@ REDIS = {
     'host': 'db01',
 }
 
-# ===========
-# = MongoDB =
-# ===========
-
-MONGODB_SLAVE = {
-    'host': 'db01'
-}
-
 # ==================
 # = Configurations =
 # ==================
@@ -475,7 +468,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'mongodb://db01,db03/?slaveOk=true',
+    'host': 'db01,db03',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
