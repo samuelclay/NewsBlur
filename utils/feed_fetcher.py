@@ -45,7 +45,7 @@ class FetchFeed:
         Uses feedparser to download the feed. Will be parsed later.
         """
         identity = self.get_identity()
-        log_msg = u'%2s ---> [%-30s] Fetching feed (%d), last update: %s' % (identity,
+        log_msg = u'%2s ---> [%-30s] ~FYFetching feed (%d), last update: %s' % (identity,
                                                             unicode(self.feed)[:30],
                                                             self.feed.id,
                                                             datetime.datetime.now() - self.feed.last_update)

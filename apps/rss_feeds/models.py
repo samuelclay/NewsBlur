@@ -771,7 +771,7 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
-            logging.debug(' ---> [%-30s] Found %s stories. Trimming to %s...' % (self, stories.count(), trim_cutoff))
+            logging.debug('   ---> [%-30s] ~FRFound %s stories. Trimming to ~SB%s~SN...' % (self, stories.count(), trim_cutoff))
             try:
                 story_trim_date = stories[trim_cutoff].story_date
             except IndexError, e:
@@ -780,10 +780,12 @@ class Feed(models.Model):
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             extra_stories.delete()
-            print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
+            if verbose:
+                print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
             userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=story_trim_date)
             if userstories.count():
-                print "Found %s user stories. Deleting..." % userstories.count()
+                if verbose:
+                    print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False, slave=False):
