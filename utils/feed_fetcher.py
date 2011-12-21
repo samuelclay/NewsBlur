@@ -345,7 +345,7 @@ class Dispatcher:
                   (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                   
                 logging.debug(u'   ---> [%-30s] Fetching page: %s' % (unicode(feed)[:30], feed.feed_link))
-                page_importer = PageImporter(feed.feed_link, feed)
+                page_importer = PageImporter(feed)
                 try:
                     page_importer.fetch_page()
                 except TimeoutError, e:
