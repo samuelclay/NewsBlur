@@ -95,8 +95,45 @@ def shared_stories_public(request, username):
     
 @login_required
 def twitter_connect(request):
-    tweepy
-    pass
+    twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
+    twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
+    
+    oauth_token = request.REQUEST.get('oauth_token')
+    oauth_verifier = request.REQUEST.get('oauth_verifier')
+    denied = request.REQUEST.get('denied')
+    if denied:
+        pass
+    elif oauth_token and oauth_verifier:
+        try:
+            auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+            auth.set_request_token(oauth_token, oauth_verifier)
+            access_token = auth.get_access_token(oauth_verifier)
+            api = tweepy.API(auth)
+            twitter_user = api.me()
+        except (tweepy.error.TweepError, IOError):
+            return json.json_response(request, dict(error="Twitter has returned an error. Try connecting again."))
+
+        # Be sure that two people aren't using the same Twitter account.
+        existing_user = MSocialServices.objects.filter(twitter_uid=unicode(twitter_user.id))
+        if existing_user and existing_user[0].user_id != request.user.pk:
+            user = User.objects.get(pk=existing_user[0].user_id)
+            return json.json_response(request, dict(error=("Another user (%s, %s) has "
+                               "already connected with those Twitter credentials."
+                               % (user.username, user.email_address))))
+
+        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services.twitter_uid = unicode(twitter_user.id)
+        social_services.twitter_access_key = access_token.key
+        social_services.twitter_access_secret = access_token.secret
+        social_services.save()
+        social_services.sync_twitter_friends()
+        return json.json_response(request, dict(code=1))
+    else:
+        # Start the OAuth process
+        auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+        auth_url = auth.get_authorization_url()
+        return HttpResponseRedirect(auth_url)
+
     
 @login_required
 def facebook_connect(request):
@@ -132,9 +169,10 @@ def facebook_connect(request):
         # Be sure that two people aren't using the same Facebook account.
         existing_user = MSocialServices.objects.filter(facebook_uid=uid)
         if existing_user and existing_user[0].user_id != request.user.pk:
+            user = User.objects.get(pk=existing_user[0].user_id)
             return json.json_response(request, dict(error=("Another user (%s, %s) has "
                                "already connected with those Facebook credentials."
-                               % (existing_user[0].username, existing_user[0].email_address))))
+                               % (user.username, user.email_address))))
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.facebook_uid = uid

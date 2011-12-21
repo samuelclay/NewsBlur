@@ -1,5 +1,7 @@
+import datetime
 import zlib
 import mongoengine as mongo
+from django.conf import settings
 from vendor import facebook
 from vendor import tweepy
 
@@ -53,7 +55,6 @@ class MSocialServices(mongo.Document):
     facebook_access_token = mongo.StringField()
     facebook_friend_ids   = mongo.ListField(mongo.StringField())
     facebook_picture_url  = mongo.StringField()
-    facebook_username     = mongo.StringField()
     facebook_refresh_date = mongo.DateTimeField()
     
     meta = {
@@ -62,8 +63,36 @@ class MSocialServices(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def sync_facebook_friends(self):
+    def twitter_api(self):
+        twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
+        twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
+        auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+        auth.set_access_token(self.twitter_access_key, self.twitter_access_secret)
+        api = tweepy.API(auth)
+        return api
+    
+    def facebook_api(self):
         graph = facebook.GraphAPI(self.facebook_access_token)
+        return graph
+
+    def sync_twitter_friends(self):
+        api = self.twitter_api()
+        if not api:
+            return
+            
+        friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
+        if not friend_ids:
+            return
+        
+        twitter_user = api.me()
+        self.twitter_picture_url = twitter_user.profile_image_url
+        self.twitter_username = twitter_user.screen_name
+        self.twitter_friend_ids = friend_ids
+        self.twitter_refreshed_date = datetime.datetime.utcnow()
+        self.save()
+        
+    def sync_facebook_friends(self):
+        graph = self.facebook_api()
         if not graph:
             return
 
@@ -71,6 +100,7 @@ class MSocialServices(mongo.Document):
         if not friends:
             return
 
-        facebook_friend_ids = [friend["id"] for friend in friends["data"]]
+        facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
         self.facebook_friend_ids = facebook_friend_ids
+        self.facebook_refresh_date = datetime.datetime.utcnow()
         self.save()
