@@ -11,7 +11,7 @@ from django.conf import settings
 from apps.rss_feeds.models import MStory
 from apps.social.models import MSharedStory, MSocialServices
 from utils import json_functions as json
-from utils.user_functions import ajax_login_required
+from utils.user_functions import get_user, ajax_login_required
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
 from vendor import facebook
@@ -92,6 +92,13 @@ def shared_stories_public(request, username):
     shared_stories = MSharedStory.objects.filter(user_id=user.pk)
         
     return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
+
+@json.json_view
+def friends(request):
+    user = get_user(request)
+    social_services = MSocialServices.objects.get(user_id=user.pk)
+    
+    return social_services.to_json()
     
 @login_required
 def twitter_connect(request):
@@ -186,3 +193,15 @@ def facebook_connect(request):
         # Start the OAuth process
         url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode(args)
         return HttpResponseRedirect(url)
+        
+@ajax_login_required
+def twitter_disconnect(request):
+    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services.disconnect_twitter()
+    return friends(request)
+
+@ajax_login_required
+def facebook_disconnect(request):
+    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services.disconnect_facebook()
+    return friends(request)

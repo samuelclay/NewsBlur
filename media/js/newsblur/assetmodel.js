@@ -915,6 +915,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
       this.make_request('/reader/load_tutorial', data, callback);
     },
     
+    fetch_friends: function(callback) {
+        this.make_request('/social/friends', null, callback);
+    },
+    
+    disconnect_social_service: function(service, callback) {
+        this.make_request('/social/'+service+'_disconnect/', null, callback);
+    },
+    
     recalculate_story_scores: function(feed_id) {
         _.each(this.stories, _.bind(function(story, i) {
             if (story.story_feed_id != feed_id) return;

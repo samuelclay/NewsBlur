@@ -16,6 +16,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     runner: function() {
         this.make_modal();
         this.open_modal();
+        this.fetch_friends();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.handle_change();
@@ -26,23 +27,58 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-friends' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active' }, 'Find Friends'),
-                $.make('div', { className: 'NB-modal-tab' }, 'I\'m Following'),
-                $.make('div', { className: 'NB-modal-tab' }, 'Following Me')
+                $.make('div', { className: 'NB-modal-loading' }),
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-findfriends' }, 'Find Friends'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-following' }, 'I\'m Following'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-followers' }, 'Following Me')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, 'Friends and Followers'),
-            $.make('form', { className: 'NB-preferences-form' }, [
-                $.make('div', { className: 'NB-modal-submit' }, [
-                    $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
-                    ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
-                ])
-            ]).bind('submit', function(e) {
-                e.preventDefault();
-                self.save();
-                return false;
-            })
+            $.make('div', { className: 'NB-tab NB-tab-findfriends NB-active' }, [
+                $.make('div', { className: 'NB-modal-section NB-friends-services'})
+            ]),
+            $.make('div', { className: 'NB-tab NB-tab-following' }, [
+                'List of followings'
+            ]),
+            $.make('div', { className: 'NB-tab NB-tab-followers' }, [
+                'List of followers'
+            ])
         ]);
+    },
+    
+    fetch_friends: function() {
+        this.model.fetch_friends(_.bind(this.make_friends, this));
+    },
+    
+    make_friends: function(data) {
+        console.log(["data", data]);
+        var $services = $('.NB-friends-services', this.$modal).empty();
+        
+        _.each(['twitter', 'facebook'], function(service) {
+            var $service;
+            console.log(["data", data, service, data.services[service][service+'_uid']]);
+            if (data.services[service][service+'_uid']) {
+                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service}, [
+                    $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-close' }, 'Disconnect')
+                ]);
+            } else {
+                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service}, [
+                    $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, 'Connect to ' + _.capitalize(service))
+                ]);
+            }
+            $services.append($service);
+        });
+       
+        $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow'}, [
+            $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: data.autofollow ? 'checked' : null }),
+            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, [
+                'Auto-follow',
+                $.make('br'),
+                'my friends'
+            ])
+        ]);
+        $services.append($autofollow);
     },
     
     open_modal: function(callback) {
@@ -83,6 +119,23 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         });
     },
     
+    switch_tab: function(newtab) {
+        var $modal_tabs = $('.NB-modal-tab', this.$modal);
+        var $tabs = $('.NB-tab', this.$modal);
+        
+        $modal_tabs.removeClass('NB-active');
+        $tabs.removeClass('NB-active');
+        
+        $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
+        $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
+    },
+    
+    disconnect: function(service) {
+        var $service = $('.NB-friends-service-'+service, this.$modal);
+        $('.NB-friends-service-connect', $service).text('Disconnecting...');
+        this.model.disconnect_social_service(service, _.bind(this.make_friends, this));
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -90,15 +143,32 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     handle_click: function(elem, e) {
         var self = this;
         
-        $.targetIs(e, { tagSelector: '.NB-account-premium-modal' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function($t, $p) {
             e.preventDefault();
-            
-            self.close_and_load_premium();
+            var newtab;
+            if ($t.hasClass('NB-modal-tab-findfriends')) {
+                newtab = 'findfriends';
+            } else if ($t.hasClass('NB-modal-tab-followers')) {
+                newtab = 'followers';
+            } else if ($t.hasClass('NB-modal-tab-following')) {
+                newtab = 'following';
+            }
+            self.switch_tab(newtab);
         });        
-        $.targetIs(e, { tagSelector: '.NB-link-account-preferences' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function($t, $p) {
             e.preventDefault();
-            
-            self.close_and_load_preferences();
+            var service;
+            var $service = $t.closest('.NB-friends-service');
+            if ($service.hasClass('NB-friends-service-twitter')) {
+                service = 'twitter';
+            } else if ($service.hasClass('NB-friends-service-facebook')) {
+                service = 'facebook';
+            }
+            if ($service.hasClass('NB-connected')) {
+                self.disconnect(service);
+            } else {
+                self.connect(service);
+            }
         });
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
             e.preventDefault();

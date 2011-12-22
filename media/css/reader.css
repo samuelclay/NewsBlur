@@ -4523,6 +4523,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/package_green.png') no-repeat  0 2px;
 }
+.NB-menu-manage .NB-menu-manage-friends .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/rainbow.png') no-repeat  0 2px;
+}
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/color_wheel.png') no-repeat  0 2px;
 }
@@ -6352,11 +6355,45 @@ background: transparent;
 /* = Friends Modal = */
 /* ================= */
 
-.NB-modal-friends .NB-modal-tabs {
+.NB-modal-friends .NB-modal-loading {
+    float: none;
+    margin: 4px 8px 0 0;
 }
-.NB-modal.NB-modal-friends .NB-modal-submit {
-    margin-top: 0;
-    clear: both;
-    border-top: 1px solid #A0A0A0;
-    padding: 12px 0 0;
+.NB-modal-friends .NB-friends-services {
+    overflow: hidden;
+}
+.NB-modal-friends .NB-friends-service {
+    float: left;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 12px;
+}
+.NB-modal-friends .NB-friends-service-title {
+    float: left;
+    padding: 0 10px 0 20px;
+}
+.NB-modal-friends .NB-friends-service-connect,
+.NB-modal-friends .NB-friends-service-disconnect {
+    float: left;
+    width: auto;
+    margin-top: -2px;
+}
+.NB-modal-friends .NB-friends-autofollow {
+    width: auto;
+    margin-left: 20px;
+    float: left;
+    font-size: 12px;
+    position: relative;
+    margin-top: -4px;
+}
+.NB-modal-friends .NB-friends-autofollow-checkbox {
+    margin-right: 4px;
+    position: absolute;
+    top: 2px;
+    left: 0;
+}
+.NB-modal-friends .NB-friends-autofollow-label {
+    margin-left: 20px;
+    display: block;
+    text-align: left;
 }

@@ -1531,7 +1531,7 @@
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
-            $('.NB-progress-link', $progress).html($.make('a', { href: '#', className: 'NB-splash-link NB-menu-manage-feedchooser' }, 'Choose your 64'));
+            $('.NB-progress-link', $progress).html($.make('a', { href: '#', className: 'NB-splash-link NB-menu-manage-feedchooser' }, 'Choose your 64 sites'));
             
             this.show_progress_bar();
         },
@@ -4350,9 +4350,14 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Extensions and extras.')
                     ]),
+                    $.make('li', { className: 'NB-menu-manage-friends' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Friends'),
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Find friends to follow.')
+                    ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
                     ]))
                 ]);
@@ -6429,6 +6434,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_goodies_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-friends' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_friends_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-preferences' }, function($t, $p){
