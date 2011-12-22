@@ -6,7 +6,6 @@ import feedparser
 import time
 import urllib2
 import httplib
-from requests.models import ConnectionError
 from django.conf import settings
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
@@ -76,6 +75,9 @@ class PageImporter(object):
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
         except (httplib.IncompleteRead), e:
             self.feed.save_page_history(500, "IncompleteRead", e)
+        except requests.exceptions.RequestException, e:
+            logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
+            return self.fetch_page(urllib_fallback=True)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
