@@ -6347,3 +6347,16 @@ background: transparent;
         margin-bottom: 54px;
     }
 }
+
+/* ================= */
+/* = Friends Modal = */
+/* ================= */
+
+.NB-modal-friends .NB-modal-tabs {
+}
+.NB-modal.NB-modal-friends .NB-modal-submit {
+    margin-top: 0;
+    clear: both;
+    border-top: 1px solid #A0A0A0;
+    padding: 12px 0 0;
+}

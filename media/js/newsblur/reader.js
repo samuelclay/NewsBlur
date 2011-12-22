@@ -3524,6 +3524,10 @@
 
             // NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {'score': score});
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({'score': score});
+        },    
+            
+        open_friends_modal: function(score) {
+            NEWSBLUR.friends = new NEWSBLUR.ReaderFriends();
         },
         
         open_recommend_modal: function(feed_id) {
@@ -6455,6 +6459,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_trainer_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-friends-button' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_friends_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-launch-tutorial' }, function($t, $p){

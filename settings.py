@@ -205,6 +205,7 @@ COMPRESS_JS = {
             'js/newsblur/reader_recommend_feed.js',
             'js/newsblur/reader_send_email.js',
             'js/newsblur/reader_tutorial.js',
+            'js/newsblur/reader_friends.js',
             'js/newsblur/about.js',
             'js/newsblur/faq.js',
         ),
