@@ -1,18 +1,19 @@
 # Use this script to copy the contents of MongoDB from one server 
 # to another using only pymongo. This circumvents the mongod --repair
-# option, which can fucking fail.
+# option, which can fail.
 
 import sys
 import pymongo
 import datetime
+from apps.rss_feeds.models import Feed
 
 collections = [
-    #"classifier_author",
-    #"classifier_feed",
-    #"classifier_tag",
-    #"classifier_title",
-    #"feed_icons",
-    # "feed_pages",
+    "classifier_author",
+    "classifier_feed",
+    "classifier_tag",
+    "classifier_title",
+    "feed_icons",
+    "feed_pages",
     "feedback",
     "starred_stories",
     "statistics",
