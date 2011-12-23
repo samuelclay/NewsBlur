@@ -4998,6 +4998,10 @@
             var unread_view_name = options['unread_view_name'] || this.get_unread_view_name();
             var $stories_show, $stories_hide;
             
+            if (this.model.stories.length > 100) {
+                options['animate'] = false;
+            }
+            
             if (this.flags['unread_threshold_temporarily']) {
               unread_view_name = this.flags['unread_threshold_temporarily'];
               options['temporary'] = true;
