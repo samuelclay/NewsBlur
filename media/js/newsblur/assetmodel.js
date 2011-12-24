@@ -92,7 +92,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 }
             },
             error: function(e, textStatus, errorThrown) {
-                NEWSBLUR.log(['AJAX Error', textStatus, errorThrown]);
+                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown]);
                 if (errorThrown == 'abort') {
                     return;
                 }
