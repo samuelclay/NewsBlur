@@ -47,6 +47,13 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.make('div', { className: 'NB-modal-section NB-friends-findlist'}, [
                         $.make('div', { className: 'NB-ghost' }, 'You\'re auto-following new friends, so no need to manually follow them. Yay!')
                     ])
+                ]),
+                $.make('fieldset', [
+                    $.make('legend', 'Search for friends'),
+                    $.make('div', { className: 'NB-modal-section NB-friends-search'}, [
+                        $.make('label', { 'for': 'NB-friends-search-input' }, 'Username or email:'),
+                        $.make('input', { type: 'text', className: 'NB-input', id: 'NB-friends-search-input' })
+                    ])
                 ])
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),

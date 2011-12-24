@@ -1988,7 +1988,8 @@ background: transparent;
 #story_pane .NB-story-comments-public-teaser {
     background-color: #B1B6B4;
     color: white;
-    text-shadow: 0 1px 0 black;
+    text-shadow: 0 1px 0 #505050;
+    font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
     padding: 2px 12px;
@@ -2001,6 +2002,10 @@ background: transparent;
 #story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
     background-color: #2B478C;
     background-image: none;
+}
+#story_pane .NB-story-comments-public-teaser b {
+    padding: 0 1px;
+    font-size: 12px;
 }
 #story_pane .NB-story-comment .NB-story-comment-content {
     clear: both;

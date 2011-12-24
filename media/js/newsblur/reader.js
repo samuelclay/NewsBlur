@@ -3792,7 +3792,7 @@
             var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
                 $.make('div', { className: 'NB-story-comments-public-teaser' }, [
                     'There are ',
-                    $.make('b', { style: 'padding: 0 1px' }, '3'),
+                    $.make('b', '3'),
                     ' public comments'
                 ])
             ]);
