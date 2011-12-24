@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from vendor import facebook
 from vendor import tweepy
+from utils import log as logging
 
 
 class MSharedStory(mongo.Document):
@@ -59,6 +60,7 @@ class MSocialServices(mongo.Document):
     facebook_friend_ids   = mongo.ListField(mongo.StringField())
     facebook_picture_url  = mongo.StringField()
     facebook_refresh_date = mongo.DateTimeField()
+    upload_picture_url    = mongo.StringField()
     
     meta = {
         'collection': 'social_services',
@@ -84,6 +86,9 @@ class MSocialServices(mongo.Document):
                 'gravatar': {
                     'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
                                             hashlib.md5(user.email).hexdigest()
+                },
+                'upload': {
+                    'upload_picture_url': self.upload_picture_url
                 }
             }
         }
@@ -133,6 +138,63 @@ class MSocialServices(mongo.Document):
         self.facebook_refresh_date = datetime.datetime.utcnow()
         self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
         self.save()
+        
+        self.follow_facebook_friends()
+        
+    def follow_twitter_friends(self):
+        social_profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
+        following = []
+        followers = 0
+        
+        if self.autofollow:
+            # Follow any friends already on NewsBlur
+            for twitter_uid in self.twitter_friend_ids:
+                user_social_services = MSocialServices.objects.filter(twitter_uid=twitter_uid)
+                if user_social_services:
+                    followee_user_id = user_social_services[0].user_id
+                    social_profile.follow_user(followee_user_id)
+                    following.append(followee_user_id)
+        
+            # Follow any friends already on NewsBlur
+            following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
+            for following_user in following_users:
+                if following_user.autofollow:
+                    following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
+                    following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+                    followers += 1
+        
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~BB~FRTwitter import: following ~SB%s~SN with ~SB%s~SN followers" % (following, followers))
+        
+        return following
+        
+    def follow_facebook_friends(self):
+        social_profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
+        following = []
+        followers = 0
+        
+        if self.autofollow:
+            # Follow any friends already on NewsBlur
+            for facebook_uid in self.facebook_friend_ids:
+                user_social_services = MSocialServices.objects.filter(facebook_uid=facebook_uid)
+                if user_social_services:
+                    followee_user_id = user_social_services[0].user_id
+                    social_profile.follow_user(followee_user_id)
+                    following.append(followee_user_id)
+        
+            # Follow any friends already on NewsBlur
+            following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
+            for following_user in following_users:
+                if following_user.autofollow:
+                    following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
+                    following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+                    followers += 1
+        
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~BB~FRFacebook import: following ~SB%s~SN with ~SB%s~SN followers" % (len(following), followers))
+        
+        return following
+        
 
     def disconnect_twitter(self):
         self.twitter_uid = None
@@ -141,3 +203,40 @@ class MSocialServices(mongo.Document):
     def disconnect_facebook(self):
         self.facebook_uid = None
         self.save()
+
+
+class MSocialProfile(mongo.Document):
+    user_id             = mongo.IntField()
+    following_user_ids  = mongo.ListField(mongo.IntField())
+    follower_user_ids   = mongo.ListField(mongo.IntField())
+    unfollowed_user_ids = mongo.ListField(mongo.IntField())
+    
+    meta = {
+        'collection': 'social_profile',
+        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
+        'allow_inheritance': False,
+    }
+    
+    def follow_user(self, user_id, check_unfollowed=False):
+        if not check_unfollowed or user_id not in self.following_user_ids:
+            if user_id not in self.following_user_ids:
+                self.following_user_ids.append(user_id)
+                self.save()
+            
+            followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
+            if self.user_id not in followee.follower_user_ids:
+                followee.follower_user_ids.append(self.user_id)
+                followee.save()
+    
+    def unfollow_user(self, user_id):
+        self.following_user_ids.remove(user_id)
+        self.save()
+        
+        followee = MSocialProfile.objects.get(user_id=user_id)
+        followee.follower_user_ids.remove(self.user_id)
+        followee.save()
+        
+    @classmethod
+    def following_user_profiles(cls, user_ids):
+        profiles = cls.objects.filter(user_id__in=user_ids)
+        

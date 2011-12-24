@@ -97,7 +97,7 @@ def shared_stories_public(request, username):
 @json.json_view
 def friends(request):
     user = get_user(request)
-    social_services = MSocialServices.objects.get(user_id=user.pk)
+    social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     
     return social_services.to_json()
     
@@ -111,7 +111,7 @@ def twitter_connect(request):
     oauth_verifier = request.REQUEST.get('oauth_verifier')
     denied = request.REQUEST.get('denied')
     if denied:
-        pass
+        return {'error': 'Denied! Try connecting again.'}
     elif oauth_token and oauth_verifier:
         try:
             auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
@@ -119,7 +119,7 @@ def twitter_connect(request):
             access_token = auth.get_access_token(oauth_verifier)
             api = tweepy.API(auth)
             twitter_user = api.me()
-        except (tweepy.error.TweepError, IOError):
+        except (tweepy.TweepError, IOError):
             return dict(error="Twitter has returned an error. Try connecting again.")
 
         # Be sure that two people aren't using the same Twitter account.
@@ -136,6 +136,7 @@ def twitter_connect(request):
         social_services.twitter_access_secret = access_token.secret
         social_services.save()
         social_services.sync_twitter_friends()
+        following = social_services.follow_twitter_friends()
         return {}
     else:
         # Start the OAuth process
@@ -189,9 +190,10 @@ def facebook_connect(request):
         social_services.facebook_access_token = access_token
         social_services.save()
         social_services.sync_facebook_friends()
+        following = social_services.follow_facebook_friends()
         return {}
     elif request.REQUEST.get('error'):
-        pass
+        return {'error': '%s... Try connecting again.' % request.REQUEST.get('error')}
     else:
         # Start the OAuth process
         url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode(args)

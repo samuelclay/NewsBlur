@@ -322,15 +322,15 @@ $(document).ready(function() {
         {% endif %}
       </div>
       
-        <div class="NB-module NB-module-tutorial">
+        <div class="NB-module NB-module-gettingstarted {% if user_profile.hide_getting_started %}NB-hidden{% endif %}">
           <h5 class="NB-module-header">
             Getting Started
             <div class="NB-module-header-right">
-              <a href="#" class="NB-splash-link NB-module-tutorial-hide">Hide</a>
+              <a href="#" class="NB-splash-link NB-module-gettingstarted-hide">Hide</a>
             </div>
           </h5>
           {% if not user_profile.tutorial_finished %}
-              <div class="NB-module-item NB-last {% if user_profile.hide_tutorial %}NB-hidden{% endif %}">
+              <div class="NB-module-item NB-module-item-tutorial NB-last {% if user_profile.tutorial_finished %}NB-hidden{% endif %}">
                 <div class="NB-module-item-image">
                     <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
                 </div>
@@ -346,39 +346,43 @@ $(document).ready(function() {
                     </div>
                 </div>
               </div>
-          {% endif %}
-        <div class="NB-module-item NB-module-find-friends">
-          <div class="NB-module-item-image">
-              <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
-          </div>
-          <h3 class="NB-module-content-header">
-              <span class="NB-module-content-subtitle">
-                  Share stories
-              </span>
-              Get Social
-          </h3>
-          <div class="NB-module-item-title">
-              <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">Find and Follow Friends</div>
+        {% endif %}
+        {% if not user_profile.hide_find_friends %}
+            <div class="NB-module-item NB-module-find-friends">
+              <div class="NB-module-item-image">
+                  <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
               </div>
-          </div>
-        </div>
-        <div class="NB-module-item NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
-          <div class="NB-module-item-image">
-              <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
-          </div>
-          <h3 class="NB-module-content-header">
-              <span class="NB-module-content-subtitle">
-                <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
-              </span>
-              Intelligence Trainer
-          </h3>
-          <div class="NB-module-item-title">
-              <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
+              <h3 class="NB-module-content-header">
+                  <span class="NB-module-content-subtitle">
+                      Share stories
+                  </span>
+                  Get Social
+              </h3>
+              <div class="NB-module-item-title">
+                  <div class="NB-modal-submit">
+                    <div class="NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">Find and Follow Friends</div>
+                  </div>
               </div>
-          </div>
-        </div>
+            </div>
+        {% endif %}
+        {% if not user_profile.has_trained_intelligence %}
+            <div class="NB-module-item NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
+              <div class="NB-module-item-image">
+                  <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
+              </div>
+              <h3 class="NB-module-content-header">
+                  <span class="NB-module-content-subtitle">
+                    <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
+                  </span>
+                  Intelligence Trainer
+              </h3>
+              <div class="NB-module-item-title">
+                  <div class="NB-modal-submit">
+                    <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
+                  </div>
+              </div>
+            </div>
+        {% endif %}
       </div>
       
       {% if not user_profile.hide_mobile %}

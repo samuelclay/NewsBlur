@@ -3539,7 +3539,7 @@
         },
         
         hide_tutorial: function() {
-          var $tutorial = $('.NB-module-tutorial');
+          var $tutorial = $('.NB-module-item-tutorial');
           
           this.model.preference('tutorial_finished', true);
           $tutorial.animate({
@@ -3550,6 +3550,51 @@
               $tutorial.slideUp(350);
             }
           });
+        },
+        
+        hide_intelligence_trainer: function() {
+          var $trainer = $('.NB-module-account-trainer');
+          
+          this.model.preference('has_trained_intelligence', true);
+          $trainer.animate({
+            'opacity': 0
+          }, {
+            'duration': 500,
+            'complete': function() {
+              $trainer.slideUp(350);
+            }
+          });
+        },
+        
+        hide_find_friends: function() {
+          var $findfriends = $('.NB-module-find-friends');
+          
+          this.model.preference('hide_find_friends', true);
+          $findfriends.animate({
+            'opacity': 0
+          }, {
+            'duration': 500,
+            'complete': function() {
+              $findfriends.slideUp(350);
+            }
+          });
+        },
+        
+        check_hide_getting_started: function(force) {
+            if (force || this.preference('hide_tutorial') &&
+                this.preference('hide_find_friends') &&
+                this.preference('has_trained_intelligence')) {
+                var $gettingstarted = $('.NB-module-gettingstarted');
+                $gettingstarted.animate({
+                'opacity': 0
+              }, {
+                'duration': 500,
+                'complete': function() {
+                  $gettingstarted.slideUp(350);
+                }
+              });
+              this.model.preference('hide_getting_started', true);
+            }
         },
         
         hide_mobile: function() {
@@ -6484,10 +6529,10 @@
                     self.open_tutorial_modal();
                 }
             });  
-            $.targetIs(e, { tagSelector: '.NB-module-tutorial-hide' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.hide_tutorial();
+                    self.check_hide_getting_started(true);
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-mobile-hide' }, function($t, $p){
