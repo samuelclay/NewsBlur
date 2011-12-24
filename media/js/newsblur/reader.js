@@ -3527,7 +3527,7 @@
         },    
             
         open_friends_modal: function(score) {
-            NEWSBLUR.friends = new NEWSBLUR.ReaderFriends();
+            NEWSBLUR.reader_friends = new NEWSBLUR.ReaderFriends();
         },
         
         open_recommend_modal: function(feed_id) {

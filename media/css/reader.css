@@ -4564,7 +4564,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/email.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
-    background: transparent url('../img/reader/twitter_icon_2.png') no-repeat 0 0;
+    background: transparent url('../img/reader/twitter_icon.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-facebook {
     background: transparent url('../img/reader/facebook_icon.png') no-repeat 0 0;
@@ -4839,7 +4839,7 @@ background: transparent;
 /* ===================== */
 
 .NB-modal-email .NB-modal-loading {
-  margin: 6px 8px 0;
+  margin: 6px 8px 0;;
 }
 .NB-modal-email label {
   float: left;
@@ -6355,9 +6355,12 @@ background: transparent;
 /* = Friends Modal = */
 /* ================= */
 
-.NB-modal-friends .NB-modal-loading {
-    float: none;
-    margin: 4px 8px 0 0;
+.NB-modal-friends .NB-tab {
+    min-height: 80px;
+}
+.NB-modal-friends .NB-modal-tabs .NB-modal-loading {
+    margin: 6px 8px 0 0;
+    float: left;
 }
 .NB-modal-friends .NB-friends-services {
     overflow: hidden;
@@ -6366,7 +6369,7 @@ background: transparent;
     float: left;
     text-align: center;
     font-weight: bold;
-    margin-right: 12px;
+    margin-right: 0px;
 }
 .NB-modal-friends .NB-friends-service-title {
     float: left;
@@ -6378,10 +6381,13 @@ background: transparent;
     width: auto;
     margin-top: -2px;
 }
+.NB-modal-friends .NB-friends-service-connect img {
+    vertical-align: bottom;
+    margin: 0 4px 0 0;
+}
 .NB-modal-friends .NB-friends-autofollow {
     width: auto;
-    margin-left: 20px;
-    float: left;
+    float: right;
     font-size: 12px;
     position: relative;
     margin-top: -4px;
@@ -6396,4 +6402,14 @@ background: transparent;
     margin-left: 20px;
     display: block;
     text-align: left;
+    cursor: pointer;
+}
+
+.NB-modal-friends .NB-tab .NB-ghost {
+    margin: 0 auto;
+    padding: 24px 0;
+    color: #A0A0A0;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
 }

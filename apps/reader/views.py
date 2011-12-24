@@ -1,8 +1,7 @@
 import datetime
 import time
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.db import IntegrityError
 from django.views.decorators.cache import never_cache
@@ -40,13 +39,14 @@ from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
-from utils.view_functions import get_argument_or_404
+from utils.view_functions import get_argument_or_404, render_to
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
 @never_cache
+@render_to('reader/feeds.xhtml')
 def index(request):
     if request.method == "POST":
         if request.POST['submit'] == 'login':
@@ -80,7 +80,7 @@ def index(request):
     if start_import_from_google_reader:
         del request.session['import_from_google_reader']
 
-    return render_to_response('reader/feeds.xhtml', {
+    return {
         'user_profile'      : hasattr(user, 'profile') and user.profile,
         'login_form'        : login_form,
         'signup_form'       : signup_form,
@@ -96,7 +96,7 @@ def index(request):
         'user_statistics'   : user_statistics,
         'feedbacks'         : feedbacks,
         'start_import_from_google_reader': start_import_from_google_reader,
-    }, context_instance=RequestContext(request))
+    }
 
 @never_cache
 def login(request):

@@ -12,6 +12,7 @@ from apps.rss_feeds.models import MStory
 from apps.social.models import MSharedStory, MSocialServices
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
+from utils.view_functions import render_to
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
 from vendor import facebook
@@ -101,6 +102,7 @@ def friends(request):
     return social_services.to_json()
     
 @login_required
+@render_to('social/social_connect.xhtml')
 def twitter_connect(request):
     twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
     twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
@@ -118,15 +120,15 @@ def twitter_connect(request):
             api = tweepy.API(auth)
             twitter_user = api.me()
         except (tweepy.error.TweepError, IOError):
-            return json.json_response(request, dict(error="Twitter has returned an error. Try connecting again."))
+            return dict(error="Twitter has returned an error. Try connecting again.")
 
         # Be sure that two people aren't using the same Twitter account.
         existing_user = MSocialServices.objects.filter(twitter_uid=unicode(twitter_user.id))
         if existing_user and existing_user[0].user_id != request.user.pk:
             user = User.objects.get(pk=existing_user[0].user_id)
-            return json.json_response(request, dict(error=("Another user (%s, %s) has "
+            return dict(error=("Another user (%s, %s) has "
                                "already connected with those Twitter credentials."
-                               % (user.username, user.email_address))))
+                               % (user.username, user.email_address)))
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.twitter_uid = unicode(twitter_user.id)
@@ -134,15 +136,16 @@ def twitter_connect(request):
         social_services.twitter_access_secret = access_token.secret
         social_services.save()
         social_services.sync_twitter_friends()
-        return json.json_response(request, dict(code=1))
+        return {}
     else:
         # Start the OAuth process
         auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
         auth_url = auth.get_authorization_url()
-        return HttpResponseRedirect(auth_url)
+        return {'next': auth_url}
 
     
 @login_required
+@render_to('social/social_connect.xhtml')
 def facebook_connect(request):
     facebook_app_id = settings.FACEBOOK_APP_ID
     facebook_secret = settings.FACEBOOK_SECRET
@@ -164,7 +167,7 @@ def facebook_connect(request):
         response = urlparse.parse_qs(response_text)
 
         if "access_token" not in response:
-            return json.json_response(request, dict(error="Facebook has returned an error. Try connecting again."))
+            return dict(error="Facebook has returned an error. Try connecting again.")
 
         access_token = response["access_token"][-1]
 
@@ -177,22 +180,22 @@ def facebook_connect(request):
         existing_user = MSocialServices.objects.filter(facebook_uid=uid)
         if existing_user and existing_user[0].user_id != request.user.pk:
             user = User.objects.get(pk=existing_user[0].user_id)
-            return json.json_response(request, dict(error=("Another user (%s, %s) has "
+            return dict(error=("Another user (%s, %s) has "
                                "already connected with those Facebook credentials."
-                               % (user.username, user.email_address))))
+                               % (user.username, user.email_address)))
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.facebook_uid = uid
         social_services.facebook_access_token = access_token
         social_services.save()
         social_services.sync_facebook_friends()
-        return json.json_response(request, dict(code=1))
+        return {}
     elif request.REQUEST.get('error'):
         pass
     else:
         # Start the OAuth process
         url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode(args)
-        return HttpResponseRedirect(url)
+        return {'next': url}
         
 @ajax_login_required
 def twitter_disconnect(request):

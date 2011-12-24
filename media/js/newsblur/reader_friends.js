@@ -36,26 +36,27 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-tab NB-tab-findfriends NB-active' }, [
                 $.make('div', { className: 'NB-modal-section NB-friends-services'})
             ]),
-            $.make('div', { className: 'NB-tab NB-tab-following' }, [
-                'List of followings'
-            ]),
-            $.make('div', { className: 'NB-tab NB-tab-followers' }, [
-                'List of followers'
-            ])
+            $.make('div', { className: 'NB-tab NB-tab-following' }),
+            $.make('div', { className: 'NB-tab NB-tab-followers' })
         ]);
     },
     
     fetch_friends: function() {
-        this.model.fetch_friends(_.bind(this.make_friends, this));
+        $('.NB-modal-loading', this.$modal).addClass('NB-active');
+        this.model.fetch_friends(_.bind(function(data) {
+            this.make_friends(data);
+            this.make_followers(data);
+            this.make_following(data);
+        }, this));
     },
     
     make_friends: function(data) {
         console.log(["data", data]);
+        $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
         
         _.each(['twitter', 'facebook'], function(service) {
             var $service;
-            console.log(["data", data, service, data.services[service][service+'_uid']]);
             if (data.services[service][service+'_uid']) {
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service}, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
@@ -64,7 +65,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service}, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, 'Connect to ' + _.capitalize(service))
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
+                        'Connect to ' + _.capitalize(service)
+                    ])
                 ]);
             }
             $services.append($service);
@@ -79,6 +83,21 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ])
         ]);
         $services.append($autofollow);
+        this.resize();
+    },
+    
+    make_followers: function(data) {
+        if (!data.followers || !data.followers.length) {
+            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
+            $('.NB-tab-followers', this.$modal).empty().append($ghost);
+        }
+    },
+    
+    make_following: function(data) {
+        if (!data.following || !data.following.length) {
+            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You are not yet subscribing to anybody\'s shared stories.');
+            $('.NB-tab-following', this.$modal).empty().append($ghost);
+        }
     },
     
     open_modal: function(callback) {
@@ -130,10 +149,25 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
     },
     
+    connect: function(service) {
+        var options = "location=0,status=0,width=800,height=500";
+        var url = "/social/" + service + "_connect";
+        this.connect_window = window.open(url, '_blank', options);
+    },
+    
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
         this.model.disconnect_social_service(service, _.bind(this.make_friends, this));
+    },
+    
+    post_connect: function(data) {
+        if (data.error) {
+            var $error = $.make('div', { className: 'DV-error' }, data.error);
+            $('.NB-friends-services', this.$modal).append($error);
+        } else {
+            this.fetch_friends();
+        }
     },
     
     // ===========

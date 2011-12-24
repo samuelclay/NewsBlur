@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html>
+<title>NewsBlur - Connecting...</title>
+
+<head>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #A0A0A0;
+            font-style: italic;
+        }
+        @-webkit-keyframes spin{
+            from {-webkit-transform: rotate(0deg)}
+            to  {-webkit-transform: rotate(360deg)}
+        }
+        .NB-loader {
+            margin: 72px auto;
+            width: 256px;
+            height: 256px;
+            display: block;
+            -webkit-animation: spin 3.4s infinite linear;
+        }
+    </style>
+    <script type="text/javascript" charset="utf-8">
+        var next = "{{ next|safe }}";
+        if (next) {
+            console.log(["next", next]);
+            setTimeout(function() {
+                window.location.href = next;
+            }, 1000);
+        } else if (window.opener && window.opener.NEWSBLUR) {
+            window.opener.NEWSBLUR.reader_friends.post_connect({
+                {% if error %}
+                    'error': "{{ error }}",
+                {% endif %}
+            });
+            window.close();
+        } else {
+            window.location.href = "/";
+        }
+    </script>
+</head>
+
+<body>
+
+    <div style="text-align: center;">
+
+        <img class="NB-loader" src="{{ MEDIA_URL }}img/logo_512.png">
+
+        <div>Hold on just a smidgen...</div>
+        <div>If I was a bird I'd be a pigeon.</div>
+
+    </div>
+
+</body>
+</html>

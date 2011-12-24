@@ -279,6 +279,7 @@
     float: right;
     position: relative;
     bottom: -1px;
+    margin-right: 16px;
 }
 
 .NB-modal .NB-modal-tab {
@@ -311,7 +312,6 @@
     margin-top: 0;
     clear: both;
     border-top: 1px solid #A0A0A0;
-    padding: 12px 0 0;
 
 }
 .NB-modal .NB-tab.NB-active {
@@ -319,7 +319,7 @@
 }
 
 .NB-modal .NB-modal-section {
-    padding: 12px 0;
+    padding: 24px 0;
     border-bottom: 1px solid #A0A0A0;
 }
 
