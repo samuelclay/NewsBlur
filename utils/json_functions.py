@@ -43,7 +43,9 @@ def json_encode(data, *args, **kwargs):
         # Opps, we used to check if it is of type list, but that fails 
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
-        if isinstance(data, list):
+        if hasattr(data, 'to_json'):
+            ret = data.to_json()
+        elif isinstance(data, list):
             ret = _list(data)
         # Same as for lists above.
         elif isinstance(data, dict):
