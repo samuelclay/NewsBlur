@@ -45,7 +45,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('fieldset', [
                     $.make('legend', 'People I Know'),
                     $.make('div', { className: 'NB-modal-section NB-friends-findlist'}, [
-                        $.make('div', { className: 'NB-ghost' }, 'You\'re auto-following new friends, so no need to manually follow them. Yay!')
+                        $.make('div', { className: 'NB-ghost' }, 'You\'re auto-following new friends, so no need to manually follow them. Score!')
                     ])
                 ]),
                 $.make('fieldset', [
@@ -110,7 +110,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     make_profile: function(data) {
         var $profiles = $('.NB-friends-profile', this.$modal).empty();
         
-        _.each(['upload', 'twitter', 'facebook', 'gravatar'], function(service) {
+        _.each(['twitter', 'facebook', 'gravatar'], function(service) {
             var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-'+service }, [
                 $.make('div', { className: 'NB-friends-photo-title' }, [
                     $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-'+service }),
@@ -136,14 +136,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     make_followers: function(data) {
         if (!data.followers || !data.followers.length) {
-            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet to subscribe to your shared stories.');
+            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
             $('.NB-tab-followers', this.$modal).empty().append($ghost);
         }
     },
     
     make_following: function(data) {
         if (!data.following || !data.following.length) {
-            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You are not yet subscribing to anybody\'s shared stories.');
+            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
             $('.NB-tab-following', this.$modal).empty().append($ghost);
         }
     },

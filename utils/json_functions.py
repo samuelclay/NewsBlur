@@ -10,6 +10,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
+from mongoengine.queryset import QuerySet as MongoQuerySet
 import sys
 import datetime
 
@@ -43,7 +44,9 @@ def json_encode(data, *args, **kwargs):
         # Opps, we used to check if it is of type list, but that fails 
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
-        if isinstance(data, list):
+        if hasattr(data, 'to_json'):
+            ret = data.to_json()
+        elif isinstance(data, list):
             ret = _list(data)
         # Same as for lists above.
         elif isinstance(data, dict):
@@ -52,6 +55,9 @@ def json_encode(data, *args, **kwargs):
             # json.dumps() cant handle Decimal
             ret = str(data)
         elif isinstance(data, models.query.QuerySet):
+            # Actually its the same as a list ...
+            ret = _list(data)
+        elif isinstance(data, MongoQuerySet):
             # Actually its the same as a list ...
             ret = _list(data)
         elif isinstance(data, models.Model):

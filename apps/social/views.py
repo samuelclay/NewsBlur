@@ -9,7 +9,7 @@ from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from apps.rss_feeds.models import MStory
-from apps.social.models import MSharedStory, MSocialServices
+from apps.social.models import MSharedStory, MSocialServices, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to
@@ -98,8 +98,17 @@ def shared_stories_public(request, username):
 def friends(request):
     user = get_user(request)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
+    social_profile = MSocialProfile.objects.get(user_id=user.pk)
+    following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
+    follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
     
-    return social_services.to_json()
+    return {
+        'services': social_services,
+        'autofollow': social_services.autofollow,
+        'social_profile': social_profile.to_json(full=True),
+        'following_profiles': following_profiles,
+        'follower_profiles': follower_profiles,
+    }
     
 @login_required
 @render_to('social/social_connect.xhtml')

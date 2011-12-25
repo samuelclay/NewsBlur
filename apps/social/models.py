@@ -71,31 +71,24 @@ class MSocialServices(mongo.Document):
     def to_json(self):
         user = User.objects.get(pk=self.user_id)
         return {
-            'autofollow': self.autofollow,
-            'friends': self.friends(), 
-            'services': {
-                'twitter': {
-                    'twitter_username': self.twitter_username,
-                    'twitter_picture_url': self.twitter_picture_url,
-                    'twitter_uid': self.twitter_uid,
-                },
-                'facebook': {
-                    'facebook_uid': self.facebook_uid,
-                    'facebook_picture_url': self.facebook_picture_url,
-                },
-                'gravatar': {
-                    'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
-                                            hashlib.md5(user.email).hexdigest()
-                },
-                'upload': {
-                    'upload_picture_url': self.upload_picture_url
-                }
+            'twitter': {
+                'twitter_username': self.twitter_username,
+                'twitter_picture_url': self.twitter_picture_url,
+                'twitter_uid': self.twitter_uid,
+            },
+            'facebook': {
+                'facebook_uid': self.facebook_uid,
+                'facebook_picture_url': self.facebook_picture_url,
+            },
+            'gravatar': {
+                'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
+                                        hashlib.md5(user.email).hexdigest()
+            },
+            'upload': {
+                'upload_picture_url': self.upload_picture_url
             }
         }
     
-    def friends(self):
-        return []
-        
     def twitter_api(self):
         twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
         twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
@@ -206,16 +199,41 @@ class MSocialServices(mongo.Document):
 
 
 class MSocialProfile(mongo.Document):
-    user_id             = mongo.IntField()
-    following_user_ids  = mongo.ListField(mongo.IntField())
-    follower_user_ids   = mongo.ListField(mongo.IntField())
-    unfollowed_user_ids = mongo.ListField(mongo.IntField())
+    user_id              = mongo.IntField()
+    username             = mongo.StringField(max_length=30)
+    email                = mongo.EmailField()
+    bio                  = mongo.StringField()
+    photo_url            = mongo.StringField()
+    subscription_count   = mongo.IntField()
+    shared_stories_count = mongo.IntField()
+    following_count      = mongo.IntField()
+    follower_count       = mongo.IntField()
+    following_user_ids   = mongo.ListField(mongo.IntField())
+    follower_user_ids    = mongo.ListField(mongo.IntField())
+    unfollowed_user_ids  = mongo.ListField(mongo.IntField())
     
     meta = {
         'collection': 'social_profile',
         'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
         'allow_inheritance': False,
     }
+    
+    def to_json(self, full=False):
+        params = {
+            'user_id': self.user_id,
+            'username': self.username,
+            'photo_url': self.photo_url,
+            'bio': self.bio,
+            'subscription_count': self.subscription_count,
+            'shared_stories_count': self.shared_stories_count,
+        }
+        if full:
+            params['following_count']     = self.following_count
+            params['follower_count']      = self.following_count
+            params['following_user_ids']  = self.following_user_ids
+            params['follower_user_ids']   = self.follower_user_ids
+            params['unfollowed_user_ids'] = self.unfollowed_user_ids
+        return params
     
     def follow_user(self, user_id, check_unfollowed=False):
         if not check_unfollowed or user_id not in self.following_user_ids:
@@ -237,6 +255,7 @@ class MSocialProfile(mongo.Document):
         followee.save()
         
     @classmethod
-    def following_user_profiles(cls, user_ids):
+    def profiles(cls, user_ids):
         profiles = cls.objects.filter(user_id__in=user_ids)
+        return profiles
         
