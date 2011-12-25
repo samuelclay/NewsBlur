@@ -1265,6 +1265,13 @@ class DuplicateFeed(models.Model):
    
     def __unicode__(self):
         return "%s: %s" % (self.feed, self.duplicate_address)
+        
+    def to_json(self):
+        return {
+            'duplicate_address': self.duplicate_address,
+            'duplicate_feed_id': self.duplicate_feed_id,
+            'feed_id': self.feed.pk
+        }
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription
