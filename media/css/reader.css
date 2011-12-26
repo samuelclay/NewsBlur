@@ -6362,6 +6362,7 @@ background: transparent;
 
 .NB-modal-friends .NB-tab {
     min-height: 80px;
+    padding: 12px 0;
 }
 .NB-modal-friends .NB-modal-tabs .NB-modal-loading {
     margin: 6px 8px 0 0;
@@ -6371,14 +6372,14 @@ background: transparent;
     border: 0;
     border-top: 1px solid #E6E6E6;
     padding: 0 12px;
-    margin: 12px 0;
+    margin: 0;
 }
 .NB-modal-friends fieldset legend {
     padding: 0 12px;
     font-weight: bold;
     font-size: 11px;
     text-transform: uppercase;
-    color: #808080;
+    color: #151775;
 }
 .NB-modal-friends .NB-friends-services {
     overflow: hidden;
@@ -6402,7 +6403,7 @@ background: transparent;
     width: auto;
     margin-top: -2px;
 }
-.NB-modal-friends .NB-friends-service-connect img {
+.NB-modal-friends .NB-modal-submit-button img {
     vertical-align: bottom;
     margin: 0 4px 0 0;
 }
@@ -6445,42 +6446,44 @@ background: transparent;
 
 
 .NB-modal-friends .NB-modal-section.NB-friends-profile {
-    padding-left: 24px;
     overflow: hidden;
 }
-.NB-modal-friends .NB-friends-profile .NB-friends-profile-photo-group {
+.NB-modal-friends .NB-modal-section.NB-friends-profilephoto {
+    overflow: hidden;
+}
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group {
     float: left;
-    margin: 12px 24px 0 0;
+    margin: 12px 0 0 12px;
     position: relative;
     width: 120px;
     font-size: 14px;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-friends-photo-title input {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-photo-title input {
     margin-right: 8px;
 }
-.NB-modal-friends .NB-friends-profile .NB-friends-photo-title label {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-photo-title label {
     margin: 2px 0 0 0;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-friends-profile-photo-group img {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group img {
     width: 50px;
     height: 50px;
     border: 1px solid #A0A0A0;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-friends-profile-photo-group.is_disabled {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group.is_disabled {
     opacity: .4;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-friends-photo-image {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-photo-image {
     position: relative;
     margin: 8px 0 0 22px;
 }
-.NB-modal-friends .NB-friends-profile .NB-friends-profile-photo-group .NB-photo-loader {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group .NB-photo-loader {
     display: none;
 }
-.NB-modal-friends .NB-friends-profile .NB-friends-profile-photo-group.NB-loading .NB-photo-loader {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group.NB-loading .NB-photo-loader {
     display: block;
     width: 32px;
     height: 32px;
@@ -6490,11 +6493,11 @@ background: transparent;
     z-index: 1;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-friends-profile-photo-group.is_loading .photo-upload-placeholder {
+.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group.is_loading .photo-upload-placeholder {
     opacity: .25;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-photo-link {
+.NB-modal-friends .NB-friends-profilephoto .NB-photo-link {
     position: relative;
     left: 0px;
     bottom: -6px;
@@ -6503,7 +6506,7 @@ background: transparent;
     overflow: hidden;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-photo-link input[type=file] {
+.NB-modal-friends .NB-friends-profilephoto .NB-photo-link input[type=file] {
     position: absolute;
     top: 0;
     right: 0;
@@ -6516,9 +6519,57 @@ background: transparent;
     cursor: pointer;
 }
 
-.NB-modal-friends .NB-friends-profile .NB-gravatar-link {
+.NB-modal-friends .NB-friends-profilephoto .NB-gravatar-link {
     position: relative;
     left: 10px;
     bottom: -6px;
     height: 20px;
+}
+
+.NB-modal-friends .NB-friends-findfriends-profile {
+    text-align: center;
+}
+.NB-modal-friends .NB-tab-findfriends .NB-friends-profile-link {
+    padding: 24px 0 24px;
+    margin: 0 auto;
+    display: inline-block;
+    text-align: center;
+}
+
+.NB-modal-friends .NB-tab-findfriends .NB-friends-profile-link img {
+    vertical-align: text-bottom;
+}
+
+.NB-modal-friends .NB-friends-profile label,
+.NB-modal-friends .NB-friends-search label {
+    clear: both;
+    float: left;
+    width: 100px;
+    padding: 12px 8px 0 12px;
+}
+.NB-modal-friends .NB-friends-search-badge {
+    min-height: 100px;
+}
+.NB-modal-friends .NB-friends-profile .NB-profile-username,
+.NB-modal-friends input[type=text] {
+    float: left;
+    width: 200px;
+    margin: 12px 8px 0 0;
+}
+.NB-modal-friends .NB-friends-profile .NB-profile-username {
+    width: auto;
+}
+.NB-modal-friends .NB-account-link {
+    margin-left: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+.NB-modal-friends .NB-tab-findfriends label {
+    width: auto ;
+}
+
+.NB-modal-friends .NB-tab-profile .NB-modal-submit-button {
+    float: left;
+    margin: 12px 0 0 12px;
+    text-align: center;
 }

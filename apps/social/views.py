@@ -98,7 +98,7 @@ def shared_stories_public(request, username):
 def friends(request):
     user = get_user(request)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
-    social_profile = MSocialProfile.objects.get(user_id=user.pk)
+    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
     follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
     
@@ -109,6 +109,27 @@ def friends(request):
         'following_profiles': following_profiles,
         'follower_profiles': follower_profiles,
     }
+    
+@ajax_login_required
+@json.json_view
+def profile(request):
+    if request.method == 'POST':
+        return save_profile(request)
+    return dict(code=0)
+    
+def save_profile(request):
+    data = request.POST
+
+    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile.location = data['location']
+    profile.bio = data['bio']
+    profile.website = data['website']
+    profile.save()
+
+    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services.set_photo(data['photo_service'])
+    
+    return dict(code=1)
     
 @login_required
 @render_to('social/social_connect.xhtml')
@@ -145,7 +166,6 @@ def twitter_connect(request):
         social_services.twitter_access_secret = access_token.secret
         social_services.save()
         social_services.sync_twitter_friends()
-        following = social_services.follow_twitter_friends()
         return {}
     else:
         # Start the OAuth process
@@ -163,7 +183,7 @@ def facebook_connect(request):
     args = {
         "client_id": facebook_app_id,
         "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
-        "scope": "offline_access",
+        "scope": "offline_access,user_website",
         "display": "popup",
     }
     
@@ -199,7 +219,6 @@ def facebook_connect(request):
         social_services.facebook_access_token = access_token
         social_services.save()
         social_services.sync_facebook_friends()
-        following = social_services.follow_facebook_friends()
         return {}
     elif request.REQUEST.get('error'):
         return {'error': '%s... Try connecting again.' % request.REQUEST.get('error')}

@@ -923,6 +923,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/'+service+'_disconnect/', null, callback);
     },
     
+    save_social_profile: function(data, callback) {
+        this.make_request('/social/profile/', data, callback);
+    },
+    
     recalculate_story_scores: function(feed_id) {
         _.each(this.stories, _.bind(function(story, i) {
             if (story.story_feed_id != feed_id) return;

@@ -4,6 +4,7 @@ import hashlib
 import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
+from apps.reader.models import UserSubscription
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -67,6 +68,9 @@ class MSocialServices(mongo.Document):
         'indexes': ['user_id', 'twitter_friend_ids', 'facebook_friend_ids', 'twitter_uid', 'facebook_uid'],
         'allow_inheritance': False,
     }
+    
+    def __unicode__(self):
+        return "%s" % self.user_id
         
     def to_json(self):
         user = User.objects.get(pk=self.user_id)
@@ -117,6 +121,16 @@ class MSocialServices(mongo.Document):
         self.twitter_refreshed_date = datetime.datetime.utcnow()
         self.save()
         
+        self.follow_twitter_friends()
+        
+        profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
+        profile.location = profile.location or twitter_user.location
+        profile.bio = profile.bio or twitter_user.description
+        profile.website = profile.website or twitter_user.url
+        profile.save()
+        if not profile.photo_url or not profile.photo_service:
+            self.set_photo('twitter')
+        
     def sync_facebook_friends(self):
         graph = self.facebook_api()
         if not graph:
@@ -133,6 +147,15 @@ class MSocialServices(mongo.Document):
         self.save()
         
         self.follow_facebook_friends()
+        
+        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
+        profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
+        profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
+        profile.bio = profile.bio or facebook_user.get('bio')
+        profile.website = profile.website or facebook_user.get('website')
+        profile.save()
+        if not profile.photo_url or not profile.photo_service:
+            self.set_photo('facebook')
         
     def follow_twitter_friends(self):
         social_profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
@@ -188,7 +211,6 @@ class MSocialServices(mongo.Document):
         
         return following
         
-
     def disconnect_twitter(self):
         self.twitter_uid = None
         self.save()
@@ -196,14 +218,32 @@ class MSocialServices(mongo.Document):
     def disconnect_facebook(self):
         self.facebook_uid = None
         self.save()
+        
+    def set_photo(self, service):
+        profile = MSocialProfile.objects.get(user_id=self.user_id)
+        profile.photo_service = service
+        if service == 'twitter':
+            profile.photo_url = self.twitter_picture_url
+        elif service == 'facebook':
+            profile.photo_url = self.facebook_picture_url
+        elif service == 'upload':
+            profile.photo_url = self.upload_picture_url
+        elif service == 'gravatar':
+            user = User.objects.get(pk=self.user_id)
+            profile.photo_url = "http://www.gravatar.com/avatar/" + \
+                                hashlib.md5(user.email).hexdigest()
+        profile.save()
 
 
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField()
     username             = mongo.StringField(max_length=30)
-    email                = mongo.EmailField()
-    bio                  = mongo.StringField()
+    email                = mongo.StringField()
+    bio                  = mongo.StringField(max_length=200)
     photo_url            = mongo.StringField()
+    photo_service        = mongo.StringField()
+    location             = mongo.StringField(max_length=40)
+    website              = mongo.StringField(max_length=256)
     subscription_count   = mongo.IntField()
     shared_stories_count = mongo.IntField()
     following_count      = mongo.IntField()
@@ -218,23 +258,52 @@ class MSocialProfile(mongo.Document):
         'allow_inheritance': False,
     }
     
+    def __unicode__(self):
+        return "%s [%s] %s/%s" % (self.username, self.user_id, 
+                                  self.subscription_count, self.shared_stories_count)
+    
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.update_user(skip_save=True)
+        if not self.subscription_count:
+            self.count(skip_save=True)
+        super(MSocialProfile, self).save(*args, **kwargs)
+        
     def to_json(self, full=False):
         params = {
             'user_id': self.user_id,
             'username': self.username,
             'photo_url': self.photo_url,
             'bio': self.bio,
+            'location': self.location,
+            'website': self.website,
             'subscription_count': self.subscription_count,
             'shared_stories_count': self.shared_stories_count,
         }
         if full:
+            params['photo_service']       = self.photo_service
             params['following_count']     = self.following_count
-            params['follower_count']      = self.following_count
+            params['follower_count']      = self.follower_count
             params['following_user_ids']  = self.following_user_ids
             params['follower_user_ids']   = self.follower_user_ids
             params['unfollowed_user_ids'] = self.unfollowed_user_ids
         return params
     
+    def update_user(self, skip_save=False):
+        user = User.objects.get(pk=self.user_id)
+        self.username = user.username
+        self.email = user.email
+        if not skip_save:
+            self.save()
+
+    def count(self, skip_save=False):
+        self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
+        self.shared_stories_count = MSharedStory.objects.filter(user_id=self.user_id).count()
+        self.following_count = len(self.following_user_ids)
+        self.follower_count = len(self.follower_user_ids)
+        if not skip_save:
+            self.save()
+        
     def follow_user(self, user_id, check_unfollowed=False):
         if not check_unfollowed or user_id not in self.following_user_ids:
             if user_id not in self.following_user_ids:

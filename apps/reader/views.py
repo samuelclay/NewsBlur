@@ -451,7 +451,7 @@ def load_single_feed(request, feed_id):
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
     logging.user(request, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s(%s)/%.4s~SN)" % (
-        feed.feed_title[:32], ('~SN/p%s' % page) if page > 1 else '', timediff,
+        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
         diff1, diff2, userstories_db and userstories_db.count() or '~SN0~SB', diff3))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
