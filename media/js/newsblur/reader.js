@@ -1828,9 +1828,9 @@
         
         scroll_back_to_original_position_before_fillout: function() {
             var $story_titles = this.$s.$story_titles;
-            if (this.flags.post_load_page_scroll_position == $story_titles.scrollTop()) {
+            if (this.flags.post_load_page_scroll_position == $story_titles.scrollTop() && this.flags.pre_load_page_scroll_position) {
                 // NEWSBLUR.log(['Snap back pre-autofill', this.flags.post_load_page_scroll_position, this.flags.pre_load_page_scroll_position]);
-                $story_titles.scrollTo(this.flags.pre_load_page_scroll_position, { 
+                $story_titles.scrollTo(this.flags.post_load_page_scroll_position, { 
                     duration: 0,
                     axis: 'y', 
                     easing: 'easeInOutQuint', 
@@ -3282,6 +3282,7 @@
             if (!this.flags['opening_feed']) {
                 this.flags.pre_load_page_scroll_position = $('#story_titles').scrollTop();
                 if (!hide_loading) this.show_feedbar_loading();
+                this.flags.post_load_page_scroll_position = $('#story_titles').scrollTop();
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
@@ -3339,7 +3340,6 @@
                 offset: 0, 
                 queue: false
             });
-            this.flags.post_load_page_scroll_position = $('#story_titles').scrollTop();
         },
         
         show_feed_title_in_stories: function(feed_id) {
