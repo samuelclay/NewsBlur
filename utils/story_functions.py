@@ -92,6 +92,8 @@ def pre_process_story(entry):
                 entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
             elif media_content.get('rel') == 'alternative' or 'text' in media_content.get('type'):
                 continue
+            elif 'application' in media_type:
+                continue
             entry['story_content'] += """<br><br>
                 Download %(media_type)s: <a href="%(media_url)s">%(media_url)s</a>"""  % {
                 'media_url': media_url, 

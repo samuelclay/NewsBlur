@@ -6527,17 +6527,17 @@ background: transparent;
 }
 
 .NB-modal-friends .NB-friends-findfriends-profile {
-    text-align: center;
+    text-align: left;
 }
 .NB-modal-friends .NB-tab-findfriends .NB-friends-profile-link {
-    padding: 24px 0 24px;
-    margin: 0 auto;
+    margin: 8px 12px 12px;
     display: inline-block;
-    text-align: center;
 }
 
 .NB-modal-friends .NB-tab-findfriends .NB-friends-profile-link img {
     vertical-align: text-bottom;
+/*    float: left;*/
+    margin: 0 4px;
 }
 
 .NB-modal-friends .NB-friends-profile label,
@@ -6548,13 +6548,25 @@ background: transparent;
     padding: 12px 8px 0 12px;
 }
 .NB-modal-friends .NB-friends-search-badge {
-    min-height: 100px;
+    clear: both;
+    padding-bottom: 18px;
 }
+
 .NB-modal-friends .NB-friends-profile .NB-profile-username,
 .NB-modal-friends input[type=text] {
     float: left;
     width: 200px;
     margin: 12px 8px 0 0;
+}
+.NB-modal-friends .NB-friends-profile .NB-count {
+    float: left;
+    color: #404040;
+    font-size: 10px;
+    font-weight: bold;
+    margin: 16px 0 0 4px;
+}
+.NB-modal-friends .NB-friends-profile .NB-count.NB-red {
+    color: #7F0000;
 }
 .NB-modal-friends .NB-friends-profile .NB-profile-username {
     width: auto;
@@ -6572,4 +6584,36 @@ background: transparent;
     float: left;
     margin: 12px 0 0 12px;
     text-align: center;
+}
+
+.NB-modal-friends .NB-profile-badge {
+    clear: both;
+    padding: 12px 12px 12px 72px;
+    position: relative;
+    font-size: 13px;
+    line-height: 17px;
+    background-color: white;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-photo {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-photo img {
+    width: 48px;
+    height: 48px;
+    border: 1px solid #202020;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-username {
+    font-weight: bold;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-location {
+    font-weight: bold;
+    color: #909090;
+    font-size: 11px;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-bio {
 }
