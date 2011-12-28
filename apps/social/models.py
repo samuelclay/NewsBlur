@@ -128,6 +128,7 @@ class MSocialServices(mongo.Document):
         profile.bio = profile.bio or twitter_user.description
         profile.website = profile.website or twitter_user.url
         profile.save()
+        profile.count()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
@@ -154,6 +155,7 @@ class MSocialServices(mongo.Document):
         profile.bio = profile.bio or facebook_user.get('bio')
         profile.website = profile.website or facebook_user.get('website')
         profile.save()
+        profile.count()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('facebook')
         
@@ -239,11 +241,11 @@ class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField()
     username             = mongo.StringField(max_length=30)
     email                = mongo.StringField()
-    bio                  = mongo.StringField(max_length=200)
+    bio                  = mongo.StringField(max_length=80)
     photo_url            = mongo.StringField()
     photo_service        = mongo.StringField()
     location             = mongo.StringField(max_length=40)
-    website              = mongo.StringField(max_length=256)
+    website              = mongo.StringField(max_length=200)
     subscription_count   = mongo.IntField()
     shared_stories_count = mongo.IntField()
     following_count      = mongo.IntField()
@@ -277,13 +279,13 @@ class MSocialProfile(mongo.Document):
             'bio': self.bio,
             'location': self.location,
             'website': self.website,
-            'subscription_count': self.subscription_count,
-            'shared_stories_count': self.shared_stories_count,
+            'subscription_count': self.subscription_count or 0,
+            'shared_stories_count': self.shared_stories_count or 0,
+            'following_count': self.following_count or 0,
+            'follower_count': self.follower_count or 0,
         }
         if full:
             params['photo_service']       = self.photo_service
-            params['following_count']     = self.following_count
-            params['follower_count']      = self.follower_count
             params['following_user_ids']  = self.following_user_ids
             params['follower_user_ids']   = self.follower_user_ids
             params['unfollowed_user_ids'] = self.unfollowed_user_ids
@@ -314,6 +316,7 @@ class MSocialProfile(mongo.Document):
             if self.user_id not in followee.follower_user_ids:
                 followee.follower_user_ids.append(self.user_id)
                 followee.save()
+        self.count()
     
     def unfollow_user(self, user_id):
         self.following_user_ids.remove(user_id)
@@ -322,6 +325,7 @@ class MSocialProfile(mongo.Document):
         followee = MSocialProfile.objects.get(user_id=user_id)
         followee.follower_user_ids.remove(self.user_id)
         followee.save()
+        self.count()
         
     @classmethod
     def profiles(cls, user_ids):

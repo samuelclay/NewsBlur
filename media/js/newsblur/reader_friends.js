@@ -159,10 +159,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('input', { id: 'NB-profile-location', name: 'location', type: 'text', className: 'NB-input', style: 'width: 220px', value: data.social_profile.location, "data-max": 40 }),
             $.make('span', { className: 'NB-count NB-count-location' }),
             $.make('label', { 'for': 'NB-profile-website' }, 'Website'),
-            $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 300px', value: data.social_profile.website, "data-max": 256 }),
+            $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 300px', value: data.social_profile.website, "data-max": 200 }),
             $.make('span', { className: 'NB-count NB-count-website' }),
             $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
-            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 380px', value: data.social_profile.bio, "data-max": 160 }),
+            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 380px', value: data.social_profile.bio, "data-max": 80 }),
             $.make('span', { className: 'NB-count NB-count-bio' })
         ]);
         $profile_container.html($profile);
@@ -201,16 +201,26 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     make_followers_tab: function(data) {
-        if (!data.followers || !data.followers.length) {
+        var $tab = $('.NB-tab-followers', this.$modal).empty();
+        if (!data.follower_profiles || !data.follower_profiles.length) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
-            $('.NB-tab-followers', this.$modal).empty().append($ghost);
+            $tab.append($ghost);
+        } else {
+            _.each(data.follower_profiles, _.bind(function(profile) {
+                $tab.append(this.make_profile_badge(profile));
+            }, this));
         }
     },
     
     make_following_tab: function(data) {
-        if (!data.following || !data.following.length) {
+        var $tab = $('.NB-tab-following', this.$modal).empty();
+        if (!data.following_profiles || !data.following_profiles.length) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
-            $('.NB-tab-following', this.$modal).empty().append($ghost);
+            $tab.append($ghost);
+        } else {
+            _.each(data.following_profiles, _.bind(function(profile) {
+                $tab.append(this.make_profile_badge(profile));
+            }, this));
         }
     },
     
@@ -221,7 +231,17 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]),
             $.make('div', { className: 'NB-profile-badge-username' }, profile.username),
             $.make('div', { className: 'NB-profile-badge-location' }, profile.location),
-            $.make('div', { className: 'NB-profile-badge-bio' }, profile.bio)
+            $.make('div', { className: 'NB-profile-badge-bio' }, profile.bio),
+            $.make('div', { className: 'NB-profile-badge-stats' }, [
+                $.make('span', { className: 'NB-count' }, profile.shared_stories_count),
+                'stories shared',
+                ' &middot; ',
+                $.make('span', { className: 'NB-count' }, profile.following_count),
+                'following',
+                ' &middot; ',
+                $.make('span', { className: 'NB-count' }, profile.follower_count),
+                'followers'
+            ])
         ]);
         return $badge;
     },
@@ -301,7 +321,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
         this.model.disconnect_social_service(service, _.bind(function(data) {
             this.make_find_friends_and_services(data);
-            this.make_profile(data);
+            this.make_profile_section(data);
+            this.make_profile_tab(data);
         }, this));
     },
     

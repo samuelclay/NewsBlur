@@ -6609,11 +6609,20 @@ background: transparent;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-username {
     font-weight: bold;
+    float: left;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-location {
     font-weight: bold;
     color: #909090;
     font-size: 11px;
+    float: left;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-bio {
+    clear: both;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-stats {
+    clear: both;
+    color: #4F4646;
+    font-size: 12px;
+    text-transform: uppercase;
 }
