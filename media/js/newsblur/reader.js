@@ -1822,6 +1822,21 @@
                 this.show_tryfeed_add_button();
             }
             this.make_content_pane_feed_counter(feed_id);
+            this.scroll_back_to_original_position_before_fillout();
+        },
+        
+        scroll_back_to_original_position_before_fillout: function() {
+            var $story_titles = this.$s.$story_titles;
+            if (this.flags.post_load_page_scroll_position == $story_titles.scrollTop() && this.flags.pre_load_page_scroll_position) {
+                // NEWSBLUR.log(['Snap back pre-autofill', this.flags.post_load_page_scroll_position, this.flags.pre_load_page_scroll_position]);
+                $story_titles.scrollTo(this.flags.post_load_page_scroll_position, { 
+                    duration: 0,
+                    axis: 'y', 
+                    easing: 'easeInOutQuint', 
+                    offset: 0, 
+                    queue: false
+                });
+            }
         },
         
         setup_mousemove_on_views: function() {
@@ -1963,6 +1978,7 @@
                 this.flags['story_titles_loaded'] = true;
                 this.prefetch_story_locations_in_feed_view();
                 this.fill_out_story_titles();
+                this.scroll_back_to_original_position_before_fillout();
             }
         },
         
@@ -2042,6 +2058,7 @@
                 this.fill_out_story_titles();
                 this.prefetch_story_locations_in_feed_view();
                 this.hide_stories_progress_bar();
+                this.scroll_back_to_original_position_before_fillout();
             }
         },
         
@@ -3133,8 +3150,9 @@
             var page = $story_titles.data('page');
 
             if (!this.flags['opening_feed']) {
-                
+                this.flags.pre_load_page_scroll_position = $('#story_titles').scrollTop();
                 if (!hide_loading) this.show_feedbar_loading();
+                this.flags.post_load_page_scroll_position = $('#story_titles').scrollTop();
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
