@@ -137,7 +137,7 @@
             this.flags.active_view = 'stories';
             $.mobile.showPageLoadingMsg();
             this.active_feed = feed_id;
-            this.model.load_feed(feed_id, this.page, this.page == 1, _.bind(this.build_stories, this));
+            this.model.load_feed(feed_id, this.page, this.page == 1, _.bind(this.build_stories, this), $.noop);
         },
         
         build_stories: function(data, first_load) {

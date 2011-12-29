@@ -2,6 +2,7 @@ from django.utils.dateformat import DateFormat
 import datetime
 from django.utils.http import urlquote
 from django.conf import settings
+from itertools import chain
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -67,6 +68,38 @@ def pre_process_story(entry):
         entry['link'] = urlquote(entry_link)
     if isinstance(entry.get('guid'), dict):
         entry['guid'] = unicode(entry['guid'])
+
+    # Normalize story content/summary
+    if entry.get('content'):
+        entry['story_content'] = entry['content'][0].get('value', '')
+    else:
+        entry['story_content'] = entry.get('summary', '')
+    
+    # Add each media enclosure as a Download link
+    for media_content in chain(entry.get('media_content', []), entry.get('links', [])):
+        media_url = media_content.get('url', '')
+        media_type = media_content.get('type', '')
+        if media_url and media_type and media_url not in entry['story_content']:
+            if 'audio' in media_type and media_url:
+                entry['story_content'] += """<br><br>
+                    <audio controls="controls">
+                        <source src="%(media_url)s" type="%(media_type)s" />
+                    </audio>"""  % {
+                        'media_url': media_url, 
+                        'media_type': media_type
+                    }
+            elif 'image' in media_type and media_url:
+                entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
+            elif media_content.get('rel') == 'alternative' or 'text' in media_content.get('type'):
+                continue
+            entry['story_content'] += """<br><br>
+                Download %(media_type)s: <a href="%(media_url)s">%(media_url)s</a>"""  % {
+                'media_url': media_url, 
+                'media_type': media_type.split('/')[0]
+            }
+    
+    entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
+    
     return entry
     
 class bunch(dict):

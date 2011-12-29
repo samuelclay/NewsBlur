@@ -136,6 +136,7 @@
 			statusLabel.text = @"Release to refresh...";
 			[self showActivity:NO animated:NO];
             [self setImageFlipped:YES];
+			[self refreshLastUpdatedDate];
             scrollView.contentInset = UIEdgeInsetsZero;
 			break;
 
@@ -151,6 +152,7 @@
 			statusLabel.text = @"Loading...";
 			[self showActivity:YES animated:YES];
             [self setImageFlipped:NO];
+			[self refreshLastUpdatedDate];
             scrollView.contentInset = UIEdgeInsetsMake(60.0f, 0.0f, 0.0f, 0.0f);
 			break;
 

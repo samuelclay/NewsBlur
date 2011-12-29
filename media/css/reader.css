@@ -1600,9 +1600,36 @@ background: transparent;
     font-size: 16px;
     padding: 0 250px 0 28px;
     background: #dadada url('../theme/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.36, rgba(212, 212, 212, 250)),
+        color-stop(0.84, rgba(244, 244, 244, 250))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(212, 212, 212) 36%,
+        rgb(244, 244, 244) 84%
+    );
     border-bottom: 1px solid #ADADAD;
     position: relative;
     overflow: hidden;
+}
+
+#story_pane .read .NB-feed-story-header-info {
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.36, rgba(214, 214, 214, 250)),
+        color-stop(0.84, rgba(230, 230, 230, 250))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(212, 212, 212) 36%,
+        rgb(244, 244, 244) 84%
+    );
 }
 
 #story_pane .NB-feed-story-header-feed {
@@ -1726,6 +1753,10 @@ background: transparent;
     text-shadow: 1px 1px 0 #e8e8e8;
 }
 
+#story_pane .read a.NB-feed-story-title {
+    color: #1C212F;
+}
+
 #story_pane a.NB-feed-story-title:hover,
 #story_pane a.NB-feed-story-title:hover .NB-score-1,
 #story_pane a.NB-feed-story-title:hover .NB-score--1 {
@@ -1740,6 +1771,9 @@ background: transparent;
     margin: 4px 24px 0 0;
     text-shadow: 1px 1px 0 #F0F0F0;
     cursor: pointer;
+}
+#story_pane .read .NB-feed-story-author {
+    color: #A0A0A0;
 }
 #story_pane .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -1794,6 +1828,10 @@ background: transparent;
     -webkit-border-radius: 4px;
     cursor: pointer;
 } 
+
+#story_pane .read .NB-feed-story-tag {
+    color: #B1ADA3;
+}
 #story_pane .NB-feed-story-tag.NB-score-1 {
     /* Green */
     background-color: #34912E;
@@ -1889,6 +1927,7 @@ background: transparent;
 #story_pane .NB-feed-story-content {
     margin: 0 140px 32px 28px;
     padding: 12px 0px;
+    max-width: 700px;
 }
 
 #story_pane .NB-feed-story-endbar {
@@ -1931,6 +1970,35 @@ background: transparent;
 #story_taskbar .NB-river-progress .NB-river-progress-bar {
   width: 150px;
   height: 8px;
+}
+
+/* ============== */
+/* = Feed Error = */
+/* ============== */
+
+#story_taskbar .NB-feed-error {
+  position: absolute;
+  top: 0;
+  margin: 2px 0 0 0;
+  width: 120px;
+  height: 20px;
+}
+
+#story_taskbar .NB-feed-error .NB-feed-error-text {
+  text-transform: uppercase;
+  font-size: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #4E0A0B;
+  text-shadow: 1px 1px 0 #D8D8D8;
+}
+
+#story_taskbar .NB-feed-error .NB-feed-error-icon {
+    margin: 3px 0 0 0;
+    width: 24px;
+    height: 19px;
+    background: transparent url('../img/reader/warning.png') no-repeat 0 0;
+    float: left;
 }
 
 /* ======================= */
@@ -4134,8 +4202,8 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
 }
-.NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/bricks.png') no-repeat  0 2px;    
+.NB-menu-manage .NB-menu-manage-feed-settings .NB-menu-manage-image {
+    background: transparent url('../img/icons/silk/calculator.png') no-repeat  0 1px;    
 }
 .NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
     background: transparent url('../img/icons/silk/car.png') no-repeat  0 1px;    
@@ -4267,7 +4335,7 @@ background: transparent;
     background: transparent url('../img/icons/silk/color_swatch.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-image {
-    background: transparent url('../img/reader/instapaper.png') no-repeat 0 1px;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 1px;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
     width: 16px;
@@ -4336,11 +4404,11 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-googleplus {
   opacity: 1;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-image,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-icon {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-icon {
   opacity: .2;
 }
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-email .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-instapaper {
   opacity: 1;
 }
 
@@ -4421,12 +4489,6 @@ background: transparent;
   margin: 0px 24px;
   width: 524px;
   height: 180px;
-}
-.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container {
-  margin: 3px 0 12px;
-}
-.NB-modal.NB-modal-statistics .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-  margin: 0 0 12px;
 }
 
 .NB-modal-statistics .NB-modal-loading {
@@ -4534,12 +4596,6 @@ background: transparent;
 /* = Feed Recommendation Modal = */
 /* ============================= */
 
-.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container {
-  margin: 3px 0 12px;
-}
-.NB-modal.NB-modal-recommend .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
-  margin: 0 0 12px;
-}
 .NB-modal-recommend .NB-modal-loading {
   margin: 6px 8px 0;
 }
@@ -4814,6 +4870,28 @@ background: transparent;
 /* = Feed Exceptions Modal = */
 /* ========================= */
 
+.NB-modal-exception .NB-exception-only {
+    display: inline;
+}
+.NB-modal-exception .NB-exception-block-only {
+    display: block;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-title {
+    display: block;
+}
+.NB-modal-exception .NB-modal-title.NB-exception-block-only {
+    display: block;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-only,
+.NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
+    display: none;
+}
+.NB-modal-exception .NB-modal-title {
+    display: none;
+}
 .NB-modal-exception .NB-exception-explanation {
     color: #606060;
     font-size: 12px;
@@ -4840,11 +4918,27 @@ background: transparent;
   margin-bottom: 6px;
 }
 
-.NB-modal-exception input[type=text] {
-  width: 200px;
-  margin: 0 10px;
+.NB-modal-exception .NB-exception-input-wrapper {
+    position: relative;
+    margin: 4px 0 0;
+}
+.NB-modal-exception .NB-exception-label {
+    position: absolute;
+    top: 2px;
+    left: 0;
 }
 
+.NB-modal-exception input[type=text] {
+  width: 400px;
+  margin: 0 0 12px 104px;
+}
+
+.NB-modal-exception .NB-exception-submit-wrapper {
+    margin: 0 0 2px 100px;
+}
+.NB-modal-exception .NB-modal-loading {
+    margin: 6px 8px 0;
+}
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */
@@ -5387,6 +5481,12 @@ background: transparent;
   clear: both;
   float: left;
 }
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=radio] {
+  margin-top: 4px;
+}
+.NB-modal-preferences .NB-preference .NB-preference-options input[type=checkbox] {
+  margin-top: 5px;
+}
 .NB-modal-preferences .NB-preference .NB-preference-options label {
   padding-left: 4px;
   margin: 0 0 4px 0;
@@ -5407,7 +5507,7 @@ background: transparent;
   height: 31px;
   min-width: 50px;
 }
-.NB-modal-preferences .NB-preference-view input {
+.NB-modal-preferences .NB-preference-view .NB-preference-options input[type="radio"] {
   margin-top: 10px;
 }
 .NB-modal-preferences .NB-preference-story-pane-position input {
@@ -5498,7 +5598,7 @@ background: transparent;
     background: transparent url('../img/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('../img/reader/email.png') no-repeat 0 0;
+    background: transparent url('../img/icons/silk/email.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readability] {
     background: transparent url('../img/reader/readability.png') no-repeat 0 0;
@@ -5552,7 +5652,7 @@ background: transparent;
   position: fixed;
   height: 55px;
   font-size: 36px;
-  line-height: 78px;
+  line-height: 60px;
   margin: 0 2px 12px 0;
   text-shadow: 1px 1px 0 #F6F6F6;
   color: #1A008D;
@@ -5853,4 +5953,199 @@ background: transparent;
 .NB-static-api .NB-api-endpoint-param-desc {
   width: 100%;
   white-space: normal;
+}
+
+/* =============== */
+/* = iPhone Page = */
+/* =============== */
+
+.NB-static-iphone .NB-iphone-main {
+    margin: 24px 36px 24px -36px;
+    text-align: center;
+}
+.NB-static-iphone .NB-iphone-title {
+    font-size: 20px;
+    margin: 0 0 24px;
+}
+.NB-static-iphone .NB-iphone-subtitle {
+    font-size: 16px;
+    margin: 8px 0 0;
+    color: #6D7D88;
+}
+.NB-static-iphone .NB-iphone-stripe-wrapper {
+    border-top: 1px solid #505050;
+    border-bottom: 1px solid #505050;    
+    margin-right: -36px;
+}
+.NB-static-iphone .NB-iphone-stripe {
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    padding: 12px 0;
+    background: #F0F0F0 url('../img/reader/stripe_background.png');
+}
+.NB-static-iphone .NB-iphone-download button {
+    padding: 4px 20px 4px 10px;
+    letter-spacing: -0.03em;
+    text-align: center;
+    background-color: #3A8FCE;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.06, #1E3C54),
+        color-stop(0.94, #648295)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1E3C54 6%,
+        #648295 94%
+    );
+    color: white;
+    text-shadow: 0 -1px 0px #101C3B;
+    border: 1px solid #2F6EA7;
+    border-color: #508FCD #4483BF #2F6EA7 #3F7EB9;
+    border-radius: 6px;
+    font-size: 1.14em;
+    line-height: 1.73em;
+    margin: 0 auto;
+    cursor: pointer;
+
+}
+.NB-static-iphone .NB-iphone-download .NB-big {
+    font-size: 1.45em;
+    font-weight: bold;
+}
+.NB-static-iphone .NB-iphone-download img {
+    float: left;
+    margin: 0 8px 0 0;
+}
+.NB-static-iphone .NB-iphone-download button:hover {
+    background-color: #3A8FCE;
+        background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.06, #182A42),
+        color-stop(0.94, #516A83)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #182A42 6%,
+        #516A83 94%
+    );
+    color: #C0D7E7;
+}
+.NB-static-iphone .NB-iphone-download button:active {
+    background-color: #3A8FCE;
+        background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.06, #516A83),
+        color-stop(0.94, #182A42)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #516A83 6%
+        #182A42 94%,
+    );
+}
+
+.NB-static-iphone .NB-iphone-features {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 0 0 0 0;
+    padding: 0;
+    font-size: 16px;
+    text-align: center;
+    clear: left;
+    overflow: hidden;
+    display: inline-block;
+}
+.NB-static-iphone .NB-iphone-features li {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+}
+
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature {
+    padding: 12px 12px 12px 12px;
+    float: left;
+    width: 160px;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature img {
+    width: 128px;
+    height: 184px;
+    border: 1px solid #202020;
+    border-color: #909090 #808080 #505050 #606060;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-title {
+    font-weight: bold;
+    margin: 8px 0 0;
+}
+.NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-subtitle {
+    margin: 8px 0 0;
+}
+.NB-static-iphone .NB-iphone-main .NB-iphone-feature {
+    -webkit-transition: all .32s ease-out;
+    -moz-transition: all .32s ease-out;
+    -o-transition: all .32s ease-out;
+    -ms-transition: all .32s ease-out;
+    border-radius: 4px;
+    border: 2px solid transparent;
+}
+.NB-static-iphone .NB-iphone-feature.NB-active {
+    border: 2px solid #39518B;
+}
+.NB-static-iphone .NB-iphone-mockup {
+    float: right;
+    margin: 142px 96px 0 0;
+    width: 320px;
+    height: 460px;
+    position: relative;
+}
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-skeleton {
+    position: absolute;
+    top: -140px;
+    left: -32px;
+    width: 381px;
+    height: 729px;
+    background: transparent url('../img/iphone/skeleton.png') no-repeat 0 0;
+    z-index: 0;
+}
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-features {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    width: 320px;
+    height: 460px;
+    display: block;
+    position: relative;
+}
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-feature {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0;
+    border: none;
+}
+.NB-static-iphone .NB-iphone-mockup .NB-iphone-feature img {
+    width: 320px;
+    height: 460px;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-right: 1px solid #505050;
+}
+@media screen and (max-width: 1050px) {
+    .NB-static-iphone .NB-iphone-mockup {
+        margin-right: 36px;
+    }
+    .NB-static-iphone .NB-iphone-features .NB-iphone-feature {
+        padding: 4px;
+    }
+    .NB-static-iphone .NB-iphone-main {
+        margin-bottom: 54px;
+    }
 }

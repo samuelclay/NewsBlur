@@ -75,7 +75,7 @@
             you can optionally turn them off. Use /api/v1/feeds/favicons/ to 
             retrieve the favicons in a separate request.
           optional: true
-          default: "true"
+          default: "false"
           example: "true/false"
         - key: flat
           desc: >
@@ -249,10 +249,25 @@
         - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
       params:
         - key: feeds_stories
-          desc: "Dictionary of feed_ids to an array of story_ids."
+          desc: "JSON serialized dictionary of feed_ids to an array of story_ids."
           required: true
           example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
     
+    - url: /reader/mark_story_as_unread
+      method: POST
+      short_desc: "Mark a story as unread."
+      long_desc: 
+        - "Mark a story as unread."
+      params:
+        - key: story_id
+          desc: "Story id to mark unread."
+          required: true
+          example: "http://www.ofbrooklyn.com/story-title"
+        - key: feed_id
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
+  
     - url: /reader/mark_story_as_starred
       method: POST
       short_desc: "Mark a story as starred (saved)."
@@ -344,7 +359,7 @@
             multiple folders.
           required: true
           example: "Blogs"
-        - key: in_folder
+        - key: to_folder
           desc: "Folder the feed is going into."
           required: true
           example: "Tumblrs"
@@ -367,7 +382,7 @@
             name is in multiple folders. (Please don't let this happen.)
           required: true
           example: "Blogs"
-        - key: in_folder
+        - key: to_folder
           desc: "New folder the existing folder is going into."
           required: true
           example: "Daily Blogs"

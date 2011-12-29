@@ -92,7 +92,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 }
             },
             error: function(e, textStatus, errorThrown) {
-                NEWSBLUR.log(['AJAX Error', textStatus, errorThrown]);
+                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown]);
+                if (errorThrown == 'abort') {
+                    return;
+                }
+                
                 if ($.isFunction(error_callback)) {
                     error_callback();
                 } else if ($.isFunction(callback)) {
@@ -293,7 +297,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/favicons', data, pre_callback, pre_callback, {request_type: 'GET'});
     },
     
-    load_feed: function(feed_id, page, first_load, callback) {
+    load_feed: function(feed_id, page, first_load, callback, error_callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -309,7 +313,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     page: page,
                     feed_address: this.feeds[feed_id].feed_address
                 }, pre_callback,
-                $.noop,
+                error_callback,
                 {
                     'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
                     'request_type': 'GET'
@@ -370,7 +374,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/rss_feeds/feed/'+feed_id, {}, pre_callback, $.noop, {request_type: 'GET'});
     },
     
-    fetch_starred_stories: function(page, callback, first_load) {
+    fetch_starred_stories: function(page, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -381,13 +385,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         
         this.make_request('/reader/starred_stories', {
             page: page
-        }, pre_callback, $.noop, {
+        }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });
     },
     
-    fetch_river_stories: function(feed_id, feeds, page, callback, first_load) {
+    fetch_river_stories: function(feed_id, feeds, page, callback, error_callback, first_load) {
         var self = this;
         
         if (first_load || !page) this.read_stories_river_count = 0;
@@ -401,10 +405,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/river_stories', {
             feeds: feeds,
             page: page,
-            read_stories_count: this.read_stories_river_count,
-            // TODO: Remove new flag
-            new_flag: true
-        }, pre_callback, $.noop, {
+            read_stories_count: this.read_stories_river_count
+        }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
         });
@@ -450,6 +452,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }));
             if (favicons_fetching.length) {
                 data['favicons_fetching'] = favicons_fetching;
+            } else {
+                this.flags['favicons_fetching'] = false;
             }
         }
         if (feed_id) {
@@ -788,6 +792,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/statistics/dashboard_graphs', {}, callback, error_callback, {request_type: 'GET'});
     },
     
+    load_feedback_table: function(callback, error_callback) {
+        this.make_request('/statistics/feedback_table', {}, callback, error_callback, {request_type: 'GET'});
+    },
+    
     save_feed_order: function(folders, callback) {
         this.make_request('/reader/save_feed_order', {'folders': $.toJSON(folders)}, callback);
     },
@@ -801,6 +809,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     get_feed_recommendation_info: function(feed_id, callback) {
         this.make_request('/recommendations/load_feed_info/'+feed_id, {}, callback, callback, {
+            'ajax_group': 'statistics',
+            'request_type': 'GET'
+        });
+    },
+    
+    get_feed_settings: function(feed_id, callback) {
+        this.make_request('/rss_feeds/feed_settings/'+feed_id, {}, callback, callback, {
             'ajax_group': 'statistics',
             'request_type': 'GET'
         });
@@ -838,7 +853,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
             self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id);
+            NEWSBLUR.reader.force_feed_refresh(feed_id, null, data.new_feed_id);
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {
@@ -857,7 +872,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = function(data) {
             // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
             self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id);
+            NEWSBLUR.reader.force_feed_refresh(feed_id, null, data.new_feed_id);
         };
         
         if (NEWSBLUR.Globals.is_authenticated) {

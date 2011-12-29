@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+from munin.gearman import MuninGearmanPlugin
+
+class MuninGearmanConnectionsPlugin(MuninGearmanPlugin):
+    title = "Gearman Connections"
+    args = "--base 1000"
+    vlabel = "Connections"
+    fields = (
+        ('total', dict(
+            label = "Total",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+        ('workers', dict(
+            label = "Workers",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+        ('clients', dict(
+            label = "Clients",
+            type = "GAUGE",
+            draw = "LINE2",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        workers = self.get_workers()
+        return dict(
+            total = len(workers),
+            workers = sum(1 for x in workers if x['abilities']),
+            clients = sum(1 for x in workers if not x['abilities']),
+        )
+
+if __name__ == "__main__":
+    MuninGearmanConnectionsPlugin().run()

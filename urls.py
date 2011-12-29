@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^api/?',          static_views.api, name='api'),
     url(r'^press/?',        static_views.press, name='press'),
     url(r'^feedback/?',     static_views.feedback, name='feedback'),
+    url(r'^iphone/?',       static_views.iphone, name='iphone'),
 )
 
 if settings.DEVELOPMENT:

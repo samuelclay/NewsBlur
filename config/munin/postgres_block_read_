@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Based on a plugin by BjØrn Ruberg.
+
+Plugin to monitor PostgreSQL memory usage; gives number of blocks
+read from disk and from memory, showing how much of the database is
+served from PostgreSQL's memory buffer.
+
+PLEASE NOTE: This plugin may not present the whole truth - the truth
+may actually be even better than this plugin will show you! That is
+because PostgreSQL statistics only considers memory block reads from
+its own allocated memory. When PostgreSQL reads from disk, it may
+actually still be read from memory, but from the _kernel_'s
+memory. Summarily, your database server may run even better than
+this plugin will indicate. See
+http://www.postgresql.org/docs/7.4/interactive/monitoring-stats.html
+for a (short) description.
+"""
+
+from munin.postgres import MuninPostgresPlugin
+
+class MuninPostgresBlockReadPlugin(MuninPostgresPlugin):
+    dbname_in_args = True
+    args = "--base 1000"
+    vlabel = "Blocks read per ${graph_period}"
+    info = "Shows number of blocks read from disk and from memory"
+    fields = (
+        ('from_disk', dict(
+            label = "Read from disk",
+            info = "Read from disk",
+            type = "DERIVE",
+            min = "0",
+            draw = "AREA",
+        )),
+        ('from_memory', dict(
+            label = "Cached in memory",
+            info = "Cached in memory",
+            type = "DERIVE",
+            min = "0",
+            draw = "STACK",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "Postgres data reads from %s" % self.dbname
+
+    def execute(self):
+        c = self.cursor()
+        query = (
+            "SELECT (SUM (heap_blks_read) + SUM (idx_blks_read) + "
+            "	 SUM (toast_blks_read) + SUM (tidx_blks_read)) AS disk, "
+            "	(SUM (heap_blks_hit) + SUM (idx_blks_hit) + "
+            "	 SUM (toast_blks_hit) + SUM (tidx_blks_hit)) AS mem "
+            "FROM pg_statio_user_tables")
+        c.execute(query)
+        values = {}
+        for row in c.fetchall():
+            values['from_disk'] = row[0]
+            values['from_memory'] = row[1]
+        return values
+
+if __name__ == "__main__":
+    MuninPostgresBlockReadPlugin().run()

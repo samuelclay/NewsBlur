@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from munin.riak import MuninRiakPlugin
+
+class RiakOpsPlugin(MuninRiakPlugin):
+    args = "-l 0 --base 1000"
+    vlabel = "ops/sec"
+    title = "Riak operations"
+    info = "Operations"
+    fields = (
+        ('gets', dict(
+            label = "gets",
+            info = "gets",
+            type = "DERIVE",
+            min = "0",
+        )),
+        ('puts', dict(
+            label = "puts",
+            info = "puts",
+            type = "DERIVE",
+            min = "0",
+        )),
+    )
+
+    def execute(self):
+        status = self.get_status()
+        return dict(
+            gets = status['node_gets_total'],
+            puts = status['node_puts_total'],
+        )
+
+if __name__ == "__main__":
+    RiakOpsPlugin().run()

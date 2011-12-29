@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Based on a plugin by BjØrn Ruberg.
+
+Plugin to monitor PostgreSQL query rate; returns the number of 
+sequential scans initiated, rows returned by sequential reads,
+index scans initiated, rows returned by index scans, inserts,
+updates, and deletes.
+
+Find out more at 
+ http://www.postgresql.org/docs/8.2/interactive/monitoring-stats.html
+ (should work with PostgreSQL 7.x and 8.x)
+"""
+
+from munin.postgres import MuninPostgresPlugin
+
+class MuninPostgresQueriesPlugin(MuninPostgresPlugin):
+    dbname_in_args = True
+    args = "--base 1000"
+    vlabel = "Queries per ${graph_period}"
+    info = "Shows number of select, insert, update and delete queries"
+
+    field_types = (
+        ('sel_seq', dict(
+            label = "s_selects",
+            info = "Sequential selects on all tables",
+            column = "seq_scan",
+        )),
+        ('sel_seq_rows', dict(
+            label = "s_select rows",
+            info = "Rows returned from sequential selects",
+            column = "seq_tup_read",
+        )),
+        ('sel_idx', dict(
+            label = "i_selects",
+            info = "Sequential selects on all indexes",
+            column = "idx_scan",
+        )),
+        ('sel_idx_rows', dict(
+            label = "i_select rows",
+            info = "Rows returned from index selects",
+            column = "idx_tup_fetch",
+        )),
+        ('inserts', dict(
+            label = "inserts",
+            info = "Rows inserted on all tables",
+            column = "n_tup_ins",
+        )),
+        ('updates', dict(
+            label = "updates",
+            info = "Rows updated on all tables",
+            column = "n_tup_upd",
+        )),
+        ('deletes', dict(
+            label = "deletes",
+            info = "Rows deleted on all tables",
+            column = "n_tup_del",
+        )),
+    )
+
+    @property
+    def title(self):
+        return "Postgres queries on %s" % self.dbname
+
+    @property
+    def fields(self):
+        return [
+            (k, dict(
+                    label = v['label'],
+                    info = v['label'],
+                    type = "DERIVE",
+                    min = "0",
+                )) for k, v in self.field_types]
+
+    def execute(self):
+        c = self.cursor()
+        keys = [(k, v['column']) for k, v in self.field_types]
+        query = "SELECT %s FROM pg_stat_all_tables" % ",".join('SUM("%s")' % col for key, col in keys)
+        c.execute(query)
+        row = c.fetchone()
+        values = {}
+        for k, v in zip(keys, row):
+            values[k[0]] = v
+        return values
+
+if __name__ == "__main__":
+    MuninPostgresQueriesPlugin().run()

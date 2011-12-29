@@ -55,6 +55,36 @@ NEWSBLUR.Modal.prototype = {
     close: function(callback) {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         $.modal.close(callback);
+    },
+    
+    make_feed_chooser: function() {
+        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        
+        this.feeds = this.feeds || this.model.get_feeds();
+        
+        for (var f in this.feeds) {
+            var feed = this.feeds[f];
+            var $option = $.make('option', { value: feed.id }, feed.feed_title);
+            $option.appendTo($chooser);
+            
+            if (feed.id == this.feed_id) {
+                $option.attr('selected', true);
+            }
+        }
+        
+        $('option', $chooser).tsort();
+        return $chooser;
+    },
+    
+    initialize_feed: function(feed_id) {
+        this.feed_id = feed_id;
+        this.feed = this.model.get_feed(feed_id);
+        
+        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed.favicon));
+        $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
+        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers));
     }
+    
+
     
 };

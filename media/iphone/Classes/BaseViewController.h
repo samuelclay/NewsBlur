@@ -15,6 +15,6 @@
 - (void) clearFinishedRequests;
 - (void) cancelRequests;
 
-- (void)informError:(NSError *)error;
+- (void)informError:(id)error;
 
 @end

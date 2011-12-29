@@ -34,7 +34,7 @@ env.roledefs ={
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com', 'db02.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
 # ================
@@ -78,7 +78,6 @@ def deploy():
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
         compress_media()
 
-@roles('web')
 def deploy_full():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -89,19 +88,16 @@ def deploy_full():
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl restart gunicorn')
         
-@roles('web')
 def gunicorn_stop():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
             run('sudo supervisorctl stop gunicorn')
         
-@roles('web')
 def staging():
     with cd('~/staging'):
         run('git pull')
@@ -110,7 +106,6 @@ def staging():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('web')
 def staging_full():
     with cd('~/staging'):
         run('git pull')
@@ -120,27 +115,23 @@ def staging_full():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
         compress_media()
 
-@roles('task')
 def celery():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
     celery_stop()
     celery_start()
 
-@roles('task')
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
             run('./utils/kill_celery.sh')
 
-@roles('task')
 def celery_start():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl start celery')
         run('tail logs/newsblur.log')
 
-@roles('task')
 def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
@@ -160,16 +151,25 @@ def compress_media():
 # = Backups =
 # ===========
 
-@roles('app')
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('./mongo_backup.sh')
+        # run('./mongo_backup.sh')
+        run('python backup_mongo.py')
 
-@roles('db')
 def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('./postgresql_backup.sh')
+        # run('./postgresql_backup.sh')
+        run('python backup_psql.py')
 
+# ===============
+# = Calibration =
+# ===============
+
+def sync_time():
+    sudo("/etc/init.d/ntp stop")
+    sudo("ntpdate pool.ntp.org")
+    sudo("/etc/init.d/ntp start")
+    
 # =============
 # = Bootstrap =
 # =============
@@ -177,6 +177,7 @@ def backup_postgresql():
 def setup_common():
     setup_installs()
     setup_user()
+    setup_sudoers()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
@@ -190,7 +191,6 @@ def setup_common():
     setup_forked_mongoengine()
     setup_pymongo_repo()
     setup_logrotate()
-    setup_sudoers()
     setup_nginx()
     configure_nginx()
 
@@ -239,7 +239,7 @@ def setup_installs():
         run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
-    sudo('chsh sclay -s /bin/zsh')
+    sudo('chsh %s -s /bin/zsh' % env.user)
     run('mkdir -p %s' % env.VENDOR_PATH)
     
 def setup_user():
@@ -255,6 +255,7 @@ def setup_user():
 def add_machine_to_ssh():
     put("~/.ssh/id_dsa.pub", "local_keys")
     run("echo `cat local_keys` >> .ssh/authorized_keys")
+    run("rm local_keys")
     
 def setup_repo():
     with settings(warn_only=True):
@@ -291,14 +292,14 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis')
+    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
         sudo('python setup.py install')
         
     with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -330,8 +331,8 @@ def setup_mongoengine():
         with settings(warn_only=True):
             run('rm -fr mongoengine')
             run('git clone https://github.com/hmarr/mongoengine.git')
-            sudo('rm -f /usr/local/lib/python2.6/site-packages/mongoengine')
-            sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
+            sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
+            sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git checkout -b dev origin/dev')
@@ -346,14 +347,17 @@ def setup_pymongo_repo():
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         with settings(warn_only=True):
-            run('git remote add github http://github.com/samuelclay/mongoengine')
-            run('git checkout dev')
-            run('git pull github dev')
+            run('git checkout master')
+            run('git branch -D dev')
+            run('git remote add sclay git://github.com/samuelclay/mongoengine.git')
+            run('git fetch sclay')
+            run('git checkout -b dev sclay/dev')
+            run('git pull sclay dev')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git co dev')
-        run('git pull github dev --force')
+        run('git pull sclay dev --force')
         # run('git checkout .')
         # run('git checkout master')
         # run('get branch -D dev')
@@ -363,7 +367,7 @@ def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     
 def setup_sudoers():
-    sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
+    sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % env.user)
 
 def setup_nginx():
     with cd(env.VENDOR_PATH):
@@ -423,7 +427,6 @@ def update_gunicorn():
         run('git pull')
         sudo('python setup.py develop')
 
-@roles('web')
 def setup_staging():
     run('git clone https://github.com/samuelclay/NewsBlur.git staging')
     with cd('~/staging'):
@@ -439,16 +442,11 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
-    sudo('ufw allow from 199.15.253.0/24 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 199.15.250.0/24 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 199.15.253.0/24 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.250.0/24 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.253.0/24 to any port 5672 ') # RabbitMQ
-    sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
-    sudo('ufw allow from 199.15.250.0/24 to any port 6379 ') # Redis
-    sudo('ufw allow from 199.15.253.0/24 to any port 6379 ') # Redis
-    sudo('ufw allow from 199.15.250.0/24 to any port 11211 ') # Memcached
-    sudo('ufw allow from 199.15.253.0/24 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.250.0/22 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 199.15.250.0/22 to any port 27017') # MongoDB
+    sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
+    sudo('ufw allow from 199.15.250.0/22 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.250.0/22 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -483,13 +481,14 @@ def setup_redis():
         run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
         run('tar -xzf redis-2.4.2.tar.gz')
         run('rm redis-2.4.2.tar.gz')
-        with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
-            sudo('make install')
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis start')
     
 # ================
 # = Setup - Task =

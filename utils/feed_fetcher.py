@@ -46,9 +46,10 @@ class FetchFeed:
         Uses feedparser to download the feed. Will be parsed later.
         """
         identity = self.get_identity()
-        log_msg = u'%2s ---> [%-30s] Fetching feed (%d)' % (identity,
+        log_msg = u'%2s ---> [%-30s] Fetching feed (%d), last update: %s' % (identity,
                                                             unicode(self.feed)[:30],
-                                                            self.feed.id)
+                                                            self.feed.id,
+                                                            datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
                                                  
         self.feed.set_next_scheduled_update()
@@ -59,7 +60,7 @@ class FetchFeed:
             modified = None
             etag = None
             
-        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s' % (
+        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
             URL
@@ -132,6 +133,7 @@ class ProcessFeed:
                 if not self.fpf.href.endswith('feedburner.com/atom.xml'):
                     self.feed.feed_address = self.fpf.href
                 if first_run:
+                    self.feed.has_feed_exception = True
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
@@ -140,31 +142,34 @@ class ProcessFeed:
                 
             if self.fpf.status >= 400:
                 logging.debug("   ---> [%-30s] HTTP Status code: %s. Checking address..." % (unicode(self.feed)[:30], self.fpf.status))
-                fixed_feed = self.feed.check_feed_address_for_feed_link()
+                fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 else:
+                    self.feed.has_feed_exception = True
                     self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
+            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
-                logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
-                fixed_feed = self.feed.check_feed_address_for_feed_link()
+                fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 else:
+                    self.feed.has_feed_exception = True
                     self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed is Bad XML (SAX). %s entries. Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries)))
+            logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
-                fixed_feed = self.feed.check_feed_address_for_feed_link()
+                fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
                 else:
+                    self.feed.has_feed_exception = True
                     self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
@@ -217,35 +222,23 @@ class ProcessFeed:
             #     end_date = story.get('published')
             story_guids.append(story.get('guid') or story.get('link'))
         
-        if self.options['slave_db']:
-            slave_db = self.options['slave_db']
-            stories_db_orig = slave_db.stories.find({
-                "story_feed_id": self.feed.pk,
-                "story_date": {
-                    "$gte": start_date,
-                },
-            }).limit(len(story_guids))
-            existing_stories = []
-            for story in stories_db_orig:
-                existing_stories.append(bunch(story))
-        else:
-            existing_stories = list(MStory.objects(
-                # story_guid__in=story_guids,
-                story_date__gte=start_date,
-                story_feed_id=self.feed.pk
-            ).limit(len(story_guids)))
+        existing_stories = list(MStory.objects(
+            # story_guid__in=story_guids,
+            story_date__gte=start_date,
+            story_feed_id=self.feed.pk
+        ).limit(len(story_guids)))
         
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories)
+        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, verbose=self.options['verbose'])
         
-        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new~FG=~FG~SB%s~SN~FY up~FG=~FY~SB%s~SN same~FG=~FY%s err~FG=~FR~SB%s' % (
+        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
                       unicode(self.feed)[:30], 
                       ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
-        self.feed.update_all_statistics()
+        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]))
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
@@ -382,7 +375,9 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e)
-                
+            else:
+                logging.debug(u'   ---> [%-30s] Skipping page fetch: %s (%s on %s stories) %s' % (unicode(feed)[:30], unicode(feed.feed_link)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
+            
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
             
@@ -427,21 +422,8 @@ class Dispatcher:
                       unicode(feed)[:30], user_subs.count(),
                       feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
         
-        if self.options['slave_db']:
-            slave_db = self.options['slave_db']
-
-            stories_db_orig = slave_db.stories.find({
-                "story_feed_id": feed.pk,
-                "story_date": {
-                    "$gte": UNREAD_CUTOFF,
-                },
-            })
-            stories_db = []
-            for story in stories_db_orig:
-                stories_db.append(bunch(story))
-        else:
-            stories_db = MStory.objects(story_feed_id=feed.pk,
-                                        story_date__gte=UNREAD_CUTOFF)
+        stories_db = MStory.objects(story_feed_id=feed.pk,
+                                    story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
             cache.delete('usersub:%s' % sub.user_id)
             sub.needs_unread_recalc = True

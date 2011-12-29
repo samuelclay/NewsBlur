@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+import boto
+from boto.sqs.connection import SQSConnection
+
+from munin import MuninPlugin
+
+class AWSSQSQueueLengthPlugin(MuninPlugin):
+    category = "AWS"
+    args = "-l 0 --base 1000"
+    vlabel = "Messages"
+    info = "Show number of messages in an SQS queue"
+
+    @property
+    def title(self):
+        return "Length of AWS SQS queues '%s'" % ",".join(self.queues)
+
+    @property
+    def fields(self):
+        return [
+            (q, dict(
+                label = "messages in %s" % q,
+                type = "GAUGE",
+                min = "0",
+            )) for q in self.queues
+        ]
+
+    def __init__(self):
+        self.api_key = os.environ['AWS_KEY']
+        self.secret_key = os.environ['AWS_SECRET']
+        self.queues = (sys.argv[0].rsplit('_', 1)[-1] or os.environ['SQS_QUEUES']).split(',')
+
+    def execute(self):
+        conn = SQSConnection(self.api_key, self.secret_key)
+        return dict(
+            (qname, conn.get_queue(qname).count())
+            for qname in self.queues
+        )
+
+if __name__ == "__main__":
+    AWSSQSQueueLengthPlugin().run()

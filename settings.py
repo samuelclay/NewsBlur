@@ -49,6 +49,7 @@ LOGIN_URL             = '/reader/login'
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
+CIPHER_USERNAMES      = False
 
 
 # ===============
@@ -291,7 +292,7 @@ COMPRESS_CSS_FILTERS = []
 # ==========================
 
 DAYS_OF_UNREAD          = 14
-SUBSCRIBER_EXPIRE       = 1
+SUBSCRIBER_EXPIRE       = 2
 
 AUTH_PROFILE_MODULE     = 'newsblur.UserProfile'
 TEST_DATABASE_COLLATION = 'utf8_general_ci'
@@ -381,7 +382,7 @@ CELERY_QUEUES = {
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
 BROKER_BACKEND       = "amqplib"
-BROKER_HOST          = "db02.newsblur.com"
+BROKER_HOST          = "db01.newsblur.com"
 BROKER_PORT          = 5672
 BROKER_USER          = "newsblur"
 BROKER_PASSWORD      = "newsblur"
@@ -428,15 +429,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db02',
-}
-
-# ===========
-# = MongoDB =
-# ===========
-
-MONGODB_SLAVE = {
-    'host': 'db01'
+    'host': 'db01',
 }
 
 # ==================
@@ -469,7 +462,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'mongodb://db01,db03/?slaveOk=true',
+    'host': 'db01,db03',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
