@@ -6616,13 +6616,18 @@ background: transparent;
     color: #909090;
     font-size: 11px;
     float: left;
+    padding-left: 12px;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-bio {
     clear: both;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-stats {
     clear: both;
-    color: #4F4646;
-    font-size: 12px;
+    color: #5A6C8A;
+    font-size: 11px;
     text-transform: uppercase;
+}
+.NB-modal-friends .NB-profile-badge .NB-profile-badge-stats .NB-count {
+    padding-right: 3px;
+    font-weight: bold;
 }
