@@ -477,18 +477,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f]]);
                 this.feeds[feed.id] = this.feeds[f];
             }
+            if ((feed['has_exception'] && !this.feeds[f]['has_exception']) ||
+                (this.feeds[f]['has_exception'] && !feed['has_exception'])) {
+                updated = true;
+                this.feeds[f]['has_exception'] = !!feed['has_exception'];
+            }
             for (var k in feed) {
                 if (this.feeds[f][k] != feed[k]) {
                     // NEWSBLUR.log(['New Feed', this.feeds[f][k], feed[k], f, k]);
+                    NEWSBLUR.log(['Different', k, this.feeds[f][k], feed[k]]);
                     this.feeds[f][k] = feed[k];
-                    NEWSBLUR.log(['Different', k, this.feeds[f], feed]);
                     updated = true;
                 }
-            }
-            if ((feed['has_exception'] && !this.feeds[f]['has_exception']) ||
-                (this.feeds[f]['has_exception'] && !feed['has_exception'])) {
-              updated = true;
-              this.feeds[f]['has_exception'] = !!feed['has_exception'];
             }
             if (feed['favicon']) {
                 this.feeds[f]['favicon'] = feed['favicon'];
