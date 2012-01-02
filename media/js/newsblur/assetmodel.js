@@ -79,6 +79,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             url: url,
             data: data,
             type: request_type,
+            cache: false,
             beforeSend: function() {
                 // NEWSBLUR.log(['beforeSend', options]);
                 $.isFunction(options['beforeSend']) && options['beforeSend']();
