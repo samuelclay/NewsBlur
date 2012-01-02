@@ -80,6 +80,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             data: data,
             type: request_type,
             cache: false,
+            cacheResponse: false,
             beforeSend: function() {
                 // NEWSBLUR.log(['beforeSend', options]);
                 $.isFunction(options['beforeSend']) && options['beforeSend']();
@@ -130,6 +131,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 feed_id: feed_id
             }, null, null, {
                 'ajax_group': 'queue_clear',
+                'abortOld': true,
                 'traditional': true,
                 'beforeSend': function() {
                     self.queued_read_stories[feed_id] = [];
