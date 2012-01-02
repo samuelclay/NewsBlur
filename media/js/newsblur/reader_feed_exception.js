@@ -30,10 +30,17 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
 
     initialize_feed: function(feed_id) {
+        var view_setting = this.model.view_setting(feed_id);
         NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
         $('input[name=feed_link]', this.$modal).val(this.feed.feed_link);
         $('input[name=feed_address]', this.$modal).val(this.feed.feed_address);
-        
+        $('input[name=view_settings]', this.$modal).each(function() {
+            if ($(this).val() == view_setting) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+                
         if (this.feed.exception_type) {
             this.$modal.removeClass('NB-modal-feed-settings');
         } else {
@@ -72,6 +79,40 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-view NB-modal-submit NB-settings-only' }, [
+                $.make('h5', [
+                    $.make('div', { className: 'NB-exception-option-status NB-right' }),
+                    $.make('div', { className: 'NB-exception-option-meta' }),
+                    'View settings'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', { className: 'NB-exception-input-wrapper' }, [
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Reading view'
+                        ]),
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'view_settings', value: 'page' }),
+                                $.make('label', { 'for': 'NB-preference-view-1' }, [
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_original.png' })
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-view-2', type: 'radio', name: 'view_settings', value: 'feed' }),
+                                $.make('label', { 'for': 'NB-preference-view-2' }, [
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_feed.png' })
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-view-3', type: 'radio', name: 'view_settings', value: 'story' }),
+                                $.make('label', { 'for': 'NB-preference-view-3' }, [
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/reader/preferences_view_story.png' })
+                                ])
+                            ])
+                        ])                      
+                    ])
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit NB-exception-block-only' }, [
@@ -282,6 +323,23 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             self.first_load = false;
             self.initialize_feed(feed_id);
             self.get_feed_settings();
+        });
+        
+        $.targetIs(e, { tagSelector: 'input[name=view_settings]' }, function($t, $p){
+            self.model.view_setting(self.feed_id, $t.val());
+
+            var $status = $('.NB-exception-option-view .NB-exception-option-status', self.$modal);
+            $status.text('Saved').animate({
+                'opacity': 1
+            }, {
+                'queue': false,
+                'duration': 600,
+                'complete': function() {
+                    _.delay(function() {
+                        $status.animate({'opacity': 0}, {'queue': false, 'duration': 1000});
+                    }, 300);
+                }
+            });
         });
     }
     
