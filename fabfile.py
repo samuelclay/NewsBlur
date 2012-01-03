@@ -1,4 +1,4 @@
-from fabric.api import abort, cd, env, get, hide, hosts, local, prompt
+from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, parallel
 from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
 from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
@@ -68,30 +68,39 @@ def task():
 def pull():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
+
+def pre_deploy():
+    compress_assets()
+
+def post_deploy():
+    cleanup_assets()
     
 def deploy():
-    # compress_media()
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
-        run('mkdir -p static')
-        put('static/*', '%s/static/' % env.NEWSBLUR_PATH)
-        run('kill -HUP `cat logs/gunicorn.pid`')
-        run('curl -s http://%s > /dev/null' % env.host)
-        run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+    pre_deploy()
+    deploy_code()
+    post_deploy()
 
 def deploy_full():
-    compress_media()
+    pre_deploy()
+    deploy_code(full=True)
+    post_deploy()
+
+@parallel
+def deploy_code(full=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
-        run('./manage.py migrate')
         run('mkdir -p static')
-        run('rm -fr static/*')
-        put('static/*', 'static/')
-        with settings(warn_only=True):
-            run('sudo supervisorctl restart gunicorn')
-        run('curl -s http://www.newsblur.com > /dev/null')
-        run('curl -s http://www.newsblur.com/m/ > /dev/null')
-
+        if full:
+            run('rm -fr static/*')
+        transfer_assets()
+        if full:
+            with settings(warn_only=True):
+                run('sudo supervisorctl restart gunicorn')            
+        else:
+            run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://%s > /dev/null' % env.host)
+        run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+        
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
@@ -103,7 +112,6 @@ def gunicorn_stop():
             run('sudo supervisorctl stop gunicorn')
         
 def staging():
-    compress_media()
     with cd('~/staging'):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
@@ -111,7 +119,6 @@ def staging():
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
 
 def staging_full():
-    compress_media()
     with cd('~/staging'):
         run('git pull')
         run('./manage.py migrate')
@@ -140,10 +147,19 @@ def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
 
-def compress_media():
+def compress_assets():
     local('rm -fr static/*')
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
-        
+    local('tar -czf static.tar static/*')
+
+def transfer_assets():
+    put('static.tar', '%s/static/' % env.NEWSBLUR_PATH)
+    run('tar -xzf static/static.tar')
+    run('rm -f static/static.tar')
+
+def cleanup_assets():
+    local('rm -f static.tar')
+    
 # ===========
 # = Backups =
 # ===========
