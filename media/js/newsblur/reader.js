@@ -1952,7 +1952,7 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
             }
@@ -2012,7 +2012,7 @@
             
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
             }
