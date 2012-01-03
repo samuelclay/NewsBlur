@@ -31,6 +31,8 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.story_keys = {};
     this.queued_read_stories = {};
     this.classifiers = {};
+    this.friends = {};
+    this.profile = {};
     this.starred_stories = [];
     this.starred_count = 0;
     this.read_stories_river_count = 0;
@@ -916,7 +918,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     fetch_friends: function(callback) {
-        this.make_request('/social/friends', null, callback);
+        var pre_callback = _.bind(function(data) {
+            // this.profile = 
+            callback(data);
+        }, this);
+        this.make_request('/social/friends', null, pre_callback);
     },
     
     disconnect_social_service: function(service, callback) {

@@ -6659,15 +6659,23 @@ background: transparent;
     padding-left: 12px;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-bio {
-    clear: both;
+    clear: left;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-stats {
-    clear: both;
-    color: #5A6C8A;
+    clear: left;
+    color: #AE5D15;
     font-size: 11px;
     text-transform: uppercase;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-stats .NB-count {
     padding-right: 3px;
     font-weight: bold;
+}
+.NB-modal-friends .NB-profile-badge-actions {
+    float: right;
+    margin-top: 10px;
+}
+.NB-modal-friends .NB-profile-badge-actions .NB-modal-submit-button {
+    width: 80px;
+    text-align: center;
 }

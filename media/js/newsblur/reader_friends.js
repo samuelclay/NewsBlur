@@ -92,6 +92,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     make_find_friends_and_services: function(data) {
         console.log(["data", data]);
+        this.profile = data.social_profile;
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
         
@@ -226,6 +227,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     make_profile_badge: function(profile) {
         var $badge = $.make('div', { className: "NB-profile-badge" }, [
+            $.make('div', { className: 'NB-profile-badge-actions' }),
             $.make('div', { className: 'NB-profile-badge-photo' }, [
                 $.make('img', { src: profile.photo_url })
             ]),
@@ -243,6 +245,19 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 'followers'
             ])
         ]);
+        
+        var $actions;
+        if (_.contains(this.profile.following_user_ids, profile.user_id)) {
+            $actions = $.make('div', { 
+                className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
+            }, 'Following');
+        } else {
+            $actions = $.make('div', { 
+                className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-green' 
+            }, 'Follow');
+        }
+        $('.NB-profile-badge-actions', $badge).append($actions);
+
         return $badge;
     },
     

@@ -187,6 +187,7 @@ COMPRESS_JS = {
             # 'js/socket.io-client.0.8.7.js',
             'js/underscore.js',
             'js/underscore.string.js',
+            'js/backbone-0.5.3.js',
             'js/newsblur/reader_utils.js',
             'js/newsblur/assetmodel.js',
             'js/newsblur/reader.js',
