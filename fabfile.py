@@ -419,6 +419,7 @@ def setup_app_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
+    sudo('ufw allow 8888')
     sudo('ufw --force enable')
 
 def setup_app_motd():

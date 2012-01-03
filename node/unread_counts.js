@@ -7,11 +7,11 @@
 
   redis = require('redis');
 
-  client = redis.createClient();
+  client = redis.createClient(6379, 'db01');
 
   io.sockets.on('connection', function(socket) {
     socket.on('subscribe:feeds', function(feeds) {
-      socket.subscribe = redis.createClient();
+      socket.subscribe = redis.createClient(6379, 'db01');
       console.log("Subscribing to " + feeds.length + " feeds");
       socket.subscribe.subscribe(feeds);
       return socket.subscribe.on('message', function(channel, message) {
