@@ -70,23 +70,27 @@ def pull():
         run('git pull')
     
 def deploy():
+    # compress_media()
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
+        run('mkdir -p static')
+        put('static/*', '%s/static/' % env.NEWSBLUR_PATH)
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)
-        # run('curl -s http://%s/m/ > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
-        compress_media()
 
 def deploy_full():
+    compress_media()
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('./manage.py migrate')
+        run('mkdir -p static')
+        run('rm -fr static/*')
+        put('static/*', 'static/')
         with settings(warn_only=True):
             run('sudo supervisorctl restart gunicorn')
         run('curl -s http://www.newsblur.com > /dev/null')
         run('curl -s http://www.newsblur.com/m/ > /dev/null')
-        compress_media()
 
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
@@ -99,21 +103,21 @@ def gunicorn_stop():
             run('sudo supervisorctl stop gunicorn')
         
 def staging():
+    compress_media()
     with cd('~/staging'):
         run('git pull')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
-        compress_media()
 
 def staging_full():
+    compress_media()
     with cd('~/staging'):
         run('git pull')
         run('./manage.py migrate')
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
-        compress_media()
 
 def celery():
     with cd(env.NEWSBLUR_PATH):
@@ -137,15 +141,8 @@ def kill_celery():
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
 
 def compress_media():
-    with cd('media/js'):
-        run('rm -f *.gz')
-        run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
-    with cd('media/css/mobile'):
-        run('rm -f *.gz')
-        run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
-    with cd('media/css'):
-        run('rm -f *.gz')
-        run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
+    local('rm -fr static/*')
+    local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
         
 # ===========
 # = Backups =

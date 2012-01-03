@@ -193,7 +193,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 .NB-account input[type=submit] {
-/*    height: 40px;*/
     outline: none;
     width: 186px; /* 174=input-width + 5*2=padding + 2=border */
     margin: 4px 5px 0 0;

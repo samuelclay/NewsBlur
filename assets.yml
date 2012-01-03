@@ -8,7 +8,7 @@ javascript_compressor: closure
 template_function: _.template
 
 # Location of static assets relative to CWD.
-public_root: .
+public_root: "."
 
 # Package data-uri and mhtml variants of stylesheets, with whitelisted 
 # images embedded inline.
