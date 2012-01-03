@@ -33,7 +33,7 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db03.newsblur.com'],
+    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
     'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
 }
 
@@ -153,11 +153,13 @@ def compress_media():
 
 def backup_mongo():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('./mongo_backup.sh')
+        # run('./mongo_backup.sh')
+        run('python backup_mongo.py')
 
 def backup_postgresql():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
-        run('./postgresql_backup.sh')
+        # run('./postgresql_backup.sh')
+        run('python backup_psql.py')
 
 # ===============
 # = Calibration =
@@ -175,6 +177,7 @@ def sync_time():
 def setup_common():
     setup_installs()
     setup_user()
+    setup_sudoers()
     setup_repo()
     setup_repo_local_settings()
     setup_local_files()
@@ -188,7 +191,6 @@ def setup_common():
     setup_forked_mongoengine()
     setup_pymongo_repo()
     setup_logrotate()
-    setup_sudoers()
     setup_nginx()
     configure_nginx()
 
@@ -237,7 +239,7 @@ def setup_installs():
         run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
     sudo('python ez_setup.py -U setuptools && rm ez_setup.py')
-    sudo('chsh sclay -s /bin/zsh')
+    sudo('chsh %s -s /bin/zsh' % env.user)
     run('mkdir -p %s' % env.VENDOR_PATH)
     
 def setup_user():
@@ -253,6 +255,7 @@ def setup_user():
 def add_machine_to_ssh():
     put("~/.ssh/id_dsa.pub", "local_keys")
     run("echo `cat local_keys` >> .ssh/authorized_keys")
+    run("rm local_keys")
     
 def setup_repo():
     with settings(warn_only=True):
@@ -296,7 +299,7 @@ def setup_python():
         sudo('python setup.py install')
         
     with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.6/sitecustomize.py\'')
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -328,8 +331,8 @@ def setup_mongoengine():
         with settings(warn_only=True):
             run('rm -fr mongoengine')
             run('git clone https://github.com/hmarr/mongoengine.git')
-            sudo('rm -f /usr/local/lib/python2.6/site-packages/mongoengine')
-            sudo('ln -s %s /usr/local/lib/python2.6/site-packages/mongoengine' % 
+            sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
+            sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git checkout -b dev origin/dev')
@@ -364,7 +367,7 @@ def setup_logrotate():
     put('config/logrotate.conf', '/etc/logrotate.d/newsblur', use_sudo=True)
     
 def setup_sudoers():
-    sudo('su - root -c "echo \\\\"sclay ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"')
+    sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % env.user)
 
 def setup_nginx():
     with cd(env.VENDOR_PATH):
@@ -439,16 +442,11 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
-    sudo('ufw allow from 199.15.253.0/24 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 199.15.250.0/24 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 199.15.253.0/24 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.250.0/24 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.253.0/24 to any port 5672 ') # RabbitMQ
-    sudo('ufw allow from 199.15.250.0/24 to any port 5672 ') # RabbitMQ
-    sudo('ufw allow from 199.15.250.0/24 to any port 6379 ') # Redis
-    sudo('ufw allow from 199.15.253.0/24 to any port 6379 ') # Redis
-    sudo('ufw allow from 199.15.250.0/24 to any port 11211 ') # Memcached
-    sudo('ufw allow from 199.15.253.0/24 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.250.0/22 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 199.15.250.0/22 to any port 27017') # MongoDB
+    sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
+    sudo('ufw allow from 199.15.250.0/22 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.250.0/22 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():

@@ -154,7 +154,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
-@ratelimit(minutes=1, requests=20)
+@ratelimit(minutes=1, requests=12)
 @json.json_view
 def load_feeds(request):
     user             = get_user(request)
@@ -226,6 +226,7 @@ def load_feeds_flat(request):
     user = request.user
     include_favicons = request.REQUEST.get('include_favicons', False)
     feeds = {}
+    iphone_version = "1.2"
     
     if include_favicons == 'false': include_favicons = False
     
@@ -235,7 +236,7 @@ def load_feeds_flat(request):
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
-        data = dict(folders=[])
+        data = dict(folders=[], iphone_version=iphone_version)
         return data
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
@@ -269,7 +270,7 @@ def load_feeds_flat(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version="1.2")
+    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version=iphone_version)
     return data
 
 @ratelimit(minutes=1, requests=10)
@@ -345,7 +346,7 @@ def load_single_feed(request, feed_id):
     start        = time.time()
     user         = get_user(request)
     offset       = int(request.REQUEST.get('offset', 0))
-    limit        = int(request.REQUEST.get('limit', 12))
+    limit        = int(request.REQUEST.get('limit', 6))
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
@@ -510,7 +511,8 @@ def load_river_stories(request):
     # Fetch all stories at and before the page number.
     # Not a single page, because reading stories can move them up in the unread order.
     # `read_stories_count` is an optimization, works best when all 25 stories before have been read.
-    limit = limit * page - read_stories_count
+    offset = (page-1) * limit - read_stories_count
+    limit = page * limit - read_stories_count
     
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story_id')
@@ -572,10 +574,11 @@ def load_river_stories(request):
     #     if story_feed_counts[story['story_feed_id']] >= 3: continue
     #     mstories_pruned.append(story)
     #     story_feed_counts[story['story_feed_id']] += 1
+    
     stories = []
     for i, story in enumerate(mstories):
         if i < offset: continue
-        if i >= offset + limit: break
+        if i >= limit: break
         stories.append(bunch(story))
     stories = Feed.format_stories(stories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))

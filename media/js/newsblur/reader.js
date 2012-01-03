@@ -62,7 +62,7 @@
         this.layout = {};
         this.constants = {
           FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
-          FILL_OUT_PAGES: 8,
+          FILL_OUT_PAGES: 50,
           RIVER_STORIES_FOR_STANDARD_ACCOUNT: 12
         };
         
@@ -104,6 +104,7 @@
         this.apply_tipsy_titles();
         this.load_recommended_feeds();
         this.setup_dashboard_graphs();
+        this.setup_feedback_table();
         this.setup_howitworks_hovers();
         this.load_url_next_param();
     };
@@ -1511,7 +1512,7 @@
                     var $this = $(this);
                     // _.defer(function() { $('.NB-hover', $folder).not($this).removeClass('NB-hover'); });
                     // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                    if ($this.offset().top > $(window).height() - 270) {
+                    if ($this.offset().top > $(window).height() - 314) {
                         $this.addClass('NB-hover-inverse');
                     } 
                 }
@@ -1822,6 +1823,21 @@
                 this.show_tryfeed_add_button();
             }
             this.make_content_pane_feed_counter(feed_id);
+            this.scroll_back_to_original_position_before_fillout();
+        },
+        
+        scroll_back_to_original_position_before_fillout: function() {
+            var $story_titles = this.$s.$story_titles;
+            if (this.flags.post_load_page_scroll_position == $story_titles.scrollTop() && this.flags.pre_load_page_scroll_position) {
+                // NEWSBLUR.log(['Snap back pre-autofill', this.flags.post_load_page_scroll_position, this.flags.pre_load_page_scroll_position]);
+                $story_titles.scrollTo(this.flags.post_load_page_scroll_position, { 
+                    duration: 0,
+                    axis: 'y', 
+                    easing: 'easeInOutQuint', 
+                    offset: 0, 
+                    queue: false
+                });
+            }
         },
         
         setup_mousemove_on_views: function() {
@@ -1937,7 +1953,7 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
             }
@@ -1963,6 +1979,7 @@
                 this.flags['story_titles_loaded'] = true;
                 this.prefetch_story_locations_in_feed_view();
                 this.fill_out_story_titles();
+                this.scroll_back_to_original_position_before_fillout();
             }
         },
         
@@ -1996,7 +2013,7 @@
             
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
             }
@@ -2042,6 +2059,7 @@
                 this.fill_out_story_titles();
                 this.prefetch_story_locations_in_feed_view();
                 this.hide_stories_progress_bar();
+                this.scroll_back_to_original_position_before_fillout();
             }
         },
         
@@ -3133,8 +3151,9 @@
             var page = $story_titles.data('page');
 
             if (!this.flags['opening_feed']) {
-                
+                this.flags.pre_load_page_scroll_position = $('#story_titles').scrollTop();
                 if (!hide_loading) this.show_feedbar_loading();
+                this.flags.post_load_page_scroll_position = $('#story_titles').scrollTop();
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
@@ -4998,6 +5017,10 @@
             var unread_view_name = options['unread_view_name'] || this.get_unread_view_name();
             var $stories_show, $stories_hide;
             
+            if (this.model.stories.length > 100) {
+                options['animate'] = false;
+            }
+            
             if (this.flags['unread_threshold_temporarily']) {
               unread_view_name = this.flags['unread_threshold_temporarily'];
               options['temporary'] = true;
@@ -5762,15 +5785,37 @@
           clearInterval(this.locks.load_dashboard_graphs);
           this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
               this.load_dashboard_graphs();
-          }, this), 10*60*1000);
+          }, this), NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000);
         },
         
-        load_dashboard_graphs: function(direction, refresh) {
+        load_dashboard_graphs: function() {
             var self = this;
             var $module = $('.NB-module-stats');
             $module.addClass('NB-loading');
             
             this.model.load_dashboard_graphs(function(resp) {
+                if (!resp) return;
+                $module.removeClass('NB-loading');
+                $module.replaceWith(resp);
+                self.load_javascript_elements_on_page();
+            }, $.noop);
+        },
+        
+        
+        setup_feedback_table: function() {
+          // Reload feedback module every 10 minutes.
+          clearInterval(this.locks.load_feedback_table);
+          this.locks.load_feedback_table = setInterval(_.bind(function() {
+              this.load_feedback_table();
+          }, this), NEWSBLUR.Globals.is_staff ? 60*1000 : 10*60*1000);
+        },
+        
+        load_feedback_table: function() {
+            var self = this;
+            var $module = $('.NB-feedback-table');
+            $module.addClass('NB-loading');
+            
+            this.model.load_feedback_table(function(resp) {
                 if (!resp) return;
                 $module.removeClass('NB-loading');
                 $module.replaceWith(resp);

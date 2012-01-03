@@ -1,4 +1,4 @@
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse
 from django.core.cache import cache
 from datetime import datetime, timedelta
 import functools
@@ -85,7 +85,7 @@ class ratelimit(object):
     
     def disallowed(self, request):
         "Over-ride this method if you want to log incidents"
-        return HttpResponseForbidden('Rate limit exceeded')
+        return HttpResponse('Rate limit exceeded', status=429)
     
     def expire_after(self):
         "Used for setting the memcached cache expiry"

@@ -60,7 +60,7 @@ class FetchFeed:
             modified = None
             etag = None
             
-        USER_AGENT = 'NewsBlur Feed Fetcher (%s subscriber%s) - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)' % (
+        USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3 (NewsBlur Feed Fetcher - %s subscriber%s - %s)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
             URL
@@ -238,7 +238,7 @@ class ProcessFeed:
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
                       unicode(self.feed)[:30], 
                       ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
-        self.feed.update_all_statistics()
+        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]))
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         

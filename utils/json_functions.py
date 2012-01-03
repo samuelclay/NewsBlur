@@ -2,7 +2,7 @@ from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.db import models
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
-# from django.utils import simplejson as json
+from django.utils import simplejson as json
 import cjson
 from decimal import Decimal
 from django.core import serializers
@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
 import sys
+import datetime
 
 def decode(data):
     if not data:
@@ -42,7 +43,9 @@ def json_encode(data, *args, **kwargs):
         # Opps, we used to check if it is of type list, but that fails 
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
-        if isinstance(data, list):
+        if hasattr(data, 'to_json'):
+            ret = data.to_json()
+        elif isinstance(data, list):
             ret = _list(data)
         # Same as for lists above.
         elif isinstance(data, dict):
@@ -61,6 +64,8 @@ def json_encode(data, *args, **kwargs):
         # see http://code.djangoproject.com/ticket/5868
         elif isinstance(data, Promise):
             ret = force_unicode(data)
+        elif isinstance(data, datetime.datetime):
+            ret = str(data)
         else:
             ret = data
         return ret
@@ -90,8 +95,8 @@ def json_encode(data, *args, **kwargs):
         return ret
     
     ret = _any(data)
-    # return json.dumps(ret)
-    return cjson.encode(ret, encoding='utf-8', extension=lambda x: "\"%s\"" % str(x))
+    return json.dumps(ret)
+    # return cjson.encode(ret, encoding='utf-8', extension=lambda x: "\"%s\"" % str(x))
 
 def json_view(func):
     def wrap(request, *a, **kw):

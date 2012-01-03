@@ -13,6 +13,7 @@
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
       'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
+      'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       'email'                   : "{{ user.email|safe }}",

@@ -51,6 +51,7 @@ LOGIN_URL             = '/reader/login'
 ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
+CIPHER_USERNAMES      = False
 
 
 # ===============
