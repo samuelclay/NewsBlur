@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% load typogrify_tags compressed %}
+{% load typogrify_tags utils_tags %}
 
 {% block extra_head_js %}
-  {% compressed_css 'paypal' %}
-  {% compressed_js 'paypal' %}
+  {% include_stylesheets "paypal" %}
+  {% include_javascripts "paypal" %}
 {% endblock %}
 
 {% block content %}

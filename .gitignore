@@ -4,6 +4,7 @@ logs/*.log
 media/*/*-compressed-*.*
 media/css/*/*-compressed-*.*
 media/release
+static/*
 local_settings.py
 media/iphone/NewsBlur/build
 media/iphone/build

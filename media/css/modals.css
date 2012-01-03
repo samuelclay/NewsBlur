@@ -52,11 +52,11 @@
 }
 
 .NB-modal .NB-modal-loading.NB-active {
-    background: transparent url('../img/reader/recycle_spinner.gif') no-repeat 0 0;
+    background: transparent url('/media/img/reader/recycle_spinner.gif') no-repeat 0 0;
 }
 
 .NB-modal .NB-loading.NB-active {
-    background: transparent url('../img/reader/spinner_ball.gif') no-repeat 0 0;
+    background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
 }
 
 .NB-modal h2,
