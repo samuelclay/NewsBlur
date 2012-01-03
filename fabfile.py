@@ -446,6 +446,13 @@ def setup_staging():
         run('cp ../newsblur/local_settings.py local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
+
+def setup_node():
+    sudo('add-apt-repository ppa:chris-lea/node.js')
+    sudo('apt-get update')
+    sudo('apt-get install nodejs')
+    run('curl http://npmjs.org/install.sh | sudo sh')
+    sudo('npm install -g supervisor')
     
 # ==============
 # = Setup - DB =
