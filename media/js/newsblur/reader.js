@@ -62,7 +62,7 @@
         this.layout = {};
         this.constants = {
           FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
-          FILL_OUT_PAGES: 8,
+          FILL_OUT_PAGES: 50,
           RIVER_STORIES_FOR_STANDARD_ACCOUNT: 12
         };
         
@@ -1953,7 +1953,7 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
             }
@@ -2014,7 +2014,7 @@
             
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = NEWSBLUR.Preferences.view_settings[this.active_feed];
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
             if (!explicit_view_setting) {
               explicit_view_setting = 'feed';
             }

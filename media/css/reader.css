@@ -5095,6 +5095,12 @@ background: transparent;
 .NB-modal-exception.NB-modal-feed-settings .NB-exception-block-only {
     display: none;
 }
+.NB-modal-exception .NB-settings-only {
+    display: none;
+}
+.NB-modal-exception.NB-modal-feed-settings .NB-settings-only {
+    display: block;
+}
 .NB-modal-exception .NB-modal-title {
     display: none;
 }
@@ -5145,6 +5151,40 @@ background: transparent;
 .NB-modal-exception .NB-modal-loading {
     margin: 6px 8px 0;
 }
+.NB-modal-feed-settings .NB-preference-label {
+    float: left;
+    margin: 6px 0;
+}
+.NB-modal-feed-settings .NB-preference-options {
+    margin-left: 24px;
+    float: left;
+    overflow: hidden;
+}
+.NB-modal-feed-settings .NB-preference-options div {
+    float: left;
+    margin: 0 12px;
+}
+.NB-modal-feed-settings .NB-preference-options input[type=radio] {
+    float: left;
+    margin: 10px 4px;
+}
+
+.NB-modal-feed-settings .NB-preference-options label {
+    padding-left: 4px;
+    margin: 0 0 4px 0;
+    float: left;
+    cursor: pointer;
+}
+.NB-modal-feed-settings .NB-preference-options img {
+    height: 31px;
+}
+.NB-modal-feed-settings .NB-exception-option-status {
+    color: #3945C0;
+    font-weight: bold;
+    text-transform: uppercase;
+    opacity: 0;
+}
+
 /* ===================== */
 /* = Feedchooser Modal = */
 /* ===================== */

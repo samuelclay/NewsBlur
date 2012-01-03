@@ -582,11 +582,9 @@ class Feed(models.Model):
         
     def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
-        try:
+        if settings.DEBUG:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
-        except:
-            pass
         
         self.set_next_scheduled_update()
         
