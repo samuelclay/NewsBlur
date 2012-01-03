@@ -976,6 +976,7 @@ def feeds_trainer(request):
     feed_id = request.REQUEST.get('feed_id')
     user = get_user(request)
     usersubs = UserSubscription.objects.filter(user=user, active=True)
+    
     if feed_id:
         feed = get_object_or_404(Feed, pk=feed_id)
         usersubs = usersubs.filter(feed=feed)

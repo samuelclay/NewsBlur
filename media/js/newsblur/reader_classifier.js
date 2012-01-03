@@ -139,7 +139,7 @@ var classifier_prototype = {
     
     load_next_feed_in_trainer: function() {
         var trainer_data_length = this.trainer_data.length;
-        this.trainer_iterator = this.trainer_iterator + 1;
+        this.trainer_iterator += 1;
         var trainer_data = this.trainer_data[this.trainer_iterator];
         // NEWSBLUR.log(['load_next_feed_in_trainer', this.trainer_iterator, trainer_data]);
         if (!trainer_data || this.trainer_iterator >= trainer_data_length) {
@@ -148,7 +148,11 @@ var classifier_prototype = {
             this.load_feeds_trainer(null, this.trainer_data);
         } else {
             this.feed_id = trainer_data['feed_id'];
-            this.load_feed(trainer_data);
+            if (this.model.get_feed(this.feed_id)) {
+                this.load_feed(trainer_data);
+            } else {
+                this.load_next_feed_in_trainer();
+            }
         }
     },
     
