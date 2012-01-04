@@ -312,7 +312,7 @@ NEWSBLUR.log = function(msg) {
             }
             
             // Third argument can be TextNode or an array of additional $.make
-            if (args[2]) {
+            if (args[2] != null) {
                 if (typeof args[2] == 'string' || typeof args[2] == 'number') {
                     text = args[2];
                 } else if (typeof args[1] == 'object' && args[2].push) {
@@ -339,7 +339,7 @@ NEWSBLUR.log = function(msg) {
                     }
                 }
             }
-            if (text) {
+            if (text != null) {
                 $elem.html(text);
             }
             return $elem;

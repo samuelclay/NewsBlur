@@ -53,11 +53,12 @@ javascripts:
         - media/js/vendor/underscore.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
-        - media/js/newsblur/reader_utils.js
-        - media/js/newsblur/assetmodel.js
-        - media/js/newsblur/reader.js
-        - media/js/newsblur/modal.js
-        - media/js/newsblur/reader_*.js
+        - media/js/newsblur/common/*.js
+        - media/js/newsblur/models/*.js
+        - media/js/newsblur/reader/reader_utils.js
+        - media/js/newsblur/reader/reader.js
+        - media/js/newsblur/reader/*.js
+        - media/js/newsblur/static/*.js
     # mobile:
     #     - media/js/jquery-1.7.js
     #     - media/js/mobile/jquery.mobile-1.0b1.js
@@ -72,7 +73,7 @@ javascripts:
     #     - media/js/newsblur/assetmodel.js
     #     - media/js/mobile/newsblur/mobile_workspace.js
     paypal:
-        - media/js/newsblur/paypal_return.js
+        - media/js/newsblur/paypal/paypal_return.js
     bookmarklet:
         - media/js/vendor/jquery-1.5.1.min.js
         - media/js/vendor/jquery.noConflict.js

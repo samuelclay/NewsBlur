@@ -215,7 +215,8 @@
     color: #909090;
     
 }
-.NB-modal-submit-close {
+.NB-modal-submit-close,
+.NB-modal-submit-grey {
     background-color: #d5d4dB;
     color: #909090;
     font-weight: bold;
@@ -225,7 +226,11 @@
     font-weight: bold;
     color: #FCFCFC;
 }
-
+.NB-modal-submit-red {
+    background-color: #911C31;
+    color: #E4E4E4;
+    font-weight: bold;
+}
 .NB-modal-submit-delete {
     background-color: #7E020D;
     font-weight: bold;

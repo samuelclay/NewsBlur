@@ -46,6 +46,110 @@ class MSharedStory(mongo.Document):
         super(MSharedStory, self).save(*args, **kwargs)
 
 
+class MSocialProfile(mongo.Document):
+    user_id              = mongo.IntField()
+    username             = mongo.StringField(max_length=30)
+    email                = mongo.StringField()
+    bio                  = mongo.StringField(max_length=80)
+    photo_url            = mongo.StringField()
+    photo_service        = mongo.StringField()
+    location             = mongo.StringField(max_length=40)
+    website              = mongo.StringField(max_length=200)
+    subscription_count   = mongo.IntField(default=0)
+    shared_stories_count = mongo.IntField(default=0)
+    following_count      = mongo.IntField(default=0)
+    follower_count       = mongo.IntField(default=0)
+    following_user_ids   = mongo.ListField(mongo.IntField())
+    follower_user_ids    = mongo.ListField(mongo.IntField())
+    unfollowed_user_ids  = mongo.ListField(mongo.IntField())
+    
+    meta = {
+        'collection': 'social_profile',
+        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
+        'allow_inheritance': False,
+    }
+    
+    def __unicode__(self):
+        return "%s [%s] %s/%s" % (self.username, self.user_id, 
+                                  self.subscription_count, self.shared_stories_count)
+    
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.update_user(skip_save=True)
+        if not self.subscription_count:
+            self.count(skip_save=True)
+        super(MSocialProfile, self).save(*args, **kwargs)
+        
+    @classmethod
+    def profiles(cls, user_ids):
+        profiles = cls.objects.filter(user_id__in=user_ids)
+        return profiles
+        
+    def to_json(self, full=False):
+        params = {
+            'user_id': self.user_id,
+            'username': self.username,
+            'photo_url': self.photo_url,
+            'bio': self.bio,
+            'location': self.location,
+            'website': self.website,
+            'subscription_count': self.subscription_count,
+            'shared_stories_count': self.shared_stories_count,
+            'following_count': self.following_count,
+            'follower_count': self.follower_count,
+        }
+        if full:
+            params['photo_service']       = self.photo_service
+            params['following_user_ids']  = self.following_user_ids
+            params['follower_user_ids']   = self.follower_user_ids
+            params['unfollowed_user_ids'] = self.unfollowed_user_ids
+        return params
+    
+    def update_user(self, skip_save=False):
+        user = User.objects.get(pk=self.user_id)
+        self.username = user.username
+        self.email = user.email
+        if not skip_save:
+            self.save()
+
+    def count(self, skip_save=False):
+        self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
+        self.shared_stories_count = MSharedStory.objects.filter(user_id=self.user_id).count()
+        self.following_count = len(self.following_user_ids)
+        self.follower_count = len(self.follower_user_ids)
+        if not skip_save:
+            self.save()
+        
+    def follow_user(self, user_id, check_unfollowed=False):
+        if check_unfollowed and user_id in self.unfollowed_user_ids:
+            return
+            
+        if user_id not in self.following_user_ids:
+            self.following_user_ids.append(user_id)
+            if user_id in self.unfollowed_user_ids:
+                self.unfollowed_user_ids.remove(user_id)
+            self.save()
+            
+            followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
+            if self.user_id not in followee.follower_user_ids:
+                followee.follower_user_ids.append(self.user_id)
+                followee.save()
+        self.count()
+    
+    def unfollow_user(self, user_id):
+        if user_id in self.following_user_ids:
+            self.following_user_ids.remove(user_id)
+        if user_id not in self.unfollowed_user_ids:
+            self.unfollowed_user_ids.append(user_id)
+        self.save()
+        
+        followee = MSocialProfile.objects.get(user_id=user_id)
+        if self.user_id in followee.follower_user_ids:
+            followee.follower_user_ids.remove(self.user_id)
+            followee.save()
+        self.count()
+        
+
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()
     autofollow            = mongo.BooleanField(default=True)
@@ -235,100 +339,3 @@ class MSocialServices(mongo.Document):
             profile.photo_url = "http://www.gravatar.com/avatar/" + \
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
-
-
-class MSocialProfile(mongo.Document):
-    user_id              = mongo.IntField()
-    username             = mongo.StringField(max_length=30)
-    email                = mongo.StringField()
-    bio                  = mongo.StringField(max_length=80)
-    photo_url            = mongo.StringField()
-    photo_service        = mongo.StringField()
-    location             = mongo.StringField(max_length=40)
-    website              = mongo.StringField(max_length=200)
-    subscription_count   = mongo.IntField()
-    shared_stories_count = mongo.IntField()
-    following_count      = mongo.IntField()
-    follower_count       = mongo.IntField()
-    following_user_ids   = mongo.ListField(mongo.IntField())
-    follower_user_ids    = mongo.ListField(mongo.IntField())
-    unfollowed_user_ids  = mongo.ListField(mongo.IntField())
-    
-    meta = {
-        'collection': 'social_profile',
-        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
-        'allow_inheritance': False,
-    }
-    
-    def __unicode__(self):
-        return "%s [%s] %s/%s" % (self.username, self.user_id, 
-                                  self.subscription_count, self.shared_stories_count)
-    
-    def save(self, *args, **kwargs):
-        if not self.username:
-            self.update_user(skip_save=True)
-        if not self.subscription_count:
-            self.count(skip_save=True)
-        super(MSocialProfile, self).save(*args, **kwargs)
-        
-    def to_json(self, full=False):
-        params = {
-            'user_id': self.user_id,
-            'username': self.username,
-            'photo_url': self.photo_url,
-            'bio': self.bio,
-            'location': self.location,
-            'website': self.website,
-            'subscription_count': self.subscription_count or 0,
-            'shared_stories_count': self.shared_stories_count or 0,
-            'following_count': self.following_count or 0,
-            'follower_count': self.follower_count or 0,
-        }
-        if full:
-            params['photo_service']       = self.photo_service
-            params['following_user_ids']  = self.following_user_ids
-            params['follower_user_ids']   = self.follower_user_ids
-            params['unfollowed_user_ids'] = self.unfollowed_user_ids
-        return params
-    
-    def update_user(self, skip_save=False):
-        user = User.objects.get(pk=self.user_id)
-        self.username = user.username
-        self.email = user.email
-        if not skip_save:
-            self.save()
-
-    def count(self, skip_save=False):
-        self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
-        self.shared_stories_count = MSharedStory.objects.filter(user_id=self.user_id).count()
-        self.following_count = len(self.following_user_ids)
-        self.follower_count = len(self.follower_user_ids)
-        if not skip_save:
-            self.save()
-        
-    def follow_user(self, user_id, check_unfollowed=False):
-        if not check_unfollowed or user_id not in self.following_user_ids:
-            if user_id not in self.following_user_ids:
-                self.following_user_ids.append(user_id)
-                self.save()
-            
-            followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
-            if self.user_id not in followee.follower_user_ids:
-                followee.follower_user_ids.append(self.user_id)
-                followee.save()
-        self.count()
-    
-    def unfollow_user(self, user_id):
-        self.following_user_ids.remove(user_id)
-        self.save()
-        
-        followee = MSocialProfile.objects.get(user_id=user_id)
-        followee.follower_user_ids.remove(self.user_id)
-        followee.save()
-        self.count()
-        
-    @classmethod
-    def profiles(cls, user_ids):
-        profiles = cls.objects.filter(user_id__in=user_ids)
-        return profiles
-        

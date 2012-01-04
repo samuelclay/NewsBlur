@@ -79,26 +79,28 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         ]);
     },
     
-    fetch_friends: function() {
+    fetch_friends: function(callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         this.model.fetch_friends(_.bind(function(data) {
-            this.make_find_friends_and_services(data);
-            this.make_profile_section(data);
-            this.make_profile_tab(data);
-            this.make_followers_tab(data);
-            this.make_following_tab(data);
+            this.profile = this.model.user_profile;
+            this.services = data.services;
+            this.autofollow = data.autofollow;
+            this.make_find_friends_and_services();
+            this.make_profile_section();
+            this.make_profile_tab();
+            this.make_followers_tab();
+            this.make_following_tab();
+            callback && callback();
         }, this));
     },
     
-    make_find_friends_and_services: function(data) {
-        console.log(["data", data]);
-        this.profile = data.social_profile;
+    make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
         
-        _.each(['twitter', 'facebook'], function(service) {
+        _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
-            if (data.services[service][service+'_uid']) {
+            if (this.services && this.services[service][service+'_uid']) {
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-close' }, 'Disconnect')
@@ -113,10 +115,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 ]);
             }
             $services.append($service);
-        });
+        }, this));
        
         $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow'}, [
-            $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: data.autofollow ? 'checked' : null }),
+            $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
             $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, [
                 'Auto-follow',
                 $.make('br'),
@@ -127,12 +129,12 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         this.resize();
     },
     
-    make_profile_section: function(data) {
+    make_profile_section: function() {
         var $badge = $('.NB-friends-findfriends-profile', this.$modal).empty();
         var $profile_badge;
-        var profile = data.social_profile;
-
-        if (!profile.location && !profile.bio && !profile.website && !profile.photo_url) {
+        var profile = this.profile;
+        
+        if (!profile.get('location') && !profile.get('bio') && !profile.get('website') && !profile.get('photo_url')) {
             $profile_badge = $.make('a', { 
                 className: 'NB-friends-profile-link NB-modal-submit-button NB-modal-submit-green', 
                 href: '#'
@@ -148,7 +150,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $badge.append($profile_badge);
     },
     
-    make_profile_tab: function(data) {
+    make_profile_tab: function() {
         var $profile_container = $('.NB-friends-profile', this.$modal).empty();
         var $profile = $.make('form', [
             $.make('label', 'Username'),
@@ -157,24 +159,24 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('a', { className: 'NB-splash-link NB-account-link', href: '#' }, 'Change')
             ]),
             $.make('label', { 'for': 'NB-profile-location' }, 'Location'),
-            $.make('input', { id: 'NB-profile-location', name: 'location', type: 'text', className: 'NB-input', style: 'width: 220px', value: data.social_profile.location, "data-max": 40 }),
+            $.make('input', { id: 'NB-profile-location', name: 'location', type: 'text', className: 'NB-input', style: 'width: 220px', value: this.profile.get('location'), "data-max": 40 }),
             $.make('span', { className: 'NB-count NB-count-location' }),
             $.make('label', { 'for': 'NB-profile-website' }, 'Website'),
-            $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 300px', value: data.social_profile.website, "data-max": 200 }),
+            $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 300px', value: this.profile.get('website'), "data-max": 200 }),
             $.make('span', { className: 'NB-count NB-count-website' }),
             $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
-            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 380px', value: data.social_profile.bio, "data-max": 80 }),
+            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 380px', value: this.profile.get('bio'), "data-max": 80 }),
             $.make('span', { className: 'NB-count NB-count-bio' })
         ]);
         $profile_container.html($profile);
-        this.make_profile_photo_chooser(data);
+        this.make_profile_photo_chooser();
         this.disable_save();
     },
     
-    make_profile_photo_chooser: function(data) {
+    make_profile_photo_chooser: function() {
         var $profiles = $('.NB-friends-profilephoto', this.$modal).empty();
         
-        _.each(['twitter', 'facebook', 'gravatar'], function(service) {
+        _.each(['twitter', 'facebook', 'gravatar'], _.bind(function(service) {
             var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-'+service }, [
                 $.make('div', { className: 'NB-friends-photo-title' }, [
                     $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-'+service }),
@@ -183,7 +185,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('div', { className: 'NB-friends-photo-image' }, [
                     $.make('label', { 'for': 'NB-profile-photo-service-'+service }, [
                         $.make('div', { className: 'NB-photo-loader' }),
-                        $.make('img', { src: data.services[service][service+'_picture_url'] })
+                        $.make('img', { src: this.services[service][service+'_picture_url'] })
                     ])
                 ]),
                 (service == 'upload' && $.make('div', { className: 'NB-photo-link' }, [
@@ -194,32 +196,32 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
                 ]))
             ]);
-            if (service == data.social_profile.photo_service) {
+            if (service == this.profile.get('photo_service')) {
                 $('input[type=radio]', $profile).attr('checked', true);
             }
             $profiles.append($profile);
-        });
+        }, this));
     },
     
-    make_followers_tab: function(data) {
+    make_followers_tab: function() {
         var $tab = $('.NB-tab-followers', this.$modal).empty();
-        if (!data.follower_profiles || !data.follower_profiles.length) {
+        if (!this.model.follower_profiles || !this.model.follower_profiles.size()) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
             $tab.append($ghost);
         } else {
-            _.each(data.follower_profiles, _.bind(function(profile) {
+            this.model.follower_profiles.each(_.bind(function(profile) {
                 $tab.append(this.make_profile_badge(profile));
             }, this));
         }
     },
     
-    make_following_tab: function(data) {
+    make_following_tab: function() {
         var $tab = $('.NB-tab-following', this.$modal).empty();
-        if (!data.following_profiles || !data.following_profiles.length) {
+        if (!this.model.following_profiles || !this.model.following_profiles.size()) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
             $tab.append($ghost);
         } else {
-            _.each(data.following_profiles, _.bind(function(profile) {
+            this.model.following_profiles.each(_.bind(function(profile) {
                 $tab.append(this.make_profile_badge(profile));
             }, this));
         }
@@ -229,31 +231,31 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $badge = $.make('div', { className: "NB-profile-badge" }, [
             $.make('div', { className: 'NB-profile-badge-actions' }),
             $.make('div', { className: 'NB-profile-badge-photo' }, [
-                $.make('img', { src: profile.photo_url })
+                $.make('img', { src: profile.get('photo_url') })
             ]),
-            $.make('div', { className: 'NB-profile-badge-username' }, profile.username),
-            $.make('div', { className: 'NB-profile-badge-location' }, profile.location),
-            $.make('div', { className: 'NB-profile-badge-bio' }, profile.bio),
+            $.make('div', { className: 'NB-profile-badge-username' }, profile.get('username')),
+            $.make('div', { className: 'NB-profile-badge-location' }, profile.get('location')),
+            $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
             $.make('div', { className: 'NB-profile-badge-stats' }, [
-                $.make('span', { className: 'NB-count' }, profile.shared_stories_count),
+                $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
                 'stories shared',
                 ' &middot; ',
-                $.make('span', { className: 'NB-count' }, profile.following_count),
+                $.make('span', { className: 'NB-count' }, profile.get('following_count')),
                 'following',
                 ' &middot; ',
-                $.make('span', { className: 'NB-count' }, profile.follower_count),
+                $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
                 'followers'
             ])
-        ]);
+        ]).data('user_id', profile.get('user_id'));
         
         var $actions;
-        if (_.contains(this.profile.following_user_ids, profile.user_id)) {
+        if (_.contains(this.profile.get('following_user_ids'), profile.get('user_id'))) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
             }, 'Following');
         } else {
             $actions = $.make('div', { 
-                className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-green' 
+                className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green' 
             }, 'Follow');
         }
         $('.NB-profile-badge-actions', $badge).append($actions);
@@ -322,6 +324,12 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         
         $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
         $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
+        
+        if (newtab == 'following') {
+            this.make_following_tab();
+        } else if (newtab == 'followers') {
+            this.make_followers_tab();
+        }
         this.resize_modal();
     },
     
@@ -335,9 +343,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
         this.model.disconnect_social_service(service, _.bind(function(data) {
-            this.make_find_friends_and_services(data);
-            this.make_profile_section(data);
-            this.make_profile_tab(data);
+            this.services = data.services;
+            this.make_find_friends_and_services();
+            this.make_profile_section();
+            this.make_profile_tab();
         }, this));
     },
     
@@ -370,10 +379,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             'website': $('input[name=website]', this.$modal).val(),
             'bio': $('input[name=bio]', this.$modal).val()
         };
-        this.model.save_social_profile(data, _.bind(function() {
-            this.fetch_friends();
+        this.model.save_user_profile(data, _.bind(function() {
+            this.fetch_friends(_.bind(function() {
+                this.animate_profile_badge();
+            }, this));
             this.switch_tab('findfriends');
-            this.animate_profile_badge();
         }, this));
         this.disable_save();
         $('.NB-profile-save-button', this.$modal).text('Saving...');
@@ -381,27 +391,51 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     animate_profile_badge: function($badge) {
         $badge = $badge || $('.NB-friends-findfriends-profile .NB-profile-badge', this.$modal);
-        console.log(["$badge", $badge]);
         _.delay(_.bind(function() {
             $badge.css('backgroundColor', 'white').animate({
-                'backgroundColor': 'orange'
+                'backgroundColor': 'gold'
             }, {
                 'queue': false,
-                'duration': 1200,
-                'easing': 'easeInQuad',
+                'duration': 600,
+                'easing': 'linear',
                 'complete': function() {
                     $badge.animate({
                         'backgroundColor': 'white'
                     }, {
                         'queue': false,
-                        'duration': 650,
+                        'duration': 1250,
                         'easing': 'easeOutQuad'
                     });
                 }
             });
         }, this), 200);
     },
-
+    
+    follow_user: function(user_id, $badge) {
+        this.model.follow_user(user_id, _.bind(function(data) {
+            this.make_profile_section();
+            var $button = $('.NB-modal-submit-button', $badge);
+            $button.text('Following');
+            $button.removeClass('NB-modal-submit-green')
+                .removeClass('NB-modal-submit-red')
+                .addClass('NB-modal-submit-close');
+            $button.removeClass('NB-profile-badge-action-follow')
+                .addClass('NB-profile-badge-action-unfollow');
+        }, this));
+    },
+    
+    unfollow_user: function(user_id, $badge) {
+        this.model.unfollow_user(user_id, _.bind(function(data) {
+            this.make_profile_section();
+            var $button = $('.NB-modal-submit-button', $badge);
+            $button.text('Unfollowed');
+            $button.removeClass('NB-modal-submit-close')
+                .addClass('NB-modal-submit-red');
+            $button.removeClass('NB-profile-badge-action-unfollow')
+                .addClass('NB-profile-badge-action-follow');
+        }, this));
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -442,6 +476,18 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             e.preventDefault();
             
             self.switch_tab('profile');
+        });
+        $.targetIs(e, { tagSelector: '.NB-profile-badge-action-follow' }, function($t, $p) {
+            e.preventDefault();
+            var $badge = $t.closest('.NB-profile-badge');
+            var user_id = $badge.data('user_id');
+            self.follow_user(user_id, $badge);
+        });
+        $.targetIs(e, { tagSelector: '.NB-profile-badge-action-unfollow' }, function($t, $p) {
+            e.preventDefault();
+            var $badge = $t.closest('.NB-profile-badge');
+            var user_id = $badge.data('user_id');
+            self.unfollow_user(user_id, $badge);
         });
         $.targetIs(e, { tagSelector: '.NB-profile-save-button' }, function($t, $p) {
             e.preventDefault();

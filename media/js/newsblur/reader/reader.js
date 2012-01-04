@@ -3010,7 +3010,7 @@
                     $story_tags
                 ]),
                 $.make('span', { className: 'story_date' }, story.short_parsed_date),
-                $.make('span', { className: 'story_id' }, ''+story.id),
+                $.make('span', { className: 'story_id' }, story.id),
                 $.make('div', { className: 'NB-story-manage-icon' })
             ]).data('story_id', story.id).data('feed_id', story.story_feed_id);
             
@@ -3354,7 +3354,7 @@
                 //     $.make('div', { className: 'NB-feed-sentiment NB-feed-like', title: 'What I like about this site...' }),
                 //     $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike', title: 'What I dislike about this site...' })
                 // ]),
-                $.make('span', { className: 'feed_id' }, ''+feed.id)
+                $.make('span', { className: 'feed_id' }, feed.id)
             ]).hover(function() {
                 $(this).addClass('NB-feedbar-hover');
             },function() {
@@ -5419,7 +5419,6 @@
             
             this.flags.feed_refresh = setInterval(function() {
                 if (!self.flags['pause_feed_refreshing']) {
-                  console.log(["setup feed refresh", self.flags['has_unfetched_feeds']]);
                   self.model.refresh_feeds(_.bind(function(updated_feeds) {
                       self.post_feed_refresh(updated_feeds);
                   }, self), self.flags['has_unfetched_feeds']);

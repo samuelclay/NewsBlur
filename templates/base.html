@@ -59,6 +59,8 @@
       'opml-export'             : "{% url opml-export %}",
       'domain'                  : "{% current_domain %}"
     };
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
   </script>
   
   {% include_stylesheets "common" %}
@@ -67,6 +69,7 @@
   {% endblock head_js %}
   {% block extra_head_js %}
   {% endblock extra_head_js %}
+  {% block head %}{% endblock %}
   
   <script type="text/javascript" charset="utf-8">
     $.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});

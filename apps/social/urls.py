@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     url(r'^facebook_disconnect/?$', views.facebook_disconnect, name='facebook-disconnect'),
     url(r'^friends/?$', views.friends, name='friends'),
     url(r'^profile/?$', views.profile, name='profile'),
+    url(r'^follow/?$', views.follow, name='social-follow'),
+    url(r'^unfollow/?$', views.unfollow, name='social-unfollow'),
     url(r'^(?P<user_id>\d+)/(?P<username>\w+)/?$', views.shared_story_feed, name='shared-story-feed'),
     url(r'^(?P<username>\w+)/?$', views.shared_stories_public, name='shared-stories-public'),
 )

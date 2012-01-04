@@ -105,7 +105,7 @@ def friends(request):
     return {
         'services': social_services,
         'autofollow': social_services.autofollow,
-        'social_profile': social_profile.to_json(full=True),
+        'user_profile': social_profile.to_json(full=True),
         'following_profiles': following_profiles,
         'follower_profiles': follower_profiles,
     }
@@ -115,7 +115,9 @@ def friends(request):
 def profile(request):
     if request.method == 'POST':
         return save_profile(request)
-    return dict(code=0)
+
+    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    return dict(code=1, user_profile=profile)
     
 def save_profile(request):
     data = request.POST
@@ -129,7 +131,27 @@ def save_profile(request):
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.set_photo(data['photo_service'])
     
-    return dict(code=1)
+    return dict(code=1, user_profile=profile)
+
+@ajax_login_required
+@json.json_view
+def follow(request):
+    follow_user_id = int(request.POST['user_id'])
+    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile.follow_user(follow_user_id)
+    
+    follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
+    
+    return dict(user_profile=profile, follow_profile=follow_profile)
+    
+@ajax_login_required
+@json.json_view
+def unfollow(request):
+    unfollow_user_id = int(request.POST['user_id'])
+    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile.unfollow_user(unfollow_user_id)
+    
+    return dict(user_profile=profile)
     
 @login_required
 @render_to('social/social_connect.xhtml')

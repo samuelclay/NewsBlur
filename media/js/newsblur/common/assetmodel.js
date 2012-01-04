@@ -919,7 +919,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     fetch_friends: function(callback) {
         var pre_callback = _.bind(function(data) {
-            // this.profile = 
+            this.user_profile = new NEWSBLUR.Models.User(data.user_profile);
+            this.follower_profiles = new NEWSBLUR.Collections.Users(data.follower_profiles);
+            this.following_profiles = new NEWSBLUR.Collections.Users(data.following_profiles);
             callback(data);
         }, this);
         this.make_request('/social/friends', null, pre_callback);
@@ -929,8 +931,35 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/'+service+'_disconnect/', null, callback);
     },
     
-    save_social_profile: function(data, callback) {
+    save_user_profile: function(data, callback) {
         this.make_request('/social/profile/', data, callback);
+    },
+    
+    follow_user: function(user_id, callback) {
+        var pre_callback = _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            var following_profile = this.following_profiles.detect(function(profile) {
+                return profile.get('user_id') == data.follow_profile.user_id;
+            });
+            if (following_profile) {
+                following_profile.set(data.follow_profile);
+            } else {
+                this.following_profiles.add(data.follow_profile);
+            }
+            callback(data);
+        }, this);
+        this.make_request('/social/follow', {'user_id': user_id}, pre_callback);
+    },
+    
+    unfollow_user: function(user_id, callback) {
+        var pre_callback = _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            this.following_profiles.remove(function(profile) {
+                return profile.get('user_id') == data.follow_profile.user_id;
+            });
+            callback(data);
+        }, this);
+        this.make_request('/social/unfollow', {'user_id': user_id}, pre_callback);
     },
     
     recalculate_story_scores: function(feed_id) {
