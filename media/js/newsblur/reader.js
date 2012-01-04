@@ -6787,6 +6787,13 @@
                 e.preventDefault();
                 self.open_river_stories();
             });
+            $document.bind('keydown', 'shift+u', function(e) {
+                e.preventDefault();
+                if (self.active_story) {
+                    var story_id = self.active_story.id;
+                    self.mark_story_as_unread(story_id);
+                }
+            });
         }
         
     };
