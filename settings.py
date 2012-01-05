@@ -4,6 +4,18 @@ import os
 from mongoengine import connect
 import redis
 
+# ===================
+# = Server Settings =
+# ===================
+
+ADMINS       = (
+    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+)
+
+SERVER_EMAIL = 'server@newsblur.com'
+HELLO_EMAIL  = 'hello@newsblur.com'
+NEWSBLUR_URL = 'http://www.newsblur.com'
+
 # ===========================
 # = Directory Declaractions =
 # ===========================
@@ -25,14 +37,10 @@ if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
-
 # ===================
 # = Global Settings =
 # ===================
 
-ADMINS                = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
-)
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
@@ -306,8 +314,6 @@ SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
-SERVER_EMAIL            = 'server@newsblur.com'
-HELLO_EMAIL             = 'hello@newsblur.com'
 
 # ===========
 # = Logging =
