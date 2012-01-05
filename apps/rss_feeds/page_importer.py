@@ -75,7 +75,9 @@ class PageImporter(object):
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
         except (httplib.IncompleteRead), e:
             self.feed.save_page_history(500, "IncompleteRead", e)
-        except requests.exceptions.RequestException, e:
+        except (requests.exceptions.RequestException, 
+                LookupError, 
+                requests.exceptions.packages.urllib3.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
             return self.fetch_page(urllib_fallback=True)
         except Exception, e:
