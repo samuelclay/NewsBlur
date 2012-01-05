@@ -344,12 +344,12 @@ class Dispatcher:
                  (ret_feed == FEED_OK or
                   (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                   
-                logging.debug(u'   ---> [%-30s] Fetching page: %s' % (unicode(feed)[:30], feed.feed_link))
+                logging.debug(u'   ---> [%-30s] ~FYFetching page: %s' % (unicode(feed)[:30], feed.feed_link))
                 page_importer = PageImporter(feed)
                 try:
                     page_importer.fetch_page()
                 except TimeoutError, e:
-                    logging.debug('   ---> [%-30s] Page fetch timed out...' % (unicode(feed)[:30]))
+                    logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (unicode(feed)[:30]))
                     feed.save_page_history(555, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -360,12 +360,12 @@ class Dispatcher:
                     fetched_feed = None
                     mail_feed_error_to_admin(feed, e)
                     
-                logging.debug(u'   ---> [%-30s] Fetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
+                logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:
                     icon_importer.save()
                 except TimeoutError, e:
-                    logging.debug('   ---> [%-30s] Icon fetch timed out...' % (unicode(feed)[:30]))
+                    logging.debug('   ---> [%-30s] ~FRIcon fetch timed out...' % (unicode(feed)[:30]))
                     feed.save_page_history(556, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -375,7 +375,7 @@ class Dispatcher:
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e)
             else:
-                logging.debug(u'   ---> [%-30s] Skipping page fetch: %s (%s on %s stories) %s' % (unicode(feed)[:30], unicode(feed.feed_link)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
+                logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: %s (%s on %s stories) %s' % (unicode(feed)[:30], unicode(feed.feed_link)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
             feed = self.refresh_feed(feed_id)
             delta = datetime.datetime.utcnow() - start_time
@@ -385,12 +385,12 @@ class Dispatcher:
             try:
                 feed.save()
             except IntegrityError:
-                logging.debug("   ---> [%-30s] IntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
+                logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
             
             if ret_entries[ENTRY_NEW]:
                 self.publish_to_subscribers(feed)
                 
-            done_msg = (u'%2s ---> [%-30s] Processed in %s (%s) [%s]' % (
+            done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FG~SB%s~FY~SN (~FB%s~FY) [%s]' % (
                 identity, feed.feed_title[:30], unicode(delta),
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)

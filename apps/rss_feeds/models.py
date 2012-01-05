@@ -769,11 +769,11 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
-            logging.debug('   ---> [%-30s] ~FRFound %s stories. Trimming to ~SB%s~SN...' % (self, stories.count(), trim_cutoff))
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' % (self, stories.count(), trim_cutoff))
             try:
                 story_trim_date = stories[trim_cutoff].story_date
             except IndexError, e:
-                logging.debug(' ***> [%-30s] Error trimming feed: %s' % (self, e))
+                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (self, e))
                 return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
