@@ -45,7 +45,7 @@ class FetchFeed:
         Uses feedparser to download the feed. Will be parsed later.
         """
         identity = self.get_identity()
-        log_msg = u'%2s ---> [%-30s] ~FYFetching feed (%d), last update: %s' % (identity,
+        log_msg = u'%2s ---> [%-30s] ~FYFetching feed (~FB%d~FY), last update: %s' % (identity,
                                                             unicode(self.feed)[:30],
                                                             self.feed.id,
                                                             datetime.datetime.now() - self.feed.last_update)
@@ -287,7 +287,7 @@ class Dispatcher:
                 ENTRY_SAME: 0,
                 ENTRY_ERR: 0
             }
-            start_time = datetime.datetime.utcnow()
+            start_time = time.time()
             ret_feed = FEED_ERREXC
             try:
                 feed = self.refresh_feed(feed_id)
@@ -375,12 +375,12 @@ class Dispatcher:
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e)
             else:
-                logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: %s (%s on %s stories) %s' % (unicode(feed)[:30], unicode(feed.feed_link)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
+                logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (unicode(feed)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
             feed = self.refresh_feed(feed_id)
-            delta = datetime.datetime.utcnow() - start_time
+            delta = time.time() - start_time
             
-            feed.last_load_time = max(1, delta.seconds)
+            feed.last_load_time = round(delta)
             feed.fetched_once = True
             try:
                 feed.save()
@@ -390,8 +390,8 @@ class Dispatcher:
             if ret_entries[ENTRY_NEW]:
                 self.publish_to_subscribers(feed)
                 
-            done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FG~SB%s~FY~SN (~FB%s~FY) [%s]' % (
-                identity, feed.feed_title[:30], unicode(delta),
+            done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FG~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
+                identity, feed.feed_title[:30], delta,
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
             
