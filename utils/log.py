@@ -37,7 +37,7 @@ def user(u, msg):
         elif 'WP7' in user_agent:
             platform = 'WP7'
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
-    username = cipher(u.__unicode__()) if settings.CIPHER_USERNAMES else u
+    username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else u
     info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, username, premium, msg))
 
 def cipher(msg):
