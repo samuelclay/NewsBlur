@@ -62,7 +62,7 @@
         this.layout = {};
         this.constants = {
           FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
-          FILL_OUT_PAGES: 8,
+          FILL_OUT_PAGES: 50,
           RIVER_STORIES_FOR_STANDARD_ACCOUNT: 12
         };
         
@@ -6786,6 +6786,13 @@
             $document.bind('keydown', 'shift+e', function(e) {
                 e.preventDefault();
                 self.open_river_stories();
+            });
+            $document.bind('keydown', 'shift+u', function(e) {
+                e.preventDefault();
+                if (self.active_story) {
+                    var story_id = self.active_story.id;
+                    self.mark_story_as_unread(story_id);
+                }
             });
         }
         
