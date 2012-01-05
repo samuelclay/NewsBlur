@@ -22,7 +22,7 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/vendor/jquery-1.7.js
+        - media/js/vendor/jquery-1.7.1.js
         - media/js/vendor/jquery.json.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
