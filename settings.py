@@ -5,6 +5,18 @@ from mongoengine import connect
 import redis
 from utils import jammit
 
+# ===================
+# = Server Settings =
+# ===================
+
+ADMINS       = (
+    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+)
+
+SERVER_EMAIL = 'server@newsblur.com'
+HELLO_EMAIL  = 'hello@newsblur.com'
+NEWSBLUR_URL = 'http://www.newsblur.com'
+
 # ===========================
 # = Directory Declaractions =
 # ===========================
@@ -27,14 +39,10 @@ if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
-
 # ===================
 # = Global Settings =
 # ===================
 
-ADMINS                = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
-)
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
@@ -159,7 +167,7 @@ LOGGING = {
 COMPRESS_JS = {
     'all': {
         'source_filenames': (
-            'js/jquery-1.6.1.js',
+            'js/jquery-1.7.1.js',
             'js/inflector.js',
             'js/jquery.json.js',
             'js/jquery.easing.js',
@@ -214,7 +222,7 @@ COMPRESS_JS = {
     },
     'mobile': {
         'source_filenames': (
-            'js/jquery-1.6.1.js',
+            'js/jquery-1.7.1.js',
             'js/mobile/jquery.mobile-1.0b1.js',
             'js/jquery.ajaxmanager.3.js',
             'js/underscore.js',
@@ -308,8 +316,6 @@ SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
-SERVER_EMAIL            = 'server@newsblur.com'
-HELLO_EMAIL             = 'hello@newsblur.com'
 
 # ===========
 # = Logging =

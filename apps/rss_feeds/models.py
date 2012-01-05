@@ -142,7 +142,7 @@ class Feed(models.Model):
         except IntegrityError, e:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
+            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
             if duplicate_feed:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
@@ -277,7 +277,7 @@ class Feed(models.Model):
         try:
             feed_address = _1()
         except TimeoutError:
-            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self.feed_title)[:30]))
+            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
             self.save_feed_history(505, 'Timeout', '')
             feed_address = None
         
@@ -769,19 +769,21 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
-            logging.debug(' ---> [%-30s] Found %s stories. Trimming to %s...' % (self, stories.count(), trim_cutoff))
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' % (unicode(self)[:30], stories.count(), trim_cutoff))
             try:
                 story_trim_date = stories[trim_cutoff].story_date
             except IndexError, e:
-                logging.debug(' ***> [%-30s] Error trimming feed: %s' % (self, e))
+                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             extra_stories.delete()
-            print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
+            if verbose:
+                print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
             userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=story_trim_date)
             if userstories.count():
-                print "Found %s user stories. Deleting..." % userstories.count()
+                if verbose:
+                    print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False, slave=False):
