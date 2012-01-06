@@ -941,12 +941,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             var following_profile = this.following_profiles.detect(function(profile) {
                 return profile.get('user_id') == data.follow_profile.user_id;
             });
+            var follow_user;
             if (following_profile) {
-                following_profile.set(data.follow_profile);
+                follow_user = following_profile.set(data.follow_profile);
             } else {
                 this.following_profiles.add(data.follow_profile);
+                follow_user = new NEWSBLUR.Models.User(data.follow_profile);
             }
-            callback(data);
+            callback(data, follow_user);
         }, this);
         this.make_request('/social/follow', {'user_id': user_id}, pre_callback);
     },
@@ -955,9 +957,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = _.bind(function(data) {
             this.user_profile.set(data.user_profile);
             this.following_profiles.remove(function(profile) {
-                return profile.get('user_id') == data.follow_profile.user_id;
+                return profile.get('user_id') == data.unfollow_profile.user_id;
             });
-            callback(data);
+            var unfollow_user = new NEWSBLUR.Models.User(data.unfollow_profile);
+            callback(data, unfollow_user);
         }, this);
         this.make_request('/social/unfollow', {'user_id': user_id}, pre_callback);
     },

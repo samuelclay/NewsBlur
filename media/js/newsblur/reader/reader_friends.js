@@ -238,13 +238,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
             $.make('div', { className: 'NB-profile-badge-stats' }, [
                 $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
-                'stories shared',
+                Inflector.pluralize('story', profile.get('shared_stories_count')),
+                ' shared',
                 ' &middot; ',
                 $.make('span', { className: 'NB-count' }, profile.get('following_count')),
                 'following',
                 ' &middot; ',
                 $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
-                'followers'
+                Inflector.pluralize('follower', profile.get('follower_count'))
             ])
         ]).data('user_id', profile.get('user_id'));
         
@@ -412,7 +413,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     follow_user: function(user_id, $badge) {
-        this.model.follow_user(user_id, _.bind(function(data) {
+        this.model.follow_user(user_id, _.bind(function(data, follow_user) {
             this.make_profile_section();
             var $button = $('.NB-modal-submit-button', $badge);
             $button.text('Following');
@@ -421,11 +422,12 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 .addClass('NB-modal-submit-close');
             $button.removeClass('NB-profile-badge-action-follow')
                 .addClass('NB-profile-badge-action-unfollow');
+            $badge.replaceWith(this.make_profile_badge(follow_user));
         }, this));
     },
     
     unfollow_user: function(user_id, $badge) {
-        this.model.unfollow_user(user_id, _.bind(function(data) {
+        this.model.unfollow_user(user_id, _.bind(function(data, unfollow_user) {
             this.make_profile_section();
             var $button = $('.NB-modal-submit-button', $badge);
             $button.text('Unfollowed');
@@ -433,6 +435,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 .addClass('NB-modal-submit-red');
             $button.removeClass('NB-profile-badge-action-unfollow')
                 .addClass('NB-profile-badge-action-follow');
+            $badge.replaceWith(this.make_profile_badge(unfollow_user));
         }, this));
     },
     

@@ -117,7 +117,7 @@ def profile(request):
         return save_profile(request)
 
     profile = MSocialProfile.objects.get(user_id=request.user.pk)
-    return dict(code=1, user_profile=profile)
+    return dict(code=1, user_profile=profile.to_json(full=True))
     
 def save_profile(request):
     data = request.POST
@@ -131,7 +131,7 @@ def save_profile(request):
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.set_photo(data['photo_service'])
     
-    return dict(code=1, user_profile=profile)
+    return dict(code=1, user_profile=profile.to_json(full=True))
 
 @ajax_login_required
 @json.json_view
@@ -142,7 +142,7 @@ def follow(request):
     
     follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
     
-    return dict(user_profile=profile, follow_profile=follow_profile)
+    return dict(user_profile=profile.to_json(full=True), follow_profile=follow_profile)
     
 @ajax_login_required
 @json.json_view
@@ -151,7 +151,9 @@ def unfollow(request):
     profile = MSocialProfile.objects.get(user_id=request.user.pk)
     profile.unfollow_user(unfollow_user_id)
     
-    return dict(user_profile=profile)
+    unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
+    
+    return dict(user_profile=profile.to_json(full=True), unfollow_profile=unfollow_profile)
     
 @login_required
 @render_to('social/social_connect.xhtml')

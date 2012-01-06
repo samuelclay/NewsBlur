@@ -133,6 +133,7 @@ class MSocialProfile(mongo.Document):
             followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
             if self.user_id not in followee.follower_user_ids:
                 followee.follower_user_ids.append(self.user_id)
+                followee.count()
                 followee.save()
         self.count()
     
@@ -146,6 +147,7 @@ class MSocialProfile(mongo.Document):
         followee = MSocialProfile.objects.get(user_id=user_id)
         if self.user_id in followee.follower_user_ids:
             followee.follower_user_ids.remove(self.user_id)
+            followee.count()
             followee.save()
         self.count()
         
