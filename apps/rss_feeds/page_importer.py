@@ -66,8 +66,6 @@ class PageImporter(object):
                 data = open(feed_link, 'r').read()
             html = self.rewrite_page(data)
             self.save_page(html)
-            if urllib_fallback:
-                mail_feed_error_to_admin(self.feed, requests_exception, locals(), subject="REQUESTS DIFFERENCE")
         except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
