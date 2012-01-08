@@ -346,7 +346,7 @@ def load_single_feed(request, feed_id):
     start        = time.time()
     user         = get_user(request)
     offset       = int(request.REQUEST.get('offset', 0))
-    limit        = int(request.REQUEST.get('limit', 12))
+    limit        = int(request.REQUEST.get('limit', 6))
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None

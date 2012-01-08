@@ -43,10 +43,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
-        this.ajax['queue'] = $.manageAjax.create('queue', {queue: false}); 
+        this.ajax['queue'] = $.manageAjax.create('queue', {queue: true}); 
         this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear'}); 
         this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domCompleteTrigger: true}); 
-        this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: false, abortOld: true, abortIsNoSuccess: false, domCompleteTrigger: true}); 
+        this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: 'clear', abortOld: true, abortIsNoSuccess: false, domCompleteTrigger: true}); 
         this.ajax['statistics'] = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
         return;
@@ -68,7 +68,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         if (options['ajax_group'] == 'statistics') {
             clear_queue = true;
-            request_type = 'GET';
         }
         
         if (clear_queue) {
@@ -79,6 +78,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             url: url,
             data: data,
             type: request_type,
+            cache: false,
+            cacheResponse: false,
             beforeSend: function() {
                 // NEWSBLUR.log(['beforeSend', options]);
                 $.isFunction(options['beforeSend']) && options['beforeSend']();
@@ -92,7 +93,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 }
             },
             error: function(e, textStatus, errorThrown) {
-                NEWSBLUR.log(['AJAX Error', textStatus, errorThrown]);
+                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown]);
                 if (errorThrown == 'abort') {
                     return;
                 }
@@ -129,7 +130,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 feed_id: feed_id
             }, null, null, {
                 'ajax_group': 'queue_clear',
-                'traditional': true,
                 'beforeSend': function() {
                     self.queued_read_stories[feed_id] = [];
                 }
@@ -477,18 +477,18 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f]]);
                 this.feeds[feed.id] = this.feeds[f];
             }
+            if ((feed['has_exception'] && !this.feeds[f]['has_exception']) ||
+                (this.feeds[f]['has_exception'] && !feed['has_exception'])) {
+                updated = true;
+                this.feeds[f]['has_exception'] = !!feed['has_exception'];
+            }
             for (var k in feed) {
                 if (this.feeds[f][k] != feed[k]) {
                     // NEWSBLUR.log(['New Feed', this.feeds[f][k], feed[k], f, k]);
+                    NEWSBLUR.log(['Different', k, this.feeds[f][k], feed[k]]);
                     this.feeds[f][k] = feed[k];
-                    NEWSBLUR.log(['Different', k, this.feeds[f], feed]);
                     updated = true;
                 }
-            }
-            if ((feed['has_exception'] && !this.feeds[f]['has_exception']) ||
-                (this.feeds[f]['has_exception'] && !feed['has_exception'])) {
-              updated = true;
-              this.feeds[f]['has_exception'] = !!feed['has_exception'];
             }
             if (feed['favicon']) {
                 this.feeds[f]['favicon'] = feed['favicon'];
@@ -803,7 +803,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     get_feed_statistics: function(feed_id, callback) {
         this.make_request('/rss_feeds/statistics/'+feed_id, {}, callback, callback, {
             'ajax_group': 'statistics',
-            'requesst_type': 'GET'
+            'request_type': 'GET'
         });
     },
     

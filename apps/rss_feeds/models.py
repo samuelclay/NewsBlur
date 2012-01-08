@@ -142,7 +142,7 @@ class Feed(models.Model):
         except IntegrityError, e:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (self, e))
+            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
             if duplicate_feed:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
@@ -277,7 +277,7 @@ class Feed(models.Model):
         try:
             feed_address = _1()
         except TimeoutError:
-            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self.feed_title)[:30]))
+            logging.debug('   ---> [%-30s] Feed address check timed out...' % (unicode(self)[:30]))
             self.save_feed_history(505, 'Timeout', '')
             feed_address = None
         
@@ -582,11 +582,9 @@ class Feed(models.Model):
         
     def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True):
         from utils import feed_fetcher
-        try:
+        if settings.DEBUG:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
-        except:
-            pass
         
         self.set_next_scheduled_update()
         
@@ -771,19 +769,21 @@ class Feed(models.Model):
             story_feed_id=self.pk,
         ).order_by('-story_date')
         if stories.count() > trim_cutoff:
-            logging.debug(' ---> [%-30s] Found %s stories. Trimming to %s...' % (self, stories.count(), trim_cutoff))
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' % (unicode(self)[:30], stories.count(), trim_cutoff))
             try:
                 story_trim_date = stories[trim_cutoff].story_date
             except IndexError, e:
-                logging.debug(' ***> [%-30s] Error trimming feed: %s' % (self, e))
+                logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             extra_stories.delete()
-            print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
+            if verbose:
+                print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
             userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=story_trim_date)
             if userstories.count():
-                print "Found %s user stories. Deleting..." % userstories.count()
+                if verbose:
+                    print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
     def get_stories(self, offset=0, limit=25, force=False, slave=False):
@@ -812,12 +812,13 @@ class Feed(models.Model):
     
     @classmethod
     def format_story(cls, story_db, feed_id=None, text=False):
+        story_content = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story                     = {}
         story['story_tags']       = story_db.story_tags or []
         story['story_date']       = story_db.story_date
         story['story_authors']    = story_db.story_author_name
         story['story_title']      = story_db.story_title
-        story['story_content']    = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
+        story['story_content']    = story_content
         story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['id']               = story_db.story_guid or story_db.story_date
@@ -1264,6 +1265,13 @@ class DuplicateFeed(models.Model):
    
     def __unicode__(self):
         return "%s: %s" % (self.feed, self.duplicate_address)
+        
+    def to_json(self):
+        return {
+            'duplicate_address': self.duplicate_address,
+            'duplicate_feed_id': self.duplicate_feed_id,
+            'feed_id': self.feed.pk
+        }
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription
