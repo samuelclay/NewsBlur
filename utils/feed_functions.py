@@ -176,10 +176,12 @@ def add_object_to_folder(obj, folder, folders, parent='', added=False):
                 folders[k][f_k] = add_object_to_folder(obj, folder, f_v, f_k, added)
     return folders  
 
-def mail_feed_error_to_admin(feed, e, local_vars=None):
+def mail_feed_error_to_admin(feed, e, local_vars=None, subject=None):
     # Mail the admins with the error
+    if not subject:
+        subject = "Feed update error"
     exc_info = sys.exc_info()
-    subject = 'Feed update error: %s' % repr(e)
+    subject = '%s: %s' % (subject, repr(e))
     message = 'Traceback:\n%s\n\Feed:\n%s\nLocals:\n%s' % (
         '\n'.join(traceback.format_exception(*exc_info)),
         pprint.pformat(feed.__dict__),

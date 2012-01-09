@@ -79,6 +79,12 @@
         this.$s.$feed_stories.bind('mousemove', $.rescope(this.handle_mousemove_feed_view, this));
         this.handle_keystrokes();
         
+        // ============
+        // = Bindings =
+        // ============
+        
+        _.bindAll(this, 'show_stories_error');
+        
         // ==================
         // = Initialization =
         // ==================
@@ -1741,7 +1747,7 @@
                 _.delay(_.bind(function() {
                     if (!delay || feed_id == self.next_feed) {
                         this.model.load_feed(feed_id, 1, true, $.rescope(this.post_open_feed, this), 
-                                             _.bind(this.show_stories_error, this));
+                                             this.show_stories_error);
                     }
                 }, this), delay || 0);
 
@@ -1965,7 +1971,7 @@
             this.setup_mousemove_on_views();
             
             this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), 
-                                             _.bind(this.show_stories_error, this), true);
+                                             this.show_stories_error, true);
         },
         
         post_open_starred_stories: function(data, first_load) {
@@ -2029,7 +2035,7 @@
             this.cache['river_feeds_with_unreads'] = feeds;
             this.show_stories_progress_bar(feeds.length);
             this.model.fetch_river_stories(this.active_feed, feeds, 1, 
-                _.bind(this.post_open_river_stories, this), _.bind(this.show_stories_error, this), true);
+                _.bind(this.post_open_river_stories, this), this.show_stories_error, true);
         },
         
         post_open_river_stories: function(data, first_load) {
@@ -3287,14 +3293,14 @@
                 $story_titles.data('page', page+1);
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
-                                                     _.bind(this.show_stories_error, this), false);
+                                                     this.show_stories_error, false);
                 } else if (this.flags['river_view']) {
                     this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
                                                    page+1, _.bind(this.post_open_river_stories, this),
-                                                   _.bind(this.show_stories_error, this), false);
+                                                   this.show_stories_error, false);
                 } else {
                     this.model.load_feed(feed_id, page+1, false, 
-                                         $.rescope(this.post_open_feed, this), _.bind(this.show_stories_error, this));                                 
+                                         $.rescope(this.post_open_feed, this), this.show_stories_error);                                 
                 }
             }
         },
@@ -5367,7 +5373,7 @@
             var $feed = this.find_feed_in_feed_list(feed_id);
             $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
 
-            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed));
+            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed), this.show_stories_error);
         },
         
         setup_socket_realtime_unread_counts: function(force) {
@@ -5442,10 +5448,10 @@
                 if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
                     self.open_feed(new_feed_id, true, $new_feed);
                 }
-            }, true, new_feed_id);
+            }, true, new_feed_id, this.show_stories_error);
         },
         
-        force_feeds_refresh: function(callback, replace_active_feed, feed_id) {
+        force_feeds_refresh: function(callback, replace_active_feed, feed_id, error_callback) {
             if (callback) {
                 this.cache.refresh_callback = callback;
             } else {
@@ -5456,7 +5462,7 @@
             
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
               this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
-            }, this), this.flags['has_unfetched_feeds'], feed_id);
+            }, this), this.flags['has_unfetched_feeds'], feed_id, error_callback);
         },
         
         post_feed_refresh: function(updated_feeds, replace_active_feed, single_feed_id) {

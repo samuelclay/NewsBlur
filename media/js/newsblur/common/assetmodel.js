@@ -75,7 +75,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         if (clear_queue) {
             this.ajax[options['ajax_group']].clear(true);
         }
-        
+
         this.ajax[options['ajax_group']].add(_.extend({
             url: url,
             data: data,
@@ -95,12 +95,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 }
             },
             error: function(e, textStatus, errorThrown) {
-                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown]);
+                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
                 if (errorThrown == 'abort') {
                     return;
                 }
                 
-                if ($.isFunction(error_callback)) {
+                if (error_callback) {
                     error_callback();
                 } else if ($.isFunction(callback)) {
                     var message = "Please create an account. Not much to do without an account.";
@@ -445,7 +445,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },    
     
-    refresh_feeds: function(callback, has_unfetched_feeds, feed_id) {
+    refresh_feeds: function(callback, has_unfetched_feeds, feed_id, error_callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -471,7 +471,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         
         if (NEWSBLUR.Globals.is_authenticated || feed_id) {
-            this.make_request('/reader/refresh_feeds', data, pre_callback);
+            this.make_request('/reader/refresh_feeds', data, pre_callback, error_callback);
         }
     },
     
@@ -843,7 +843,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    save_exception_retry: function(feed_id, callback) {
+    save_exception_retry: function(feed_id, callback, error_callback) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -854,7 +854,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/rss_feeds/exception_retry', {
           'feed_id': feed_id, 
           'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
-        }, pre_callback);
+        }, pre_callback, error_callback);
     },
         
     save_exception_change_feed_link: function(feed_id, feed_link, callback) {
