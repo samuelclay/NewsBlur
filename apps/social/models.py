@@ -1,6 +1,7 @@
 import datetime
 import zlib
 import hashlib
+import redis
 import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -32,9 +33,13 @@ class MSharedStory(mongo.Document):
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
         'index_drop_dups': True,
-        'ordering': ['-shared_date'],
+        'ordering': ['shared_date'],
         'allow_inheritance': False,
     }
+    
+    @property
+    def guid_hash(self):
+        return hashlib.sha1(self.story_guid).hexdigest()
     
     def save(self, *args, **kwargs):
         if self.story_content:
@@ -43,8 +48,50 @@ class MSharedStory(mongo.Document):
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
+        
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        if self.has_comments:
+            r.sadd(share_key, self.user_id)
+        else:
+            r.srem(share_key, self.user_id)
+        
         super(MSharedStory, self).save(*args, **kwargs)
-
+        
+        author = MSocialProfile.objects.get(user_id=self.user_id)
+        author.count()
+    
+    def comments_with_author(self, full=False):
+        comments = {
+            'user_id': self.user_id,
+            'comments': self.comments,
+            'shared_date': self.shared_date,
+        }
+        if full:
+            author = MSocialProfile.objects.get(user_id=self.user_id)
+            comments['author'] = author.to_json()
+        return comments
+    
+    @classmethod
+    def stories_with_comments(cls, stories, user):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        for story in stories: 
+            if story['comment_count']:
+                share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                friend_key = "F:%s:F" % (user.pk)
+                friends_with_comments = r.sinter(share_key, friend_key)
+                if friends_with_comments:
+                    params = {
+                        'story_guid': story['id'],
+                        'story_feed_id': story['story_feed_id'],
+                        'user_id__in': friends_with_comments,
+                    }
+                    shared_stories = cls.objects.filter(**params)
+                    story['comments'] = []
+                    for shared_story in shared_stories:
+                        story['comments'].append(shared_story.comments_with_author())
+        return stories
+        
 
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField()
@@ -121,6 +168,8 @@ class MSocialProfile(mongo.Document):
             self.save()
         
     def follow_user(self, user_id, check_unfollowed=False):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
             
@@ -136,8 +185,15 @@ class MSocialProfile(mongo.Document):
                 followee.count()
                 followee.save()
         self.count()
+        
+        following_key = "F:%s:F" % (self.user_id)
+        r.sadd(following_key, user_id)
+        follower_key = "F:%s:f" % (user_id)
+        r.sadd(follower_key, self.user_id)
     
     def unfollow_user(self, user_id):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        
         if user_id in self.following_user_ids:
             self.following_user_ids.remove(user_id)
         if user_id not in self.unfollowed_user_ids:
@@ -151,6 +207,10 @@ class MSocialProfile(mongo.Document):
             followee.save()
         self.count()
         
+        following_key = "F:%s:F" % (self.user_id)
+        r.srem(following_key, user_id)
+        follower_key = "F:%s:f" % (user_id)
+        r.srem(follower_key, self.user_id)
 
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()

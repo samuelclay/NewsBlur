@@ -786,17 +786,9 @@ class Feed(models.Model):
                     print "Found %s user stories. Deleting..." % userstories.count()
                 userstories.delete()
         
-    def get_stories(self, offset=0, limit=25, force=False, slave=False):
-        if slave:
-            import pymongo
-            db = pymongo.Connection(['db01'], slave_okay=True, replicaset='nbset').newsblur
-            stories_db_orig = db.stories.find({"story_feed_id": self.pk})[offset:offset+limit]
-            stories_db = []
-            for story in stories_db_orig:
-                stories_db.append(bunch(story))
-        else:
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
-        stories = Feed.format_stories(stories_db, self.pk)
+    def get_stories(self, offset=0, limit=25, force=False):
+        stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+        stories = self.format_stories(stories_db, self.pk)
         
         return stories
     
@@ -821,6 +813,11 @@ class Feed(models.Model):
         story['story_content']    = story_content
         story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
         story['story_feed_id']    = feed_id or story_db.story_feed_id
+        story['comment_count']    = story_db.comment_count
+        story['comment_user_ids'] = story_db.comment_user_ids
+        story['share_count']      = story_db.share_count
+        story['share_user_ids']   = story_db.share_user_ids
+        story['guid_hash']        = story_db.guid_hash
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
@@ -833,7 +830,7 @@ class Feed(models.Model):
             story['text'] = text
         
         return story
-                
+    
     def get_tags(self, entry):
         fcat = []
         if entry.has_key('tags'):
@@ -1124,6 +1121,10 @@ class MStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    comment_count            = mongo.IntField()
+    comment_user_ids         = mongo.ListField(mongo.IntField())
+    share_count              = mongo.IntField()
+    share_user_ids           = mongo.ListField(mongo.IntField())
 
     meta = {
         'collection': 'stories',
@@ -1132,6 +1133,10 @@ class MStory(mongo.Document):
         'ordering': ['-story_date'],
         'allow_inheritance': False,
     }
+    
+    @property
+    def guid_hash(self):
+        return hashlib.sha1(self.story_guid).hexdigest()
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
@@ -1147,7 +1152,21 @@ class MStory(mongo.Document):
         if self.story_content_type and len(self.story_content_type) > story_content_type_max:
             self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
-
+    
+    def count_comments(self):
+        from apps.social.models import MSharedStory
+        params = {
+            'story_guid': self.story_guid,
+            'story_feed_id': self.story_feed_id,
+        }
+        comments = MSharedStory.objects.filter(has_comments=True, **params).only('user_id')
+        shares = MSharedStory.objects.filter(has_comments=False, **params).only('user_id')
+        self.comment_count = comments.count()
+        self.comment_user_ids = [c['user_id'] for c in comments]
+        self.share_count = shares.count()
+        self.share_user_ids = [s['user_id'] for s in shares]
+        self.save()
+        
 
 class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in

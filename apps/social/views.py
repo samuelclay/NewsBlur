@@ -27,26 +27,27 @@ def mark_story_as_shared(request):
     story_id = request.POST['story_id']
     comments = request.POST.get('comments', '')
     
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1)
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
         return {'code': -1, 'message': 'Story not found.'}
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, story_feed_id=feed_id, story_guid=story_id)
     if not shared_story:
-        story_db = dict([(k, v) for k, v in story[0]._data.items() 
+        story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, shared_date=now, comments=comments, 
                             has_comments=bool(comments), **story_db)
         MSharedStory.objects.create(**story_values)
-        logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story[0].story_title[:50], comments[:100]))
+        logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
     else:
         shared_story = shared_story[0]
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
-        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story[0].story_title[:50], comments[:100]))
-        
+        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
+    
+    story.count_comments()
     
     return {'code': code}
     
