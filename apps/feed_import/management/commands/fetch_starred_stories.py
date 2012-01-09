@@ -20,7 +20,10 @@ class Command(BaseCommand):
             daemonize()
             
         settings.LOG_TO_STREAM = True
-
-        user = User.objects.get(username__icontains=options['username'])
+        
+        try:
+            user = User.objects.get(username__icontains=options['username'])
+        except User.MultipleObjectsReturned:
+            user = User.objects.get(username=options['username'])
         reader_importer = GoogleReaderImporter(user)
         reader_importer.import_starred_items(count=options['count'])
