@@ -12,6 +12,6 @@ accesslog = "/home/sclay/newsblur/logs/production.log"
 errorlog = "/home/sclay/newsblur/logs/errors.log"
 loglevel = "debug"
 name = "newsblur"
-timeout = 60
+timeout = 120
 max_requests = 1000
 workers = numCPUs()
