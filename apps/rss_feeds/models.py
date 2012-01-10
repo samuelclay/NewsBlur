@@ -46,6 +46,7 @@ class Feed(models.Model):
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
+    active_premium_subscribers = models.IntegerField(default=-1, db_index=True)
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
@@ -370,6 +371,14 @@ class Feed(models.Model):
             user__profile__is_premium=True
         )
         self.premium_subscribers = premium_subs.count()
+        
+        active_premium_subscribers = UserSubscription.objects.filter(
+            feed__in=feed_ids, 
+            active=True,
+            user__profile__is_premium=True,
+            user__profile__last_seen_on__gte=SUBSCRIBER_EXPIRE
+        )
+        self.active_premium_subscribers = active_premium_subscribers.count()
         
         self.save()
         
@@ -756,15 +765,15 @@ class Feed(models.Model):
         from apps.reader.models import MUserStory
         trim_cutoff = 500
         if self.active_subscribers <= 1 and self.premium_subscribers < 1:
-            trim_cutoff = 50
-        elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
             trim_cutoff = 100
-        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
+        elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
             trim_cutoff = 150
+        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
+            trim_cutoff = 200
         elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
-            trim_cutoff = 250
+            trim_cutoff = 300
         elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
-            trim_cutoff = 350
+            trim_cutoff = 400
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
@@ -937,7 +946,7 @@ class Feed(models.Model):
             # print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
         
-    def get_next_scheduled_update(self, force=False):
+    def get_next_scheduled_update(self, force=False, verbose=True):
         if self.min_to_decay and not force:
             random_factor = random.randint(0, self.min_to_decay) / 4
             return self.min_to_decay, random_factor
@@ -979,7 +988,15 @@ class Feed(models.Model):
             elif self.last_load_time >= 200:
                 slow_punishment = 6 * self.last_load_time
         total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
-        # print "[%s] %s (%s-%s), %s, %s: %s" % (self, updates_per_day_delay, updates_per_day, self.num_subscribers, subscriber_bonus, slow_punishment, total)
+        
+        if self.active_premium_subscribers:
+            total = min(total, 60) # 1 hour minimum for premiums
+            
+        if verbose:
+            print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
+                                                self.num_subscribers, self.active_subscribers,
+                                                self.premium_subscribers, self.active_premium_subscribers,
+                                                subscriber_bonus, slow_punishment, total)
         random_factor = random.randint(0, total) / 4
         
         return total, random_factor*2
