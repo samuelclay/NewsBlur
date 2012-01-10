@@ -9,7 +9,7 @@ from apps.reader.models import UserSubscription
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
-
+from utils.feed_functions import relative_timesince
 
 class MSharedStory(mongo.Document):
     user_id                  = mongo.IntField()
@@ -61,11 +61,21 @@ class MSharedStory(mongo.Document):
         author = MSocialProfile.objects.get(user_id=self.user_id)
         author.count()
     
+    @classmethod
+    def sync_redis(cls):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        for story in cls.objects.all():
+            share_key = "S:%s:%s" % (story.story_feed_id, story.guid_hash)
+            if story.has_comments:
+                r.sadd(share_key, story.user_id)
+            else:
+                r.srem(share_key, story.user_id)
+        
     def comments_with_author(self, full=False):
         comments = {
             'user_id': self.user_id,
             'comments': self.comments,
-            'shared_date': self.shared_date,
+            'shared_date': relative_timesince(self.shared_date),
         }
         if full:
             author = MSocialProfile.objects.get(user_id=self.user_id)
@@ -132,6 +142,16 @@ class MSocialProfile(mongo.Document):
         profiles = cls.objects.filter(user_id__in=user_ids)
         return profiles
         
+    @classmethod
+    def sync_redis(cls):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        for profile in cls.objects.all():
+            for user_id in profile.following_user_ids:
+                following_key = "F:%s:F" % (profile.user_id)
+                r.sadd(following_key, user_id)
+                follower_key = "F:%s:f" % (user_id)
+                r.sadd(follower_key, profile.user_id)
+                
     def to_json(self, full=False):
         params = {
             'user_id': self.user_id,
