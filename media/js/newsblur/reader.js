@@ -6795,8 +6795,11 @@
             });
             $document.bind('keydown', 'shift+u', function(e) {
                 e.preventDefault();
-                if (self.active_story) {
-                    var story_id = self.active_story.id;
+                var story_id = self.active_story.id;
+                console.log(["self.active_story", self.active_story]);
+                if (self.active_story && !self.active_story.read_status) {
+                    self.mark_story_as_read(story_id);
+                } else if (self.active_story && self.active_story.read_status) {
                     self.mark_story_as_unread(story_id);
                 }
             });
