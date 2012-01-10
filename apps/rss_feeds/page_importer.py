@@ -41,7 +41,7 @@ class PageImporter(object):
         }
     
     @timelimit(15)
-    def fetch_page(self, urllib_fallback=False):
+    def fetch_page(self, urllib_fallback=False, requests_exception=None):
         feed_link = self.feed.feed_link
         if not feed_link:
             self.save_no_page()
@@ -79,7 +79,7 @@ class PageImporter(object):
                 LookupError, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
-            return self.fetch_page(urllib_fallback=True)
+            return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
