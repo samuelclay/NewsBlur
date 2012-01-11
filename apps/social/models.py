@@ -100,6 +100,8 @@ class MSharedStory(mongo.Document):
                     story['comments'] = []
                     for shared_story in shared_stories:
                         story['comments'].append(shared_story.comments_with_author())
+                    story['comment_count_public'] = story['comment_count'] - len(shared_stories)
+                    story['comment_count_shared'] = len(shared_stories)
         return stories
         
 

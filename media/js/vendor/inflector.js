@@ -87,6 +87,7 @@ window.Inflector = {
   pluralize : function(s, count) {
     if (count == 1) return s;
     if (s == 'person') return 'people';
+    if (s == 'is') return 'are';
     if (s.match(/y$/i)) return s.replace(/y$/i, 'ies');
     return s + 's';
   },

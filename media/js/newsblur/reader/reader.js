@@ -83,7 +83,7 @@
         // = Bindings =
         // ============
         
-        _.bindAll(this, 'show_stories_error');
+        _.bindAll(this, 'show_stories_error', 'make_story_share_comment');
         
         // ==================
         // = Initialization =
@@ -3723,7 +3723,7 @@
                         ])
                     ]),
                     $.make('div', { className: 'NB-feed-story-content' }, this.make_story_content(story.story_content)),
-                    $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(story)),
+                    (story.comment_count && $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(story))),
                     $.make('div', { className: 'NB-feed-story-sideoptions-container' }, [
                         $.make('div', { className: 'NB-sideoption NB-feed-story-train' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
@@ -3808,38 +3808,47 @@
         
         make_story_share_comments: function(story) {
             var $comments = $([]);
+            console.log(["story", story]);
             
-            var $share = $.make('div', { className: 'NB-story-comments-sharers' }, 'Shared by: ');
-            var $comment = this.make_story_share_comment({'content': 'Pour some sugar on this comment form. It\'s done.'});
-            var $comment2 = this.make_story_share_comment({'content': 'These are all AWESOME changes and things we wished we\'d had when we were doing our campaign! Good job, guys. Go go gadget team!'});
-            var $comment3 = this.make_story_share_comment({'content': 'So cool to get a glimpse of the NewsBlur team and offices! (Love the farm table and tin wainscotting). Thanks for sharing the love with my baby girl! And never apologize for delicious sandwiches. ;)'});
+            // var $share = $.make('div', { className: 'NB-story-comments-sharers' }, 'Shared by: ');
             
-            var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
-                $.make('div', { className: 'NB-story-comments-public-teaser' }, [
-                    'There are ',
-                    $.make('b', '3'),
-                    ' public comments'
-                ])
-            ]);
+            if (story.comment_count_shared) {
+                _.each(story.comments, _.bind(function(comment) {
+                    var $comment = this.make_story_share_comment(comment);
+                    $comments.push($comment);
+                }, this));
+            }
             
-            Math.random() < .35 && $comments.push($comment);
-            Math.random() < .45 && $comments.push($comment2);
-            Math.random() < .35 && $comments.push($comment3);
-            Math.random() < .45 && $comments.push($public_teaser);
+            if (story.comment_count_public) {
+                var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
+                    $.make('div', { className: 'NB-story-comments-public-teaser' }, [
+                        'There ',
+                        Inflector.pluralize('is', story.comment_count_public),
+                        ' ',
+                        $.make('b', story.comment_count_public),
+                        ' public ',
+                        Inflector.pluralize('comment', story.comment_count_public)
+                    ])
+                ]);
+                $comments.push($public_teaser);
+            }
             
             return $comments;
         },
         
         make_story_share_comment: function(comment) {
+            console.log(["make_story_share_comment", comment, this.model.following_profiles, this.model.following_profiles.find(comment.user_id)]);
+            var user = this.model.following_profiles.find(comment.user_id);
+            
             var $comment = $.make('div', { className: 'NB-story-comment' }, [
                 $.make('div', { className: 'NB-user-avatar' }, [
-                    $.make('img', { src: '/media/img/reader/account_standard_3.jpg' })
+                    $.make('img', { src: user.get('photo_url') })
                 ]),
                 $.make('div', { className: 'NB-story-comment-author-container' }, [
-                    $.make('div', { className: 'NB-story-comment-username' }, 'samuelclay'),
-                    $.make('div', { className: 'NB-story-comment-date' }, '2 hours ago')
+                    $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
+                    $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago')
                 ]),
-                $.make('div', { className: 'NB-story-comment-content' }, comment.content)
+                $.make('div', { className: 'NB-story-comment-content' }, comment.comments)
             ]);
             
             return $comment;
