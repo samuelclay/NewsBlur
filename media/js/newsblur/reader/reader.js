@@ -2673,10 +2673,17 @@
             });
             $star.tipsy('enable');
             $star.tipsy('show');
-            _.delay(function() {
-                $star.tipsy('hide');
-                $star.tipsy('disable');
-            }, 850);
+
+            $star.animate({
+                'opacity': 1
+            }, {
+                'duration': 850,
+                'queue': false,
+                'complete': function() {
+                    $(this).tipsy('hide');
+                    $(this).tipsy('disable');                    
+                }
+            });
             
             this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {});
             this.update_starred_count();
