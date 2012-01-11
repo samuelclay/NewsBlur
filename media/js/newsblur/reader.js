@@ -6779,6 +6779,10 @@
                 e.preventDefault();
                 self.open_story_trainer();
             });
+            $document.bind('keypress', 'a', function(e) {
+                e.preventDefault();
+                self.open_add_feed_modal();
+            });
             $document.bind('keypress', 'f', function(e) {
                 e.preventDefault();
                 self.open_feed_intelligence_modal(1);
