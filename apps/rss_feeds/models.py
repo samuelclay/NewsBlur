@@ -96,7 +96,7 @@ class Feed(models.Model):
         
         if include_favicon:
             try:
-                feed_icon = MFeedIcon.objects.filter(feed_id=self.pk).first()
+                feed_icon = MFeedIcon.objects.get(feed_id=self.pk)
                 feed['favicon'] = feed_icon.data
             except MFeedIcon.DoesNotExist:
                 pass
@@ -989,7 +989,7 @@ class Feed(models.Model):
                 slow_punishment = 6 * self.last_load_time
         total = max(4, int(updates_per_day_delay + subscriber_bonus + slow_punishment))
         
-        if self.active_premium_subscribers:
+        if self.active_premium_subscribers > 0:
             total = min(total, 60) # 1 hour minimum for premiums
             
         if verbose:
