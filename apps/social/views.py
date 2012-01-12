@@ -18,6 +18,16 @@ from utils import PyRSS2Gen as RSS
 from vendor import facebook
 from vendor import tweepy
 
+@json.json_view
+def story_comments(request):
+    feed_id  = int(request.POST['feed_id'])
+    story_id = request.POST['story_id']
+    full = bool(request.POST.get('full', True))
+    
+    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
+    comments = [s.comments_with_author(full=full) for s in shared_stories]
+    
+    return {'comments': comments}
 
 @ajax_login_required
 @json.json_view

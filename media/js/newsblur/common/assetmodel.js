@@ -965,6 +965,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/unfollow', {'user_id': user_id}, pre_callback);
     },
     
+    load_public_story_comments: function(story_id, feed_id, callback) {
+        this.make_request('/social/comments', {
+            'story_id': story_id,
+            'feed_id': feed_id
+        }, callback);
+    },
+    
     recalculate_story_scores: function(feed_id) {
         _.each(this.stories, _.bind(function(story, i) {
             if (story.story_feed_id != feed_id) return;

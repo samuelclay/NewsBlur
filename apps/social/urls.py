@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^profile/?$', views.profile, name='profile'),
     url(r'^follow/?$', views.follow, name='social-follow'),
     url(r'^unfollow/?$', views.unfollow, name='social-unfollow'),
+    url(r'^comments/?$', views.story_comments, name='social-story-comments'),
     url(r'^(?P<user_id>\d+)/(?P<username>\w+)/?$', views.shared_story_feed, name='shared-story-feed'),
     url(r'^(?P<username>\w+)/?$', views.shared_stories_public, name='shared-stories-public'),
 )

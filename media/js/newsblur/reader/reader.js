@@ -3813,54 +3813,6 @@
             return $story_content;
         },
         
-        make_story_share_comments: function(story) {
-            var $comments = $([]);
-            console.log(["story", story]);
-            
-            // var $share = $.make('div', { className: 'NB-story-comments-sharers' }, 'Shared by: ');
-            
-            if (story.comment_count_shared) {
-                _.each(story.comments, _.bind(function(comment) {
-                    var $comment = this.make_story_share_comment(comment);
-                    $comments.push($comment);
-                }, this));
-            }
-            
-            if (story.comment_count_public) {
-                var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
-                    $.make('div', { className: 'NB-story-comments-public-teaser' }, [
-                        'There ',
-                        Inflector.pluralize('is', story.comment_count_public),
-                        ' ',
-                        $.make('b', story.comment_count_public),
-                        ' public ',
-                        Inflector.pluralize('comment', story.comment_count_public)
-                    ])
-                ]);
-                $comments.push($public_teaser);
-            }
-            
-            return $comments;
-        },
-        
-        make_story_share_comment: function(comment) {
-            console.log(["make_story_share_comment", comment, this.model.following_profiles, this.model.following_profiles.find(comment.user_id)]);
-            var user = this.model.following_profiles.find(comment.user_id);
-            
-            var $comment = $.make('div', { className: 'NB-story-comment' }, [
-                $.make('div', { className: 'NB-user-avatar' }, [
-                    $.make('img', { src: user.get('photo_url') })
-                ]),
-                $.make('div', { className: 'NB-story-comment-author-container' }, [
-                    $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
-                    $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago')
-                ]),
-                $.make('div', { className: 'NB-story-comment-content' }, comment.comments)
-            ]);
-            
-            return $comment;
-        },
-        
         make_story_feed_title: function(story) {
             var title = story.story_title;
             var feed_titles = this.model.classifiers[story.story_feed_id] && 
@@ -4121,6 +4073,77 @@
             ]);
             $('.NB-feed-story-premium-only', $story_titles).remove();
             $story_titles.append($notice);
+        },
+        
+        // ==================
+        // = Story Comments =
+        // ==================
+        
+        make_story_share_comments: function(story) {
+            var $comments = $([]);
+            console.log(["story", story]);
+            
+            // var $share = $.make('div', { className: 'NB-story-comments-sharers' }, 'Shared by: ');
+            
+            if (story.comment_count_shared) {
+                _.each(story.comments, _.bind(function(comment) {
+                    var $comment = this.make_story_share_comment(comment);
+                    $comments.push($comment);
+                }, this));
+            }
+            
+            if (story.comment_count_public) {
+                var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
+                    $.make('div', { className: 'NB-story-comments-public-teaser' }, [
+                        'There ',
+                        Inflector.pluralize('is', story.comment_count_public),
+                        ' ',
+                        $.make('b', story.comment_count_public),
+                        ' public ',
+                        Inflector.pluralize('comment', story.comment_count_public)
+                    ])
+                ]);
+                $comments.push($public_teaser);
+            }
+            
+            return $comments;
+        },
+        
+        make_story_share_comment: function(comment) {
+            console.log(["make_story_share_comment", comment, this.model.following_profiles, this.model.following_profiles.find(comment.user_id)]);
+            var user = this.model.following_profiles.find(comment.user_id);
+            if (!user) {
+                user = new NEWSBLUR.Models.User(comment.author);
+            }
+            
+            var $comment = $.make('div', { className: 'NB-story-comment' }, [
+                $.make('div', { className: 'NB-user-avatar' }, [
+                    $.make('img', { src: user.get('photo_url') })
+                ]),
+                $.make('div', { className: 'NB-story-comment-author-container' }, [
+                    $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
+                    $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago')
+                ]),
+                $.make('div', { className: 'NB-story-comment-content' }, comment.comments)
+            ]);
+            
+            return $comment;
+        },
+        
+        load_public_story_comments: function(story_id) {
+            var story = this.model.get_story(story_id);
+            this.model.load_public_story_comments(story_id, story.story_feed_id, _.bind(function(data) {
+                console.log(["comments", data]);
+                var $comments = $.make('div', { className: 'NB-story-comments-public' });
+                
+                _.each(data.comments, _.bind(function(comment) {
+                    var $comment = this.make_story_share_comment(comment);
+                    $comments.append($comment);
+                }, this));
+                
+                var $story = this.find_story_in_feed_view(story_id);
+                $('.NB-story-comments-public-teaser-wrapper', $story).replaceWith($comments);
+            }, this));
         },
         
         // ===================
@@ -6318,6 +6341,11 @@
             $.targetIs(e, { tagSelector: '.NB-feed-story-premium-only a' }, function($t, $p){
                 e.preventDefault();
                 self.open_feedchooser_modal();
+            });
+            $.targetIs(e, { tagSelector: '.NB-story-comments-public-teaser' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-feed-story').data('story_id');
+                self.load_public_story_comments(story_id);
             });
             
             
