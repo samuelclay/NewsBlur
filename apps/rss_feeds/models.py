@@ -96,7 +96,7 @@ class Feed(models.Model):
         
         if include_favicon:
             try:
-                feed_icon = MFeedIcon.objects.filter(feed_id=self.pk).first()
+                feed_icon = MFeedIcon.objects.get(feed_id=self.pk)
                 feed['favicon'] = feed_icon.data
             except MFeedIcon.DoesNotExist:
                 pass

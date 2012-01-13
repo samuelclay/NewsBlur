@@ -2661,10 +2661,16 @@
             });
             $star.tipsy('enable');
             $star.tipsy('show');
-            _.delay(function() {
-                $star.tipsy('hide');
-                $star.tipsy('disable');
-            }, 850);
+            $star.animate({
+                'opacity': 1
+            }, {
+                'duration': 850,
+                'queue': false,
+                'complete': function() {
+                    $(this).tipsy('hide');
+                    $(this).tipsy('disable');                    
+                }
+            });
             this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {});
             this.update_starred_count();
         },
@@ -6772,6 +6778,10 @@
             $document.bind('keypress', 't', function(e) {
                 e.preventDefault();
                 self.open_story_trainer();
+            });
+            $document.bind('keypress', 'a', function(e) {
+                e.preventDefault();
+                self.open_add_feed_modal();
             });
             $document.bind('keypress', 'f', function(e) {
                 e.preventDefault();
