@@ -22,10 +22,11 @@ from vendor import tweepy
 def story_comments(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
-    full = bool(request.POST.get('full', True))
+    full = request.POST.get('full', False)
+    compact = request.POST.get('compact', False)
     
     shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
-    comments = [s.comments_with_author(full=full) for s in shared_stories]
+    comments = [s.comments_with_author(compact=compact, full=full) for s in shared_stories]
     
     return {'comments': comments}
 

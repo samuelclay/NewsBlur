@@ -51,45 +51,57 @@ class MSharedStory(mongo.Document):
         
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        r.sadd(share_key, self.user_id)
+        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
         if self.has_comments:
-            r.sadd(share_key, self.user_id)
+            r.sadd(comment_key, self.user_id)
         else:
-            r.srem(share_key, self.user_id)
+            r.srem(comment_key, self.user_id)
         
         super(MSharedStory, self).save(*args, **kwargs)
         
         author = MSocialProfile.objects.get(user_id=self.user_id)
         author.count()
-    
+
+    def delete(self, *args, **kwargs):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        r.srem(share_key, self.user_id)
+
+        super(MSharedStory, self).delete(*args, **kwargs)
+        
     @classmethod
     def sync_redis(cls):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         for story in cls.objects.all():
             share_key = "S:%s:%s" % (story.story_feed_id, story.guid_hash)
+            comment_key = "C:%s:%s" % (story.story_feed_id, story.guid_hash)
+            r.sadd(share_key, story.user_id)
             if story.has_comments:
-                r.sadd(share_key, story.user_id)
+                r.sadd(comment_key, story.user_id)
             else:
-                r.srem(share_key, story.user_id)
+                r.srem(comment_key, story.user_id)
         
-    def comments_with_author(self, full=False):
+    def comments_with_author(self, compact=False, full=False):
         comments = {
             'user_id': self.user_id,
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
         }
-        if full:
+        if full or compact:
             author = MSocialProfile.objects.get(user_id=self.user_id)
-            comments['author'] = author.to_json()
+            comments['author'] = author.to_json(compact=compact, full=full)
         return comments
     
     @classmethod
     def stories_with_comments(cls, stories, user):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        friend_key = "F:%s:F" % (user.pk)
         for story in stories: 
             if story['comment_count']:
-                share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                friend_key = "F:%s:F" % (user.pk)
-                friends_with_comments = r.sinter(share_key, friend_key)
+                comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                friends_with_comments = r.sinter(comment_key, friend_key)
+                shared_stories = []
                 if friends_with_comments:
                     params = {
                         'story_guid': story['id'],
@@ -97,11 +109,23 @@ class MSharedStory(mongo.Document):
                         'user_id__in': friends_with_comments,
                     }
                     shared_stories = cls.objects.filter(**params)
-                    story['comments'] = []
-                    for shared_story in shared_stories:
-                        story['comments'].append(shared_story.comments_with_author())
-                    story['comment_count_public'] = story['comment_count'] - len(shared_stories)
-                    story['comment_count_shared'] = len(shared_stories)
+                story['comments'] = []
+                for shared_story in shared_stories:
+                    story['comments'].append(shared_story.comments_with_author(compact=True))
+                story['comment_count_public'] = story['comment_count'] - len(shared_stories)
+                story['comment_count_friends'] = len(shared_stories)
+            if story['share_count']:
+                share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                friends_with_shares = r.sinter(share_key, friend_key)
+                profiles = []
+                if friends_with_shares:
+                    profiles = MSocialProfile.objects.filter(user_id__in=friends_with_shares)
+                story['shared_by_friends'] = []
+                for profile in profiles:
+                    story['shared_by_friends'].append(profile.to_json(compact=True))
+                story['share_count_public'] = story['share_count'] - len(profiles)
+                story['share_count_friends'] = len(profiles)
+                    
         return stories
         
 
@@ -154,19 +178,26 @@ class MSocialProfile(mongo.Document):
                 follower_key = "F:%s:f" % (user_id)
                 r.sadd(follower_key, profile.user_id)
                 
-    def to_json(self, full=False):
-        params = {
-            'user_id': self.user_id,
-            'username': self.username,
-            'photo_url': self.photo_url,
-            'bio': self.bio,
-            'location': self.location,
-            'website': self.website,
-            'subscription_count': self.subscription_count,
-            'shared_stories_count': self.shared_stories_count,
-            'following_count': self.following_count,
-            'follower_count': self.follower_count,
-        }
+    def to_json(self, compact=False, full=False):
+        if compact:
+            params = {
+                'user_id': self.user_id,
+                'username': self.username,
+                'photo_url': self.photo_url
+            }
+        else:
+            params = {
+                'user_id': self.user_id,
+                'username': self.username,
+                'photo_url': self.photo_url,
+                'bio': self.bio,
+                'location': self.location,
+                'website': self.website,
+                'subscription_count': self.subscription_count,
+                'shared_stories_count': self.shared_stories_count,
+                'following_count': self.following_count,
+                'follower_count': self.follower_count,
+            }
         if full:
             params['photo_service']       = self.photo_service
             params['following_user_ids']  = self.following_user_ids
