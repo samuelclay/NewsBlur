@@ -1714,6 +1714,7 @@
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
             this.hide_content_pane_feed_counter();
+            // $('.feed_counts_floater').remove();
             
             if (this.flags['showing_feed_in_tryfeed_view']) {
                 this.hide_tryfeed_view();
@@ -2724,6 +2725,20 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(readitlater_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_tumblr: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://www.tumblr.com/share';
+            var tumblr_url = [
+              url,
+              '?v=3&u=',
+              encodeURIComponent(story.story_permalink),
+              '&t=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(tumblr_url, '_blank');
             this.mark_story_as_read(story_id);
         },
         
@@ -4345,6 +4360,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_tumblr'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-tumblr'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Tumblr').parent().addClass('NB-menu-manage-highlight-tumblr');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -4377,6 +4397,8 @@
                           this.send_story_to_twitter(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readitlater')) {
                           this.send_story_to_readitlater(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
+                          this.send_story_to_tumblr(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
                           this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
@@ -5139,10 +5161,9 @@
                 this.socket = this.socket || io.connect('http://' + window.location.hostname + ':8888');
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
-                console.log(["Connecting to pubsub", this.socket]);
                 this.socket.on('connect', _.bind(function() {
                     var active_feeds = _.compact(_.map(this.model.feeds, function(feed) { return feed.active && feed.id; }));
-                    console.log(["Connecting to pubsub", this.socket, active_feeds.length]);
+                    console.log(["Connected to pubsub", this.socket, active_feeds.length]);
                     this.socket.emit('subscribe:feeds', active_feeds);
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         console.log(['Feed update', feed_id, message]);

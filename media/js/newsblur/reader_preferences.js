@@ -424,6 +424,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-option', title: 'Read It Later' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Tumblr' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-tumblr', name: 'story_share_tumblr' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-tumblr' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [

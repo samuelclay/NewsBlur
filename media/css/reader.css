@@ -4349,6 +4349,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
     background: transparent url('/media/embed/reader/readitlater.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
+    background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
 }
@@ -4387,6 +4390,13 @@ background: transparent;
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-tumblr {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-image,
@@ -5629,6 +5639,9 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
     background: transparent url('/media/embed/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-tumblr] {
+    background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
