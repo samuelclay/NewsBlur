@@ -1,4 +1,4 @@
-{% load compressed utils_tags %}
+{% load utils_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,6 +12,7 @@
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
       'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
+      'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
@@ -59,9 +60,9 @@
     };
   </script>
   
-  {% compressed_css 'all' %}
+  {% include_stylesheets "common" %}
   {% block head_js %}
-    {% compressed_js 'all' %}
+    {% include_javascripts "common" %}
   {% endblock head_js %}
   {% block extra_head_js %}
   {% endblock extra_head_js %}

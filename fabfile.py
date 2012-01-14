@@ -1,4 +1,4 @@
-from fabric.api import abort, cd, env, get, hide, hosts, local, prompt
+from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, parallel
 from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
 from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
@@ -68,26 +68,39 @@ def task():
 def pull():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
+
+def pre_deploy():
+    compress_assets()
+
+def post_deploy():
+    cleanup_assets()
     
 def deploy():
-    with cd(env.NEWSBLUR_PATH):
-        run('git pull')
-        run('kill -HUP `cat logs/gunicorn.pid`')
-        run('curl -s http://%s > /dev/null' % env.host)
-        # run('curl -s http://%s/m/ > /dev/null' % env.host)
-        run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
-        compress_media()
+    pre_deploy()
+    deploy_code()
+    post_deploy()
 
 def deploy_full():
+    pre_deploy()
+    deploy_code(full=True)
+    post_deploy()
+
+@parallel
+def deploy_code(full=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
-        run('./manage.py migrate')
-        with settings(warn_only=True):
-            run('sudo supervisorctl restart gunicorn')
-        run('curl -s http://www.newsblur.com > /dev/null')
-        run('curl -s http://www.newsblur.com/m/ > /dev/null')
-        compress_media()
-
+        run('mkdir -p static')
+        if full:
+            run('rm -fr static/*')
+        transfer_assets()
+        if full:
+            with settings(warn_only=True):
+                run('sudo supervisorctl restart gunicorn')            
+        else:
+            run('kill -HUP `cat logs/gunicorn.pid`')
+        run('curl -s http://%s > /dev/null' % env.host)
+        run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+        
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
@@ -104,7 +117,6 @@ def staging():
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
-        compress_media()
 
 def staging_full():
     with cd('~/staging'):
@@ -113,7 +125,6 @@ def staging_full():
         run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
-        compress_media()
 
 def celery():
     with cd(env.NEWSBLUR_PATH):
@@ -136,17 +147,18 @@ def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
 
-def compress_media():
-    with cd('media/js'):
-        run('rm -f *.gz')
-        run('for js in *-compressed-*.js; do gzip -9 $js -c > $js.gz; done;')
-    with cd('media/css/mobile'):
-        run('rm -f *.gz')
-        run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
-    with cd('media/css'):
-        run('rm -f *.gz')
-        run('for css in *-compressed-*.css; do gzip -9 $css -c > $css.gz; done;')
-        
+def compress_assets():
+    local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
+    local('tar -czf static.tar static/*')
+
+def transfer_assets():
+    put('static.tar', '%s/static/' % env.NEWSBLUR_PATH)
+    run('tar -xzf static/static.tar')
+    run('rm -f static/static.tar')
+
+def cleanup_assets():
+    local('rm -f static.tar')
+    
 # ===========
 # = Backups =
 # ===========
@@ -374,10 +386,10 @@ def setup_nginx():
         with settings(warn_only=True):
             sudo("groupadd nginx")
             sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://nginx.org/download/nginx-1.1.7.tar.gz')
-            run('tar -xzf nginx-1.1.7.tar.gz')
-            run('rm nginx-1.1.7.tar.gz')
-            with cd('nginx-1.1.7'):
+            run('wget http://nginx.org/download/nginx-1.1.12.tar.gz')
+            run('tar -xzf nginx-1.1.12.tar.gz')
+            run('rm nginx-1.1.12.tar.gz')
+            with cd('nginx-1.1.12'):
                 run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
                 run('make')
                 sudo('make install')
@@ -406,6 +418,7 @@ def setup_app_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
+    sudo('ufw allow 8888')
     sudo('ufw --force enable')
 
 def setup_app_motd():
@@ -433,6 +446,13 @@ def setup_staging():
         run('cp ../newsblur/local_settings.py local_settings.py')
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
+
+def setup_node():
+    sudo('add-apt-repository ppa:chris-lea/node.js')
+    sudo('apt-get update')
+    sudo('apt-get install nodejs')
+    run('curl http://npmjs.org/install.sh | sudo sh')
+    sudo('npm install -g supervisor')
     
 # ==============
 # = Setup - DB =

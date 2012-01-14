@@ -3,6 +3,7 @@ import logging
 import os
 from mongoengine import connect
 import redis
+from utils import jammit
 
 # ===================
 # = Server Settings =
@@ -24,6 +25,7 @@ CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
+STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
 VENDOR_ROOT   = os.path.join(CURRENT_DIR, 'vendor')
 LOG_FILE      = os.path.join(CURRENT_DIR, 'logs/newsblur.log')
@@ -336,7 +338,6 @@ INSTALLED_APPS = (
     'djcelery',
     # 'seacucumber',
     'django_ses',
-    'compress',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -478,3 +479,5 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 # =========
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+
+JAMMIT = jammit.JammitAssets()
