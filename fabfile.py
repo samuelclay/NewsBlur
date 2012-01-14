@@ -1,4 +1,4 @@
-from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, parallel
+from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, parallel, serial
 from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
 from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
@@ -75,8 +75,8 @@ def pre_deploy():
 def post_deploy():
     cleanup_assets()
     
+@parallel
 def deploy():
-    pre_deploy()
     deploy_code()
     post_deploy()
 
@@ -85,7 +85,6 @@ def deploy_full():
     deploy_code(full=True)
     post_deploy()
 
-@parallel
 def deploy_code(full=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -447,6 +446,7 @@ def setup_node():
     sudo('apt-get install nodejs')
     run('curl http://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
+    sudo('ufw allow 8888')
 
     
 # ==============
