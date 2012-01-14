@@ -24,6 +24,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             self.get_stats();
         }, 50);
         
+        this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
     },
     
@@ -52,36 +53,6 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         });
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
     },
-        
-    open_modal: function() {
-        var self = this;
-
-        this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
-            'minHeight': 425,
-            'overlayClose': true,
-            'autoResize': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200);
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
-    },
     
     get_stats: function() {
         var $loading = $('.NB-modal-loading', this.$modal);
@@ -98,20 +69,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.removeClass('NB-active');
         
-        var interval_start = data['update_interval_minutes'];
-        var interval_end = data['update_interval_minutes'] * 1.25;
-        var interval = '';
-        if (interval_start < 60) {
-            interval = interval_start + ' to ' + interval_end + ' minutes';
-        } else {
-            var interval_start_hours = parseInt(interval_start / 60, 10);
-            var interval_end_hours = parseInt(interval_end / 60, 10);
-            var dec_start = interval_start % 60;
-            var dec_end = interval_end % 60;
-            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
-        }
-        
-        var $stats = this.make_stats(data, interval);
+        var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
         
         setTimeout(function() {
@@ -123,7 +81,10 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         }, 100);
     },
     
-    make_stats: function(data, interval) {
+    make_stats: function(data) {
+        var update_interval = this.calculate_update_interval(data['update_interval_minutes']);
+        var premium_update_interval = this.calculate_update_interval(data['premium_update_interval_minutes']);
+        
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
@@ -132,12 +93,24 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Every'),
-                $.make('div', { className: 'NB-statistics-count' }, interval)
+                $.make('div', { className: 'NB-statistics-count' }, update_interval)
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
                 $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))
-              ])
+              ]),
+              (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
+                  $.make('div', { className: 'NB-statistics-update'}, [
+                    $.make('div', { className: 'NB-statistics-label' }, [
+                        'If you went ',
+                        $.make('a', { href: '#', className: 'NB-premium-link NB-splash-link' }, 'premium'),
+                        ', ',
+                        $.make('br'),
+                        'this site would update every'
+                    ]),
+                    $.make('div', { className: 'NB-statistics-count' }, premium_update_interval)
+                  ])
+              ]))
             ]),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
@@ -164,6 +137,25 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         ]);
         
         return $stats;
+    },
+    
+    calculate_update_interval: function(update_interval_minutes) {
+        if (!update_interval_minutes) return '&nbsp;';
+        
+        var interval_start = update_interval_minutes;
+        var interval_end = update_interval_minutes * 1.25;
+        var interval = '';
+        if (interval_start < 60) {
+            interval = interval_start + ' to ' + interval_end + ' minutes';
+        } else {
+            var interval_start_hours = parseInt(interval_start / 60, 10);
+            var interval_end_hours = parseInt(interval_end / 60, 10);
+            var dec_start = interval_start % 60;
+            var dec_end = interval_end % 60;
+            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+        }
+        
+        return interval;
     },
     
     make_classifier_count: function(facet, data) {
@@ -256,6 +248,16 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             });
     },
     
+    close_and_load_premium: function() {
+      this.close(function() {
+          NEWSBLUR.reader.open_feedchooser_modal();
+      });
+    },
+    
+    // ===========
+    // = Actions =
+    // ===========
+    
     handle_change: function(elem, e) {
         var self = this;
         
@@ -264,6 +266,15 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             self.first_load = false;
             self.initialize_feed(feed_id);
             self.get_stats();
+        });
+    },
+    
+    handle_click: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-premium-link' }, function($t, $p) {
+            e.preventDefault();
+            self.close_and_load_premium();
         });
     }
     

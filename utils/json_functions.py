@@ -136,7 +136,7 @@ def json_view(func):
                             'text': unicode(e)}
                 code = 500
             else:
-                raise
+                print '\n'.join(traceback.format_exception(*exc_info))
 
         if isinstance(response, HttpResponseForbidden):
             return response
