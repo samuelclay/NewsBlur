@@ -12,19 +12,22 @@ class JammitAssets:
 
     ASSET_FILENAME = 'assets.yml'
     
-    def __init__(self):
+    def __init__(self, assets_dir):
         """
         Initializes the Jammit object by reading the assets.yml file and
         stores all javascripts and stylesheets in memory for easy lookup
         in templates.
         """
+        self.assets_dir = assets_dir
         self.assets = self.read_assets()
         
     def read_assets(self):
         """
         Read the assets from the YAML and store it as a lookup dictionary.
         """
-        f = open(self.ASSET_FILENAME, 'r')
+        filepath = os.path.join(self.assets_dir, self.ASSET_FILENAME)
+        print filepath
+        f = open(filepath, 'r')
         return yaml.load(f.read())
     
     def render_tags(self, asset_type, asset_package):
