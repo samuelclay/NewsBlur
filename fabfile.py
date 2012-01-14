@@ -403,12 +403,6 @@ def configure_nginx():
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
-
-def configure_node():
-    sudo("apt-get install node")
-    sudo("curl http://npmjs.org/install.sh | sudo sh")
-    sudo("npm install -g redis")
-    sudo("npm install -g socket.io")
     
 # ===============
 # = Setup - App =
@@ -453,6 +447,7 @@ def setup_node():
     sudo('apt-get install nodejs')
     run('curl http://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
+
     
 # ==============
 # = Setup - DB =
