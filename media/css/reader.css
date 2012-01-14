@@ -4591,6 +4591,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
     background: transparent url('/media/embed/reader/readitlater.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
+    background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
 }
@@ -4629,6 +4632,13 @@ background: transparent;
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-tumblr {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-image,
@@ -4712,6 +4722,21 @@ background: transparent;
   float: left;
   width: 33%;
   text-align: center;
+  overflow: hidden;
+  margin: 0 0 12px 0;
+}
+.NB-modal-statistics .NB-statistics-premium-stats {
+    border-top: 1px solid #E0E0E0;
+    padding: 12px 0 0;
+    margin: 0 12px;
+    clear: both;
+    text-align: center;
+}
+.NB-modal-statistics .NB-statistics-premium-stats .NB-statistics-update {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    float: none;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {
@@ -5871,6 +5896,9 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
     background: transparent url('/media/embed/reader/readitlater.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-tumblr] {
+    background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;

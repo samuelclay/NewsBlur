@@ -63,12 +63,19 @@ NEWSBLUR.ReaderGoodies.prototype = {
               $.make('div', { className: 'NB-goodies-custom' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')
             ]),
-            
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-chrome-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://chrome.google.com/webstore/detail/nnbhbdncokmmjheldobdfbmfpamelojh'
+              }, 'Chrome Notifier'),
+              $.make('div', { className: 'NB-goodies-chrome' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Chrome address bar button that shows unread counts')
+            ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'mailto:samuel@ofbrooklyn.com?subject=iPhone Beta! Yeah!&body=My username is: '+NEWSBLUR.Globals.username+', and my iTunes/iPhone UUID is: [http://www.ispeeddial.com/how-to-find-your-iphone-uuid/]'
-              }, 'Request Beta'),
+                  href: '/iphone/'
+              }, 'See the iPhone App'),
               $.make('div', { className: 'NB-goodies-iphone' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone App')
             ]),

@@ -16,7 +16,7 @@ class RecommendedFeed(models.Model):
         return "%s (%s)" % (self.feed, self.approved_date or self.created_date)
         
     class Meta:
-        ordering = ['-approved_date']
+        ordering = ['-approved_date', '-created_date']
 
 
 class RecommendedFeedUserFeedback(models.Model):
