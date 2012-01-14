@@ -81,7 +81,7 @@ def load_feed_statistics(request, feed_id):
     # Dates of last and next update
     stats['last_update'] = relative_timesince(feed.last_update)
     stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
-    
+
     # Minutes between updates
     update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
     stats['update_interval_minutes'] = update_interval_minutes

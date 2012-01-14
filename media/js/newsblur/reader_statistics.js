@@ -49,8 +49,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         var $stats = this.make_stats({
             'last_update': '',
-            'next_update': '',
-            'premium_interval': ''
+            'next_update': ''
         });
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
     },
@@ -82,7 +81,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         }, 100);
     },
     
-    make_stats: function(data, interval) {
+    make_stats: function(data) {
         var update_interval = this.calculate_update_interval(data['update_interval_minutes']);
         var premium_update_interval = this.calculate_update_interval(data['premium_update_interval_minutes']);
         
@@ -141,6 +140,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
     },
     
     calculate_update_interval: function(update_interval_minutes) {
+        if (!update_interval_minutes) return '&nbsp;';
+        
         var interval_start = update_interval_minutes;
         var interval_end = update_interval_minutes * 1.25;
         var interval = '';
