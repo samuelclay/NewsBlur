@@ -4480,6 +4480,21 @@ background: transparent;
   float: left;
   width: 33%;
   text-align: center;
+  overflow: hidden;
+  margin: 0 0 12px 0;
+}
+.NB-modal-statistics .NB-statistics-premium-stats {
+    border-top: 1px solid #E0E0E0;
+    padding: 12px 0 0;
+    margin: 0 12px;
+    clear: both;
+    text-align: center;
+}
+.NB-modal-statistics .NB-statistics-premium-stats .NB-statistics-update {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    float: none;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {

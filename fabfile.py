@@ -148,7 +148,6 @@ def kill_celery():
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
 
 def compress_assets():
-    local('rm -fr static/*')
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tar static/*')
 
