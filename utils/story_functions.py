@@ -80,6 +80,7 @@ def pre_process_story(entry):
         media_url = media_content.get('url', '')
         media_type = media_content.get('type', '')
         if media_url and media_type and media_url not in entry['story_content']:
+            media_type_name = media_type.split('/')[0]
             if 'audio' in media_type and media_url:
                 entry['story_content'] += """<br><br>
                     <audio controls="controls">
@@ -92,10 +93,12 @@ def pre_process_story(entry):
                 entry['story_content'] += """<br><br><img src="%s" />"""  % media_url
             elif media_content.get('rel') == 'alternative' or 'text' in media_content.get('type'):
                 continue
+            elif media_type_name in ['application']:
+                continue
             entry['story_content'] += """<br><br>
                 Download %(media_type)s: <a href="%(media_url)s">%(media_url)s</a>"""  % {
+                'media_type': media_type_name,
                 'media_url': media_url, 
-                'media_type': media_type.split('/')[0]
             }
     
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))

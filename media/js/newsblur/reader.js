@@ -83,7 +83,7 @@
         // = Bindings =
         // ============
         
-        _.bindAll(this, 'show_stories_error');
+        _.bindAll(this, 'show_stories_error', 'sort_items');
         
         // ==================
         // = Initialization =
@@ -1036,7 +1036,6 @@
                 'opacity': 0
             });
             $feed_list.html($feeds);
-            // this.sort_feeds($feed_list);
             this.count_collapsed_unread_stories();
             $feed_list.animate({'opacity': 1}, {'duration': 700});
             this.hover_over_feed_titles($feed_list);
@@ -1089,53 +1088,54 @@
           }
         },
         
-        sort_items: function(items) {
-          var self = this;
-          var sort_order = this.model.preference('feed_order');
-          
-          if (sort_order == 'ALPHABETICAL' || !sort_order) {
-            return items.sort(function(a, b) {
-              var feedA, feedB;
-              if (_.isNumber(a)) feedA = self.model.get_feed(a);
-              if (_.isNumber(b)) feedB = self.model.get_feed(b);
-              if (feedA && feedB) {
-                return feedA.feed_title.toLowerCase() > feedB.feed_title.toLowerCase() ? 1 : -1;
-              } else if (feedA && !feedB) {
-                return -1;
-              } else if (!feedA && feedB) {
-                return 1;
-              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b) && a && b) {
-                // console.log(['a b 1', a, b, feedA, feedB]);
-                var folderA = _.keys(a)[0];
-                var folderB = _.keys(b)[0];
-                return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
-              }
-            });
-          } else if (sort_order == 'MOSTUSED') {
-            return items.sort(function(a, b) {
-              var feedA, feedB;
-              if (_.isNumber(a)) feedA = self.model.get_feed(a);
-              if (_.isNumber(b)) feedB = self.model.get_feed(b);
-              if (feedA && feedB) {
-                return feedA.feed_opens < feedB.feed_opens ? 1 : 
-                (feedA.feed_opens > feedB.feed_opens ? -1 : 
-                  (feedA.feed_title.toLowerCase() > feedB.feed_title.toLowerCase() ? 1 : -1));
-              } else if (feedA && !feedB) {
-                return -1;
-              } else if (!feedA && feedB) {
-                return 1;
-              } else if (!feedA && !feedB && !_.isNumber(a) && !_.isNumber(b)) {
-                // console.log(['a b 2', a, b]);
-                var folderA = _.keys(a)[0];
-                var folderB = _.keys(b)[0];
-                return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
-              }
-            });
-          }
+        sort_items: function(a, b) {
+            var self = this;
+            var sort_order = this.model.preference('feed_order');
+            var feedA, feedB;
+            if (a && a.e instanceof jQuery) feedA = self.model.get_feed(parseInt(a.e.data('id'), 10));
+            if (b && b.e instanceof jQuery) feedB = self.model.get_feed(parseInt(b.e.data('id'), 10));
+            if (_.isNumber(a)) feedA = self.model.get_feed(a);
+            if (_.isNumber(b)) feedB = self.model.get_feed(b);
+            
+            // console.log(["feeds", sort_order, feedA, feedB]);
+            
+            if (sort_order == 'ALPHABETICAL' || !sort_order) {
+                if (feedA && feedB) {
+                    return feedA.feed_title.toLowerCase() > feedB.feed_title.toLowerCase() ? 1 : -1;
+                } else if (feedA && !feedB) {
+                    return -1;
+                } else if (!feedA && feedB) {
+                    return 1;
+                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && (!b.e instanceof jQuery)) {
+                    // console.log(['a b 1', a, b, feedA, feedB]);
+                    var folderA = _.keys(a)[0];
+                    var folderB = _.keys(b)[0];
+                    return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
+                }
+            } else if (sort_order == 'MOSTUSED') {
+                if (feedA && feedB) {
+                    return feedA.feed_opens < feedB.feed_opens ? 1 : 
+                        (feedA.feed_opens > feedB.feed_opens ? -1 : 
+                        (feedA.feed_title.toLowerCase() > feedB.feed_title.toLowerCase() ? 1 : -1));
+                } else if (feedA && !feedB) {
+                    return -1;
+                } else if (!feedA && feedB) {
+                    return 1;
+                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && (!b.e instanceof jQuery)) {
+                    // console.log(['a b 2', a, b]);
+                    var folderA = _.keys(a)[0];
+                    var folderB = _.keys(b)[0];
+                    return folderA.toLowerCase() > folderB.toLowerCase() ? 1 : -1;
+                }
+            }
+        },
+        
+        sort_feed_models: function(items) {
+          return items.sort(this.sort_items);
         },
         
         sort_feeds: function($feeds) {
-            $('.feed', $feeds).tsort('.feed_title');
+            $('.feed', $feeds).tsort('', {sortFunction: this.sort_items});
             $('.folder', $feeds).tsort('.folder_title_text');
         },
         
@@ -1151,7 +1151,7 @@
             var self = this;
             var $feeds = "";
             
-            items = this.sort_items(items);
+            items = this.sort_feed_models(items);
             
             for (var i in items) {
                 var item = items[i];
@@ -1313,6 +1313,7 @@
                     self.flags['sorting_feed'] = true;
                     ui.placeholder.attr('class', ui.item.attr('class') + ' NB-feeds-list-highlight');
                     ui.item.addClass('NB-feed-sorting');
+                    ui.placeholder.data('id', ui.item.data('id'));
                     self.$s.$feed_list.addClass('NB-feed-sorting');
                     if (ui.item.is('.folder')) {
                         ui.placeholder.html(ui.item.children().clone());
