@@ -26,7 +26,6 @@ class JammitAssets:
         Read the assets from the YAML and store it as a lookup dictionary.
         """
         filepath = os.path.join(self.assets_dir, self.ASSET_FILENAME)
-        print filepath
         f = open(filepath, 'r')
         return yaml.load(f.read())
     
