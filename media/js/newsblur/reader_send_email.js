@@ -46,7 +46,8 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
                 $.make('span', { className: 'NB-raquo' }, '&raquo;'),
                 ' Recipient\'s email: '
               ]),
-              $.make('input', { className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value: "" })
+              $.make('input', { className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value: 
+          ($.cookie('NB:email:to') || "") })
             ]),
             $.make('div', { className: 'NB-modal-email-explanation' }, [
                 "Add an optional comment to send with the story. The story will be sent below your comment."
@@ -114,6 +115,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
           $save.removeClass('NB-disabled').val('Send this story');
         } else {
           $save.val('Sent!');
+          $.cookie('NB:email:to', $('input[name=to]', this.$modal).val());
           this.close();
         }
     },
