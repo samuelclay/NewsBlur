@@ -2819,9 +2819,9 @@
             var story = this.model.get_story(story_id);
             var $story_title = this.find_story_in_story_titles(story_id);
             var $feed_story = this.find_story_in_feed_view(story_id);
-            var $share_button = $('.NB-sideoption-share-save', $story);
-            var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $story);
-            var comments = $('.NB-sideoption-share-comments', $story).val();
+            var $share_button = $('.NB-sideoption-share-save', $feed_story);
+            var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $feed_story);
+            var comments = $('.NB-sideoption-share-comments', $feed_story).val();
             
             $share_button.addClass('NB-saving').text('Sharing...');
             this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
@@ -2830,12 +2830,12 @@
                 $share_sideoption.text('Shared').closest('.NB-sideoption');
                 $feed_story.addClass('NB-story-shared');
                 var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
-                var $comments = $('.NB-feed-story-comments', $feed_story);
-                if (!$comments.length) {
-                    $comments = $.make('div', { className: 'NB-feed-story-comments' });
-                    $('.NB-feed-story-content', $feed_story).after($comments);
+                var $old_comments = $('.NB-feed-story-comments', $feed_story);
+                if (!$old_comments.length) {
+                    $old_comments = $.make('div', { className: 'NB-feed-story-comments' });
+                    $('.NB-feed-story-content', $feed_story).after($old_comments);
                 }
-                $comments.replaceWith($new_comments);
+                $old_comments.replaceWith($new_comments);
             }, this));
         },
         
@@ -4105,9 +4105,6 @@
         make_story_share_comments: function(story) {
             var self = this;
             var $comments = $([]);
-            console.log(["story shared: ", story]);
-            
-            // var $share = $.make('div', { className: 'NB-story-comments-sharers' }, 'Shared by: ');
             
             if (story.share_count) {
                 var $public_teaser = $.make('div', { className: 'NB-story-comments-shares-teaser-wrapper' }, [
@@ -4157,7 +4154,6 @@
         },
         
         make_story_share_comment: function(comment) {
-            console.log(["make_story_share_comment", comment]);
             var user = new NEWSBLUR.Models.User(comment.author);
             
             var $comment = $.make('div', { className: 'NB-story-comment' }, [
@@ -4189,7 +4185,6 @@
         load_public_story_comments: function(story_id) {
             var story = this.model.get_story(story_id);
             this.model.load_public_story_comments(story_id, story.story_feed_id, _.bind(function(data) {
-                console.log(["comments", data]);
                 var $comments = $.make('div', { className: 'NB-story-comments-public' });
                 
                 _.each(data.comments, _.bind(function(comment) {
