@@ -104,11 +104,14 @@ def _do_timesince(d, chunks, now=None):
     # ignore microsecond part of 'd' since we removed it from 'now'
     delta = now - (d - datetime.timedelta(0, 0, d.microsecond))
     since = delta.days * 24 * 60 * 60 + delta.seconds
-    for i, (seconds, name) in enumerate(chunks):
-        count = since // seconds
-        if count != 0:
-            break
-    s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    if since > 10:
+        for i, (seconds, name) in enumerate(chunks):
+            count = since // seconds
+            if count != 0:
+                break
+        s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    else:
+        s = 'just a second'
     return s
 
 def relative_timesince(value):
@@ -118,7 +121,9 @@ def relative_timesince(value):
     chunks = (
       (60 * 60 * 24, lambda n: ungettext('day', 'days', n)),
       (60 * 60, lambda n: ungettext('hour', 'hours', n)),
-      (60, lambda n: ungettext('minute', 'minutes', n))
+      (60, lambda n: ungettext('minute', 'minutes', n)),
+      (1, lambda n: ungettext('second', 'seconds', n)),
+      (0, lambda n: 'just now'),
     )
     return _do_timesince(value, chunks)
     

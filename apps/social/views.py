@@ -47,7 +47,7 @@ def mark_story_as_shared(request):
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
-        story_values = dict(user_id=request.user.pk, shared_date=now, comments=comments, 
+        story_values = dict(user_id=request.user.pk, comments=comments, 
                             has_comments=bool(comments), **story_db)
         MSharedStory.objects.create(**story_values)
         logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))

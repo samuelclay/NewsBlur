@@ -822,11 +822,11 @@ class Feed(models.Model):
         story['story_content']    = story_content
         story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
         story['story_feed_id']    = feed_id or story_db.story_feed_id
-        story['comment_count']    = story_db.comment_count
-        story['comment_user_ids'] = story_db.comment_user_ids
-        story['share_count']      = story_db.share_count
-        story['share_user_ids']   = story_db.share_user_ids
-        story['guid_hash']        = story_db.guid_hash
+        story['comment_count']    = story_db.comment_count if hasattr(story_db, 'comment_count') else 0
+        story['comment_user_ids'] = story_db.comment_user_ids if hasattr(story_db, 'comment_user_ids') else []
+        story['share_count']      = story_db.share_count if hasattr(story_db, 'share_count') else 0
+        story['share_user_ids']   = story_db.share_user_ids if hasattr(story_db, 'share_user_ids') else []
+        story['guid_hash']        = story_db.guid_hash if hasattr(story_db, 'guid_hash') else None
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
@@ -1177,7 +1177,7 @@ class MStory(mongo.Document):
             'story_feed_id': self.story_feed_id,
         }
         comments = MSharedStory.objects.filter(has_comments=True, **params).only('user_id')
-        shares = MSharedStory.objects.filter(has_comments=False, **params).only('user_id')
+        shares = MSharedStory.objects.filter(**params).only('user_id')
         self.comment_count = comments.count()
         self.comment_user_ids = [c['user_id'] for c in comments]
         self.share_count = shares.count()

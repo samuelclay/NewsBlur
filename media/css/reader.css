@@ -1942,7 +1942,7 @@ background: transparent;
     border-top: 1px solid #A6A6A6;
     background-color: #FCFCFC;
     position: relative;
-    padding: 0 12px 0 54px;
+    padding: 0 12px 2px 54px;
     line-height: 20px;
     overflow: hidden;
 }
@@ -1952,9 +1952,10 @@ background: transparent;
     top: 6px;
 }
 #story_pane .NB-story-comment .NB-user-avatar img {
-    border: 1px solid #A6A6A6;
-    width: 36px;
-    height: 36px;
+    border-radius: 6px;
+    margin: 2px 0 0 1px;
+    width: 38px;
+    height: 38px;
 }
 #story_pane .NB-story-comment .NB-story-comment-author-container {
     overflow: hidden;
@@ -2009,8 +2010,9 @@ background: transparent;
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 2px 12px;
+    padding: 8px 12px 0px;
     overflow: hidden;
+    height: 27px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2025,19 +2027,40 @@ background: transparent;
     padding: 0 1px;
     font-size: 12px;
 }
+#story_pane .NB-story-share-label {
+    display: inline-block;
+    margin: 0 4px 0 0;
+}
 #story_pane .NB-story-share-profiles {
     display: inline-block;
+    vertical-align: top;
+    height: 24px;
+    padding-top: 2px;
+    margin-top: -4px;
     overflow: hidden;
+}
+#story_pane .NB-story-share-profiles.NB-story-share-profiles-public {
+    float: right;
+}
+#story_pane .NB-story-share-profiles.NB-story-share-profiles-public .NB-story-share-profile {
+    float: right;
 }
 
 #story_pane .NB-story-share-profile {
     display: inline-block;
-    overflow: hidden;
 }
 #story_pane .NB-story-share-profile .NB-user-avatar {
-    width: 16px;
-    height: 16px;
     float: left;
+    font-size: 0;
+    vertical-align: middle;
+    height: 22px;
+    width: 22px;
+    margin: 0 4px 0 0;
+}
+#story_pane .NB-story-share-profile .NB-user-avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
 }
 #story_pane .NB-story-share-profile .NB-user-username {
     float: left;

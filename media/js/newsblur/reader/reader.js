@@ -4111,11 +4111,14 @@
                             ' ',
                             Inflector.pluralize('person', story.share_count)
                         ])),
-                        (story.share_count_friends && $.make('span', [
-                            'Shared by: ',
-                            $.make('div', { className: 'NB-story-share-profiles' }, 
+                        (story.share_count && $.make('span', [
+                            (story.share_count_public && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-public' }, 
+                                _.map(story.shared_by_public, function(profile) { return self.make_story_share_profile(profile); })
+                            )),
+                            (story.share_count_friends && $.make('div', { className: 'NB-story-share-label' }, 'Shared by: ')),
+                            (story.share_count_friends && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-friends' }, 
                                 _.map(story.shared_by_friends, function(profile) { return self.make_story_share_profile(profile); })
-                            )
+                            ))
                         ]))
                     ])
                 ]);
@@ -4169,9 +4172,8 @@
             
             var $profile = $.make('div', { className: 'NB-story-share-profile' }, [
                 $.make('div', { className: 'NB-user-avatar' }, [
-                    $.make('img', { src: user.get('photo_url') })
-                ]),
-                $.make('div', { className: 'NB-user-username' }, user.get('username'))
+                    $.make('img', { src: user.get('photo_url'), title: user.get('username') })
+                ])
             ]);
             
             return $profile;

@@ -58,6 +58,8 @@ class MSharedStory(mongo.Document):
         else:
             r.srem(comment_key, self.user_id)
         
+        self.shared_date = datetime.datetime.utcnow()
+        
         super(MSharedStory, self).save(*args, **kwargs)
         
         author = MSocialProfile.objects.get(user_id=self.user_id)
@@ -116,15 +118,20 @@ class MSharedStory(mongo.Document):
                 story['comment_count_friends'] = len(shared_stories)
             if story['share_count']:
                 share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                friends_with_shares = r.sinter(share_key, friend_key)
-                profiles = []
+                friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+                nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
+                profiles = MSocialProfile.objects.filter(user_id__in=nonfriend_user_ids)
+                friend_profiles = []
                 if friends_with_shares:
-                    profiles = MSocialProfile.objects.filter(user_id__in=friends_with_shares)
+                    friend_profiles = MSocialProfile.objects.filter(user_id__in=friends_with_shares)
+                story['shared_by_public'] = []
                 story['shared_by_friends'] = []
                 for profile in profiles:
+                    story['shared_by_public'].append(profile.to_json(compact=True))
+                for profile in friend_profiles:
                     story['shared_by_friends'].append(profile.to_json(compact=True))
-                story['share_count_public'] = story['share_count'] - len(profiles)
-                story['share_count_friends'] = len(profiles)
+                story['share_count_public'] = story['share_count'] - len(friend_profiles)
+                story['share_count_friends'] = len(friend_profiles)
                     
         return stories
         
