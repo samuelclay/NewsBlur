@@ -43,6 +43,7 @@ javascripts:
         - media/js/vendor/jquery.ui.slider.js
         - media/js/vendor/jquery.ui.autocomplete.js
         - media/js/vendor/jquery.ui.progressbar.js
+        - media/js/vendor/jquery.cookie.js
         - media/js/vendor/jquery.layout.js
         - media/js/vendor/jquery.tinysort.js
         - media/js/vendor/jquery.fieldselection.js
