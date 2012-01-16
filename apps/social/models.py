@@ -116,6 +116,7 @@ class MSharedStory(mongo.Document):
                     story['comments'].append(shared_story.comments_with_author(compact=True))
                 story['comment_count_public'] = story['comment_count'] - len(shared_stories)
                 story['comment_count_friends'] = len(shared_stories)
+                
             if story['share_count']:
                 share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
                 friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]

@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
-from apps.rss_feeds.models import MStory
+from apps.rss_feeds.models import MStory, Feed
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
@@ -46,7 +46,6 @@ def mark_story_as_shared(request):
     if not shared_story:
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
-        now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, comments=comments, 
                             has_comments=bool(comments), **story_db)
         MSharedStory.objects.create(**story_values)
@@ -60,7 +59,10 @@ def mark_story_as_shared(request):
     
     story.count_comments()
     
-    return {'code': code}
+    story = Feed.format_story(story)
+    story = MSharedStory.stories_with_comments([story], request.user)[0]
+    
+    return {'code': code, 'story': story}
     
 def shared_story_feed(request, user_id, username):
     try:

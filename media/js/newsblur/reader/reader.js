@@ -2824,11 +2824,18 @@
             var comments = $('.NB-sideoption-share-comments', $story).val();
             
             $share_button.addClass('NB-saving').text('Sharing...');
-            this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function() {
+            this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
                 this.toggle_feed_story_share_dialog(story_id, story.story_feed_id);
                 $share_button.removeClass('NB-saving').text('Share');
                 $share_sideoption.text('Shared').closest('.NB-sideoption');
                 $feed_story.addClass('NB-story-shared');
+                var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
+                var $comments = $('.NB-feed-story-comments', $feed_story);
+                if (!$comments.length) {
+                    $comments = $.make('div', { className: 'NB-feed-story-comments' });
+                    $('.NB-feed-story-content', $feed_story).after($comments);
+                }
+                $comments.replaceWith($new_comments);
             }, this));
         },
         
