@@ -125,6 +125,7 @@ def staging_full():
         run('curl -s http://dev.newsblur.com > /dev/null')
         run('curl -s http://dev.newsblur.com/m/ > /dev/null')
 
+@parallel
 def celery():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -447,6 +448,8 @@ def setup_node():
     run('curl http://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
+    put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
+
 
     
 # ==============
