@@ -7,7 +7,7 @@
   <link rel="shortcut icon" HREF="/media/img/favicon.png">
 
   <script type="text/javascript" charset="utf-8">
-    var NEWSBLUR = {};
+    window.NEWSBLUR = {};
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},

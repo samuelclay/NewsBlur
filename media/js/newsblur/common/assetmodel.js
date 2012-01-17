@@ -345,7 +345,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.feed_id = feed_id;
-                if (_.includes(feed_id, ':')) {
+                if (_.string.include(feed_id, ':')) {
                     _.extend(this.classifiers, data.classifiers);
                 } else {
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);

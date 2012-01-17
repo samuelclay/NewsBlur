@@ -48,6 +48,7 @@ SINGLE_DAY = 60*60*24
 @never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
+    print "Feeds"
     if request.method == "POST":
         if request.POST['submit'] == 'login':
             login_form  = LoginForm(request.POST, prefix='login')

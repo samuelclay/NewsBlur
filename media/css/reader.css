@@ -2730,6 +2730,10 @@ background: transparent;
     cursor: pointer;
     background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 8px center;
 }
+.NB-taskbar .task_button.NB-task-feed-settings {
+    cursor: pointer;
+    background: transparent url('/media/embed/icons/silk/cog.png') no-repeat center center;
+}
 .NB-taskbar .task_button.task_story_next_positive {
     cursor: pointer;
     background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 8px center;
@@ -4464,7 +4468,7 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bricks.png') no-repeat  0 2px;    
 }
 .NB-menu-manage .NB-menu-manage-feed-settings .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/calculator.png') no-repeat  0 1px;    
+    background: transparent url('/media/embed/icons/silk/cog.png') no-repeat  0 1px;    
 }
 .NB-menu-manage .NB-menu-manage-feed-reload .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/car.png') no-repeat  0 1px;    
