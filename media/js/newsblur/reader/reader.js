@@ -1983,11 +1983,7 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = this.model.view_setting(this.active_feed);
-            if (!explicit_view_setting) {
-              explicit_view_setting = 'feed';
-            }
-            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.set_correct_story_view_for_feed(this.active_feed, 'feed');
             // this.show_feed_title_in_stories(feed_id);
             this.show_feedbar_loading();
             this.switch_taskbar_view(this.story_view);
@@ -2044,11 +2040,7 @@
             
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = this.model.view_setting(this.active_feed);
-            if (!explicit_view_setting) {
-              explicit_view_setting = 'feed';
-            }
-            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.set_correct_story_view_for_feed(this.active_feed, 'feed');
             // this.show_feed_title_in_stories(feed_id);
             this.show_feedbar_loading();
             this.switch_taskbar_view(this.story_view);
