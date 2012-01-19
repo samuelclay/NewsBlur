@@ -42,6 +42,9 @@ class UserSubscription(models.Model):
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
+        
+    class Meta:
+        unique_together = ("user", "feed")
     
     def canonical(self, full=False, include_favicon=True, classifiers=None):
         feed               = self.feed.canonical(full=full, include_favicon=include_favicon)
@@ -360,9 +363,6 @@ class UserSubscription(models.Model):
         switch_feed_for_classifier(MClassifierAuthor)
         switch_feed_for_classifier(MClassifierFeed)
         switch_feed_for_classifier(MClassifierTag)
-        
-    class Meta:
-        unique_together = ("user", "feed")
         
         
 class MUserStory(mongo.Document):

@@ -9,7 +9,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "user/*user": "user"
     },
     
-    index: function() {},
+    index: function() {
+        NEWSBLUR.reader.show_splash_page();
+    },
     
     add_site: function() {
         console.log(["add", window.location, $.getQueryString('url')]);

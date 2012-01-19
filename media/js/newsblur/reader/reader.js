@@ -351,7 +351,7 @@
             }
         },
         
-        show_splash_page: function() {
+        show_splash_page: function(skip_router) {
             this.reset_feed();
             this.unload_feed_iframe();
             this.unload_story_iframe();
@@ -361,6 +361,10 @@
             $('#NB-splash').show();
             $('#NB-splash-overlay').show();
             this.$s.$dashboard.removeClass('NB-active');
+            if (!skip_router) {
+                NEWSBLUR.router.navigate('');
+            }
+
         },
         
         iframe_buster_buster: function() {
