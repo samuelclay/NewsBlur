@@ -102,15 +102,15 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $service;
             if (this.services && this.services[service][service+'_uid']) {
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-close' }, 'Disconnect')
                 ]);
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
-                    $.make('div', { className: 'NB-friends-service-title' }, _.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        'Find ' + _.capitalize(service) + ' Friends'
+                        'Find ' + _.string.capitalize(service) + ' Friends'
                     ])
                 ]);
             }
@@ -180,7 +180,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-'+service }, [
                 $.make('div', { className: 'NB-friends-photo-title' }, [
                     $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-'+service }),
-                    $.make('label', { 'for': 'NB-profile-photo-service-'+service }, _.capitalize(service))
+                    $.make('label', { 'for': 'NB-profile-photo-service-'+service }, _.string.capitalize(service))
                 ]),
                 $.make('div', { className: 'NB-friends-photo-image' }, [
                     $.make('label', { 'for': 'NB-profile-photo-service-'+service }, [
@@ -238,11 +238,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
             $.make('div', { className: 'NB-profile-badge-stats' }, [
                 $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
+                'shared ',
                 Inflector.pluralize('story', profile.get('shared_stories_count')),
-                ' shared',
-                ' &middot; ',
-                $.make('span', { className: 'NB-count' }, profile.get('following_count')),
-                'following',
                 ' &middot; ',
                 $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
                 Inflector.pluralize('follower', profile.get('follower_count'))

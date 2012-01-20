@@ -30,7 +30,7 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
-from apps.social.models import MSharedStory
+from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -48,7 +48,6 @@ SINGLE_DAY = 60*60*24
 @never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
-    print "Feeds"
     if request.method == "POST":
         if request.POST['submit'] == 'login':
             login_form  = LoginForm(request.POST, prefix='login')
@@ -74,7 +73,7 @@ def index(request):
     unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
                                                        declined_date__isnull=True).select_related('feed')[:2]
     statistics        = MStatistics.all()
-    user_statistics   = MStatistics.user(request.user)
+    user_statistics   = MSocialProfile.user_statistics(request.user)
     feedbacks         = MFeedback.all()
 
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
@@ -210,9 +209,17 @@ def load_feeds(request):
                 feeds[f]['not_yet_fetched'] = False
 
     starred_count = MStarredStory.objects(user_id=user.pk).count()
-
+    
+    social_params = {
+        'user_id': user.pk,
+        'include_favicon': include_favicons,
+        'update_counts': update_counts,
+    }
+    social_feeds = MSocialSubscription.feeds(**social_params)
+    
     data = {
         'feeds': feeds,
+        'social_feeds': social_feeds,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
     }

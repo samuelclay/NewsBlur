@@ -16,6 +16,7 @@ from django.db import IntegrityError
 from django.core.cache import cache
 from django.conf import settings
 from django.db.models.query import QuerySet
+from django.contrib.auth.models import User
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds

@@ -300,12 +300,16 @@ $(document).ready(function() {
           </div>
         </div>
         
-        {% if user_statistics.shared_stories > 3000 %}
+        {% if user_statistics %}
             <h3 class="NB-module-content-header">
                 Your statistics
             </h3>
 
             <div class="NB-module-item NB-module-stats NB-module-account-stats">
+                <div class="NB-module-stats-count">
+                    <div class="NB-module-stats-count-number">{{ user_statistics.shared_stories|commify }}</div>
+                    <div class="NB-module-stats-count-description">Shared stor{{ user_statistics.shared_stories|pluralize:"y,ies" }}</div>
+                </div>
                 <div class="NB-module-stats-count">
                     <div class="NB-module-stats-count-number">{{ user_statistics.following|commify }}</div>
                     <div class="NB-module-stats-count-description">Following</div>
@@ -313,10 +317,6 @@ $(document).ready(function() {
                 <div class="NB-module-stats-count">
                     <div class="NB-module-stats-count-number">{{ user_statistics.followers|commify }}</div>
                     <div class="NB-module-stats-count-description">Follower{{ user_statistics.followers|pluralize }}</div>
-                </div>
-                <div class="NB-module-stats-count">
-                    <div class="NB-module-stats-count-number">{{ user_statistics.shared_stories|commify }}</div>
-                    <div class="NB-module-stats-count-description">Shared stor{{ user_statistics.shared_stories|pluralize:"y,ies" }}</div>
                 </div>
             </div>
         {% endif %}

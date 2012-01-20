@@ -25,6 +25,7 @@ NEWSBLUR.AssetModel.Reader = function() {
         }
     };
     this.feeds = {};
+    this.social_feeds = {};
     this.favicons = {};
     this.folders = [];
     this.stories = {};
@@ -225,6 +226,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             });
             self.folders = subscriptions.folders;
             self.starred_count = subscriptions.starred_count;
+            self.social_feeds = subscriptions.social_feeds;
             
             if (!_.isEqual(self.favicons, {})) {
                 _.each(self.feeds, function(feed) {

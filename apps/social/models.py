@@ -62,9 +62,9 @@ class MSharedStory(mongo.Document):
         
         super(MSharedStory, self).save(*args, **kwargs)
         
-        author = MSocialProfile.objects.get(user_id=self.user_id)
+        author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         author.count()
-
+        
     def delete(self, *args, **kwargs):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
@@ -73,16 +73,22 @@ class MSharedStory(mongo.Document):
         super(MSharedStory, self).delete(*args, **kwargs)
         
     @classmethod
-    def sync_redis(cls):
+    def sync_all_redis(cls):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         for story in cls.objects.all():
-            share_key = "S:%s:%s" % (story.story_feed_id, story.guid_hash)
-            comment_key = "C:%s:%s" % (story.story_feed_id, story.guid_hash)
-            r.sadd(share_key, story.user_id)
-            if story.has_comments:
-                r.sadd(comment_key, story.user_id)
-            else:
-                r.srem(comment_key, story.user_id)
+            story.sync_redis(redis_conn=r)
+            
+    def sync_redis(self, redis_conn=None):
+        if not redis_conn:
+            redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
+        
+        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
+        redis_conn.sadd(share_key, self.user_id)
+        if self.has_comments:
+            redis_conn.sadd(comment_key, self.user_id)
+        else:
+            redis_conn.srem(comment_key, self.user_id)
         
     def comments_with_author(self, compact=False, full=False):
         comments = {
@@ -153,6 +159,9 @@ class MSocialProfile(mongo.Document):
     following_user_ids   = mongo.ListField(mongo.IntField())
     follower_user_ids    = mongo.ListField(mongo.IntField())
     unfollowed_user_ids  = mongo.ListField(mongo.IntField())
+    stories_last_month   = mongo.IntField(default=0)
+    average_stories_per_month = mongo.IntField(default=0)
+    favicon_color        = mongo.StringField(max_length=6)
     
     meta = {
         'collection': 'social_profile',
@@ -172,20 +181,46 @@ class MSocialProfile(mongo.Document):
         super(MSocialProfile, self).save(*args, **kwargs)
         
     @classmethod
+    def user_statistics(cls, user):
+        try:
+            profile = cls.objects.get(user_id=user.pk)
+        except cls.DoesNotExist:
+            return None
+        
+        values = {
+            'followers': profile.follower_count,
+            'following': profile.following_count,
+            'shared_stories': profile.shared_stories_count,
+        }
+        return values
+        
+    @classmethod
     def profiles(cls, user_ids):
         profiles = cls.objects.filter(user_id__in=user_ids)
         return profiles
+
+    @classmethod
+    def profile_feeds(cls, user_ids):
+        profiles = cls.objects.filter(user_id__in=user_ids, shared_stories_count__gte=1)
+        profiles = dict((p.username, p) for p in profiles)
+        return profiles
         
     @classmethod
-    def sync_redis(cls):
+    def sync_all_redis(cls):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         for profile in cls.objects.all():
-            for user_id in profile.following_user_ids:
-                following_key = "F:%s:F" % (profile.user_id)
-                r.sadd(following_key, user_id)
-                follower_key = "F:%s:f" % (user_id)
-                r.sadd(follower_key, profile.user_id)
-                
+            profile.sync_redis(redis_conn=r)
+    
+    def sync_redis(self, redis_conn=None):
+        if not redis_conn:
+            redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
+            
+        for user_id in self.following_user_ids:
+            following_key = "F:%s:F" % (self.user_id)
+            redis_conn.sadd(following_key, user_id)
+            follower_key = "F:%s:f" % (user_id)
+            redis_conn.sadd(follower_key, self.user_id)
+
     def to_json(self, compact=False, full=False):
         if compact:
             params = {
@@ -251,6 +286,8 @@ class MSocialProfile(mongo.Document):
         r.sadd(following_key, user_id)
         follower_key = "F:%s:f" % (user_id)
         r.sadd(follower_key, self.user_id)
+        
+        MSocialSubscription.objects.create(user_id=self.user_id, subscription_user_id=user_id)
     
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -272,7 +309,45 @@ class MSocialProfile(mongo.Document):
         r.srem(following_key, user_id)
         follower_key = "F:%s:f" % (user_id)
         r.srem(follower_key, self.user_id)
+        
+        MSocialSubscription.objects.filter(user_id=self.user_id, subscription_user_id=user_id).delete()
 
+
+class MSocialSubscription(mongo.Document):
+    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
+    user_id = mongo.IntField()
+    subscription_user_id = mongo.IntField(unique_with='user_id')
+    last_read_date = mongo.DateTimeField(default=UNREAD_CUTOFF)
+    mark_read_date = mongo.DateTimeField(default=UNREAD_CUTOFF)
+    unread_count_neutral = mongo.IntField(default=0)
+    unread_count_positive = mongo.IntField(default=0)
+    unread_count_negative = mongo.IntField(default=0)
+    unread_count_updated = mongo.DateTimeField()
+    oldest_unread_story_date = mongo.DateTimeField()
+    needs_unread_recalc = mongo.BooleanField(default=False)
+    feed_opens = mongo.IntField(default=0)
+    is_trained = mongo.BooleanField(default=False)
+    
+    meta = {
+        'collection': 'social_subscription',
+        'indexes': [('user_id', 'subscription_user_id')],
+        'allow_inheritance': False,
+    }
+
+    def __unicode__(self):
+        return "%s:%s" % (self.user_id, self.subscription_user_id)
+    
+    @classmethod
+    def feeds(cls, *args, **kwargs):
+        user_id = kwargs['user_id']
+        social_subs = cls.objects.filter(user_id=user_id)
+        social_user_ids = [s.subscription_user_id for s in social_subs]
+        social_profiles = MSocialProfile.profile_feeds(social_user_ids)
+        
+        return social_profiles
+    
+    
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()
     autofollow            = mongo.BooleanField(default=True)
@@ -449,7 +524,7 @@ class MSocialServices(mongo.Document):
         self.save()
         
     def set_photo(self, service):
-        profile = MSocialProfile.objects.get(user_id=self.user_id)
+        profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         profile.photo_service = service
         if service == 'twitter':
             profile.photo_url = self.twitter_picture_url

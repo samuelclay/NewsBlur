@@ -34,18 +34,6 @@ class MStatistics(mongo.Document):
                 values[key] = float(value)
                 
         return values
-    
-    @classmethod
-    def user(cls, user):
-        share_reads = [random.randint(0, 30) for x in xrange(30)]
-        values = {
-            'followers': random.randint(0, 1200),
-            'following': random.randint(0, 300),
-            'shared_stories': random.randint(0, 5000),
-            'share_reads': share_reads,
-            'max_share_reads': max(share_reads),
-        }
-        return values
         
     @classmethod
     def collect_statistics(cls):
