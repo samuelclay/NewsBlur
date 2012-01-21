@@ -3330,6 +3330,25 @@
             }
         },
         
+        check_feed_view_scrolled_to_bottom: function() {
+            var $story_titles = this.$s.$story_titles;
+            var $feed_view = this.$s.$feed_view;
+
+            if (!($('.NB-story-titles-end-stories-line', $story_titles).length)) {
+                var $last_story = $('.NB-feed-story', $feed_view).last();
+                var container_offset = $feed_view.position().top;
+                var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
+                var visible_height = $feed_view.height();
+                var scroll_y = $feed_view.scrollTop();
+            
+                // Fudge factor is simply because it looks better at 13 pixels off.
+                if ((visible_height + 26) >= full_height) {
+                    // NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
+                    this.load_page_of_feed_stories();
+                }
+            }
+        },
+        
         show_hidden_story_titles: function() {
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
@@ -6654,6 +6673,7 @@
                 var story = this.cache.feed_view_story_positions[positions[closest]];
                 // NEWSBLUR.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
                 this.navigate_story_titles_to_story(story);
+                this.check_feed_view_scrolled_to_bottom();
             }
             
             if (this.flags.river_view &&
