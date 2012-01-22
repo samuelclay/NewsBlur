@@ -202,7 +202,7 @@ class MSocialProfile(mongo.Document):
     @classmethod
     def profile_feeds(cls, user_ids):
         profiles = cls.objects.filter(user_id__in=user_ids, shared_stories_count__gte=1)
-        profiles = dict((p.username, p) for p in profiles)
+        profiles = dict((p.user_id, p.feed()) for p in profiles)
         return profiles
         
     @classmethod
@@ -220,7 +220,14 @@ class MSocialProfile(mongo.Document):
             redis_conn.sadd(following_key, user_id)
             follower_key = "F:%s:f" % (user_id)
             redis_conn.sadd(follower_key, self.user_id)
-
+            
+    def feed(self):
+        params = self.to_json(compact=True)
+        params.update({
+            'feed_title': params['username'] + '\'s blurblog'
+        })
+        return params
+        
     def to_json(self, compact=False, full=False):
         if compact:
             params = {
@@ -342,10 +349,24 @@ class MSocialSubscription(mongo.Document):
     def feeds(cls, *args, **kwargs):
         user_id = kwargs['user_id']
         social_subs = cls.objects.filter(user_id=user_id)
-        social_user_ids = [s.subscription_user_id for s in social_subs]
+        social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
+        social_user_ids = social_subs.keys()
         social_profiles = MSocialProfile.profile_feeds(social_user_ids)
-        
-        return social_profiles
+        social_feeds = {}
+        for user_id, social_sub in social_subs.items():
+            social_feeds[user_id] = dict(social_sub.items() + social_profiles[user_id].items())
+
+        return social_feeds
+    
+    def to_json(self):
+        return {
+            'user_id': self.user_id,
+            'subscription_user_id': self.subscription_user_id,
+            'nt': self.unread_count_neutral + 2,
+            'ps': self.unread_count_positive + 3,
+            'ng': self.unread_count_negative,
+            'is_trained': self.is_trained,
+        }
     
     
 class MSocialServices(mongo.Document):

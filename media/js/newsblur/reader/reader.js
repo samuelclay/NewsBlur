@@ -12,6 +12,7 @@
         this.$s = {
             $body: $('body'),
             $feed_list: $('#feed_list'),
+            $social_feeds: $('.NB-socialfeeds'),
             $story_titles: $('#story_titles'),
             $content_pane: $('.content-pane'),
             $story_taskbar: $('#story_taskbar'),
@@ -1025,7 +1026,10 @@
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.$s.$feed_link_loader.css({'display': 'block'});
                 this.flags['favicons_downloaded'] = false;
-                this.model.load_feeds($.rescope(this.make_feeds, this));
+                this.model.load_feeds(_.bind(function() {
+                    this.make_feeds();
+                    this.make_social_feeds();
+                }, this));
             }
         },
         
@@ -1083,6 +1087,28 @@
             }, this));
             
             this.load_router();
+        },
+        
+        make_social_feeds: function() {
+            var social_feeds = this.model.social_feeds;
+            var $social_feeds = this.$s.$social_feeds;
+            
+            $social_feeds.empty();
+            
+            var $feeds = "";
+            _.each(social_feeds, _.bind(function(feed) {
+                console.log(["social feed", feed]);
+                var $feed = this.make_feed_title_template(feed, 'feed', 0);
+                $feeds += $feed;
+            }, this));
+
+            $social_feeds.css({
+                'display': 'block', 
+                'opacity': 0
+            });            
+            $social_feeds.html($feeds);
+            $social_feeds.animate({'opacity': 1}, {'duration': 700});
+
         },
         
         load_router: function() {
@@ -1728,6 +1754,7 @@
             this.$s.$river_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             $('.NB-selected', this.$s.$feed_list).removeClass('NB-selected');
+            $('.NB-selected', this.$s.$social_feeds).removeClass('NB-selected');
             this.$s.$body.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
@@ -5317,6 +5344,7 @@
         switch_feed_view_unread_view: function(unread_view) {
             if (!_.isNumber(unread_view)) unread_view = this.model.preference('unread_view');
             var $feed_list             = this.$s.$feed_list;
+            var $social_feeds          = this.$s.$social_feeds;
             var unread_view_name       = this.get_unread_view_name(unread_view);
             var $next_story_button     = $('.task_story_next_unread');
             var $story_title_indicator = $('.NB-story-title-indicator', this.$story_titles);
@@ -5326,6 +5354,10 @@
                       .removeClass('unread_view_neutral')
                       .removeClass('unread_view_negative')
                       .addClass('unread_view_'+unread_view_name);
+            $social_feeds.removeClass('unread_view_positive')
+                         .removeClass('unread_view_neutral')
+                         .removeClass('unread_view_negative')
+                         .addClass('unread_view_'+unread_view_name);
             
             if (NEWSBLUR.Preferences['hide_read_feeds'] == 1) {
                 $hidereadfeeds_button.attr('title', 'Show all sites');

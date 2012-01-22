@@ -351,6 +351,29 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     overflow-x: hidden !important;
 }
 
+/* =============== */
+/* = Friend List = */
+/* =============== */
+
+.NB-socialfeeds {
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 11px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: auto !important;
+    height: auto !important;
+    border-bottom: 1px solid #A0A0A0;
+}
+
+.NB-feedlist .NB-socialfeeds .feed {
+    background-color: #E6DABC;    
+    border-top-color: #E6DABC;    
+    border-bottom-color: #E6DABC;    
+}
+
+
 /* ============= */
 /* = Feed List = */
 /* ============= */
