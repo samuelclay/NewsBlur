@@ -5504,8 +5504,9 @@
 
             $module.addClass('NB-loading');
             
-            if (direction == -1 && !this.counts['feature_page']) {
+            if (direction == -1 && this.counts['feature_page'] <= 0) {
                 $module.removeClass('NB-loading');
+                this.counts['feature_page'] = 0;
                 return;
             }
             if (direction == 1 && this.flags['features_last_page']) {

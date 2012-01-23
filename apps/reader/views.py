@@ -1,5 +1,6 @@
 import datetime
 import time
+import boto
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -927,7 +928,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = int(request.REQUEST.get('page', 0))
+    page = max(int(request.REQUEST.get('page', 0)), 0)
     logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
@@ -1130,7 +1131,11 @@ def send_story_email(request):
                                          cc=['%s <%s>' % (from_name, from_email)],
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
-        msg.send()
+        try:
+            msg.send()
+        except boto.ses.connection.ResponseError, e:
+            code = -1
+            message = "Email error: %s" % str(e)
         logging.user(request, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], feed.feed_title[:50]))
         

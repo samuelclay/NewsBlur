@@ -122,8 +122,14 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
     
     error: function(data) {
         var $error = $('.NB-modal-error', this.$modal);
+        var $save = $('input[type=submit]', this.$modal);
         $error.show();
-        $error.text("There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be fixed soon. You should probably send this manually now.");
+        if (!data) {
+            $error.text("There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be fixed soon. You should probably send this manually now.");
+        } else {
+          $('.NB-error', this.$modal).html(data.message).fadeIn(500); 
+        }
+        $save.removeClass('NB-disabled').val('Send this story');
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
     },
     
