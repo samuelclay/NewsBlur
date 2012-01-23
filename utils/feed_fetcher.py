@@ -139,7 +139,7 @@ class ProcessFeed:
                     return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] HTTP Status code: %s. Checking address..." % (unicode(self.feed)[:30], self.fpf.status))
+                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (unicode(self.feed)[:30], self.fpf.status, ' Not' if self.feed.fetched_once else ''))
                 fixed_feed = None
                 if not self.feed.fetched_once:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
