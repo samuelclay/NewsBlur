@@ -1065,8 +1065,11 @@ def mark_story_as_starred(request):
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
-        MStarredStory.objects.create(**story_values)
-        logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        starred_story, created = MStarredStory.objects.get_or_create(**story_values)
+        if created:
+            logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        else:
+            logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story[0].story_title[:50]))
     else:
         code = -1
     
