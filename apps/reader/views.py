@@ -561,7 +561,7 @@ def load_river_stories(request):
     try:
         mstories = [story.value for story in mstories if story and story.value]
     except OperationFailure, e:
-        raise e
+        return dict(error=str(e), code=-1)
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, days_to_keep_unreads), 
                                                      story_score(x, days_to_keep_unreads)))
@@ -1065,7 +1065,10 @@ def mark_story_as_starred(request):
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
-        starred_story, created = MStarredStory.objects.get_or_create(**story_values)
+        starred_story, created = MStarredStory.objects.get_or_create(
+            story_guid=story_values.pop('story_guid'),
+            user_id=story_values.pop('user_id'),
+            defaults=story_values)
         if created:
             logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
         else:
@@ -1080,7 +1083,7 @@ def mark_story_as_starred(request):
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
-    
+
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
