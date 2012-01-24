@@ -20,5 +20,5 @@ class UserSubscriptionManager(models.Manager):
                     kwargs['feed'] = feed
                 elif 'feed__pk' in kwargs:
                     kwargs['feed__pk'] = feed.pk
-                logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s (%s)" % (kwargs['user'].username, feed, feed_id))
+                logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s (%s)" % (getattr(kwargs.get('user'), 'username'), feed, feed_id))
                 return super(UserSubscriptionManager, self).get(*args, **kwargs)

@@ -1,5 +1,6 @@
 import datetime
 import time
+import boto
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -561,7 +562,7 @@ def load_river_stories(request):
     try:
         mstories = [story.value for story in mstories if story and story.value]
     except OperationFailure, e:
-        raise e
+        return dict(error=str(e), code=-1)
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, days_to_keep_unreads), 
                                                      story_score(x, days_to_keep_unreads)))
@@ -927,7 +928,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = int(request.REQUEST.get('page', 0))
+    page = max(int(request.REQUEST.get('page', 0)), 0)
     logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
@@ -1065,8 +1066,14 @@ def mark_story_as_starred(request):
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
-        MStarredStory.objects.create(**story_values)
-        logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        starred_story, created = MStarredStory.objects.get_or_create(
+            story_guid=story_values.pop('story_guid'),
+            user_id=story_values.pop('user_id'),
+            defaults=story_values)
+        if created:
+            logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        else:
+            logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story[0].story_title[:50]))
     else:
         code = -1
     
@@ -1077,7 +1084,7 @@ def mark_story_as_starred(request):
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
-    
+
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
@@ -1124,7 +1131,11 @@ def send_story_email(request):
                                          cc=['%s <%s>' % (from_name, from_email)],
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
-        msg.send()
+        try:
+            msg.send()
+        except boto.ses.connection.ResponseError, e:
+            code = -1
+            message = "Email error: %s" % str(e)
         logging.user(request, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], feed.feed_title[:50]))
         
