@@ -364,13 +364,15 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     padding: 0;
     width: auto !important;
     height: auto !important;
-    border-bottom: 1px solid #A0A0A0;
 }
 
 .NB-feedlist .NB-socialfeeds .feed {
-    background-color: #E6DABC;    
-    border-top-color: #E6DABC;    
-    border-bottom-color: #E6DABC;    
+    background-color: #E6DFD3;    
+    border-top-color: #E6DFD3;    
+    border-bottom-color: #E6DFD3;    
+}
+.NB-feedlist .NB-socialfeeds .feed:last-child {
+    border-bottom: 1px solid #A0A0A0;
 }
 
 

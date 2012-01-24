@@ -2,6 +2,7 @@ import datetime
 import zlib
 import urllib
 import urlparse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -11,12 +12,15 @@ from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile
 from utils import json_functions as json
-from utils.user_functions import get_user, ajax_login_required
-from utils.view_functions import render_to
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
+from utils.user_functions import get_user, ajax_login_required
+from utils.view_functions import render_to
+from utils.story_functions import format_story_link_date__short
+from utils.story_functions import format_story_link_date__long
 from vendor import facebook
 from vendor import tweepy
+from vendor.timezones.utilities import localtime_for_timezone
 
 @json.json_view
 def story_comments(request):
@@ -107,6 +111,38 @@ def shared_stories_public(request, username):
     shared_stories = MSharedStory.objects.filter(user_id=user.pk)
         
     return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
+
+@json.json_view
+def load_social_stories(request, social_user_id, social_username=None):
+    user = get_user(request)
+    social_user = get_object_or_404(User, pk=social_user_id)
+    offset = int(request.REQUEST.get('offset', 0))
+    limit = int(request.REQUEST.get('limit', 10))
+    page = request.REQUEST.get('page')
+    if page: offset = limit * (int(page) - 1)
+    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+
+    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
+    stories = Feed.format_stories(mstories)
+    
+    for story in stories:
+        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
+        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
+        shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
+        story['shared_date'] = format_story_link_date__long(shared_date, now)
+        story['read_status'] = 1
+        story['starred'] = True
+        story['intelligence'] = {
+            'feed': 0,
+            'author': 0,
+            'tags': 0,
+            'title': 0,
+        }
+    
+    logging.user(request, "~FCLoading shared stories: ~SB%s stories" % (len(stories)))
+    
+    return dict(stories=stories)
 
 @json.json_view
 def friends(request):

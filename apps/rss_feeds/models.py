@@ -831,6 +831,8 @@ class Feed(models.Model):
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date
+        if hasattr(story_db, 'shared_date'):
+            story['shared_date'] = story_db.shared_date
         if text:
             from BeautifulSoup import BeautifulSoup
             soup = BeautifulSoup(story['story_content'])

@@ -367,6 +367,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
+    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
@@ -416,7 +417,6 @@ def load_single_feed(request, feed_id):
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         if usersub:
@@ -497,13 +497,13 @@ def load_starred_stories(request):
     limit = int(request.REQUEST.get('limit', 10))
     page = int(request.REQUEST.get('page', 0))
     if page: offset = limit * (page - 1)
+    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         
     mstories = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         starred_date = localtime_for_timezone(story['starred_date'], user.profile.timezone)
@@ -532,7 +532,8 @@ def load_river_stories(request):
     page                 = int(request.REQUEST.get('page', 1))
     read_stories_count   = int(request.REQUEST.get('read_stories_count', 0))
     days_to_keep_unreads = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    
+    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+
     if not feed_ids: 
         logging.user(request, "~FCLoading empty river stories: page %s" % (page))
         return dict(stories=[])
@@ -648,7 +649,6 @@ def load_river_stories(request):
     # Just need to format stories
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
         story['read_status'] = 0
