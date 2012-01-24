@@ -2542,7 +2542,8 @@
               }, 400);
             });
             
-            if (this.model.preference('folder_counts') || !$feed.is(':visible')) {
+            if (this.model.preference('folder_counts') ||
+                $feed.parents('li.folder').filter('.NB-folder-collapsed').length) {
                 var $folder_title = $feed.closest('li.folder:visible').children('.folder_title');
                 var $children = $folder_title.closest('li.folder').children('ul.folder, .feed');
                 this.show_collapsed_folder_count($folder_title, $children);
