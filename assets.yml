@@ -60,19 +60,19 @@ javascripts:
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/*.js
         - media/js/newsblur/static/*.js
-    # mobile:
-    #     - media/js/jquery-1.7.js
-    #     - media/js/mobile/jquery.mobile-1.0b1.js
-    #     - media/js/jquery.ajaxmanager.3.js
-    #     - media/js/underscore.js
-    #     - media/js/underscore.string.js
-    #     - media/js/inflector.js
-    #     - media/js/jquery.json.js
-    #     - media/js/jquery.easing.js
-    #     - media/js/jquery.newsblur.js
-    #     - media/js/newsblur/reader_utils.js
-    #     - media/js/newsblur/assetmodel.js
-    #     - media/js/mobile/newsblur/mobile_workspace.js
+    mobile:
+        - media/js/vendor/jquery-1.7.1.js
+        - media/js/mobile/jquery.mobile-1.0b1.js
+        - media/js/vendor/jquery.ajaxmanager.3.js
+        - media/js/vendor/underscore.js
+        - media/js/vendor/underscore.string.js
+        - media/js/vendor/inflector.js
+        - media/js/vendor/jquery.json.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/newsblur/reader/reader_utils.js
+        - media/js/newsblur/reader/assetmodel.js
+        - media/js/mobile/newsblur/mobile_workspace.js
     paypal:
         - media/js/newsblur/paypal/paypal_return.js
     bookmarklet:
@@ -91,6 +91,9 @@ stylesheets:
         - media/css/jquery-ui/jquery.theme.css
         - media/css/jquery.tipsy.css
         - media/css/*.css
+    mobile:
+        - media/css/mobile/jquery.mobile-1.0b1.css
+        - media/css/mobile/mobile.css
     bookmarklet:
         - media/css/bookmarklet/reset.css
         - media/css/modals.css

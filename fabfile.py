@@ -149,15 +149,15 @@ def kill_celery():
 
 def compress_assets():
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
-    local('tar -czf static.tar static/*')
+    local('tar -czf static.tgz static/*')
 
 def transfer_assets():
-    put('static.tar', '%s/static/' % env.NEWSBLUR_PATH)
-    run('tar -xzf static/static.tar')
-    run('rm -f static/static.tar')
+    put('static.tgz', '%s/static/' % env.NEWSBLUR_PATH)
+    run('tar -xzf static/static.tgz')
+    run('rm -f static/static.tgz')
 
 def cleanup_assets():
-    local('rm -f static.tar')
+    local('rm -f static.tgz')
     
 # ===========
 # = Backups =

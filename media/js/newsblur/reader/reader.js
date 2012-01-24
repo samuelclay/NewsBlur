@@ -2071,7 +2071,11 @@
             
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            this.set_correct_story_view_for_feed(this.active_feed, 'feed');
+            var explicit_view_setting = this.model.view_setting(this.active_feed);
+            if (!explicit_view_setting || explicit_view_setting == 'page') {
+              explicit_view_setting = 'feed';
+            }
+            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             // this.show_feed_title_in_stories(feed_id);
             this.show_feedbar_loading();
             this.switch_taskbar_view(this.story_view);
@@ -2589,7 +2593,8 @@
               }, 400);
             });
             
-            if (this.model.preference('folder_counts') || !$feed.is(':visible')) {
+            if (this.model.preference('folder_counts') ||
+                $feed.parents('li.folder').filter('.NB-folder-collapsed').length) {
                 var $folder_title = $feed.closest('li.folder:visible').children('.folder_title');
                 var $children = $folder_title.closest('li.folder').children('ul.folder, .feed');
                 this.show_collapsed_folder_count($folder_title, $children);
@@ -5876,8 +5881,9 @@
 
             $module.addClass('NB-loading');
             
-            if (direction == -1 && !this.counts['feature_page']) {
+            if (direction == -1 && this.counts['feature_page'] <= 0) {
                 $module.removeClass('NB-loading');
+                this.counts['feature_page'] = 0;
                 return;
             }
             if (direction == 1 && this.flags['features_last_page']) {

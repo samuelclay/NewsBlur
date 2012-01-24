@@ -11,7 +11,6 @@ from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
-from utils.story_functions import bunch
 import time
 import datetime
 import traceback
@@ -96,7 +95,7 @@ class ProcessFeed:
     def refresh_feed(self):
         self.feed = Feed.objects.using('default').get(pk=self.feed_id) 
         
-    def process(self, first_run=True):
+    def process(self):
         """ Downloads and parses a feed.
         """
         self.refresh_feed()
@@ -109,7 +108,6 @@ class ProcessFeed:
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
         
-        self.feed.fetched_once = True
         self.feed.last_update = datetime.datetime.utcnow()
 
         if hasattr(self.fpf, 'status'):
@@ -131,8 +129,9 @@ class ProcessFeed:
             if self.fpf.status in (302, 301):
                 if not self.fpf.href.endswith('feedburner.com/atom.xml'):
                     self.feed.feed_address = self.fpf.href
-                if first_run:
+                if not self.feed.fetched_once:
                     self.feed.has_feed_exception = True
+                    self.feed.fetched_once = True
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
@@ -140,8 +139,10 @@ class ProcessFeed:
                     return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] HTTP Status code: %s. Checking address..." % (unicode(self.feed)[:30], self.fpf.status))
-                fixed_feed = self.feed.check_feed_link_for_feed_address()
+                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (unicode(self.feed)[:30], self.fpf.status, ' Not' if self.feed.fetched_once else ''))
+                fixed_feed = None
+                if not self.feed.fetched_once:
+                    fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 else:
@@ -153,7 +154,9 @@ class ProcessFeed:
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
             logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
-                fixed_feed = self.feed.check_feed_link_for_feed_address()
+                fixed_feed = None
+                if not self.feed.fetched_once:
+                    fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
                 else:
@@ -164,7 +167,9 @@ class ProcessFeed:
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
             logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
-                fixed_feed = self.feed.check_feed_link_for_feed_address()
+                fixed_feed = None
+                if not self.feed.fetched_once:
+                    fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
                 else:

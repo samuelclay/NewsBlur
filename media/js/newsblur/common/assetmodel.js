@@ -90,8 +90,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             },
             success: function(o) {
                 // NEWSBLUR.log(['make_request 1', o]);
-
-                if ($.isFunction(callback)) {
+                
+                if (o && o.code < 0 && error_callback) {
+                    error_callback(o);
+                } else if ($.isFunction(callback)) {
                     callback(o);
                 }
             },
