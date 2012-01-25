@@ -102,12 +102,14 @@ class MSharedStory(mongo.Document):
         return comments
     
     @classmethod
-    def stories_with_comments(cls, stories, user):
+    def stories_with_comments(cls, stories, user, check_all=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         friend_key = "F:%s:F" % (user.pk)
         for story in stories: 
-            if story['comment_count']:
+            if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                if check_all:
+                    story['comment_count'] = r.scard(comment_key)
                 friends_with_comments = r.sinter(comment_key, friend_key)
                 shared_stories = []
                 if friends_with_comments:
@@ -123,8 +125,10 @@ class MSharedStory(mongo.Document):
                 story['comment_count_public'] = story['comment_count'] - len(shared_stories)
                 story['comment_count_friends'] = len(shared_stories)
                 
-            if story['share_count']:
+            if check_all or story['share_count']:
                 share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                if check_all:
+                    story['share_count'] = r.scard(share_key)
                 friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
                 nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
                 profiles = MSocialProfile.objects.filter(user_id__in=nonfriend_user_ids)

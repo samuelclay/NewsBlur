@@ -124,6 +124,7 @@ def load_social_stories(request, social_user_id, social_username=None):
 
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
+    stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
