@@ -14,6 +14,7 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         this.open_modal();
         this.handle_keystrokes();
         this.setup_autocomplete();
+        this.setup_chosen();
         this.focus_add_feed();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
@@ -179,6 +180,11 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                 ])
             ]).data("item.autocomplete", item).appendTo(ul);
         };
+    },
+    
+    setup_chosen: function() {
+        var $select = $('select', this.$modal);
+        $select.chosen();
     },
     
     handle_keystrokes: function() {

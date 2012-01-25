@@ -69,6 +69,10 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     box-shadow:2px 2px 0 #D0D0D0;
 }
 
+.chzn-drop {
+    text-shadow: none;
+}
+
 /* =============== */
 /* = Splash page = */
 /* =============== */
@@ -2966,6 +2970,11 @@ a.NB-splash-link:hover {
 /* = Add Feeds/Folders = */
 /* ===================== */
 
+.NB-modal.NB-add .NB-fieldset,
+.NB-modal.NB-add h5 {
+    overflow: visible;
+}
+
 .NB-modal.NB-add .NB-fieldset-fields {
     margin: 14px 0 0 16px;
 }
@@ -2989,7 +2998,7 @@ a.NB-splash-link:hover {
     text-transform: none;
     position: absolute;
     right: 8px;
-    bottom: 6px;
+    bottom: 4px;
 }
 
 .NB-add .NB-add-folders select {
