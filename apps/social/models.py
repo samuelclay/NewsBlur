@@ -235,12 +235,14 @@ class MSocialProfile(mongo.Document):
     def to_json(self, compact=False, full=False):
         if compact:
             params = {
+                'id': self.user_id,
                 'user_id': self.user_id,
                 'username': self.username,
                 'photo_url': self.photo_url
             }
         else:
             params = {
+                'id': self.user_id,
                 'user_id': self.user_id,
                 'username': self.username,
                 'photo_url': self.photo_url,

@@ -133,7 +133,6 @@ def load_social_stories(request, social_user_id, social_username=None):
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
         story['shared_date'] = format_story_link_date__long(shared_date, now)
         story['read_status'] = 1
-        story['starred'] = True
         story['intelligence'] = {
             'feed': 0,
             'author': 0,

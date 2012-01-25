@@ -426,6 +426,23 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
+    fetch_social_stories: function(feed_id, user_id, page, callback, error_callback, first_load) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            return self.load_feed_precallback(data, feed_id, callback, first_load);
+        };
+        
+        this.feed_id = feed_id;
+
+        this.make_request('/social/stories/'+user_id+'/', {
+            page: page
+        }, pre_callback, error_callback, {
+            'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
+            'request_type': 'GET'
+        });
+    },
+    
     get_feeds_trainer: function(feed_id, callback) {
         var self = this;
         var params = {};

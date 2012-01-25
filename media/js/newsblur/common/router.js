@@ -23,7 +23,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     site: function(site_id, slug) {
-        console.log(["site", site_id, slug, NEWSBLUR.reader]);
+        site_id = parseInt(site_id, 10);
         NEWSBLUR.reader.open_feed(site_id, {silent: true});
     },
     
