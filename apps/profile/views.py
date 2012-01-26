@@ -181,7 +181,7 @@ def profile_is_premium(request):
     
     if retries >= 30:
         subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
-        message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user_id, request.user.email)
+        message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
         mail_admins(subject, message, fail_silently=True)
         code = -1
         request.user.profile.is_premium = True

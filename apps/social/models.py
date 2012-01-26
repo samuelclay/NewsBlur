@@ -355,13 +355,15 @@ class MSocialSubscription(mongo.Document):
     def feeds(cls, *args, **kwargs):
         user_id = kwargs['user_id']
         social_subs = cls.objects.filter(user_id=user_id)
-        social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
-        social_user_ids = social_subs.keys()
-        social_profiles = MSocialProfile.profile_feeds(social_user_ids)
-        social_feeds = {}
-        for user_id, social_sub in social_subs.items():
-            print social_profiles[user_id]['id'], social_sub, social_profiles[user_id]
-            social_feeds[social_profiles[user_id]['id']] = dict(social_sub.items() + social_profiles[user_id].items())
+        social_feeds = []
+        if social_subs:
+            social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
+            social_user_ids = social_subs.keys()
+            social_profiles = MSocialProfile.profile_feeds(social_user_ids)
+            social_feeds = {}
+            for user_id, social_sub in social_subs.items():
+                print social_profiles[user_id]['id'], social_sub, social_profiles[user_id]
+                social_feeds[social_profiles[user_id]['id']] = dict(social_sub.items() + social_profiles[user_id].items())
 
         return social_feeds
     

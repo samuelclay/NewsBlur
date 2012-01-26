@@ -771,7 +771,7 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
         
-    m = MUserStory.objects(story_id=story_id, user_id=request.user_id, feed_id=feed_id)
+    m = MUserStory.objects(story_id=story_id, user_id=request.user.pk, feed_id=feed_id)
     m.delete()
     
     return data
@@ -1094,7 +1094,7 @@ def mark_story_as_starred(request):
         story_db = dict([(k, v) for k, v in story[0]._data.items() 
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
-        story_values = dict(user_id=request.user_id, starred_date=now, **story_db)
+        story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
         starred_story, created = MStarredStory.objects.get_or_create(
             story_guid=story_values.pop('story_guid'),
             user_id=story_values.pop('user_id'),
@@ -1114,7 +1114,7 @@ def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
 
-    starred_story = MStarredStory.objects(user_id=request.user_id, story_guid=story_id)
+    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()

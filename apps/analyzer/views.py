@@ -50,7 +50,7 @@ def save_classifier(request):
                 for post_content in post_contents:
                     if not post_content: continue
                     classifier_dict = {
-                        'user_id': request.user_id,
+                        'user_id': request.user.pk,
                         'feed_id': feed_id,
                         'defaults': {
                             'score': score
