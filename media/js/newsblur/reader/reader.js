@@ -2159,23 +2159,24 @@
         // = Social Stories =
         // ==================
         
-        open_social_stories: function(user_id) {
+        open_social_stories: function(feed_id) {
+            var feed = this.model.get_feed(feed_id);
             var $story_titles = this.$s.$story_titles;
-            var $social_feed = this.find_social_feed_with_user_id(user_id);
-            console.log(["$social_feed", $social_feed.length, $social_feed[0]]);
+            var $social_feed = this.find_social_feed_with_feed_id(feed_id);
+
             $story_titles.empty().scrollTop('0px');
             this.reset_feed();
             this.hide_splash_page();
 
-            this.active_feed = 'river:social:' + user_id;
+            this.active_feed = feed.id;
             $social_feed.addClass('NB-selected');
             $story_titles.data('page', 1);
-            $story_titles.data('feed_id', null);
-            $story_titles.data('user_id', null);
+            $story_titles.data('feed_id', feed.id);
+            $story_titles.data('user_id', feed.user_id);
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
             this.mark_feed_as_selected(null, null);
-            this.make_feed_title_in_stories(user_id);
+            this.make_feed_title_in_stories(feed.id);
             this.show_correct_feed_in_feed_title_floater();
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
@@ -2188,7 +2189,7 @@
             this.setup_mousemove_on_views();
             
             this.show_stories_progress_bar();
-            this.model.fetch_social_stories(this.active_feed, user_id, 1, 
+            this.model.fetch_social_stories(this.active_feed, feed.user_id, 1, 
                 _.bind(this.post_open_social_stories, this), this.show_stories_error, true);
         },
         
@@ -2198,7 +2199,7 @@
               return this.show_stories_error();
             }
             
-            if (this.active_feed && this.active_feed.indexOf('river:social:') != -1) {
+            if (this.active_feed && this.active_feed.indexOf('social:') != -1) {
                 this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
@@ -2219,21 +2220,21 @@
             }
         },
         
-        find_social_feed_with_user_id: function(user_id) {
-            if (_.contains(this.cache.$feed_in_social_feed_list, user_id)) {
-                return this.cache.$feed_in_social_feed_list[user_id];
+        find_social_feed_with_feed_id: function(feed_id) {
+            if (_.contains(this.cache.$feed_in_social_feed_list, feed_id)) {
+                return this.cache.$feed_in_social_feed_list[feed_id];
             }
             
             var $social_feeds = this.$s.$social_feeds;
             var $feeds = $([]);
             
             $('.feed', $social_feeds).each(function() {
-                if (parseInt($(this).attr('data-id'), 10) == user_id) {
+                if ($(this).attr('data-id') == feed_id) {
                     $feeds.push($(this).get(0));
                 }
             });
             
-            this.cache.$feed_in_social_feed_list[user_id] = $feeds;
+            this.cache.$feed_in_social_feed_list[feed_id] = $feeds;
             
             return $feeds;
         },
@@ -3463,6 +3464,7 @@
             options = $.extend({'show_loading': true}, options);
             var $story_titles = this.$s.$story_titles;
             var feed_id = $story_titles.data('feed_id');
+            var user_id = $story_titles.data('user_id');
             var page = $story_titles.data('page');
 
             if (!this.flags['opening_feed']) {
@@ -3474,6 +3476,10 @@
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
                                                      this.show_stories_error, false);
+                } else if (_.string.include(this.active_feed, 'social:')) {
+                    this.model.fetch_social_stories(this.active_feed, user_id,
+                                                    page+1, _.bind(this.post_open_social_stories, this),
+                                                    this.show_stories_error, false);
                 } else if (this.flags['river_view']) {
                     this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],
                                                    page+1, _.bind(this.post_open_river_stories, this),
@@ -3535,7 +3541,7 @@
             }
         },
         
-        make_feed_title_in_stories: function(feed_id) {
+        make_feed_title_in_stories: function(feed_id, options) {
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id);
             if (!feed) return;
@@ -6418,8 +6424,8 @@
             });
             $.targetIs(e, { tagSelector: '.NB-socialfeeds .feed' }, function($t, $p){
                 e.preventDefault();
-                var user_id = parseInt($t.attr('data-id'), 10);
-                self.open_social_stories(user_id);
+                var feed_id = $t.attr('data-id');
+                self.open_social_stories(feed_id);
             });
             
             // ============

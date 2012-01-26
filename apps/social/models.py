@@ -235,14 +235,14 @@ class MSocialProfile(mongo.Document):
     def to_json(self, compact=False, full=False):
         if compact:
             params = {
-                'id': self.user_id,
+                'id': 'social:%s' % self.user_id,
                 'user_id': self.user_id,
                 'username': self.username,
                 'photo_url': self.photo_url
             }
         else:
             params = {
-                'id': self.user_id,
+                'id': 'social:%s' % self.user_id,
                 'user_id': self.user_id,
                 'username': self.username,
                 'photo_url': self.photo_url,
@@ -360,7 +360,8 @@ class MSocialSubscription(mongo.Document):
         social_profiles = MSocialProfile.profile_feeds(social_user_ids)
         social_feeds = {}
         for user_id, social_sub in social_subs.items():
-            social_feeds[user_id] = dict(social_sub.items() + social_profiles[user_id].items())
+            print social_profiles[user_id]['id'], social_sub, social_profiles[user_id]
+            social_feeds[social_profiles[user_id]['id']] = dict(social_sub.items() + social_profiles[user_id].items())
 
         return social_feeds
     

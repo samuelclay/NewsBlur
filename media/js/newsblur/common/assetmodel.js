@@ -588,7 +588,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     get_feed: function(feed_id) {
         var self = this;
         
-        return this.feeds[feed_id];
+        if (_.string.include(feed_id, 'social:')) {
+            return this.social_feeds[feed_id];
+        } else {
+            return this.feeds[feed_id];
+        }
     },
     
     get_feeds: function() {

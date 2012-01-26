@@ -9,8 +9,11 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
-from apps.rss_feeds.models import MStory, Feed
-from apps.social.models import MSharedStory, MSocialServices, MSocialProfile
+from apps.rss_feeds.models import MStory, Feed, MStarredStory
+from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription
+from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.reader.models import MUserStory
 from utils import json_functions as json
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
@@ -115,6 +118,7 @@ def shared_stories_public(request, username):
 @json.json_view
 def load_social_stories(request, social_user_id, social_username=None):
     user = get_user(request)
+    social_user_id = int(social_user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 10))
@@ -124,8 +128,38 @@ def load_social_stories(request, social_user_id, social_username=None):
 
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
-    stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
     
+    if not stories:
+        return dict(stories=[])
+        
+    stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
+    story_feed_ids = [s['story_feed_id'] for s in stories]
+
+    socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
+
+    # Get intelligence classifier for user
+    # XXX TODO: Change all analyzers to use social feed ids instead of overlapping with feed ids. Ugh.
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=social_user_id))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=social_user_id))
+    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=social_user_id))
+    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=social_user_id))
+    
+    story_ids = [story['id'] for story in stories]
+    userstories_db = MUserStory.objects(user_id=user.pk,
+                                        feed_id__in=story_feed_ids,
+                                        story_id__in=story_ids).only('story_id')
+    starred_stories = MStarredStory.objects(user_id=user.pk, 
+                                            story_feed_id__in=story_feed_ids, 
+                                            story_guid__in=story_ids).only('story_guid', 'starred_date')
+    shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                          story_feed_id__in=story_feed_ids, 
+                                          story_guid__in=story_ids)\
+                                 .only('story_guid', 'shared_date', 'comments')
+    starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
+    shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
+                           for story in shared_stories])
+    userstories = set(us.story_id for us in userstories_db)
+        
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
@@ -133,11 +167,27 @@ def load_social_stories(request, social_user_id, social_username=None):
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
         story['shared_date'] = format_story_link_date__long(shared_date, now)
         story['read_status'] = 1
+        if story['id'] in userstories:
+            story['read_status'] = 1
+        elif not story.get('read_status') and story['story_date'] < socialsub.mark_read_date:
+            story['read_status'] = 1
+        elif not story.get('read_status') and story['story_date'] > socialsub.last_read_date:
+            story['read_status'] = 0
+        if story['id'] in starred_stories:
+            story['starred'] = True
+            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
+            story['starred_date'] = format_story_link_date__long(starred_date, now)
+        if story['id'] in shared_stories:
+            story['shared'] = True
+            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'], user.profile.timezone)
+            story['shared_date'] = format_story_link_date__long(shared_date, now)
+            story['shared_comments'] = shared_stories[story['id']]['comments']
+
         story['intelligence'] = {
-            'feed': 0,
-            'author': 0,
-            'tags': 0,
-            'title': 0,
+            'feed': apply_classifier_feeds(classifier_feeds, social_user_id),
+            'author': apply_classifier_authors(classifier_authors, story),
+            'tags': apply_classifier_tags(classifier_tags, story),
+            'title': apply_classifier_titles(classifier_titles, story),
         }
     
     logging.user(request, "~FCLoading shared stories: ~SB%s stories" % (len(stories)))
