@@ -125,5 +125,5 @@ def add_site(request, token):
     return HttpResponse(callback + '(' + json.encode({
         'code':    code,
         'message': message,
-        'usersub': us and us.feed.pk,
+        'usersub': us and us.feed_id,
     }) + ')', mimetype='text/plain')

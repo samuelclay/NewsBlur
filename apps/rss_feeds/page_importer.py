@@ -137,6 +137,6 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
+            feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed_id)
             feed_page.page_data = html
             feed_page.save()

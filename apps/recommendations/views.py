@@ -29,7 +29,7 @@ def load_recommended_feed(request):
         logging.user(request, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
     recommended_feed = recommended_feeds and recommended_feeds[0]
-    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed.pk)
+    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed_id)
     
     if recommended_feed:
         return render_to_response('recommendations/render_recommended_feed.xhtml', {

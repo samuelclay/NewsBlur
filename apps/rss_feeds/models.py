@@ -1309,7 +1309,7 @@ class DuplicateFeed(models.Model):
         return {
             'duplicate_address': self.duplicate_address,
             'duplicate_feed_id': self.duplicate_feed_id,
-            'feed_id': self.feed.pk
+            'feed_id': self.feed_id
         }
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):

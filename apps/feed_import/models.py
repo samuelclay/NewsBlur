@@ -81,7 +81,7 @@ class OPMLExporter:
         
     def fetch_feeds(self):
         subs = UserSubscription.objects.filter(user=self.user)
-        self.feeds = dict((sub.feed.pk, sub.canonical()) for sub in subs)
+        self.feeds = dict((sub.feed_id, sub.canonical()) for sub in subs)
         
 
 class Importer:
@@ -280,7 +280,7 @@ class GoogleReaderImporter(Importer):
                     original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, fetch=False)
                 content = story.get('content') or story.get('summary')
                 story_db = {
-                    "user_id": self.user.pk,
+                    "user_id": self.user_id,
                     "starred_date": datetime.datetime.fromtimestamp(story['updated']),
                     "story_date": datetime.datetime.fromtimestamp(story['published']),
                     "story_title": story.get('title'),

@@ -15,7 +15,7 @@ def render_recommended_feed(context, recommended_feeds, unmoderated=False):
     if context['user'].is_authenticated():
         usersub = UserSubscription.objects.filter(user=user, feed=recommended_feeds[0].feed)
     recommended_feed = recommended_feeds and recommended_feeds[0]
-    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed.pk)
+    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed_id)
     
     if recommended_feed:
         return {

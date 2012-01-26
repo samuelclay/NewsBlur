@@ -229,7 +229,7 @@ class ProcessFeed:
         existing_stories = list(MStory.objects(
             # story_guid__in=story_guids,
             story_date__gte=start_date,
-            story_feed_id=self.feed.pk
+            story_feed_id=self.feed_id
         ).limit(len(story_guids)))
         
         # MStory.objects(

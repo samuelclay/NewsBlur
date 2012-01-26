@@ -13,7 +13,7 @@ from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from apps.reader.models import MUserStory
+from apps.reader.models import MUserStory, UserSubscription
 from utils import json_functions as json
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
@@ -49,11 +49,11 @@ def mark_story_as_shared(request):
     if not story:
         return {'code': -1, 'message': 'Story not found.'}
     
-    shared_story = MSharedStory.objects.filter(user_id=request.user.pk, story_feed_id=feed_id, story_guid=story_id)
+    shared_story = MSharedStory.objects.filter(user_id=request.user_id, story_feed_id=feed_id, story_guid=story_id)
     if not shared_story:
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
-        story_values = dict(user_id=request.user.pk, comments=comments, 
+        story_values = dict(user_id=request.user_id, comments=comments, 
                             has_comments=bool(comments), **story_db)
         MSharedStory.objects.create(**story_values)
         logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
@@ -121,7 +121,7 @@ def load_social_stories(request, social_user_id, social_username=None):
     social_user_id = int(social_user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 10))
+    limit = int(request.REQUEST.get('limit', 6))
     page = request.REQUEST.get('page')
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
@@ -133,10 +133,12 @@ def load_social_stories(request, social_user_id, social_username=None):
         return dict(stories=[])
         
     stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
-    story_feed_ids = [s['story_feed_id'] for s in stories]
+    story_feed_ids = list(set(s['story_feed_id'] for s in stories))
 
     socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
-
+    usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
+    usersubs_map = dict((sub.feed_id, sub.mark_read_date) for sub in usersubs)
+    
     # Get intelligence classifier for user
     # XXX TODO: Change all analyzers to use social feed ids instead of overlapping with feed ids. Ugh.
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=social_user_id))
@@ -216,19 +218,19 @@ def profile(request):
     if request.method == 'POST':
         return save_profile(request)
 
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile = MSocialProfile.objects.get(user_id=request.user_id)
     return dict(code=1, user_profile=profile.to_json(full=True))
     
 def save_profile(request):
     data = request.POST
 
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile = MSocialProfile.objects.get(user_id=request.user_id)
     profile.location = data['location']
     profile.bio = data['bio']
     profile.website = data['website']
     profile.save()
 
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services = MSocialServices.objects.get(user_id=request.user_id)
     social_services.set_photo(data['photo_service'])
     
     return dict(code=1, user_profile=profile.to_json(full=True))
@@ -237,7 +239,7 @@ def save_profile(request):
 @json.json_view
 def follow(request):
     follow_user_id = int(request.POST['user_id'])
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile = MSocialProfile.objects.get(user_id=request.user_id)
     profile.follow_user(follow_user_id)
     
     follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
@@ -248,7 +250,7 @@ def follow(request):
 @json.json_view
 def unfollow(request):
     unfollow_user_id = int(request.POST['user_id'])
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile = MSocialProfile.objects.get(user_id=request.user_id)
     profile.unfollow_user(unfollow_user_id)
     
     unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
@@ -278,13 +280,13 @@ def twitter_connect(request):
 
         # Be sure that two people aren't using the same Twitter account.
         existing_user = MSocialServices.objects.filter(twitter_uid=unicode(twitter_user.id))
-        if existing_user and existing_user[0].user_id != request.user.pk:
+        if existing_user and existing_user[0].user_id != request.user_id:
             user = User.objects.get(pk=existing_user[0].user_id)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Twitter credentials."
                                % (user.username, user.email_address)))
 
-        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user_id)
         social_services.twitter_uid = unicode(twitter_user.id)
         social_services.twitter_access_key = access_token.key
         social_services.twitter_access_secret = access_token.secret
@@ -332,13 +334,13 @@ def facebook_connect(request):
 
         # Be sure that two people aren't using the same Facebook account.
         existing_user = MSocialServices.objects.filter(facebook_uid=uid)
-        if existing_user and existing_user[0].user_id != request.user.pk:
+        if existing_user and existing_user[0].user_id != request.user_id:
             user = User.objects.get(pk=existing_user[0].user_id)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Facebook credentials."
                                % (user.username, user.email_address)))
 
-        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+        social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user_id)
         social_services.facebook_uid = uid
         social_services.facebook_access_token = access_token
         social_services.save()
@@ -353,12 +355,12 @@ def facebook_connect(request):
         
 @ajax_login_required
 def twitter_disconnect(request):
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services = MSocialServices.objects.get(user_id=request.user_id)
     social_services.disconnect_twitter()
     return friends(request)
 
 @ajax_login_required
 def facebook_disconnect(request):
-    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    social_services = MSocialServices.objects.get(user_id=request.user_id)
     social_services.disconnect_facebook()
     return friends(request)

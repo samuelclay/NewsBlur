@@ -191,7 +191,7 @@ def load_feeds(request):
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
     for sub in user_subs:
-        pk = sub.feed.pk
+        pk = sub.feed_id
         if update_counts:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
@@ -261,7 +261,7 @@ def load_feeds_flat(request):
     for sub in user_subs:
         if sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
-        feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
+        feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
     folders = json.decode(folders.folders)
     flat_folders = {}
@@ -306,7 +306,7 @@ def refresh_feeds(request):
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
 
     for i, sub in enumerate(user_subs):
-        pk = sub.feed.pk
+        pk = sub.feed_id
         if (sub.needs_unread_recalc or 
             sub.unread_count_updated < UNREAD_CUTOFF or 
             sub.oldest_unread_story_date < UNREAD_CUTOFF):
@@ -325,21 +325,21 @@ def refresh_feeds(request):
         if request.REQUEST.get('check_fetch_status', False):
             feeds[pk]['not_yet_fetched'] = not sub.feed.fetched_once
             
-        if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
-            feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
-            feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
+        if sub.feed_id in favicons_fetching and sub.feed_id in feed_icons:
+            feeds[pk]['favicon'] = feed_icons[sub.feed_id].data
+            feeds[pk]['favicon_color'] = feed_icons[sub.feed_id].color
             feeds[pk]['favicon_fetching'] = sub.feed.favicon_fetching
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
     
     if favicons_fetching:
-        sub_feed_ids = [s.feed.pk for s in user_subs]
+        sub_feed_ids = [s.feed_id for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
         for moved_feed_id in moved_feed_ids:
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=moved_feed_id)
-            if duplicate_feeds and duplicate_feeds[0].feed.pk in feeds:
-                feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
-                feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
+            if duplicate_feeds and duplicate_feeds[0].feed_id in feeds:
+                feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed_id]
+                feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed_id
         
     if settings.DEBUG or request.REQUEST.get('check_fetch_status'):
         diff = datetime.datetime.utcnow()-start
@@ -771,7 +771,7 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
         
-    m = MUserStory.objects(story_id=story_id, user_id=request.user.pk, feed_id=feed_id)
+    m = MUserStory.objects(story_id=story_id, user_id=request.user_id, feed_id=feed_id)
     m.delete()
     
     return data
@@ -995,8 +995,8 @@ def feeds_trainer(request):
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier['classifiers'] = get_classifiers_for_user(user, us.feed.pk)
-            classifier['feed_id'] = us.feed.pk
+            classifier['classifiers'] = get_classifiers_for_user(user, us.feed_id)
+            classifier['feed_id'] = us.feed_id
             classifier['stories_last_month'] = us.feed.stories_last_month
             classifier['num_subscribers'] = us.feed.num_subscribers
             classifier['feed_tags'] = json.decode(us.feed.data.popular_tags) if us.feed.data.popular_tags else []
@@ -1016,7 +1016,7 @@ def save_feed_chooser(request):
     
     for sub in usersubs:
         try:
-            if sub.feed.pk in approved_feeds:
+            if sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True
@@ -1094,7 +1094,7 @@ def mark_story_as_starred(request):
         story_db = dict([(k, v) for k, v in story[0]._data.items() 
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
-        story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
+        story_values = dict(user_id=request.user_id, starred_date=now, **story_db)
         starred_story, created = MStarredStory.objects.get_or_create(
             story_guid=story_values.pop('story_guid'),
             user_id=story_values.pop('user_id'),
@@ -1114,7 +1114,7 @@ def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
 
-    starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
+    starred_story = MStarredStory.objects(user_id=request.user_id, story_guid=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
         starred_story.delete()

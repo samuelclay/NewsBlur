@@ -207,7 +207,7 @@ def exception_change_feed_address(request):
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
-    classifiers = get_classifiers_for_user(usersub.user, usersub.feed.pk)
+    classifiers = get_classifiers_for_user(usersub.user, usersub.feed_id)
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
@@ -215,7 +215,7 @@ def exception_change_feed_address(request):
     return {
         'code': code, 
         'feeds': feeds, 
-        'new_feed_id': usersub.feed.pk,
+        'new_feed_id': usersub.feed_id,
     }
     
 @ajax_login_required
@@ -271,7 +271,7 @@ def exception_change_feed_link(request):
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
-    classifiers = get_classifiers_for_user(usersub.user, usersub.feed.pk)
+    classifiers = get_classifiers_for_user(usersub.user, usersub.feed_id)
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
@@ -279,7 +279,7 @@ def exception_change_feed_link(request):
     return {
         'code': code, 
         'feeds': feeds, 
-        'new_feed_id': usersub.feed.pk,
+        'new_feed_id': usersub.feed_id,
     }
 
 @login_required
