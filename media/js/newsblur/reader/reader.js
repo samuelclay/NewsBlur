@@ -2879,7 +2879,8 @@
             var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
             var $share = $('.NB-sideoption-share-wrapper', $feed_story);
             var $story_content = $('.NB-feed-story-content', $feed_story);
-            var $comments = $('.NB-sideoption-share-comments', $share);
+            var $comment_input = $('.NB-sideoption-share-comments', $share);
+            var $story_comments = $('.NB-feed-story-comments', $feed_story);
             
             if ($sideoption.hasClass('NB-active')) {
                 $share.animate({
@@ -2919,13 +2920,14 @@
                 'easing': 'easeInOutQuint',
                 'queue': false,
                 'complete': function() {
-                    $comments.focus();
+                    $comment_input.focus();
                 }
             });
             
             var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight();
-            if (sideoptions_height + full_height > $story_content.innerHeight()) {
-                // console.log(["heights", $story_content.innerHeight(), full_height, sideoptions_height]);
+            var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
+            // console.log(["heights", full_height + sideoptions_height, content_height]);
+            if (sideoptions_height + full_height > content_height) {
                 // this.$s.$feed_stories.scrollTo(this.$s.$feed_stories.scrollTop() + sideoptions_height, {
                 //     'duration': 350,
                 //     'queue': false,
@@ -2933,7 +2935,7 @@
                 // });
                 var original_height = $story_content.height();
                 $story_content.animate({
-                    'height': full_height + sideoptions_height
+                    'height': original_height + ((full_height + sideoptions_height) - content_height)
                 }, {
                     'duration': 350,
                     'easing': 'easeInOutQuint',
@@ -2946,11 +2948,11 @@
         },
         
         attach_handlers_to_share_comments: function($share) {
-            var $comments = $('.NB-sideoption-share-comments', $share);
+            var $comment_input = $('.NB-sideoption-share-comments', $share);
             var $share_button = $('.NB-sideoption-share-save', $share);
             
-            $comments.bind('keyup', function() {
-                if (_.string.isBlank($comments.val())) {
+            $comment_input.bind('keyup', function() {
+                if (_.string.isBlank($comment_input.val())) {
                     $share_button.text('Share with comment');
                 } else {
                     $share_button.text('Share');
