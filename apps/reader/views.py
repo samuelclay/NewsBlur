@@ -704,21 +704,25 @@ def mark_all_as_read(request):
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(get_argument_or_404(request, 'feed_id'))
-
+    usersub = None
+    
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-    except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+    except (Feed.DoesNotExist):
         duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
         if duplicate_feed:
+            feed_id = duplicate_feed[0].feed_id
             try:
                 usersub = UserSubscription.objects.get(user=request.user, 
                                                        feed=duplicate_feed[0].feed)
-            except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+            except (Feed.DoesNotExist):
                 return dict(code=-1)
         else:
             return dict(code=-1)
-    
-    data = usersub.mark_story_ids_as_read(story_ids, request=request)
+    except UserSubscription.DoesNotExist:
+        MUserStory.mark_story_ids_as_read(story_ids, user=request.user, request=request)
+    else:
+        data = usersub.mark_story_ids_as_read(story_ids, request=request)
     
     return data
     

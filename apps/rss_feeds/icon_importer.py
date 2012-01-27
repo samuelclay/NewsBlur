@@ -21,7 +21,7 @@ class IconImporter(object):
     def __init__(self, feed, force=False):
         self.feed = feed
         self.force = force
-        self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed_id)
+        self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
     
     def save(self):
         if not self.force and self.feed.favicon_not_found:
@@ -137,7 +137,7 @@ class IconImporter(object):
     def fetch_image_from_page_data(self):
         image = None
         image_file = None
-        content = MFeedPage.get_data(feed_id=self.feed_id)
+        content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
         if url:
             image, image_file = self.get_image_from_url(url)
