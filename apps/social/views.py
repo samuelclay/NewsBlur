@@ -138,6 +138,9 @@ def load_social_stories(request, social_user_id, social_username=None):
     socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
     usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
     usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
+    unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
+    unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
+    unsub_feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
     
     # Get intelligence classifier for user
     # XXX TODO: Change all analyzers to use social feed ids instead of overlapping with feed ids. Ugh.
@@ -161,8 +164,6 @@ def load_social_stories(request, social_user_id, social_username=None):
     shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
                            for story in shared_stories])
     userstories = set(us.story_id for us in userstories_db)
-    
-    # TODO: Go through usersubs_map and fetch feeds that the user isn't subscribed to.
     
     for story in stories:
         story_feed_id = story['story_feed_id']
@@ -198,7 +199,7 @@ def load_social_stories(request, social_user_id, social_username=None):
     
     logging.user(request, "~FCLoading shared stories: ~SB%s stories" % (len(stories)))
     
-    return dict(stories=stories)
+    return dict(stories=stories, feeds=unsub_feeds)
 
 @json.json_view
 def friends(request):

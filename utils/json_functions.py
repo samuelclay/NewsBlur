@@ -46,6 +46,8 @@ def json_encode(data, *args, **kwargs):
         # the type "list". Oh man, that was a dumb mistake!
         if hasattr(data, 'to_json'):
             ret = data.to_json()
+        elif hasattr(data, 'canonical'):
+            ret = data.canonical()
         elif isinstance(data, list):
             ret = _list(data)
         # Same as for lists above.

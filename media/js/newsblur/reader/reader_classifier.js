@@ -238,7 +238,7 @@ var classifier_prototype = {
         if (this.options.feed_loaded && this.feed) {
           this.feed_tags = this.model.get_feed_tags();
           this.feed_authors = this.model.get_feed_authors();
-          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed.favicon));
+          $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
           $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
           $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed['num_subscribers']*4852) + ' subscribers');
         }
@@ -353,7 +353,7 @@ var classifier_prototype = {
             $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
@@ -600,7 +600,7 @@ var classifier_prototype = {
                     (classifier_type == 'feed' && 
                         $.make('img', { 
                             className: 'feed_favicon', 
-                            src: $.favicon(this.feed.favicon)
+                            src: $.favicon(this.feed)
                         })),
                     $.make('b', classifier_type_title+': '),
                     $.make('span', classifier_title)

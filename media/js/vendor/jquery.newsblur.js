@@ -191,11 +191,12 @@ NEWSBLUR.log = function(msg) {
             }
         },
         
-        favicon: function(feed_favicon, empty_on_missing) {
-            if (feed_favicon && feed_favicon.indexOf('data:image/png;base64,') != -1) return feed_favicon;
-            else if (feed_favicon) return 'data:image/png;base64,' + feed_favicon;
+        favicon: function(feed, empty_on_missing) {
+            if (feed.favicon && feed.favicon.indexOf('data:image/png;base64,') != -1) return feed.favicon;
+            else if (feed.favicon) return 'data:image/png;base64,' + feed.favicon;
+            else if (feed.favicon_url) return feed.favicon_url;
             else if (empty_on_missing) return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
-            return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/world.png';
+            return feed.favicon_url;
         },
         
         deepCopy: function(obj) {

@@ -1,13 +1,14 @@
 import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedIcon
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
@@ -38,7 +39,24 @@ def load_single_feed(request, feed_id):
     payload['classifiers'] = classifiers
 
     return payload
-    
+
+def load_feed_icon(request, feed_id):
+    not_found = False
+    try:
+        feed = get_object_or_404(Feed, id=feed_id)
+    except Feed.DoesNotExist:
+        not_found = True
+    try:
+        feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
+    except MFeedIcon.DoesNotExist:
+        not_found = True
+        
+    if not_found or not feed_icon.data:
+        return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/silk/world.png')
+        
+    icon_data = feed_icon.data.decode('base64')
+    return HttpResponse(icon_data, mimetype='image/png')
+
 @json.json_view
 def feed_autocomplete(request):
     query = request.GET.get('term')

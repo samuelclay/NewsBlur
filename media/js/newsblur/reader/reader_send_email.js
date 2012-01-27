@@ -35,7 +35,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
             $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('div', { className: 'NB-modal-email-feed' }, [
-                  $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
+                  $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                   $.make('div', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
                 ]),
                 $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),

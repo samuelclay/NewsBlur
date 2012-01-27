@@ -38,7 +38,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed.favicon) }),
+                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
@@ -185,7 +185,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             var key = counts[facet];
             if (facet == 'feed') {
                 key = [$.make('div', [
-                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed.favicon) }),
+                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed) }),
                     $.make('span', { className: 'NB-modal-feed-title' }, self.feed.feed_title)
                 ])];
             }

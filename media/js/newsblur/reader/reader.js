@@ -1124,7 +1124,7 @@
           $('.feed_favicon', this.$s.$feed_list).each(function() {
             var $feed_favicon = $(this);
             var feed_id = $feed_favicon.closest('.feed').attr('data-id');
-            $feed_favicon.attr('src', $.favicon(model.get_feed(feed_id).favicon));
+            $feed_favicon.attr('src', $.favicon(model.get_feed(feed_id)));
           });
           
           if (!this.flags['has_chosen_feeds'] && this.model.folders.length) {
@@ -1264,7 +1264,7 @@
               <div class="feed_counts">\
                 <%= feed_counts_floater %>\
               </div>\
-              <img class="feed_favicon" src="<%= $.favicon(feed.favicon, true) %>">\
+              <img class="feed_favicon" src="<%= $.favicon(feed, true) %>">\
               <span class="feed_title">\
                 <%= feed.feed_title %>\
                 <% if (type == "story") { %>\
@@ -3180,7 +3180,7 @@
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     (options['river_stories'] && feed &&
                         $.make('div', { className: 'NB-story-feed' }, [
-                            $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
+                            $.make('img', { className: 'feed_favicon', src: $.favicon(feed) }),
                             $.make('span', { className: 'feed_title' }, feed.feed_title)
                         ])),
                     $.make('div', { className: 'NB-storytitles-star'}),
@@ -3900,7 +3900,7 @@
                         $.make('div', { className: 'NB-feed-story-header-feed' }, [
                             (options.river_stories && feed && // !river_same_feed
                                 $.make('div', { className: 'NB-feed-story-feed' }, [
-                                   $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
+                                   $.make('img', { className: 'feed_favicon', src: $.favicon(feed) }),
                                    $.make('span', { className: 'feed_title' }, feed.feed_title)
                                 ])
                             )
@@ -4123,7 +4123,7 @@
                 if (!$new_header.find('.NB-feed-story-feed').length) {
                   var feed = this.model.get_feed(story.story_feed_id);
                   feed && $new_header.append($.make('div', { className: 'NB-feed-story-feed' }, [
-                    $.make('img', { className: 'feed_favicon', src: $.favicon(feed.favicon) }),
+                    $.make('img', { className: 'feed_favicon', src: $.favicon(feed) }),
                     $.make('span', { className: 'feed_title' }, feed.feed_title)
                   ]));
                 }
@@ -6226,7 +6226,7 @@
             var feed = {
                 feed_id     : feed_id,
                 feed_title  : feed.feed_title || $('.NB-recommended-title', $recommended_feeds).text(),
-                favicon     : feed.favicon ? $.favicon(feed.favicon) : $('.NB-recommended-favicon', $recommended_feeds).attr('src'),
+                favicon     : feed.favicon ? $.favicon(feed) : $('.NB-recommended-favicon', $recommended_feeds).attr('src'),
                 feed_address : feed.feed_address
             };
 

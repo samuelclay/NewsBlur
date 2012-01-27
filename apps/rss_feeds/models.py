@@ -17,6 +17,7 @@ from django.core.cache import cache
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
@@ -93,6 +94,7 @@ class Feed(models.Model):
             'favicon_fade': self.favicon_fade(),
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': self.favicon_fetching,
+            'favicon_url': reverse('feed-icon', kwargs={'feed_id': self.pk}),
         }
         
         if include_favicon:
