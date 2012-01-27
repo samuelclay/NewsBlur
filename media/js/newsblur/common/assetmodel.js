@@ -345,7 +345,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         if (feed_id == this.feed_id) {
             if (data.feeds) {
-                console.log(["extending", this.feeds, data.feeds]);
                 _.extend(this.feeds, data.feeds);
             }
             if (data && first_load) {

@@ -492,34 +492,40 @@ def load_feed_page(request, feed_id):
     
 @json.json_view
 def load_starred_stories(request):
-    user = get_user(request)
+    user   = get_user(request)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 10))
-    page = int(request.REQUEST.get('page', 0))
+    limit  = int(request.REQUEST.get('limit', 10))
+    page   = int(request.REQUEST.get('page', 0))
+    now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     if page: offset = limit * (page - 1)
-    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
         
-    mstories = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
-    stories = Feed.format_stories(mstories)
-    
+    mstories       = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
+    stories        = Feed.format_stories(mstories)
+    story_feed_ids = list(set(s['story_feed_id'] for s in stories))
+    usersub_ids    = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids).values('feed__pk')
+    usersub_ids    = [us['feed__pk'] for us in usersub_ids]
+    unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
+    unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
+    unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+
     for story in stories:
-        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
-        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
-        starred_date = localtime_for_timezone(story['starred_date'], user.profile.timezone)
-        story['starred_date'] = format_story_link_date__long(starred_date, now)
-        story['read_status'] = 1
-        story['starred'] = True
-        story['intelligence'] = {
-            'feed': 0,
+        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
+        starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
+        story['starred_date']      = format_story_link_date__long(starred_date, now)
+        story['read_status']       = 1
+        story['starred']           = True
+        story['intelligence']      = {
+            'feed':   0,
             'author': 0,
-            'tags': 0,
-            'title': 0,
+            'tags':   0,
+            'title':  0,
         }
     
     logging.user(request, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
     
-    return dict(stories=stories)
+    return dict(stories=stories, feeds=unsub_feeds)
 
 @json.json_view
 def load_river_stories(request):
