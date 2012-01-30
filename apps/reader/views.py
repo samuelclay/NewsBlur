@@ -722,7 +722,8 @@ def mark_story_as_read(request):
     except UserSubscription.DoesNotExist:
         MUserStory.mark_story_ids_as_read(story_ids, user=request.user, request=request)
     else:
-        data = usersub.mark_story_ids_as_read(story_ids, request=request)
+        socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, subscription_user_id=feed_id)
+        data = socialsub.mark_story_ids_as_read(story_ids, request=request)
     
     return data
     

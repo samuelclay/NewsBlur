@@ -384,55 +384,6 @@ class MUserStory(mongo.Document):
     }
     
     @classmethod
-    def mark_story_ids_as_read(cls, story_ids, user, request=None):
-        data = dict(code=0, payload=story_ids)
-        
-        if not request:
-            request = user
-    
-        if not self.needs_unread_recalc:
-            self.needs_unread_recalc = True
-            self.save()
-    
-        if len(story_ids) > 1:
-            logging.user(request, "~FYRead %s stories in feed: %s" % (len(story_ids), self.feed))
-        else:
-            logging.user(request, "~FYRead story in feed: %s" % (self.feed))
-        
-        for story_id in set(story_ids):
-            try:
-                story = MStory.objects.get(story_feed_id=self.feed_id, story_guid=story_id)
-            except MStory.DoesNotExist:
-                # Story has been deleted, probably by feed_fetcher.
-                continue
-            except MStory.MultipleObjectsReturned:
-                continue
-            now = datetime.datetime.utcnow()
-            date = now if now > story.story_date else story.story_date # For handling future stories
-            m = MUserStory(story=story, user_id=self.user_id, 
-                           feed_id=self.feed_id, read_date=date, 
-                           story_id=story_id, story_date=story.story_date)
-            try:
-                m.save()
-            except OperationError, e:
-                original_m = MUserStory.objects.get(story=story, user_id=self.user_id, feed_id=self.feed_id)
-                logging.user(request, "~BRMarked story as read error: %s" % (e))
-                logging.user(request, "~BRMarked story as read: %s" % (story_id))
-                logging.user(request, "~BROrigin story as read: %s" % (m.story.story_guid))
-                logging.user(request, "~BRMarked story id:   %s" % (original_m.story_id))
-                logging.user(request, "~BROrigin story guid: %s" % (original_m.story.story_guid))
-                logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
-                original_m.story_id = story_id
-                original_m.read_date = date
-                original_m.story_date = story.story_date
-                original_m.save()
-            except OperationError, e:
-                logging.user(request, "~BR~SKCan't even save: %s" % (original_m.story_id))
-                pass
-                
-        return data
-    
-    @classmethod
     def delete_old_stories(cls, feed_id):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         cls.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF).delete()

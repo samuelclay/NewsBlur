@@ -3,9 +3,10 @@ import zlib
 import hashlib
 import redis
 import mongoengine as mongo
+from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, MUserStory
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -376,6 +377,32 @@ class MSocialSubscription(mongo.Document):
             'ng': self.unread_count_negative,
             'is_trained': self.is_trained,
         }
+    
+    def mark_story_ids_as_read(self, story_ids, request=None):
+        data = dict(code=0, payload=story_ids)
+        
+        if not request:
+            request = self.user
+    
+        if not self.needs_unread_recalc:
+            self.needs_unread_recalc = True
+            self.save()
+    
+        if len(story_ids) > 1:
+            logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_ids), self.subscription_user_id))
+        else:
+            logging.user(request, "~FYRead story in social subscription: %s" % (self.subscription_user_id))
+        
+        for story_id in set(story_ids):
+            story = MSharedStory.objects.get(user_id=self.subscription_user_id, story_guid=story_id)
+            now = datetime.datetime.utcnow()
+            date = now if now > story.story_date else story.story_date # For handling future stories
+            m = MUserStory(story=story, user_id=self.user_id, 
+                           feed_id=self.feed_id, read_date=date, 
+                           story_id=story_id, story_date=story.story_date)
+            m.save()
+                
+        return data
     
     
 class MSocialServices(mongo.Document):
