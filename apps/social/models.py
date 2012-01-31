@@ -3,9 +3,10 @@ import zlib
 import hashlib
 import redis
 import mongoengine as mongo
-from mongoengine.queryset import OperationError
+# from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from apps.reader.models import UserSubscription, MUserStory
 from vendor import facebook
 from vendor import tweepy
@@ -153,6 +154,8 @@ class MSocialProfile(mongo.Document):
     username             = mongo.StringField(max_length=30)
     email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=80)
+    blog_title           = mongo.StringField(max_length=256)
+    custom_css           = mongo.StringField()
     photo_url            = mongo.StringField()
     photo_service        = mongo.StringField()
     location             = mongo.StringField(max_length=40)
@@ -225,11 +228,24 @@ class MSocialProfile(mongo.Document):
             redis_conn.sadd(following_key, user_id)
             follower_key = "F:%s:f" % (user_id)
             redis_conn.sadd(follower_key, self.user_id)
-            
+    
+    @property
+    def title(self):
+        return self.blog_title if self.blog_title else self.username + "'s blurblog"
+        
     def feed(self):
         params = self.to_json(compact=True)
         params.update({
-            'feed_title': params['username'] + '\'s blurblog'
+            'feed_title': self.title,
+            'page_url': reverse('load-social-page', kwargs={'user_id': self.user_id, 'username': self.username})
+        })
+        return params
+        
+    def page(self):
+        params = self.to_json(full=True)
+        params.update({
+            'feed_title': self.title,
+            'custom_css': self.custom_css,
         })
         return params
         

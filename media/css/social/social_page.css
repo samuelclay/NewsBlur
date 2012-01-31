@@ -1,0 +1,105 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    margin: 0;
+}
+
+/* ========== */
+/* = Layout = */
+/* ========== */
+
+/* ========== */
+/* = Header = */
+/* ========== */
+
+header {
+    padding: 12px 24px;
+    text-shadow: 1px 1px 0 white;
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #E9EAEF),
+      color-stop(0.84, #F5F8FA)
+    );
+    background-image: -moz-linear-gradient(
+      center bottom,
+      #E9EAEF 10%,
+      #F5F8FA 84%
+    );
+
+}
+
+/* ===================== */
+/* = Story Feed Header = */
+/* ===================== */
+
+.NB-feed {
+    background: #404040 url('/media/embed/reader/feed_view_feed_background.png') repeat-x 0 0;
+    background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.36, rgba(76, 76, 76, 250)), color-stop(0.84, rgba(55, 55, 55, 250)) );
+    background-image: -moz-linear-gradient( center bottom, #4C4C4C 36%, #373737 84% );
+    opacity: .9;
+    padding: 2px 200px 2px 28px;
+    position: relative;
+    border-bottom: 1px solid black;
+    border-top: 1px solid #707070;
+    color: white;
+    font-size: 13px;
+}
+
+.NB-feed-title {
+    padding: 2px 0;
+}
+
+.NB-feed-favicon {
+    position: absolute;
+    left: 6px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-feed a {
+    color: white;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 black;
+}
+
+.NB-feed.NB-feed-black a {
+    color: black;
+    text-shadow: 1px 1px 0 white;
+}
+    
+.NB-feed a:hover {
+    color: #C8DFFF;
+}
+.NB-feed.NB-feed-black a:hover {
+    color: #1E2655;
+}
+
+/* =========== */
+/* = Stories = */
+/* =========== */
+
+.NB-divider {
+    border-top: 1px solid #F6F6F6;
+    border-bottom: 1px solid #E8E8E8;
+    height: 0;
+}
+
+.NB-story {
+    margin: 0 28px;
+    padding: 12px 0 24px;
+    max-width: 700px;
+}
+
+.NB-story-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 0 4px;
+}
+
+.NB-story img {
+    max-width: 100%;
+}

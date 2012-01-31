@@ -1,4 +1,4 @@
-from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, parallel, serial
+from fabric.api import abort, cd, lcd, env, get, hide, hosts, local, prompt, parallel, serial
 from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
 from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
@@ -42,8 +42,8 @@ env.roledefs ={
 # ================
 
 def server():
-    env.NEWSBLUR_PATH = "~/newsblur"
-    env.VENDOR_PATH   = "~/code"
+    env.NEWSBLUR_PATH = "/home/sclay/newsblur"
+    env.VENDOR_PATH   = "/home/sclay/code"
 
 def app():
     server()
@@ -413,6 +413,7 @@ def setup_app_firewall():
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
     sudo('ufw allow 8888')
+    sudo('ufw allow 443')
     sudo('ufw --force enable')
 
 def setup_app_motd():
@@ -450,7 +451,12 @@ def setup_node():
     sudo('ufw allow 8888')
     put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
 
-
+def copy_certificates():
+    # with cd(env.NEWSBLUR_PATH):
+    #     run('mkdir -p config/certificates')
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'config/certificates')):
+        put('data/www.newsblur.com.crt', 'www.newsblur.com.crt')
+        put('data/www.newsblur.com.nopass.key', 'www.newsblur.com.key')
     
 # ==============
 # = Setup - DB =

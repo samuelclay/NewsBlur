@@ -116,9 +116,9 @@ def shared_stories_public(request, username):
     return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
 
 @json.json_view
-def load_social_stories(request, social_user_id, social_username=None):
+def load_social_stories(request, user_id, username=None):
     user = get_user(request)
-    social_user_id = int(social_user_id)
+    social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 6))
@@ -201,6 +201,41 @@ def load_social_stories(request, social_user_id, social_username=None):
     
     return dict(stories=stories, feeds=unsub_feeds)
 
+@render_to('social/social_page.xhtml')
+def load_social_page(request, user_id, username=None):
+    user = get_user(request)
+    social_user_id = int(user_id)
+    social_user = get_object_or_404(User, pk=social_user_id)
+    offset = int(request.REQUEST.get('offset', 0))
+    limit = int(request.REQUEST.get('limit', 12))
+    page = request.REQUEST.get('page')
+    if page: offset = limit * (int(page) - 1)
+    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    
+    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
+    stories = Feed.format_stories(mstories)
+    
+    if not stories:
+        return dict(stories=[])
+
+    story_feed_ids = list(set(s['story_feed_id'] for s in stories))
+    feeds = Feed.objects.filter(pk__in=story_feed_ids)
+    feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in feeds)
+    for story in stories:
+        story['feed'] = feeds[story['story_feed_id']]
+    
+    stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
+    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+
+    params = {
+        'social_user': social_user,
+        'stories': stories,
+        'social_profile': social_profile.page(),
+        'feeds': feeds,
+    }
+    
+    return params
+    
 @json.json_view
 def friends(request):
     user = get_user(request)

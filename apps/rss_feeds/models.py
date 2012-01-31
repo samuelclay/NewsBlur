@@ -92,6 +92,7 @@ class Feed(models.Model):
             'subs': self.num_subscribers,
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
+            'favicon_border': self.favicon_border(),
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': self.favicon_fetching,
             'favicon_url': reverse('feed-icon', kwargs={'feed_id': self.pk}),
@@ -411,9 +412,17 @@ class Feed(models.Model):
     def favicon_fade(self):
         red, green, blue = self._split_favicon_color()
         if red and green and blue:
-            fade_red = hex(max(int(red, 16) - 60, 0))[2:].zfill(2)
-            fade_green = hex(max(int(green, 16) - 60, 0))[2:].zfill(2)
-            fade_blue = hex(max(int(blue, 16) - 60, 0))[2:].zfill(2)
+            fade_red = hex(min(int(red, 16) + 35, 255))[2:].zfill(2)
+            fade_green = hex(min(int(green, 16) + 35, 255))[2:].zfill(2)
+            fade_blue = hex(min(int(blue, 16) + 35, 255))[2:].zfill(2)
+            return "%s%s%s" % (fade_red, fade_green, fade_blue)
+
+    def favicon_border(self):
+        red, green, blue = self._split_favicon_color()
+        if red and green and blue:
+            fade_red = hex(min(int(int(red, 16) * .75), 255))[2:].zfill(2)
+            fade_green = hex(min(int(int(green, 16) * .75), 255))[2:].zfill(2)
+            fade_blue = hex(min(int(int(blue, 16) * .75), 255))[2:].zfill(2)
             return "%s%s%s" % (fade_red, fade_green, fade_blue)
             
     def favicon_text_color(self):

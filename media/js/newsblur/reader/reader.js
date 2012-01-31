@@ -660,21 +660,27 @@
             }
             
             if ($story && $story.length) {
-                var self = this;
+                // Check for NB-mark above and use that.
+                if ($story.closest('.NB-mark').length) {
+                    console.log(["NB-mark", $story, $story.closest('.NB-mark')]);
+                    $story = $story.closest('.NB-mark');
+                }
+                
                 this.cache.iframe_stories[story.id] = $story;
                 var position_original = parseInt($story.offset().top, 10);
                 // var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
                 var position = position_original; // + position_offset;
                 this.cache.iframe_story_positions[position] = story;
                 this.cache.iframe_story_positions_keys.push(position);
-            
+                
+                
                 if (!this.flags['iframe_view_not_busting']) {
                     var feed_id = this.active_feed;
-                    _.delay(function() {
-                        if (feed_id == self.active_feed) {
-                            self.flags['iframe_view_not_busting'] = true;
+                    _.delay(_.bind(function() {
+                        if (feed_id == this.active_feed) {
+                            this.flags['iframe_view_not_busting'] = true;
                         }
-                    }, 1000);
+                    }, this), 200);
                 }
             }
             
@@ -1715,6 +1721,7 @@
                 'feed_list_showing_manage_menu': false,
                 'unread_threshold_temporarily': null,
                 'river_view': false,
+                'social_view': false,
                 'non_premium_river_view': false
             });
             
@@ -2159,7 +2166,8 @@
         // = Social Stories =
         // ==================
         
-        open_social_stories: function(feed_id) {
+        open_social_stories: function(feed_id, options) {
+            options = options || {};
             var feed = this.model.get_feed(feed_id);
             var $story_titles = this.$s.$story_titles;
             var $social_feed = this.find_social_feed_with_feed_id(feed_id);
@@ -2179,9 +2187,8 @@
             this.make_feed_title_in_stories(feed.id);
             this.show_correct_feed_in_feed_title_floater();
             this.$s.$body.addClass('NB-view-river');
-            this.flags.river_view = true;
+            this.flags.social_view = true;
             
-            $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = this.model.view_setting(this.active_feed);
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             this.show_feedbar_loading();
@@ -2191,6 +2198,17 @@
             this.show_stories_progress_bar();
             this.model.fetch_social_stories(this.active_feed, feed.user_id, 1, 
                 _.bind(this.post_open_social_stories, this), this.show_stories_error, true);
+
+            if (!this.story_view || this.story_view == 'page') {
+                _.delay(_.bind(function() {
+                    if (!options.delay || feed_id == this.next_feed) {
+                        this.load_feed_iframe();
+                    }
+                }, this), options.delay || 0);
+            } else {
+                this.unload_feed_iframe();
+                this.flags['iframe_prevented_from_loading'] = true;
+            }
         },
         
         post_open_social_stories: function(data, first_load) {
@@ -2217,6 +2235,7 @@
                 this.fill_out_story_titles();
                 this.prefetch_story_locations_in_feed_view();
                 this.hide_stories_progress_bar();
+                
             }
         },
         
@@ -3318,11 +3337,19 @@
             } else {
                 $feed_iframe.data('feed_id', feed_id);
             }
+            var page_url = '/reader/page/'+feed_id;
+            if (this.flags['social_view']) {
+                var feed = this.model.get_feed(feed_id);
+                page_url = feed.page_url;
+            }
             
             this.flags.iframe_scroll_snap_back_prepared = true;
             this.iframe_link_attacher_num_links = 0;
             
-            var $new_iframe = $.make('iframe', { className: this.$s.$feed_iframe.attr('class'), src: '/reader/page/'+feed_id });
+            var $new_iframe = $.make('iframe', { 
+                className: this.$s.$feed_iframe.attr('class'), 
+                src: page_url
+            });
             this.$s.$feed_iframe.replaceWith($new_iframe);
             this.$s.$feed_iframe = $new_iframe;
             $feed_iframe = this.$s.$feed_iframe;
@@ -3478,7 +3505,7 @@
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(page+1, _.bind(this.post_open_starred_stories, this),
                                                      this.show_stories_error, false);
-                } else if (_.string.include(this.active_feed, 'social:')) {
+                } else if (this.flags['social_view']) {
                     this.model.fetch_social_stories(this.active_feed, user_id,
                                                     page+1, _.bind(this.post_open_social_stories, this),
                                                     this.show_stories_error, false);
@@ -4428,7 +4455,7 @@
             // }, 1000);
             if (view == 'page') {
                 if (this.flags['iframe_prevented_from_loading']) {
-                    this.load_feed_iframe(this.active_feed);
+                    this.load_feed_iframe();
                 }
                 var $iframe_story = this.find_story_in_feed_iframe(this.active_story);
                 this.scroll_to_story_in_iframe(this.active_story, $iframe_story, true);
