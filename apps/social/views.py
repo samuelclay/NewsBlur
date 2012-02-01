@@ -80,8 +80,10 @@ def shared_story_feed(request, user_id, username):
     if user.username != username:
         return HttpResponseRedirect(reverse('shared-story-feed', kwargs={'username': user.username, 'user_id': user.pk}))
 
+    social_profile = MSocialProfile.objects.get(user_id=user_id)
+
     data = {}
-    data['title'] = "%s - Shared Stories" % user.username
+    data['title'] = social_profile.blog_title
     link = reverse('shared-stories-public', kwargs={'username': user.username})
     data['link'] = "http://www.newsblur.com/%s" % link
     data['description'] = "Stories shared by %s on NewsBlur." % user.username
@@ -223,6 +225,8 @@ def load_social_page(request, user_id, username=None):
     feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in feeds)
     for story in stories:
         story['feed'] = feeds[story['story_feed_id']]
+        shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
+        story['shared_date'] = format_story_link_date__long(shared_date, now)
     
     stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)

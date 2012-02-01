@@ -14,7 +14,7 @@ body {
 /* ========== */
 
 header {
-    padding: 12px 24px;
+    padding: 12px 28px;
     text-shadow: 1px 1px 0 white;
     background-image: -webkit-gradient(
       linear,
@@ -45,7 +45,7 @@ header {
     border-bottom: 1px solid black;
     border-top: 1px solid #707070;
     color: white;
-    font-size: 13px;
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 
 .NB-feed-title {
@@ -78,6 +78,80 @@ header {
     color: #1E2655;
 }
 
+/* ================ */
+/* = Story Header = */
+/* ================ */
+
+.NB-story-header {
+    position: relative;
+    padding: 12px 222px 12px 28px;
+    text-shadow: 0 1px 0 white;
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #E9EAEF),
+      color-stop(0.84, #F5F8FA)
+    );
+    background-image: -moz-linear-gradient(
+      center bottom,
+      #E9EAEF 10%,
+      #F5F8FA 84%
+    );
+    border-bottom: 1px solid #D0D0D0;
+}
+
+.NB-story-title {
+    clear: both;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 0 4px;
+}
+
+.NB-story-title a {
+    color: #1F4499;
+    text-decoration: none;
+}
+
+.NB-story-title a:hover {
+    color: #99481D;
+}
+
+.NB-story-author {
+    float: left;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 10px;
+    color: #B0B0B0;
+    margin: 0 16px 4px 0;
+}
+
+.NB-story-tags {
+    overflow: hidden;
+    line-height: 12px;
+    height: 14px;
+    margin: 2px 0 2px;
+}
+
+.NB-story-tag {
+    float: left;
+    font-weight: normal;
+    font-size: 9px;
+    padding: 0px 4px 1px;
+    margin: 0 2px 2px;
+    background-color: #DBDBDB;
+    color: #6F6D69;
+    border-radius: 4px;
+    text-shadow: 0 1px 0 #E9E9E9;
+}
+
+.NB-story-date {
+    position: absolute;
+    right: 24px;
+    top: 12px;
+    font-size: 12px;
+}
+
 /* =========== */
 /* = Stories = */
 /* =========== */
@@ -90,14 +164,16 @@ header {
 
 .NB-story {
     margin: 0 28px;
-    padding: 12px 0 24px;
+    padding: 12px 212px 24px 0;
     max-width: 700px;
 }
 
-.NB-story-title {
-    font-weight: bold;
-    font-size: 16px;
-    margin: 0 0 4px;
+.NB-story a {
+    color: #1F4499;
+}
+
+.NB-story a:hover {
+    color: #99481D;
 }
 
 .NB-story img {

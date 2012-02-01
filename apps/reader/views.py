@@ -708,7 +708,7 @@ def mark_story_as_read(request):
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-    except (Feed.DoesNotExist):
+    except Feed.DoesNotExist:
         duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
         if duplicate_feed:
             feed_id = duplicate_feed[0].feed_id
@@ -720,11 +720,14 @@ def mark_story_as_read(request):
         else:
             return dict(code=-1)
     except UserSubscription.DoesNotExist:
-        MUserStory.mark_story_ids_as_read(story_ids, user=request.user, request=request)
+        pass
+        
+    if usersub:
+        data = usersub.mark_story_ids_as_read(story_ids, request=request)
     else:
         socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, subscription_user_id=feed_id)
         data = socialsub.mark_story_ids_as_read(story_ids, request=request)
-    
+
     return data
     
 @ajax_login_required

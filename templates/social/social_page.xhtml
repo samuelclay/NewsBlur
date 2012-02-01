@@ -3,6 +3,8 @@
 
 <head>
     <title>{{ social_profile.feed_title }}</title>
+    <link rel="alternate" type="application/rss+xml" href="{% url shared-story-feed user.pk user.username %}" title="{{ social_profile.feed_title }} RSS feed">
+      <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/social/social_page.css" type="text/css" media="screen" title="no title" charset="utf-8">
     {% if social_profile.custom_css %}
     <style type="text/css" media="screen">
@@ -15,6 +17,9 @@
     
     <header class="NB-header">
         <h1 class="NB-title">{{ social_profile.feed_title }}</h1>
+        <div class="NB-header-feed">
+            <a type="application/rss+xml" href="{% url shared-story-feed user.pk user.username %}">RSS feed for this page</a>
+        </div>
     </header>
 
     {% for story in stories %}
@@ -33,11 +38,25 @@
                     <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
                 </div>
             </div>
-            <div class="NB-story">
+            
+            <div class="NB-story-header">
+                {% if story.story_authors %}
+                    <div class="NB-story-author">{{ story.story_authors }}</div>
+                {% endif %}
+                {% if story.story_tags %}
+                    <div class="NB-story-tags">
+                        {% for story_tag in story.story_tags %}
+                            <div class="NB-story-tag">{{ story_tag }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div class="NB-story-title">
                     <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
                 </div>
-                <div class="NB-story-date">{{ story.story_date }}</div>
+                <div class="NB-story-date">Shared {{ story.shared_date }}</div>
+            </div>
+            
+            <div class="NB-story">
                 <div class="NB-story-content">{{ story.story_content|safe }}</div>
             </div>
         </div>
