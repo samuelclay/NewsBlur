@@ -50,6 +50,7 @@ class Feed(models.Model):
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
+    known_good = models.BooleanField(default=False, db_index=True)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)

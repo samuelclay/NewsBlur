@@ -1,8 +1,13 @@
-# from apps.rss_feeds.models import FeedXML
+import time
+import datetime
+import traceback
+import multiprocessing
+import urllib2
+import xml.sax
+import redis
 from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
-# from mongoengine.queryset import Q
 from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
@@ -11,18 +16,10 @@ from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
-import time
-import datetime
-import traceback
-import multiprocessing
-import urllib2
-import xml.sax
-import redis
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-SLOWFEED_WARNING = 10
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
 
@@ -132,6 +129,8 @@ class ProcessFeed:
                 if not self.feed.fetched_once:
                     self.feed.has_feed_exception = True
                     self.feed.fetched_once = True
+                    self.feed.known_good = True
+                    logging.debug("   ---> [%-30s] Feed is 302'ing, but it's not new. Refetching..." % (unicode(self.feed)[:30]))
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
@@ -139,9 +138,9 @@ class ProcessFeed:
                     return FEED_ERRHTTP, ret_values
                 
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (unicode(self.feed)[:30], self.fpf.status, ' Not' if self.feed.fetched_once else ''))
+                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (unicode(self.feed)[:30], self.fpf.status, ' Not' if self.feed.known_good else ''))
                 fixed_feed = None
-                if not self.feed.fetched_once:
+                if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
@@ -152,10 +151,10 @@ class ProcessFeed:
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
+            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.feed.known_good and self.fpf.entries else ''))
             if not self.fpf.entries:
                 fixed_feed = None
-                if not self.feed.fetched_once:
+                if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
@@ -168,7 +167,7 @@ class ProcessFeed:
             logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
                 fixed_feed = None
-                if not self.feed.fetched_once:
+                if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
@@ -306,9 +305,9 @@ class Dispatcher:
                     
                     feed = self.refresh_feed(feed_id)
                     
-                    if ret_entries.get(ENTRY_NEW) or self.options['force'] or not feed.fetched_once:
-                        if not feed.fetched_once:
-                            feed.fetched_once = True
+                    if ret_entries.get(ENTRY_NEW) or self.options['force']:
+                        if not feed.known_good:
+                            feed.known_good = True
                             feed.save()
                         MUserStory.delete_old_stories(feed_id=feed.pk)
                         try:
