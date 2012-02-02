@@ -1,21 +1,13 @@
 logs/*.log
-*.pycmedia/release/
 *.pyc
-media/*/*-compressed-*.*
-media/css/*/*-compressed-*.*
-media/release
 static/*
 local_settings.py
 media/iphone/NewsBlur/build
 media/iphone/build
-build/
 .DS_Store
 **/*.perspectivev*
 data/
-logs
-mongo/
 **/*.xcuserstate
-media/iphone/NewsBlur.xcodeproj/project.xcworkspace/xcuserdata/conesus.xcuserdatad/UserInterfaceState.xcuserstate
 UserInterfaceState.xcuserstate
 UserInterfaceState\.xcuserstate
 *.xcuserstate
@@ -23,3 +15,4 @@ xcuserdata
 .xcodeproj/ push.xcodeproj/project.pbxproj
 *.mode1v3
 *.pbxuser
+media/maintenance.html
