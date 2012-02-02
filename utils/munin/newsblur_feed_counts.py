@@ -20,6 +20,7 @@ def calculate_metrics():
         'inactive_feeds': Feed.objects.filter(active=False).count(),
         'duplicate_feeds': DuplicateFeed.objects.count(),
         'active_feeds': Feed.objects.filter(active_subscribers__gt=0).count(),
+        'known_good_feeds': Feed.objects.filter(known_good=True).count(),
     }
 
 if __name__ == '__main__':
