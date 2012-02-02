@@ -10,6 +10,7 @@ graph_config = {
     'inactive_feeds.label': 'inactive_feeds',
     'duplicate_feeds.label': 'duplicate_feeds',
     'active_feeds.label': 'active_feeds',
+    'known_good_feeds.label': 'known_good',
 }
 def calculate_metrics():
     from apps.rss_feeds.models import Feed, DuplicateFeed
