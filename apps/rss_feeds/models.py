@@ -1003,7 +1003,7 @@ class Feed(models.Model):
         return total, random_factor*2
         
     def set_next_scheduled_update(self):
-        total, random_factor = self.get_next_scheduled_update(force=True)
+        total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
