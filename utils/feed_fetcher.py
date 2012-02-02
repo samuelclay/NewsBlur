@@ -129,14 +129,12 @@ class ProcessFeed:
                 if not self.feed.fetched_once:
                     self.feed.has_feed_exception = True
                     self.feed.fetched_once = True
-                    self.feed.known_good = True
                     logging.debug("   ---> [%-30s] Feed is 302'ing, but it's not new. Refetching..." % (unicode(self.feed)[:30]))
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
-                
             if self.fpf.status >= 400:
                 logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (unicode(self.feed)[:30], self.fpf.status, ' Not' if self.feed.known_good else ''))
                 fixed_feed = None
