@@ -74,7 +74,7 @@ def index(request):
     unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
                                                        declined_date__isnull=True).select_related('feed')[:2]
     statistics        = MStatistics.all()
-    user_statistics   = MSocialProfile.user_statistics(request.user)
+    user_statistics   = MSocialProfile.user_statistics(user)
     feedbacks         = MFeedback.all()
 
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
