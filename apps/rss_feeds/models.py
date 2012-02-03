@@ -52,6 +52,7 @@ class Feed(models.Model):
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
+    known_good = models.BooleanField(default=False, db_index=True)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
@@ -1013,7 +1014,7 @@ class Feed(models.Model):
         return total, random_factor*2
         
     def set_next_scheduled_update(self):
-        total, random_factor = self.get_next_scheduled_update(force=True)
+        total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)

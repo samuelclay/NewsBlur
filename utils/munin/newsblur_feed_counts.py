@@ -10,6 +10,7 @@ graph_config = {
     'inactive_feeds.label': 'inactive_feeds',
     'duplicate_feeds.label': 'duplicate_feeds',
     'active_feeds.label': 'active_feeds',
+    'known_good_feeds.label': 'known_good',
 }
 def calculate_metrics():
     from apps.rss_feeds.models import Feed, DuplicateFeed
@@ -20,6 +21,7 @@ def calculate_metrics():
         'inactive_feeds': Feed.objects.filter(active=False).count(),
         'duplicate_feeds': DuplicateFeed.objects.count(),
         'active_feeds': Feed.objects.filter(active_subscribers__gt=0).count(),
+        'known_good_feeds': Feed.objects.filter(known_good=True).count(),
     }
 
 if __name__ == '__main__':

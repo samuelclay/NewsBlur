@@ -3785,6 +3785,7 @@ background: transparent;
 .NB-module h5 {
     margin: 0 0 12px;
     padding: 8px 12px 6px;
+    overflow: hidden;
 }
 
 .NB-module .NB-module-header-left {
