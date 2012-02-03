@@ -133,7 +133,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }, null, null, {
                 'ajax_group': 'queue_clear',
                 'beforeSend': function() {
-                    self.queued_read_stories[feed_id] = [];
+                    self.queued_read_stories = {};
                 }
             });
         }

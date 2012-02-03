@@ -142,15 +142,19 @@ class Feed(models.Model):
             super(Feed, self).save(*args, **kwargs)
             return self
         except IntegrityError, e:
-            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
+            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
-            if duplicate_feed:
+            if duplicate_feeds:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
             # Feed has been deleted. Just ignore it.
             return
     
+    @classmethod
+    def merge_feeds(cls, *args, **kwargs):
+        merge_feeds(*args, **kwargs)
+        
     @property
     def favicon_fetching(self):
         return bool(not (self.favicon_not_found or self.favicon_color))
