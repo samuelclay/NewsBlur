@@ -4,6 +4,7 @@ static/*
 local_settings.py
 media/iphone/NewsBlur/build
 media/iphone/build
+build/
 .DS_Store
 **/*.perspectivev*
 data/
