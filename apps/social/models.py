@@ -13,141 +13,6 @@ from vendor import tweepy
 from utils import log as logging
 from utils.feed_functions import relative_timesince
 
-class MSharedStory(mongo.Document):
-    user_id                  = mongo.IntField()
-    shared_date              = mongo.DateTimeField()
-    comments                 = mongo.StringField()
-    has_comments             = mongo.BooleanField(default=False)
-    story_feed_id            = mongo.IntField()
-    story_date               = mongo.DateTimeField()
-    story_title              = mongo.StringField(max_length=1024)
-    story_content            = mongo.StringField()
-    story_content_z          = mongo.BinaryField()
-    story_original_content   = mongo.StringField()
-    story_original_content_z = mongo.BinaryField()
-    story_content_type       = mongo.StringField(max_length=255)
-    story_author_name        = mongo.StringField()
-    story_permalink          = mongo.StringField()
-    story_guid               = mongo.StringField(unique_with=('user_id',))
-    story_tags               = mongo.ListField(mongo.StringField(max_length=250))
-    
-    meta = {
-        'collection': 'shared_stories',
-        'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
-        'index_drop_dups': True,
-        'ordering': ['shared_date'],
-        'allow_inheritance': False,
-    }
-    
-    @property
-    def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
-    
-    def save(self, *args, **kwargs):
-        if self.story_content:
-            self.story_content_z = zlib.compress(self.story_content)
-            self.story_content = None
-        if self.story_original_content:
-            self.story_original_content_z = zlib.compress(self.story_original_content)
-            self.story_original_content = None
-        
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
-        r.sadd(share_key, self.user_id)
-        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
-        if self.has_comments:
-            r.sadd(comment_key, self.user_id)
-        else:
-            r.srem(comment_key, self.user_id)
-        
-        self.shared_date = datetime.datetime.utcnow()
-        
-        super(MSharedStory, self).save(*args, **kwargs)
-        
-        author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
-        author.count()
-        
-    def delete(self, *args, **kwargs):
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
-        r.srem(share_key, self.user_id)
-
-        super(MSharedStory, self).delete(*args, **kwargs)
-        
-    @classmethod
-    def sync_all_redis(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        for story in cls.objects.all():
-            story.sync_redis(redis_conn=r)
-            
-    def sync_redis(self, redis_conn=None):
-        if not redis_conn:
-            redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
-        
-        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
-        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
-        redis_conn.sadd(share_key, self.user_id)
-        if self.has_comments:
-            redis_conn.sadd(comment_key, self.user_id)
-        else:
-            redis_conn.srem(comment_key, self.user_id)
-        
-    def comments_with_author(self, compact=False, full=False):
-        comments = {
-            'user_id': self.user_id,
-            'comments': self.comments,
-            'shared_date': relative_timesince(self.shared_date),
-        }
-        if full or compact:
-            author = MSocialProfile.objects.get(user_id=self.user_id)
-            comments['author'] = author.to_json(compact=compact, full=full)
-        return comments
-    
-    @classmethod
-    def stories_with_comments(cls, stories, user, check_all=False):
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        friend_key = "F:%s:F" % (user.pk)
-        for story in stories: 
-            if check_all or story['comment_count']:
-                comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                if check_all:
-                    story['comment_count'] = r.scard(comment_key)
-                friends_with_comments = r.sinter(comment_key, friend_key)
-                shared_stories = []
-                if friends_with_comments:
-                    params = {
-                        'story_guid': story['id'],
-                        'story_feed_id': story['story_feed_id'],
-                        'user_id__in': friends_with_comments,
-                    }
-                    shared_stories = cls.objects.filter(**params)
-                story['comments'] = []
-                for shared_story in shared_stories:
-                    story['comments'].append(shared_story.comments_with_author(compact=True))
-                story['comment_count_public'] = story['comment_count'] - len(shared_stories)
-                story['comment_count_friends'] = len(shared_stories)
-                
-            if check_all or story['share_count']:
-                share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                if check_all:
-                    story['share_count'] = r.scard(share_key)
-                friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
-                nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
-                profiles = MSocialProfile.objects.filter(user_id__in=nonfriend_user_ids)
-                friend_profiles = []
-                if friends_with_shares:
-                    friend_profiles = MSocialProfile.objects.filter(user_id__in=friends_with_shares)
-                story['shared_by_public'] = []
-                story['shared_by_friends'] = []
-                for profile in profiles:
-                    story['shared_by_public'].append(profile.to_json(compact=True))
-                for profile in friend_profiles:
-                    story['shared_by_friends'].append(profile.to_json(compact=True))
-                story['share_count_public'] = story['share_count'] - len(friend_profiles)
-                story['share_count_friends'] = len(friend_profiles)
-                    
-        return stories
-        
 
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField()
@@ -390,7 +255,7 @@ class MSocialSubscription(mongo.Document):
             'subscription_user_id': self.subscription_user_id,
             'nt': self.unread_count_neutral + 2,
             'ps': self.unread_count_positive + 3,
-            'ng': self.unread_count_negative,
+            'ng': self.unread_count_negative + 1,
             'is_trained': self.is_trained,
         }
     
@@ -421,6 +286,142 @@ class MSocialSubscription(mongo.Document):
         return data
     
     
+class MSharedStory(mongo.Document):
+    user_id                  = mongo.IntField()
+    shared_date              = mongo.DateTimeField()
+    comments                 = mongo.StringField()
+    has_comments             = mongo.BooleanField(default=False)
+    story_feed_id            = mongo.IntField()
+    story_date               = mongo.DateTimeField()
+    story_title              = mongo.StringField(max_length=1024)
+    story_content            = mongo.StringField()
+    story_content_z          = mongo.BinaryField()
+    story_original_content   = mongo.StringField()
+    story_original_content_z = mongo.BinaryField()
+    story_content_type       = mongo.StringField(max_length=255)
+    story_author_name        = mongo.StringField()
+    story_permalink          = mongo.StringField()
+    story_guid               = mongo.StringField(unique_with=('user_id',))
+    story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    
+    meta = {
+        'collection': 'shared_stories',
+        'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
+        'index_drop_dups': True,
+        'ordering': ['shared_date'],
+        'allow_inheritance': False,
+    }
+    
+    @property
+    def guid_hash(self):
+        return hashlib.sha1(self.story_guid).hexdigest()
+    
+    def save(self, *args, **kwargs):
+        if self.story_content:
+            self.story_content_z = zlib.compress(self.story_content)
+            self.story_content = None
+        if self.story_original_content:
+            self.story_original_content_z = zlib.compress(self.story_original_content)
+            self.story_original_content = None
+        
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        r.sadd(share_key, self.user_id)
+        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
+        if self.has_comments:
+            r.sadd(comment_key, self.user_id)
+        else:
+            r.srem(comment_key, self.user_id)
+        
+        self.shared_date = datetime.datetime.utcnow()
+        
+        super(MSharedStory, self).save(*args, **kwargs)
+        
+        author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
+        author.count()
+        
+    def delete(self, *args, **kwargs):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        r.srem(share_key, self.user_id)
+
+        super(MSharedStory, self).delete(*args, **kwargs)
+        
+    @classmethod
+    def sync_all_redis(cls):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        for story in cls.objects.all():
+            story.sync_redis(redis_conn=r)
+            
+    def sync_redis(self, redis_conn=None):
+        if not redis_conn:
+            redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
+        
+        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
+        redis_conn.sadd(share_key, self.user_id)
+        if self.has_comments:
+            redis_conn.sadd(comment_key, self.user_id)
+        else:
+            redis_conn.srem(comment_key, self.user_id)
+        
+    def comments_with_author(self, compact=False, full=False):
+        comments = {
+            'user_id': self.user_id,
+            'comments': self.comments,
+            'shared_date': relative_timesince(self.shared_date),
+        }
+        if full or compact:
+            author = MSocialProfile.objects.get(user_id=self.user_id)
+            comments['author'] = author.to_json(compact=compact, full=full)
+        return comments
+    
+    @classmethod
+    def stories_with_comments(cls, stories, user, check_all=False):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        friend_key = "F:%s:F" % (user.pk)
+        for story in stories: 
+            if check_all or story['comment_count']:
+                comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                if check_all:
+                    story['comment_count'] = r.scard(comment_key)
+                friends_with_comments = r.sinter(comment_key, friend_key)
+                shared_stories = []
+                if friends_with_comments:
+                    params = {
+                        'story_guid': story['id'],
+                        'story_feed_id': story['story_feed_id'],
+                        'user_id__in': friends_with_comments,
+                    }
+                    shared_stories = cls.objects.filter(**params)
+                story['comments'] = []
+                for shared_story in shared_stories:
+                    story['comments'].append(shared_story.comments_with_author(compact=True))
+                story['comment_count_public'] = story['comment_count'] - len(shared_stories)
+                story['comment_count_friends'] = len(shared_stories)
+                
+            if check_all or story['share_count']:
+                share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
+                if check_all:
+                    story['share_count'] = r.scard(share_key)
+                friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+                nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
+                profiles = MSocialProfile.objects.filter(user_id__in=nonfriend_user_ids)
+                friend_profiles = []
+                if friends_with_shares:
+                    friend_profiles = MSocialProfile.objects.filter(user_id__in=friends_with_shares)
+                story['shared_by_public'] = []
+                story['shared_by_friends'] = []
+                for profile in profiles:
+                    story['shared_by_public'].append(profile.to_json(compact=True))
+                for profile in friend_profiles:
+                    story['shared_by_friends'].append(profile.to_json(compact=True))
+                story['share_count_public'] = story['share_count'] - len(friend_profiles)
+                story['share_count_friends'] = len(friend_profiles)
+                    
+        return stories
+        
+
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()
     autofollow            = mongo.BooleanField(default=True)

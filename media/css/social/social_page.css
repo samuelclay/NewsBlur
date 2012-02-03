@@ -149,7 +149,8 @@ header {
     position: absolute;
     right: 24px;
     top: 12px;
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: bold;
 }
 
 /* =========== */

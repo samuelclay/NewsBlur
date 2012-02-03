@@ -71,42 +71,6 @@ def mark_story_as_shared(request):
     
     return {'code': code, 'story': story}
     
-def shared_story_feed(request, user_id, username):
-    try:
-        user = User.objects.get(pk=user_id)
-    except User.DoesNotExist:
-        raise Http404
-    
-    if user.username != username:
-        return HttpResponseRedirect(reverse('shared-story-feed', kwargs={'username': user.username, 'user_id': user.pk}))
-
-    social_profile = MSocialProfile.objects.get(user_id=user_id)
-
-    data = {}
-    data['title'] = social_profile.blog_title
-    link = reverse('shared-stories-public', kwargs={'username': user.username})
-    data['link'] = "http://www.newsblur.com/%s" % link
-    data['description'] = "Stories shared by %s on NewsBlur." % user.username
-    data['lastBuildDate'] = datetime.datetime.utcnow()
-    data['items'] = []
-    data['generator'] = 'NewsBlur'
-    data['docs'] = None
-
-    shared_stories = MSharedStory.objects.filter(user_id=user.pk)[:30]
-    for shared_story in shared_stories:
-        story_data = {
-            'title': shared_story.story_title,
-            'link': shared_story.story_permalink,
-            'description': zlib.decompress(shared_story.story_content_z),
-            'guid': shared_story.story_guid,
-            'pubDate': shared_story.story_date,
-        }
-        data['items'].append(RSS.RSSItem(**story_data))
-        
-    rss = RSS.RSS2(**data)
-    
-    return HttpResponse(rss.to_xml())
-    
 def shared_stories_public(request, username):
     try:
         user = User.objects.get(username=username)
@@ -300,6 +264,42 @@ def unfollow(request):
     unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
     
     return dict(user_profile=profile.to_json(full=True), unfollow_profile=unfollow_profile)
+    
+def shared_stories_rss_feed(request, user_id, username):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        raise Http404
+    
+    if user.username != username:
+        return HttpResponseRedirect(reverse('shared-story-feed', kwargs={'username': user.username, 'user_id': user.pk}))
+
+    social_profile = MSocialProfile.objects.get(user_id=user_id)
+
+    data = {}
+    data['title'] = social_profile.blog_title
+    link = reverse('shared-stories-public', kwargs={'username': user.username})
+    data['link'] = "http://www.newsblur.com/%s" % link
+    data['description'] = "Stories shared by %s on NewsBlur." % user.username
+    data['lastBuildDate'] = datetime.datetime.utcnow()
+    data['items'] = []
+    data['generator'] = 'NewsBlur'
+    data['docs'] = None
+
+    shared_stories = MSharedStory.objects.filter(user_id=user.pk)[:30]
+    for shared_story in shared_stories:
+        story_data = {
+            'title': shared_story.story_title,
+            'link': shared_story.story_permalink,
+            'description': zlib.decompress(shared_story.story_content_z),
+            'guid': shared_story.story_guid,
+            'pubDate': shared_story.story_date,
+        }
+        data['items'].append(RSS.RSSItem(**story_data))
+        
+    rss = RSS.RSS2(**data)
+    
+    return HttpResponse(rss.to_xml())
     
 @login_required
 @render_to('social/social_connect.xhtml')
