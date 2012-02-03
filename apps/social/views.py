@@ -26,62 +26,6 @@ from vendor import tweepy
 from vendor.timezones.utilities import localtime_for_timezone
 
 @json.json_view
-def story_comments(request):
-    feed_id  = int(request.POST['feed_id'])
-    story_id = request.POST['story_id']
-    full = request.POST.get('full', False)
-    compact = request.POST.get('compact', False)
-    
-    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
-    comments = [s.comments_with_author(compact=compact, full=full) for s in shared_stories]
-    
-    return {'comments': comments}
-
-@ajax_login_required
-@json.json_view
-def mark_story_as_shared(request):
-    code     = 1
-    feed_id  = int(request.POST['feed_id'])
-    story_id = request.POST['story_id']
-    comments = request.POST.get('comments', '')
-    
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
-    if not story:
-        return {'code': -1, 'message': 'Story not found.'}
-    
-    shared_story = MSharedStory.objects.filter(user_id=request.user.pk, story_feed_id=feed_id, story_guid=story_id)
-    if not shared_story:
-        story_db = dict([(k, v) for k, v in story._data.items() 
-                                if k is not None and v is not None])
-        story_values = dict(user_id=request.user.pk, comments=comments, 
-                            has_comments=bool(comments), **story_db)
-        MSharedStory.objects.create(**story_values)
-        logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
-    else:
-        shared_story = shared_story[0]
-        shared_story.comments = comments
-        shared_story.has_comments = bool(comments)
-        shared_story.save()
-        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
-    
-    story.count_comments()
-    
-    story = Feed.format_story(story)
-    story = MSharedStory.stories_with_comments([story], request.user)[0]
-    
-    return {'code': code, 'story': story}
-    
-def shared_stories_public(request, username):
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        raise Http404
-
-    shared_stories = MSharedStory.objects.filter(user_id=user.pk)
-        
-    return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
-
-@json.json_view
 def load_social_stories(request, user_id, username=None):
     user = get_user(request)
     social_user_id = int(user_id)
@@ -99,8 +43,8 @@ def load_social_stories(request, user_id, username=None):
         return dict(stories=[])
         
     stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
-    story_feed_ids = list(set(s['story_feed_id'] for s in stories))
 
+    story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
     usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
     usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
@@ -132,6 +76,7 @@ def load_social_stories(request, user_id, username=None):
     userstories = set(us.story_id for us in userstories_db)
     
     for story in stories:
+        story['social_user_id'] = social_user_id
         story_feed_id = story['story_feed_id']
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
@@ -205,6 +150,62 @@ def load_social_page(request, user_id, username=None):
     return params
     
 @json.json_view
+def story_comments(request):
+    feed_id  = int(request.POST['feed_id'])
+    story_id = request.POST['story_id']
+    full = request.POST.get('full', False)
+    compact = request.POST.get('compact', False)
+    
+    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
+    comments = [s.comments_with_author(compact=compact, full=full) for s in shared_stories]
+    
+    return {'comments': comments}
+
+@ajax_login_required
+@json.json_view
+def mark_story_as_shared(request):
+    code     = 1
+    feed_id  = int(request.POST['feed_id'])
+    story_id = request.POST['story_id']
+    comments = request.POST.get('comments', '')
+    
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
+    if not story:
+        return {'code': -1, 'message': 'Story not found.'}
+    
+    shared_story = MSharedStory.objects.filter(user_id=request.user.pk, story_feed_id=feed_id, story_guid=story_id)
+    if not shared_story:
+        story_db = dict([(k, v) for k, v in story._data.items() 
+                                if k is not None and v is not None])
+        story_values = dict(user_id=request.user.pk, comments=comments, 
+                            has_comments=bool(comments), **story_db)
+        MSharedStory.objects.create(**story_values)
+        logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
+    else:
+        shared_story = shared_story[0]
+        shared_story.comments = comments
+        shared_story.has_comments = bool(comments)
+        shared_story.save()
+        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
+    
+    story.count_comments()
+    
+    story = Feed.format_story(story)
+    story = MSharedStory.stories_with_comments([story], request.user)[0]
+    
+    return {'code': code, 'story': story}
+    
+def shared_stories_public(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404
+
+    shared_stories = MSharedStory.objects.filter(user_id=user.pk)
+        
+    return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
+
+@json.json_view
 def friends(request):
     user = get_user(request)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
@@ -272,7 +273,8 @@ def shared_stories_rss_feed(request, user_id, username):
         raise Http404
     
     if user.username != username:
-        return HttpResponseRedirect(reverse('shared-story-feed', kwargs={'username': user.username, 'user_id': user.pk}))
+        params = {'username': user.username, 'user_id': user.pk}
+        return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
 
     social_profile = MSocialProfile.objects.get(user_id=user_id)
 

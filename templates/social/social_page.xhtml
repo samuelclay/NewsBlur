@@ -3,7 +3,7 @@
 
 <head>
     <title>{{ social_profile.feed_title }}</title>
-    <link rel="alternate" type="application/rss+xml" href="{% url shared-story-feed user.pk user.username %}" title="{{ social_profile.feed_title }} RSS feed">
+    <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed user.pk user.username %}" title="{{ social_profile.feed_title }} RSS feed">
       <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/social/social_page.css" type="text/css" media="screen" title="no title" charset="utf-8">
     {% if social_profile.custom_css %}
@@ -18,7 +18,7 @@
     <header class="NB-header">
         <h1 class="NB-title">{{ social_profile.feed_title }}</h1>
         <div class="NB-header-feed">
-            <a type="application/rss+xml" href="{% url shared-story-feed user.pk user.username %}">RSS feed for this page</a>
+            <a type="application/rss+xml" href="{% url shared-stories-rss-feed user.pk user.username %}">RSS feed for this page</a>
         </div>
     </header>
 

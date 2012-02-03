@@ -704,7 +704,6 @@ def mark_all_as_read(request):
 def mark_story_as_read(request):
     story_ids = request.REQUEST.getlist('story_id')
     feed_id = int(get_argument_or_404(request, 'feed_id'))
-    usersub = None
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
@@ -716,17 +715,16 @@ def mark_story_as_read(request):
                 usersub = UserSubscription.objects.get(user=request.user, 
                                                        feed=duplicate_feed[0].feed)
             except (Feed.DoesNotExist):
-                return dict(code=-1)
+                return dict(code=-1, errors=["No feed exists for feed_id %d." % feed_id])
         else:
-            return dict(code=-1)
+            return dict(code=-1, errors=["No feed exists for feed_id %d." % feed_id])
     except UserSubscription.DoesNotExist:
-        pass
+        usersub = None
         
     if usersub:
         data = usersub.mark_story_ids_as_read(story_ids, request=request)
     else:
-        socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, subscription_user_id=feed_id)
-        data = socialsub.mark_story_ids_as_read(story_ids, request=request)
+        data = dict(code=-1, errors=["User is not subscribed to this feed."])
 
     return data
     
@@ -739,19 +737,54 @@ def mark_feed_stories_as_read(request):
         feed_id = int(feed_id)
         try:
             usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-        except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+            data = usersub.mark_story_ids_as_read(story_ids)
+        except UserSubscription.DoesNotExist:
+            return dict(code=-1, error="You are not subscribed to this feed_id: %d" % feed_id)
+        except Feed.DoesNotExist:
             duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
-            if duplicate_feed:
-                try:
-                    usersub = UserSubscription.objects.get(user=request.user, 
-                                                           feed=duplicate_feed[0].feed)
-                except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
-                    continue
-            else:
-                continue
-        usersub.mark_story_ids_as_read(story_ids)
+            try:
+                if not duplicate_feed: raise Feed.DoesNotExist
+                usersub = UserSubscription.objects.get(user=request.user, 
+                                                       feed=duplicate_feed[0].feed)
+                data = usersub.mark_story_ids_as_read(story_ids)
+            except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+                return dict(code=-1, error="No feed exists for feed_id: %d" % feed_id)
     
-    return dict(code=1)
+    return data
+    
+@ajax_login_required
+@json.json_view
+def mark_social_stories_as_read(request):
+    code = 1
+    errors = []
+    data = None
+    users_feeds_stories = request.REQUEST.get('users_feeds_stories', "{}")
+    users_feeds_stories = json.decode(users_feeds_stories)
+
+    for social_user_id, feeds in users_feeds_stories.items():
+        for feed_id, story_ids in feeds.items():
+            feed_id = int(feed_id)
+            try:
+                print social_user_id, feed_id
+                socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, 
+                                                            subscription_user_id=social_user_id)
+                data = socialsub.mark_story_ids_as_read(story_ids, feed_id, request=request)
+            except MSocialSubscription.DoesNotExist:
+                errors.append("You are not subscribed to this social user_id: %s" % social_user_id)
+            except Feed.DoesNotExist:
+                duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+                if duplicate_feed:
+                    try:
+                        socialsub = MSocialSubscription.objects.get(user_id=request.user.pk,
+                                                                    subscription_user_id=social_user_id)
+                        data = socialsub.mark_story_ids_as_read(story_ids, duplicate_feed[0].feed.pk, request=request)
+                    except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
+                        code = -1
+                        errors.append("No feed exists for feed_id %d." % feed_id)
+                else:
+                    continue
+    
+    return dict(code=code, errors=errors, data=data)
     
 @ajax_login_required
 @json.json_view

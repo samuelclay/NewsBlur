@@ -662,7 +662,6 @@
             if ($story && $story.length) {
                 // Check for NB-mark above and use that.
                 if ($story.closest('.NB-mark').length) {
-                    console.log(["NB-mark", $story, $story.closest('.NB-mark')]);
                     $story = $story.closest('.NB-mark');
                 }
                 
@@ -1119,9 +1118,11 @@
         },
         
         load_router: function() {
-            NEWSBLUR.router = new NEWSBLUR.Router;
-            var route_found = Backbone.history.start({pushState: true});
-            this.load_url_next_param(route_found);
+            if (!NEWSBLUR.router) {
+                NEWSBLUR.router = new NEWSBLUR.Router;
+                var route_found = Backbone.history.start({pushState: true});
+                this.load_url_next_param(route_found);
+            }
         },
         
         make_feed_favicons: function() {
@@ -2624,10 +2625,13 @@
         
         mark_story_as_read: function(story_id) {
             var self = this;
-            var $story_title = this.find_story_in_story_titles(story_id);
-            var feed_id = parseInt($story_title.data('feed_id'), 10) || this.active_feed;
+            var feed_id = this.active_feed;
             
-            this.model.mark_story_as_read(story_id, feed_id, function(read) {
+            var mark_read_fn = this.model.mark_story_as_read;
+            if (this.flags.social_view) {
+                mark_read_fn = this.model.mark_social_story_as_read;
+            }
+            mark_read_fn.call(this.model, story_id, feed_id, function(read) {
                 self.update_read_count(story_id, feed_id, false, read);
             });
         },
@@ -7248,7 +7252,7 @@
                 this.check_feed_view_scrolled_to_bottom();
             }
             
-            if (this.flags.river_view &&
+            if ((this.flags.river_view || this.flags.social_view) &&
                 !this.model.preference('feed_view_single_story')) {
                 var story;
                 if (this.flags.scrolling_by_selecting_story_title) {

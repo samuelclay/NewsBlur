@@ -46,11 +46,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
-        this.ajax['queue'] = $.manageAjax.create('queue', {queue: true}); 
+        this.ajax['queue']       = $.manageAjax.create('queue', {queue: true}); 
         this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear'}); 
-        this.ajax['feed'] = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, domCompleteTrigger: true}); 
-        this.ajax['feed_page'] = $.manageAjax.create('feed_page', {queue: 'clear', abortOld: true, abortIsNoSuccess: false, domCompleteTrigger: true}); 
-        this.ajax['statistics'] = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
+        this.ajax['feed']        = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, 
+                                                                domCompleteTrigger: true}); 
+        this.ajax['feed_page']   = $.manageAjax.create('feed_page', {queue: 'clear', abortOld: true, 
+                                                                     abortIsNoSuccess: false, 
+                                                                     domCompleteTrigger: true}); 
+        this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
         return;
     },
@@ -119,30 +122,64 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     mark_story_as_read: function(story_id, feed_id, callback) {
         var self = this;
-        var read = false;
-        
         var story = this.get_story(story_id);
-        read = story.read_status;
-        story.read_status = 1;
 
-        if (!read && NEWSBLUR.Globals.is_authenticated) {
-            if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
-            this.queued_read_stories[feed_id].push(story_id);
-            // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story_id]);
+        if (!story.read_status) {
+            story.read_status = 1;
             
-            this.make_request('/reader/mark_story_as_read', {
-                story_id: this.queued_read_stories[feed_id],
-                feed_id: feed_id
-            }, null, null, {
-                'ajax_group': 'queue_clear',
-                'beforeSend': function() {
-                    self.queued_read_stories[feed_id] = [];
-                }
-            });
+            if (NEWSBLUR.Globals.is_authenticated) {
+                if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
+                this.queued_read_stories[feed_id].push(story_id);
+                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story_id]);
+            
+                this.make_request('/reader/mark_story_as_read', {
+                    story_id: this.queued_read_stories[feed_id],
+                    feed_id: feed_id
+                }, null, null, {
+                    'ajax_group': 'queue_clear',
+                    'beforeSend': function() {
+                        self.queued_read_stories = {};
+                    }
+                });
+            }
         }
         
         this.read_stories_river_count += 1;
-        $.isFunction(callback) && callback(read);
+        $.isFunction(callback) && callback();
+    },
+    
+    mark_social_story_as_read: function(story_id, social_feed_id, callback) {
+        var self = this;
+        var story = this.get_story(story_id);
+        var feed_id = story.story_feed_id;
+        var social_user_id = this.social_feeds[social_feed_id].user_id;
+
+        if (!story.read_status) {
+            story.read_status = 1;
+            
+            if (NEWSBLUR.Globals.is_authenticated) {
+                if (!(social_user_id in this.queued_read_stories)) { 
+                    this.queued_read_stories[social_user_id] = {};
+                }
+                if (!(feed_id in this.queued_read_stories[social_user_id])) {
+                    this.queued_read_stories[social_user_id][feed_id] = [];
+                }
+                this.queued_read_stories[social_user_id][feed_id].push(story_id);
+                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story_id]);
+            
+                this.make_request('/reader/mark_social_stories_as_read', {
+                    users_feeds_stories: $.toJSON(this.queued_read_stories)
+                }, null, null, {
+                    'ajax_group': 'queue_clear',
+                    'beforeSend': function() {
+                        self.queued_read_stories = {};
+                    }
+                });
+            }
+        }
+        
+        this.read_stories_river_count += 1;
+        $.isFunction(callback) && callback();
     },
     
     mark_story_as_unread: function(story_id, feed_id, callback) {

@@ -259,7 +259,7 @@ class MSocialSubscription(mongo.Document):
             'is_trained': self.is_trained,
         }
     
-    def mark_story_ids_as_read(self, story_ids, request=None):
+    def mark_story_ids_as_read(self, story_ids, feed_id, request=None):
         data = dict(code=0, payload=story_ids)
         
         if not request:
@@ -278,8 +278,8 @@ class MSocialSubscription(mongo.Document):
             story = MSharedStory.objects.get(user_id=self.subscription_user_id, story_guid=story_id)
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m = MUserStory(story=story, user_id=self.user_id, 
-                           feed_id=self.feed_id, read_date=date, 
+            m = MUserStory(user_id=self.user_id, 
+                           feed_id=feed_id, read_date=date, 
                            story_id=story_id, story_date=story.story_date)
             m.save()
                 
