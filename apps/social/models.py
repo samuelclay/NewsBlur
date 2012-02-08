@@ -8,6 +8,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from apps.reader.models import UserSubscription, MUserStory
+from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
+from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -244,7 +246,6 @@ class MSocialSubscription(mongo.Document):
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             social_feeds = {}
             for user_id, social_sub in social_subs.items():
-                print social_profiles[user_id]['id'], social_sub, social_profiles[user_id]
                 social_feeds[social_profiles[user_id]['id']] = dict(social_sub.items() + social_profiles[user_id].items())
 
         return social_feeds
@@ -284,7 +285,125 @@ class MSocialSubscription(mongo.Document):
             m.save()
                 
         return data
+        
+    def mark_feed_read(self):
+        now = datetime.datetime.utcnow()
+
+        self.last_read_date = now
+        self.mark_read_date = now
+        self.unread_count_negative = 0
+        self.unread_count_positive = 0
+        self.unread_count_neutral = 0
+        self.unread_count_updated = now
+        self.oldest_unread_story_date = now
+        self.needs_unread_recalc = False
+
+        # Cannot delete these stories, since the original feed may not be read. 
+        # Just go 2 weeks back.
+        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id, mark_read_date=UNREAD_CUTOFF)
+                
+        self.save()
     
+    def calculate_feed_scores(self, silent=False, stories_db=None):
+        now = datetime.datetime.now()
+        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        user = User.objects.get(pk=self.user_id)
+
+        if user.profile.last_seen_on < UNREAD_CUTOFF:
+            # if not silent:
+            #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
+            return
+            
+        feed_scores = dict(negative=0, neutral=0, positive=0)
+        
+        # Two weeks in age. If mark_read_date is older, mark old stories as read.
+        date_delta = UNREAD_CUTOFF
+        if date_delta < self.mark_read_date:
+            date_delta = self.mark_read_date
+        else:
+            self.mark_read_date = date_delta
+
+        read_stories = MUserStory.objects(user_id=self.user_id,
+                                          feed_id=self.feed_id,
+                                          read_date__gte=self.mark_read_date)
+        # if not silent:
+        #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
+        read_stories_ids = []
+        for us in read_stories:
+            read_stories_ids.append(us.story_id)
+        stories_db = stories_db or MStory.objects(story_feed_id=self.feed_id,
+                                                  story_date__gte=date_delta)
+        # if not silent:
+        #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+        oldest_unread_story_date = now
+        unread_stories_db = []
+        for story in stories_db:
+            if story.story_date < date_delta:
+                continue
+            if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
+                unread_stories_db.append(story)
+                if story.story_date < oldest_unread_story_date:
+                    oldest_unread_story_date = story.story_date
+        stories = Feed.format_stories(unread_stories_db, self.feed_id)
+        # if not silent:
+        #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
+        
+        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
+
+        # if not silent:
+        #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
+            
+        scores = {
+            'feed': apply_classifier_feeds(classifier_feeds, self.feed),
+        }
+        
+        for story in stories:
+            scores.update({
+                'author' : apply_classifier_authors(classifier_authors, story),
+                'tags'   : apply_classifier_tags(classifier_tags, story),
+                'title'  : apply_classifier_titles(classifier_titles, story),
+            })
+            
+            max_score = max(scores['author'], scores['tags'], scores['title'])
+            min_score = min(scores['author'], scores['tags'], scores['title'])
+            if max_score > 0:
+                feed_scores['positive'] += 1
+            elif min_score < 0:
+                feed_scores['negative'] += 1
+            else:
+                if scores['feed'] > 0:
+                    feed_scores['positive'] += 1
+                elif scores['feed'] < 0:
+                    feed_scores['negative'] += 1
+                else:
+                    feed_scores['neutral'] += 1
+                
+        
+        # if not silent:
+        #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
+            
+        self.unread_count_positive = feed_scores['positive']
+        self.unread_count_neutral = feed_scores['neutral']
+        self.unread_count_negative = feed_scores['negative']
+        self.unread_count_updated = datetime.datetime.now()
+        self.oldest_unread_story_date = oldest_unread_story_date
+        self.needs_unread_recalc = False
+        
+        self.save()
+
+        if (self.unread_count_positive == 0 and 
+            self.unread_count_neutral == 0 and
+            self.unread_count_negative == 0):
+            self.mark_feed_read()
+        
+        if not silent:
+            logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
+            
+        return self
     
 class MSharedStory(mongo.Document):
     user_id                  = mongo.IntField()

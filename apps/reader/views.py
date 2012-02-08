@@ -765,7 +765,6 @@ def mark_social_stories_as_read(request):
         for feed_id, story_ids in feeds.items():
             feed_id = int(feed_id)
             try:
-                print social_user_id, feed_id
                 socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, 
                                                             subscription_user_id=social_user_id)
                 data = socialsub.mark_story_ids_as_read(story_ids, feed_id, request=request)

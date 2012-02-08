@@ -26,39 +26,42 @@ class Category(models.Model):
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
     title = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'classifier_title',
-        'indexes': [('user_id', 'feed_id'), 'feed_id'],
+        'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
             
 class MClassifierAuthor(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
-    author = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id'))
+    social_user_id = mongo.IntField()
+    author = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id', 'social_user_id'))
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'classifier_author',
-        'indexes': [('user_id', 'feed_id'), 'feed_id'],
+        'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
     
 
 class MClassifierFeed(mongo.Document):
     user_id = mongo.IntField()
-    feed_id = mongo.IntField(unique_with='user_id')
+    feed_id = mongo.IntField(unique_with=('user_id', 'social_user_id'))
+    social_user_id = mongo.IntField()
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'classifier_feed',
-        'indexes': [('user_id', 'feed_id'), 'feed_id'],
+        'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
     
@@ -66,13 +69,14 @@ class MClassifierFeed(mongo.Document):
 class MClassifierTag(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
-    tag = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id'))
+    social_user_id = mongo.IntField()
+    tag = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id', 'social_user_id'))
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'classifier_tag',
-        'indexes': [('user_id', 'feed_id'), 'feed_id'],
+        'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
     

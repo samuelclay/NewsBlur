@@ -5,7 +5,6 @@ from utils import json_functions as json
 from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from mongoengine.queryset import OperationError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
@@ -144,6 +143,7 @@ class UserSubscription(models.Model):
         self.unread_count_updated = now
         self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
+
         MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id)
         
         self.save()
@@ -297,8 +297,6 @@ class UserSubscription(models.Model):
             self.unread_count_neutral == 0 and
             self.unread_count_negative == 0):
             self.mark_feed_read()
-        
-        cache.delete('usersub:%s' % self.user.id)
         
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
