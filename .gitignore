@@ -1,5 +1,6 @@
 logs/*.log
 logs/*.log.*
+logs/*.pid
 *.pyc
 static/*
 local_settings.py
