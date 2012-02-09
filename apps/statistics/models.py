@@ -51,17 +51,20 @@ class MStatistics(mongo.Document):
     def collect_statistics_feeds_fetched(cls, last_day=None):
         if not last_day:
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+        last_biweek = datetime.datetime.now() - datetime.timedelta(days=14)
         
-        feeds_fetched = MFeedFetchHistory.objects.count()
+        feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__lt=last_day).count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
-        pages_fetched = MPageFetchHistory.objects.count()
+        pages_fetched = MPageFetchHistory.objects.filter(fetch_date__lt=last_day).count()
         cls.objects(key='pages_fetched').update_one(upsert=True, key='pages_fetched', value=pages_fetched)
         
         from utils.feed_functions import timelimit, TimeoutError
         @timelimit(60)
         def delete_old_history():
-            MFeedFetchHistory.objects(fetch_date__lt=last_day).delete()
-            MPageFetchHistory.objects(fetch_date__lt=last_day).delete()
+            MFeedFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
+            MPageFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
+            MFeedFetchHistory.objects(fetch_date__lt=last_biweek).delete()
+            MPageFetchHistory.objects(fetch_date__lt=last_biweek).delete()
         try:
             delete_old_history()
         except TimeoutError:

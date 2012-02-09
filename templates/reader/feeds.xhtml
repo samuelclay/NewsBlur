@@ -483,10 +483,22 @@ $(document).ready(function() {
           <li class="task_button task_button_menu NB-task-manage NB-disabled"></li>
         </ul>
         <div class="NB-taskbar-intelligence">
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
-          <div class="NB-intelligence-slider"></div>
+          <div class="NB-intelligence-slider">
+              <ul class="segmented-control">
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_red.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+              </ul>
+          </div>
         </div>
         <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (u)"></div>
       </div>

@@ -2931,9 +2931,10 @@ a.NB-splash-link:hover {
 .NB-taskbar-intelligence {
     width: 100px;
     position: absolute;
-    left: 100px;
-    top: 16px;
+    left: 92px;
+    top: 6px;
     font-size: .5em;
+    white-space: nowrap;
 }
 
 .NB-taskbar-intelligence.NB-modal-slider {
@@ -2963,9 +2964,19 @@ a.NB-splash-link:hover {
     background: transparent url(/media/embed/icons/silk/bullet_green.png) no-repeat 0 0;
 }
 
-.NB-intelligence-slider {
+.NB-intelligence-slider li {
+    width: 40px;
+    text-align: center;
 }
-
+.NB-intelligence-slider img {
+    width: 16px;
+    height: 16px;
+    margin: 0px -8px 0 0;
+    vertical-align: bottom;
+}
+.NB-intelligence-slider img:last-child {
+    margin-right: 0;
+}
 /* ===================== */
 /* = Add Feeds/Folders = */
 /* ===================== */
@@ -3504,6 +3515,7 @@ background: transparent;
 .NB-module h5 {
     margin: 0 0 12px;
     padding: 8px 12px 6px;
+    overflow: hidden;
 }
 
 .NB-module .NB-module-header-left {
@@ -4777,7 +4789,7 @@ background: transparent;
   list-style: none;
   padding: 0;
 }
-.NB-modal-tutorial ul li {
+.NB-modal-tutorial li {
   margin: 0 0 12px;
   padding: 0;
   padding-left: 20px;

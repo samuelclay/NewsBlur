@@ -50,6 +50,7 @@ class Feed(models.Model):
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True)
     last_update = models.DateTimeField(db_index=True)
     fetched_once = models.BooleanField(default=False)
+    known_good = models.BooleanField(default=False, db_index=True)
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
@@ -141,15 +142,19 @@ class Feed(models.Model):
             super(Feed, self).save(*args, **kwargs)
             return self
         except IntegrityError, e:
-            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address)
+            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
-            if duplicate_feed:
+            if duplicate_feeds:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
             # Feed has been deleted. Just ignore it.
             return
     
+    @classmethod
+    def merge_feeds(cls, *args, **kwargs):
+        merge_feeds(*args, **kwargs)
+        
     @property
     def favicon_fetching(self):
         return bool(not (self.favicon_not_found or self.favicon_color))
@@ -1002,7 +1007,7 @@ class Feed(models.Model):
         return total, random_factor*2
         
     def set_next_scheduled_update(self):
-        total, random_factor = self.get_next_scheduled_update(force=True)
+        total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)

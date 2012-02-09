@@ -1,0 +1,137 @@
+ul.segmented-control {
+    background-color: #333;
+    list-style-type: none;
+    width: 120px;
+    overflow: hidden;
+    padding: 1px;
+    margin: 0 auto;
+    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
+    clear: none;
+}
+
+.segmented-control li {
+    background: none;
+    background-color: #595959;
+    float: left;
+    margin-left: 1px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+.segmented-control li,
+.segmented-control.alt li.NB-active,
+.segmented-control.alt li.NB-active:active {
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .1)), to(rgba(255, 255, 255, 0)));
+    
+    background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, 0));
+}
+
+.segmented-control li, .segmented-control.alt li.NB-active {
+    -webkit-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
+    -moz-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
+}
+
+.segmented-control li:first-child {
+    margin-left: 0;
+    
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.segmented-control li:last-child {
+    -webkit-border-top-right-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    -moz-border-radius-bottomright: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.segmented-control a {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 24px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    width: 70px;
+    height: 25px;
+}
+
+.segmented-control a,
+.segmented-control.alt li.NB-active a {
+    color: #262626;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .15);
+}
+
+.segmented-control li:active {background-color: #525252;}
+
+.segmented-control li:active,
+.segmented-control.alt li.NB-active:active {
+    -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
+                        inset 0 0 5px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
+                     inset 0 0 5px rgba(0, 0, 0, .1);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
+                inset 0 0 5px rgba(0, 0, 0, .1);
+}
+
+.segmented-control li:active a,
+.segmented-control.alt li:active a {
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .1);
+    position: relative;
+    top: 1px;
+}
+
+.segmented-control li.NB-active {
+    background-image:
+        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, .1))),
+        url(/media/img/reader/background-control.png);
+    
+    background-image:
+        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .1)),
+        url(/media/img/reader/background-control.png);
+    
+    background-color: #333;
+    
+    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1),
+                        inset 0 0 5px rgba(0, 0, 0, .15);
+    -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1),
+                     inset 0 0 5px rgba(0, 0, 0, .15);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1),
+                inset 0 0 5px rgba(0, 0, 0, .15);
+}
+
+.segmented-control.alt li.NB-active {background-color: #4e4e4e;}
+
+.segmented-control li.NB-active a {color: #fff; text-shadow: 0 1px 0 #000;}
+
+.segmented-control li.NB-active:active {
+    background-image:
+        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, .05))),
+        url(/media/img/reader/background-control.png);
+        
+    background-image:
+        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .05)),
+        url(/media/img/reader/background-control.png);
+    
+    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
+                        inset 0 0 5px rgba(0, 0, 0, .15);
+    -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
+                     inset 0 0 5px rgba(0, 0, 0, .15);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
+                inset 0 0 5px rgba(0, 0, 0, .15);
+}
