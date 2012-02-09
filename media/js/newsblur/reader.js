@@ -1927,6 +1927,9 @@
                 if (unread_view <= 1) {
                     counts.push(unread_counts['positive']);
                 }
+                if (!unread_counts['negative'] && !unread_counts['positive']) {
+                    counts = [unread_counts['neutral']];
+                }
                 title += counts.join('/') + ') NewsBlur';
                 document.title = title;
             }
