@@ -81,7 +81,6 @@ def deploy():
     post_deploy()
 
 def deploy_full():
-    pre_deploy()
     deploy_code(full=True)
     post_deploy()
 
