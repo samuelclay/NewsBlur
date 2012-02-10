@@ -82,19 +82,14 @@ class MSocialProfile(mongo.Document):
         
     @classmethod
     def sync_all_redis(cls):
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
         for profile in cls.objects.all():
-            profile.sync_redis(redis_conn=r)
+            profile.sync_redis()
     
-    def sync_redis(self, redis_conn=None):
-        if not redis_conn:
-            redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
-            
+    def sync_redis(self):
         for user_id in self.following_user_ids:
-            following_key = "F:%s:F" % (self.user_id)
-            redis_conn.sadd(following_key, user_id)
-            follower_key = "F:%s:f" % (user_id)
-            redis_conn.sadd(follower_key, self.user_id)
+            self.follow_user(user_id)
+        
+        self.follow_user(self.user_id)
     
     @property
     def title(self):
@@ -149,6 +144,7 @@ class MSocialProfile(mongo.Document):
         user = User.objects.get(pk=self.user_id)
         self.username = user.username
         self.email = user.email
+        self.follow_user(self.user_id)
         if not skip_save:
             self.save()
 
@@ -170,6 +166,7 @@ class MSocialProfile(mongo.Document):
             self.following_user_ids.append(user_id)
             if user_id in self.unfollowed_user_ids:
                 self.unfollowed_user_ids.remove(user_id)
+            self.count()
             self.save()
             
             followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
@@ -177,7 +174,6 @@ class MSocialProfile(mongo.Document):
                 followee.follower_user_ids.append(self.user_id)
                 followee.count()
                 followee.save()
-        self.count()
         
         following_key = "F:%s:F" % (self.user_id)
         r.sadd(following_key, user_id)
@@ -189,10 +185,12 @@ class MSocialProfile(mongo.Document):
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
+        # import pdb; pdb.set_trace()
         if user_id in self.following_user_ids:
             self.following_user_ids.remove(user_id)
         if user_id not in self.unfollowed_user_ids:
             self.unfollowed_user_ids.append(user_id)
+        self.count()
         self.save()
         
         followee = MSocialProfile.objects.get(user_id=user_id)
@@ -200,12 +198,13 @@ class MSocialProfile(mongo.Document):
             followee.follower_user_ids.remove(self.user_id)
             followee.count()
             followee.save()
-        self.count()
         
-        following_key = "F:%s:F" % (self.user_id)
-        r.srem(following_key, user_id)
-        follower_key = "F:%s:f" % (user_id)
-        r.srem(follower_key, self.user_id)
+        if user_id != self.user_id:
+            # Only unfollow other people, not yourself.
+            following_key = "F:%s:F" % (self.user_id)
+            r.srem(following_key, user_id)
+            follower_key = "F:%s:f" % (user_id)
+            r.srem(follower_key, self.user_id)
         
         MSocialSubscription.objects.filter(user_id=self.user_id, subscription_user_id=user_id).delete()
 

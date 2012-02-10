@@ -2035,7 +2035,7 @@ background: transparent;
     -ms-transition: all .12s ease-out;
 }
 #story_pane .NB-story-comments-shares-teaser {
-    background-color: #E3E9E7;
+    background-color: whiteSmoke;
     color: #202020;
     text-shadow: 0 1px 0 #FFF;
     font-weight: bold;
