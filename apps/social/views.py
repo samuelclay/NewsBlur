@@ -253,7 +253,19 @@ def follow(request):
     
     follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
     
-    return dict(user_profile=profile.to_json(full=True), follow_profile=follow_profile)
+    social_params = {
+        'user_id': request.user.pk,
+        'subscription_user_id': follow_user_id,
+        'include_favicon': True,
+        'update_counts': True,
+    }
+    follow_subscription = MSocialSubscription.feeds(**social_params)
+    
+    return {
+        "user_profile": profile.to_json(full=True), 
+        "follow_profile": follow_profile,
+        "follow_subscription": follow_subscription,
+    }
     
 @ajax_login_required
 @json.json_view

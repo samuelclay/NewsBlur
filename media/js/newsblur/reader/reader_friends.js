@@ -420,6 +420,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $button.removeClass('NB-profile-badge-action-follow')
                 .addClass('NB-profile-badge-action-unfollow');
             $badge.replaceWith(this.make_profile_badge(follow_user));
+            NEWSBLUR.reader.make_social_feeds();
         }, this));
     },
     
@@ -433,6 +434,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $button.removeClass('NB-profile-badge-action-unfollow')
                 .addClass('NB-profile-badge-action-follow');
             $badge.replaceWith(this.make_profile_badge(unfollow_user));
+            NEWSBLUR.reader.make_social_feeds();
         }, this));
     },
     

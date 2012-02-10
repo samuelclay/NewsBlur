@@ -25,7 +25,7 @@ NEWSBLUR.AssetModel.Reader = function() {
         }
     };
     this.feeds = {};
-    this.social_feeds = {};
+    this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
     this.favicons = {};
     this.folders = [];
     this.stories = {};
@@ -154,7 +154,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         var story = this.get_story(story_id);
         var feed_id = story.story_feed_id;
-        var social_user_id = this.social_feeds[social_feed_id].user_id;
+        var social_user_id = this.social_feeds.get(social_feed_id).user_id;
         var read = story.read_status;
 
         if (!story.read_status) {
@@ -268,7 +268,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             });
             self.folders = subscriptions.folders;
             self.starred_count = subscriptions.starred_count;
-            self.social_feeds = subscriptions.social_feeds;
+            self.social_feeds.reset(subscriptions.social_feeds);
             
             if (!_.isEqual(self.favicons, {})) {
                 _.each(self.feeds, function(feed) {
@@ -632,7 +632,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         if (_.string.include(feed_id, 'social:')) {
-            return this.social_feeds[feed_id];
+            return this.social_feeds.get(feed_id);
         } else {
             return this.feeds[feed_id];
         }
@@ -1016,6 +1016,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.following_profiles.add(data.follow_profile);
                 follow_user = new NEWSBLUR.Models.User(data.follow_profile);
             }
+            this.social_feeds.add(data.follow_subscription);
             callback(data, follow_user);
         }, this);
         this.make_request('/social/follow', {'user_id': user_id}, pre_callback);
@@ -1027,6 +1028,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.following_profiles.remove(function(profile) {
                 return profile.get('user_id') == data.unfollow_profile.user_id;
             });
+            this.social_feeds.remove(data.unfollow_profile.id);
             var unfollow_user = new NEWSBLUR.Models.User(data.unfollow_profile);
             callback(data, unfollow_user);
         }, this);

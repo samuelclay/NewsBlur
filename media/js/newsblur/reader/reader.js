@@ -1101,15 +1101,13 @@
         },
         
         make_social_feeds: function() {
-            var social_feeds = this.model.social_feeds;
             var $social_feeds = this.$s.$social_feeds;
             
             $social_feeds.empty();
             
             var $feeds = "";
-            _.each(social_feeds, _.bind(function(feed) {
-                console.log(["social feed", feed]);
-                var $feed = this.make_feed_title_template(feed, 'feed', 0);
+            this.model.social_feeds.each(_.bind(function(feed) {
+                var $feed = this.make_feed_title_template(feed.attributes, 'feed', 0);
                 $feeds += $feed;
             }, this));
 

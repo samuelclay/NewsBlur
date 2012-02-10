@@ -237,15 +237,17 @@ class MSocialSubscription(mongo.Document):
     @classmethod
     def feeds(cls, *args, **kwargs):
         user_id = kwargs['user_id']
-        social_subs = cls.objects.filter(user_id=user_id)
+        params = dict(user_id=user_id)
+        if 'subscription_user_id' in kwargs:
+            params["subscription_user_id"] = kwargs["subscription_user_id"]
+        social_subs = cls.objects.filter(**params)
         social_feeds = []
         if social_subs:
             social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
             social_user_ids = social_subs.keys()
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
-            social_feeds = {}
             for user_id, social_sub in social_subs.items():
-                social_feeds[social_profiles[user_id]['id']] = dict(social_sub.items() + social_profiles[user_id].items())
+                social_feeds.append(dict(social_sub.items() + social_profiles[user_id].items()))
 
         return social_feeds
     
