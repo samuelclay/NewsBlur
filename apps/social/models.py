@@ -282,7 +282,7 @@ class MSocialSubscription(mongo.Document):
             date = now if now > story.story_date else story.story_date # For handling future stories
             m = MUserStory(user_id=self.user_id, 
                            feed_id=feed_id, read_date=date, 
-                           story_id=story_id, story_date=story.story_date)
+                           story_id=story.story_guid, story_date=story.story_date)
             m.save()
                 
         return data

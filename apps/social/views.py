@@ -63,6 +63,7 @@ def load_social_stories(request, user_id, username=None):
     userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id__in=story_feed_ids,
                                         story_id__in=story_ids).only('story_id')
+    userstories = set(us.story_id for us in userstories_db)
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_feed_id__in=story_feed_ids, 
                                             story_guid__in=story_ids).only('story_guid', 'starred_date')
@@ -73,7 +74,6 @@ def load_social_stories(request, user_id, username=None):
     starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
     shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
                            for story in shared_stories])
-    userstories = set(us.story_id for us in userstories_db)
     
     for story in stories:
         story['social_user_id'] = social_user_id

@@ -154,7 +154,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         var story = this.get_story(story_id);
         var feed_id = story.story_feed_id;
-        var social_user_id = this.social_feeds.get(social_feed_id).user_id;
+        var social_user_id = this.social_feeds.get(social_feed_id).get('user_id');
         var read = story.read_status;
 
         if (!story.read_status) {
@@ -632,7 +632,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var self = this;
         
         if (_.string.include(feed_id, 'social:')) {
-            return this.social_feeds.get(feed_id);
+            return this.social_feeds.get(feed_id).attributes;
         } else {
             return this.feeds[feed_id];
         }

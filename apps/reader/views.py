@@ -15,6 +15,7 @@ from django.conf import settings
 from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
+from mongoengine.queryset import OperationError
 from pymongo.helpers import OperationFailure
 from collections import defaultdict
 from operator import itemgetter
@@ -757,7 +758,7 @@ def mark_feed_stories_as_read(request):
 def mark_social_stories_as_read(request):
     code = 1
     errors = []
-    data = None
+    data = {}
     users_feeds_stories = request.REQUEST.get('users_feeds_stories', "{}")
     users_feeds_stories = json.decode(users_feeds_stories)
 
@@ -768,7 +769,11 @@ def mark_social_stories_as_read(request):
                 socialsub = MSocialSubscription.objects.get(user_id=request.user.pk, 
                                                             subscription_user_id=social_user_id)
                 data = socialsub.mark_story_ids_as_read(story_ids, feed_id, request=request)
+            except OperationError, e:
+                code = -1
+                errors.append("Already read story: %s" % e)
             except MSocialSubscription.DoesNotExist:
+                code = -1
                 errors.append("You are not subscribed to this social user_id: %s" % social_user_id)
             except Feed.DoesNotExist:
                 duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
@@ -782,8 +787,9 @@ def mark_social_stories_as_read(request):
                         errors.append("No feed exists for feed_id %d." % feed_id)
                 else:
                     continue
-    
-    return dict(code=code, errors=errors, data=data)
+
+    data.update(code=code, errors=errors)
+    return data
     
 @ajax_login_required
 @json.json_view
