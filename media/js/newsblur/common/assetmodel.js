@@ -46,6 +46,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     init: function() {
         this.ajax = {};
+        this.ajax['rapid']       = $.manageAjax.create('rapid', {queue: false});
         this.ajax['queue']       = $.manageAjax.create('queue', {queue: true}); 
         this.ajax['queue_clear'] = $.manageAjax.create('queue_clear', {queue: 'clear'}); 
         this.ajax['feed']        = $.manageAjax.create('feed', {queue: 'clear', abortOld: true, 
@@ -137,7 +138,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     story_id: this.queued_read_stories[feed_id],
                     feed_id: feed_id
                 }, null, null, {
-                    'ajax_group': 'queue_clear',
+                    'ajax_group': $.browser.msie ? 'rapid' : 'queue_clear',
                     'beforeSend': function() {
                         self.queued_read_stories = {};
                     }

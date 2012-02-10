@@ -522,14 +522,32 @@ $(document).ready(function() {
           </div>
         </div>
         <ul class="taskbar_nav taskbar_nav_feeds">
-          <li class="task_button task_button_menu NB-task-add"></li>
-          <li class="task_button task_button_menu NB-task-manage NB-disabled"></li>
+          <li class="task_button task_button_menu NB-task-add">
+              <div class="task_button_background"></div>
+              <div class="NB-task-image"></div>
+          </li>
+          <li class="task_button task_button_menu NB-task-manage NB-disabled">
+              <div class="task_button_background"></div>
+              <div class="NB-task-image"></div>
+          </li>
         </ul>
         <div class="NB-taskbar-intelligence">
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
-          <div class="NB-intelligence-slider"></div>
+          <div class="NB-intelligence-slider">
+              <ul class="segmented-control">
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_red.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+              </ul>
+          </div>
         </div>
         <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (u)"></div>
       </div>
@@ -549,6 +567,8 @@ $(document).ready(function() {
           <div class="NB-taskbar">
             <ul class="taskbar_nav taskbar_nav_view">
               <li class="task_button task_button_view task_view_page NB-active">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Original</span>
                 <span class="NB-task-original-return NB-task-title">
                   <div>Return to</div>
@@ -557,22 +577,37 @@ $(document).ready(function() {
                 <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
               </li>
               <li class="task_button task_button_view task_view_feed">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Feed</span>
                 <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
               </li>
               <li class="task_button task_button_view task_view_story">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Story</span>
               </li>
               <li class="task_button NB-task-feed-settings"></li>
             </ul>
             <ul class="taskbar_nav taskbar_nav_story first">
-              <li class="task_button task_button_story task_story_previous"></li>
+              <li class="task_button task_button_story task_story_previous">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </li>
               <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Next Unread</span>
               </li>
-              <li class="task_button task_button_story task_story_next"></li>
+              <li class="task_button task_button_story task_story_next">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </li>
               {% if not user.is_authenticated %}
-                <li class="task_button task_button_signup"></li>
+                <li class="task_button task_button_signup">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+                </li>
               {% endif %}
             </ul>
           </div>

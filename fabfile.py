@@ -81,7 +81,6 @@ def deploy():
     post_deploy()
 
 def deploy_full():
-    pre_deploy()
     deploy_code(full=True)
     post_deploy()
 
@@ -279,6 +278,10 @@ def setup_repo_local_settings():
         run('mkdir -p logs')
         run('touch logs/newsblur.log')
 
+def copy_local_settings():
+    with cd(env.NEWSBLUR_PATH):
+        put('local_settings.py.server', 'local_settings.py')
+        
 def setup_local_files():
     put("config/toprc", "./.toprc")
     put("config/zshrc", "./.zshrc")

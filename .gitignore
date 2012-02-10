@@ -1,4 +1,6 @@
 logs/*.log
+logs/*.log.*
+logs/*.pid
 *.pyc
 static/*
 local_settings.py
@@ -8,6 +10,7 @@ build/
 .DS_Store
 **/*.perspectivev*
 data/
+config/certificates/*
 **/*.xcuserstate
 UserInterfaceState.xcuserstate
 UserInterfaceState\.xcuserstate
