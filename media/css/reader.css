@@ -3060,7 +3060,7 @@ a.NB-splash-link:hover {
     text-transform: none;
     position: absolute;
     right: 8px;
-    bottom: 4px;
+    top: 4px;
 }
 
 .NB-add .NB-add-folders select {
@@ -3078,7 +3078,7 @@ a.NB-splash-link:hover {
 }
 
 .NB-add input[type=text] {
-    width: 308px;
+    width: 300px;
     margin-bottom: 16px;
 }
 .NB-add .NB-add-add-folder input[type=text] {
