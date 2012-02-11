@@ -2596,7 +2596,8 @@
                 });
             }
             
-            if (story && story['story_feed_id'] == this.active_feed) {
+            if (story && (story['story_feed_id'] == this.active_feed || 
+                          "social:" + story['social_user_id'] == this.active_feed)) {
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
                 // NEWSBLUR.log(['Fetching story', s, story.story_title, $story]);
                 
@@ -2618,8 +2619,9 @@
                         clearInterval(self.flags['iframe_scroll_snapback_check']);
                     }
                 }, 20);
-            } else if (story && story['story_feed_id'] != this.active_feed) {
-                NEWSBLUR.log(['Switched off iframe early']);
+            } else if (story && story['story_feed_id'] != this.active_feed &&
+                       "social:" + story['social_user_id'] != this.active_feed) {
+                NEWSBLUR.log(['Switched off iframe early', this.active_feed, story['story_feed_id'], story['social_user_id']]);
             }
         },
         
