@@ -371,12 +371,15 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 }
 
 .NB-feedlist .NB-socialfeeds .feed {
-    background-color: #E6DFD3;    
-    border-top-color: #E6DFD3;    
-    border-bottom-color: #E6DFD3;    
+    background-color: #C6D3E6;    
+    border-top-color: #C6D3E6;    
+    border-bottom-color: #C6D3E6;    
 }
 .NB-feedlist .NB-socialfeeds .feed:last-child {
     border-bottom: 1px solid #A0A0A0;
+}
+.NB-feedlist .NB-socialfeeds .feed .feed_title {
+    text-shadow: 0 1px 0 #DAE2E8;
 }
 
 
@@ -3337,7 +3340,7 @@ a.NB-splash-link:hover {
     text-transform: none;
     position: absolute;
     right: 8px;
-    top: 4px;
+    top: 3px;
 }
 
 .NB-add .NB-add-folders select {

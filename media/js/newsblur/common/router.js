@@ -6,6 +6,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "try/?": "try_site",
         "site/:site_id": "site",
         "site/:site_id/:slug": "site",
+        "social/:user_id": "social",
+        "social/:user_id/:slug": "social",
         "user/*user": "user"
     },
     
@@ -23,8 +25,15 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     site: function(site_id, slug) {
+        console.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
-        NEWSBLUR.reader.open_feed(site_id, {silent: true});
+        NEWSBLUR.reader.open_feed(site_id, {force: true});
+    },
+    
+    social: function(user_id, slug) {
+        console.log(["social", user_id, slug]);
+        user_id = "social:" + user_id;
+        NEWSBLUR.reader.open_social_stories(user_id, {force: true});
     },
     
     user: function(user) {
