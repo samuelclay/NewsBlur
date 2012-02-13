@@ -497,6 +497,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/reader/feeds_trainer', params, callback, null, {'ajax_group': 'feed', 'request_type': 'GET'});
     },    
     
+    get_social_trainer: function(feed_id, callback) {
+        var self = this;
+        var params = {};
+        
+        if (feed_id) {
+          params['user_id'] = feed_id.replace('social:', '');
+        }
+        
+        this.make_request('/social/feed_trainer', params, callback, null, {'ajax_group': 'feed', 'request_type': 'GET'});
+    },    
     
     retrain_all_sites: function(callback) {
         var self = this;

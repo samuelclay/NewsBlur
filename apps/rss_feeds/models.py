@@ -122,8 +122,7 @@ class Feed(models.Model):
 
             
         return feed
-
-
+    
     def save(self, *args, **kwargs):
         if not self.last_update:
             self.last_update = datetime.datetime.utcnow()

@@ -2773,6 +2773,10 @@ background: transparent;
 .NB-taskbar .task_button.task_view_story .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
 }
+.NB-taskbar .task_button.NB-task-feed-settings .NB-task-image {
+    left: 12px;
+    background: transparent url('/media/embed/icons/silk/cog.png') no-repeat 0 0;
+}
 .NB-taskbar .task_button.task_story_next_positive .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
 }

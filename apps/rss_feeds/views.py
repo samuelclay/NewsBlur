@@ -97,6 +97,7 @@ def load_feed_statistics(request, feed_id):
     feed.save_classifier_counts()
     
     # Dates of last and next update
+    stats['active'] = feed.active
     stats['last_update'] = relative_timesince(feed.last_update)
     stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
 

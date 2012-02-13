@@ -13,6 +13,7 @@ from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import MUserStory, UserSubscription
 from utils import json_functions as json
 from utils import log as logging
@@ -314,6 +315,24 @@ def shared_stories_rss_feed(request, user_id, username):
     rss = RSS.RSS2(**data)
     
     return HttpResponse(rss.to_xml())
+
+@json.json_view
+def social_feed_trainer(request):
+    social_user_id = request.REQUEST.get('user_id')
+    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    social_user = get_object_or_404(User, pk=social_user_id)
+    user = get_user(request)
+    
+    social_profile.count_stories()
+    classifier = social_profile.to_json()
+    classifier['classifiers'] = get_classifiers_for_user(user, social_user_id)
+    classifier['num_subscribers'] = social_profile.follower_count
+    classifier['feed_tags'] = []
+    classifier['feed_authors'] = []
+    
+    logging.user(user, "~FGLoading social trainer on ~SB%s: %s" % (social_user.username, social_profile.title))
+    
+    return [classifier]
     
 @login_required
 @render_to('social/social_connect.xhtml')

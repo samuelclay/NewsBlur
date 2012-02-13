@@ -197,6 +197,7 @@ NEWSBLUR.log = function(msg) {
             else if (feed.favicon_url && !empty_on_missing) return feed.favicon_url;
             else if (feed.photo_url) return feed.photo_url;
             else if (empty_on_missing) return 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+            else if (_.isNumber(feed.id)) return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
             return feed.favicon_url;
         },
         

@@ -2990,7 +2990,7 @@
             var $share_button = $('.NB-sideoption-share-save', $share);
             
             $comment_input.bind('keyup', function() {
-                if (_.string.isBlank($comment_input.val())) {
+                if (!_.string.isBlank($comment_input.val())) {
                     $share_button.text('Share with comment');
                 } else {
                     $share_button.text('Share');
@@ -6520,7 +6520,7 @@
             $.targetIs(e, { tagSelector: '.NB-feedbar-train-feed' }, function($t, $p){
                 e.preventDefault();
                 if (!$('.NB-task-manage').hasClass('NB-disabled')) {
-                    self.open_feed_intelligence_modal(1, this.active_feed, true);
+                    self.open_feed_intelligence_modal(1, self.active_feed, !self.flags.social_view);
                 }
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-title-indicator' }, function($t, $p){

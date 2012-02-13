@@ -3,6 +3,7 @@ import zlib
 import hashlib
 import redis
 import mongoengine as mongo
+from collections import defaultdict
 # from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,10 +11,12 @@ from django.core.urlresolvers import reverse
 from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.rss_feeds.models import Feed
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils import json_functions as json
 
 
 class MSocialProfile(mongo.Document):
@@ -34,6 +37,7 @@ class MSocialProfile(mongo.Document):
     following_user_ids   = mongo.ListField(mongo.IntField())
     follower_user_ids    = mongo.ListField(mongo.IntField())
     unfollowed_user_ids  = mongo.ListField(mongo.IntField())
+    popular_publishers   = mongo.StringField()
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
     favicon_color        = mongo.StringField(max_length=6)
@@ -54,6 +58,31 @@ class MSocialProfile(mongo.Document):
         if not self.subscription_count:
             self.count(skip_save=True)
         super(MSocialProfile, self).save(*args, **kwargs)
+    
+    def count_stories(self):
+        # Popular Publishers
+        self.save_popular_publishers()
+        
+    def save_popular_publishers(self, feed_publishers=None):
+        if not feed_publishers:
+            publishers = defaultdict(int)
+            for story in MSharedStory.objects(user_id=self.user_id).only('story_feed_id')[:500]:
+                publishers[story.story_feed_id] += 1
+            feed_titles = dict((f.id, f.feed_title) 
+                               for f in Feed.objects.filter(pk__in=publishers.keys()).only('id', 'feed_title'))
+            feed_publishers = sorted([{'id': k, 'feed_title': feed_titles[k], 'story_count': v} 
+                                      for k, v in publishers.items()],
+                                     key=lambda f: f['story_count'],
+                                     reverse=True)[:20]
+
+        popular_publishers = json.encode(feed_publishers)
+        if len(popular_publishers) < 1023:
+            self.popular_publishers = popular_publishers
+            self.save()
+            return
+
+        if len(popular_publishers) > 1:
+            self.save_popular_publishers(feed_publishers=feed_publishers[:-1])
         
     @classmethod
     def user_statistics(cls, user):
@@ -132,6 +161,9 @@ class MSocialProfile(mongo.Document):
                 'shared_stories_count': self.shared_stories_count,
                 'following_count': self.following_count,
                 'follower_count': self.follower_count,
+                'popular_publishers': json.decode(self.popular_publishers),
+                'stories_last_month': self.stories_last_month,
+                'average_stories_per_month': self.average_stories_per_month,
             }
         if full:
             params['photo_service']       = self.photo_service

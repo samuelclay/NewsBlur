@@ -74,6 +74,8 @@ var classifier_prototype = {
     },
     
     runner_feed: function() {
+        this.options.social_feed = _.string.include(this.feed_id, 'social:');
+
         if (!this.model.classifiers[this.feed_id]) {
             this.model.classifiers[this.feed_id] = _.extend({}, this.model.defaults['classifiers']);
         }
@@ -157,11 +159,12 @@ var classifier_prototype = {
     },
     
     load_feed: function(trainer_data) {
-        this.feed_id = trainer_data['feed_id'];
+        this.feed_id = trainer_data['feed_id'] || trainer_data['id'];
         this.feed = this.model.get_feed(this.feed_id);
         this.feed_tags = trainer_data['feed_tags'];
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
+        this.feed_publishers = trainer_data['popular_publishers'];
         this.feed.num_subscribers = trainer_data['num_subscribers'];
         this.options.feed_loaded = true;
         
@@ -248,8 +251,12 @@ var classifier_prototype = {
         var self = this;
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
-    
-        this.model.get_feeds_trainer(this.feed_id, function(data) {
+        
+        var get_trainer_fn = this.model.get_feeds_trainer;
+        if (this.options.social_feed) {
+            get_trainer_fn = this.model.get_social_trainer;
+        }
+        get_trainer_fn.call(this.model, this.feed_id, function(data) {
             self.trainer_data = data;
             if (data && data.length) {
               // Should only be one feed
@@ -377,6 +384,12 @@ var classifier_prototype = {
                       $.make('h5', 'Categories &amp; Tags'),
                       $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                           this.make_tags(this.feed_tags).concat(this.make_user_tags())
+                      )
+                  ])),
+                  (this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
+                      $.make('h5', 'Sharing Stories From These Sites'),
+                      $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
+                          this.make_publishers(this.feed_publishers)
                       )
                   ])),
                   $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
@@ -562,12 +575,21 @@ var classifier_prototype = {
         return this.make_tags(tags);
     },
     
+    make_publishers: function(publishers) {
+        var $publishers = _.map(publishers, _.bind(function(publisher) {
+            return this.make_publisher(publisher);
+        }, this));
+        
+        return $publishers;
+    },
+        
     make_publisher: function(publisher) {
-        var $publisher = this.make_classifier(publisher.feed_title, this.feed_id, 'feed');
+        console.log(["publisher", publisher]);
+        var $publisher = this.make_classifier(publisher.feed_title, publisher.id, 'feed', publisher.story_count, publisher);
         return $publisher;
     },
     
-    make_classifier: function(classifier_title, classifier_value, classifier_type, classifier_count) {
+    make_classifier: function(classifier_title, classifier_value, classifier_type, classifier_count, classifier) {
         var score = 0;
         // NEWSBLUR.log(['classifiers', this.user_classifiers, classifier_value, this.user_classifiers[classifier_type+'s']]);
         if (classifier_value in this.user_classifiers[classifier_type+'s']) {
@@ -575,7 +597,7 @@ var classifier_prototype = {
         }
         
         var classifier_type_title = Inflector.capitalize(classifier_type=='feed' ?
-                                    'publisher' :
+                                    'site' :
                                     classifier_type);
                                     
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
@@ -600,7 +622,7 @@ var classifier_prototype = {
                     (classifier_type == 'feed' && 
                         $.make('img', { 
                             className: 'feed_favicon', 
-                            src: $.favicon(this.feed)
+                            src: $.favicon(classifier)
                         })),
                     $.make('b', classifier_type_title+': '),
                     $.make('span', classifier_title)

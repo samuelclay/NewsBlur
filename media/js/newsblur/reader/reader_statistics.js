@@ -97,7 +97,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
               ]),
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
-                $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))
+                (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
+                (!data.active && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                   $.make('div', { className: 'NB-statistics-update'}, [
