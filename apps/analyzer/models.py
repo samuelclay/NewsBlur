@@ -25,8 +25,8 @@ class Category(models.Model):
 
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
-    feed_id = mongo.IntField()
-    social_user_id = mongo.IntField()
+    feed_id = mongo.IntField(required=False)
+    social_user_id = mongo.IntField(required=False)
     title = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -38,10 +38,10 @@ class MClassifierTitle(mongo.Document):
     }
             
 class MClassifierAuthor(mongo.Document):
-    user_id = mongo.IntField()
-    feed_id = mongo.IntField()
-    social_user_id = mongo.IntField()
-    author = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id', 'social_user_id'))
+    user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'author'))
+    feed_id = mongo.IntField(required=False)
+    social_user_id = mongo.IntField(required=False)
+    author = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
@@ -50,32 +50,32 @@ class MClassifierAuthor(mongo.Document):
         'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
-    
 
-class MClassifierFeed(mongo.Document):
-    user_id = mongo.IntField()
-    feed_id = mongo.IntField(unique_with=('user_id', 'social_user_id'))
-    social_user_id = mongo.IntField()
-    score = mongo.IntField()
-    creation_date = mongo.DateTimeField()
-    
-    meta = {
-        'collection': 'classifier_feed',
-        'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
-        'allow_inheritance': False,
-    }
-    
-        
+
 class MClassifierTag(mongo.Document):
-    user_id = mongo.IntField()
-    feed_id = mongo.IntField()
-    social_user_id = mongo.IntField()
-    tag = mongo.StringField(max_length=255, unique_with=('user_id', 'feed_id', 'social_user_id'))
+    user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'tag'))
+    feed_id = mongo.IntField(required=False)
+    social_user_id = mongo.IntField(required=False)
+    tag = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
     meta = {
         'collection': 'classifier_tag',
+        'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
+        'allow_inheritance': False,
+    }
+    
+
+class MClassifierFeed(mongo.Document):
+    user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id'))
+    feed_id = mongo.IntField(required=False)
+    social_user_id = mongo.IntField(required=False)
+    score = mongo.IntField()
+    creation_date = mongo.DateTimeField()
+    
+    meta = {
+        'collection': 'classifier_feed',
         'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
@@ -116,18 +116,36 @@ def apply_classifier_tags(classifiers, story):
             if score > 0: return classifier.score
     return score
     
-def get_classifiers_for_user(user, feed_id, classifier_feeds=None, classifier_authors=None, classifier_titles=None, classifier_tags=None):
+def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier_feeds=None, classifier_authors=None, 
+                             classifier_titles=None, classifier_tags=None):
+    params = dict(user_id=user.pk)
+    if isinstance(feed_id, int):
+        params['feed_id'] = feed_id
+    elif isinstance(feed_id, list):
+        params['feed_id__in'] = feed_id
+    if social_user_id:
+        params['social_user_id'] = int(social_user_id.replace('social:', ''))
+    else:
+        params['social_user_id'] = 0
+    
     if classifier_feeds is None:
-        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_feeds = list(MClassifierFeed.objects(**params))
     if classifier_authors is None:
-        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_authors = list(MClassifierAuthor.objects(**params))
     if classifier_titles is None:
-        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_titles = list(MClassifierTitle.objects(**params))
     if classifier_tags is None:
-        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
-
+        classifier_tags = list(MClassifierTag.objects(**params))
+    
+    feeds = []
+    for f in classifier_feeds:
+        if f.social_user_id and not f.feed_id:
+            feeds.append(('social:%s' % f.social_user_id, f.score))
+        else:
+            feeds.append((f.feed_id, f.score))
+            
     payload = {
-        'feeds': dict([(f.feed_id, f.score) for f in classifier_feeds]),
+        'feeds': dict(feeds),
         'authors': dict([(a.author, a.score) for a in classifier_authors]),
         'titles': dict([(t.title, t.score) for t in classifier_titles]),
         'tags': dict([(t.tag, t.score) for t in classifier_tags]),

@@ -325,7 +325,7 @@ def social_feed_trainer(request):
     
     social_profile.count_stories()
     classifier = social_profile.to_json()
-    classifier['classifiers'] = get_classifiers_for_user(user, social_user_id)
+    classifier['classifiers'] = get_classifiers_for_user(user, social_user_id=classifier['id'])
     classifier['num_subscribers'] = social_profile.follower_count
     classifier['feed_tags'] = []
     classifier['feed_authors'] = []
