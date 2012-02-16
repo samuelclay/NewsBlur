@@ -33,7 +33,7 @@ def search_feed(request):
 def load_single_feed(request, feed_id):
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
-    classifiers = get_classifiers_for_user(user, feed.pk)
+    classifiers = get_classifiers_for_user(user, feed_id=feed.pk)
 
     payload = feed.canonical(full=True)
     payload['classifiers'] = classifiers
@@ -226,7 +226,7 @@ def exception_change_feed_address(request):
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
-    classifiers = get_classifiers_for_user(usersub.user, usersub.feed_id)
+    classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
@@ -290,7 +290,7 @@ def exception_change_feed_link(request):
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
-    classifiers = get_classifiers_for_user(usersub.user, usersub.feed_id)
+    classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 

@@ -386,7 +386,7 @@ var classifier_prototype = {
                           this.make_tags(this.feed_tags).concat(this.make_user_tags())
                       )
                   ])),
-                  (this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
+                  (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
                       $.make('h5', 'Sharing Stories From These Sites'),
                       $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
                           this.make_publishers(this.feed_publishers)

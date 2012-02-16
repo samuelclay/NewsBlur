@@ -204,7 +204,6 @@
             usernameInput.frame = CGRectMake(20, 67, 280, 31); 
             usernameOrEmailLabel.alpha = 1.0;
             
-            
             passwordInput.frame = CGRectMake(20, 129, 280, 31);
             passwordLabel.frame = CGRectMake(21, 106, 212, 22);
             passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);

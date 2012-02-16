@@ -388,10 +388,10 @@ def load_single_feed(request, feed_id):
     stories = MSharedStory.stories_with_comments(stories, user)
     
     # Get intelligence classifier for user
-    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
-    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
-    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
+    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
+    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
     
     checkpoint1 = time.time()
     
@@ -450,8 +450,11 @@ def load_single_feed(request, feed_id):
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
-    classifiers = get_classifiers_for_user(user, feed_id, classifier_feeds, 
-                                           classifier_authors, classifier_titles, classifier_tags)
+    classifiers = get_classifiers_for_user(user, feed_id=feed_id, 
+                                           classifier_feeds=classifier_feeds, 
+                                           classifier_authors=classifier_authors, 
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
     
     if usersub:
         usersub.feed_opens += 1
@@ -648,10 +651,11 @@ def load_river_stories(request):
         logging.info(" ***> Classifiers failure")
     else:
         for feed_id in found_feed_ids:
-            classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
-                                                            classifier_authors[feed_id],
-                                                            classifier_titles[feed_id],
-                                                            classifier_tags[feed_id])
+            classifiers[feed_id] = get_classifiers_for_user(user, feed_id=feed_id, 
+                                                            classifier_feeds=classifier_feeds[feed_id], 
+                                                            classifier_authors=classifier_authors[feed_id],
+                                                            classifier_titles=classifier_titles[feed_id],
+                                                            classifier_tags=classifier_tags[feed_id])
     
     # Just need to format stories
     for story in stories:
@@ -1047,7 +1051,7 @@ def feeds_trainer(request):
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier['classifiers'] = get_classifiers_for_user(user, us.feed_id)
+            classifier['classifiers'] = get_classifiers_for_user(user, feed_id=us.feed_id)
             classifier['feed_id'] = us.feed_id
             classifier['stories_last_month'] = us.feed.stories_last_month
             classifier['num_subscribers'] = us.feed.num_subscribers

@@ -107,7 +107,7 @@ def get_classifiers_feed(request, feed_id):
     user = get_user(request)
     code = 0
     
-    payload = get_classifiers_for_user(user, feed_id)
+    payload = get_classifiers_for_user(user, feed_id=feed_id)
     
     response = dict(code=code, payload=payload)
     

@@ -25,8 +25,8 @@ class Category(models.Model):
 
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
-    feed_id = mongo.IntField(required=False)
-    social_user_id = mongo.IntField(required=False)
+    feed_id = mongo.IntField(default=0)
+    social_user_id = mongo.IntField(default=0)
     title = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -39,8 +39,8 @@ class MClassifierTitle(mongo.Document):
             
 class MClassifierAuthor(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'author'))
-    feed_id = mongo.IntField(required=False)
-    social_user_id = mongo.IntField(required=False)
+    feed_id = mongo.IntField(default=0)
+    social_user_id = mongo.IntField(default=0)
     author = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -54,8 +54,8 @@ class MClassifierAuthor(mongo.Document):
 
 class MClassifierTag(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'tag'))
-    feed_id = mongo.IntField(required=False)
-    social_user_id = mongo.IntField(required=False)
+    feed_id = mongo.IntField(default=0)
+    social_user_id = mongo.IntField(default=0)
     tag = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -69,8 +69,8 @@ class MClassifierTag(mongo.Document):
 
 class MClassifierFeed(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id'))
-    feed_id = mongo.IntField(required=False)
-    social_user_id = mongo.IntField(required=False)
+    feed_id = mongo.IntField(default=0)
+    social_user_id = mongo.IntField(default=0)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
@@ -90,14 +90,6 @@ def apply_classifier_titles(classifiers, story):
             if score > 0: return score
     return score
     
-def apply_classifier_feeds(classifiers, feed):
-    feed_id = feed if isinstance(feed, int) else feed.pk
-    for classifier in classifiers:
-        if classifier.feed_id == feed_id:
-            # print 'Feeds: %s -- %s' % (classifier.feed_id, feed.pk)
-            return classifier.score
-    return 0
-    
 def apply_classifier_authors(classifiers, story):
     score = 0
     for classifier in classifiers:
@@ -115,6 +107,16 @@ def apply_classifier_tags(classifiers, story):
             score = classifier.score
             if score > 0: return classifier.score
     return score
+    
+def apply_classifier_feeds(classifiers, feed, social_user_id=None):
+    feed_id = feed if isinstance(feed, int) else feed.pk
+    for classifier in classifiers:
+        if classifier.feed_id == feed_id:
+            # print 'Feeds: %s -- %s' % (classifier.feed_id, feed.pk)
+            return classifier.score
+        if social_user_id and not classifier.feed_id and social_user_id == classifier.social_user_id:
+            return classifier.score
+    return 0
     
 def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier_feeds=None, classifier_authors=None, 
                              classifier_titles=None, classifier_tags=None):

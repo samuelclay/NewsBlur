@@ -36,6 +36,7 @@ def load_social_stories(request, user_id, username=None):
     page = request.REQUEST.get('page')
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
@@ -52,18 +53,21 @@ def load_social_stories(request, user_id, username=None):
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    date_delta = UNREAD_CUTOFF
+    if date_delta < socialsub.mark_read_date:
+        date_delta = socialsub.mark_read_date
     
     # Get intelligence classifier for user
-    # XXX TODO: Change all analyzers to use social feed ids instead of overlapping with feed ids. Ugh.
-    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=social_user_id))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=social_user_id))
-    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=social_user_id))
-    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=social_user_id))
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, social_user_id=social_user_id))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id=social_user_id))
+    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, social_user_id=social_user_id))
+    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, social_user_id=social_user_id))
     
     story_ids = [story['id'] for story in stories]
     userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id__in=story_feed_ids,
-                                        story_id__in=story_ids).only('story_id')
+                                        story_id__in=story_ids,
+                                        read_date__gte=date_delta).only('story_id')
     userstories = set(us.story_id for us in userstories_db)
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_feed_id__in=story_feed_ids, 
@@ -80,18 +84,20 @@ def load_social_stories(request, user_id, username=None):
         story['social_user_id'] = social_user_id
         story_feed_id = story['story_feed_id']
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
-        story['long_parsed_date'] = format_story_link_date__long(story_date, now)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
-        story['shared_date'] = format_story_link_date__long(shared_date, now)
+        story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
+        story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
         if story['id'] in userstories:
+            story['read_status'] = 1
+        elif story['shared_date'] < date_delta:
             story['read_status'] = 1
         elif not usersubs_map.get(story_feed_id):
             story['read_status'] = 0
-        elif not story.get('read_status') and story['story_date'] < usersubs_map[story_feed_id].mark_read_date:
+        # elif not story.get('read_status') and story['shared_date'] < usersubs_map[story_feed_id].mark_read_date:
+        elif not story.get('read_status') and story['shared_date'] < socialsub.mark_read_date:
             story['read_status'] = 1
-        elif not story.get('read_status') and story['story_date'] > usersubs_map[story_feed_id].last_read_date:
-            story['read_status'] = 0
+        # elif not story.get('read_status') and story['shared_date'] > socialsub.last_read_date:
+        #     story['read_status'] = 0
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
@@ -103,12 +109,12 @@ def load_social_stories(request, user_id, username=None):
             story['shared_comments'] = shared_stories[story['id']]['comments']
 
         story['intelligence'] = {
-            'feed': apply_classifier_feeds(classifier_feeds, social_user_id),
+            'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id'], social_user_id=social_user_id),
             'author': apply_classifier_authors(classifier_authors, story),
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
         }
-    
+
     logging.user(request, "~FCLoading shared stories: ~SB%s stories" % (len(stories)))
     
     return dict(stories=stories, feeds=unsub_feeds)

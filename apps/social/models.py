@@ -273,6 +273,8 @@ class MSocialSubscription(mongo.Document):
         if 'subscription_user_id' in kwargs:
             params["subscription_user_id"] = kwargs["subscription_user_id"]
         social_subs = cls.objects.filter(**params)
+        for sub in social_subs:
+            sub.calculate_feed_scores()
         social_feeds = []
         if social_subs:
             social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
@@ -287,9 +289,9 @@ class MSocialSubscription(mongo.Document):
         return {
             'user_id': self.user_id,
             'subscription_user_id': self.subscription_user_id,
-            'nt': self.unread_count_neutral + 2,
-            'ps': self.unread_count_positive + 3,
-            'ng': self.unread_count_negative + 1,
+            'nt': self.unread_count_neutral,
+            'ps': self.unread_count_positive,
+            'ng': self.unread_count_negative,
             'is_trained': self.is_trained,
         }
     
@@ -333,12 +335,15 @@ class MSocialSubscription(mongo.Document):
 
         # Cannot delete these stories, since the original feed may not be read. 
         # Just go 2 weeks back.
-        UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id, mark_read_date=UNREAD_CUTOFF)
+        # UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        # MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id, mark_read_date=UNREAD_CUTOFF)
                 
         self.save()
     
-    def calculate_feed_scores(self, silent=False, stories_db=None):
+    def calculate_feed_scores(self, silent=False):
+        # if not self.needs_unread_recalc:
+        #     return
+            
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         user = User.objects.get(pk=self.user_id)
@@ -357,49 +362,41 @@ class MSocialSubscription(mongo.Document):
         else:
             self.mark_read_date = date_delta
 
+        stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
+                                          shared_date__gte=date_delta)
+        story_feed_ids = [s['story_feed_id'] for s in stories_db]
+        if not story_feed_ids: return
+
+        usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
+        usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
         read_stories = MUserStory.objects(user_id=self.user_id,
-                                          feed_id=self.feed_id,
-                                          read_date__gte=self.mark_read_date)
-        # if not silent:
-        #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
-        read_stories_ids = []
-        for us in read_stories:
-            read_stories_ids.append(us.story_id)
-        stories_db = stories_db or MStory.objects(story_feed_id=self.feed_id,
-                                                  story_date__gte=date_delta)
-        # if not silent:
-        #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+                                          feed_id__in=story_feed_ids,
+                                          read_date__gte=date_delta)
+        read_stories_ids = [rs.story_id for rs in read_stories]
+
         oldest_unread_story_date = now
         unread_stories_db = []
         for story in stories_db:
-            if story.story_date < date_delta:
-                continue
-            if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
+            if (hasattr(story, 'story_guid') and 
+                story.story_guid not in read_stories_ids):
                 unread_stories_db.append(story)
                 if story.story_date < oldest_unread_story_date:
                     oldest_unread_story_date = story.story_date
-        stories = Feed.format_stories(unread_stories_db, self.feed_id)
-        # if not silent:
-        #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
+        stories = Feed.format_stories(unread_stories_db)
         
-        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id))
-        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
-        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
-        classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
+        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
+        classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
 
-        # if not silent:
-        #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
-            
-        scores = {
-            'feed': apply_classifier_feeds(classifier_feeds, self.feed),
-        }
-        
         for story in stories:
-            scores.update({
+            scores = {
+                'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
+                                                  social_user_id=self.subscription_user_id),
                 'author' : apply_classifier_authors(classifier_authors, story),
                 'tags'   : apply_classifier_tags(classifier_tags, story),
                 'title'  : apply_classifier_titles(classifier_titles, story),
-            })
+            }
             
             max_score = max(scores['author'], scores['tags'], scores['title'])
             min_score = min(scores['author'], scores['tags'], scores['title'])
@@ -416,9 +413,6 @@ class MSocialSubscription(mongo.Document):
                     feed_scores['neutral'] += 1
                 
         
-        # if not silent:
-        #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
-            
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
@@ -434,7 +428,7 @@ class MSocialSubscription(mongo.Document):
             self.mark_feed_read()
         
         if not silent:
-            logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
+            logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (user.username, self.subscription_user_id, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
         return self
     
