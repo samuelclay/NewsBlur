@@ -146,29 +146,19 @@ class MSocialProfile(mongo.Document):
         
     def to_json(self, compact=False, full=False):
         domain = Site.objects.get_current().domain
-        if compact:
-            params = {
-                'id': 'social:%s' % self.user_id,
-                'user_id': self.user_id,
-                'username': self.username,
-                'photo_url': self.photo_url,
-                'num_subscribers': self.follower_count,
-                'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
-                                        kwargs={'user_id': self.user_id, 'username': self.username})),
-                'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
-                                     kwargs={'user_id': self.user_id, 'username': self.username})),
-            }
-        else:
-            params = {
-                'id': 'social:%s' % self.user_id,
-                'user_id': self.user_id,
-                'username': self.username,
-                'photo_url': self.photo_url,
-                'num_subscribers': self.follower_count,
-                'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
-                                        kwargs={'user_id': self.user_id, 'username': self.username})),
-                'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
-                                     kwargs={'user_id': self.user_id, 'username': self.username})),
+        params = {
+            'id': 'social:%s' % self.user_id,
+            'user_id': self.user_id,
+            'username': self.username,
+            'photo_url': self.photo_url,
+            'num_subscribers': self.follower_count,
+            'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
+                                    kwargs={'user_id': self.user_id, 'username': self.username})),
+            'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
+                                 kwargs={'user_id': self.user_id, 'username': self.username})),
+        }
+        if not compact:
+            params.update({
                 'bio': self.bio,
                 'location': self.location,
                 'website': self.website,
@@ -179,12 +169,14 @@ class MSocialProfile(mongo.Document):
                 'popular_publishers': json.decode(self.popular_publishers),
                 'stories_last_month': self.stories_last_month,
                 'average_stories_per_month': self.average_stories_per_month,
-            }
+            })
         if full:
-            params['photo_service']       = self.photo_service
-            params['following_user_ids']  = self.following_user_ids
-            params['follower_user_ids']   = self.follower_user_ids
-            params['unfollowed_user_ids'] = self.unfollowed_user_ids
+            params.update({
+                'photo_service': self.photo_service,
+                'following_user_ids': self.following_user_ids,
+                'follower_user_ids': self.follower_user_ids,
+                'unfollowed_user_ids': self.unfollowed_user_ids,
+            })
         return params
     
     def update_user(self, skip_save=False):
