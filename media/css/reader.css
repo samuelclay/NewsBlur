@@ -375,7 +375,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     border-top-color: #C6D3E6;    
     border-bottom-color: #C6D3E6;    
 }
-.NB-feedlist .NB-socialfeeds .feed:last-child {
+.NB-feedlist .NB-socialfeeds {
     border-bottom: 1px solid #A0A0A0;
 }
 .NB-feedlist .NB-socialfeeds .feed .feed_title {

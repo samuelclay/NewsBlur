@@ -54,7 +54,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
         
-        this.model.get_feed_settings(this.feed_id, _.bind(this.populate_settings, this));
+        var settings_fn = this.options.social_feed ? this.model.get_social_settings : this.model.get_feed_settings;
+        settings_fn.call(this.model, this.feed_id, _.bind(this.populate_settings, this));
     },
     
     populate_settings: function() {

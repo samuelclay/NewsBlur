@@ -895,6 +895,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         });
     },
     
+    get_social_statistics: function(social_feed_id, callback) {
+        this.make_request('/social/statistics/'+_.string.ltrim(social_feed_id, 'social:'), {}, callback, callback, {
+            'ajax_group': 'statistics',
+            'request_type': 'GET'
+        });
+    },
+    
     get_feed_recommendation_info: function(feed_id, callback) {
         this.make_request('/recommendations/load_feed_info/'+feed_id, {}, callback, callback, {
             'ajax_group': 'statistics',
@@ -904,6 +911,13 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     get_feed_settings: function(feed_id, callback) {
         this.make_request('/rss_feeds/feed_settings/'+feed_id, {}, callback, callback, {
+            'ajax_group': 'statistics',
+            'request_type': 'GET'
+        });
+    },
+    
+    get_social_settings: function(social_feed_id, callback) {
+        this.make_request('/social/settings/'+_.string.ltrim(social_feed_id, 'social:'), {}, callback, callback, {
             'ajax_group': 'statistics',
             'request_type': 'GET'
         });

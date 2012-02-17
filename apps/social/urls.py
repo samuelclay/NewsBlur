@@ -16,5 +16,7 @@ urlpatterns = patterns('',
     url(r'^rss/(?P<user_id>\d+)/(?P<username>\w+)?$', views.shared_stories_rss_feed, name='shared-stories-rss-feed'),
     url(r'^stories/(?P<user_id>\w+)/(?P<username>\w+)?/?$', views.load_social_stories, name='load-social-stories'),
     url(r'^page/(?P<user_id>\w+)/(?P<username>\w+)?/?$', views.load_social_page, name='load-social-page'),
+    url(r'^settings/(?P<social_user_id>\w+)/(?P<username>\w+)?/?$', views.load_social_settings, name='load-social-settings'),
+    url(r'^statistics/(?P<social_user_id>\w+)/(?P<username>\w+)?/?$', views.load_social_statistics, name='load-social-statistics'),
     url(r'^(?P<username>\w+)/?$', views.shared_stories_public, name='shared-stories-public'),
 )

@@ -92,6 +92,10 @@ NEWSBLUR.utils = {
         return $.textColor({r: r, g: g, b: b}) != 'white';
     },
     
+    is_feed_social: function(feed_id) {
+        return _.string.include(feed_id, 'social:');
+    },
+    
     make_folders: function(model) {
         var folders = model.get_folders();
         var $options = $.make('select', { className: 'NB-folders'});

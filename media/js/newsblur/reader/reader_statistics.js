@@ -18,6 +18,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
     runner: function() {
         var self = this;
         
+        this.initialize_feed(this.feed_id);
         this.make_modal();
         this.open_modal();
         setTimeout(function() {
@@ -58,7 +59,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
         
-        this.model.get_feed_statistics(this.feed_id, $.rescope(this.populate_stats, this));
+        var statistics_fn = this.options.social_feed ? this.model.get_social_statistics : this.model.get_feed_statistics;
+        statistics_fn.call(this.model, this.feed_id, $.rescope(this.populate_stats, this));
     },
     
     populate_stats: function(s, data) {
@@ -86,7 +88,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var premium_update_interval = this.calculate_update_interval(data['premium_update_interval_minutes']);
         
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
-            $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
+            (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-updates'}, [
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Last Update'),
                 $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' ago')))
@@ -112,7 +114,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                     $.make('div', { className: 'NB-statistics-count' }, premium_update_interval)
                   ])
               ]))
-            ]),
+            ])),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history'}, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Stories per month')

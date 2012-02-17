@@ -243,7 +243,7 @@ var classifier_prototype = {
           this.feed_authors = this.model.get_feed_authors();
           $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
           $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
-          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed['num_subscribers']*4852) + ' subscribers');
+          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed['num_subscribers']) + ' subscribers');
         }
     },
     

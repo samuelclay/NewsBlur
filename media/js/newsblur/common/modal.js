@@ -79,6 +79,7 @@ NEWSBLUR.Modal.prototype = {
     initialize_feed: function(feed_id) {
         this.feed_id = feed_id;
         this.feed = this.model.get_feed(feed_id);
+        this.options.social_feed = NEWSBLUR.utils.is_feed_social(feed_id);
         
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);

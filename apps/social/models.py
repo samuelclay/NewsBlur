@@ -2,11 +2,13 @@ import datetime
 import zlib
 import hashlib
 import redis
+import re
 import mongoengine as mongo
 from collections import defaultdict
 # from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -40,6 +42,8 @@ class MSocialProfile(mongo.Document):
     popular_publishers   = mongo.StringField()
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
+    story_count_history  = mongo.ListField()
+    feed_classifier_counts = mongo.DictField()
     favicon_color        = mongo.StringField(max_length=6)
     
     meta = {
@@ -141,12 +145,18 @@ class MSocialProfile(mongo.Document):
         return params
         
     def to_json(self, compact=False, full=False):
+        domain = Site.objects.get_current().domain
         if compact:
             params = {
                 'id': 'social:%s' % self.user_id,
                 'user_id': self.user_id,
                 'username': self.username,
-                'photo_url': self.photo_url
+                'photo_url': self.photo_url,
+                'num_subscribers': self.follower_count,
+                'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
+                                        kwargs={'user_id': self.user_id, 'username': self.username})),
+                'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
+                                     kwargs={'user_id': self.user_id, 'username': self.username})),
             }
         else:
             params = {
@@ -154,6 +164,11 @@ class MSocialProfile(mongo.Document):
                 'user_id': self.user_id,
                 'username': self.username,
                 'photo_url': self.photo_url,
+                'num_subscribers': self.follower_count,
+                'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
+                                        kwargs={'user_id': self.user_id, 'username': self.username})),
+                'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
+                                     kwargs={'user_id': self.user_id, 'username': self.username})),
                 'bio': self.bio,
                 'location': self.location,
                 'website': self.website,
@@ -240,6 +255,107 @@ class MSocialProfile(mongo.Document):
         
         MSocialSubscription.objects.filter(user_id=self.user_id, subscription_user_id=user_id).delete()
 
+    def save_feed_story_history_statistics(self):
+        """
+        Fills in missing months between earlier occurances and now.
+        
+        Save format: [('YYYY-MM, #), ...]
+        Example output: [(2010-12, 123), (2011-01, 146)]
+        """
+        now = datetime.datetime.utcnow()
+        min_year = now.year
+        total = 0
+        month_count = 0
+
+        # Count stories, aggregate by year and month. Map Reduce!
+        map_f = """
+            function() {
+                var date = (this.shared_date.getFullYear()) + "-" + (this.shared_date.getMonth()+1);
+                emit(date, 1);
+            }
+        """
+        reduce_f = """
+            function(key, values) {
+                var total = 0;
+                for (var i=0; i < values.length; i++) {
+                    total += values[i];
+                }
+                return total;
+            }
+        """
+        dates = {}
+        res = MSharedStory.objects(user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
+        for r in res:
+            dates[r.key] = r.value
+            year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
+            if year < min_year:
+                min_year = year
+        
+        # Assemble a list with 0's filled in for missing months, 
+        # trimming left and right 0's.
+        months = []
+        start = False
+        for year in range(min_year, now.year+1):
+            for month in range(1, 12+1):
+                if datetime.datetime(year, month, 1) < now:
+                    key = u'%s-%s' % (year, month)
+                    if dates.get(key) or start:
+                        start = True
+                        months.append((key, dates.get(key, 0)))
+                        total += dates.get(key, 0)
+                        month_count += 1
+        print months
+        self.story_count_history = months
+        self.average_stories_per_month = total / month_count
+        self.save()
+    
+    def save_classifier_counts(self):
+        
+        def calculate_scores(cls, facet):
+            map_f = """
+                function() {
+                    emit(this["%s"], {
+                        pos: this.score>0 ? this.score : 0, 
+                        neg: this.score<0 ? Math.abs(this.score) : 0
+                    });
+                }
+            """ % (facet)
+            reduce_f = """
+                function(key, values) {
+                    var result = {pos: 0, neg: 0};
+                    values.forEach(function(value) {
+                        result.pos += value.pos;
+                        result.neg += value.neg;
+                    });
+                    return result;
+                }
+            """
+            scores = []
+            res = cls.objects(social_user_id=self.user_id).map_reduce(map_f, reduce_f, output='inline')
+            for r in res:
+                facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
+                facet_values[facet] = r.key
+                scores.append(facet_values)
+            scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
+
+            return scores
+        
+        scores = {}
+        for cls, facet in [(MClassifierTitle, 'title'), 
+                           (MClassifierAuthor, 'author'), 
+                           (MClassifierTag, 'tag'), 
+                           (MClassifierFeed, 'feed_id')]:
+            scores[facet] = calculate_scores(cls, facet)
+            if facet == 'feed_id' and scores[facet]:
+                scores['feed'] = scores[facet]
+                del scores['feed_id']
+            elif not scores[facet]:
+                del scores[facet]
+                
+        if scores:
+            print scores
+            self.feed_classifier_counts = scores
+            self.save()
 
 class MSocialSubscription(mongo.Document):
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -367,8 +483,8 @@ class MSocialSubscription(mongo.Document):
         story_feed_ids = [s['story_feed_id'] for s in stories_db]
         if not story_feed_ids: return
 
-        usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
-        usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
+        # usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
+        # usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
         read_stories = MUserStory.objects(user_id=self.user_id,
                                           feed_id__in=story_feed_ids,
                                           read_date__gte=date_delta)
@@ -431,6 +547,7 @@ class MSocialSubscription(mongo.Document):
             logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (user.username, self.subscription_user_id, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
         return self
+        
     
 class MSharedStory(mongo.Document):
     user_id                  = mongo.IntField()

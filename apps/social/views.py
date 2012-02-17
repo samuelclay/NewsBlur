@@ -83,7 +83,7 @@ def load_social_stories(request, user_id, username=None):
     for story in stories:
         story['social_user_id'] = social_user_id
         story_feed_id = story['story_feed_id']
-        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
+        # story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
         story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
@@ -339,6 +339,35 @@ def social_feed_trainer(request):
     logging.user(user, "~FGLoading social trainer on ~SB%s: %s" % (social_user.username, social_profile.title))
     
     return [classifier]
+    
+
+@json.json_view
+def load_social_statistics(request, social_user_id, username=None):
+    stats = dict()
+    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    social_profile.save_feed_story_history_statistics()
+    social_profile.save_classifier_counts()
+    
+    # Stories per month - average and month-by-month breakout
+    stats['average_stories_per_month'] = social_profile.average_stories_per_month
+    stats['story_count_history'] = social_profile.story_count_history
+    
+    # Subscribers
+    stats['subscriber_count'] = social_profile.follower_count
+    stats['num_subscribers'] = social_profile.follower_count
+    
+    # Classifier counts
+    stats['classifier_counts'] = social_profile.feed_classifier_counts
+    
+    logging.user(request, "~FBStatistics social: ~SB%s ~FG(%s subs)" % (social_profile.user_id, social_profile.follower_count))
+
+    return stats
+
+@json.json_view
+def load_social_settings(request, social_user_id, username=None):
+    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    
+    return social_profile.to_json()
     
 @login_required
 @render_to('social/social_connect.xhtml')
