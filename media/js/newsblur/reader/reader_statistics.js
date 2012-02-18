@@ -127,7 +127,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 this.make_classifier_count('title', data.classifier_counts['title']),
                 this.make_classifier_count('feed', data.classifier_counts['feed'])
             ])),
-            $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches'}, [
+            (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches'}, [
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
                     $.make('div', { className: 'NB-statistics-label' }, 'Feed'),
                     $.make('div', this.make_history(data, 'feed'))
@@ -136,7 +136,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                     $.make('div', { className: 'NB-statistics-label' }, 'Page'),
                     $.make('div', this.make_history(data, 'page'))
                 ])
-            ])
+            ]))
         ]);
         
         return $stats;

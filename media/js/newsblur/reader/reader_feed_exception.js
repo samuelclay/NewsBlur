@@ -15,6 +15,7 @@ NEWSBLUR.ReaderFeedException.prototype.constructor = NEWSBLUR.ReaderFeedExceptio
 _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     
     runner: function() {
+        NEWSBLUR.Modal.prototype.initialize_feed.call(this, this.feed_id);
         this.make_modal();
         this.show_recommended_options_meta();
         this.handle_cancel();
@@ -145,10 +146,10 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed['feed_address'] })
                     ]),
-                    $.make('div', { className: 'NB-exception-submit-wrapper' }, [
+                    (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
                         $.make('div', { className: 'NB-error' })
-                    ])
+                    ]))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-page NB-modal-submit' }, [
@@ -166,13 +167,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         ]),
                         $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed['feed_link'] })
                     ]),
-                    $.make('div', { className: 'NB-exception-submit-wrapper' }, [
+                    (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
                         $.make('div', { className: 'NB-error' })
-                    ])
+                    ]))
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-modal-submit' }, [
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-delete NB-exception-block-only NB-modal-submit' }, [
                 $.make('h5', [
                     $.make('span', { className: 'NB-exception-option-option NB-exception-only' }, 'Option 4:'),
                     'Just Delete This Feed'
