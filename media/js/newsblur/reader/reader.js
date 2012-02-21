@@ -3545,7 +3545,6 @@
             var $story_titles = this.$s.$story_titles;
             var feed_id = $story_titles.data('feed_id');
             var user_id = $story_titles.data('user_id');
-            var page = $story_titles.data('page');
 
             if (!this.flags['opening_feed']) {
                 this.flags.pre_load_page_scroll_position = $('#story_titles').scrollTop();
@@ -3559,7 +3558,7 @@
                                                      this.show_stories_error, false);
                 } else if (this.flags['social_view']) {
                     this.model.fetch_social_stories(this.active_feed, user_id,
-                                                    page+1, _.bind(this.post_open_social_stories, this),
+                                                    this.counts['page'], _.bind(this.post_open_social_stories, this),
                                                     this.show_stories_error, false);
                 } else if (this.flags['river_view']) {
                     this.model.fetch_river_stories(this.active_feed, this.cache['river_feeds_with_unreads'],

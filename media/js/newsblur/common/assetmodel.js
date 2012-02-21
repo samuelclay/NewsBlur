@@ -1019,6 +1019,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/friends', null, pre_callback);
     },
     
+    fetch_profile: function(user_id, callback) {
+        this.make_request('/social/profile', {'user_id': user_id}, callback);
+    },
+    
     disconnect_social_service: function(service, callback) {
         this.make_request('/social/'+service+'_disconnect/', null, callback);
     },
