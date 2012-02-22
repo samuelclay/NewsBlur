@@ -410,7 +410,7 @@ class Dispatcher:
             if listeners_count:
                 logging.debug("   ---> [%-30s] Published to %s subscribers" % (unicode(feed)[:30], listeners_count))
         except redis.ConnectionError:
-            logging.debug("   ***> [%-30s] Redis is unavailable for real-time." % (unicode(feed)[:30],))
+            logging.debug("   ***> [%-30s] ~FRRedis is unavailable for real-time." % (unicode(feed)[:30],))
         
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):

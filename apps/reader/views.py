@@ -1,6 +1,7 @@
 import datetime
 import time
 import boto
+import redis
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
@@ -384,9 +385,12 @@ def load_single_feed(request, feed_id):
         else:
             raise Http404
         
-    stories = feed.get_stories(offset, limit) 
-    stories = MSharedStory.stories_with_comments(stories, user)
-    
+    stories = feed.get_stories(offset, limit)
+    try:
+        stories = MSharedStory.stories_with_comments(stories, user)
+    except redis.ConnectionError:
+        logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
+
     # Get intelligence classifier for user
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))

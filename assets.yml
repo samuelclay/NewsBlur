@@ -71,8 +71,10 @@ javascripts:
         - media/js/vendor/jquery.json.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/backbone-*.js
         - media/js/newsblur/reader/reader_utils.js
-        - media/js/newsblur/reader/assetmodel.js
+        - media/js/newsblur/models/*.js
+        - media/js/newsblur/common/assetmodel.js
         - media/js/mobile/newsblur/mobile_workspace.js
     paypal:
         - media/js/newsblur/paypal/paypal_return.js
