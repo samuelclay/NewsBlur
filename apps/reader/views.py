@@ -369,6 +369,7 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     dupe_feed_id = None
     userstories_db = None
+    user_profiles = {}
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if page: offset = limit * (page-1)
@@ -387,7 +388,7 @@ def load_single_feed(request, feed_id):
         
     stories = feed.get_stories(offset, limit)
     try:
-        stories = MSharedStory.stories_with_comments(stories, user)
+        stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user)
     except redis.ConnectionError:
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
@@ -474,6 +475,7 @@ def load_single_feed(request, feed_id):
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 
+                user_profiles=user_profiles,
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
                 classifiers=classifiers,

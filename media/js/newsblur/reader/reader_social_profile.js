@@ -19,7 +19,6 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.make_modal();
         this.open_modal();
         _.defer(_.bind(this.fetch_profile, this, user_id));
-        // this.fetch_profile(user_id);
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },

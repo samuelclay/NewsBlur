@@ -643,9 +643,10 @@ class MSharedStory(mongo.Document):
         return comments
     
     @classmethod
-    def stories_with_comments(cls, stories, user, check_all=False):
+    def stories_with_comments_and_profiles(cls, stories, user, check_all=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         friend_key = "F:%s:F" % (user.pk)
+        profile_user_ids = set()
         for story in stories: 
             if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
@@ -672,20 +673,18 @@ class MSharedStory(mongo.Document):
                     story['share_count'] = r.scard(share_key)
                 friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
                 nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
-                profiles = MSocialProfile.objects.filter(user_id__in=nonfriend_user_ids)
+                profile_user_ids.update(nonfriend_user_ids)
+                profile_user_ids.update(friends_with_shares)
                 friend_profiles = []
-                if friends_with_shares:
-                    friend_profiles = MSocialProfile.objects.filter(user_id__in=friends_with_shares)
-                story['shared_by_public'] = []
-                story['shared_by_friends'] = []
-                for profile in profiles:
-                    story['shared_by_public'].append(profile.to_json(compact=True))
-                for profile in friend_profiles:
-                    story['shared_by_friends'].append(profile.to_json(compact=True))
+                story['shared_by_public'] = nonfriend_user_ids
+                story['shared_by_friends'] = friends_with_shares
                 story['share_count_public'] = story['share_count'] - len(friend_profiles)
                 story['share_count_friends'] = len(friend_profiles)
-                    
-        return stories
+
+        profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
+        profiles = [profile.to_json(compact=True) for profile in profiles]
+        
+        return stories, profiles
         
 
 class MSocialServices(mongo.Document):

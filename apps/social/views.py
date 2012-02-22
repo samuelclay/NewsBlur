@@ -44,7 +44,7 @@ def load_social_stories(request, user_id, username=None):
     if not stories:
         return dict(stories=[])
         
-    stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
@@ -144,7 +144,7 @@ def load_social_page(request, user_id, username=None):
         shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
         story['shared_date'] = format_story_link_date__long(shared_date, now)
     
-    stories = MSharedStory.stories_with_comments(stories, user, check_all=True)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
 
     params = {
@@ -198,7 +198,7 @@ def mark_story_as_shared(request):
     story.count_comments()
     
     story = Feed.format_story(story)
-    story = MSharedStory.stories_with_comments([story], request.user)[0]
+    story, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)[0]
     
     return {'code': code, 'story': story}
     

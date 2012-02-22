@@ -34,6 +34,7 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.classifiers = {};
     this.friends = {};
     this.profile = {};
+    this.user_profiles = new NEWSBLUR.Collections.Users();
     this.starred_stories = [];
     this.starred_count = 0;
     this.read_stories_river_count = 0;
@@ -413,6 +414,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                         return true;
                     }
                 });
+            }
+            if (data.user_profiles) {
+                this.user_profiles.add(data.user_profiles);
             }
             $.isFunction(callback) && callback(data, first_load);
         }
