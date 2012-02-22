@@ -64,8 +64,12 @@ class PageImporter(object):
                 return
             else:
                 data = open(feed_link, 'r').read()
-            html = self.rewrite_page(data)
-            self.save_page(html)
+            if data:
+                html = self.rewrite_page(data)
+                self.save_page(html)
+            else:
+                self.save_no_page()
+                return
         except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
