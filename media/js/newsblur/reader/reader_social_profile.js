@@ -1,26 +1,25 @@
-NEWSBLUR.ReaderSocialProfile = function(options) {
+NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
     var defaults = {
         width: 800
     };
         
     this.options = $.extend({}, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
-
-    this.runner();
+    
+    user_id = _.string.ltrim(user_id, 'social:');
+    this.runner(user_id);
 };
 
 NEWSBLUR.ReaderSocialProfile.prototype = new NEWSBLUR.Modal;
 
 _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
-    runner: function() {
-        this.options.onOpen = _.bind(function() {
-            this.resize_modal();
-        }, this);
-
+    runner: function(user_id) {
+        this.profile = new NEWSBLUR.Models.User();
         this.make_modal();
         this.open_modal();
-        this.fetch_profile();
+        _.defer(_.bind(this.fetch_profile, this, user_id));
+        // this.fetch_profile(user_id);
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
@@ -62,10 +61,11 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         ]);
     },
     
-    fetch_profile: function(callback) {
+    fetch_profile: function(user_id, callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
-        this.model.fetch_profile(_.bind(function(data) {
-            this.profile = data.profile;
+        
+        this.model.fetch_user_profile(user_id, _.bind(function(data) {
+            this.profile = new NEWSBLUR.Models.User(data.user_profile);
             this.populate_friends(data);
             callback && callback();
         }, this));
@@ -79,43 +79,31 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         $('.NB-profile-followers-everybody', this.$modal).html(this.make_profile_badges(data.followers_everybody));
     },
     
-    make_profile_tab: function() {
-        var $info = [
+    make_profile_user_info_header: function() {
+        var $info = $.make('div', [
             $.make('h2', { className: 'NB-modal-title' }, this.profile.get('username')),
             $.make('div', { className: 'NB-profile-location' }, this.profile.get('location')),
             $.make('div', { className: 'NB-profile-website' }, this.profile.get('website')),
             $.make('div', { className: 'NB-profile-bio' }, this.profile.get('bio')),
             $.make('div', { className: 'NB-profile-badge-stats' }, [
-                $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
+                $.make('span', { className: 'NB-count' }, this.profile.get('shared_stories_count')),
                 'shared ',
-                Inflector.pluralize('story', profile.get('shared_stories_count')),
+                Inflector.pluralize('story', this.profile.get('shared_stories_count')),
                 ' &middot; ',
-                $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
-                Inflector.pluralize('follower', profile.get('follower_count'))
+                $.make('span', { className: 'NB-count' }, this.profile.get('follower_count')),
+                Inflector.pluralize('follower', this.profile.get('follower_count'))
             ])
-        ];
+        ]);
         return $info;
     },
     
     make_profile_badges: function(profiles) {
-        var $badges = _.map(profiles, function(profile) {
+        var $badges = $.make('div', _.map(profiles, function(profile) {
             return $.make('div', { className: 'NB-profile-badge', title: profile['username'] }, [
                 $.make('img', { src: profile['photo_url'] })
             ]).data('user_id', profile['user_id']);
-        });
+        }));
         return $badges;
-    },
-    
-    make_following_tab: function() {
-        var $tab = $('.NB-tab-following', this.$modal).empty();
-        if (!this.model.following_profiles || !this.model.following_profiles.size()) {
-            var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
-            $tab.append($ghost);
-        } else {
-            this.model.following_profiles.each(_.bind(function(profile) {
-                $tab.append(this.make_profile_badge(profile));
-            }, this));
-        }
     },
     
     open_modal: function(callback) {
@@ -132,9 +120,6 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                         if (self.options.onOpen) {
                             self.options.onOpen();
                         }
-                    });
-                    setTimeout(function() {
-                        $(window).resize();
                     });
                 });
             },
@@ -154,19 +139,6 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                 $('.NB-modal-holder').empty().remove();
             }
         });
-    },
-    
-    resize_modal: function(count) {
-        var $tab = $('.NB-tab.NB-active', this.$modal);
-        var $modal = this.$modal;
-        var $modal_container = $modal.closest('.simplemodal-container');
-        
-        if (count > 50) return;
-        
-        if ($modal.height() > $modal_container.height() - 24) {
-            $tab.height($tab.height() - 5);
-            this.resize_modal(count+1);
-        }
     },
     
     follow_user: function(user_id, $badge) {

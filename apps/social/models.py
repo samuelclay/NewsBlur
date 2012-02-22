@@ -246,7 +246,18 @@ class MSocialProfile(mongo.Document):
             r.srem(follower_key, self.user_id)
         
         MSocialSubscription.objects.filter(user_id=self.user_id, subscription_user_id=user_id).delete()
-
+    
+    def common_follows(self, user_id, direction='followers'):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        
+        my_followers = "F:%s:%s" % (self.user_id, 'f' if direction == 'followers' else 'F')
+        their_followers = "F:%s:%s" % (user_id, 'F' if direction == 'followers' else 'f')
+        print my_followers, their_followers
+        follows_inter = r.sinter(my_followers, their_followers)
+        follows_diff = r.sdiff(my_followers, their_followers)
+        
+        return list(follows_inter), list(follows_diff)
+        
     def save_feed_story_history_statistics(self):
         """
         Fills in missing months between earlier occurances and now.

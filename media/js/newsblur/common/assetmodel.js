@@ -1019,8 +1019,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/friends', null, pre_callback);
     },
     
-    fetch_profile: function(user_id, callback) {
-        this.make_request('/social/profile', {'user_id': user_id}, callback);
+    fetch_user_profile: function(user_id, callback) {
+        this.make_request('/social/profile', {'user_id': user_id}, callback, callback, {request_type: 'GET'});
     },
     
     disconnect_social_service: function(service, callback) {
@@ -1033,6 +1033,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     follow_user: function(user_id, callback) {
         var pre_callback = _.bind(function(data) {
+            console.log(["follow data", data]);
             this.user_profile.set(data.user_profile);
             var following_profile = this.following_profiles.detect(function(profile) {
                 return profile.get('user_id') == data.follow_profile.user_id;

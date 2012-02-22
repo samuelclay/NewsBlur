@@ -234,8 +234,20 @@ def profile(request):
     if request.method == 'POST':
         return save_profile(request)
 
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
-    return dict(code=1, user_profile=profile.to_json(full=True))
+    user_id = request.GET.get('user_id', request.user.pk)
+    user_profile = MSocialProfile.objects.get(user_id=user_id)
+    current_profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    followers_youknow, followers_everybody = current_profile.common_follows(user_id, direction='followers')
+    following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
+    
+    payload = {
+        'user_profile': user_profile.to_json(full=True),
+        'followers_youknow': followers_youknow,
+        'followers_everybody': followers_everybody,
+        'following_youknow': following_youknow,
+        'following_everybody': following_everybody,
+    }
+    return payload
     
 def save_profile(request):
     data = request.POST

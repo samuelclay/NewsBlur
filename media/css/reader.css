@@ -1996,6 +1996,7 @@ background: transparent;
     position: absolute;
     left: 6px;
     top: 6px;
+    cursor: pointer;
 }
 #story_pane .NB-story-comment .NB-user-avatar img {
     border-radius: 6px;
@@ -2014,6 +2015,7 @@ background: transparent;
     font-weight: bold;
     margin: 0 10px 0 0;
     text-shadow: 0 -1px 0 #F0F0F0;
+    cursor: pointer;
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
     text-transform: uppercase;
@@ -2102,6 +2104,7 @@ background: transparent;
     height: 22px;
     width: 22px;
     margin: 0 4px 0 0;
+    cursor: pointer;
 }
 #story_pane .NB-story-share-profile .NB-user-avatar img {
     width: 22px;
@@ -6882,4 +6885,27 @@ background: transparent;
 .NB-modal-friends .NB-profile-badge-actions .NB-modal-submit-button {
     width: 90px;
     text-align: center;
+}
+
+/* ======================== */
+/* = Social Profile Modal = */
+/* ======================== */
+
+.NB-modal-profile fieldset {
+    border: 0;
+    border-top: 1px solid #E6E6E6;
+    padding: 0 12px;
+    margin: 0;
+}
+.NB-modal-profile fieldset legend {
+    padding: 0 12px;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #151775;
+}
+.NB-modal-profile .NB-profile-photo {
+    max-width: 108px;
+    max-height: 108px;
+    margin: 0 8px 0 0;
 }
