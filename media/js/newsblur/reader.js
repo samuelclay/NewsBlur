@@ -1240,7 +1240,7 @@
               <div class="feed_counts">\
                 <%= feed_counts_floater %>\
               </div>\
-              <img class="feed_favicon" src="<%= $.favicon(feed.favicon, !!favicons_downloaded) %>">\
+              <img class="feed_favicon" src="<%= $.favicon(feed.favicon, !favicons_downloaded) %>">\
               <span class="feed_title">\
                 <%= feed.feed_title %>\
                 <% if (type == "story") { %>\
