@@ -77,20 +77,22 @@ def post_deploy():
     
 @parallel
 def deploy():
-    deploy_code()
+    deploy_code(copy_assets=True)
     post_deploy()
 
 def deploy_full():
     deploy_code(full=True)
     post_deploy()
 
-def deploy_code(full=False):
+@parallel
+def deploy_code(copy_assets=False, full=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
         if full:
             run('rm -fr static/*')
-        transfer_assets()
+        if copy_assets:
+            transfer_assets()
         if full:
             with settings(warn_only=True):
                 run('sudo supervisorctl restart gunicorn')            
