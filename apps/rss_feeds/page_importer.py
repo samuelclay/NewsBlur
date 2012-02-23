@@ -63,7 +63,12 @@ class PageImporter(object):
                 self.save_no_page()
                 return
             else:
-                data = open(feed_link, 'r').read()
+                try:
+                    data = open(feed_link, 'r').read()
+                except IOError:
+                    self.feed.feed_link = 'http://' + feed_link
+                    self.fetch_page(urllib_fallback=True)
+                    return
             if data:
                 html = self.rewrite_page(data)
                 self.save_page(html)
