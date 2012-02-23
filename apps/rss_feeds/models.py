@@ -307,9 +307,7 @@ class Feed(models.Model):
         # for history in old_fetch_histories:
         #     history.delete()
         if status_code not in (200, 304):
-            fetch_history = map(lambda h: h.status_code, 
-                                MFeedFetchHistory.objects(feed_id=self.pk)[:50])
-            self.count_errors_in_history(fetch_history, status_code, 'feed')
+            self.count_errors_in_history('feed', status_code)
         elif self.has_feed_exception:
             self.has_feed_exception = False
             self.active = True
@@ -326,15 +324,16 @@ class Feed(models.Model):
         #     history.delete()
             
         if status_code not in (200, 304):
-            fetch_history = map(lambda h: h.status_code, 
-                                MPageFetchHistory.objects(feed_id=self.pk)[:50])
-            self.count_errors_in_history(fetch_history, status_code, 'page')
+            self.count_errors_in_history('page', status_code)
         elif self.has_page_exception:
             self.has_page_exception = False
             self.active = True
             self.save()
         
-    def count_errors_in_history(self, fetch_history, status_code, exception_type):
+    def count_errors_in_history(self, exception_type='feed', status_code=None):
+        history_class = MFeedFetchHistory if exception_type == 'feed' else MPageFetchHistory
+        fetch_history = map(lambda h: h.status_code, 
+                            history_class.objects(feed_id=self.pk)[:50])
         non_errors = [h for h in fetch_history if int(h)     in (200, 304)]
         errors     = [h for h in fetch_history if int(h) not in (200, 304)]
 
@@ -344,12 +343,14 @@ class Feed(models.Model):
                 self.active = False
             elif exception_type == 'page':
                 self.has_page_exception = True
-            self.exception_code = status_code
+            self.exception_code = status_code or int(errors[0])
             self.save()
         elif self.exception_code > 0:
             self.active = True
             self.exception_code = 0
             self.save()
+        
+        return errors, non_errors
     
     def count_subscribers(self, verbose=False):
         SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
@@ -1016,9 +1017,12 @@ class Feed(models.Model):
         
         return total, random_factor*2
         
-    def set_next_scheduled_update(self):
+    def set_next_scheduled_update(self, multiplier=1):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
+        if multiplier > 1:
+            total = total * multiplier
+            
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
             
@@ -1031,6 +1035,10 @@ class Feed(models.Model):
         self.next_scheduled_update = datetime.datetime.utcnow()
 
         self.save()
+        
+    def schedule_feed_fetch_geometrically(self):
+        errors, non_errors = self.count_errors_in_history('feed')
+        self.set_next_scheduled_update(multiplier=len(errors))
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,

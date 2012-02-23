@@ -1287,7 +1287,7 @@
               <div class="feed_counts">\
                 <%= feed_counts_floater %>\
               </div>\
-              <img class="feed_favicon" src="<%= $.favicon(feed, true) %>">\
+              <img class="feed_favicon" src="<%= $.favicon(feed, !favicons_downloaded) %>">\
               <span class="feed_title">\
                 <%= feed.feed_title %>\
                 <% if (type == "story") { %>\
@@ -1319,7 +1319,8 @@
               unread_class        : unread_class,
               exception_class     : exception_class,
               toplevel            : depth == 0,
-              list_type           : type == 'feed' ? 'li' : 'div'
+              list_type           : type == 'feed' ? 'li' : 'div',
+              favicons_downloaded : this.flags['favicons_downloaded']
             });
             
             return $feed;
@@ -5770,7 +5771,7 @@
             var $feed = this.find_feed_in_feed_list(feed_id);
             $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
 
-            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id, $feed), this.show_stories_error);
+            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id), this.show_stories_error);
         },
         
         setup_socket_realtime_unread_counts: function(force) {
@@ -5828,10 +5829,10 @@
             }, refresh_interval);
         },
         
-        force_feed_refresh: function(feed_id, $feed, new_feed_id) {
+        force_feed_refresh: function(feed_id, new_feed_id) {
             var self = this;
             feed_id  = feed_id || this.active_feed;
-            $feed    = $feed || this.find_feed_in_feed_list(feed_id);
+            var $feed = this.find_feed_in_feed_list(feed_id);
             new_feed_id = new_feed_id || feed_id;
 
             this.force_feeds_refresh(function(feeds) {

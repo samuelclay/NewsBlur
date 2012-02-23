@@ -144,7 +144,7 @@ class ProcessFeed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 else:
                     self.feed.has_feed_exception = True
-                    self.feed.schedule_feed_fetch_immediately()
+                    self.feed.schedule_feed_fetch_geometrically()
                 self.feed.save()
                 return FEED_ERRHTTP, ret_values
                                     
