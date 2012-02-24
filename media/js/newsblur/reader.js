@@ -1014,7 +1014,7 @@
         
         find_story_with_action_preference_on_open_feed: function() {
             var open_feed_action = this.model.preference('open_feed_action');
-            console.log(["action_preference_on_open_feed", open_feed_action, this.counts['page']]);
+
             if (this.counts['page'] != 1) return;
             
             if (open_feed_action == 'newest') {
@@ -2001,6 +2001,7 @@
         post_open_starred_stories: function(data, first_load) {
             if (this.active_feed == 'starred') {
                 // NEWSBLUR.log(['post_open_starred_stories', data.stories.length, first_load]);
+                this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
                 this.story_titles_clear_loading_endbar();
                 this.create_story_titles(data.stories, {'river_stories': true});
