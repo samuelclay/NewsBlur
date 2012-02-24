@@ -1126,7 +1126,7 @@
                     return -1;
                 } else if (!feedA && feedB) {
                     return 1;
-                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && (!b.e instanceof jQuery)) {
+                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && !(b.e instanceof jQuery)) {
                     // console.log(['a b 1', a, b, feedA, feedB]);
                     var folderA = _.keys(a)[0];
                     var folderB = _.keys(b)[0];
@@ -1141,7 +1141,7 @@
                     return -1;
                 } else if (!feedA && feedB) {
                     return 1;
-                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && (!b.e instanceof jQuery)) {
+                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && !(b.e instanceof jQuery)) {
                     // console.log(['a b 2', a, b]);
                     var folderA = _.keys(a)[0];
                     var folderB = _.keys(b)[0];
