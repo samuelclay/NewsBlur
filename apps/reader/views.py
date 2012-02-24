@@ -274,7 +274,7 @@ def load_feeds_flat(request):
     data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version=iphone_version)
     return data
 
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=20)
 @json.json_view
 def refresh_feeds(request):
     start = datetime.datetime.utcnow()

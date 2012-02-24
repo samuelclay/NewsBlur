@@ -223,15 +223,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
     
     save_retry_feed: function() {
-        var self = this;
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
+        var feed_id = this.feed_id;
         
         $('.NB-modal-submit-retry', this.$modal).addClass('NB-disabled').attr('value', 'Fetching...');
         
-        this.model.save_exception_retry(this.feed_id, function() {
-            // NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
-            // NEWSBLUR.reader.force_instafetch_stories(self.feed_id);
+        this.model.save_exception_retry(feed_id, function() {
+            NEWSBLUR.reader.force_feed_refresh(feed_id);
             $.modal.close();
         });
     },
@@ -261,8 +260,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         
         if (feed_address.length) {
             this.model.save_exception_change_feed_address(feed_id, feed_address, function(code) {
-                // NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
-                // NEWSBLUR.reader.load_feeds();
+                NEWSBLUR.reader.force_feed_refresh(feed_id);
                 $.modal.close();
             });
         }
@@ -279,8 +277,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         
         if (feed_link.length) {
             this.model.save_exception_change_feed_link(feed_id, feed_link, function(code) {
-                // NEWSBLUR.reader.flags['has_unfetched_feeds'] = true;
-                // NEWSBLUR.reader.load_feeds();
+                NEWSBLUR.reader.force_feed_refresh(feed_id);
                 $.modal.close();
             });
         }

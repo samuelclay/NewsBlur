@@ -89,7 +89,7 @@
     border-bottom: 1px solid #A1A9CF;
     color:#505050;
     font-size: 14px;
-    font-family: "Gill Sans", inherit;
+    font-family: "Gill Sans", "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif, inherit;
     font-weight: normal;
     text-transform: uppercase;
     position: relative;
