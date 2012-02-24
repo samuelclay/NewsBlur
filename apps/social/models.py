@@ -441,15 +441,21 @@ class MSocialSubscription(mongo.Document):
         return data
         
     def mark_feed_read(self):
-        now = datetime.datetime.utcnow()
+        latest_story_date = datetime.datetime.utcnow()
+        
+        # Use the latest story to get last read time.
+        if MSharedStory.objects(user_id=self.subscription_user_id).first():
+            latest_story_date = MSharedStory.objects(user_id=self.subscription_user_id)\
+                                .order_by('-shared_date').only('shared_date')[0]['shared_date']\
+                                + datetime.timedelta(seconds=1)
 
-        self.last_read_date = now
-        self.mark_read_date = now
+        self.last_read_date = latest_story_date
+        self.mark_read_date = latest_story_date
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
-        self.unread_count_updated = now
-        self.oldest_unread_story_date = now
+        self.unread_count_updated = latest_story_date
+        self.oldest_unread_story_date = latest_story_date
         self.needs_unread_recalc = False
 
         # Cannot delete these stories, since the original feed may not be read. 

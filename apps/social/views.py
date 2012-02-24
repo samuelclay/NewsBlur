@@ -62,13 +62,13 @@ def load_social_stories(request, user_id, username=None):
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, social_user_id=social_user_id))
-    
+
     story_ids = [story['id'] for story in stories]
     userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id__in=story_feed_ids,
-                                        story_id__in=story_ids,
-                                        read_date__gte=date_delta).only('story_id')
+                                        story_id__in=story_ids).only('story_id')
     userstories = set(us.story_id for us in userstories_db)
+
     starred_stories = MStarredStory.objects(user_id=user.pk, 
                                             story_feed_id__in=story_feed_ids, 
                                             story_guid__in=story_ids).only('story_guid', 'starred_date')
@@ -87,6 +87,7 @@ def load_social_stories(request, user_id, username=None):
         shared_date = localtime_for_timezone(story['shared_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
         story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
+        
         if story['id'] in userstories:
             story['read_status'] = 1
         elif story['shared_date'] < date_delta:
@@ -94,10 +95,13 @@ def load_social_stories(request, user_id, username=None):
         elif not usersubs_map.get(story_feed_id):
             story['read_status'] = 0
         # elif not story.get('read_status') and story['shared_date'] < usersubs_map[story_feed_id].mark_read_date:
-        elif not story.get('read_status') and story['shared_date'] < socialsub.mark_read_date:
+        elif not story.get('read_status') and story['shared_date'] < date_delta:
             story['read_status'] = 1
         # elif not story.get('read_status') and story['shared_date'] > socialsub.last_read_date:
         #     story['read_status'] = 0
+        else:
+            story['read_status'] = 0
+        print story['read_status'], story['shared_date'], date_delta
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
@@ -198,9 +202,10 @@ def mark_story_as_shared(request):
     story.count_comments()
     
     story = Feed.format_story(story)
-    story, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)[0]
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
+    story = stories[0]
     
-    return {'code': code, 'story': story}
+    return {'code': code, 'story': story, 'profiles': profiles}
     
 def shared_stories_public(request, username):
     try:
