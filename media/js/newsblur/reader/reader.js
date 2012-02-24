@@ -2984,7 +2984,7 @@
                 }
             });
             
-            var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight();
+            var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight() + 12;
             var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
             // console.log(["heights", full_height + sideoptions_height, content_height]);
             if (sideoptions_height + full_height > content_height) {
