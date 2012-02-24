@@ -252,7 +252,6 @@ class MSocialProfile(mongo.Document):
         
         my_followers = "F:%s:%s" % (self.user_id, 'f' if direction == 'followers' else 'F')
         their_followers = "F:%s:%s" % (user_id, 'F' if direction == 'followers' else 'f')
-        print my_followers, their_followers
         follows_inter = r.sinter(my_followers, their_followers)
         follows_diff = r.sdiff(my_followers, their_followers)
         
@@ -307,7 +306,7 @@ class MSocialProfile(mongo.Document):
                         months.append((key, dates.get(key, 0)))
                         total += dates.get(key, 0)
                         month_count += 1
-        print months
+
         self.story_count_history = months
         self.average_stories_per_month = total / month_count
         self.save()
@@ -356,7 +355,6 @@ class MSocialProfile(mongo.Document):
                 del scores[facet]
                 
         if scores:
-            print scores
             self.feed_classifier_counts = scores
             self.save()
 
@@ -489,14 +487,18 @@ class MSocialSubscription(mongo.Document):
 
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           shared_date__gte=date_delta)
-        story_feed_ids = [s['story_feed_id'] for s in stories_db]
+        story_feed_ids = []
+        story_ids = []
+        for s in stories_db:
+            story_feed_ids.append(s['story_feed_id'])
+            story_ids.append(s['story_guid'])
         if not story_feed_ids: return
 
         # usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
         # usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
         read_stories = MUserStory.objects(user_id=self.user_id,
                                           feed_id__in=story_feed_ids,
-                                          read_date__gte=date_delta)
+                                          story_id__in=story_ids)
         read_stories_ids = [rs.story_id for rs in read_stories]
 
         oldest_unread_story_date = now
@@ -580,7 +582,7 @@ class MSharedStory(mongo.Document):
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
         'index_drop_dups': True,
-        'ordering': ['shared_date'],
+        'ordering': ['-shared_date'],
         'allow_inheritance': False,
     }
     
@@ -681,11 +683,10 @@ class MSharedStory(mongo.Document):
                 nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
                 profile_user_ids.update(nonfriend_user_ids)
                 profile_user_ids.update(friends_with_shares)
-                friend_profiles = []
                 story['shared_by_public'] = nonfriend_user_ids
                 story['shared_by_friends'] = friends_with_shares
-                story['share_count_public'] = story['share_count'] - len(friend_profiles)
-                story['share_count_friends'] = len(friend_profiles)
+                story['share_count_public'] = story['share_count'] - len(friends_with_shares)
+                story['share_count_friends'] = len(friends_with_shares)
 
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]

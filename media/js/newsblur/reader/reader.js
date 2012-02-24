@@ -4398,11 +4398,11 @@
                         ])),
                         (story.share_count && $.make('span', [
                             (story.share_count_public && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-public' }, 
-                                _.map(story.shared_by_public, function(profile) { return self.make_story_share_profile(profile); })
+                                _.map(story.shared_by_public, function(user_id) { return self.make_story_share_profile(user_id); })
                             )),
                             (story.share_count_friends && $.make('div', { className: 'NB-story-share-label' }, 'Shared by: ')),
                             (story.share_count_friends && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-friends' }, 
-                                _.map(story.shared_by_friends, function(profile) { return self.make_story_share_profile(profile); })
+                                _.map(story.shared_by_friends, function(user_id) { return self.make_story_share_profile(user_id); })
                             ))
                         ]))
                     ])
@@ -4435,7 +4435,7 @@
         },
         
         make_story_share_comment: function(comment) {
-            var user = new NEWSBLUR.Models.User(comment.author);
+            var user = this.model.user_profiles.get(comment.author.user_id);
             
             var $comment = $.make('div', { className: 'NB-story-comment' }, [
                 $.make('div', { className: 'NB-user-avatar' }, [
@@ -4451,8 +4451,8 @@
             return $comment;
         },
         
-        make_story_share_profile: function(profile) {
-            var user = new NEWSBLUR.Models.User(profile);
+        make_story_share_profile: function(user_id) {
+            var user = this.model.user_profiles.get(user_id);
             
             var $profile = $.make('div', { className: 'NB-story-share-profile' }, [
                 $.make('div', { className: 'NB-user-avatar', title: user.get('username') }, [

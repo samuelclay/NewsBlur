@@ -1,6 +1,14 @@
 NEWSBLUR.Models.User = Backbone.Model.extend({
     
-    idAttribute: 'user_id'
+    idAttribute: 'user_id',
+    
+    get: function(attr) {
+        var value = Backbone.Model.prototype.get.call(this, attr);
+        if (attr == 'photo_url' && !value) {
+            value = NEWSBLUR.Globals.MEDIA_URL + 'img/reader/default_profile_photo.png';
+        }
+        return value;
+    }
     
 });
 

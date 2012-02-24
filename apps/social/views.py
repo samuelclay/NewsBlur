@@ -44,7 +44,7 @@ def load_social_stories(request, user_id, username=None):
     if not stories:
         return dict(stories=[])
         
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
@@ -121,7 +121,7 @@ def load_social_stories(request, user_id, username=None):
 
     logging.user(request, "~FCLoading shared stories: ~SB%s stories" % (len(stories)))
     
-    return dict(stories=stories, feeds=unsub_feeds)
+    return dict(stories=stories, user_profiles=user_profiles, feeds=unsub_feeds)
 
 @render_to('social/social_page.xhtml')
 def load_social_page(request, user_id, username=None):

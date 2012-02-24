@@ -416,7 +416,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 });
             }
             if (data.user_profiles) {
-                this.user_profiles.add(data.user_profiles);
+                var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
+                    return profile.user_id in this.user_profiles._byId;
+                }, this));
+                this.user_profiles.add(profiles);
             }
             $.isFunction(callback) && callback(data, first_load);
         }
