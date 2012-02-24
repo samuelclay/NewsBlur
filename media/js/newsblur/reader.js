@@ -2684,16 +2684,19 @@
                 trigger: 'manual',
                 offsetOpposite: -1
             });
-            $star.tipsy('enable');
-            $star.tipsy('show');
+            var tipsy = $star.data('tipsy');
+            tipsy.enable();
+            tipsy.show();
             $star.animate({
                 'opacity': 1
             }, {
                 'duration': 850,
                 'queue': false,
                 'complete': function() {
-                    $(this).tipsy('hide');
-                    $(this).tipsy('disable');                    
+                    if (tipsy.enabled) {
+                        tipsy.hide();
+                        tipsy.disable();
+                    }
                 }
             });
             this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {});
@@ -2712,11 +2715,14 @@
                 trigger: 'manual',
                 offsetOpposite: -1
             });
-            $star.tipsy('enable');
-            $star.tipsy('show');
+            var tipsy = $star.data('tipsy');
+            tipsy.enable();
+            tipsy.show();
             _.delay(function() {
-                $star.tipsy('hide');
-                $star.tipsy('disable');
+                if (tipsy.enabled) {
+                    tipsy.hide();
+                    tipsy.disable();
+                }
             }, 850);
             $story.removeClass('NB-story-starred');
             this.model.mark_story_as_unstarred(story_id, function() {});
