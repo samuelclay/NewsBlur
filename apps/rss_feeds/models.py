@@ -286,8 +286,8 @@ class Feed(models.Model):
             feed_address = None
         
         if feed_address:
-            self.feed.has_feed_exception = True
-            self.feed.schedule_feed_fetch_immediately()
+            self.has_feed_exception = True
+            self.schedule_feed_fetch_immediately()
         
         return not not feed_address
 
@@ -672,9 +672,15 @@ class Feed(models.Model):
                     original_content = None
                     try:
                         if existing_story and existing_story.id:
-                            existing_story = MStory.objects.get(id=existing_story.id)
+                            try:
+                                existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
+                                                                    id=existing_story.id)
+                            except ValidationError:
+                                existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
+                                                                    story_guid=existing_story.id)
                         elif existing_story and existing_story.story_guid:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
+                                                                story_guid=existing_story.story_guid)
                         else:
                             raise MStory.DoesNotExist
                     except (MStory.DoesNotExist, OperationError), e:
