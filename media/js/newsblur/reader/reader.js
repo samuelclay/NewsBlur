@@ -1030,7 +1030,7 @@
         
         find_story_with_action_preference_on_open_feed: function() {
             var open_feed_action = this.model.preference('open_feed_action');
-            console.log(["action_preference_on_open_feed", open_feed_action, this.counts['page']]);
+
             if (this.counts['page'] != 1) return;
             
             if (open_feed_action == 'newest') {
@@ -1173,7 +1173,7 @@
                     return -1;
                 } else if (!feedA && feedB) {
                     return 1;
-                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && (!b.e instanceof jQuery)) {
+                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && !(b.e instanceof jQuery)) {
                     // console.log(['a b 1', a, b, feedA, feedB]);
                     var folderA = _.keys(a)[0];
                     var folderB = _.keys(b)[0];
@@ -1188,7 +1188,7 @@
                     return -1;
                 } else if (!feedA && feedB) {
                     return 1;
-                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && (!b.e instanceof jQuery)) {
+                } else if (!feedA && !feedB && a && b && !_.isNumber(a) && !_.isNumber(b) && !(a.e instanceof jQuery) && !(b.e instanceof jQuery)) {
                     // console.log(['a b 2', a, b]);
                     var folderA = _.keys(a)[0];
                     var folderB = _.keys(b)[0];
@@ -2064,6 +2064,7 @@
         post_open_starred_stories: function(data, first_load) {
             if (this.active_feed == 'starred') {
                 // NEWSBLUR.log(['post_open_starred_stories', data.stories.length, first_load]);
+                this.flags['opening_feed'] = false;
                 this.flags['feed_view_positions_calculated'] = false;
                 this.counts['feed_view_positions_timer'] = 0;
                 this.story_titles_clear_loading_endbar();
@@ -2876,8 +2877,9 @@
                 trigger: 'manual',
                 offsetOpposite: -1
             });
-            $star.tipsy('enable');
-            $star.tipsy('show');
+            var tipsy = $star.data('tipsy');
+            tipsy.enable();
+            tipsy.show();
 
             $star.animate({
                 'opacity': 1
@@ -2885,8 +2887,10 @@
                 'duration': 850,
                 'queue': false,
                 'complete': function() {
-                    $(this).tipsy('hide');
-                    $(this).tipsy('disable');                    
+                    if (tipsy.enabled) {
+                        tipsy.hide();
+                        tipsy.disable();
+                    }
                 }
             });
             
@@ -2920,11 +2924,14 @@
                 trigger: 'manual',
                 offsetOpposite: -1
             });
-            $star.tipsy('enable');
-            $star.tipsy('show');
+            var tipsy = $star.data('tipsy');
+            tipsy.enable();
+            tipsy.show();
             _.delay(function() {
-                $star.tipsy('hide');
-                $star.tipsy('disable');
+                if (tipsy.enabled) {
+                    tipsy.hide();
+                    tipsy.disable();
+                }
             }, 850);
             
             $story_title.removeClass('NB-story-starred');

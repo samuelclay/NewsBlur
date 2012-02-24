@@ -3924,7 +3924,10 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
             break
     # if no luck and we have auto-detection library, try that
     if (not known_encoding) and chardet:
-        proposed_encoding = unicode(chardet.detect(data)['encoding'], 'ascii', 'ignore')
+        # import pdb; pdb.set_trace()
+        proposed_encoding = chardet.detect(data)['encoding']
+        if proposed_encoding:
+            proposed_encoding = unicode(proposed_encoding, 'ascii', 'ignore')
         if proposed_encoding and (proposed_encoding not in tried_encodings):
             tried_encodings.append(proposed_encoding)
             try:
