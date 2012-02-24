@@ -54,9 +54,9 @@ class MStatistics(mongo.Document):
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
         
-        feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__lt=last_day).count()
+        feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__gte=last_day).count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
-        pages_fetched = MPageFetchHistory.objects.filter(fetch_date__lt=last_day).count()
+        pages_fetched = MPageFetchHistory.objects.filter(fetch_date__gte=last_day).count()
         cls.objects(key='pages_fetched').update_one(upsert=True, key='pages_fetched', value=pages_fetched)
         
         from utils.feed_functions import timelimit, TimeoutError
