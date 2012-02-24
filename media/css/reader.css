@@ -4601,7 +4601,7 @@ background: transparent;
 .NB-modal-statistics .NB-statistics-history-fetch.NB-ok {
   color: #135500;
 }
-.NB-modal-statistics .NB-statistics-history-fetch.NB-error {
+.NB-modal-statistics .NB-statistics-history-fetch.NB-errorcode {
   color: #6A1000;
 }
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-code {
