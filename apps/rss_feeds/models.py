@@ -4,7 +4,6 @@ import random
 import re
 import math
 import mongoengine as mongo
-import redis
 import zlib
 import urllib
 import hashlib
@@ -13,7 +12,6 @@ from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
-from django.core.cache import cache
 from django.conf import settings
 from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
@@ -287,6 +285,10 @@ class Feed(models.Model):
             self.save_feed_history(505, 'Timeout', '')
             feed_address = None
         
+        if feed_address:
+            self.feed.has_feed_exception = True
+            self.feed.schedule_feed_fetch_immediately()
+        
         return not not feed_address
 
     def save_feed_history(self, status_code, message, exception=None):
@@ -304,7 +306,8 @@ class Feed(models.Model):
         # for history in old_fetch_histories:
         #     history.delete()
         if status_code not in (200, 304):
-            self.count_errors_in_history('feed', status_code)
+            errors, non_errors = self.count_errors_in_history('feed', status_code)
+            self.set_next_scheduled_update(error_count=len(errors), non_error_count=len(non_errors))
         elif self.has_feed_exception:
             self.has_feed_exception = False
             self.active = True
@@ -333,8 +336,8 @@ class Feed(models.Model):
                             history_class.objects(feed_id=self.pk)[:50])
         non_errors = [h for h in fetch_history if int(h)     in (200, 304)]
         errors     = [h for h in fetch_history if int(h) not in (200, 304)]
-
-        if len(non_errors) == 0 and len(errors) >= 1:
+        
+        if len(non_errors) == 0 and len(errors) > 1:
             if exception_type == 'feed':
                 self.has_feed_exception = True
                 self.active = False
@@ -345,6 +348,10 @@ class Feed(models.Model):
         elif self.exception_code > 0:
             self.active = True
             self.exception_code = 0
+            if exception_type == 'feed':
+                self.has_feed_exception = False
+            elif exception_type == 'page':
+                self.has_page_exception = False
             self.save()
         
         return errors, non_errors
@@ -1007,11 +1014,12 @@ class Feed(models.Model):
         
         return total, random_factor*2
         
-    def set_next_scheduled_update(self, multiplier=1):
+    def set_next_scheduled_update(self, error_count=0, non_error_count=0):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
-        if multiplier > 1:
-            total = total * multiplier
+        if error_count:
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors' % (unicode(self)[:30], error_count, non_error_count))
+            total = total * error_count
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
@@ -1022,13 +1030,10 @@ class Feed(models.Model):
         self.save()
 
     def schedule_feed_fetch_immediately(self):
+        logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
         self.next_scheduled_update = datetime.datetime.utcnow()
 
         self.save()
-        
-    def schedule_feed_fetch_geometrically(self):
-        errors, non_errors = self.count_errors_in_history('feed')
-        self.set_next_scheduled_update(multiplier=len(errors))
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
