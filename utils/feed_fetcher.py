@@ -103,8 +103,6 @@ class ProcessFeed:
             ENTRY_ERR:0}
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
-        
-        self.feed.last_update = datetime.datetime.utcnow()
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -187,8 +185,6 @@ class ProcessFeed:
             self.feed.data.save()
         if not self.feed.feed_link_locked:
             self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
-        
-        self.feed.last_update = datetime.datetime.utcnow()
         
         guids = []
         for entry in self.fpf.entries:
