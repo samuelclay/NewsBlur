@@ -331,6 +331,7 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, exception_type='feed', status_code=None):
+        logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
         history_class = MFeedFetchHistory if exception_type == 'feed' else MPageFetchHistory
         fetch_history = map(lambda h: h.status_code, 
                             history_class.objects(feed_id=self.pk)[:50])
