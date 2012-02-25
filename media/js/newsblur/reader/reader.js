@@ -137,7 +137,8 @@
                 view = 'story';
                 flag = 'story';
             }
-            
+
+            this.counts['feed_view_positions_timer'] = 0;
             this.flags.scrolling_by_selecting_story_title = true;
             clearTimeout(this.locks.scrolling);
             this.locks.scrolling = _.delay(_.bind(function() {
@@ -4326,7 +4327,7 @@
             this.flags['feed_view_positions_calculated'] = true;
             NEWSBLUR.log(['Feed view entirely loaded', this.model.stories.length + " stories", this.counts['feed_view_positions_timer']/1000 + " sec delay"]);
             
-            this.counts['feed_view_positions_timer'] = Math.max(this.counts['feed_view_positions_timer']*2, 500);
+            this.counts['feed_view_positions_timer'] = Math.max(this.counts['feed_view_positions_timer']*2, 1000);
             clearTimeout(this.flags['next_fetch']);
             this.flags['next_fetch'] = _.delay(_.bind(this.fetch_story_locations_in_feed_view, this),
                                                this.counts['feed_view_positions_timer']);

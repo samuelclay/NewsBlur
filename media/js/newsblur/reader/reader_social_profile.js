@@ -67,6 +67,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             this.profile = new NEWSBLUR.Models.User(data.user_profile);
             this.populate_friends(data);
             callback && callback();
+            this.resize();
         }, this));
     },
     
@@ -80,9 +81,8 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     make_profile_user_info_header: function() {
         var $info = $.make('div', [
-            $.make('h2', { className: 'NB-modal-title' }, this.profile.get('username')),
+            $.make('h2', { className: 'NB-modal-title NB-profile-username' }, this.profile.get('username')),
             $.make('div', { className: 'NB-profile-location' }, this.profile.get('location')),
-            $.make('div', { className: 'NB-profile-website' }, this.profile.get('website')),
             $.make('div', { className: 'NB-profile-bio' }, this.profile.get('bio')),
             $.make('div', { className: 'NB-profile-badge-stats' }, [
                 $.make('span', { className: 'NB-count' }, this.profile.get('shared_stories_count')),
@@ -90,7 +90,12 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                 Inflector.pluralize('story', this.profile.get('shared_stories_count')),
                 ' &middot; ',
                 $.make('span', { className: 'NB-count' }, this.profile.get('follower_count')),
-                Inflector.pluralize('follower', this.profile.get('follower_count'))
+                Inflector.pluralize('follower', this.profile.get('follower_count')),
+                (this.profile.get('website') && ' &middot; '),
+                (this.profile.get('website') && $.make('a', { 
+                    href: this.profile.get('website'), 
+                    className: 'NB-profile-website NB-splash-link'
+                }, this.profile.get('website')))
             ])
         ]);
         return $info;
@@ -119,7 +124,9 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                         if (self.options.onOpen) {
                             self.options.onOpen();
                         }
+                        self.resize();
                     });
+                    self.resize();
                 });
             },
             'onShow': function(dialog) {

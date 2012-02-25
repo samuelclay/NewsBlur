@@ -6891,6 +6891,9 @@ background: transparent;
 /* = Social Profile Modal = */
 /* ======================== */
 
+.NB-modal-profile {
+    min-height: 300px;
+}
 .NB-modal-profile fieldset {
     border: 0;
     border-top: 1px solid #E6E6E6;
@@ -6908,4 +6911,39 @@ background: transparent;
     max-width: 108px;
     max-height: 108px;
     margin: 0 8px 0 0;
+}
+.NB-modal-profile .NB-profile-username {
+    font-weight: bold;
+    float: left;
+}
+.NB-modal-profile .NB-profile-location {
+    font-weight: bold;
+    color: #909090;
+    font-size: 12px;
+    float: left;
+    padding: 10px 0 0 12px;
+}
+.NB-modal-profile .NB-profile-website {
+    padding: 2px 0;
+    font-size: 12px;
+    text-decoration: underline;
+    text-transform: none;
+}
+.NB-modal-profile .NB-profile-bio {
+    clear: left;
+}
+.NB-modal-profile .NB-profile-badge-stats {
+    clear: left;
+    color: #AE5D15;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 4px 0 0 0;
+}
+.NB-modal-profile .NB-profile-badge-stats .NB-count {
+    padding-right: 3px;
+    font-weight: bold;
+}
+.NB-modal-profile .NB-profile-actions {
+    float: right;
+    margin-top: 10px;
 }
