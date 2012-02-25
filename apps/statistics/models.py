@@ -21,6 +21,19 @@ class MStatistics(mongo.Document):
         return "%s: %s" % (self.key, self.value)
     
     @classmethod
+    def get(cls, key, default=None):
+        obj = cls.objects.filter(key=key).first()
+        if not obj:
+            return default
+        return obj.value
+
+    @classmethod
+    def set(cls, key, value):
+        obj, _ = cls.objects.get_or_create(key=key)
+        obj.value = value
+        obj.save()
+    
+    @classmethod
     def all(cls):
         values = dict([(stat.key, stat.value) for stat in cls.objects.all()])
         for key, value in values.items():

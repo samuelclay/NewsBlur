@@ -603,7 +603,7 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, fake=False):
         from utils import feed_fetcher
         if settings.DEBUG:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -617,6 +617,7 @@ class Feed(models.Model):
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
+            'fake': fake,
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -1025,8 +1026,8 @@ class Feed(models.Model):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
         if error_count:
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors' % (unicode(self)[:30], error_count, non_error_count))
             total = total * error_count
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors. Total: %s' % (unicode(self)[:30], error_count, non_error_count, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)

@@ -282,6 +282,10 @@ class Dispatcher:
             ret_feed = FEED_ERREXC
             try:
                 feed = self.refresh_feed(feed_id)
+
+                if self.options['fake']:
+                    logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping...' % (unicode(feed)[:30],))
+                    continue
                 
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()

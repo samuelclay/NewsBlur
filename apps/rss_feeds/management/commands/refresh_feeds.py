@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.auth.models import User
+from apps.statistics.models import MStatistics
 from apps.rss_feeds.models import Feed
 from optparse import make_option
 from utils import feed_fetcher
@@ -31,7 +32,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['daemonize']:
             daemonize()
-            
+        
+        options['fake'] = bool(MStatistics.get('fake_fetch'))
+        
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
         
