@@ -609,7 +609,7 @@ class Feed(models.Model):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         
-        self.feed.last_update = datetime.datetime.utcnow()
+        self.last_update = datetime.datetime.utcnow()
         self.set_next_scheduled_update()
         
         options = {
