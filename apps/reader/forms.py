@@ -80,11 +80,6 @@ class SignupForm(forms.Form):
     
     def clean_username(self):
         username = self.cleaned_data['username']
-        try:
-            User.objects.get(username__iexact=username)
-        except User.DoesNotExist:
-            return username
-        raise forms.ValidationError(_(u'Someone is already using that username.'))
         return username
 
     def clean_password(self):
@@ -96,15 +91,36 @@ class SignupForm(forms.Form):
         if not self.cleaned_data['email']:
             return ""
         return self.cleaned_data['email']
-            
+    
+    def clean(self):
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
+        exists = User.objects.filter(username__iexact=username).count()
+        if exists:
+            user_auth = authenticate(username=username, password=password)
+            if not user_auth:
+                raise forms.ValidationError(_(u'Someone is already using that username.'))
+        return self.cleaned_data
+        
     def save(self, profile_callback=None):
-        new_user = User(username=self.cleaned_data['username'])
-        new_user.set_password(self.cleaned_data['password'])
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
+
+        exists = User.objects.filter(username__iexact=username).count()
+        if exists:
+            user_auth = authenticate(username=username, password=password)
+            if not user_auth:
+                raise forms.ValidationError(_(u'Someone is already using that username.'))
+            else:
+                return user_auth
+            
+        new_user = User(username=username)
+        new_user.set_password(password)
         new_user.is_active = True
         new_user.email = self.cleaned_data['email']
         new_user.save()
-        new_user = authenticate(username=self.cleaned_data['username'],
-                                password=self.cleaned_data['password'])
+        new_user = authenticate(username=username,
+                                password=password)
         new_user.profile.send_new_user_email()
         
         return new_user

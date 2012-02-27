@@ -334,6 +334,7 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, exception_type='feed', status_code=None):
+        logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
         history_class = MFeedFetchHistory if exception_type == 'feed' else MPageFetchHistory
         fetch_history = map(lambda h: h.status_code, 
                             history_class.objects(feed_id=self.pk)[:50])
@@ -613,21 +614,26 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, options=None):
         from utils import feed_fetcher
+        if not options:
+            options = {}
         if settings.DEBUG:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         
+        self.last_update = datetime.datetime.utcnow()
         self.set_next_scheduled_update()
         
-        options = {
+        options.update({
             'verbose': verbose,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
-        }
+            'fake': options.get('fake'),
+            'quick': options.get('quick'),
+        })
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
@@ -1034,8 +1040,8 @@ class Feed(models.Model):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
         if error_count:
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors' % (unicode(self)[:30], error_count, non_error_count))
             total = total * error_count
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors. Total: %s' % (unicode(self)[:30], error_count, non_error_count, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)

@@ -219,7 +219,7 @@ def setup_db():
     setup_common()
     setup_db_firewall()
     setup_db_motd()
-    setup_rabbitmq()
+    # setup_rabbitmq()
     setup_memcached()
     setup_postgres()
     setup_mongo()
@@ -310,7 +310,7 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -474,7 +474,7 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     sudo('ufw allow from 199.15.248.0/21 to any port 5432 ') # PostgreSQL
     sudo('ufw allow from 199.15.248.0/21 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.248.0/21 to any port 5672 ') # RabbitMQ
+    # sudo('ufw allow from 199.15.248.0/21 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.248.0/21 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
     sudo('ufw --force enable')

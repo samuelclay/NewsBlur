@@ -1,4 +1,5 @@
 #!/usr/bin/env python 
+import redis
 from utils.munin.base import MuninGraph
 
 graph_config = {
@@ -16,15 +17,16 @@ def calculate_metrics():
     import datetime
     import commands
     from apps.rss_feeds.models import Feed
+    from django.conf import settings
     
     hour_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-    update_feeds_query = "ssh -i ~sclay/.ssh/id_dsa sclay@db01 \"sudo rabbitmqctl list_queues -p newsblurvhost | grep %s\" | awk '{print $2}'"
-    
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)    
+
     return {
         'update_queue': Feed.objects.filter(queued_date__gte=hour_ago).count(),
         'feeds_fetched': Feed.objects.filter(last_update__gte=hour_ago).count(),
-        'celery_update_feeds': commands.getoutput(update_feeds_query % 'update_feeds'),
-        'celery_new_feeds': commands.getoutput(update_feeds_query % 'new_feeds'),
+        'celery_update_feeds': r.llen("update_feeds"),
+        'celery_new_feeds': r.llen("new_feeds"),
     }
 
 if __name__ == '__main__':
