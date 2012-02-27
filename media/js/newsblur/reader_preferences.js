@@ -268,6 +268,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Window title'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-openfeedaction-1', type: 'radio', name: 'open_feed_action', value: 'newest' }),
+                                $.make('label', { 'for': 'NB-preference-openfeedaction-1' }, [
+                                    'Open the newest unread story'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-openfeedaction-2', type: 'radio', name: 'open_feed_action', value: 'oldest' }),
+                                $.make('label', { 'for': 'NB-preference-openfeedaction-2' }, [
+                                    'Open the oldest unread story'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-openfeedaction-0', type: 'radio', name: 'open_feed_action', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-openfeedaction-0' }, [
+                                    'Show all stories'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'When opening a site'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -511,6 +536,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=show_unread_counts_in_title]', this.$modal).each(function() {
             if (NEWSBLUR.Preferences.show_unread_counts_in_title) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=open_feed_action]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
                 $(this).attr('checked', true);
                 return false;
             }

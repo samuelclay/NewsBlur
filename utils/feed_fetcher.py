@@ -5,6 +5,7 @@ import multiprocessing
 import urllib2
 import xml.sax
 import redis
+import random
 from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
@@ -47,11 +48,10 @@ class FetchFeed:
                                                             datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
                                                  
-        self.feed.set_next_scheduled_update()
         etag=self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         
-        if self.options.get('force') or not self.feed.fetched_once:
+        if self.options.get('force') or not self.feed.fetched_once or not self.feed.known_good:
             modified = None
             etag = None
             
@@ -104,8 +104,6 @@ class ProcessFeed:
             ENTRY_ERR:0}
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
-        
-        self.feed.last_update = datetime.datetime.utcnow()
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
@@ -126,10 +124,9 @@ class ProcessFeed:
             if self.fpf.status in (302, 301):
                 if not self.fpf.href.endswith('feedburner.com/atom.xml'):
                     self.feed.feed_address = self.fpf.href
-                if not self.feed.fetched_once:
-                    self.feed.has_feed_exception = True
+                if not self.feed.known_good:
                     self.feed.fetched_once = True
-                    logging.debug("   ---> [%-30s] Feed is 302'ing, but it's not new. Refetching..." % (unicode(self.feed)[:30]))
+                    logging.debug("   ---> [%-30s] Feed is %s'ing. Refetching..." % (unicode(self.feed)[:30], self.fpf.status))
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
@@ -142,9 +139,6 @@ class ProcessFeed:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
-                else:
-                    self.feed.has_feed_exception = True
-                    self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRHTTP, ret_values
                                     
@@ -156,9 +150,6 @@ class ProcessFeed:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
-                else:
-                    self.feed.has_feed_exception = True
-                    self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
@@ -169,9 +160,6 @@ class ProcessFeed:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
-                else:
-                    self.feed.has_feed_exception = True
-                    self.feed.schedule_feed_fetch_immediately()
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
                 
@@ -198,8 +186,6 @@ class ProcessFeed:
             self.feed.data.save()
         if not self.feed.feed_link_locked:
             self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
-        
-        self.feed.last_update = datetime.datetime.utcnow()
         
         guids = []
         for entry in self.fpf.entries:
@@ -293,6 +279,24 @@ class Dispatcher:
             ret_feed = FEED_ERREXC
             try:
                 feed = self.refresh_feed(feed_id)
+                
+                skip = False
+                if self.options.get('fake'):
+                    skip = True
+                    weight = "-"
+                elif self.options.get('quick'):
+                    weight = feed.stories_last_month * feed.num_subscribers
+                    random_weight = random.randint(1, max(weight, 1))
+                    quick = float(self.options['quick'])
+                    rand = random.random()
+                    if random_weight < 100 and rand < quick:
+                        skip = True
+                if skip:
+                    logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs)...' % (
+                        unicode(feed)[:30],
+                        weight,
+                        feed.num_subscribers))
+                    continue
                 
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()

@@ -388,21 +388,17 @@ CELERY_QUEUES = {
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND       = "amqplib"
-BROKER_HOST          = "db01.newsblur.com"
-BROKER_PORT          = 5672
-BROKER_USER          = "newsblur"
-BROKER_PASSWORD      = "newsblur"
-BROKER_VHOST         = "newsblurvhost"
+BROKER_BACKEND       = "redis"
+BROKER_URL = "redis://db01:6379/0"
+CELERY_REDIS_HOST          = "db01"
 
-CELERY_RESULT_BACKEND       = "amqp"
-CELERYD_LOG_LEVEL           = 'ERROR'
+CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
-# CELERYD_TASK_TIME_LIMIT   = 12 * 30
+CELERYD_TASK_TIME_LIMIT     = 12 * 30
 CELERY_DISABLE_RATE_LIMITS  = True
 
 # ====================

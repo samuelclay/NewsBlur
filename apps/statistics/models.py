@@ -21,6 +21,19 @@ class MStatistics(mongo.Document):
         return "%s: %s" % (self.key, self.value)
     
     @classmethod
+    def get(cls, key, default=None):
+        obj = cls.objects.filter(key=key).first()
+        if not obj:
+            return default
+        return obj.value
+
+    @classmethod
+    def set(cls, key, value):
+        obj, _ = cls.objects.get_or_create(key=key)
+        obj.value = value
+        obj.save()
+    
+    @classmethod
     def all(cls):
         values = dict([(stat.key, stat.value) for stat in cls.objects.all()])
         for key, value in values.items():
@@ -51,11 +64,11 @@ class MStatistics(mongo.Document):
     def collect_statistics_feeds_fetched(cls, last_day=None):
         if not last_day:
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
-        last_biweek = datetime.datetime.now() - datetime.timedelta(days=14)
+        last_month = datetime.datetime.now() - datetime.timedelta(days=30)
         
-        feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__lt=last_day).count()
+        feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__gte=last_day).count()
         cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
-        pages_fetched = MPageFetchHistory.objects.filter(fetch_date__lt=last_day).count()
+        pages_fetched = MPageFetchHistory.objects.filter(fetch_date__gte=last_day).count()
         cls.objects(key='pages_fetched').update_one(upsert=True, key='pages_fetched', value=pages_fetched)
         
         from utils.feed_functions import timelimit, TimeoutError
@@ -63,8 +76,8 @@ class MStatistics(mongo.Document):
         def delete_old_history():
             MFeedFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
             MPageFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
-            MFeedFetchHistory.objects(fetch_date__lt=last_biweek).delete()
-            MPageFetchHistory.objects(fetch_date__lt=last_biweek).delete()
+            MFeedFetchHistory.objects(fetch_date__lt=last_month).delete()
+            MPageFetchHistory.objects(fetch_date__lt=last_month).delete()
         try:
             delete_old_history()
         except TimeoutError:

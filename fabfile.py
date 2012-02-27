@@ -65,6 +65,7 @@ def task():
 # = Deploy =
 # ==========
 
+@parallel
 def pull():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
@@ -77,20 +78,22 @@ def post_deploy():
     
 @parallel
 def deploy():
-    deploy_code()
+    deploy_code(copy_assets=True)
     post_deploy()
 
 def deploy_full():
     deploy_code(full=True)
     post_deploy()
 
-def deploy_code(full=False):
+@parallel
+def deploy_code(copy_assets=False, full=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
         if full:
             run('rm -fr static/*')
-        transfer_assets()
+        if copy_assets:
+            transfer_assets()
         if full:
             with settings(warn_only=True):
                 run('sudo supervisorctl restart gunicorn')            
@@ -216,7 +219,7 @@ def setup_db():
     setup_common()
     setup_db_firewall()
     setup_db_motd()
-    setup_rabbitmq()
+    # setup_rabbitmq()
     setup_memcached()
     setup_postgres()
     setup_mongo()
@@ -303,11 +306,11 @@ def setup_libxml_code():
         run('./configure && make && sudo make install')
 
 def setup_psycopg():
-    sudo('easy_install psycopg2')
+    sudo('easy_install -U psycopg2')
     
 def setup_python():
-    sudo('easy_install pip')
-    sudo('easy_install fabric django celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U pip')
+    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -465,7 +468,7 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     sudo('ufw allow from 199.15.250.0/22 to any port 5432 ') # PostgreSQL
     sudo('ufw allow from 199.15.250.0/22 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
+    # sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.250.0/22 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.250.0/22 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
