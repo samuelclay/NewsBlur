@@ -11,7 +11,10 @@ class UpdateFeeds(Task):
         from apps.rss_feeds.models import Feed
         from apps.statistics.models import MStatistics
         
-        fake = bool(MStatistics.get('fake_fetch'))
+        options = {
+            'fake': bool(MStatistics.get('fake_fetch')),
+            'quick': bool(MStatistics.get('quick_fetch')),
+        }
         
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
@@ -19,7 +22,7 @@ class UpdateFeeds(Task):
         for feed_pk in feed_pks:
             try:
                 feed = Feed.objects.get(pk=feed_pk)
-                feed.update(fake=fake)
+                feed.update(options=options)
             except Feed.DoesNotExist:
                 logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)
             # logging.debug(' Updating: [%s] %s' % (feed_pks, feed))

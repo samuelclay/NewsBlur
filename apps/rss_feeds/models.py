@@ -603,8 +603,10 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, fake=False):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, options=None):
         from utils import feed_fetcher
+        if not options:
+            options = {}
         if settings.DEBUG:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
@@ -612,14 +614,15 @@ class Feed(models.Model):
         self.last_update = datetime.datetime.utcnow()
         self.set_next_scheduled_update()
         
-        options = {
+        options.update({
             'verbose': verbose,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
-            'fake': fake,
-        }
+            'fake': options.get('fake'),
+            'quick': options.get('quick'),
+        })
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()

@@ -5,6 +5,7 @@ import multiprocessing
 import urllib2
 import xml.sax
 import redis
+import random
 from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
@@ -278,9 +279,23 @@ class Dispatcher:
             ret_feed = FEED_ERREXC
             try:
                 feed = self.refresh_feed(feed_id)
-
+                
+                skip = False
                 if self.options.get('fake'):
-                    logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping...' % (unicode(feed)[:30],))
+                    skip = True
+                    weight = "-"
+                elif self.options.get('quick'):
+                    weight = feed.stories_last_month * feed.num_subscribers
+                    random_weight = random.randint(1, max(weight, 1))
+                    quick = float(self.options['quick'])
+                    rand = random.random()
+                    if random_weight < 100 and rand < quick:
+                        skip = True
+                if skip:
+                    logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs)...' % (
+                        unicode(feed)[:30],
+                        weight,
+                        feed.num_subscribers))
                     continue
                 
                 ffeed = FetchFeed(feed_id, self.options)

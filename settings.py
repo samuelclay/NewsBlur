@@ -388,14 +388,10 @@ CELERY_QUEUES = {
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND       = "amqplib"
-BROKER_HOST          = "db01.newsblur.com"
-BROKER_PORT          = 5672
-BROKER_USER          = "newsblur"
-BROKER_PASSWORD      = "newsblur"
-BROKER_VHOST         = "newsblurvhost"
+BROKER_BACKEND       = "redis"
+BROKER_URL = "redis://db01:6379/0"
+CELERY_REDIS_HOST          = "db01"
 
-CELERY_RESULT_BACKEND       = "amqp"
 CELERYD_LOG_LEVEL           = 'ERROR'
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
 CELERYD_CONCURRENCY         = 4
