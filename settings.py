@@ -336,7 +336,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    # 'seacucumber',
     'django_ses',
     'apps.rss_feeds',
     'apps.reader',
@@ -352,12 +351,21 @@ INSTALLED_APPS = (
     'vendor',
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
+    'vendor.zebra',
 )
 
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
+    
+# ==========
+# = Stripe =
+# ==========
+
+STRIPE_SECRET = "YOUR-SECRET-API-KEY"
+STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+ZEBRA_ENABLE_APP = True
 
 # ==========
 # = Celery =

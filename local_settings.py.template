@@ -38,6 +38,9 @@ S3_ACCESS_KEY = 'XXX'
 S3_SECRET = 'SECRET'
 S3_BACKUP_BUCKET = 'newsblur_backups'
 
+STRIPE_SECRET = "YOUR-SECRET-API-KEY"
+STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+
 # =============
 # = Databases =
 # =============

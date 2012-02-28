@@ -1,3 +1,4 @@
+import stripe
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect
@@ -7,11 +8,13 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
-from utils import json_functions as json
-from vendor.paypal.standard.forms import PayPalPaymentsForm
-from utils.user_functions import ajax_login_required
+from django.conf import settings
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
+from utils import json_functions as json
+from utils.user_functions import ajax_login_required
+from vendor.zebra.forms import StripePaymentForm
+from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished','hide_mobile','send_emails',)
 SPECIAL_PREFERENCES = ('old_password', 'new_password',)
@@ -60,28 +63,28 @@ def get_preference(request):
 def set_account_settings(request):
     code = 1
     message = ''
-    settings = request.POST
+    post_settings = request.POST
     
-    if settings['username'] and request.user.username != settings['username']:
+    if post_settings['username'] and request.user.username != post_settings['username']:
         try:
-            User.objects.get(username__iexact=settings['username'])
+            User.objects.get(username__iexact=post_settings['username'])
         except User.DoesNotExist:
-            request.user.username = settings['username']
+            request.user.username = post_settings['username']
             request.user.save()
         else:
             code = -1
             message = "This username is already taken. Try something different."
     
-    if request.user.email != settings['email']:
-        if not User.objects.filter(email=settings['email']).count():
-            request.user.email = settings['email']
+    if request.user.email != post_settings['email']:
+        if not User.objects.filter(email=post_settings['email']).count():
+            request.user.email = post_settings['email']
             request.user.save()
         else:
             code = -2
             message = "This email is already being used by another account. Try something different."
         
-    if code != -1 and (settings['old_password'] or settings['new_password']):
-        code = change_password(request.user, settings['old_password'], settings['new_password'])
+    if code != -1 and (post_settings['old_password'] or post_settings['new_password']):
+        code = change_password(request.user, post_settings['old_password'], post_settings['new_password'])
         if code == -3:
             message = "Your old password is incorrect."
     
@@ -192,4 +195,41 @@ def profile_is_premium(request):
         'activated_subs': activated_subs,
         'total_subs': total_subs,
     }
+
+@login_required
+def stripe_form(request):
+    user = request.user
+    success_updating = False
+    stripe.api_key = settings.STRIPE_SECRET
     
+    if request.method == 'POST':
+        zebra_form = StripePaymentForm(request.POST)
+        if zebra_form.is_valid():
+
+            customer = stripe.Customer.create(**{
+                'card': zebra_form.cleaned_data['stripe_token'],
+                'plan': 2,
+                'email': user.email,
+            })
+            
+            user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
+            user.profile.stripe_id = customer.id
+            user.profile.save()
+
+            success_updating = True
+
+    else:
+        zebra_form = StripePaymentForm()
+    
+    if success_updating:
+        return render_to_response('reader/paypal_return.xhtml', 
+                                  {}, context_instance=RequestContext(request))
+        
+    return render_to_response('profile/stripe_form.xhtml',
+        {
+          'zebra_form': zebra_form,
+          'publishable': settings.STRIPE_PUBLISHABLE,
+          'success_updating': success_updating,
+        },
+        context_instance=RequestContext(request)
+    )

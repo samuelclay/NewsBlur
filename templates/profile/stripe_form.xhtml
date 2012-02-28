@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags zebra_tags %}
+
+{% block extra_head_js %}
+  {% include_stylesheets "common" %}
+  {% include_javascripts "payments" %}
+  
+  <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+
+  {% zebra_head_and_stripe_key %}
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-stripe-form">
+  
+    {% zebra_card_form %}
+  
+</div>
+
+{% endblock %}

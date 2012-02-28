@@ -1,0 +1,6 @@
+<form action="" method="POST" id="payment-form">{% csrf_token %}
+    <noscript><h3>Note:&nbsp; this form requires Javascript to use.</h3></noscript>
+    <span class="payment-errors"></span>
+    {{ zebra_form.as_p }}
+    <button type="submit" class="submit-button">Submit Payment</button>
+</form>

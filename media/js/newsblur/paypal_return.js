@@ -1,7 +1,9 @@
 (function($) {
 
     $(document).ready(function() {
-        NEWSBLUR.paypal_return = new NEWSBLUR.PaypalReturn();
+        if($('.NB-paypal-return').length) {
+            NEWSBLUR.paypal_return = new NEWSBLUR.PaypalReturn();
+        }
     });
 
     NEWSBLUR.PaypalReturn = function() {
