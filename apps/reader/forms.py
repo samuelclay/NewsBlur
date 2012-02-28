@@ -33,7 +33,7 @@ class LoginForm(forms.Form):
                 email_username = User.objects.filter(email=username)
                 if email_username:
                     self.user_cache = authenticate(username=email_username[0].username, password=password)
-                    if self.username is None:
+                    if self.user_cache is None:
                         self.user_cache = authenticate(username=email_username[0].username, password="")
             if self.user_cache is None:
                 # logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
@@ -97,8 +97,8 @@ class SignupForm(forms.Form):
         return self.cleaned_data['email']
     
     def clean(self):
-        username = self.cleaned_data['username']
-        password = self.cleaned_data['password']
+        username = self.cleaned_data.get('username', '')
+        password = self.cleaned_data.get('password', '')
         exists = User.objects.filter(username__iexact=username).count()
         if exists:
             user_auth = authenticate(username=username, password=password)
