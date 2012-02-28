@@ -71,7 +71,7 @@ def pull():
         run('git pull')
 
 def pre_deploy():
-    compress_assets()
+    compress_assets(bundle=True)
 
 def post_deploy():
     cleanup_assets()
@@ -149,7 +149,7 @@ def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
 
-def compress_assets():
+def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 

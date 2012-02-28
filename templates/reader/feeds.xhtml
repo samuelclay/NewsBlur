@@ -2,15 +2,29 @@
 
 {% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
 
+{% block extra_head_js %}
+    <script>
+        $(document).ready(function() {
+
+            NEWSBLUR.reader = new NEWSBLUR.Reader();
+
+        });
+    </script>
+
+    {% if user.is_staff %}
+        <script>
+            $(document).ready(function() {
+              $('#add-feature-button').click(function(e) {
+                e.preventDefault();
+                $('#add-feature-form').fadeIn(500);
+              });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 
-<script>
-$(document).ready(function() {
-
-    NEWSBLUR.reader = new NEWSBLUR.Reader();
-
-});
-</script>
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- A visual feed reader with intelligence.</h2>
@@ -28,14 +42,6 @@ $(document).ready(function() {
             <div class="NB-features-add">
               <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
             </div>
-            <script>
-            $(document).ready(function() {
-              $('#add-feature-button').click(function(e) {
-                e.preventDefault();
-                $('#add-feature-form').fadeIn(500);
-              });
-            });
-            </script>
           {% endif %}
           <div class="NB-spinner NB-left"></div>
         <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>

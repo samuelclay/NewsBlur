@@ -39,10 +39,12 @@ if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
+    
 # ===================
 # = Global Settings =
 # ===================
 
+DEBUG                 = False
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
@@ -60,7 +62,7 @@ ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
-
+DEBUG_ASSETS          = DEBUG
 
 # ===============
 # = Enviornment =
