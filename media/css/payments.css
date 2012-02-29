@@ -4,10 +4,14 @@
 
 .NB-paypal-return {
   margin: 176px 0 0;
-  background-color: #CBE5C7;
+  background-color: #D3E7BA;
   border-top: 1px solid #A0A0A0;
   border-bottom: 1px solid #A0A0A0;
   padding: 24px 0;
+  background-image: linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+  background-image: -moz-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+  background-image: -webkit-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+  background-image: -ms-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
   text-align: center;
 }
 
@@ -36,13 +40,16 @@
 /* ========== */
 
 .NB-stripe-form-wrapper {
-  margin: 76px 0 24px;
-  background-color: #CBE5C7;
+  margin: 56px 0 18px;
+  background-color: #D3E7BA;
   border-top: 1px solid #A0A0A0;
   border-bottom: 1px solid #A0A0A0;
   padding: 24px 0;
+  background-image: linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+  background-image: -moz-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+  background-image: -webkit-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+  background-image: -ms-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
 }
-
 .NB-stripe-form {
     margin: 0 auto;
     width: 360px;
