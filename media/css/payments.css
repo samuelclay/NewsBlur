@@ -128,6 +128,8 @@
     float: left;
     width: 200px;
     margin-top: 4px;
+    padding: 0 2px;
+    font-weight: bold;
 }
 .NB-stripe-form .NB-stripe-plan-choice label {
     width: auto;
@@ -143,4 +145,10 @@
     font-size: 10px;
     margin-left: 4px;
     color: #575857;
+}
+.NB-stripe-form .payment-errors {
+    margin: 8px 0 0 150px;
+    color: #600000;
+    display: block;
+    font-weight: bold;
 }
