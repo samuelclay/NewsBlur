@@ -11,7 +11,7 @@ from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
-from apps.profile.forms import StripePlusPaymentForm
+from apps.profile.forms import StripePlusPaymentForm, PLANS
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from vendor.paypal.standard.forms import PayPalPaymentsForm
@@ -201,7 +201,8 @@ def stripe_form(request):
     user = request.user
     success_updating = False
     stripe.api_key = settings.STRIPE_SECRET
-    plan = request.GET.get('plan', 2)
+    plan = int(request.GET.get('plan', 2))
+    plan = PLANS[plan-1][0]
     
     if request.method == 'POST':
         zebra_form = StripePlusPaymentForm(request.POST, email=user.email)
@@ -211,7 +212,7 @@ def stripe_form(request):
             
             customer = stripe.Customer.create(**{
                 'card': zebra_form.cleaned_data['stripe_token'],
-                'plan': int(zebra_form.cleaned_data['plan']),
+                'plan': zebra_form.cleaned_data['plan'],
                 'email': user.email,
                 'description': user.username,
             })

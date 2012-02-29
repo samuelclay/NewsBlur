@@ -1,10 +1,11 @@
 from django import forms
 from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
+
 PLANS = [
-    (1, mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
-    (2, mark_safe("$24 / year <span class='NB-small'>($2/month)</span>")),
-    (3, mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
+    ("newsblur-premium-12", mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
+    ("newsblur-premium-24", mark_safe("$24 / year <span class='NB-small'>($2/month)</span>")),
+    ("newsblur-premium-36", mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
 ]
 
 class HorizRadioRenderer(forms.RadioSelect.renderer):
@@ -23,7 +24,7 @@ class StripePlusPaymentForm(StripePaymentForm):
         super(StripePlusPaymentForm, self).__init__(*args, **kwargs)
         self.fields['email'].initial = email
         if plan:
-            self.fields['plan'].initial = int(plan)
+            self.fields['plan'].initial = plan
 
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
                              label='Email address',
