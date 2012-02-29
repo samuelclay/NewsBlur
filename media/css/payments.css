@@ -35,21 +35,105 @@
 /* = Stripe = */
 /* ========== */
 
-.NB-stripe-form {
-  margin: 176px 0 0;
+.NB-stripe-form-wrapper {
+  margin: 76px 0 24px;
   background-color: #CBE5C7;
   border-top: 1px solid #A0A0A0;
   border-bottom: 1px solid #A0A0A0;
   padding: 24px 0;
-  text-align: center;
 }
 
-#id_card_number {
-    width: 15ex;
+.NB-stripe-form {
+    margin: 0 auto;
+    width: 360px;
+    overflow: hidden;
 }
-#id_card_cvv {
-    width: 3ex;
+
+.NB-stripe-form input,
+.NB-stripe-form select {
+    margin: 6px 0 2px;
+    width: 200px;
+    font-size: 14px;
+    padding: 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #A0B998;
+    -webkit-box-shadow:2px 2px 0 #A0B998;
+    box-shadow:2px 2px 0 #A0B998;
 }
-#id_card_expiry_year {
-    width: 10ex;
+
+.NB-stripe-form input.error,
+.NB-stripe-form select.error {
+    border-color: #830C0C;
+}
+.NB-stripe-form button {
+    width: 200px;
+    margin: 12px 0 4px 150px;
+    
+    -moz-box-shadow:2px 2px 0 #A0B998;
+    -webkit-box-shadow:2px 2px 0 #A0B998;
+    box-shadow:2px 2px 0 #A0B998;
+}
+.NB-stripe-form .helptext {
+    display: none;
+}
+
+.NB-stripe-form #id_card_cvv {
+    width: 42px;
+}
+
+.NB-stripe-form .NB-stripe-username {
+    margin: 6px 0 12px;
+}
+
+.NB-stripe-form label {
+    width: 150px;
+    display: block;
+    float: left;
+    clear: both;
+    margin: 6px 0 0;
+    padding: 2px 0 0;
+    text-shadow: 0 1px 0 #F3FFED;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.NB-stripe-form .NB-creditcards {
+    margin: 8px 0 0 150px;
+}
+
+.NB-stripe-form input[type=submit] {
+    margin-left: 150px;
+    width: 200px;
+}
+
+.NB-stripe-form label.error {
+    width: 200px;
+    margin-left: 150px;
+    text-transform: none;
+}
+
+.NB-stripe-form p {
+    overflow: hidden;
+}
+
+.NB-stripe-form .NB-stripe-plan-choice {
+    float: left;
+    width: 200px;
+    margin-top: 4px;
+}
+.NB-stripe-form .NB-stripe-plan-choice label {
+    width: auto;
+    float: left;
+    margin-top: 0;
+}
+.NB-stripe-form .NB-stripe-plan-choice input {
+    width: auto;
+    margin-right: 4px;
+}
+
+.NB-stripe-form .NB-small {
+    font-size: 10px;
+    margin-left: 4px;
+    color: #575857;
 }

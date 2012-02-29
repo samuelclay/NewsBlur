@@ -2,10 +2,12 @@
 
 {% load typogrify_tags utils_tags zebra_tags %}
 
+{% block bodyclass %}NB-static{% endblock %}
 {% block extra_head_js %}
   {% include_stylesheets "common" %}
   {% include_javascripts "payments" %}
-  
+
+  <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.min.js"></script>
   <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
 
   {% zebra_head_and_stripe_key %}
@@ -13,10 +15,59 @@
 
 {% block content %}
 
-<div class="NB-stripe-form">
-  
-    {% zebra_card_form %}
-  
+<div class="NB-stripe-form-wrapper">
+    <div class="NB-stripe-form">
+        <label>Username</label>
+        <div class="NB-stripe-username">{{ user.username }}</div>
+        <div class="NB-creditcards">
+            <img src="https://manage.stripe.com/img/credit_cards/visa.png">
+            <img src="https://manage.stripe.com/img/credit_cards/mastercard.png">
+            <img src="https://manage.stripe.com/img/credit_cards/amex.png">
+            <img src="https://manage.stripe.com/img/credit_cards/discover.png">
+        </div>
+        
+        <form action="" method="POST" id="payment-form">{% csrf_token %}
+            
+            <div>
+                {{ zebra_form.card_number.label_tag }}
+                {{ zebra_form.card_number }}
+            </div>
+            <div>
+                {{ zebra_form.card_cvv.label_tag }}
+                {{ zebra_form.card_cvv }}
+            </div>
+            
+            <div>
+                {{ zebra_form.card_expiry_month.label_tag }}
+                {{ zebra_form.card_expiry_month }}
+            </div>
+            
+            <div>
+                {{ zebra_form.card_expiry_year.label_tag }}
+                {{ zebra_form.card_expiry_year }}
+            </div>
+            
+            <div>
+                {{ zebra_form.email.label_tag }}
+                {{ zebra_form.email }}
+            </div>
+            
+            <div>
+                {{ zebra_form.plan.label_tag }}
+                {{ zebra_form.plan|safe }}
+            </div>
+            
+            {{ zebra_form.last_4_digits }}
+            {{ zebra_form.stripe_token }}
+            
+            <noscript><h3>Note:&nbsp; this form requires Javascript to use.</h3></noscript>
+        
+            <span class="payment-errors"></span>
+        
+            <button type="submit" class="submit-button NB-modal-submit-button NB-modal-submit-green">Submit Payment</button>
+        </form>
+
+    </div>  
 </div>
 
 {% endblock %}

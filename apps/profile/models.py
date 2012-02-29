@@ -18,8 +18,8 @@ from utils import log as logging
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
-from vendor.zebra.signals import zebra_webhook_customer_subscription_created
-from vendor.zebra.signals import WEBHOOK_MAP as ZEBRA_WEBHOOK_MAP
+from zebra.signals import zebra_webhook_customer_subscription_created
+from zebra.signals import WEBHOOK_MAP as ZEBRA_WEBHOOK_MAP
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")

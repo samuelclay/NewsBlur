@@ -11,9 +11,9 @@ from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
+from apps.profile.forms import StripePlusPaymentForm
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
-from vendor.zebra.forms import StripePaymentForm
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished','hide_mobile','send_emails',)
@@ -201,15 +201,19 @@ def stripe_form(request):
     user = request.user
     success_updating = False
     stripe.api_key = settings.STRIPE_SECRET
+    plan = request.GET.get('plan', 2)
     
     if request.method == 'POST':
-        zebra_form = StripePaymentForm(request.POST)
+        zebra_form = StripePlusPaymentForm(request.POST, email=user.email)
         if zebra_form.is_valid():
-
+            user.email = zebra_form.cleaned_data['email']
+            user.save()
+            
             customer = stripe.Customer.create(**{
                 'card': zebra_form.cleaned_data['stripe_token'],
-                'plan': 2,
+                'plan': int(zebra_form.cleaned_data['plan']),
                 'email': user.email,
+                'description': user.username,
             })
             
             user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
@@ -219,7 +223,7 @@ def stripe_form(request):
             success_updating = True
 
     else:
-        zebra_form = StripePaymentForm()
+        zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
     
     if success_updating:
         return render_to_response('reader/paypal_return.xhtml', 
