@@ -5206,7 +5206,7 @@ background: transparent;
     text-align: center;
     overflow: hidden;
     float: left;
-    margin-top: 16px;
+    margin: 12px 0 8px;
     padding-left: 12px;
     border-left: 1px solid #C6B400;
 }
@@ -5217,7 +5217,7 @@ background: transparent;
 }
 .NB-modal-feedchooser .NB-creditcards img {
     width: 28px;
-    margin: 4px 2px 0 0;
+    margin: 0 2px 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar {
     margin: 0px auto;

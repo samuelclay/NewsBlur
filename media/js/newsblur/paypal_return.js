@@ -40,7 +40,7 @@
         },
         
         homepage: function() {
-            window.location.href = '/';
+            window.location.href = 'http://' + NEWSBLUR.URLs.domain + '/';
         }
 
     };
