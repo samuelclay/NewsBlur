@@ -19,7 +19,6 @@ from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
 from zebra.signals import zebra_webhook_customer_subscription_created
-from zebra.signals import WEBHOOK_MAP as ZEBRA_WEBHOOK_MAP
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
@@ -190,16 +189,11 @@ def paypal_signup(sender, **kwargs):
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
 
-def stripe_signup(sender, **kwargs):
-    profile = Profile.objects.get(stripe_id=kwargs['customer'])
+def stripe_signup(sender, full_json, **kwargs):
+    profile = Profile.objects.get(stripe_id=full_json['data']['object']['customer'])
     profile.activate_premium()
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
-def webhook_logger(sender, **kwargs):
-    logging.debug(" Webhook: %s", kwargs)
-for event_key, webhook_signal in ZEBRA_WEBHOOK_MAP.iteritems():
-    webhook_signal.connect(webhook_logger)
-    
 def change_password(user, old_password, new_password):
     user_db = authenticate(username=user.username, password=old_password)
     if user_db is None:
