@@ -5133,7 +5133,7 @@ background: transparent;
     font-size: 14px;
     line-height: 16px;
     color: #427700;
-    margin: 24px 0 1px;
+    margin: 12px 0 1px;
     font-weight: bold;
     text-shadow:1px 1px 0 #F0F0F0;
 }
@@ -5141,7 +5141,7 @@ background: transparent;
     font-size: 12px;
     line-height: 16px;
     color: #C0C0C0;
-    margin: 24px 0 0;
+    margin: 12px 0 0;
     font-weight: bold;
     text-transform: uppercase;
     text-shadow:1px 1px 0 #F6F6F6;
@@ -5155,6 +5155,9 @@ background: transparent;
     color: #C05050;
 }
 
+.NB-modal-feedchooser .NB-modal-subtitle {
+    width: auto;
+}
 .NB-modal-feedchooser .NB-feedchooser {
     background-color: #D7DDE6;
     overflow-y: auto;

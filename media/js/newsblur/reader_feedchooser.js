@@ -39,10 +39,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   ]),
                     $.make('h2', { className: 'NB-modal-subtitle' }, [
                         $.make('b', [
-                            'You have a ',
-                            $.make('span', { style: 'color: #303060;' }, 'Standard Account'),
-                            ', which can follow up to '+this.MAX_FEEDS+' sites.'
+                            'You can follow up to '+this.MAX_FEEDS+' sites.'
                         ]),
+                        $.make('br'),
                         'You can always change these.'
                     ]),
                   $.make('div', { className: 'NB-feedchooser-info-counts'}),
@@ -70,7 +69,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                 $.make('li', { className: 'NB-1' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Sites are updated 10x more often.'
+                  'Sites are updated up to 10x more often.'
                 ]),
                 $.make('li', { className: 'NB-2' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -78,7 +77,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Access to the premium-only River of News.'
+                  'River of News (reading by folder).'
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
