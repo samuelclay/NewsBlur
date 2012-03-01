@@ -6026,6 +6026,10 @@ background: transparent;
   vertical-align: middle;
   margin: -3px 6px 0 2px;
 }
+.NB-modal-preferences .NB-preference-ssl label img {
+  vertical-align: middle;
+  margin: -5px 6px 0 2px;
+}
 .NB-modal-preferences .NB-preference-password .NB-preference-option {
   float: left;
   margin: 0 12px 0 0;
