@@ -268,6 +268,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Window title'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-ssl' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-ssl-1', type: 'radio', name: 'ssl', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-ssl-1' }, [
+                                    'Use a standard connection'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-ssl-2', type: 'radio', name: 'ssl', value: 1 }),
+                                $.make('label', { 'for': 'NB-preference-ssl-2' }, [
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/silk/lock.png' }),
+                                    'Only use a secure https connection'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'SSL'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -534,6 +554,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=ssl]', this.$modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.ssl) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
         $('input[name=show_unread_counts_in_title]', this.$modal).each(function() {
             if (NEWSBLUR.Preferences.show_unread_counts_in_title) {
                 $(this).attr('checked', true);
@@ -626,6 +652,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             }
             if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {
               NEWSBLUR.reader.apply_resizable_layout(true);
+            }
+            if (self.original_preferences['ssl'] != form['ssl']) {
+                NEWSBLUR.reader.check_and_load_ssl();
             }
             self.close();
         });

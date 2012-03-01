@@ -90,6 +90,8 @@
         // = Initialization =
         // ==================
         
+        var refresh_page = this.check_and_load_ssl();
+        if (refresh_page) return;
         this.load_javascript_elements_on_page();
         this.unload_feed_iframe();
         this.unload_story_iframe();
@@ -121,6 +123,13 @@
         // ========
         // = Page =
         // ========
+        
+        check_and_load_ssl: function() {
+            if (window.location.protocol == 'http:' && this.model.preference('ssl')) {
+                window.location.href = window.location.href.replace('http:', 'https:');
+                return true;
+            }
+        },
         
         load_javascript_elements_on_page: function() {
           $('.NB-javascript').removeClass('NB-javascript');
