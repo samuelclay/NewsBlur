@@ -29,6 +29,9 @@ def load_recommended_feed(request):
         logging.user(request, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
     recommended_feed = recommended_feeds and recommended_feeds[0]
+    if not recommended_feeds:
+        return HttpResponse("")
+        
     feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed_id)
     
     if recommended_feed:

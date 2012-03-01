@@ -398,7 +398,9 @@ class MSocialSubscription(mongo.Document):
             social_user_ids = social_subs.keys()
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for user_id, social_sub in social_subs.items():
-                social_feeds.append(dict(social_sub.items() + social_profiles[user_id].items()))
+                # Check if the social feed has any stories, otherwise they aren't active.
+                if user_id in social_profiles:
+                    social_feeds.append(dict(social_sub.items() + social_profiles[user_id].items()))
 
         return social_feeds
     
