@@ -39,10 +39,12 @@ if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
+    
 # ===================
 # = Global Settings =
 # ===================
 
+DEBUG                 = False
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
@@ -60,7 +62,7 @@ ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
-
+DEBUG_ASSETS          = DEBUG
 
 # ===============
 # = Enviornment =
@@ -160,145 +162,6 @@ LOGGING = {
     }
 }
 
-# =====================
-# = Media Compression =
-# =====================
-
-COMPRESS_JS = {
-    'all': {
-        'source_filenames': (
-            'js/jquery-1.7.1.js',
-            'js/inflector.js',
-            'js/jquery.json.js',
-            'js/jquery.easing.js',
-            'js/jquery.newsblur.js',
-            'js/jquery.scrollTo.js',
-            'js/jquery.corners.js',
-            'js/jquery.hotkeys.js',
-            'js/jquery.ajaxupload.js',
-            'js/jquery.ajaxmanager.3.js',
-            'js/jquery.simplemodal-1.3.js',
-            'js/jquery.color.js',
-            'js/jquery.rightclick.js',
-            'js/jquery.ui.core.js',
-            'js/jquery.ui.widget.js',
-            'js/jquery.ui.mouse.js',
-            'js/jquery.ui.position.js',
-            'js/jquery.ui.draggable.js',
-            'js/jquery.ui.sortable.js',
-            'js/jquery.ui.slider.js',
-            'js/jquery.ui.autocomplete.js',
-            'js/jquery.ui.progressbar.js',
-            'js/jquery.layout.js',
-            'js/jquery.tinysort.js',
-            'js/jquery.fieldselection.js',
-            'js/jquery.flot.js',
-            'js/jquery.tipsy.js',
-            # 'js/socket.io-client.0.8.7.js',
-            'js/underscore.js',
-            'js/underscore.string.js',
-            'js/backbone-0.5.3.js',
-            'js/newsblur/reader_utils.js',
-            'js/newsblur/assetmodel.js',
-            'js/newsblur/reader.js',
-            'js/newsblur/generate_bookmarklet.js',
-            'js/newsblur/modal.js',
-            'js/newsblur/reader_classifier.js',
-            'js/newsblur/reader_add_feed.js',
-            'js/newsblur/reader_mark_read.js',
-            'js/newsblur/reader_goodies.js',
-            'js/newsblur/reader_preferences.js',
-            'js/newsblur/reader_account.js',
-            'js/newsblur/reader_feedchooser.js',
-            'js/newsblur/reader_statistics.js',
-            'js/newsblur/reader_feed_exception.js',
-            'js/newsblur/reader_keyboard.js',
-            'js/newsblur/reader_recommend_feed.js',
-            'js/newsblur/reader_send_email.js',
-            'js/newsblur/reader_tutorial.js',
-            'js/newsblur/reader_friends.js',
-            'js/newsblur/about.js',
-            'js/newsblur/faq.js',
-        ),
-        'output_filename': 'js/all-compressed-?.js'
-    },
-    'mobile': {
-        'source_filenames': (
-            'js/jquery-1.7.1.js',
-            'js/mobile/jquery.mobile-1.0b1.js',
-            'js/jquery.ajaxmanager.3.js',
-            'js/underscore.js',
-            'js/underscore.string.js',
-            'js/inflector.js',
-            'js/jquery.json.js',
-            'js/jquery.easing.js',
-            'js/jquery.newsblur.js',
-            'js/newsblur/reader_utils.js',
-            'js/newsblur/assetmodel.js',
-            'js/mobile/newsblur/mobile_workspace.js',
-        ),
-        'output_filename': 'js/mobile-compressed-?.js',
-    },
-    'paypal': {
-        'source_filenames': (
-            'js/newsblur/paypal_return.js',
-        ),
-        'output_filename': 'js/paypal-compressed-?.js',
-    },
-    'bookmarklet': {
-        'source_filenames': (
-            'js/jquery-1.5.1.min.js',
-            'js/jquery.noConflict.js',
-            'js/jquery.newsblur.js',
-            'js/jquery.tinysort.js',
-            'js/jquery.simplemodal-1.3.js',
-            'js/jquery.corners.js',
-        ),
-        'output_filename': 'js/bookmarklet-compressed-?.js',
-    },
-}
-
-COMPRESS_CSS = {
-    'all': {
-        'source_filenames': (
-            'css/reader.css',
-            'css/modals.css',
-            'css/status.css',
-            'css/jquery-ui/jquery.theme.css',
-            'css/jquery.tipsy.css',
-        ),
-        'output_filename': 'css/all-compressed-?.css'
-    },
-    'mobile': {
-        'source_filenames': (
-            'css/mobile/jquery.mobile-1.0b1.css',
-            'css/mobile/mobile.css',
-        ),
-        'output_filename': 'css/mobile/mobile-compressed-?.css',
-    },
-    'paypal': {
-        'source_filenames': (
-            'css/paypal_return.css',
-        ),
-        'output_filename': 'css/paypal-compressed-?.css',
-    },
-    'bookmarklet': {
-        'source_filenames': (
-            'css/reset.css',
-            'css/modals.css',
-        ),
-        'output_filename': 'css/paypal-compressed-?.css',
-    },
-}
-
-COMPRESS_VERSION = True
-COMPRESS_JS_FILTERS = ['compress.filters.jsmin.JSMinFilter']
-COMPRESS_CSS_FILTERS = []
-
-# YUI_DIR = ''.join([UTILS_ROOT, '/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'])
-# COMPRESS_YUI_BINARY = 'java -jar ' + YUI_DIR
-# COMPRESS_YUI_JS_ARGUMENTS = '--preserve-semi --nomunge --disable-optimizations'
-
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -338,7 +201,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    # 'seacucumber',
     'django_ses',
     'apps.rss_feeds',
     'apps.reader',
@@ -355,12 +217,21 @@ INSTALLED_APPS = (
     'vendor',
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
+    'vendor.zebra',
 )
 
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
+    
+# ==========
+# = Stripe =
+# ==========
+
+STRIPE_SECRET = "YOUR-SECRET-API-KEY"
+STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+ZEBRA_ENABLE_APP = True
 
 # ==========
 # = Celery =

@@ -20,8 +20,11 @@ from utils.view_functions import get_argument_or_404
 
 @json.json_view
 def search_feed(request):
-    address = request.REQUEST['address']
+    address = request.REQUEST.get('address')
     offset = int(request.REQUEST.get('offset', 0))
+    if not address:
+        return dict(code=-1, message="Please provide a URL/address.")
+        
     feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
     
     if feed:

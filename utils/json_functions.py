@@ -70,7 +70,7 @@ def json_encode(data, *args, **kwargs):
         # see http://code.djangoproject.com/ticket/5868
         elif isinstance(data, Promise):
             ret = force_unicode(data)
-        elif isinstance(data, datetime.datetime):
+        elif isinstance(data, datetime.datetime) or isinstance(data, datetime.date):
             ret = str(data)
         else:
             ret = data

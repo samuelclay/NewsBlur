@@ -5447,7 +5447,7 @@ background: transparent;
     font-size: 14px;
     line-height: 16px;
     color: #427700;
-    margin: 24px 0 1px;
+    margin: 12px 0 1px;
     font-weight: bold;
     text-shadow:1px 1px 0 #F0F0F0;
 }
@@ -5455,7 +5455,7 @@ background: transparent;
     font-size: 12px;
     line-height: 16px;
     color: #C0C0C0;
-    margin: 24px 0 0;
+    margin: 12px 0 0;
     font-weight: bold;
     text-transform: uppercase;
     text-shadow:1px 1px 0 #F6F6F6;
@@ -5469,6 +5469,9 @@ background: transparent;
     color: #C05050;
 }
 
+.NB-modal-feedchooser .NB-modal-subtitle {
+    width: auto;
+}
 .NB-modal-feedchooser .NB-feedchooser {
     background-color: #D7DDE6;
     overflow-y: auto;
@@ -5503,16 +5506,38 @@ background: transparent;
 
 .NB-modal-feedchooser .NB-feedchooser-paypal {
     min-height: 48px;
-    width: 135px;
+    width: 50%;
     text-align: center;
     overflow: hidden;
-    float: right;
-    margin-top: 16px;
+    float: left;
+    clear: both;
+    padding: 16px 0 0;
 }
 
-.NB-modal-feedchooser .NB-feedchooser-dollar {
+.NB-modal-feedchooser .NB-feedchooser-paypal img {
+    margin: 0 auto;
+}
+.NB-modal-feedchooser .NB-feedchooser-stripe {
+    min-height: 48px;
+    width: 44%;
+    text-align: center;
+    overflow: hidden;
     float: left;
-    margin: 0px 0px 0px 0;
+    margin: 12px 0 8px;
+    padding-left: 12px;
+    border-left: 1px solid #C6B400;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-stripe .NB-modal-submit-green {
+     -moz-box-shadow:2px 2px 0 #E2D121;
+    box-shadow:2px 2px 0 #E2D121;
+}
+.NB-modal-feedchooser .NB-creditcards img {
+    width: 28px;
+    margin: 0 2px 0 0;
+}
+.NB-modal-feedchooser .NB-feedchooser-dollar {
+    margin: 0px auto;
     padding: 4px 0 4px 2px;
     font-weight: bold;
 }
@@ -5537,7 +5562,7 @@ background: transparent;
     width: 40px;
     height: 40px;
     top: 0;
-    left: 0;
+    left: -40px;
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image {
     top: -8px;
@@ -5559,6 +5584,7 @@ background: transparent;
     display: inline;
     padding: 0 4px 0 0;
     font-size: 15px;
+    position: relative;
 }
 
 .NB-modal-feedchooser .NB-selected .NB-feedchooser-dollar-month {

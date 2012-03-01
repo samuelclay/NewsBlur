@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^paypal_return/?', views.paypal_return, name='paypal-return'),
     url(r'^is_premium/?', views.profile_is_premium, name='profile-is-premium'),
     url(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
+    url(r'^stripe_form/?', views.stripe_form, name='stripe-form'),
 )

@@ -13,7 +13,7 @@ class UpdateFeeds(Task):
         
         options = {
             'fake': bool(MStatistics.get('fake_fetch')),
-            'quick': bool(MStatistics.get('quick_fetch')),
+            'quick': float(MStatistics.get('quick_fetch', 0)),
         }
         
         if not isinstance(feed_pks, list):

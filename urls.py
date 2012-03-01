@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^press/?',        static_views.press, name='press'),
     url(r'^feedback/?',     static_views.feedback, name='feedback'),
     url(r'^iphone/?',       static_views.iphone, name='iphone'),
+    url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),
 )
 
 if settings.DEVELOPMENT:
