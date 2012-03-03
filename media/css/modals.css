@@ -209,19 +209,112 @@
 }
 
 .NB-modal-submit-back,
-.NB-modal-submit-reset {
-    background-color: #d5d4dB;
-    color: #909090;
-    
-}
+.NB-modal-submit-reset,
 .NB-modal-submit-close,
 .NB-modal-submit-grey {
     background-color: #d5d4dB;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #CBCAD3),
+        color-stop(0.84, #d5d4dB)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #CBCAD3 16%,
+        #d5d4dB 84%
+    );
     color: #909090;
+}
+.NB-modal-submit-back:hover,
+.NB-modal-submit-reset:hover,
+.NB-modal-submit-close:hover,
+.NB-modal-submit-grey:hover {
+    background-color: #CBCAD3;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #BDBCC7),
+        color-stop(0.84, #CBCAD3)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #BDBCC7 16%,
+        #CBCAD3 84%
+    );
+}
+.NB-modal-submit-back:active,
+.NB-modal-submit-reset:active,
+.NB-modal-submit-close:active,
+.NB-modal-submit-grey:active {
+    background-color: #BDBCC7;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #ADACBB),
+        color-stop(0.84, #BDBCC7)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #ADACBB 16%,
+        #BDBCC7 84%
+    );
+}
+.NB-modal-submit-close,
+.NB-modal-submit-grey {
     font-weight: bold;
 }
 .NB-modal-submit-green {
     background-color: #217412;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #216200),
+        color-stop(0.84, #217412)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #216200 16%,
+        #217412 84%
+    );
+    font-weight: bold;
+    color: #FCFCFC;
+}
+.NB-modal-submit-green:hover {
+    background-color: #216200;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #1E5000),
+        color-stop(0.84, #216200)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1E5000 16%,
+        #216200 84%
+    );
+    font-weight: bold;
+    color: #FCFCFC;
+}
+.NB-modal-submit-green:active {
+    background-color: #1E5000;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #1B3F00),
+        color-stop(0.84, #1E5000)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1B3F00 16%,
+        #1E5000 84%
+    );
     font-weight: bold;
     color: #FCFCFC;
 }

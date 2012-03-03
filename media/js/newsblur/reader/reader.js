@@ -3874,6 +3874,10 @@
             NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
         },
         
+        open_intro_modal: function() {
+            NEWSBLUR.intro = new NEWSBLUR.ReaderIntro();
+        },
+        
         hide_tutorial: function() {
           var $tutorial = $('.NB-module-item-tutorial');
           
@@ -4794,7 +4798,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-manage-tutorial' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Tutorial')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Tips &amp; Tricks')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
@@ -6786,6 +6790,12 @@
                     self.open_tutorial_modal();
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-intro' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_intro_modal();
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-stats' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -6980,6 +6990,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_tutorial_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-module-launch-intro' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_intro_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function($t, $p){

@@ -5276,6 +5276,146 @@ background: transparent;
 .NB-modal-tutorial .NB-page-5 h4 {
   clear: none;
 }
+
+
+/* ================== */
+/* = Tutorial Modal = */
+/* ================== */
+
+.NB-modal-intro {
+}
+.NB-modal-intro h4 {
+  clear: both;
+}
+.NB-modal-intro .NB-page {
+  display: none;
+}
+.NB-modal-intro .NB-modal-page {
+  float: right;
+  margin-top: 7px;
+}
+.NB-modal-intro .NB-page {
+  height: 390px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.NB-modal-intro .NB-page.NB-page-1 {
+  display: block;
+}
+.NB-modal-intro .NB-modal-submit {
+    position: absolute;
+    padding: 0 12px 12px;
+    bottom: 0;
+    right: 0;
+}
+.NB-modal-intro .NB-modal-submit .NB-modal-submit-button {
+  float: right;
+}
+.NB-modal-intro ul {
+  clear: both;
+  list-style: none;
+  padding: 0;
+}
+.NB-modal-intro li {
+  margin: 0 0 12px;
+  padding: 0;
+  padding-left: 20px;
+  background: transparent url('/media/embed/icons/silk/bullet_blue.png') no-repeat 0 2px;
+}
+
+.NB-modal-intro .NB-intro-spinning-logo {
+    position: absolute;
+    top: 72px;
+    left: 180px;
+    width: 256px;
+    height: 256px;
+    -webkit-animation: slow-spin 60s infinite linear;    
+}
+@-webkit-keyframes slow-spin {
+    from {-webkit-transform: rotate(0deg)}
+    to  {-webkit-transform: rotate(360deg)}
+}
+
+.NB-modal-intro .NB-page-1-started {
+    margin: 316px 0 0;
+    text-align: center;
+}
+
+.NB-modal-intro .NB-page-2-started {
+    margin: 32px 0 0;
+    text-align: center;
+}
+
+.NB-modal-intro .NB-intro-imports {
+    margin: 24px 0 0;
+    overflow: hidden;
+}
+.NB-modal-intro .NB-intro-import {
+    width: 300px;
+    float: left;
+    text-align: center;
+    padding: 12px 0 36px;
+}
+.NB-modal-intro .NB-intro-import .NB-modal-submit-button {
+    margin: 0;
+    font-weight: bold;
+    position: relative;
+    display: block;
+    width: 165px;
+    margin: 0 auto;
+}
+.NB-modal-intro .NB-intro-import .NB-modal-submit-button input[type=file] {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font-family: Arial;
+    font-size: 118px;
+    margin: 0px;
+    padding: 0px;
+    cursor: pointer;
+    opacity: 0;
+}
+.NB-modal-intro .NB-intro-import.NB-intro-import-opml {
+    width: 260px;
+    border-left: 1px solid #E6E6E6;
+    position: relative;
+}
+.NB-modal-intro .NB-intro-import .NB-loading {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.NB-modal-intro .NB-intro-import h3 {
+    height: 48px;
+}
+.NB-modal-intro .NB-add-google-reader-arrow {
+    width: 16px;
+    height: 16px;
+    vertical-align: bottom;
+    margin: 0 4px;
+}
+.NB-modal-intro .NB-intro-bookmarklet {
+    border-top: 1px solid #E6E6E6;
+    border-bottom: 1px solid #E6E6E6;
+    padding: 24px 0 24px 112px;
+    text-align: center;
+    overflow: hidden;
+}
+.NB-modal-intro .NB-intro-bookmarklet-info {
+    float: left;
+    font-size: 15px;
+}
+.NB-modal-intro .NB-intro-bookmarklet-arrow {
+    float: left;
+    font-size: 24px;
+    line-height: 20px;
+    margin: 0 12px;
+}
+.NB-modal-intro a.NB-goodies-bookmarklet-button {
+    float: left;
+    margin: 2px 0 0;
+}
+
 /* ========================= */
 /* = Feed Exceptions Modal = */
 /* ========================= */
@@ -5763,6 +5903,7 @@ background: transparent;
 }
 
 .NB-modal-goodies .NB-goodies-bookmarklet-button,
+.NB-modal-intro .NB-goodies-bookmarklet-button,
 .NB-modal-goodies .NB-goodies-contenthandler-button {
     display: inline-block;
     float: right;
