@@ -208,10 +208,10 @@ NEWSBLUR.ReaderAddFeed.prototype = {
     handle_opml_upload: function() {
         var self = this;
         var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
+        var $error = $('.NB-error', '.NB-fieldset.NB-add-opml');
         $loading.addClass('NB-active');
 
         if (NEWSBLUR.Globals.is_anonymous) {
-            var $error = $('.NB-error', '.NB-fieldset.NB-add-opml');
             $error.text("Please create an account. Not much to do without an account.");
             $error.slideDown(300);
             $loading.removeClass('NB-active');
@@ -235,6 +235,8 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             {
                 $loading.removeClass('NB-active');
                 NEWSBLUR.log(['Error', data, status, e]);
+                $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@ofbrooklyn.com.");
+                $error.slideDown(300);
             }
         });
         

@@ -5363,6 +5363,7 @@ background: transparent;
     display: block;
     width: 165px;
     margin: 0 auto;
+    overflow: hidden;
 }
 .NB-modal-intro .NB-intro-import .NB-modal-submit-button input[type=file] {
     position: absolute;
@@ -5374,6 +5375,7 @@ background: transparent;
     padding: 0px;
     cursor: pointer;
     opacity: 0;
+    z-index: 10;
 }
 .NB-modal-intro .NB-intro-import.NB-intro-import-opml {
     width: 260px;
@@ -5383,7 +5385,7 @@ background: transparent;
 .NB-modal-intro .NB-intro-import .NB-loading {
     position: absolute;
     right: 0;
-    bottom: 0;
+    bottom: 36px;
 }
 .NB-modal-intro .NB-intro-import h3 {
     height: 48px;

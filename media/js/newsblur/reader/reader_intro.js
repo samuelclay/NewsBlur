@@ -4,7 +4,7 @@ NEWSBLUR.ReaderIntro = function(options) {
     _.bindAll(this, 'close');
     
     this.options = $.extend({
-      'page_number': 2
+      'page_number': 1
     }, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
 
@@ -60,13 +60,12 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         ])
                     ]),
                     $.make('div', { className: 'NB-intro-import NB-intro-import-opml' }, [
-                        $.make('h3', ['Upload an', $.make('br'), ' OPML file']),
-                        $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
+                        $.make('h3', ['Upload an', $.make('br'), 'OPML file']),
+                        $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                             $.make('div', { className: 'NB-loading' }),
-                            // $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
-                            $.make('a', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
+                            $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
                                 'Upload OPML File',
-                                $.make('input', { type: 'file', className: 'NB-intro-upload-opml-button' })
+                                $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' }).bind('change', self.handle_opml_upload)
                             ])
                         ]),
                         $.make('div', { className: 'NB-error' })
@@ -182,6 +181,49 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       NEWSBLUR.reader.load_feed_in_tryfeed_view(this.newsblur_feed.id, this.newsblur_feed);
     },
     
+    // ==========
+    // = Import =
+    // ==========
+    
+    handle_opml_upload: function() {
+        var self = this;
+        var $loading = $('.NB-intro-import-opml .NB-loading', this.$modal);
+        var $error = $('.NB-intro-import-opml .NB-error', this.$modal);
+        $error.slideUp(300);
+        $loading.addClass('NB-active');
+
+        if (NEWSBLUR.Globals.is_anonymous) {
+            var $error = $('.NB-error', '.NB-fieldset.NB-add-opml');
+            $error.text("Please create an account. Not much to do without an account.");
+            $error.slideDown(300);
+            $loading.removeClass('NB-active');
+            return false;
+        }
+
+        // NEWSBLUR.log(['Uploading']);
+        $.ajaxFileUpload({
+            url: NEWSBLUR.URLs['opml-upload'], 
+            secureuri: false,
+            fileElementId: 'NB-intro-upload-opml-button',
+            dataType: 'text',
+            success: function (data, status) {
+                console.log(["upload opml data", data]);
+                $loading.removeClass('NB-active');
+                NEWSBLUR.reader.load_feeds();
+                NEWSBLUR.reader.load_recommended_feed();
+            },
+            error: function (data, status, e)
+            {
+                $loading.removeClass('NB-active');
+                NEWSBLUR.log(['Error', data, status, e]);
+                $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@ofbrooklyn.com.");
+                $error.slideDown(300);
+            }
+        });
+        
+        return false;
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -209,6 +251,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             self.close_and_load_newsblur_blog();
         });
         
+        $.targetIs(e, { tagSelector: '.NB-intro-upload-opml' }, function($t, $p) {
+            // e.preventDefault();
+            // return false;
+        });
         $.targetIs(e, { tagSelector: '.NB-goodies-bookmarklet-button' }, function($t, $p) {
             e.preventDefault();
             

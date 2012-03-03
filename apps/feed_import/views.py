@@ -33,7 +33,6 @@ def opml_upload(request):
             xml_opml = file.read()
             opml_importer = OPMLImporter(xml_opml, request.user)
             folders = opml_importer.process()
-
             feeds = UserSubscription.objects.filter(user=request.user).values()
             payload = dict(folders=folders, feeds=feeds)
             logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
