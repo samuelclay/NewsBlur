@@ -3752,7 +3752,7 @@
                 swfLocation: NEWSBLUR.Globals.MEDIA_URL + 'flash/audiojs.swf',
                 preload: false
             };
-            console.log(["audio", $audio, audio_opts]);
+
             audiojs.events.ready(function() {
                 audiojs.createAll(audio_opts, $audio);
             });

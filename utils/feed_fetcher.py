@@ -347,6 +347,7 @@ class Dispatcher:
             
             feed = self.refresh_feed(feed_id)
             if ((self.options['force']) or 
+                (random.random() > .9) or
                 (fetched_feed and
                  feed.feed_link and
                  feed.has_page and
