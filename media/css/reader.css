@@ -2244,6 +2244,10 @@ background: transparent;
     padding: 0;
 }
 
+#story_pane .audiojs audio {
+    display: none;
+}
+
 /* ====================== */
 /* = River Progress Bar = */
 /* ====================== */

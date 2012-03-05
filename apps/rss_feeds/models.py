@@ -330,6 +330,7 @@ class Feed(models.Model):
             self.count_errors_in_history('page', status_code)
         elif self.has_page_exception:
             self.has_page_exception = False
+            self.has_page = True
             self.active = True
             self.save()
         
