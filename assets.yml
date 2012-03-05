@@ -87,7 +87,8 @@ javascripts:
         - media/js/newsblur/reader_utils.js
         - media/js/newsblur/assetmodel.js
         - media/js/mobile/newsblur/mobile_workspace.js
-    paypal:
+    payments:
+        - media/js/newsblur/stripe_form.js
         - media/js/newsblur/paypal_return.js
     bookmarklet:
         - media/js/jquery-1.5.1.min.js

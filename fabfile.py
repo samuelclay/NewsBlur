@@ -65,32 +65,35 @@ def task():
 # = Deploy =
 # ==========
 
+@parallel
 def pull():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
 
 def pre_deploy():
-    compress_assets()
+    compress_assets(bundle=True)
 
 def post_deploy():
     cleanup_assets()
     
 @parallel
 def deploy():
-    deploy_code()
+    deploy_code(copy_assets=True)
     post_deploy()
 
 def deploy_full():
     deploy_code(full=True)
     post_deploy()
 
-def deploy_code(full=False):
+@parallel
+def deploy_code(copy_assets=False, full=False):
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
         run('mkdir -p static')
         if full:
             run('rm -fr static/*')
-        transfer_assets()
+        if copy_assets:
+            transfer_assets()
         if full:
             with settings(warn_only=True):
                 run('sudo supervisorctl restart gunicorn')            
@@ -131,12 +134,14 @@ def celery():
     celery_stop()
     celery_start()
 
+@parallel
 def celery_stop():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl stop celery')
         with settings(warn_only=True):
             run('./utils/kill_celery.sh')
 
+@parallel
 def celery_start():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl start celery')
@@ -146,7 +151,7 @@ def kill_celery():
     with cd(env.NEWSBLUR_PATH):
         run('ps aux | grep celeryd | egrep -v grep | awk \'{print $2}\' | sudo xargs kill -9')
 
-def compress_assets():
+def compress_assets(bundle=False):
     local('jammit -c assets.yml --base-url http://www.newsblur.com --output static')
     local('tar -czf static.tgz static/*')
 
@@ -216,7 +221,7 @@ def setup_db():
     setup_common()
     setup_db_firewall()
     setup_db_motd()
-    setup_rabbitmq()
+    # setup_rabbitmq()
     setup_memcached()
     setup_postgres()
     setup_mongo()
@@ -307,7 +312,7 @@ def setup_psycopg():
     
 def setup_python():
     sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-compress South django-extensions pymongo BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -416,6 +421,7 @@ def setup_app_firewall():
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
     sudo('ufw allow 8888')
+    sudo('ufw allow 443')
     sudo('ufw --force enable')
 
 def setup_app_motd():
@@ -464,7 +470,7 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     sudo('ufw allow from 199.15.250.0/22 to any port 5432 ') # PostgreSQL
     sudo('ufw allow from 199.15.250.0/22 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
+    # sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.250.0/22 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.250.0/22 to any port 11211 ') # Memcached
     sudo('ufw --force enable')

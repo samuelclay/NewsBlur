@@ -36,7 +36,7 @@ class JammitAssets:
         `use_compressed_assets` profile setting.
         """
         tags = []
-        if not settings.DEBUG:
+        if not getattr(settings, 'DEBUG_ASSETS', settings.DEBUG):
             if asset_type == 'javascripts':
                 asset_type_ext = 'js'
             elif asset_type == 'stylesheets':

@@ -75,7 +75,8 @@ class PageImporter(object):
             else:
                 self.save_no_page()
                 return
-        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
+        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL,
+                requests.exceptions.ConnectionError), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
             feed_link = fp.feed.get('link', "")
@@ -88,6 +89,7 @@ class PageImporter(object):
                 LookupError, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
+            mail_feed_error_to_admin(self.feed, e, locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))

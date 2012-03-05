@@ -28,24 +28,28 @@ class LoginForm(forms.Form):
         if username and user:
             self.user_cache = authenticate(username=user[0].username, password=password)
             if self.user_cache is None:
+                self.user_cache = authenticate(username=user[0].username, password="")
+            if self.user_cache is None:
                 email_username = User.objects.filter(email=username)
                 if email_username:
                     self.user_cache = authenticate(username=email_username[0].username, password=password)
-                if self.user_cache is None:
-                    # logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
-                    jkless_password = password.replace('j', '').replace('k', '')
-                    self.user_cache = authenticate(username=username, password=jkless_password)
                     if self.user_cache is None:
-                        logging.info(" ***> [%s] Bad Login" % username)
-                        raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
-                    else:
-                        # Supreme fuck-up. Accidentally removed the letters J and K from
-                        # all user passwords. Re-save with correct password.
-                        logging.info(" ***> [%s] FIXING JK-LESS PASSWORD" % username)
-                        self.user_cache.set_password(password)
-                        self.user_cache.save()
-                elif not self.user_cache.is_active:
-                    raise forms.ValidationError(_("This account is inactive."))
+                        self.user_cache = authenticate(username=email_username[0].username, password="")
+            if self.user_cache is None:
+                # logging.info(" ***> [%s] Bad Login: TRYING JK-LESS PASSWORD" % username)
+                jkless_password = password.replace('j', '').replace('k', '')
+                self.user_cache = authenticate(username=username, password=jkless_password)
+                if self.user_cache is None:
+                    logging.info(" ***> [%s] Bad Login" % username)
+                    raise forms.ValidationError(_("Whoopsy-daisy. Try again."))
+                else:
+                    # Supreme fuck-up. Accidentally removed the letters J and K from
+                    # all user passwords. Re-save with correct password.
+                    logging.info(" ***> [%s] FIXING JK-LESS PASSWORD" % username)
+                    self.user_cache.set_password(password)
+                    self.user_cache.save()
+            if not self.user_cache.is_active:
+                raise forms.ValidationError(_("This account is inactive."))
         elif username and not user:
             raise forms.ValidationError(_("That username is not registered. Create an account with it instead."))
             
@@ -80,11 +84,6 @@ class SignupForm(forms.Form):
     
     def clean_username(self):
         username = self.cleaned_data['username']
-        try:
-            User.objects.get(username__iexact=username)
-        except User.DoesNotExist:
-            return username
-        raise forms.ValidationError(_(u'Someone is already using that username.'))
         return username
 
     def clean_password(self):
@@ -96,15 +95,36 @@ class SignupForm(forms.Form):
         if not self.cleaned_data['email']:
             return ""
         return self.cleaned_data['email']
-            
+    
+    def clean(self):
+        username = self.cleaned_data.get('username', '')
+        password = self.cleaned_data.get('password', '')
+        exists = User.objects.filter(username__iexact=username).count()
+        if exists:
+            user_auth = authenticate(username=username, password=password)
+            if not user_auth:
+                raise forms.ValidationError(_(u'Someone is already using that username.'))
+        return self.cleaned_data
+        
     def save(self, profile_callback=None):
-        new_user = User(username=self.cleaned_data['username'])
-        new_user.set_password(self.cleaned_data['password'])
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
+
+        exists = User.objects.filter(username__iexact=username).count()
+        if exists:
+            user_auth = authenticate(username=username, password=password)
+            if not user_auth:
+                raise forms.ValidationError(_(u'Someone is already using that username.'))
+            else:
+                return user_auth
+            
+        new_user = User(username=username)
+        new_user.set_password(password)
         new_user.is_active = True
         new_user.email = self.cleaned_data['email']
         new_user.save()
-        new_user = authenticate(username=self.cleaned_data['username'],
-                                password=self.cleaned_data['password'])
+        new_user = authenticate(username=username,
+                                password=password)
         new_user.profile.send_new_user_email()
         
         return new_user

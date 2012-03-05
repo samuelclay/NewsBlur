@@ -79,7 +79,7 @@ def pre_process_story(entry):
     for media_content in chain(entry.get('media_content', []), entry.get('links', [])):
         media_url = media_content.get('url', '')
         media_type = media_content.get('type', '')
-        if media_url and media_type and media_url not in entry['story_content']:
+        if media_url and media_type and entry['story_content'] and media_url not in entry['story_content']:
             media_type_name = media_type.split('/')[0]
             if 'audio' in media_type and media_url:
                 entry['story_content'] += """<br><br>

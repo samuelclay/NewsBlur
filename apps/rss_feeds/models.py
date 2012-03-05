@@ -4,7 +4,6 @@ import random
 import re
 import math
 import mongoengine as mongo
-import redis
 import zlib
 import urllib
 import hashlib
@@ -13,7 +12,6 @@ from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
-from django.core.cache import cache
 from django.conf import settings
 from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
@@ -287,6 +285,10 @@ class Feed(models.Model):
             self.save_feed_history(505, 'Timeout', '')
             feed_address = None
         
+        if feed_address:
+            self.has_feed_exception = True
+            self.schedule_feed_fetch_immediately()
+        
         return not not feed_address
 
     def save_feed_history(self, status_code, message, exception=None):
@@ -304,7 +306,8 @@ class Feed(models.Model):
         # for history in old_fetch_histories:
         #     history.delete()
         if status_code not in (200, 304):
-            self.count_errors_in_history('feed', status_code)
+            errors, non_errors = self.count_errors_in_history('feed', status_code)
+            self.set_next_scheduled_update(error_count=len(errors), non_error_count=len(non_errors))
         elif self.has_feed_exception:
             self.has_feed_exception = False
             self.active = True
@@ -328,13 +331,14 @@ class Feed(models.Model):
             self.save()
         
     def count_errors_in_history(self, exception_type='feed', status_code=None):
+        logging.debug('   ---> [%-30s] Counting errors in history...' % (unicode(self)[:30]))
         history_class = MFeedFetchHistory if exception_type == 'feed' else MPageFetchHistory
         fetch_history = map(lambda h: h.status_code, 
                             history_class.objects(feed_id=self.pk)[:50])
         non_errors = [h for h in fetch_history if int(h)     in (200, 304)]
         errors     = [h for h in fetch_history if int(h) not in (200, 304)]
-
-        if len(non_errors) == 0 and len(errors) >= 1:
+        
+        if len(non_errors) == 0 and len(errors) > 1:
             if exception_type == 'feed':
                 self.has_feed_exception = True
                 self.active = False
@@ -345,6 +349,10 @@ class Feed(models.Model):
         elif self.exception_code > 0:
             self.active = True
             self.exception_code = 0
+            if exception_type == 'feed':
+                self.has_feed_exception = False
+            elif exception_type == 'page':
+                self.has_page_exception = False
             self.save()
         
         return errors, non_errors
@@ -595,21 +603,26 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True):
+    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, options=None):
         from utils import feed_fetcher
+        if not options:
+            options = {}
         if settings.DEBUG:
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         
+        self.last_update = datetime.datetime.utcnow()
         self.set_next_scheduled_update()
         
-        options = {
+        options.update({
             'verbose': verbose,
             'timeout': 10,
             'single_threaded': single_threaded,
             'force': force,
             'compute_scores': compute_scores,
-        }
+            'fake': options.get('fake'),
+            'quick': options.get('quick'),
+        })
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
@@ -665,9 +678,15 @@ class Feed(models.Model):
                     original_content = None
                     try:
                         if existing_story and existing_story.id:
-                            existing_story = MStory.objects.get(id=existing_story.id)
+                            try:
+                                existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
+                                                                    id=existing_story.id)
+                            except ValidationError:
+                                existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
+                                                                    story_guid=existing_story.id)
                         elif existing_story and existing_story.story_guid:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, story_guid=existing_story.story_guid)
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
+                                                                story_guid=existing_story.story_guid)
                         else:
                             raise MStory.DoesNotExist
                     except (MStory.DoesNotExist, OperationError), e:
@@ -1007,11 +1026,12 @@ class Feed(models.Model):
         
         return total, random_factor*2
         
-    def set_next_scheduled_update(self, multiplier=1):
+    def set_next_scheduled_update(self, error_count=0, non_error_count=0):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
-        if multiplier > 1:
-            total = total * multiplier
+        if error_count:
+            total = total * error_count
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors. Total: %s' % (unicode(self)[:30], error_count, non_error_count, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
@@ -1022,13 +1042,10 @@ class Feed(models.Model):
         self.save()
 
     def schedule_feed_fetch_immediately(self):
+        logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
         self.next_scheduled_update = datetime.datetime.utcnow()
 
         self.save()
-        
-    def schedule_feed_fetch_geometrically(self):
-        errors, non_errors = self.count_errors_in_history('feed')
-        self.set_next_scheduled_update(multiplier=len(errors))
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
