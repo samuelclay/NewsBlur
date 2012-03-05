@@ -459,7 +459,6 @@ def setup_node():
     sudo('ufw allow 8888')
     put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
 
-
     
 # ==============
 # = Setup - DB =
@@ -516,6 +515,10 @@ def setup_redis():
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis start')
+
+def setup_db_munin():
+    sudo('ln -s %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+
     
 # ================
 # = Setup - Task =
