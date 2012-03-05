@@ -465,7 +465,7 @@ def copy_certificates():
     with cd(os.path.join(env.NEWSBLUR_PATH, 'config/certificates')):
         put('data/www.newsblur.com.crt', 'www.newsblur.com.crt')
         put('data/www.newsblur.com.nopass.key', 'www.newsblur.com.key')
-    
+
 # ==============
 # = Setup - DB =
 # ==============    
@@ -521,6 +521,10 @@ def setup_redis():
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
     sudo('/etc/init.d/redis start')
+
+def setup_db_munin():
+    sudo('ln -s %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+
     
 # ================
 # = Setup - Task =

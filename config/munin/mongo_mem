@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+## GENERATED FILE - DO NOT EDIT
+
+import urllib2
+import sys
+import os
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+
+def getServerStatus():
+    host = os.environ.get("host", "127.0.0.1")
+    port = 28017
+    url = "http://%s:%d/_status" % (host, port)
+    req = urllib2.Request(url)
+    user = os.environ.get("user")
+    password = os.environ.get("password")
+    if user and password:
+        passwdmngr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passwdmngr.add_password(None, 'http://%s:%d' % (host, port), user, password)
+        authhandler = urllib2.HTTPDigestAuthHandler(passwdmngr)
+        opener = urllib2.build_opener(authhandler)
+        urllib2.install_opener(opener)
+    raw = urllib2.urlopen(req).read()
+    return json.loads( raw )["serverStatus"]
+
+def ok(s):
+    return s == "resident" or s == "virtual" or s == "mapped"
+
+def doData():
+    for k,v in getServerStatus()["mem"].iteritems():
+        if ok(k):
+            print( str(k) + ".value " + str(v * 1024 * 1024) )
+
+def doConfig():
+
+    print "graph_title MongoDB memory usage"
+    print "graph_args --base 1024 -l 0 --vertical-label Bytes"
+    print "graph_category MongoDB"
+
+    for k in getServerStatus()["mem"]:
+        if ok( k ):
+            print k + ".label " + k
+            print k + ".draw LINE1"
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "config":
+        doConfig()
+    else:
+        doData()
+
+

@@ -75,7 +75,8 @@ class PageImporter(object):
             else:
                 self.save_no_page()
                 return
-        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
+        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL,
+                requests.exceptions.ConnectionError), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
             feed_link = fp.feed.get('link', "")
