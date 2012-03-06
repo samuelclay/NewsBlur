@@ -5288,6 +5288,10 @@ background: transparent;
 
 .NB-modal-intro {
 }
+
+.NB-modal-intro .NB-modal-loading {
+    margin: 8px 8px 0 0;
+}
 .NB-modal-intro h4 {
   clear: both;
 }
@@ -5390,6 +5394,7 @@ background: transparent;
     width: 165px;
     margin: 0 auto;
     overflow: hidden;
+    line-height: 11px;
 }
 .NB-modal-intro .NB-intro-import .NB-modal-submit-button input[type=file] {
     position: absolute;
@@ -5461,14 +5466,57 @@ background: transparent;
     color: #606060;
 }
 
+.NB-modal-intro .NB-page-3-started {
+    margin-bottom: 4px;
+}
+
+.NB-modal-intro .NB-friends-service {
+    width: 49%;
+    float: left;
+    text-align: center;
+    padding: 12px 0 36px;
+}
+.NB-modal-intro .NB-friends-service .NB-friends-service-title {
+    height: 48px;
+}
+.NB-modal-intro .NB-friends-service .NB-modal-submit-button {
+    margin: 0;
+    font-weight: bold;
+    position: relative;
+    display: block;
+    width: 195px;
+    margin: 0 auto;
+    overflow: hidden;
+    line-height: 11px;
+}
+.NB-modal-intro .NB-friends-service-facebook {
+    border-left: 1px solid #E6E6E6;
+    position: relative;
+}
+.NB-modal-intro .NB-friends-autofollow {
+    text-align: center;
+    font-size: 11px;
+    margin: 0 0 24px;
+}
+.NB-modal-intro .NB-friends-autofollow input[type=checkbox] {
+    margin: 0 6px 0 0;
+}
+.NB-modal-intro .NB-friends-service .NB-modal-submit-button img {
+    vertical-align: text-bottom;
+    margin: 0 4px 0 0;
+}
+.NB-modal-intro .NB-friends-service-connected {
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
 /* ============ */
 /* = Carousel = */
 /* ============ */
 
 .carousel {
   position: relative;
-  margin-bottom: 18px;
-  line-height: 1;
 }
 .carousel-inner {
   overflow: hidden;
@@ -5760,7 +5808,7 @@ background: transparent;
     list-style: none;
 /*    margin: 12px 0;*/
     padding: 0;
-    max-height: 392px;
+    max-height: 422px;
     min-height: 186px;
     width: auto;
     border: 1px solid #909090;

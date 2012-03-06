@@ -292,13 +292,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
         $('.NB-feedchooser-info-sort', this.$modal).fadeOut(500);
         if (approved > this.MAX_FEEDS) {
-          $submit.addClass('NB-disabled').attr('disabled', true).val('Too many sites! Deselect ' + (
+          $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
             difference == 1 ?
             '1 site...' :
             difference + ' sites...'
           ));
         } else {
-          $submit.removeClass('NB-disabled').attr('disabled', false).val('Turn on these '+ approved +' sites, please');
+          $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('Turn on these '+ approved +' sites, please');
         }
     },
     

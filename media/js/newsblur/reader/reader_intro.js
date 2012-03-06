@@ -4,10 +4,15 @@ NEWSBLUR.ReaderIntro = function(options) {
     _.bindAll(this, 'close');
     
     this.options = $.extend({
-      'page_number': 2
+      'page_number': 1
     }, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
-
+    this.services = {
+        'twitter': {},
+        'facebook': {}
+    };
+    this.autofollow = true;
+    
     this.page_number = this.options.page_number;
     this.slider_value = 0;
     this.intervals = {};
@@ -29,8 +34,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
     runner: function() {
         this.make_modal();
+        this.make_find_friends_and_services();
         this.open_modal();
         this.page(this.page_number);
+        this.fetch_friends();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -40,8 +47,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-intro NB-modal' }, [
-            $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('div', { className: 'NB-modal-page' }),
+            $.make('span', { className: 'NB-modal-loading NB-spinner'}),
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('img', { className: 'NB-intro-spinning-logo', src: NEWSBLUR.Globals.MEDIA_URL + 'img/logo_512.png' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
@@ -91,7 +98,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 ])
             ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
-                $.make('h4', { className: 'NB-page-3-started' }, "Social")
+                $.make('h4', { className: 'NB-page-3-started' }, "Connect with friends"),
+                $.make('div', { className: 'NB-intro-services' })
             ]),
             $.make('div', { className: 'NB-page NB-page-4' }, [
                 $.make('h4', { className: 'NB-page-4-started' }, "Feed chooser/premium")
@@ -102,10 +110,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
                 $.make('span', { className: 'NB-tutorial-next-page-text' }, "Let's Get Started "),
-                $.make('span', { className: 'NB-raquo' }, '&raquo;')
-              ]),
-              $.make('div', { className: 'NB-page-previous NB-modal-submit-button NB-modal-submit-close NB-modal-submit-save' }, [
-                $.make('span', { className: 'NB-tutorial-previous-page-text' }, "Skip this step "),
                 $.make('span', { className: 'NB-raquo' }, '&raquo;')
               ])
             ])
@@ -120,6 +124,92 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
     },
 
+    // ==========
+    // = Social =
+    // ==========
+    
+    fetch_friends: function(callback) {
+        $('.NB-modal-loading', this.$modal).addClass('NB-active');
+        this.model.fetch_friends(_.bind(function(data) {
+            this.profile = this.model.user_profile;
+            this.services = data.services;
+            this.autofollow = data.autofollow;
+            this.make_find_friends_and_services();
+            callback && callback();
+        }, this));
+    },
+    
+    make_find_friends_and_services: function() {
+        $('.NB-modal-loading', this.$modal).removeClass('NB-active');
+        var $services = $('.NB-intro-services', this.$modal).empty();
+        
+        _.each(['twitter', 'facebook'], _.bind(function(service) {
+            var $service;
+            if (this.services && this.services[service][service+'_uid']) {
+                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
+                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-connected' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
+                        'Connected'
+                    ])
+                ]);
+            } else {
+                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
+                    $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
+                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
+                        'Find ' + _.string.capitalize(service) + ' Friends'
+                    ])
+                ]);
+            }
+            $services.append($service);
+        }, this));
+       
+        $autofollow = $.make('div', { className: 'NB-friends-autofollow'}, [
+            $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
+            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, 'and auto-follow them')
+        ]);
+        $services.prepend($autofollow);
+        this.resize();
+        
+        if (this.services.twitter.twitter_uid || this.services.facebook.facebook_uid) {
+            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+        }
+    },
+    
+    connect: function(service) {
+        var options = "location=0,status=0,width=800,height=500";
+        var url = "/social/" + service + "_connect";
+        this.connect_window = window.open(url, '_blank', options);
+    },
+    
+    disconnect: function(service) {
+        var $service = $('.NB-friends-service-'+service, this.$modal);
+        $('.NB-friends-service-connect', $service).text('Disconnecting...');
+        this.model.disconnect_social_service(service, _.bind(function(data) {
+            this.services = data.services;
+            this.make_find_friends_and_services();
+            this.make_profile_section();
+            this.make_profile_tab();
+        }, this));
+    },
+    
+    post_connect: function(data) {
+        $('.NB-error', this.$modal).remove();
+        if (data.error) {
+            var $error = $.make('div', { className: 'NB-error' }, [
+                $.make('span', { className: 'NB-raquo' }, '&raquo; '),
+                data.error
+            ]).css('opacity', 0);
+            $('.NB-friends-services', this.$modal).append($error);
+            $error.animate({'opacity': 1}, {'duration': 1000});
+            this.resize();
+        } else {
+            this.fetch_friends();
+            NEWSBLUR.reader.hide_find_friends();
+        }
+    },
+    
     // ==========
     // = Paging =
     // ==========
@@ -146,9 +236,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       } else if (page_number == 1) {
         $('.NB-tutorial-next-page-text', this.$modal).text("Let's Get Started ");
       } else {
-        $('.NB-tutorial-next-page-text', this.$modal).text('Next Page ');
+        $('.NB-tutorial-next-page-text', this.$modal).text('Skip this step ');
       }
-      $('.NB-page-previous', this.$modal).toggle(page_number != 1);
       $('.NB-page', this.$modal).css({'display': 'none'});
       $('.NB-page-'+this.page_number, this.$modal).css({'display': 'block'});
       $('.NB-modal-page', this.$modal).html($.make('div', [
@@ -181,6 +270,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 page = 0;
                 $('.NB-intro-imports-start', this.$modal).addClass('active');
             }
+        }
+        
+        if (page >= 2) {
+            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
         
         $carousel.carousel(page);
@@ -330,11 +423,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 self.next_page();
             }
         });
-        $.targetIs(e, { tagSelector: '.NB-page-previous' }, function($t, $p) {
-            e.preventDefault();
-            
-            self.previous_page();
-        });
         $.targetIs(e, { tagSelector: '.NB-tutorial-finish-newsblur-blog' }, function($t, $p) {
             e.preventDefault();
             
@@ -357,6 +445,21 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             e.preventDefault();
             
             alert('Drag this button to your bookmark toolbar.');
+        });
+        $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function($t, $p) {
+            e.preventDefault();
+            var service;
+            var $service = $t.closest('.NB-friends-service');
+            if ($service.hasClass('NB-friends-service-twitter')) {
+                service = 'twitter';
+            } else if ($service.hasClass('NB-friends-service-facebook')) {
+                service = 'facebook';
+            }
+            if ($service.hasClass('NB-connected')) {
+                self.disconnect(service);
+            } else {
+                self.connect(service);
+            }
         });
     },
     

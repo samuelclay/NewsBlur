@@ -39,7 +39,14 @@
                 {% endif %}
             });
             window.close();
-        } else if (window.opener && window.opener.NEWSBLUR && NEWSBLUR.reader_friends) {
+        } else if (window.opener && window.opener.NEWSBLUR && window.opener.NEWSBLUR.intro) {
+            window.opener.NEWSBLUR.intro.post_connect({
+                {% if error %}
+                    'error': "{{ error }}",
+                {% endif %}
+            });
+            window.close();
+        } else if (window.opener && window.opener.NEWSBLUR && window.opener.NEWSBLUR.reader_friends) {
             window.opener.NEWSBLUR.reader_friends.post_connect({
                 {% if error %}
                     'error': "{{ error }}",
