@@ -3682,6 +3682,7 @@
             
             this.append_feed_view_story_endbar();
             this.hover_story_feed_titles();
+            this.attach_audio_handler_to_stories();
             if (first_load) this.show_stories_preference_in_feed_view(true);
         },
         
@@ -3742,7 +3743,20 @@
             });
         },
         
+        attach_audio_handler_to_stories: function() {
+            var $audio = $('audio', this.$s.$feed_stories).filter(function() {
+                return !$(this).closest('.audiojs').length;
+            });
+            var audio_opts = window.a = {
+                imageLocation: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/player-graphics.gif',
+                swfLocation: NEWSBLUR.Globals.MEDIA_URL + 'flash/audiojs.swf',
+                preload: false
+            };
 
+            audiojs.events.ready(function() {
+                audiojs.createAll(audio_opts, $audio);
+            });
+        },
         
         preserve_classifier_color: function($story, classifier_type, value, score) {
             var $t;

@@ -83,7 +83,7 @@ def pre_process_story(entry):
             media_type_name = media_type.split('/')[0]
             if 'audio' in media_type and media_url:
                 entry['story_content'] += """<br><br>
-                    <audio controls="controls">
+                    <audio controls="controls" preload="none">
                         <source src="%(media_url)s" type="%(media_type)s" />
                     </audio>"""  % {
                         'media_url': media_url, 
