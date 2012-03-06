@@ -247,6 +247,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, callback, error_callback);
     },
     
+    reset_feeds: function() {
+        this.feeds = {};
+    },
+    
     load_feeds: function(callback, error_callback) {
         var self = this;
         

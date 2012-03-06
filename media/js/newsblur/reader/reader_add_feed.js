@@ -1,13 +1,20 @@
 NEWSBLUR.ReaderAddFeed = function(options) {
-    var defaults = {};
+    var defaults = {
+        'onOpen': _.bind(function() {
+            this.focus_add_feed();
+        }, this)
+    };
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.runner();
 };
 
-NEWSBLUR.ReaderAddFeed.prototype = {
-    
+NEWSBLUR.ReaderAddFeed.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderAddFeed.prototype.constructor = NEWSBLUR.ReaderAddFeed;
+
+_.extend(NEWSBLUR.ReaderAddFeed.prototype, {
+
     runner: function() {
         this.make_modal();
         this.handle_cancel();
@@ -66,36 +73,14 @@ NEWSBLUR.ReaderAddFeed.prototype = {
                         'Import feeds'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
-                            'Import from Google Reader',
+                        $.make('div', { className: 'NB-add-import-button NB-modal-submit-green NB-modal-submit-button' }, [
+                            'Import from Google Reader or upload OPML',
                             $.make('img', { className: 'NB-add-google-reader-arrow', src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/arrow_right.png' })
                         ]),
                         $.make('div', { className: 'NB-add-danger' }, (NEWSBLUR.Globals.is_authenticated && _.size(this.model.feeds) > 0 && [
                             $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/server_go.png' }),
                             'This will erase all existing feeds and folders.'
                         ]))
-                    ])
-                ]),
-                $.make('div', { className: 'NB-fieldset NB-add-opml NB-modal-submit' }, [
-                    $.make('h5', [
-                        'Upload OPML',
-                        $.make('a', { className: 'NB-right NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Export OPML')
-                    ]),
-                    $.make('div', { className: 'NB-fieldset-fields' }, [
-                        $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-add-form' }, [
-                            $.make('div', { className: 'NB-loading' }),
-                            $.make('input', { type: 'file', name: 'file', id: 'opml_file_input' }),
-                            $.make('input', { type: 'submit', className: 'NB-add-opml-button NB-modal-submit-green', value: 'Upload OPML File' }).click(function(e) {
-                                e.preventDefault();
-                                self.handle_opml_upload();
-                                return false;
-                            })
-                        ]),
-                        $.make('div', { className: 'NB-add-danger' }, (NEWSBLUR.Globals.is_authenticated && _.size(this.model.feeds) > 0 && [
-                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/server_go.png' }),
-                            'This will erase all existing feeds and folders.'
-                        ])),
-                        $.make('div', { className: 'NB-error' })
                     ])
                 ])
             ])
@@ -104,37 +89,6 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         if (NEWSBLUR.Globals.is_anonymous) {
             this.$modal.addClass('NB-signed-out');
         }
-    },
-
-    open_modal: function() {
-        var self = this;
-        
-        this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
-            'overlayClose': true,
-            'autoResize': true,
-            'onOpen': function (dialog) {
-                dialog.overlay.fadeIn(200, function () {
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200, function() {
-                        self.focus_add_feed();
-                    });
-                });
-            },
-            'onShow': function(dialog) {
-                $('#simplemodal-container').corner('6px');
-            },
-            'onClose': function(dialog) {
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
-                    dialog.overlay.empty().remove();
-                    $.modal.close();
-                });
-                $('.NB-modal-holder').empty().remove();
-            }
-        });
     },
     
     handle_cancel: function() {
@@ -200,47 +154,14 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             self.save_add_folder();
         });  
     },
-        
-    // ========
-    // = OPML =
-    // ========
-        
-    handle_opml_upload: function() {
-        var self = this;
-        var $loading = $('.NB-fieldset.NB-add-opml .NB-loading');
-        var $error = $('.NB-error', '.NB-fieldset.NB-add-opml');
-        $loading.addClass('NB-active');
 
-        if (NEWSBLUR.Globals.is_anonymous) {
-            $error.text("Please create an account. Not much to do without an account.");
-            $error.slideDown(300);
-            $loading.removeClass('NB-active');
-            return false;
-        }
-
-        // NEWSBLUR.log(['Uploading']);
-        $.ajaxFileUpload({
-            url: NEWSBLUR.URLs['opml-upload'], 
-            secureuri: false,
-            fileElementId: 'opml_file_input',
-            dataType: 'text',
-            success: function (data, status)
-            {
-                $loading.removeClass('NB-active');
-                NEWSBLUR.reader.load_feeds();
-                NEWSBLUR.reader.load_recommended_feed();
-                $.modal.close();
-            },
-            error: function (data, status, e)
-            {
-                $loading.removeClass('NB-active');
-                NEWSBLUR.log(['Error', data, status, e]);
-                $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@ofbrooklyn.com.");
-                $error.slideDown(300);
-            }
+    close_and_open_import: function() {
+        this.close(function() {
+            NEWSBLUR.reader.open_intro_modal({
+                'page_number': 2,
+                'force_import': true
+            });
         });
-        
-        return false;
     },
     
     // ===========
@@ -260,6 +181,12 @@ NEWSBLUR.ReaderAddFeed.prototype = {
             e.preventDefault();
             
             self.save_add_folder();
+        });        
+        
+        $.targetIs(e, { tagSelector: '.NB-add-import-button' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close_and_open_import();
         });        
         
     },
@@ -335,4 +262,4 @@ NEWSBLUR.ReaderAddFeed.prototype = {
         }
     }
     
-};
+});

@@ -1054,17 +1054,19 @@
         // = Feed Pane =
         // =============
         
-        load_feeds: function() {
+        load_feeds: function(callback) {
             var self = this;
 
             if ($('#feed_list').length) {
                 $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
                 this.$s.$feed_link_loader.css({'display': 'block'});
                 this.flags['favicons_downloaded'] = false;
+                this.model.reset_feeds();
                 this.model.load_feeds(_.bind(function() {
                     this.make_feeds();
                     this.make_social_feeds();
                     this.load_router();
+                    callback && callback();
                 }, this));
             }
         },
@@ -3874,8 +3876,8 @@
             NEWSBLUR.tutorial = new NEWSBLUR.ReaderTutorial();
         },
         
-        open_intro_modal: function() {
-            NEWSBLUR.intro = new NEWSBLUR.ReaderIntro();
+        open_intro_modal: function(options) {
+            NEWSBLUR.intro = new NEWSBLUR.ReaderIntro(options);
         },
         
         hide_tutorial: function() {
@@ -6277,7 +6279,15 @@
         // =============================
         // = Import from Google Reader =
         // =============================
-
+        
+        post_google_reader_connect: function(data) {
+            if (NEWSBLUR.intro) {
+                NEWSBLUR.intro.start_import_from_google_reader(data);
+            } else {
+                this.start_import_from_google_reader();
+            }
+        },
+        
         start_import_from_google_reader: function() {
             var self = this;
             var $progress = this.$s.$feeds_progress;

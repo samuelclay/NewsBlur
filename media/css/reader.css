@@ -3407,7 +3407,7 @@ a.NB-splash-link:hover {
     margin: 0 4px;
 }
 
-.NB-add .NB-google-reader-oauth {
+.NB-add .NB-add-import-button {
     margin: 4px 0 6px 0;
     text-decoration: none;
     float: left;
@@ -5345,15 +5345,37 @@ background: transparent;
     text-align: center;
 }
 
-.NB-modal-intro .NB-page-2-started {
-    margin: 32px 0 0;
+.NB-modal-intro .NB-page.NB-page-2 {
+    position: relative;
+}
+
+.NB-modal-intro h4 {
+    margin: 32px 0;
     text-align: center;
 }
 
 .NB-modal-intro .NB-intro-imports {
-    margin: 24px 0 0;
+    position: relative;
+}
+
+.NB-modal-intro .carousel-inner {
+    border-bottom: 1px solid #E6E6E6;
+}
+.NB-modal-intro .carousel .item {
     overflow: hidden;
 }
+.NB-modal-intro .NB-intro-imports-start {
+    min-height: 234px;
+}
+
+.NB-modal-intro .NB-intro-imports-progress {
+    min-height: 234px;
+}
+
+.NB-modal-intro .NB-intro-imports-sites {
+    min-height: 234px;
+}
+
 .NB-modal-intro .NB-intro-import {
     width: 300px;
     float: left;
@@ -5386,10 +5408,10 @@ background: transparent;
     border-left: 1px solid #E6E6E6;
     position: relative;
 }
-.NB-modal-intro .NB-intro-import .NB-loading {
-    position: absolute;
-    right: 0;
-    bottom: 36px;
+.NB-modal-intro .NB-intro-import .NB-error  {
+    margin: 12px 12px -24px;
+    font-size: 11px;
+    line-height: 13px;
 }
 .NB-modal-intro .NB-intro-import h3 {
     height: 48px;
@@ -5401,7 +5423,6 @@ background: transparent;
     margin: 0 4px;
 }
 .NB-modal-intro .NB-intro-bookmarklet {
-    border-top: 1px solid #E6E6E6;
     border-bottom: 1px solid #E6E6E6;
     padding: 24px 0 24px 112px;
     text-align: center;
@@ -5420,6 +5441,120 @@ background: transparent;
 .NB-modal-intro a.NB-goodies-bookmarklet-button {
     float: left;
     margin: 2px 0 0;
+}
+.NB-modal-intro .NB-intro-imports-progress .NB-loading {
+    margin: 0 auto -24px;
+    float: none;
+}
+.NB-modal-intro .NB-intro-imports-progress h4 {
+    margin: 72px 0 36px;
+}
+.NB-modal-intro .NB-intro-imports-sites h4 {
+    margin: 72px 0 36px;
+}
+.NB-modal-intro .NB-intro-imports-sites .NB-modal-submit-button {
+    margin: 0 auto 24px;
+    width: 250px;
+    text-align: center;
+    display: block;
+    line-height: 20px;
+    color: #606060;
+}
+
+/* ============ */
+/* = Carousel = */
+/* ============ */
+
+.carousel {
+  position: relative;
+  margin-bottom: 18px;
+  line-height: 1;
+}
+.carousel-inner {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+.carousel .item {
+  display: none;
+  position: relative;
+  -webkit-transition: 0.6s ease-in-out left;
+  -moz-transition: 0.6s ease-in-out left;
+  -ms-transition: 0.6s ease-in-out left;
+  -o-transition: 0.6s ease-in-out left;
+  transition: 0.6s ease-in-out left;
+}
+.carousel .item > img {
+  display: block;
+  line-height: 1;
+}
+.carousel .active, .carousel .next, .carousel .prev {
+  display: block;
+}
+.carousel .active {
+  left: 0;
+}
+.carousel .next, .carousel .prev {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.carousel .next {
+  left: 100%;
+}
+.carousel .prev {
+  left: -100%;
+}
+.carousel .next.left, .carousel .prev.right {
+  left: 0;
+}
+.carousel .active.left {
+  left: -100%;
+}
+.carousel .active.right {
+  left: 100%;
+}
+.carousel-control {
+  position: absolute;
+  top: 40%;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  font-size: 60px;
+  font-weight: 100;
+  line-height: 30px;
+  color: #ffffff;
+  text-align: center;
+  background: #222222;
+  border: 3px solid #ffffff;
+  -webkit-border-radius: 23px;
+  -moz-border-radius: 23px;
+  border-radius: 23px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+.carousel-control.right {
+  left: auto;
+  right: 15px;
+}
+.carousel-control:hover {
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
+.carousel-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 15px 5px;
+  background: #333333;
+  background: rgba(0, 0, 0, 0.75);
+}
+.carousel-caption h4, .carousel-caption p {
+  color: #ffffff;
 }
 
 /* ========================= */

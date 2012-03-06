@@ -84,7 +84,8 @@ window.Inflector = {
 
   // Only works for words that pluralize by adding an 's', end in a 'y', or
   // that we've special-cased. Not comprehensive.
-  pluralize : function(s, count) {
+  pluralize : function(s, count, include_count) {
+    if (include_count) s = count + ' ' + s;
     if (count == 1) return s;
     if (s == 'person') return 'people';
     if (s == 'is') return 'are';
