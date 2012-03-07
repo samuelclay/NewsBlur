@@ -413,7 +413,7 @@ def twitter_connect(request):
             user = User.objects.get(pk=existing_user[0].user_id)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Twitter credentials."
-                               % (user.username, user.email_address)))
+                               % (user.username, user.email)))
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.twitter_uid = unicode(twitter_user.id)
@@ -467,7 +467,7 @@ def facebook_connect(request):
             user = User.objects.get(pk=existing_user[0].user_id)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Facebook credentials."
-                               % (user.username, user.email_address)))
+                               % (user.username, user.email or "no email")))
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.facebook_uid = uid

@@ -5469,7 +5469,12 @@ background: transparent;
 .NB-modal-intro .NB-page-3-started {
     margin-bottom: 4px;
 }
-
+.NB-modal-intro .NB-intro-services .NB-error {
+    display: block;
+    clear: both;
+    margin: 12px 24px;
+    float: left;
+}
 .NB-modal-intro .NB-friends-service {
     width: 49%;
     float: left;
