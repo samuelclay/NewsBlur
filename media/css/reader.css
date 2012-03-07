@@ -5477,7 +5477,7 @@ background: transparent;
 }
 .NB-modal-intro .NB-friends-service {
     width: 49%;
-    float: left;
+    display: inline-block;
     text-align: center;
     padding: 12px 0 36px;
 }
@@ -5506,15 +5506,51 @@ background: transparent;
 .NB-modal-intro .NB-friends-autofollow input[type=checkbox] {
     margin: 0 6px 0 0;
 }
-.NB-modal-intro .NB-friends-service .NB-modal-submit-button img {
+.NB-modal-intro .NB-friends-service .NB-modal-submit-button img,
+.NB-modal-intro .NB-friends-service-connected img {
     vertical-align: text-bottom;
-    margin: 0 4px 0 0;
+    margin: 0 8px 0 0;
 }
 .NB-modal-intro .NB-friends-service-connected {
     font-weight: bold;
     font-size: 12px;
     text-transform: uppercase;
+    color: darkgreen;
 }
+.NB-modal-intro .NB-intro-services .NB-note {
+    display: block;
+    clear: both;
+    margin: 12px 24px;
+    color: #606060;
+    font-size: 11px;
+    text-align: center;
+}
+.NB-modal-intro .NB-services-stats {
+    border-top: 1px solid #E6E6E6;
+    display: inline-block;
+    width: 50%;
+    overflow: hidden;
+}
+.NB-modal-intro .NB-intro-services-stats-count {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 13px;
+  padding: 8px 0 0;
+}
+.NB-modal-intro .NB-intro-services-stats-count-number {
+  clear: both;
+  font-size: 18px;
+  margin: 8px 0 0 0;
+  color: #0D003C;
+  text-shadow: 1px 1px 0 #E8E8E8;
+  font-weight: bold;
+}
+.NB-modal-intro .NB-intro-services-stats-count-description {
+  margin: 4px 0 0 0;
+  color: #808080;
+  clear: both;
+}
+
 
 /* ============ */
 /* = Carousel = */

@@ -89,6 +89,7 @@ window.Inflector = {
     if (count == 1) return s;
     if (s == 'person') return 'people';
     if (s == 'is') return 'are';
+    if (s == 'following') return s;
     if (s.match(/y$/i)) return s.replace(/y$/i, 'ies');
     return s + 's';
   },

@@ -165,14 +165,28 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $services.append($service);
         }, this));
        
-        $autofollow = $.make('div', { className: 'NB-friends-autofollow'}, [
+        var $autofollow = $.make('div', { className: 'NB-friends-autofollow'}, [
             $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
             $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, 'and auto-follow them')
         ]);
         $services.prepend($autofollow);
-        this.resize();
         
+        var $note = $.make('div', { className: 'NB-note'}, [
+            'Feel comfortable connecting to these services.',
+            $.make('br'),
+            'NewsBlur will not spam, email, bother, or do anything without your permission.'
+        ]);
+        $services.append($note);
         if (this.services.twitter.twitter_uid || this.services.facebook.facebook_uid) {
+            _.each(['follower', 'following'], _.bind(function(follow) {
+                var $stats = $.make('div', { className: 'NB-services-stats' }, [
+                    $.make('div', { className: 'NB-intro-services-stats-count' }, [
+                        $.make('div', { className: 'NB-intro-services-stats-count-number' }, this.profile.get(follow+'_count')),
+                        $.make('div', { className: 'NB-intro-services-stats-count-description' }, Inflector.pluralize(follow, this.profile.get(follow+'_count')))
+                    ])
+                ]);
+                $services.append($stats);
+            }, this));
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
     },
