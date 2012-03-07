@@ -5384,7 +5384,7 @@ background: transparent;
     width: 300px;
     float: left;
     text-align: center;
-    padding: 12px 0 36px;
+    padding: 12px 0 31px;
 }
 .NB-modal-intro .NB-intro-import .NB-modal-submit-button {
     margin: 0;
@@ -5476,7 +5476,7 @@ background: transparent;
     float: left;
 }
 .NB-modal-intro .NB-friends-service {
-    width: 49%;
+    width: 50%;
     display: inline-block;
     text-align: center;
     padding: 12px 0 36px;
@@ -5497,6 +5497,7 @@ background: transparent;
 .NB-modal-intro .NB-friends-service-facebook {
     border-left: 1px solid #E6E6E6;
     position: relative;
+    width: 49%;
 }
 .NB-modal-intro .NB-friends-autofollow {
     text-align: center;
@@ -5527,15 +5528,15 @@ background: transparent;
 }
 .NB-modal-intro .NB-services-stats {
     border-top: 1px solid #E6E6E6;
-    display: inline-block;
-    width: 50%;
+    padding: 8px 20% 0;
     overflow: hidden;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 13px;
 }
 .NB-modal-intro .NB-intro-services-stats-count {
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 13px;
-  padding: 8px 0 0;
+    float: left;
+    width: 50%;
 }
 .NB-modal-intro .NB-intro-services-stats-count-number {
   clear: both;

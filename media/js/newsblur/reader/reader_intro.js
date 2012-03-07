@@ -24,14 +24,6 @@ NEWSBLUR.ReaderIntro.prototype.constructor = NEWSBLUR.ReaderIntro;
 
 _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
-    TITLES: [
-      'Welcome to NewsBlur',
-      'Welcome to NewsBlur',
-      'Welcome to NewsBlur',
-      'Welcome to NewsBlur',
-      'Welcome to NewsBlur'
-    ],
-    
     runner: function() {
         this.make_modal();
         this.make_find_friends_and_services();
@@ -49,7 +41,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-intro NB-modal' }, [
             $.make('div', { className: 'NB-modal-page' }),
             $.make('span', { className: 'NB-modal-loading NB-spinner'}),
-            $.make('h2', { className: 'NB-modal-title' }),
+            $.make('h2', { className: 'NB-modal-title' }, 'Welcome to NewsBlur'),
             $.make('img', { className: 'NB-intro-spinning-logo', src: NEWSBLUR.Globals.MEDIA_URL + 'img/logo_512.png' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
                 $.make('h4', { className: 'NB-page-1-started' }, "So much time and so little to do. Strike that! Reverse it.")
@@ -120,10 +112,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         });
     },
     
-    set_title: function() {
-      $('.NB-modal-title', this.$modal).text(this.TITLES[this.page_number-1]);
-    },
-
     // ==========
     // = Social =
     // ==========
@@ -171,22 +159,24 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         ]);
         $services.prepend($autofollow);
         
-        var $note = $.make('div', { className: 'NB-note'}, [
-            'Feel comfortable connecting to these services.',
-            $.make('br'),
-            'NewsBlur will not spam, email, bother, or do anything without your permission.'
-        ]);
-        $services.append($note);
+        if (!this.services.twitter.twitter_uid && !this.services.facebook.facebook_uid) {
+             var $note = $.make('div', { className: 'NB-note'}, [
+                'Feel comfortable connecting to these services.',
+                $.make('br'),
+                'NewsBlur will not spam, email, bother, or do anything without your permission.'
+            ]);
+            $services.append($note);
+        }
         if (this.services.twitter.twitter_uid || this.services.facebook.facebook_uid) {
-            _.each(['follower', 'following'], _.bind(function(follow) {
-                var $stats = $.make('div', { className: 'NB-services-stats' }, [
-                    $.make('div', { className: 'NB-intro-services-stats-count' }, [
-                        $.make('div', { className: 'NB-intro-services-stats-count-number' }, this.profile.get(follow+'_count')),
-                        $.make('div', { className: 'NB-intro-services-stats-count-description' }, Inflector.pluralize(follow, this.profile.get(follow+'_count')))
-                    ])
+            var $stats = $.make('div', { className: 'NB-services-stats' });
+            _.each(['following', 'follower'], _.bind(function(follow) {
+                var $stat = $.make('div', { className: 'NB-intro-services-stats-count' }, [
+                    $.make('div', { className: 'NB-intro-services-stats-count-number' }, this.profile.get(follow+'_count')),
+                    $.make('div', { className: 'NB-intro-services-stats-count-description' }, Inflector.pluralize(follow, this.profile.get(follow+'_count')))
                 ]);
-                $services.append($stats);
+                $stats.append($stat);
             }, this));
+            $services.append($stats);
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
     },
@@ -266,10 +256,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
           $('.NB-modal-title', this.$modal).css({'paddingLeft': 42});
       }
       
-      this.set_title();
-      
       if (page_number == 2) {
           this.advance_import_carousel();
+      }
+      if (page_number == 3) {
+          this.make_find_friends_and_services();
       }
     },
     
