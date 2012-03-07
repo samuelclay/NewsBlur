@@ -37,7 +37,7 @@ class FeedTest(TestCase):
         url = reverse('load-single-feed', kwargs=dict(feed_id=1))
         response = self.client.get(url)
         feed = json.decode(response.content)
-        self.assertEquals(len(feed['stories']), 12)
+        self.assertEquals(len(feed['stories']), 6)
         
     def test_load_feeds__gothamist(self):
         self.client.login(username='conesus', password='test')
@@ -55,7 +55,7 @@ class FeedTest(TestCase):
         url = reverse('load-single-feed', kwargs=dict(feed_id=4))
         response = self.client.get(url)
         content = json.decode(response.content)
-        self.assertEquals(len(content['stories']), 12)
+        self.assertEquals(len(content['stories']), 6)
         
         management.call_command('loaddata', 'gothamist_aug_2009_2.json', verbosity=0)
         management.call_command('refresh_feed', force=1, feed=4, single_threaded=True, daemonize=False)
@@ -68,13 +68,13 @@ class FeedTest(TestCase):
         # print [c['story_title'] for c in json.decode(response.content)]
         content = json.decode(response.content)
         # Test: 1 changed char in title
-        self.assertEquals(len(content['stories']), 12)
+        self.assertEquals(len(content['stories']), 6)
         
     def test_load_feeds__slashdot(self):
         self.client.login(username='conesus', password='test')
         
-        old_story_guid = "{'original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss', 'gr:original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss'}"
-        new_story_guid = "{'original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss!!', 'gr:original-id': u'http://yro.slashdot.org/story/09/09/05/0112254/Court-Allows-Microsoft-To-Sell-Word-During-Appeal?from=rss!!'}"
+        old_story_guid = "tag:google.com,2005:reader/item/4528442633bc7b2b"
+        new_story_guid = "tag:google.com,2005:reader/item/4528442633bc7b2b!!'}"
         
         management.call_command('loaddata', 'slashdot1.json', verbosity=0)
         
@@ -90,7 +90,7 @@ class FeedTest(TestCase):
         response = self.client.get(reverse('load-feeds'))
         content = json.decode(response.content)
         self.assertEquals(content['feeds']['5']['nt'], 38)
-        
+
         self.client.post(reverse('mark-story-as-read'), {'story_id': old_story_guid, 'feed_id': 5})
         
         response = self.client.get(reverse('refresh-feeds'))
@@ -110,12 +110,12 @@ class FeedTest(TestCase):
         feed = json.decode(response.content)
         
         # Test: 1 changed char in title
-        self.assertEquals(len(feed['stories']), 12)
+        self.assertEquals(len(feed['stories']), 6)
         
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
         self.assertEquals(content['feeds']['5']['nt'], 37)
-        
+
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')
         
@@ -129,7 +129,7 @@ class FeedTest(TestCase):
         feed = json.decode(response.content)
         
         # Test: 1 changed char in title
-        self.assertEquals(len(feed['stories']), 10)
+        self.assertEquals(len(feed['stories']), 6)
         
     def test_all_feeds(self):
         pass
