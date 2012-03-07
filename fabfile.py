@@ -523,7 +523,7 @@ def setup_redis():
     sudo('/etc/init.d/redis start')
 
 def setup_db_munin():
-    sudo('ln -s %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -rs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
 
     
 # ================
