@@ -12,17 +12,25 @@
             color: #A0A0A0;
             font-style: italic;
         }
-        @-webkit-keyframes spin{
-            from {-webkit-transform: rotate(0deg)}
-            to  {-webkit-transform: rotate(360deg)}
-        }
         .NB-loader {
             margin: 72px auto;
             width: 256px;
             height: 256px;
-            display: block;
-            -webkit-animation: spin 3.4s infinite linear;
+            display: block;   
+            -webkit-animation: -webkit-slow-spin 3.4s infinite linear;    
+            -moz-animation-duration: 6.8s;  
+            -moz-animation-name: -moz-slow-spin;  
+            -moz-animation-iteration-count: infinite;  
+            -moz-animation-timing-function: linear;  
         }
+        @-webkit-keyframes -webkit-slow-spin {
+            from {-webkit-transform: rotate(0deg)}
+            to  {-webkit-transform: rotate(360deg)}
+        }
+        @-moz-keyframes -moz-slow-spin {  
+            from {-moz-transform: rotate(0deg)}
+            to  {-moz-transform: rotate(360deg)}
+        } 
     </style>
     <script type="text/javascript" charset="utf-8">
         var next = "{{ next|safe }}";

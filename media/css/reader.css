@@ -5337,12 +5337,20 @@ background: transparent;
     left: 180px;
     width: 256px;
     height: 256px;
-    -webkit-animation: slow-spin 60s infinite linear;    
+    -webkit-animation: -webkit-slow-spin 60s infinite linear;    
+    -moz-animation-duration: 60s;  
+    -moz-animation-name: -moz-slow-spin;  
+    -moz-animation-iteration-count: infinite;   
+    -moz-animation-timing-function: linear;  
 }
-@-webkit-keyframes slow-spin {
+@-webkit-keyframes -webkit-slow-spin {
     from {-webkit-transform: rotate(0deg)}
     to  {-webkit-transform: rotate(360deg)}
 }
+@-moz-keyframes -moz-slow-spin {  
+    from {-moz-transform: rotate(0deg)}
+    to  {-moz-transform: rotate(360deg)}
+} 
 
 .NB-modal-intro .NB-page-1-started {
     margin: 316px 0 0;
@@ -5479,10 +5487,12 @@ background: transparent;
     width: 50%;
     display: inline-block;
     text-align: center;
-    padding: 12px 0 36px;
+    padding: 12px 0 0;
+    height: 108px;
+    overflow: hidden;
 }
 .NB-modal-intro .NB-friends-service .NB-friends-service-title {
-    height: 48px;
+    margin-bottom: 20px;
 }
 .NB-modal-intro .NB-friends-service .NB-modal-submit-button {
     margin: 0;
@@ -5521,7 +5531,7 @@ background: transparent;
 .NB-modal-intro .NB-intro-services .NB-note {
     display: block;
     clear: both;
-    margin: 12px 24px;
+    margin: 6px 24px 12px;
     color: #606060;
     font-size: 11px;
     text-align: center;
@@ -7242,6 +7252,7 @@ background: transparent;
     font-size: 13px;
     line-height: 17px;
     background-color: white;
+    min-height: 50px;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-photo {
     position: absolute;

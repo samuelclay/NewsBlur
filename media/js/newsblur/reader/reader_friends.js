@@ -247,7 +247,9 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         ]).data('user_id', profile.get('user_id'));
         
         var $actions;
-        if (_.contains(this.profile.get('following_user_ids'), profile.get('user_id'))) {
+        if (this.profile.get('user_id') == profile.get('user_id')) {
+            $actions = $.make('div', { className: 'NB-profile-badge-action-self' }, 'This is you');
+        } else if (_.contains(this.profile.get('following_user_ids'), profile.get('user_id'))) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
             }, 'Following');

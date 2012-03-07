@@ -58,10 +58,14 @@ class MSocialProfile(mongo.Document):
     
     def save(self, *args, **kwargs):
         if not self.username:
-            self.update_user(skip_save=True)
+            self.import_user_fields()
         if not self.subscription_count:
             self.count(skip_save=True)
+        if self.bio and len(self.bio) > MSocialProfile.bio.max_length:
+            self.bio = self.bio[:80]
         super(MSocialProfile, self).save(*args, **kwargs)
+        if self.user_id not in self.following_user_ids:
+            self.follow_user(self.user_id)
     
     def count_stories(self):
         # Popular Publishers
@@ -179,13 +183,10 @@ class MSocialProfile(mongo.Document):
             })
         return params
     
-    def update_user(self, skip_save=False):
+    def import_user_fields(self, skip_save=False):
         user = User.objects.get(pk=self.user_id)
         self.username = user.username
         self.email = user.email
-        self.follow_user(self.user_id)
-        if not skip_save:
-            self.save()
 
     def count(self, skip_save=False):
         self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
@@ -219,8 +220,11 @@ class MSocialProfile(mongo.Document):
         follower_key = "F:%s:f" % (user_id)
         r.sadd(follower_key, self.user_id)
         
-        MSocialSubscription.objects.create(user_id=self.user_id, subscription_user_id=user_id)
+        MSocialSubscription.objects.get_or_create(user_id=self.user_id, subscription_user_id=user_id)
     
+    def is_following_user(self, user_id):
+        return user_id in self.following_user_ids
+        
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
@@ -245,7 +249,7 @@ class MSocialProfile(mongo.Document):
             follower_key = "F:%s:f" % (user_id)
             r.srem(follower_key, self.user_id)
         
-        MSocialSubscription.objects.filter(user_id=self.user_id, subscription_user_id=user_id).delete()
+        MSocialSubscription.objects.get(user_id=self.user_id, subscription_user_id=user_id).delete()
     
     def common_follows(self, user_id, direction='followers'):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -720,7 +724,8 @@ class MSocialServices(mongo.Document):
     }
     
     def __unicode__(self):
-        return "%s" % self.user_id
+        user = User.objects.get(pk=self.user_id)
+        return "%s (Twitter: %s, FB: %s)" % (user.username, self.twitter_uid, self.facebook_uid)
         
     def to_json(self):
         user = User.objects.get(pk=self.user_id)
@@ -816,12 +821,11 @@ class MSocialServices(mongo.Document):
         
         if self.autofollow:
             # Follow any friends already on NewsBlur
-            for twitter_uid in self.twitter_friend_ids:
-                user_social_services = MSocialServices.objects.filter(twitter_uid=twitter_uid)
-                if user_social_services:
-                    followee_user_id = user_social_services[0].user_id
-                    social_profile.follow_user(followee_user_id)
-                    following.append(followee_user_id)
+            user_social_services = MSocialServices.objects.filter(twitter_uid__in=self.twitter_friend_ids)
+            for user_social_service in user_social_services:
+                followee_user_id = user_social_service.user_id
+                social_profile.follow_user(followee_user_id)
+                following.append(followee_user_id)
         
             # Follow any friends already on NewsBlur
             following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
@@ -832,7 +836,7 @@ class MSocialServices(mongo.Document):
                     followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import: following ~SB%s~SN with ~SB%s~SN followers" % (following, followers))
+        logging.user(user, "~BB~FRTwitter import: following ~SB%s~SN with ~SB%s~SN follower-backs" % (following, followers))
         
         return following
         
@@ -843,14 +847,13 @@ class MSocialServices(mongo.Document):
         
         if self.autofollow:
             # Follow any friends already on NewsBlur
-            for facebook_uid in self.facebook_friend_ids:
-                user_social_services = MSocialServices.objects.filter(facebook_uid=facebook_uid)
-                if user_social_services:
-                    followee_user_id = user_social_services[0].user_id
-                    social_profile.follow_user(followee_user_id)
-                    following.append(followee_user_id)
+            user_social_services = MSocialServices.objects.filter(facebook_uid__in=self.facebook_friend_ids)
+            for user_social_service in user_social_services:
+                followee_user_id = user_social_service.user_id
+                social_profile.follow_user(followee_user_id)
+                following.append(followee_user_id)
         
-            # Follow any friends already on NewsBlur
+            # Friends already on NewsBlur should follow back
             following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
             for following_user in following_users:
                 if following_user.autofollow:
@@ -859,7 +862,7 @@ class MSocialServices(mongo.Document):
                     followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRFacebook import: following ~SB%s~SN with ~SB%s~SN followers" % (len(following), followers))
+        logging.user(user, "~BB~FRFacebook import: following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(following), followers))
         
         return following
         

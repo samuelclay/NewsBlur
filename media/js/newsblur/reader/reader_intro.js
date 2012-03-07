@@ -4,7 +4,7 @@ NEWSBLUR.ReaderIntro = function(options) {
     _.bindAll(this, 'close');
     
     this.options = $.extend({
-      'page_number': 3
+      'page_number': 1
     }, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
     this.services = {
@@ -94,10 +94,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $.make('div', { className: 'NB-intro-services' })
             ]),
             $.make('div', { className: 'NB-page NB-page-4' }, [
-                $.make('h4', { className: 'NB-page-4-started' }, "Feed chooser/premium")
-            ]),
-            $.make('div', { className: 'NB-page NB-page-5' }, [
-                $.make('h4', { className: 'NB-page-5-started' }, "Feedback")
+                $.make('h4', { className: 'NB-page-4-started' }, "Stay in touch")
             ]),
             $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
@@ -159,7 +156,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         ]);
         $services.prepend($autofollow);
         
-        if (!this.services.twitter.twitter_uid && !this.services.facebook.facebook_uid) {
+        if (!this.services.twitter.twitter_uid || !this.services.facebook.facebook_uid) {
              var $note = $.make('div', { className: 'NB-note'}, [
                 'Feel comfortable connecting to these services.',
                 $.make('br'),
