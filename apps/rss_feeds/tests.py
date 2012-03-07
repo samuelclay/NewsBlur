@@ -74,7 +74,6 @@ class FeedTest(TestCase):
         self.client.login(username='conesus', password='test')
         
         old_story_guid = "tag:google.com,2005:reader/item/4528442633bc7b2b"
-        new_story_guid = "tag:google.com,2005:reader/item/4528442633bc7b2b!!'}"
         
         management.call_command('loaddata', 'slashdot1.json', verbosity=0)
         
@@ -115,6 +114,50 @@ class FeedTest(TestCase):
         response = self.client.get(reverse('refresh-feeds'))
         content = json.decode(response.content)
         self.assertEquals(content['feeds']['5']['nt'], 37)
+        
+        
+    def test_load_feeds__motherjones(self):
+        self.client.login(username='conesus', password='test')
+        
+        management.call_command('loaddata', 'motherjones1.json', verbosity=0)
+        
+        feed = Feed.objects.get(feed_link__contains='motherjones')
+        stories = MStory.objects(story_feed_id=feed.pk)
+        self.assertEquals(stories.count(), 0)
+        
+        management.call_command('refresh_feed', force=1, feed=feed.pk, single_threaded=True, daemonize=False)
+        
+        stories = MStory.objects(story_feed_id=feed.pk)
+        self.assertEquals(stories.count(), 10)
+        
+        response = self.client.get(reverse('load-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds'][str(feed.pk)]['nt'], 10)
+
+        self.client.post(reverse('mark-story-as-read'), {'story_id': stories[0].story_guid, 'feed_id': feed.pk})
+        
+        response = self.client.get(reverse('refresh-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds'][str(feed.pk)]['nt'], 9)
+        
+        management.call_command('loaddata', 'motherjones2.json', verbosity=0)
+        management.call_command('refresh_feed', force=1, feed=feed.pk, single_threaded=True, daemonize=False)
+        
+        stories = MStory.objects(story_feed_id=feed.pk)
+        self.assertEquals(stories.count(), 10)
+        
+        url = reverse('load-single-feed', kwargs=dict(feed_id=feed.pk))
+        response = self.client.get(url)
+        
+        # pprint([c['story_title'] for c in json.decode(response.content)])
+        feed = json.decode(response.content)
+        
+        # Test: 1 changed char in title
+        self.assertEquals(len(feed['stories']), 6)
+        
+        response = self.client.get(reverse('refresh-feeds'))
+        content = json.decode(response.content)
+        self.assertEquals(content['feeds'][str(feed['feed_id'])]['nt'], 9)
 
     def test_load_feeds__brokelyn__invalid_xml(self):
         self.client.login(username='conesus', password='test')
