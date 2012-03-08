@@ -15,7 +15,7 @@ NEWSBLUR.ReaderSocialProfile.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     runner: function(user_id) {
-        this.profile = new NEWSBLUR.Models.User();
+        this.profile = this.model.user_profiles.get(user_id);
         this.make_modal();
         this.open_modal();
         _.defer(_.bind(this.fetch_profile, this, user_id));
@@ -31,6 +31,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         });
 
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile' }, [
+            $.make('div', { className: 'NB-modal-loading' }),
             $.make('div', { className: 'NB-profile-info-header' }, $(profile)),
             $.make('div', { className: 'NB-profile-section' }, [
                 $.make('h3', 'Following'),
@@ -61,6 +62,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         
         this.model.fetch_user_profile(user_id, _.bind(function(data) {
+            $('.NB-modal-loading', this.$modal).removeClass('NB-active');
             this.profile.set(data.user_profile);
             this.populate_friends(data);
             callback && callback();

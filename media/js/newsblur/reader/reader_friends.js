@@ -486,11 +486,17 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     enable_save: function() {
-        $('.NB-profile-save-button', this.$modal).addClass('NB-modal-submit-green').text('Save My Profile');
+        $('.NB-profile-save-button', this.$modal)
+            .removeClass('NB-modal-submit-close')
+            .addClass('NB-modal-submit-green')
+            .text('Save My Profile');
     },
     
     disable_save: function() {
-        $('.NB-profile-save-button', this.$modal).removeClass('NB-modal-submit-green').text('Change what you like above...');
+        $('.NB-profile-save-button', this.$modal)
+            .addClass('NB-modal-submit-close')
+            .removeClass('NB-modal-submit-green')
+            .text('Change what you like above...');
     }
     
 });

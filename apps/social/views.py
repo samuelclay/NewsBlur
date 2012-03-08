@@ -207,7 +207,7 @@ def mark_story_as_shared(request):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
     story = stories[0]
     
-    return {'code': code, 'story': story, 'profiles': profiles}
+    return {'code': code, 'story': story, 'user_profiles': profiles}
     
 def shared_stories_public(request, username):
     try:
@@ -246,7 +246,7 @@ def profile(request):
     current_profile = MSocialProfile.objects.get(user_id=request.user.pk)
     followers_youknow, followers_everybody = current_profile.common_follows(user_id, direction='followers')
     following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
-    
+
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile.username)
     
     payload = {

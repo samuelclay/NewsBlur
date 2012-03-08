@@ -243,11 +243,21 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     mark_story_as_shared: function(story_id, feed_id, comments, callback, error_callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.user_profiles) {
+                var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
+                    return profile.user_id in this.user_profiles._byId;
+                }, this));
+                this.user_profiles.add(profiles);
+            }
+            callback(data);
+        }, this);
+        
         this.make_request('/social/share_story', {
             story_id: story_id,
             feed_id: feed_id,
             comments: comments
-        }, callback, error_callback);
+        }, pre_callback, error_callback);
     },
     
     reset_feeds: function() {

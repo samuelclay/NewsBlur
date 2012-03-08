@@ -37,14 +37,14 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                         className: 'NB-profile-badge-website NB-splash-link'
                     }, profile.get('website').replace('http://', ''))),
                     $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
-                    $.make('div', { className: 'NB-profile-badge-stats' }, [
+                    (_.isNumber(profile.get('shared_stories_count')) && $.make('div', { className: 'NB-profile-badge-stats' }, [
                         $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
                         'shared ',
                         Inflector.pluralize('story', profile.get('shared_stories_count')),
                         ' &middot; ',
                         $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
                         Inflector.pluralize('follower', profile.get('follower_count'))
-                    ])
+                    ]))
                 ])
             ])
         ]));
