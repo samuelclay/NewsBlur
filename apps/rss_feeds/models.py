@@ -715,7 +715,9 @@ class Feed(models.Model):
                     self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
                 
                 existing_story.story_feed = self.pk
-                existing_story.story_date = story.get('published')
+                # Do not allow publishers to change the story date once a story is published.
+                # Leads to incorrect unread story counts.
+                # existing_story.story_date = story.get('published')
                 existing_story.story_title = story.get('title')
                 existing_story.story_content = story_content_diff
                 existing_story.story_original_content = original_content
