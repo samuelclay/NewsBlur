@@ -101,7 +101,9 @@ def load_social_stories(request, user_id, username=None):
         #     story['read_status'] = 0
         else:
             story['read_status'] = 0
-        print story['read_status'], story['shared_date'], date_delta
+
+        # print story['read_status'], story['shared_date'], date_delta
+
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
@@ -245,6 +247,8 @@ def profile(request):
     followers_youknow, followers_everybody = current_profile.common_follows(user_id, direction='followers')
     following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
     
+    logging.user(request, "~BB~FRLoading social profile: %s" % user_profile.username)
+    
     payload = {
         'user_profile': user_profile.to_json(full=True),
         'followers_youknow': followers_youknow,
@@ -266,6 +270,8 @@ def save_profile(request):
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.set_photo(data['photo_service'])
     
+    logging.user(request, "~BB~FRSaving social profile")
+    
     return dict(code=1, user_profile=profile.to_json(full=True))
 
 @ajax_login_required
@@ -285,6 +291,8 @@ def follow(request):
     }
     follow_subscription = MSocialSubscription.feeds(**social_params)
     
+    logging.user(request, "~BB~FRFollowing: %s" % follow_profile.username)
+    
     return {
         "user_profile": profile.to_json(full=True), 
         "follow_profile": follow_profile,
@@ -299,6 +307,8 @@ def unfollow(request):
     profile.unfollow_user(unfollow_user_id)
     
     unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
+    
+    logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
     
     return dict(user_profile=profile.to_json(full=True), unfollow_profile=unfollow_profile)
     
@@ -396,6 +406,7 @@ def twitter_connect(request):
     oauth_verifier = request.REQUEST.get('oauth_verifier')
     denied = request.REQUEST.get('denied')
     if denied:
+        logging.user(request, "~BB~FRDenied Twitter connect")
         return {'error': 'Denied! Try connecting again.'}
     elif oauth_token and oauth_verifier:
         try:
@@ -405,12 +416,14 @@ def twitter_connect(request):
             api = tweepy.API(auth)
             twitter_user = api.me()
         except (tweepy.TweepError, IOError):
+            logging.user(request, "~BB~FRFailed Twitter connect")
             return dict(error="Twitter has returned an error. Try connecting again.")
 
         # Be sure that two people aren't using the same Twitter account.
         existing_user = MSocialServices.objects.filter(twitter_uid=unicode(twitter_user.id))
         if existing_user and existing_user[0].user_id != request.user.pk:
             user = User.objects.get(pk=existing_user[0].user_id)
+            logging.user(request, "~BB~FRFailed Twitter connect, another user: %s" % user.username)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Twitter credentials."
                                % (user.username, user.email)))
@@ -421,11 +434,13 @@ def twitter_connect(request):
         social_services.twitter_access_secret = access_token.secret
         social_services.save()
         social_services.sync_twitter_friends()
+        logging.user(request, "~BB~FRFinishing Twitter connect")
         return {}
     else:
         # Start the OAuth process
         auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
         auth_url = auth.get_authorization_url()
+        logging.user(request, "~BB~FRStarting Twitter connect")
         return {'next': auth_url}
 
     
@@ -452,6 +467,7 @@ def facebook_connect(request):
         response = urlparse.parse_qs(response_text)
 
         if "access_token" not in response:
+            logging.user(request, "~BB~FRFailed Facebook connect")
             return dict(error="Facebook has returned an error. Try connecting again.")
 
         access_token = response["access_token"][-1]
@@ -465,6 +481,7 @@ def facebook_connect(request):
         existing_user = MSocialServices.objects.filter(facebook_uid=uid)
         if existing_user and existing_user[0].user_id != request.user.pk:
             user = User.objects.get(pk=existing_user[0].user_id)
+            logging.user(request, "~BB~FRFailed FB connect, another user: %s" % user.username)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Facebook credentials."
                                % (user.username, user.email or "no email")))
@@ -474,22 +491,27 @@ def facebook_connect(request):
         social_services.facebook_access_token = access_token
         social_services.save()
         social_services.sync_facebook_friends()
+        logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}
     elif request.REQUEST.get('error'):
+        logging.user(request, "~BB~FRFailed Facebook connect")
         return {'error': '%s... Try connecting again.' % request.REQUEST.get('error')}
     else:
         # Start the OAuth process
+        logging.user(request, "~BB~FRStarting Facebook connect")
         url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode(args)
         return {'next': url}
         
 @ajax_login_required
 def twitter_disconnect(request):
+    logging.user(request, "~BB~FRDisconnecting Twitter")
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.disconnect_twitter()
     return friends(request)
 
 @ajax_login_required
 def facebook_disconnect(request):
+    logging.user(request, "~BB~FRDisconnecting Facebook")
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.disconnect_facebook()
     return friends(request)

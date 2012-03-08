@@ -432,10 +432,12 @@ class MSocialSubscription(mongo.Document):
             self.needs_unread_recalc = True
             self.save()
     
+        sub_username = MSocialProfile.objects.get(user_id=self.subscription_user_id).username
+
         if len(story_ids) > 1:
-            logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_ids), self.subscription_user_id))
+            logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_ids), sub_username))
         else:
-            logging.user(request, "~FYRead story in social subscription: %s" % (self.subscription_user_id))
+            logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
         for story_id in set(story_ids):
             story = MSharedStory.objects.get(user_id=self.subscription_user_id, story_guid=story_id)

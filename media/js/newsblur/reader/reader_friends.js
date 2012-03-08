@@ -135,7 +135,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $profile_badge;
         var profile = this.profile;
         
-        if (!profile.get('location') && !profile.get('bio') && !profile.get('website') && !profile.get('photo_url')) {
+        if (!profile.get('location') && !profile.get('bio') && !profile.get('website')) {
             $profile_badge = $.make('a', { 
                 className: 'NB-friends-profile-link NB-modal-submit-button NB-modal-submit-green', 
                 href: '#'
@@ -145,7 +145,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png' })
             ]);
         } else {
-            $profile_badge = this.make_profile_badge(profile);
+            $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
+                model: profile,
+                user_profile: this.profile
+            });
         }
         
         $badge.append($profile_badge);
@@ -217,7 +220,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]);
             $tab.append($heading);
             this.model.follower_profiles.each(_.bind(function(profile) {
-                $tab.append(this.make_profile_badge(profile));
+                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({
+                    model: profile,
+                    user_profile: this.profile
+                }));
             }, this));
         }
     },
@@ -235,45 +241,12 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]);
             $tab.append($heading);
             this.model.following_profiles.each(_.bind(function(profile) {
-                $tab.append(this.make_profile_badge(profile));
+                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({
+                    model: profile,
+                    user_profile: this.profile
+                }));
             }, this));
         }
-    },
-    
-    make_profile_badge: function(profile) {
-        var $badge = $.make('div', { className: "NB-profile-badge" }, [
-            $.make('div', { className: 'NB-profile-badge-actions' }),
-            $.make('div', { className: 'NB-profile-badge-photo' }, [
-                $.make('img', { src: profile.get('photo_url') })
-            ]),
-            $.make('div', { className: 'NB-profile-badge-username' }, profile.get('username')),
-            $.make('div', { className: 'NB-profile-badge-location' }, profile.get('location')),
-            $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
-            $.make('div', { className: 'NB-profile-badge-stats' }, [
-                $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
-                'shared ',
-                Inflector.pluralize('story', profile.get('shared_stories_count')),
-                ' &middot; ',
-                $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
-                Inflector.pluralize('follower', profile.get('follower_count'))
-            ])
-        ]).data('user_id', profile.get('user_id'));
-        
-        var $actions;
-        if (this.profile.get('user_id') == profile.get('user_id')) {
-            $actions = $.make('div', { className: 'NB-profile-badge-action-self NB-modal-submit-button' }, 'You');
-        } else if (_.contains(this.profile.get('following_user_ids'), profile.get('user_id'))) {
-            $actions = $.make('div', { 
-                className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
-            }, 'Following');
-        } else {
-            $actions = $.make('div', { 
-                className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green' 
-            }, 'Follow');
-        }
-        $('.NB-profile-badge-actions', $badge).append($actions);
-
-        return $badge;
     },
     
     open_modal: function(callback) {
@@ -424,35 +397,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }, this), 200);
     },
     
-    follow_user: function(user_id, $badge) {
-        this.model.follow_user(user_id, _.bind(function(data, follow_user) {
-            this.make_profile_section();
-            var $button = $('.NB-modal-submit-button', $badge);
-            $button.text('Following');
-            $button.removeClass('NB-modal-submit-green')
-                .removeClass('NB-modal-submit-red')
-                .addClass('NB-modal-submit-close');
-            $button.removeClass('NB-profile-badge-action-follow')
-                .addClass('NB-profile-badge-action-unfollow');
-            $badge.replaceWith(this.make_profile_badge(follow_user));
-            NEWSBLUR.reader.make_social_feeds();
-        }, this));
-    },
-    
-    unfollow_user: function(user_id, $badge) {
-        this.model.unfollow_user(user_id, _.bind(function(data, unfollow_user) {
-            this.make_profile_section();
-            var $button = $('.NB-modal-submit-button', $badge);
-            $button.text('Unfollowed');
-            $button.removeClass('NB-modal-submit-close')
-                .addClass('NB-modal-submit-red');
-            $button.removeClass('NB-profile-badge-action-unfollow')
-                .addClass('NB-profile-badge-action-follow');
-            $badge.replaceWith(this.make_profile_badge(unfollow_user));
-            NEWSBLUR.reader.make_social_feeds();
-        }, this));
-    },
-    
     // ===========
     // = Actions =
     // ===========
@@ -493,18 +437,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             e.preventDefault();
             
             self.switch_tab('profile');
-        });
-        $.targetIs(e, { tagSelector: '.NB-profile-badge-action-follow' }, function($t, $p) {
-            e.preventDefault();
-            var $badge = $t.closest('.NB-profile-badge');
-            var user_id = $badge.data('user_id');
-            self.follow_user(user_id, $badge);
-        });
-        $.targetIs(e, { tagSelector: '.NB-profile-badge-action-unfollow' }, function($t, $p) {
-            e.preventDefault();
-            var $badge = $t.closest('.NB-profile-badge');
-            var user_id = $badge.data('user_id');
-            self.unfollow_user(user_id, $badge);
         });
         $.targetIs(e, { tagSelector: '.NB-profile-save-button' }, function($t, $p) {
             e.preventDefault();

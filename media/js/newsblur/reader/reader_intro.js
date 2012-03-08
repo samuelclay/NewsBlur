@@ -3,10 +3,10 @@ NEWSBLUR.ReaderIntro = function(options) {
     
     _.bindAll(this, 'close');
     
-    this.options = $.extend({
-      'page_number': 1
-    }, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
+    this.options = $.extend({
+      'page_number': this.model.preference('intro_page') || 1
+    }, defaults, options);
     this.services = {
         'twitter': {},
         'facebook': {}
@@ -230,6 +230,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       }
       var page_count = $('.NB-page', this.$modal).length;
       this.page_number = page_number;
+      this.model.preference('intro_page', page_number);
       
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');

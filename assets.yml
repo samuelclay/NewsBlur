@@ -59,6 +59,7 @@ javascripts:
         - media/js/vendor/backbone-*.js
         - media/js/newsblur/common/*.js
         - media/js/newsblur/models/*.js
+        - media/js/newsblur/views/*.js
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/*.js
