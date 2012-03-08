@@ -12,13 +12,14 @@ from django.conf import settings
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
+from apps.social.models import MSocialServices
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished','hide_mobile','send_emails',
                       'has_trained_intelligence', 'hide_find_friends', 'hide_getting_started',)
-SPECIAL_PREFERENCES = ('old_password', 'new_password',)
+SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends')
 
 @ajax_login_required
 @require_POST
@@ -33,6 +34,12 @@ def set_preference(request):
         if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
+        elif preference_name in SPECIAL_PREFERENCES:
+            if preference_name == 'autofollow_friends':
+                social_services = MSocialServices.objects.get(user_id=request.user.pk)
+                social_services.autofollow = preference_value
+                print social_services.autofollow
+                social_services.save()
         else:
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False

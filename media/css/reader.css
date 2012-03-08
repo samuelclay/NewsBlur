@@ -7244,7 +7244,12 @@ background: transparent;
     margin: 12px 0 0 12px;
     text-align: center;
 }
-
+.NB-modal-friends .NB-profile-section-heading {
+    text-align: center;
+    margin: 4px 0;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 0 0 16px;
+}
 .NB-modal-friends .NB-profile-badge {
     clear: both;
     padding: 12px 12px 12px 72px;
@@ -7262,10 +7267,7 @@ background: transparent;
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-photo img {
     width: 48px;
     height: 48px;
-    border: 1px solid #202020;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
+    border-radius: 3px;
 }
 .NB-modal-friends .NB-profile-badge .NB-profile-badge-username {
     font-weight: bold;
@@ -7295,9 +7297,19 @@ background: transparent;
     float: right;
     margin-top: 10px;
 }
+.NB-modal-friends .NB-profile-badge-actions .NB-profile-badge-action-self {
+    color: #C0C0C0;
+    font-weight: bold;
+    background: none;
+    box-shadow: none;
+    cursor: default;
+    border-color: #C0C0C0;
+}
+.NB-modal-friends .NB-profile-badge-actions .NB-profile-badge-action-self,
 .NB-modal-friends .NB-profile-badge-actions .NB-modal-submit-button {
     width: 90px;
     text-align: center;
+    text-transform: uppercase;
 }
 
 /* ======================== */

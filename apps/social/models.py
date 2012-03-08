@@ -66,6 +66,7 @@ class MSocialProfile(mongo.Document):
         super(MSocialProfile, self).save(*args, **kwargs)
         if self.user_id not in self.following_user_ids:
             self.follow_user(self.user_id)
+            self.count()
     
     def count_stories(self):
         # Popular Publishers
@@ -209,7 +210,10 @@ class MSocialProfile(mongo.Document):
             self.count()
             self.save()
             
-            followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
+            if self.user_id == user_id:
+                followee = self
+            else:
+                followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
             if self.user_id not in followee.follower_user_ids:
                 followee.follower_user_ids.append(self.user_id)
                 followee.count()

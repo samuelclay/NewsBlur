@@ -220,8 +220,8 @@ def shared_stories_public(request, username):
 @json.json_view
 def friends(request):
     user = get_user(request)
-    social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     social_profile, _ = MSocialProfile.objects.get_or_create(user_id=user.pk)
+    social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
     follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
 

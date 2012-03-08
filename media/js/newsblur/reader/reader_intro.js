@@ -474,6 +474,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             
             self.handle_opml_upload();
         });
+        $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.model.preference('autofollow_friends', $t.is(':checked'));
+        });
     }
     
 });

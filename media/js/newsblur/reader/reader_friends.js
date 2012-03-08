@@ -23,8 +23,9 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         this.fetch_friends();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        this.$modal.bind('change', $.rescope(this.handle_change, this));
         this.handle_profile_counts();
-        this.handle_change();
+        this.delegate_change();
     },
     
     make_modal: function() {
@@ -205,10 +206,16 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     make_followers_tab: function() {
         var $tab = $('.NB-tab-followers', this.$modal).empty();
-        if (!this.model.follower_profiles || !this.model.follower_profiles.size()) {
+        if (this.profile.get('follower_count') <= 0) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
             $tab.append($ghost);
         } else {
+            var $heading = $.make('div', { className: 'NB-profile-section-heading' }, [
+                'You are followed by ',
+                Inflector.pluralize('person', this.profile.get('follower_count'), true),
+                '.'
+            ]);
+            $tab.append($heading);
             this.model.follower_profiles.each(_.bind(function(profile) {
                 $tab.append(this.make_profile_badge(profile));
             }, this));
@@ -217,10 +224,16 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     make_following_tab: function() {
         var $tab = $('.NB-tab-following', this.$modal).empty();
-        if (!this.model.following_profiles || !this.model.following_profiles.size()) {
+        if (this.profile.get('following_count') <= 0) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
             $tab.append($ghost);
         } else {
+            var $heading = $.make('div', { className: 'NB-profile-section-heading' }, [
+                'You are following ',
+                Inflector.pluralize('person', this.profile.get('following_count'), true),
+                '.'
+            ]);
+            $tab.append($heading);
             this.model.following_profiles.each(_.bind(function(profile) {
                 $tab.append(this.make_profile_badge(profile));
             }, this));
@@ -248,7 +261,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         
         var $actions;
         if (this.profile.get('user_id') == profile.get('user_id')) {
-            $actions = $.make('div', { className: 'NB-profile-badge-action-self' }, 'This is you');
+            $actions = $.make('div', { className: 'NB-profile-badge-action-self NB-modal-submit-button' }, 'You');
         } else if (_.contains(this.profile.get('following_user_ids'), profile.get('user_id'))) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
@@ -505,6 +518,16 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         });
     },
     
+    handle_change: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.model.preference('autofollow_friends', $t.is(':checked'));
+        });
+    },
+    
     handle_cancel: function() {
         var $cancel = $('.NB-modal-cancel', this.$modal);
         
@@ -534,7 +557,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         });
     },
     
-    handle_change: function() {
+    delegate_change: function() {
         $('.NB-tab-profile', this.$modal).delegate('input[type=radio],input[type=checkbox],select,input[type=text]', 'change', _.bind(this.enable_save, this));
         $('.NB-tab-profile', this.$modal).delegate('input[type=text]', 'keydown', _.bind(this.enable_save, this));
     },

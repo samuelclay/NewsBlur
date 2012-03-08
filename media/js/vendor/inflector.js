@@ -85,13 +85,15 @@ window.Inflector = {
   // Only works for words that pluralize by adding an 's', end in a 'y', or
   // that we've special-cased. Not comprehensive.
   pluralize : function(s, count, include_count) {
+    if (count != 1) {
+        if (s == 'person') s = 'people';
+        else if (s == 'is') s = 'are';
+        else if (s == 'following') s = s;
+        else if (s.match(/y$/i)) s = s.replace(/y$/i, 'ies');
+        else s = s + 's';
+    }
     if (include_count) s = count + ' ' + s;
-    if (count == 1) return s;
-    if (s == 'person') return 'people';
-    if (s == 'is') return 'are';
-    if (s == 'following') return s;
-    if (s.match(/y$/i)) return s.replace(/y$/i, 'ies');
-    return s + 's';
+    return s;
   },
 
   classify : function(s) {
