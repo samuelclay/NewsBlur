@@ -25,16 +25,13 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     make_modal: function() {
         var self = this;
-        
+        var profile = new NEWSBLUR.Views.SocialProfileBadge({
+            model: this.profile,
+            embiggen: true
+        });
+
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile' }, [
-            $.make('table', { className: 'NB-profile-info-table' }, [
-                $.make('tr', [
-                    $.make('td', [
-                        $.make('img', { src: this.profile.get('photo_url'), className: 'NB-profile-photo' })
-                    ]),
-                    $.make('td', { className: 'NB-profile-info-header' }, this.make_profile_user_info_header())
-                ])
-            ]),
+            $.make('div', { className: 'NB-profile-info-header' }, $(profile)),
             $.make('div', { className: 'NB-profile-section' }, [
                 $.make('h3', 'Following'),
                 $.make('fieldset', [
@@ -64,7 +61,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         
         this.model.fetch_user_profile(user_id, _.bind(function(data) {
-            this.profile = new NEWSBLUR.Models.User(data.user_profile);
+            this.profile.set(data.user_profile);
             this.populate_friends(data);
             callback && callback();
             this.resize();
@@ -72,33 +69,10 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     },
     
     populate_friends: function(data) {
-        $('.NB-profile-info-header', this.$modal).html(this.make_profile_user_info_header());
         $('.NB-profile-following-youknow', this.$modal).html(this.make_profile_badges(data.following_youknow));
         $('.NB-profile-following-everybody', this.$modal).html(this.make_profile_badges(data.following_everybody));
         $('.NB-profile-followers-youknow', this.$modal).html(this.make_profile_badges(data.followers_youknow));
         $('.NB-profile-followers-everybody', this.$modal).html(this.make_profile_badges(data.followers_everybody));
-    },
-    
-    make_profile_user_info_header: function() {
-        var $info = $.make('div', [
-            $.make('h2', { className: 'NB-modal-title NB-profile-username' }, this.profile.get('username')),
-            $.make('div', { className: 'NB-profile-location' }, this.profile.get('location')),
-            $.make('div', { className: 'NB-profile-bio' }, this.profile.get('bio')),
-            $.make('div', { className: 'NB-profile-badge-stats' }, [
-                $.make('span', { className: 'NB-count' }, this.profile.get('shared_stories_count')),
-                'shared ',
-                Inflector.pluralize('story', this.profile.get('shared_stories_count')),
-                ' &middot; ',
-                $.make('span', { className: 'NB-count' }, this.profile.get('follower_count')),
-                Inflector.pluralize('follower', this.profile.get('follower_count')),
-                (this.profile.get('website') && ' &middot; '),
-                (this.profile.get('website') && $.make('a', { 
-                    href: this.profile.get('website'), 
-                    className: 'NB-profile-website NB-splash-link'
-                }, this.profile.get('website')))
-            ])
-        ]);
-        return $info;
     },
     
     make_profile_badges: function(profiles) {

@@ -19,28 +19,40 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     render: function() {
         var profile = this.model;
-        this.$el.html($.make('div', { className: "NB-profile-badge" }, [
-            $.make('div', { className: 'NB-profile-badge-actions' }),
-            $.make('div', { className: 'NB-profile-badge-photo' }, [
-                $.make('img', { src: profile.get('photo_url') })
-            ]),
-            $.make('div', { className: 'NB-profile-badge-username' }, profile.get('username')),
-            $.make('div', { className: 'NB-profile-badge-location' }, profile.get('location')),
-            $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
-            $.make('div', { className: 'NB-profile-badge-stats' }, [
-                $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
-                'shared ',
-                Inflector.pluralize('story', profile.get('shared_stories_count')),
-                ' &middot; ',
-                $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
-                Inflector.pluralize('follower', profile.get('follower_count'))
+        this.$el.html($.make('table', { className: "NB-profile-badge " + (this.options.embiggen ? "NB-profile-badge-embiggen" : "") }, [
+            $.make('tr', [
+                $.make('td', [
+                    $.make('div', { className: 'NB-profile-badge-photo' }, [
+                        $.make('img', { src: profile.get('photo_url') })
+                    ])
+                ]),
+                $.make('td', { className: 'NB-profile-badge-info' }, [
+                    $.make('div', { className: 'NB-profile-badge-actions' }),
+                    $.make('div', { className: 'NB-profile-badge-username' }, profile.get('username')),
+                    $.make('div', { className: 'NB-profile-badge-location' }, profile.get('location')),
+                    (profile.get('website') && $.make('a', { 
+                        href: profile.get('website'), 
+                        target: '_blank',
+                        rel: 'nofollow',
+                        className: 'NB-profile-badge-website NB-splash-link'
+                    }, profile.get('website').replace('http://', ''))),
+                    $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
+                    $.make('div', { className: 'NB-profile-badge-stats' }, [
+                        $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
+                        'shared ',
+                        Inflector.pluralize('story', profile.get('shared_stories_count')),
+                        ' &middot; ',
+                        $.make('span', { className: 'NB-count' }, profile.get('follower_count')),
+                        Inflector.pluralize('follower', profile.get('follower_count'))
+                    ])
+                ])
             ])
         ]));
         
         var $actions;
-        if (this.options.user_profile.get('user_id') == profile.get('user_id')) {
+        if (NEWSBLUR.reader.model.user_profile.get('user_id') == profile.get('user_id')) {
             $actions = $.make('div', { className: 'NB-profile-badge-action-self NB-modal-submit-button' }, 'You');
-        } else if (_.contains(this.options.user_profile.get('following_user_ids'), profile.get('user_id'))) {
+        } else if (_.contains(NEWSBLUR.reader.model.user_profile.get('following_user_ids'), profile.get('user_id'))) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
             }, 'Following');

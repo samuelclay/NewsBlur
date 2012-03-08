@@ -34,7 +34,10 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.classifiers = {};
     this.friends = {};
     this.profile = {};
+    this.user_profile = new NEWSBLUR.Models.User();
     this.user_profiles = new NEWSBLUR.Collections.Users();
+    this.follower_profiles = new NEWSBLUR.Collections.Users();
+    this.following_profiles = new NEWSBLUR.Collections.Users();
     this.starred_stories = [];
     this.starred_count = 0;
     this.read_stories_river_count = 0;
@@ -274,6 +277,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             self.folders = subscriptions.folders;
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
+            self.user_profile.set(subscriptions.social_profile);
             
             if (!_.isEqual(self.favicons, {})) {
                 _.each(self.feeds, function(feed) {

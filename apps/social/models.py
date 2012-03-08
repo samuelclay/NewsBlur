@@ -108,6 +108,14 @@ class MSocialProfile(mongo.Document):
         return values
         
     @classmethod
+    def profile(cls, user_id):
+        try:
+            profile = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            return {}
+        return profile.to_json(full=True)
+        
+    @classmethod
     def profiles(cls, user_ids):
         profiles = cls.objects.filter(user_id__in=user_ids)
         return profiles
@@ -180,7 +188,6 @@ class MSocialProfile(mongo.Document):
                 'photo_service': self.photo_service,
                 'following_user_ids': self.following_user_ids,
                 'follower_user_ids': self.follower_user_ids,
-                'unfollowed_user_ids': self.unfollowed_user_ids,
             })
         return params
     

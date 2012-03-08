@@ -145,10 +145,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png' })
             ]);
         } else {
-            $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
-                model: profile,
-                user_profile: this.profile
-            });
+            $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({model: profile});
         }
         
         $badge.append($profile_badge);
@@ -220,10 +217,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]);
             $tab.append($heading);
             this.model.follower_profiles.each(_.bind(function(profile) {
-                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({
-                    model: profile,
-                    user_profile: this.profile
-                }));
+                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({model: profile}));
             }, this));
         }
     },
@@ -241,10 +235,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]);
             $tab.append($heading);
             this.model.following_profiles.each(_.bind(function(profile) {
-                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({
-                    model: profile,
-                    user_profile: this.profile
-                }));
+                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({model: profile}));
             }, this));
         }
     },

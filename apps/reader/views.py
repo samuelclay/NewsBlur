@@ -219,10 +219,12 @@ def load_feeds(request):
         'update_counts': update_counts,
     }
     social_feeds = MSocialSubscription.feeds(**social_params)
+    social_profile = MSocialProfile.profile(user.pk)
     
     data = {
         'feeds': feeds,
         'social_feeds': social_feeds,
+        'social_profile': social_profile,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
     }
