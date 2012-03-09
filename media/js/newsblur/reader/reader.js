@@ -4105,6 +4105,7 @@
                             }
                             return true;
                         });
+                        $('.NB-feed-story-content', $story).linkify();
                     })($story, story, image_count);
                 }
             }
@@ -4120,7 +4121,7 @@
         },
         
         make_story_content: function(story_content) {
-            var $story_content = $('<div>').html(story_content).autolink();
+            var $story_content = $('<div>').html(story_content);
             return $story_content;
         },
         
