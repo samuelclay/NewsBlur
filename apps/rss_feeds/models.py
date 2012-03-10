@@ -77,7 +77,7 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return self.feed_title
+        return "%s (%s)" % (self.feed_title, self.pk)
         
     def canonical(self, full=False, include_favicon=True):
         feed = {
@@ -158,6 +158,7 @@ class Feed(models.Model):
         
     @property
     def favicon_fetching(self):
+        print "%s: %s %s" % (self, self.favicon_not_found, self.favicon_color)
         return bool(not (self.favicon_not_found or self.favicon_color))
         
     @classmethod

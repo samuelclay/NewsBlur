@@ -594,7 +594,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             for (var k in feed) {
                 if (this.feeds[f][k] != feed[k]) {
                     // NEWSBLUR.log(['New Feed', this.feeds[f][k], feed[k], f, k]);
-                    NEWSBLUR.log(['Different', k, this.feeds[f][k], feed[k]]);
+                    NEWSBLUR.log(['Different', k, this.feeds[f].feed_title, this.feeds[f][k], feed[k]]);
                     this.feeds[f][k] = feed[k];
                     updated = true;
                 }
