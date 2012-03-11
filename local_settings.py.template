@@ -72,6 +72,8 @@ REDIS = {
     'host': '127.0.0.1',
 }
 
+ELASTICSEARCH_HOSTS = ['127.0.0.1:9200']
+
 # AMQP - RabbitMQ server
 BROKER_HOST     = "db01.newsblur.com"
 BROKER_PORT     = 5672

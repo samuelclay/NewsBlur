@@ -3,6 +3,7 @@ import logging
 import os
 from mongoengine import connect
 import redis
+import pyes
 from utils import jammit
 
 # ===================
@@ -308,6 +309,12 @@ REDIS = {
     'host': 'db01',
 }
 
+# =================
+# = Elasticsearch =
+# =================
+
+ELASTICSEARCH_HOSTS = ['db01:9200']
+
 # ==================
 # = Configurations =
 # ==================
@@ -350,3 +357,9 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
+
+# =================
+# = Elasticsearch =
+# =================
+
+ELASTICSEARCH = pyes.ES(ELASTICSEARCH_HOSTS)
