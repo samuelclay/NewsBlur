@@ -1081,7 +1081,6 @@
             $feed_list.empty();
             
             this.$s.$story_taskbar.css({'display': 'block'});
-            this.flags['has_chosen_feeds'] = this.detect_all_inactive_feeds();
             var $feeds = this.make_feeds_folder(folders, 0);
             $feed_list.css({
                 'display': 'block', 
@@ -1097,15 +1096,10 @@
                 $('.NB-task-manage').removeClass('NB-disabled');
                 $('.NB-callout-ftux').fadeOut(500);
             }
-            
-            if (NEWSBLUR.Globals.is_authenticated && this.flags['has_chosen_feeds']) {
+            this.open_dialog_after_feeds_loaded();
+            if (NEWSBLUR.Globals.is_authenticated && this.model.flags['has_chosen_feeds']) {
                 _.delay(_.bind(this.start_count_unreads_after_import, this), 1000);
                 this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this), true);
-            } else if (!this.flags['has_chosen_feeds'] && this.flags['favicons_downloaded'] && folders.length) {
-                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
-                return;
-            } else if (NEWSBLUR.Globals.is_authenticated && !folders.length) {
-                this.setup_ftux_add_feed_callout();
             }
             
             if (folders.length) {
@@ -1119,7 +1113,7 @@
                 this.force_feed_refresh();
             }
             _.defer(_.bind(function() {
-              this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.flags['has_chosen_feeds']);
+              this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.model.flags['has_chosen_feeds']);
               var force_socket = NEWSBLUR.Globals.is_admin;
               this.setup_socket_realtime_unread_counts(force_socket);
             }, this));
@@ -1162,9 +1156,7 @@
             $feed_favicon.attr('src', $.favicon(model.get_feed(feed_id)));
           });
           
-          if (!this.flags['has_chosen_feeds'] && this.model.folders.length) {
-              _.defer(_.bind(this.open_feedchooser_modal, this), 100);
-          }
+          this.open_dialog_after_feeds_loaded();
         },
         
         sort_items: function(a, b) {
@@ -1216,14 +1208,6 @@
         sort_feeds: function($feeds) {
             $('.feed', $feeds).tsort('', {sortFunction: this.sort_items});
             $('.folder', $feeds).tsort('.folder_title_text');
-        },
-        
-        detect_all_inactive_feeds: function() {
-          var feeds = this.model.feeds;
-          var has_chosen_feeds = _.any(feeds, function(feed) {
-            return feed.active;
-          });
-          return has_chosen_feeds;
         },
         
         make_feeds_folder: function(items, depth, collapsed_parent) {
@@ -1619,7 +1603,9 @@
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
-            $('.NB-progress-link', $progress).html($.make('a', { href: '#', className: 'NB-splash-link NB-menu-manage-feedchooser' }, 'Choose your 64 sites'));
+            $('.NB-progress-link', $progress).html($.make('div', { 
+                className: 'NB-modal-submit-button NB-modal-submit-green NB-menu-manage-feedchooser'
+            }, ['Choose your 64 sites']));
             
             this.show_progress_bar();
         },
@@ -1630,6 +1616,16 @@
             $progress.removeClass('NB-progress-error').removeClass('NB-progress-big');
             
             this.hide_progress_bar();
+        },
+        
+        open_dialog_after_feeds_loaded: function() {
+            if (!NEWSBLUR.Globals.is_authenticated) return;
+            
+            if (!this.model.folders.length) {
+                _.defer(_.bind(this.open_intro_modal, this), 100);
+            } else if (!this.model.flags['has_chosen_feeds'] && this.flags['favicons_downloaded'] && this.model.folders.length) {
+                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+            }
         },
         
         // ================
@@ -6335,7 +6331,7 @@
             var percentage = 0;
             var feeds_count = _.keys(this.model.feeds).length;
             
-            if (!this.flags['pause_feed_refreshing']) return;
+            if (!this.flags['pause_feed_refreshing'] || this.flags['has_unfetched_feeds']) return;
             
             this.flags['count_unreads_after_import_working'] = true;
             

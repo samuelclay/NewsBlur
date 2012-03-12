@@ -1,11 +1,11 @@
 NEWSBLUR.ReaderIntro = function(options) {
     var defaults = {};
+    var intro_page = this.model.preference('intro_page');
     
     _.bindAll(this, 'close');
-    
     this.model   = NEWSBLUR.AssetModel.reader();
     this.options = $.extend({
-      'page_number': this.model.preference('intro_page') || 1
+      'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 4 ? intro_page : 1
     }, defaults, options);
     this.services = {
         'twitter': {},
@@ -235,7 +235,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
       } else if (page_number > page_count) {
-        return this.close();
+          this.close(function() {
+              NEWSBLUR.reader.open_dialog_after_feeds_loaded();
+          });
+          return;
       } else if (page_number == 1) {
         $('.NB-tutorial-next-page-text', this.$modal).text("Let's Get Started ");
       } else {

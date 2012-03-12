@@ -151,6 +151,9 @@ class OPMLImporter(Importer):
                 if self.user.profile.is_premium and not us.active:
                     us.active = True
                     us.save()
+                if not us.needs_unread_recalc:
+                    us.needs_unread_recalc = True
+                    us.save()
                 folders.append(feed_db.pk)
         return folders
         
@@ -245,6 +248,9 @@ class GoogleReaderImporter(Importer):
                     'active': self.user.profile.is_premium,
                 }
             )
+            if not us.needs_unread_recalc:
+                us.needs_unread_recalc = True
+                us.save()
             if not category: category = "Root"
             folders[category].append(feed_db.pk)
         except Exception, e:

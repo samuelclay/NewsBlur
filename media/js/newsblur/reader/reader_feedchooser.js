@@ -30,7 +30,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var self = this;
         
         this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal' }, [
-            $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
+            // $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
             $.make('div', { className: 'NB-feedchooser-type'}, [
               $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
@@ -73,7 +73,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-2' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Unlimited number of sites'
+                  'Unlimited number of sites.'
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -81,16 +81,16 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Access to future premium-only features like searching, archives, and [top secret]'
+                  'Access to future features like searching.'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed my poor, hungry dog for 6 days',
+                  'You feed my poor, hungry dog for 6 days.',
                   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
                 ]),
                 $.make('li', { className: 'NB-6' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You are supporting an indie developer'
+                  'You are supporting a solo indie developer.'
                 ]),
                 $.make('li', { className: 'NB-7' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -219,7 +219,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 $('#simplemodal-container').corner('6px');
             },
             'onClose': function(dialog, callback) {
-                if (!self.flags['has_saved'] && !NEWSBLUR.reader.flags['has_chosen_feeds']) {
+                if (!self.flags['has_saved'] && !self.model.flags['has_chosen_feeds']) {
                     NEWSBLUR.reader.show_feed_chooser_button();
                 }
                 dialog.data.hide().empty().remove();

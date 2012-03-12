@@ -42,7 +42,8 @@ NEWSBLUR.AssetModel.Reader = function() {
     this.starred_count = 0;
     this.read_stories_river_count = 0;
     this.flags = {
-        'favicons_fetching': false
+        'favicons_fetching': false,
+        'has_chosen_feeds': false
     };
 };
 
@@ -296,6 +297,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     }
                 });
             }
+            
+            self.detect_any_inactive_feeds();
             callback();
         };
         
@@ -305,6 +308,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
         
         this.make_request('/reader/feeds', data, pre_callback, error_callback, {request_type: 'GET'});
+    },
+    
+    detect_any_inactive_feeds: function() {
+        this.flags['has_chosen_feeds'] = _.any(this.feeds, function(feed) {
+            return feed.active;
+        });
     },
     
     load_feeds_flat: function(callback, error_callback) {

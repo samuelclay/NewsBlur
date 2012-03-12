@@ -142,10 +142,10 @@ class Feed(models.Model):
         try:
             super(Feed, self).save(*args, **kwargs)
             return self
-        except IntegrityError, e:
+        except IntegrityError:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
+            logging.debug(' ***> [%-30s] Feed deleted.' % (unicode(self)[:30]))
             if duplicate_feed:
                 merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
@@ -1375,8 +1375,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         
     logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
                                              original_feed, original_feed.feed_link))
-    logging.info("            --> %s" % original_feed.feed_address)
-    logging.info("            --> %s" % duplicate_feed.feed_address)
+    logging.info("            --> %s / %s" % (original_feed.feed_address, original_feed.feed_link))
+    logging.info("            --> %s / %s" % (duplicate_feed.feed_address, duplicate_feed.feed_link))
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
     for user_sub in user_subs:
