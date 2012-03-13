@@ -265,12 +265,14 @@ class MSocialProfile(mongo.Document):
     def common_follows(self, user_id, direction='followers'):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
-        my_followers = "F:%s:%s" % (self.user_id, 'f' if direction == 'followers' else 'F')
-        their_followers = "F:%s:%s" % (user_id, 'F' if direction == 'followers' else 'f')
-        follows_inter = r.sinter(my_followers, their_followers)
-        follows_diff = r.sdiff(my_followers, their_followers)
+        my_followers    = "F:%s:%s" % (self.user_id, 'F' if direction == 'followers' else 'F')
+        their_followers = "F:%s:%s" % (user_id, 'f' if direction == 'followers' else 'F')
+        follows_inter   = r.sinter(their_followers, my_followers)
+        follows_diff    = r.sdiff(their_followers, my_followers)
+        follows_inter   = [int(f) for f in follows_inter]
+        follows_diff    = [int(f) for f in follows_diff]
         
-        return list(follows_inter), list(follows_diff)
+        return follows_inter, follows_diff
         
     def save_feed_story_history_statistics(self):
         """
@@ -658,15 +660,12 @@ class MSharedStory(mongo.Document):
         else:
             redis_conn.srem(comment_key, self.user_id)
         
-    def comments_with_author(self, compact=False, full=False):
+    def comments_with_author(self):
         comments = {
             'user_id': self.user_id,
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
         }
-        if full or compact:
-            author = MSocialProfile.objects.get(user_id=self.user_id)
-            comments['author'] = author.to_json(compact=compact, full=full)
         return comments
     
     @classmethod
@@ -690,7 +689,7 @@ class MSharedStory(mongo.Document):
                     shared_stories = cls.objects.filter(**params)
                 story['comments'] = []
                 for shared_story in shared_stories:
-                    story['comments'].append(shared_story.comments_with_author(compact=True))
+                    story['comments'].append(shared_story.comments_with_author())
                 story['comment_count_public'] = story['comment_count'] - len(shared_stories)
                 story['comment_count_friends'] = len(shared_stories)
                 
@@ -699,7 +698,7 @@ class MSharedStory(mongo.Document):
                 if check_all:
                     story['share_count'] = r.scard(share_key)
                 friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
-                nonfriend_user_ids = list(set(story['share_user_ids']).difference(friends_with_shares))
+                nonfriend_user_ids = [int(f) for f in r.sdiff(share_key, friend_key)]
                 profile_user_ids.update(nonfriend_user_ids)
                 profile_user_ids.update(friends_with_shares)
                 story['shared_by_public'] = nonfriend_user_ids

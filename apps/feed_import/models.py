@@ -135,9 +135,8 @@ class OPMLImporter(Importer):
                 else:
                     feed_data['active_subscribers'] = 1
                     feed_data['num_subscribers'] = 1
-                    feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
-                                                            feed_link=feed_link,
-                                                            defaults=dict(**feed_data))
+                    feed_db, _ = Feed.find_or_create(feed_address=feed_address, feed_link=feed_link,
+                                                     defaults=dict(**feed_data))
                     
                 us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
@@ -229,15 +228,11 @@ class GoogleReaderImporter(Importer):
             if duplicate_feed:
                 feed_db = duplicate_feed[0].feed
             else:
-                feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
+                feed_data = dict(feed_title=feed_title)
                 feed_data['active_subscribers'] = 1
                 feed_data['num_subscribers'] = 1
-                feeds = Feed.objects.filter(feed_address=feed_address,
-                                            branch_from_feed__isnull=True).order_by('-num_subscribers')
-                if feeds:
-                    feed_db = feeds[0]
-                else:
-                    feed_db = Feed.objects.create(**feed_data)
+                feed_db, _ = Feed.find_or_create(feed_address=feed_address, feed_link=feed_link,
+                                                 defaults=dict(**feed_data))
 
             us, _ = UserSubscription.objects.get_or_create(
                 feed=feed_db, 

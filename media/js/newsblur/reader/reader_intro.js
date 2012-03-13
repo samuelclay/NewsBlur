@@ -2,7 +2,7 @@ NEWSBLUR.ReaderIntro = function(options) {
     var defaults = {};
     var intro_page = this.model.preference('intro_page');
     
-    _.bindAll(this, 'close');
+    _.bindAll(this, 'close', 'start_import_from_google_reader', 'post_connect');
     this.model   = NEWSBLUR.AssetModel.reader();
     this.options = $.extend({
       'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 4 ? intro_page : 1
@@ -104,9 +104,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             ])
         ]);
         
-        $('.carousel', this.$modal).carousel({
-            interval: 1000
-        });
+        $('.carousel', this.$modal).carousel({});
     },
     
     // ==========
@@ -196,7 +194,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     post_connect: function(data) {
-        console.log(["post_connect", data]);
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
@@ -268,7 +265,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     advance_import_carousel: function(page) {
         var $carousel = $('.carousel', this.$modal);
         $carousel.carousel('pause');
-        
         if (!_.isNumber(page)) { 
             if (_.size(this.model.feeds) && !this.options.force_import) {
                 page = 2;
@@ -343,8 +339,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     start_import_from_google_reader: function(data) {
         var $error = $('.NB-intro-gitgoogle .NB-error', this.$modal);
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
-
-        if (data.error) {
+        if (data && data.error) {
             $error.show().text(data.error);
             this.advance_import_carousel(0);
         } else {
@@ -358,9 +353,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
     finish_import_from_google_reader: function() {
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
-        $loading.removeClass('NB-active');
         
         NEWSBLUR.reader.load_feeds(_.bind(function() {
+            $loading.removeClass('NB-active');
             this.advance_import_carousel(2);
         }, this));
     },
@@ -389,9 +384,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             url: NEWSBLUR.URLs['opml-upload'],
             type: 'POST',
             success: function (data, status) {
-                console.log(["upload opml success", status, data]);
-                $loading.removeClass('NB-active');
                 NEWSBLUR.reader.load_feeds(function() {
+                    $loading.removeClass('NB-active');
                     self.advance_import_carousel(2);
                 });
                 NEWSBLUR.reader.load_recommended_feed();

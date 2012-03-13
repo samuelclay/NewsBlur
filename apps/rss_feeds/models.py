@@ -153,6 +153,19 @@ class Feed(models.Model):
             return
     
     @classmethod
+    def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
+        feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
+        if feeds:
+            return feeds[0], False
+
+        if feed_link.endswith('/'):
+            feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link[:-1])
+            if feeds:
+                return feeds[0], False
+        
+        return cls.objects.get_or_create(feed_address=feed_address, feed_link=feed_link, *args, **kwargs)
+        
+    @classmethod
     def merge_feeds(cls, *args, **kwargs):
         merge_feeds(*args, **kwargs)
         
@@ -1345,16 +1358,18 @@ class FeedLoadtime(models.Model):
         return "%s: %s sec" % (self.feed, self.loadtime)
     
 class DuplicateFeed(models.Model):
-    duplicate_address = models.CharField(max_length=255)
-    duplicate_feed_id = models.CharField(max_length=255, null=True)
+    duplicate_address = models.CharField(max_length=255, db_index=True)
+    duplicate_link = models.CharField(max_length=255, null=True, db_index=True)
+    duplicate_feed_id = models.CharField(max_length=255, null=True, db_index=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
    
     def __unicode__(self):
-        return "%s: %s" % (self.feed, self.duplicate_address)
+        return "%s: %s / %s" % (self.feed, self.duplicate_address, self.duplicate_link)
         
     def to_json(self):
         return {
             'duplicate_address': self.duplicate_address,
+            'duplicate_link': self.duplicate_link,
             'duplicate_feed_id': self.duplicate_feed_id,
             'feed_id': self.feed_id
         }
@@ -1394,6 +1409,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     try:
         DuplicateFeed.objects.create(
             duplicate_address=duplicate_feed.feed_address,
+            duplicate_link=duplicate_feed.feed_link,
             duplicate_feed_id=duplicate_feed.pk,
             feed=original_feed
         )

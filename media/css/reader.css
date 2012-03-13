@@ -7353,6 +7353,13 @@ background: transparent;
 .NB-modal-profile {
     min-height: 300px;
 }
+.NB-modal.NB-modal-profile .NB-modal-loading {
+    position: absolute;
+    top: 12px;
+    right: 22px;
+    float: none;
+    z-index: 1;
+}
 .NB-modal-profile fieldset {
     border: 0;
     border-top: 1px solid #E6E6E6;
@@ -7369,4 +7376,21 @@ background: transparent;
 .NB-modal-profile .NB-profile-actions {
     float: right;
     margin-top: 10px;
+}
+.NB-modal-profile .NB-profile-links {
+    overflow: hidden;
+}
+.NB-modal-profile .NB-profile-links .NB-profile-link {
+    float: left;
+    font-size: 0;
+    vertical-align: middle;
+    height: 22px;
+    width: 22px;
+    margin: 0 4px 0 0;
+    cursor: pointer;
+}
+.NB-modal-profile .NB-profile-links .NB-profile-link img {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
 }

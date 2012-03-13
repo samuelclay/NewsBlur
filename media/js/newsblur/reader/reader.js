@@ -1621,7 +1621,7 @@
         open_dialog_after_feeds_loaded: function() {
             if (!NEWSBLUR.Globals.is_authenticated) return;
             
-            if (!this.model.folders.length) {
+            if (!this.model.folders.length && (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open)) {
                 _.defer(_.bind(this.open_intro_modal, this), 100);
             } else if (!this.model.flags['has_chosen_feeds'] && this.flags['favicons_downloaded'] && this.model.folders.length) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
@@ -4462,7 +4462,7 @@
         },
         
         make_story_share_comment: function(comment) {
-            var user = this.model.user_profiles.get(comment.author.user_id);
+            var user = this.model.user_profiles.get(comment.user_id);
             
             var $comment = $.make('div', { className: 'NB-story-comment' }, [
                 $.make('div', { className: 'NB-user-avatar' }, [
@@ -4499,8 +4499,10 @@
             var story = this.model.get_story(story_id);
             this.model.load_public_story_comments(story_id, story.story_feed_id, _.bind(function(data) {
                 var $comments = $.make('div', { className: 'NB-story-comments-public' });
-                
-                _.each(data.comments, _.bind(function(comment) {
+                var comments = _.select(data.comments, _.bind(function(comment) {
+                    return !_.contains(this.model.user_profile.get('following_user_ids'), comment.user_id);
+                }, this));
+                _.each(comments, _.bind(function(comment) {
                     var $comment = this.make_story_share_comment(comment);
                     $comments.append($comment);
                 }, this));

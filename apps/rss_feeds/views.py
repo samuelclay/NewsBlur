@@ -174,7 +174,7 @@ def exception_retry(request):
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
-    feeds = {feed.pk: usersub.canonical(full=True)}
+    feeds = {feed.pk: usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
     return {'code': 1, 'feeds': feeds}
     
     

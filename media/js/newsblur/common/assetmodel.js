@@ -591,27 +591,28 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             var updated = false;
             f = parseInt(f, 10);
             var feed = data.feeds[f];
+            var feed_id = feed.id || f;
             if (feed.id && f != feed.id) {
                 NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f]]);
                 this.feeds[feed.id] = this.feeds[f];
             }
-            if ((feed['has_exception'] && !this.feeds[f]['has_exception']) ||
-                (this.feeds[f]['has_exception'] && !feed['has_exception'])) {
+            if ((feed['has_exception'] && !this.feeds[feed_id]['has_exception']) ||
+                (this.feeds[feed_id]['has_exception'] && !feed['has_exception'])) {
                 updated = true;
-                this.feeds[f]['has_exception'] = !!feed['has_exception'];
+                this.feeds[feed_id]['has_exception'] = !!feed['has_exception'];
             }
             for (var k in feed) {
-                if (this.feeds[f][k] != feed[k]) {
-                    // NEWSBLUR.log(['New Feed', this.feeds[f][k], feed[k], f, k]);
-                    NEWSBLUR.log(['Different', k, this.feeds[f].feed_title, this.feeds[f][k], feed[k]]);
-                    this.feeds[f][k] = feed[k];
+                if (this.feeds[feed_id][k] != feed[k]) {
+                    // NEWSBLUR.log(['New Feed', this.feeds[feed_id][k], feed[k], f, k]);
+                    NEWSBLUR.log(['Different', k, this.feeds[feed_id].feed_title, this.feeds[feed_id][k], feed[k]]);
+                    this.feeds[feed_id][k] = feed[k];
                     updated = true;
                 }
             }
             if (feed['favicon']) {
-                this.feeds[f]['favicon'] = feed['favicon'];
-                this.feeds[f]['favicon_color'] = feed['favicon_color'];
-                this.feeds[f]['favicon_fetching'] = false;
+                this.feeds[feed_id]['favicon'] = feed['favicon'];
+                this.feeds[feed_id]['favicon_color'] = feed['favicon_color'];
+                this.feeds[feed_id]['favicon_fetching'] = false;
                 updated = true;
             }
             if (updated && !(f in updated_feeds)) {

@@ -4,6 +4,7 @@ NEWSBLUR.Modal = function(options) {
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.AssetModel.reader();
     this.runner();
+    this.flags = {};
 };
 
 NEWSBLUR.Modal.prototype = {
@@ -18,6 +19,7 @@ NEWSBLUR.Modal.prototype = {
             'maxWidth': 600,
             'overlayClose': true,
             'onOpen': function (dialog) {
+                self.flags.open = true;
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
                     dialog.data.fadeIn(200, function() {
@@ -37,6 +39,7 @@ NEWSBLUR.Modal.prototype = {
                 }
             },
             'onClose': function(dialog, callback) {
+                self.flags.open = false;
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {

@@ -166,11 +166,9 @@ def load_social_page(request, user_id, username=None):
 def story_comments(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
-    full = request.POST.get('full', False)
-    compact = request.POST.get('compact', False)
     
     shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
-    comments = [s.comments_with_author(compact=compact, full=full) for s in shared_stories]
+    comments = [s.comments_with_author() for s in shared_stories]
     
     return {'comments': comments}
 
@@ -246,7 +244,8 @@ def profile(request):
     current_profile = MSocialProfile.objects.get(user_id=request.user.pk)
     followers_youknow, followers_everybody = current_profile.common_follows(user_id, direction='followers')
     following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
-
+    profile_ids = set(followers_youknow + followers_everybody + following_youknow + following_everybody)
+    profiles = MSocialProfile.profiles(profile_ids)
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile.username)
     
     payload = {
@@ -255,6 +254,7 @@ def profile(request):
         'followers_everybody': followers_everybody,
         'following_youknow': following_youknow,
         'following_everybody': following_everybody,
+        'profiles': [p.to_json(compact=True) for p in profiles],
     }
     return payload
     

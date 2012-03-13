@@ -23,7 +23,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             $.make('tr', [
                 $.make('td', [
                     $.make('div', { className: 'NB-profile-badge-photo' }, [
-                        $.make('img', { src: profile.get('photo_url') })
+                        $.make('img', { src: profile.photo_url({'size': this.options.photo_size}) })
                     ])
                 ]),
                 $.make('td', { className: 'NB-profile-badge-info' }, [

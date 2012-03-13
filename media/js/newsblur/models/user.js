@@ -8,6 +8,15 @@ NEWSBLUR.Models.User = Backbone.Model.extend({
             value = NEWSBLUR.Globals.MEDIA_URL + 'img/reader/default_profile_photo.png';
         }
         return value;
+    },
+    
+    photo_url: function(options) {
+        options = options || {};
+        var url = this.get('photo_url');
+        if (options.size && _.string.contains(url, 'graph.facebook.com')) {
+            url += '?type=' + options.size;
+        }
+        return url;
     }
     
 });

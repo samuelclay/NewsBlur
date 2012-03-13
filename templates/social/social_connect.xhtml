@@ -35,31 +35,37 @@
     <script type="text/javascript" charset="utf-8">
         var next = "{{ next|safe }}";
         if (next) {
-            console.log(["next", next]);
             setTimeout(function() {
                 window.location.href = next;
             }, 1000);
-        } else if (window.opener && window.opener.NEWSBLUR &&
-                   window.opener.NEWSBLUR.reader.flags.importing_from_google_reader) {
-            window.opener.NEWSBLUR.reader.post_google_reader_connect({
-                {% if error %}
-                    'error': "{{ error }}",
-                {% endif %}
-            });
-            window.close();
-        } else if (window.opener && window.opener.NEWSBLUR && window.opener.NEWSBLUR.intro) {
-            window.opener.NEWSBLUR.intro.post_connect({
-                {% if error %}
-                    'error': "{{ error }}",
-                {% endif %}
-            });
-            window.close();
-        } else if (window.opener && window.opener.NEWSBLUR && window.opener.NEWSBLUR.reader_friends) {
-            window.opener.NEWSBLUR.reader_friends.post_connect({
-                {% if error %}
-                    'error': "{{ error }}",
-                {% endif %}
-            });
+        } else if (window.opener && window.opener.NEWSBLUR) {
+            if (window.opener.NEWSBLUR.reader.flags.importing_from_google_reader) {
+                if (window.opener.NEWSBLUR.intro) {
+                    window.opener.NEWSBLUR.intro.start_import_from_google_reader({
+                        {% if error %}
+                            'error': "{{ error }}",
+                        {% endif %}
+                    });
+                } else {
+                    window.opener.NEWSBLUR.reader.post_google_reader_connect({
+                        {% if error %}
+                            'error': "{{ error }}",
+                        {% endif %}
+                    });
+                }
+            } else if (window.opener.NEWSBLUR.intro) {
+                window.opener.NEWSBLUR.intro.post_connect({
+                    {% if error %}
+                        'error': "{{ error }}",
+                    {% endif %}
+                });
+            } else if (window.opener.NEWSBLUR.reader_friends) {
+                window.opener.NEWSBLUR.reader_friends.post_connect({
+                    {% if error %}
+                        'error': "{{ error }}",
+                    {% endif %}
+                });
+            }
             window.close();
         } else {
             window.location.href = "/";
