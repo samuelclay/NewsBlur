@@ -5,7 +5,7 @@ NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
         
     this.options = $.extend({}, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
-    
+    this.profiles = new NEWSBLUR.Collections.Users();
     user_id = _.string.ltrim(user_id, 'social:');
     this.runner(user_id);
 };
@@ -15,6 +15,7 @@ NEWSBLUR.ReaderSocialProfile.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     runner: function(user_id) {
+        console.log(["get profile", user_id, this.model.user_profiles.get(user_id)]);
         this.profile = this.model.user_profiles.get(user_id);
         this.make_modal();
         this.open_modal();
@@ -61,29 +62,29 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     fetch_profile: function(user_id, callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
-        
+
         this.model.fetch_user_profile(user_id, _.bind(function(data) {
             console.log(["profile", data]);
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
-            this.profile.set(data.user_profile);
+            this.profile = new NEWSBLUR.Models.User(data.user_profile);
             this.populate_friends(data);
             callback && callback();
-            this.resize();
+            _.defer(_.bind(this.resize, this));
         }, this));
     },
     
     populate_friends: function(data) {
-        this.profiles = new NEWSBLUR.Collections.Users(data.profiles);
-        $('.NB-profile-following-youknow', this.$modal).html(this.make_profile_badges(data.following_youknow));
-        $('.NB-profile-following-everybody', this.$modal).html(this.make_profile_badges(data.following_everybody));
-        $('.NB-profile-followers-youknow', this.$modal).html(this.make_profile_badges(data.followers_youknow));
-        $('.NB-profile-followers-everybody', this.$modal).html(this.make_profile_badges(data.followers_everybody));
+        _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function(f) {
+            var user_ids = data[f];
+            var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);
+            $f.html(this.make_profile_badges(user_ids, data.profiles));
+            $f.closest('fieldset').toggle(!!user_ids.length);
+        }, this));
     },
     
-    make_profile_badges: function(user_ids) {
-        var profiles = this.profiles;
+    make_profile_badges: function(user_ids, profiles) {
         var $badges = $.make('div', { className: 'NB-profile-links' }, _.map(user_ids, function(user_id) {
-            var user = profiles.get(user_id);
+            var user = new NEWSBLUR.Models.User(profiles[user_id]);
             return $.make('div', { className: 'NB-profile-link', title: user.get('username') }, [
                 $.make('img', { src: user.get('photo_url') })
             ]).tipsy({

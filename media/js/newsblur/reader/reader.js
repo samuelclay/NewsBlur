@@ -4490,7 +4490,7 @@
                     fade: true,
                     offset: 3
                 })
-            ]).data('user_id', user.get('id'));
+            ]).data('user_id', user_id);
             
             return $profile;
         },

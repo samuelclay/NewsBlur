@@ -254,7 +254,7 @@ def profile(request):
         'followers_everybody': followers_everybody,
         'following_youknow': following_youknow,
         'following_everybody': following_everybody,
-        'profiles': [p.to_json(compact=True) for p in profiles],
+        'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
     }
     return payload
     
