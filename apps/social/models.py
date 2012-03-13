@@ -53,8 +53,8 @@ class MSocialProfile(mongo.Document):
     }
     
     def __unicode__(self):
-        return "%s [%s] %s/%s" % (self.username, self.user_id, 
-                                  self.subscription_count, self.shared_stories_count)
+        return "%s [%s] following %s/%s, shared %s" % (self.username, self.user_id, 
+                                  self.following_count, self.follower_count, self.shared_stories_count)
     
     def save(self, *args, **kwargs):
         if not self.username:
@@ -239,7 +239,10 @@ class MSocialProfile(mongo.Document):
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
-        # import pdb; pdb.set_trace()
+        if user_id == self.user_id:
+            # Only unfollow other people, not yourself.
+            return
+
         if user_id in self.following_user_ids:
             self.following_user_ids.remove(user_id)
         if user_id not in self.unfollowed_user_ids:
@@ -253,8 +256,6 @@ class MSocialProfile(mongo.Document):
             followee.count()
             followee.save()
         
-        if user_id != self.user_id:
-            # Only unfollow other people, not yourself.
             following_key = "F:%s:F" % (self.user_id)
             r.srem(following_key, user_id)
             follower_key = "F:%s:f" % (user_id)

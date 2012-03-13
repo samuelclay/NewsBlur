@@ -24,6 +24,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
+        this.$modal.bind('keyup', $.rescope(this.handle_keyup, this));
         this.handle_profile_counts();
         this.delegate_change();
     },
@@ -54,7 +55,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.make('div', { className: 'NB-modal-section NB-friends-search'}, [
                         $.make('label', { 'for': 'NB-friends-search-input' }, 'Username or email:'),
                         $.make('input', { type: 'text', className: 'NB-input', id: 'NB-friends-search-input' }),
-                        $.make('div', { className: 'NB-friends-search-badge' })
+                        $.make('div', { className: 'NB-loading' }),
+                        $.make('div', { className: 'NB-friends-search-badges' })
                     ])
                 ]),
                 $.make('fieldset', [
@@ -388,6 +390,42 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }, this), 200);
     },
     
+    search_for_friends: function(query) {
+        var $loading = $('.NB-friends-search .NB-loading', this.$modal);
+        var $badges = $('.NB-friends-search .NB-friends-search-badges', this.$modal);
+        
+        if (this.last_query && this.last_query == query) {
+            return;
+        } else {
+            this.last_query = query;
+        }
+        
+        if (!query) {
+            $badges.html('');
+            return;
+        }
+        
+        $loading.addClass('NB-active');
+        
+        this.model.search_for_friends(query, _.bind(function(data) {
+            $loading.removeClass('NB-active');
+            if (!data || !data.profiles.length) {
+                $badges.html($.make('div', { 
+                    className: 'NB-friends-search-badges-empty' 
+                }, [
+                    $.make('div', { className: 'NB-raquo' }, '&raquo;'),
+                    'Sorry, nobody matches "'+query+'".'
+                ]));
+                return;
+            }
+            
+            $badges.html($.make('div', _.map(data.profiles, function(profile) {
+                var user = new NEWSBLUR.Models.User(profile);
+                return new NEWSBLUR.Views.SocialProfileBadge({model: user});
+            })));
+        }, this));
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -448,6 +486,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             e.preventDefault();
             
             self.model.preference('autofollow_friends', $t.is(':checked'));
+        });
+    },
+    
+    handle_keyup: function(elem, e) {
+        var self = this;
+        
+        $.targetIs(e, { tagSelector: '#NB-friends-search-input' }, function($t, $p) {
+            self.search_for_friends($t.val());
         });
     },
     

@@ -1058,6 +1058,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/profile', {'user_id': user_id}, callback, callback, {request_type: 'GET'});
     },
     
+    search_for_friends: function(query, callback) {
+        this.make_request('/social/find_friends', {'query': query}, callback, callback, {request_type: 'GET'});
+    },
+    
     disconnect_social_service: function(service, callback) {
         this.make_request('/social/'+service+'_disconnect/', null, callback);
     },

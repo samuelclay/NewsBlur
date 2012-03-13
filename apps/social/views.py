@@ -311,6 +311,17 @@ def unfollow(request):
     logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
     
     return dict(user_profile=profile.to_json(full=True), unfollow_profile=unfollow_profile)
+
+@json.json_view
+def find_friends(request):
+    query = request.GET.get('query')
+    profiles = MSocialProfile.objects.filter(username__icontains=query)
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(email__icontains=query)
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(blog_title__icontains=query)
+    
+    return dict(profiles=profiles)
     
 def shared_stories_rss_feed(request, user_id, username):
     try:

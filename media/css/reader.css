@@ -7201,11 +7201,28 @@ background: transparent;
     width: 100px;
     padding: 12px 8px 0 12px;
 }
-.NB-modal-friends .NB-friends-search-badge {
+.NB-modal.NB-modal-friends .NB-friends-search {
+    overflow: hidden;
+    padding-bottom: 0;
+}
+.NB-modal-friends .NB-friends-search .NB-loading {
+    float: left;
+    margin-left: 12px;
+}
+.NB-modal-friends .NB-friends-search-badges {
     clear: both;
-    padding-bottom: 18px;
+    float: left;
+    margin: 12px 12px 18px;
 }
 
+.NB-modal-friends .NB-friends-search-badges-empty .NB-raquo {
+    float: left;
+    margin-right: 6px;
+}
+.NB-modal-friends .NB-friends-search-badges-empty {
+    color: #999;
+    font-size: 13px;
+}
 .NB-modal-friends .NB-friends-profile .NB-profile-username,
 .NB-modal-friends input[type=text] {
     float: left;
@@ -7267,7 +7284,7 @@ background: transparent;
     width: 100%;
 }
 .NB-profile-badge.NB-profile-badge-embiggen {
-    padding: 12px 0;
+    padding: 0;
 }
 .NB-profile-badge .NB-profile-badge-photo {
     padding: 0 8px 0 0;
@@ -7303,6 +7320,7 @@ background: transparent;
 .NB-profile-badge .NB-profile-badge-website {
     float: left;
     padding-left: 12px;
+    font-size: 11px;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-website {
     padding: 4px 0 0 12px;
@@ -7364,14 +7382,18 @@ background: transparent;
     border: 0;
     border-top: 1px solid #E6E6E6;
     padding: 0 12px;
-    margin: 0;
+    margin: 8px 0 0;
 }
 .NB-modal-profile fieldset legend {
     padding: 0 12px;
     font-weight: bold;
     font-size: 11px;
-    text-transform: uppercase;
     color: #151775;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 white;
+}
+.NB-modal.NB-modal-profile .NB-modal-section {
+    padding: 12px 0 2px;
 }
 .NB-modal-profile .NB-profile-actions {
     float: right;
@@ -7384,13 +7406,38 @@ background: transparent;
     float: left;
     font-size: 0;
     vertical-align: middle;
-    height: 22px;
-    width: 22px;
-    margin: 0 4px 0 0;
+    margin: 0 6px 6px 0;
     cursor: pointer;
 }
 .NB-modal-profile .NB-profile-links .NB-profile-link img {
-    width: 22px;
-    height: 22px;
+    width: 42px;
+    height: 42px;
     border-radius: 3px;
+}
+.NB-modal-profile .NB-profile-followers {
+    width: 100%;
+    padding: 0;
+    background-color: #F9F9F9;
+    margin: 16px 0 0 0;
+    border-radius: 6px;
+    text-shadow: 0 1px 0 white;
+}
+.NB-modal-profile .NB-profile-followers td {
+    width: 100%;
+    padding-right: 12px;
+}
+.NB-modal-profile .NB-profile-followers td.NB-profile-follow-count {
+    width: 116px;
+    text-align: center;
+    padding-right: 0;
+}
+.NB-modal-profile .NB-profile-followers td.NB-profile-follow-count div {
+    width: 116px;
+    font-size: 28px;
+}
+.NB-modal-profile .NB-profile-followers td.NB-profile-follow-count h3 {
+    font-size: 14px;
+    margin: 4px 0 0;
+    color: #909090;
+    text-transform: uppercase;
 }
