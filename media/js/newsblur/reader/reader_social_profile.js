@@ -15,7 +15,7 @@ NEWSBLUR.ReaderSocialProfile.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     runner: function(user_id) {
-        this.profile = this.model.user_profiles.get(user_id).clone();
+        this.profile = this.model.user_profiles.find(user_id).clone();
         this.make_modal();
         this.open_modal();
         _.defer(_.bind(this.fetch_profile, this, user_id));
@@ -38,26 +38,6 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                 $.make('table', { className: 'NB-profile-followers' }, [
                     $.make('tr', [
                         $.make('td', { className: 'NB-profile-follow-count' }, [
-                            $.make('div', { className: 'NB-profile-follower-count' }, this.profile.get('followers_count')),
-                            $.make('h3', 'Followers')
-                        ]),
-                        $.make('td', [
-                            $.make('fieldset', [
-                                $.make('legend', 'People you follow'),
-                                $.make('div', { className: 'NB-modal-section NB-profile-followers-youknow' })
-                            ]),
-                            $.make('fieldset', [
-                                $.make('legend', 'Everybody'),
-                                $.make('div', { className: 'NB-modal-section NB-profile-followers-everybody' })
-                            ])
-                        ])
-                    ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-profile-section' }, [
-                $.make('table', { className: 'NB-profile-followers' }, [
-                    $.make('tr', [
-                        $.make('td', { className: 'NB-profile-follow-count' }, [
                             $.make('div', { className: 'NB-profile-following-count' }, this.profile.get('following_count')),
                             $.make('h3', 'Following')
                         ]),
@@ -69,6 +49,26 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                             $.make('fieldset', [
                                 $.make('legend', 'Everybody'),
                                 $.make('div', { className: 'NB-modal-section NB-profile-following-everybody' })
+                            ])
+                        ])
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-profile-section' }, [
+                $.make('table', { className: 'NB-profile-followers' }, [
+                    $.make('tr', [
+                        $.make('td', { className: 'NB-profile-follow-count' }, [
+                            $.make('div', { className: 'NB-profile-follower-count' }, this.profile.get('followers_count')),
+                            $.make('h3', 'Followers')
+                        ]),
+                        $.make('td', [
+                            $.make('fieldset', [
+                                $.make('legend', 'People you follow'),
+                                $.make('div', { className: 'NB-modal-section NB-profile-followers-youknow' })
+                            ]),
+                            $.make('fieldset', [
+                                $.make('legend', 'Everybody'),
+                                $.make('div', { className: 'NB-modal-section NB-profile-followers-everybody' })
                             ])
                         ])
                     ])

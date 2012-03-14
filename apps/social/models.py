@@ -414,11 +414,15 @@ class MSocialSubscription(mongo.Document):
         if social_subs:
             social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
             social_user_ids = social_subs.keys()
+            
+            # Fetch user profiles of subscriptions
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for user_id, social_sub in social_subs.items():
                 # Check if the social feed has any stories, otherwise they aren't active.
                 if user_id in social_profiles:
-                    social_feeds.append(dict(social_sub.items() + social_profiles[user_id].items()))
+                    # Combine subscription read counts with feed/user info
+                    feed = dict(social_sub.items() + social_profiles[user_id].items())
+                    social_feeds.append(feed)
 
         return social_feeds
     

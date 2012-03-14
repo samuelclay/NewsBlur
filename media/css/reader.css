@@ -7347,7 +7347,6 @@ background: transparent;
 }
 .NB-profile-badge-actions {
     float: right;
-    margin-top: 10px;
 }
 .NB-profile-badge-actions .NB-profile-badge-action-self {
     color: #C0C0C0;
@@ -7362,8 +7361,15 @@ background: transparent;
     width: 90px;
     text-align: center;
     text-transform: uppercase;
+    margin: 0 0 4px;
+    clear: right;
+    float: right;
 }
-
+.NB-profile-badge-actions .NB-profile-badge-action-preview {
+    color: #404040;
+    line-height: 1;
+    font-size: 11px;
+}
 /* ======================== */
 /* = Social Profile Modal = */
 /* ======================== */

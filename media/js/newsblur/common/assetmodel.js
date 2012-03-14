@@ -444,7 +444,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             }
             if (data.user_profiles) {
                 var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
-                    return profile.user_id in this.user_profiles._byId;
+                    return profile.id in this.user_profiles._byId;
                 }, this));
                 this.user_profiles.add(profiles);
             }
@@ -667,10 +667,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return counts;
     },
     
-    set_feed: function(feed_id, feed) {
-        var self = this;
-        
-        return this.feeds[feed_id] = feed;
+    set_feed: function(feed) {
+        this.feeds[feed.id] = feed;
+    },
+
+    add_social_feed: function(feed) {
+        if (!this.social_feeds.get(feed.get('user_id'))) {
+            this.social_feeds.add(feed);
+        }
     },
     
     get_feed: function(feed_id) {

@@ -1,6 +1,6 @@
 NEWSBLUR.Models.User = Backbone.Model.extend({
     
-    idAttribute: 'user_id',
+    // idAttribute: 'user_id',
     
     get: function(attr) {
         var value = Backbone.Model.prototype.get.call(this, attr);
@@ -13,7 +13,7 @@ NEWSBLUR.Models.User = Backbone.Model.extend({
     photo_url: function(options) {
         options = options || {};
         var url = this.get('photo_url');
-        if (options.size && _.string.contains(url, 'graph.facebook.com')) {
+        if (options.size && _.string.include(url, 'graph.facebook.com')) {
             url += '?type=' + options.size;
         }
         return url;

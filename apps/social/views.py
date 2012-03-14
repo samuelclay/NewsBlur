@@ -47,14 +47,17 @@ def load_social_stories(request, user_id, username=None):
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
-    socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
+    try:
+        socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
+    except MSocialSubscription.DoesNotExist:
+        socialsub = None
     usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
     usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
     date_delta = UNREAD_CUTOFF
-    if date_delta < socialsub.mark_read_date:
+    if socialsub and date_delta < socialsub.mark_read_date:
         date_delta = socialsub.mark_read_date
     
     # Get intelligence classifier for user
@@ -97,7 +100,7 @@ def load_social_stories(request, user_id, username=None):
         # elif not story.get('read_status') and story['shared_date'] < usersubs_map[story_feed_id].mark_read_date:
         elif not story.get('read_status') and story['shared_date'] < date_delta:
             story['read_status'] = 1
-        # elif not story.get('read_status') and story['shared_date'] > socialsub.last_read_date:
+        # elif not story.get('read_status') and socialsub and story['shared_date'] > socialsub.last_read_date:
         #     story['read_status'] = 0
         else:
             story['read_status'] = 0

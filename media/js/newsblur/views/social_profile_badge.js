@@ -2,7 +2,8 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     events: {
         "click .NB-profile-badge-action-follow": "follow_user",
-        "click .NB-profile-badge-action-unfollow": "unfollow_user"
+        "click .NB-profile-badge-action-unfollow": "unfollow_user",
+        "click .NB-profile-badge-action-preview": "preview_user"
     },
     
     constructor : function(options) {
@@ -19,7 +20,9 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     render: function() {
         var profile = this.model;
-        this.$el.html($.make('table', { className: "NB-profile-badge " + (this.options.embiggen ? "NB-profile-badge-embiggen" : "") }, [
+        this.$el.html($.make('table', { 
+            className: "NB-profile-badge " + (this.options.embiggen ? "NB-profile-badge-embiggen" : "") 
+        }, [
             $.make('tr', [
                 $.make('td', [
                     $.make('div', { className: 'NB-profile-badge-photo' }, [
@@ -37,7 +40,8 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                         className: 'NB-profile-badge-website NB-splash-link'
                     }, profile.get('website').replace('http://', ''))),
                     $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
-                    (_.isNumber(profile.get('shared_stories_count')) && $.make('div', { className: 'NB-profile-badge-stats' }, [
+                    (_.isNumber(profile.get('shared_stories_count')) && 
+                     $.make('div', { className: 'NB-profile-badge-stats' }, [
                         $.make('span', { className: 'NB-count' }, profile.get('shared_stories_count')),
                         'shared ',
                         Inflector.pluralize('story', profile.get('shared_stories_count')),
@@ -57,9 +61,14 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 className: 'NB-profile-badge-action-unfollow NB-modal-submit-button NB-modal-submit-close' 
             }, 'Following');
         } else {
-            $actions = $.make('div', { 
-                className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green' 
-            }, 'Follow');
+            $actions = $.make('div', [
+                $.make('div', { 
+                    className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green' 
+                }, 'Follow'),
+                $.make('div', { 
+                    className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey'
+                }, 'Preview')
+            ]);
         }
         this.$('.NB-profile-badge-actions').append($actions);
         
@@ -71,7 +80,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             // this.make_profile_section();
             this.model.set(follow_user);
             
-            var $button = this.$('.NB-modal-submit-button');
+            var $button = this.$('.NB-profile-badge-action-follow');
             $button.text('Following');
             $button.removeClass('NB-modal-submit-green')
                 .removeClass('NB-modal-submit-red')
@@ -88,7 +97,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             // this.make_profile_section();
             this.model.set(unfollow_user);
             
-            var $button = this.$('.NB-modal-submit-button');
+            var $button = this.$('.NB-profile-badge-action-follow');
             $button.text('Unfollowed');
             $button.removeClass('NB-modal-submit-close')
                 .addClass('NB-modal-submit-red');
@@ -96,6 +105,13 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 .addClass('NB-profile-badge-action-follow');
                 
             NEWSBLUR.reader.make_social_feeds();
+        }, this));
+    },
+    
+    preview_user: function() {
+        $.modal.close(_.bind(function() {
+            NEWSBLUR.reader.model.add_social_feed(this.model);
+            NEWSBLUR.reader.load_social_feed_in_tryfeed_view(this.model);
         }, this));
     }
     
