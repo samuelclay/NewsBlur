@@ -5537,6 +5537,13 @@ background: transparent;
   margin: 0 6px 0 0;
   background: transparent url('/media/embed/mobile/android.png') no-repeat 0 0;
 }
+.NB-modal-goodies .NB-goodies-nokia {
+  float: right;
+  width: 28px;
+  height: 28px;
+  margin: 0 6px 0 0;
+  background: transparent url('/media/embed/mobile/nokia.png') no-repeat 0 0;
+}
 
 /* ============================ */
 /* = Keyboard Shortcuts Modal = */
