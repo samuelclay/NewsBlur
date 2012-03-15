@@ -672,7 +672,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
 
     add_social_feed: function(feed) {
-        var social_feed = this.social_feeds.get(feed.get('user_id'));
+        var social_feed = this.social_feeds.get(feed);
         if (!social_feed) {
             social_feed = new NEWSBLUR.Models.SocialSubscription(feed.attributes);
             this.social_feeds.add(social_feed);
@@ -1114,9 +1114,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     load_public_story_comments: function(story_id, feed_id, callback) {
         this.make_request('/social/comments', {
             'story_id': story_id,
-            'feed_id': feed_id,
-            'compact': true
-        }, callback);
+            'feed_id': feed_id
+        }, callback, callback, {request_type: 'GET'});
     },
     
     recalculate_story_scores: function(feed_id) {

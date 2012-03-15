@@ -167,13 +167,17 @@ def load_social_page(request, user_id, username=None):
     
 @json.json_view
 def story_comments(request):
-    feed_id  = int(request.POST['feed_id'])
-    story_id = request.POST['story_id']
+    feed_id  = int(request.REQUEST['feed_id'])
+    story_id = request.REQUEST['story_id']
     
-    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
+    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id, has_comments=True)
     comments = [s.comments_with_author() for s in shared_stories]
+
+    profile_user_ids = [c['user_id'] for c in comments]
+    profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
+    profiles = [profile.to_json(compact=True) for profile in profiles]
     
-    return {'comments': comments}
+    return {'comments': comments, 'profiles': profiles}
 
 @ajax_login_required
 @json.json_view
