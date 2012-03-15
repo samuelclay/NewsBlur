@@ -1114,7 +1114,7 @@
                 _.delay(_.bind(this.update_starred_count, this), 250);
             }
             
-            if (this.flags['showing_feed_in_tryfeed_view']) {
+            if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
                 this.hide_tryfeed_view();
                 this.force_feed_refresh();
             }
@@ -1805,7 +1805,7 @@
             clearTimeout(this.flags['next_fetch']);
             this.counts['feed_view_positions_timer'] = 0;
             
-            if (this.flags['showing_feed_in_tryfeed_view']) {
+            if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
                 this.hide_tryfeed_view();
             }
         },
@@ -2283,6 +2283,9 @@
                 this.prefetch_story_locations_in_feed_view();
                 this.hide_stories_progress_bar();
                 
+                if (this.flags['showing_social_feed_in_tryfeed_view']) {
+                    this.show_tryfeed_follow_button();
+                }
             }
         },
         
@@ -3403,7 +3406,7 @@
             
             this.flags.iframe_scroll_snap_back_prepared = true;
             this.iframe_link_attacher_num_links = 0;
-            console.log(["new iframe url", page_url, feed_id]);
+
             var $new_iframe = $.make('iframe', { 
                 className: this.$s.$feed_iframe.attr('class'), 
                 src: page_url
@@ -3440,7 +3443,7 @@
                     }
                 }, 500);
                 
-                NEWSBLUR.log(['iFrame domain', $feed_iframe, $feed_iframe.attr('src')]);
+                // NEWSBLUR.log(['iFrame domain', $feed_iframe, $feed_iframe.attr('src')]);
                 if ($feed_iframe.attr('src').indexOf('/reader/page/'+feed_id) != -1) {
                     var iframe_link_attacher = function() {
                         var num_links = $feed_iframe.contents().find('a').length;
@@ -3486,7 +3489,7 @@
             var $feed_iframe = this.$s.$feed_iframe;
                 
             $feed_iframe.load(function() {
-                console.log(["iframe load", self.flags['iframe_view_loaded']]);
+                // console.log(["iframe load", self.flags['iframe_view_loaded']]);
                 self.flags['iframe_view_loaded'] = true;
                 try {
                     var $iframe_contents = $feed_iframe.contents();
@@ -6418,7 +6421,7 @@
             $tryfeed_container.slideDown(350, _.bind(function() {
                 this.open_social_stories(social_feed.get('id'));
                 this.switch_taskbar_view('feed');
-                this.flags['showing_feed_in_tryfeed_view'] = true;
+                this.flags['showing_social_feed_in_tryfeed_view'] = true;
                 this.$s.$tryfeed_header.addClass('NB-selected');
             }, this));
         },
@@ -6427,7 +6430,9 @@
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             $tryfeed_container.slideUp(350);
             this.$s.$story_taskbar.find('.NB-tryfeed-add').remove();
+            this.$s.$story_taskbar.find('.NB-tryfeed-follow').remove();
             this.flags['showing_feed_in_tryfeed_view'] = false;
+            this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
         
         show_tryfeed_add_button: function() {
@@ -6440,10 +6445,28 @@
             $add.animate({'opacity': 1}, {'duration': 600});
         },
         
+        show_tryfeed_follow_button: function() {
+            console.log(["show_tryfeed_follow_button", this.$s.$story_taskbar.find('.NB-tryfeed-follow:visible')]);
+            if (this.$s.$story_taskbar.find('.NB-tryfeed-follow:visible').length) return;
+            
+            var $add = $.make('div', { className: 'NB-modal-submit' }, [
+              $.make('div', { className: 'NB-tryfeed-follow NB-modal-submit-green NB-modal-submit-button' }, 'Follow')
+            ]).css({'opacity': 0});
+            this.$s.$story_taskbar.find('.NB-taskbar').append($add);
+            $add.animate({'opacity': 1}, {'duration': 600});
+        },
+        
         add_recommended_feed: function(feed_id) {
             var feed_address = this.model.get_feed(feed_id ? feed_id : this.active_feed).feed_address;
             
             this.open_add_feed_modal({url: feed_address});
+        },
+        
+        follow_user_in_tryfeed: function(feed_id) {
+            var socialsub = this.model.get_feed(feed_id);
+            this.model.follow_user(socialsub.get('user_id'), function(data) {
+                NEWSBLUR.reader.make_social_feeds();
+            });
         },
         
         approve_feed_in_moderation_queue: function(feed_id) {
@@ -7199,6 +7222,11 @@
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.add_recommended_feed(feed_id);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-follow' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = self.active_feed;
+                self.follow_user_in_tryfeed(feed_id);
             }); 
             
             // = Social =======================================================

@@ -2553,9 +2553,8 @@ background: transparent;
 
 .NB-taskbar {
     position: relative;
-    border-bottom: 1px solid #F0F0F0;
+    overflow: hidden;
 }
-
 .NB-taskbar .NB-taskbar-sidebar-toggle-close {
   width: 20px;
   height: 28px;
@@ -2648,7 +2647,6 @@ background: transparent;
     position: relative;
     border-right: 1px solid #828282;
     float: left;
-    padding: 0px 8px 0 32px;
     font-size: 13px;
 }
 
@@ -2663,6 +2661,11 @@ background: transparent;
 
 .NB-taskbar .taskbar_nav .task_button.active .taskbar_menu {
     display: block;
+}
+
+.NB-taskbar .NB-task-button-wrapper {
+    border-top: 1px solid #F0F0F0;
+    padding: 0px 8px 0 32px;
 }
 
 .NB-taskbar .taskbar_nav .task_button .taskbar_menu {
@@ -2747,10 +2750,12 @@ background: transparent;
     display: none;
 }
 
-#story_taskbar .NB-tryfeed-add {
-    margin: 1px auto 0px;
-    width: 30px;
+#story_taskbar .NB-tryfeed-add,
+#story_taskbar .NB-tryfeed-follow {
+    margin: 2px auto 0px;
+    width: 60px;
     height: 14px;
+    text-align: center;
     cursor: pointer;
     -webkit-box-shadow: #9A9A9A 2px 2px 0px;
     -moz-box-shadow: #9A9A9A 2px 2px 0px;
@@ -7220,6 +7225,7 @@ background: transparent;
     clear: both;
     float: left;
     margin: 12px 12px 18px;
+    width: 100%;
 }
 
 .NB-modal-friends .NB-friends-search-badges-empty .NB-raquo {

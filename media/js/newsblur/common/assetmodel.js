@@ -247,7 +247,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         var pre_callback = _.bind(function(data) {
             if (data.user_profiles) {
                 var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
-                    return profile.user_id in this.user_profiles._byId;
+                    return profile.id in this.user_profiles._byId;
                 }, this));
                 this.user_profiles.add(profiles);
             }
@@ -1091,6 +1091,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.following_profiles.add(data.follow_profile);
                 follow_user = new NEWSBLUR.Models.User(data.follow_profile);
             }
+            this.social_feeds.remove(data.follow_subscription);
             this.social_feeds.add(data.follow_subscription);
             callback(data, follow_user);
         }, this);

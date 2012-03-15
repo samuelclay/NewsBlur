@@ -563,12 +563,16 @@
         </div>
         <ul class="taskbar_nav taskbar_nav_feeds">
           <li class="task_button task_button_menu NB-task-add">
-              <div class="task_button_background"></div>
-              <div class="NB-task-image"></div>
+              <div class="NB-task-button-wrapper">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </div>
           </li>
           <li class="task_button task_button_menu NB-task-manage NB-disabled">
-              <div class="task_button_background"></div>
-              <div class="NB-task-image"></div>
+              <div class="NB-task-button-wrapper">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </div>
           </li>
         </ul>
         <div class="NB-taskbar-intelligence">
@@ -607,49 +611,65 @@
           <div class="NB-taskbar">
             <ul class="taskbar_nav taskbar_nav_view">
               <li class="task_button task_button_view task_view_page NB-active">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                  <span class="NB-task-title">Original</span>
-                  <span class="NB-task-original-return NB-task-title">
-                      <div>Return to</div>
-                      <div>Original</div>
-                  </span>
-                  <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Original</span>
+                      <span class="NB-task-original-return NB-task-title">
+                          <div>Return to</div>
+                          <div>Original</div>
+                      </span>
+                      <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+                  </div>
               </li>
               <li class="task_button task_button_view task_view_feed">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                  <span class="NB-task-title">Feed</span>
-                  <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Feed</span>
+                      <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
+                  </div>
               </li>
               <li class="task_button task_button_view task_view_story">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                  <span class="NB-task-title">Story</span>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Story</span>
+                  </div>
               </li>
               <li class="task_button NB-task-feed-settings">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                  </div>
               </li>
             </ul>
             <ul class="taskbar_nav taskbar_nav_story first">
               <li class="task_button task_button_story task_story_previous">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                  </div>
               </li>
               <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                <span class="NB-task-title">Next Unread</span>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Next Unread</span>
+                  </div>
               </li>
               <li class="task_button task_button_story task_story_next">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                  </div>
               </li>
               {% if not user.is_authenticated %}
                 <li class="task_button task_button_signup">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                    <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                    </div>
                 </li>
               {% endif %}
             </ul>
