@@ -356,13 +356,19 @@
         
         hide_splash_page: function() {
             var self = this;
+            var resize = false;
+            if (!$('.right-pane').is(':visible')) {
+                resize = true;
+            }
             $('.right-pane').show();
             $('#NB-splash').hide();
             $('.NB-splash-info').hide();
             $('#NB-splash-overlay').hide();
-            // this.$s.$body.layout().resizeAll();
             this.$s.$dashboard.addClass('NB-active');
-            
+
+            if (resize) {
+                this.$s.$body.layout().resizeAll();
+            }
             if (NEWSBLUR.Globals.is_anonymous) {
                 this.setup_ftux_signup_callout();
             }

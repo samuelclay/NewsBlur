@@ -110,8 +110,9 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     preview_user: function() {
         $.modal.close(_.bind(function() {
-            NEWSBLUR.reader.model.add_social_feed(this.model);
-            NEWSBLUR.reader.load_social_feed_in_tryfeed_view(this.model);
+            window.ss = this.model;
+            var socialsub = NEWSBLUR.reader.model.add_social_feed(this.model);
+            NEWSBLUR.reader.load_social_feed_in_tryfeed_view(socialsub);
         }, this));
     }
     

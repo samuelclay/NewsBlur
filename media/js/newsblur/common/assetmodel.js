@@ -672,9 +672,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
 
     add_social_feed: function(feed) {
-        if (!this.social_feeds.get(feed.get('user_id'))) {
-            this.social_feeds.add(feed);
+        var social_feed = this.social_feeds.get(feed.get('user_id'));
+        if (!social_feed) {
+            social_feed = new NEWSBLUR.Models.SocialSubscription(feed.attributes);
+            this.social_feeds.add(social_feed);
         }
+        return social_feed;
     },
     
     get_feed: function(feed_id) {
