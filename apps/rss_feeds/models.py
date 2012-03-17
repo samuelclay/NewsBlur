@@ -171,7 +171,6 @@ class Feed(models.Model):
         
     @property
     def favicon_fetching(self):
-        print "%s: %s %s" % (self, self.favicon_not_found, self.favicon_color)
         return bool(not (self.favicon_not_found or self.favicon_color))
         
     @classmethod

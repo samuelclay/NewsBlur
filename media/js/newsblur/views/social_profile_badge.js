@@ -3,7 +3,11 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     events: {
         "click .NB-profile-badge-action-follow": "follow_user",
         "click .NB-profile-badge-action-unfollow": "unfollow_user",
-        "click .NB-profile-badge-action-preview": "preview_user"
+        "click .NB-profile-badge-action-preview": "preview_user",
+        "mouseenter .NB-profile-badge-action-unfollow": "mouseenter_unfollow",
+        "mouseleave .NB-profile-badge-action-unfollow": "mouseleave_unfollow",
+        "mouseenter .NB-profile-badge-action-follow": "mouseenter_follow",
+        "mouseleave .NB-profile-badge-action-follow": "mouseleave_follow"
     },
     
     constructor : function(options) {
@@ -114,6 +118,22 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             var socialsub = NEWSBLUR.reader.model.add_social_feed(this.model);
             NEWSBLUR.reader.load_social_feed_in_tryfeed_view(socialsub);
         }, this));
+    },
+    
+    mouseenter_unfollow: function() {
+        this.$('.NB-profile-badge-action-unfollow').text('Unfollow').addClass('NB-active');
+    },
+    
+    mouseleave_unfollow: function() {
+        this.$('.NB-profile-badge-action-unfollow').text('Following').removeClass('NB-active');
+    },
+    
+    mouseenter_follow: function() {
+        this.$('.NB-profile-badge-action-follow').text('Follow').addClass('NB-active');
+    },
+    
+    mouseleave_follow: function() {
+        this.$('.NB-profile-badge-action-follow').text('Follow').removeClass('NB-active');
     }
     
 });

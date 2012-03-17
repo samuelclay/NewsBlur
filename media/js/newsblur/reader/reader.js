@@ -3067,6 +3067,11 @@
             }, this));
         },
         
+        count_selected_words_when_sharing_story: function($feed_story) {
+            var $wordcount = $('.NB-sideoption-share-wordcount', $feed_story);
+            
+        },
+        
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.instapaper.com/edit';
@@ -4060,6 +4065,7 @@
                         ]),
                         $.make('div', { className: 'NB-sideoption-share-wrapper' }, [
                             $.make('div', { className: 'NB-sideoption-share' }, [
+                                $.make('div', { className: 'NB-sideoption-share-wordcount' }),
                                 $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
                                 $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
                                 $.make('textarea', { className: 'NB-sideoption-share-comments' }, story.shared_comments),

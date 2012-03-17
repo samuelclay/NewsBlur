@@ -5292,6 +5292,12 @@ background: transparent;
 .NB-modal-intro .NB-modal-loading {
     margin: 8px 8px 0 0;
 }
+.NB-modal-intro .NB-intro-section {
+    border-bottom: 1px solid #E6E6E6;
+    padding: 24px 4px;
+    text-align: center;
+    overflow: hidden;
+}
 .NB-modal-intro h4 {
   clear: both;
 }
@@ -5362,7 +5368,7 @@ background: transparent;
 }
 
 .NB-modal-intro h4 {
-    margin: 32px 0;
+    margin: 32px 0 0;
     text-align: center;
 }
 
@@ -5436,10 +5442,8 @@ background: transparent;
     margin: 0 4px;
 }
 .NB-modal-intro .NB-intro-bookmarklet {
-    border-bottom: 1px solid #E6E6E6;
-    padding: 24px 0 24px 112px;
     text-align: center;
-    overflow: hidden;
+    padding-left: 112px;
 }
 .NB-modal-intro .NB-intro-bookmarklet-info {
     float: left;
@@ -5561,8 +5565,63 @@ background: transparent;
   color: #808080;
   clear: both;
 }
-
-
+.NB-modal-intro .NB-intro-uptodate-follow {
+    float: left;
+    width: 47%;
+    background-color: #FED655;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FED655), to(#F3BE00));
+    background: -moz-linear-gradient(center bottom, #FED655 0%, #F3BE00 100%);
+    border-radius: 6px;
+    text-shadow: 0 1px 0 #FEEA95;
+    border: 1px solid #FFFDE0;
+}
+.NB-modal-intro .NB-intro-uptodate-follow:hover,
+.NB-modal-intro .NB-intro-uptodate-follow.NB-active {
+    background-color: #ED6D00;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ED6D00), to(#DD5A00));
+    background: -moz-linear-gradient(center bottom, #ED6D00 0%, #DD5A00 100%);
+    color: white;
+    text-shadow: 0 1px 0 #303030;
+    border: 1px solid #ED6D00;
+}
+.NB-modal-intro .NB-intro-uptodate-follow.NB-active {
+    border: 1px solid #813600;
+     -moz-box-shadow:2px 2px 0 #DCDCDC;
+    box-shadow:2px 2px 0 #DCDCDC;
+}
+.NB-modal-intro .NB-intro-uptodate-follow.NB-right {
+    float: right;
+}
+.NB-modal-intro .NB-intro-uptodate-follow input {
+    float: left;
+    margin: 26px 8px 0;
+    cursor: pointer;
+}
+.NB-modal-intro .NB-intro-uptodate-follow span {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 8px 0;
+    line-height: 20px;
+    display: block;
+}
+.NB-modal-intro .NB-intro-uptodate-follow img {
+    float: left;
+    width: 48px;
+    height: 48px;
+    margin: 4px 0;
+    vertical-align: text-top;
+}
+.NB-modal-intro .NB-intro-uptodate-follow span img {
+    width: 16px;
+    height: 16px;
+    margin: 0 4px;
+    float: none;
+}
+.NB-modal-intro .NB-intro-uptodate-follow label {
+    display: block;
+    padding: 4px 16px;
+    cursor: pointer;
+}
 /* ============ */
 /* = Carousel = */
 /* ============ */

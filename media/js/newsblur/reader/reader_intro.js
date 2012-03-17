@@ -83,7 +83,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-intro-bookmarklet' }, [
+                $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section' }, [
                     NEWSBLUR.generate_bookmarklet(),
                     $.make('div', { className: 'NB-intro-bookmarklet-arrow' }, '&larr;'),
                     $.make('div', { className: 'NB-intro-bookmarklet-info' }, 'Install the bookmarklet')
@@ -94,7 +94,60 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $.make('div', { className: 'NB-intro-services' })
             ]),
             $.make('div', { className: 'NB-page NB-page-4' }, [
-                $.make('h4', { className: 'NB-page-4-started' }, "Stay in touch")
+                $.make('h4', { className: 'NB-page-4-started' }, "Keep up-to-date with NewsBlur"),
+                $.make('div', { className: 'NB-intro-section' }, [
+                    $.make('div', { className: 'NB-intro-uptodate-follow NB-right' }, [
+                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
+                        $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
+                            $.make('img', { src: 'http://img.tweetimag.es/i/newsblur_n.png', style: 'border-color: #505050;' }),
+                            $.make('span', [
+                                'Follow @newsblur on', 
+                                $.make('br'), 
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/twitter_icon.png' }),
+                                'Twitter'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-intro-uptodate-follow' }, [
+                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
+                        $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
+                            $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border-color: #505050;' }),
+                            $.make('span', [
+                                'Follow @samuelclay on', 
+                                $.make('br'), 
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/twitter_icon.png' }),
+                                'Twitter'
+                            ])
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-intro-section' }, [
+                    $.make('div', { className: 'NB-intro-uptodate-follow NB-right' }, [
+                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-popular' }),
+                        $.make('label', { 'for': 'NB-intro-uptodate-follow-popular' }, [
+                            $.make('span', [
+                                'Subscribe to', 
+                                $.make('br'), 
+                                $.make('img', { src: '/media/img/favicon.png' }),
+                                'Popular Shared Stories'
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-intro-uptodate-follow' }, [
+                        $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-blog' }),
+                        $.make('label', { 'for': 'NB-intro-uptodate-follow-blog' }, [
+                            $.make('span', [
+                                'Subscribe to', 
+                                $.make('br'), 
+                                $.make('img', { src: '/media/img/favicon.png' }),
+                                'The NewsBlur Blog'
+                            ])
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-intro-section' }, [
+                    'On GitHub'
+                ])
             ]),
             $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
@@ -408,6 +461,40 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         return false;
     },
     
+    // ===================
+    // = Stay Up To Date =
+    // ===================
+    
+    follow_twitter_account: function(username) {
+        var $input = $('#NB-intro-uptodate-follow-'+username, this.$modal);
+        var $button = $input.closest('.NB-intro-uptodate-follow');
+        
+        if ($input.is(':checked')) {
+            $button.addClass('NB-active');
+            this.model.follow_twitter_account(username);
+        } else {
+            $button.removeClass('NB-active');
+            this.model.unfollow_twitter_account(username);
+        }
+    },
+    
+    subscribe_to_feed: function(feed) {
+        var $input = $('#NB-intro-uptodate-follow-'+feed, this.$modal);
+        var $button = $input.closest('.NB-intro-uptodate-follow');
+        
+        if ($input.is(':checked')) {
+            $button.addClass('NB-active');
+            var url = 'http://blog.newsblur.com/';
+            this.model.save_add_url(url, "", function() {
+                NEWSBLUR.reader.load_feeds();
+            });
+        } else {
+            $button.removeClass('NB-active');
+            var feed_id = 0;
+            this.model.delete_feed(feed_id);
+        }
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -473,9 +560,19 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             self.handle_opml_upload();
         });
         $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function($t, $p) {
-            e.preventDefault();
-            
             self.model.preference('autofollow_friends', $t.is(':checked'));
+        });
+        $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-newsblur' }, function($t, $p) {
+            self.follow_twitter_account('newsblur');
+        });
+        $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-samuelclay' }, function($t, $p) {
+            self.follow_twitter_account('samuelclay');
+        });
+        $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-blog' }, function($t, $p) {
+            self.subscribe_to_feed('blog');
+        });
+        $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-popular' }, function($t, $p) {
+            self.subscribe_to_feed('popular');
         });
     }
     
