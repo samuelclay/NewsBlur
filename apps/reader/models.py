@@ -117,12 +117,18 @@ class UserSubscription(models.Model):
             user_sub_folders = add_object_to_folder(feed.pk, folder, user_sub_folders)
             user_sub_folders_object.folders = json.encode(user_sub_folders)
             user_sub_folders_object.save()
+            
+            if not auto_active:
+                feed_count = cls.objects.filter(user=user).count()
+                if feed_count < 64 or user.profile.is_premium:
+                    us.active = True
+                    us.save()
         
             feed.setup_feed_for_premium_subscribers()
         
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed.update()
-
+        
         return code, message, us
 
     def mark_feed_read(self):

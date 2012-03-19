@@ -219,6 +219,8 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
             $submit.val('Added!');
+            this.model.preference('has_setup_feeds', true);
+            NEWSBLUR.reader.check_hide_getting_started();
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
             $error.text(data.message);

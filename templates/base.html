@@ -28,6 +28,7 @@
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 0,
       'feed_pane_size'          : {% firstof user_profile.feed_pane_size 240 %},
+      'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
       'has_trained_intelligence': {{ user_profile.has_trained_intelligence|yesno:"true,false" }},

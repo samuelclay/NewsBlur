@@ -5589,7 +5589,7 @@ background: transparent;
     width: 47%;
     background-color: #FED655;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FED655), to(#F3BE00));
-    background: -moz-linear-gradient(center bottom, #FED655 100%, #F3BE00 0%);
+    background: -moz-linear-gradient(center bottom, #F3BE00 0%, #FED655 100%);
     border-radius: 6px;
     text-shadow: 0 1px 0 #FEEA95;
     border: 1px solid #FFFDE0;
@@ -5598,7 +5598,7 @@ background: transparent;
 .NB-modal-intro .NB-intro-uptodate-follow.NB-active {
     background-color: #ED6D00;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ED6D00), to(#DD5A00));
-    background: -moz-linear-gradient(center bottom, #ED6D00 100%, #DD5A00 0%);
+    background: -moz-linear-gradient(center bottom, #DD5A00 0%, #ED6D00 100%);
     color: white;
     text-shadow: 0 1px 0 #303030;
     border: 1px solid #ED6D00;
@@ -7460,6 +7460,13 @@ background: transparent;
     color: #404040;
     line-height: 1;
     font-size: 11px;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-preview.NB-disabled {
+    cursor: default;
+    background: white;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    opacity: .25;
 }
 /* ======================== */
 /* = Social Profile Modal = */

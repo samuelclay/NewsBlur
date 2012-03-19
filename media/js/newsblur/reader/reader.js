@@ -1112,7 +1112,6 @@
                 this.load_sortable_feeds();
                 this.update_header_counts();
                 _.delay(_.bind(this.update_starred_count, this), 250);
-                this.model.preference('has_setup_feeds', true);
                 NEWSBLUR.reader.check_hide_getting_started();
             }
             
@@ -1630,12 +1629,11 @@
         open_dialog_after_feeds_loaded: function() {
             if (!NEWSBLUR.Globals.is_authenticated) return;
             
-            if (!this.model.folders.length) {
-                if (!this.model.preference('has_setup_feeds') && 
-                    (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open)) {
-                    _.defer(_.bind(this.open_intro_modal, this), 100);
-                } else if (this.model.preference('has_setup_feeds')) {
+            if (!this.model.folders.length || !this.model.preference('has_setup_feeds')) {
+                if (this.model.preference('has_setup_feeds')) {
                     this.setup_ftux_add_feed_callout();
+                } else if (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open) {
+                    _.defer(_.bind(this.open_intro_modal, this), 100);
                 }
             } else if (!this.model.flags['has_chosen_feeds'] && this.flags['favicons_downloaded'] && this.model.folders.length) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);

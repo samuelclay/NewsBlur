@@ -286,8 +286,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
       } else if (page_number > page_count) {
-          
-          this.model.preference('has_setup_feeds', true);
           NEWSBLUR.reader.check_hide_getting_started();
           this.close(function() {
               NEWSBLUR.reader.open_dialog_after_feeds_loaded();
@@ -342,11 +340,18 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     count_feeds: function() {
+        var feed_count = _.size(this.model.feeds);
+        
         $(".NB-intro-imports-sites h4", this.$modal).text([
             'You are subscribed to ',
-            Inflector.pluralize(' site', _.size(this.model.feeds), true),
+            Inflector.pluralize(' site', feed_count, true),
             '.'
         ].join(""));
+
+        if (feed_count) {
+            this.model.preference('has_setup_feeds', true);
+            NEWSBLUR.reader.check_hide_getting_started();
+        }
     },
     
     fade_out_logo: function() {
@@ -404,7 +409,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             NEWSBLUR.reader.flags.importing_from_google_reader = false;
             this.advance_import_carousel(1);
             $loading.addClass('NB-active');
-            this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));    
+            this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
         }
     },
     

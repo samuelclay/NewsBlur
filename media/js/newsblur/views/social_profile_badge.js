@@ -70,7 +70,8 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     className: 'NB-profile-badge-action-follow NB-modal-submit-button NB-modal-submit-green' 
                 }, 'Follow'),
                 $.make('div', { 
-                    className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey'
+                    className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
+                               (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
                 }, 'Preview')
             ]);
         }
@@ -113,6 +114,8 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     },
     
     preview_user: function() {
+        if (this.$('.NB-profile-badge-action-preview').hasClass('NB-disabled')) return;
+        
         $.modal.close(_.bind(function() {
             window.ss = this.model;
             var socialsub = NEWSBLUR.reader.model.add_social_feed(this.model);

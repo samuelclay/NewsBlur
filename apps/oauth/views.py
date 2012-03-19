@@ -10,6 +10,7 @@ from apps.social.models import MSocialServices
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
+from utils import json_functions as json
 from vendor import facebook
 from vendor import tweepy
 
@@ -136,26 +137,45 @@ def facebook_disconnect(request):
     return HttpResponseRedirect(reverse('friends'))
     
 @ajax_login_required
+@json.json_view
 def follow_twitter_account(request):
     username = request.POST['username']
+    code = 1
+    message = "OK"
+    
+    logging.user(request, "~BB~FRFollowing Twitter: %s" % username)
+    
     if username not in ['samuelclay', 'newsblur']:
         return HttpResponseForbidden
     
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    api = social_services.twitter_api()
-    api.follow_user('samuelclayid')
-    
-    return {}
+    try:
+        api = social_services.twitter_api()
+        api.create_friendship(username)
+    except tweepy.TweepError, e:
+        code = -1
+        message = e
+        
+    return {'code': code, 'message': message}
     
 @ajax_login_required
+@json.json_view
 def unfollow_twitter_account(request):
     username = request.POST['username']
+    code = 1
+    message = "OK"
+    
+    logging.user(request, "~BB~FRUnfollowing Twitter: %s" % username)
+        
     if username not in ['samuelclay', 'newsblur']:
         return HttpResponseForbidden
     
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    api = social_services.twitter_api()
-    api.unfollow_user('samuelclayid')
+    try:
+        api = social_services.twitter_api()
+        api.destroy_friendship(username)
+    except tweepy.TweepError, e:
+        code = -1
+        message = e
     
-    return {}
-    
+    return {'code': code, 'message': message}
