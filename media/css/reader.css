@@ -2553,7 +2553,7 @@ background: transparent;
 
 .NB-taskbar {
     position: relative;
-    overflow: hidden;
+/*    overflow: hidden;*/ /* No hidden overflow so ftux callouts can show */
 }
 .NB-taskbar .NB-taskbar-sidebar-toggle-close {
   width: 20px;
@@ -3929,6 +3929,21 @@ background: transparent;
 
 .NB-module .NB-module-item.NB-last {
     margin-bottom: 0;
+}
+.NB-module .NB-module-item .NB-done-label {
+    display: none;
+    padding-left: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    background: transparent url(/media/embed/icons/silk/accept.png) no-repeat 0 0;
+    color: #808080;
+    font-size: 13px;
+}
+.NB-module .NB-module-item.NB-done .NB-modal-submit {
+    display: none;
+}
+.NB-module .NB-module-item.NB-done .NB-done-label {
+    display: block;
 }
 .NB-module .NB-module-item .NB-module-content-header {
     margin-left: 128px;
@@ -5399,6 +5414,10 @@ background: transparent;
     float: left;
     text-align: center;
     padding: 12px 0 31px;
+}
+
+.NB-modal-intro .NB-page-2 h4 {
+    margin-bottom: 34px;
 }
 .NB-modal-intro .NB-intro-import .NB-modal-submit-button {
     margin: 0;

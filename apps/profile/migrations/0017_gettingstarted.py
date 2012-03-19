@@ -8,26 +8,38 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'Profile.has_trained_intelligence'
-        db.add_column('profile_profile', 'has_trained_intelligence', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
-
-        # Adding field 'Profile.hide_find_friends'
-        db.add_column('profile_profile', 'hide_find_friends', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        # Deleting field 'Profile.tutorial_finished'
+        db.delete_column('profile_profile', 'tutorial_finished')
 
         # Adding field 'Profile.hide_getting_started'
         db.add_column('profile_profile', 'hide_getting_started', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
+        # Adding field 'Profile.has_setup_feeds'
+        db.add_column('profile_profile', 'has_setup_feeds', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+        # Adding field 'Profile.has_found_friends'
+        db.add_column('profile_profile', 'has_found_friends', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+        # Adding field 'Profile.has_trained_intelligence'
+        db.add_column('profile_profile', 'has_trained_intelligence', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
 
     def backwards(self, orm):
         
-        # Deleting field 'Profile.has_trained_intelligence'
-        db.delete_column('profile_profile', 'has_trained_intelligence')
-
-        # Deleting field 'Profile.hide_find_friends'
-        db.delete_column('profile_profile', 'hide_find_friends')
+        # Adding field 'Profile.tutorial_finished'
+        db.add_column('profile_profile', 'tutorial_finished', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
         # Deleting field 'Profile.hide_getting_started'
         db.delete_column('profile_profile', 'hide_getting_started')
+
+        # Deleting field 'Profile.has_setup_feeds'
+        db.delete_column('profile_profile', 'has_setup_feeds')
+
+        # Deleting field 'Profile.has_found_friends'
+        db.delete_column('profile_profile', 'has_found_friends')
+
+        # Deleting field 'Profile.has_trained_intelligence'
+        db.delete_column('profile_profile', 'has_trained_intelligence')
 
 
     models = {
@@ -71,8 +83,9 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Profile'},
             'collapsed_folders': ('django.db.models.fields.TextField', [], {'default': "'[]'"}),
             'feed_pane_size': ('django.db.models.fields.IntegerField', [], {'default': '240'}),
+            'has_found_friends': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'has_setup_feeds': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'has_trained_intelligence': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'hide_find_friends': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'hide_getting_started': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'hide_mobile': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -82,8 +95,9 @@ class Migration(SchemaMigration):
             'preferences': ('django.db.models.fields.TextField', [], {'default': "'{}'"}),
             'secret_token': ('django.db.models.fields.CharField', [], {'max_length': '12', 'null': 'True', 'blank': 'True'}),
             'send_emails': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'stripe_4_digits': ('django.db.models.fields.CharField', [], {'max_length': '4', 'null': 'True', 'blank': 'True'}),
+            'stripe_id': ('django.db.models.fields.CharField', [], {'max_length': '24', 'null': 'True', 'blank': 'True'}),
             'timezone': ('vendor.timezones.fields.TimeZoneField', [], {'default': "'America/New_York'", 'max_length': '100'}),
-            'tutorial_finished': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': "orm['auth.User']"}),
             'view_settings': ('django.db.models.fields.TextField', [], {'default': "'{}'"})
         }

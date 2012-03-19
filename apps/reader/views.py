@@ -1067,6 +1067,9 @@ def feeds_trainer(request):
             classifier['feed_authors'] = json.decode(us.feed.data.popular_authors) if us.feed.data.popular_authors else []
             classifiers.append(classifier)
     
+    user.profile.has_trained_intelligence = True
+    user.profile.save()
+    
     logging.user(user, "~FGLoading Trainer: ~SB%s feeds" % (len(classifiers)))
     
     return classifiers

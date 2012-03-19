@@ -1112,6 +1112,8 @@
                 this.load_sortable_feeds();
                 this.update_header_counts();
                 _.delay(_.bind(this.update_starred_count, this), 250);
+                this.model.preference('has_setup_feeds', true);
+                NEWSBLUR.reader.check_hide_getting_started();
             }
             
             if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
@@ -1628,8 +1630,13 @@
         open_dialog_after_feeds_loaded: function() {
             if (!NEWSBLUR.Globals.is_authenticated) return;
             
-            if (!this.model.folders.length && (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open)) {
-                _.defer(_.bind(this.open_intro_modal, this), 100);
+            if (!this.model.folders.length) {
+                if (!this.model.preference('has_setup_feeds') && 
+                    (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open)) {
+                    _.defer(_.bind(this.open_intro_modal, this), 100);
+                } else if (this.model.preference('has_setup_feeds')) {
+                    this.setup_ftux_add_feed_callout();
+                }
             } else if (!this.model.flags['has_chosen_feeds'] && this.flags['favicons_downloaded'] && this.model.folders.length) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             }
@@ -3889,52 +3896,25 @@
             NEWSBLUR.intro = new NEWSBLUR.ReaderIntro(options);
         },
         
-        hide_tutorial: function() {
-          var $tutorial = $('.NB-module-item-tutorial');
-          
-          this.model.preference('tutorial_finished', true);
-          $tutorial.animate({
-            'opacity': 0
-          }, {
-            'duration': 500,
-            'complete': function() {
-              $tutorial.slideUp(350);
-            }
-          });
-        },
-        
         hide_intelligence_trainer: function() {
           var $trainer = $('.NB-module-account-trainer');
           
-          this.model.preference('has_trained_intelligence', true);
-          $trainer.animate({
-            'opacity': 0
-          }, {
-            'duration': 500,
-            'complete': function() {
-              $trainer.slideUp(350);
-            }
-          });
+          $trainer.addClass('NB-done');
         },
         
         hide_find_friends: function() {
           var $findfriends = $('.NB-module-find-friends');
           
-          this.model.preference('hide_find_friends', true);
-          $findfriends.animate({
-            'opacity': 0
-          }, {
-            'duration': 500,
-            'complete': function() {
-              $findfriends.slideUp(350);
-            }
-          });
+          $findfriends.addClass('NB-done');
         },
         
         check_hide_getting_started: function(force) {
-            if (force || this.preference('hide_tutorial') &&
-                this.preference('hide_find_friends') &&
-                this.preference('has_trained_intelligence')) {
+            var friends = this.model.preference('has_found_friends');
+            var trained = this.model.preference('has_trained_intelligence');
+            var feeds = this.model.preference('has_setup_feeds');
+            
+            if (force ||
+                friends && trained && feeds) {
                 var $gettingstarted = $('.NB-module-gettingstarted');
                 $gettingstarted.animate({
                 'opacity': 0
@@ -3945,6 +3925,16 @@
                 }
               });
               this.model.preference('hide_getting_started', true);
+            } else {
+              var $intro = $('.NB-module-item-intro');
+              var $findfriends = $('.NB-module-find-friends');
+              var $trainer = $('.NB-module-account-trainer');
+          
+              $intro.toggleClass('NB-done', feeds);
+              $findfriends.toggleClass('NB-done', friends);
+              $findfriends.toggleClass('NB-hidden', !feeds);
+              $trainer.toggleClass('NB-done', trained);
+              $trainer.toggleClass('NB-hidden', !feeds);
             }
         },
         
@@ -6241,6 +6231,7 @@
         
         setup_ftux_add_feed_callout: function() {
             var self = this;
+            if (this.flags['bouncing_callout']) return;
             
             $('.NB-callout-ftux .NB-callout-text').text('First things first...');
             $('.NB-callout-ftux').corner('5px');

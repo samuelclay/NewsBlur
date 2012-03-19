@@ -17,9 +17,10 @@ from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
-SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished','hide_mobile','send_emails',
-                      'has_trained_intelligence', 'hide_find_friends', 'hide_getting_started',)
-SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends')
+SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
+                      'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
+                      'has_trained_intelligence',)
+SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends',)
 
 @ajax_login_required
 @require_POST

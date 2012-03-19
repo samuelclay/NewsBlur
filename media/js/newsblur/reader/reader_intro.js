@@ -258,8 +258,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             this.resize();
         } else {
             this.fetch_friends();
-            NEWSBLUR.reader.hide_find_friends();
         }
+        this.model.preference('has_found_friends', true);
+        NEWSBLUR.reader.check_hide_getting_started();
     },
     
     // ==========
@@ -285,6 +286,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
       } else if (page_number > page_count) {
+          
+          this.model.preference('has_setup_feeds', true);
+          NEWSBLUR.reader.check_hide_getting_started();
           this.close(function() {
               NEWSBLUR.reader.open_dialog_after_feeds_loaded();
           });

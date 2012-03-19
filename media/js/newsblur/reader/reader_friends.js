@@ -341,8 +341,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.resize();
         } else {
             this.fetch_friends();
-            NEWSBLUR.reader.hide_find_friends();
         }
+        
+        this.model.preference('has_found_friends', true);
+        NEWSBLUR.reader.check_hide_getting_started();
     },
 
     close_and_load_account: function() {

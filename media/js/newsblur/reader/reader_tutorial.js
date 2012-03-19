@@ -473,9 +473,6 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     
     close: function() {
       this.model.load_tutorial({'finished': true});
-      _.delay(function() {
-        NEWSBLUR.reader.hide_tutorial();
-      }, 500);
       NEWSBLUR.Modal.prototype.close.call(this);
     },
     

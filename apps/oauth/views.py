@@ -43,7 +43,7 @@ def twitter_connect(request):
             logging.user(request, "~BB~FRFailed Twitter connect, another user: %s" % user.username)
             return dict(error=("Another user (%s, %s) has "
                                "already connected with those Twitter credentials."
-                               % (user.username, user.email)))
+                               % (user.username, user.email or "no email")))
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.twitter_uid = unicode(twitter_user.id)

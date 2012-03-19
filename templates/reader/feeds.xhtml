@@ -297,7 +297,7 @@
               
               <div class="NB-modal-submit">
                 {% if feed_count == 0 %}
-                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add NB-javascript">Add Sites</div>
+                    {# <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add NB-javascript">Add Sites</div> #}
                 {% else %}
                     <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade NB-javascript">Choose Your 64 Sites</div>
                 {% endif %}
@@ -306,7 +306,7 @@
           </div>
         </div>
         
-        {% if user_statistics %}
+        <div class="NB-module-user-statistics {% if not user_statistics.shared_stories or not user_statistics %}NB-hidden{% endif %}">
             <h3 class="NB-module-content-header">
                 Your statistics
             </h3>
@@ -325,54 +325,40 @@
                     <div class="NB-module-stats-count-description">Follower{{ user_statistics.followers|pluralize }}</div>
                 </div>
             </div>
-        {% endif %}
+        </div>
+
       </div>
-      
-        <div class="NB-module NB-module-gettingstarted {% if user_profile.hide_getting_started %}NB-hidden{% endif %}">
+
+      {% if not user_profile.hide_getting_started %}
+        <div class="NB-module NB-module-gettingstarted">
           <h5 class="NB-module-header">
             Getting Started
             <div class="NB-module-header-right">
               <a href="#" class="NB-splash-link NB-module-gettingstarted-hide">Hide</a>
             </div>
           </h5>
-          
-              <div class="NB-module-item NB-module-item-intro NB-last">
-                <div class="NB-module-item-image">
-                    <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
-                </div>
-                <h3 class="NB-module-content-header">
-                    <span class="NB-module-content-subtitle">
+
+          <div class="NB-module-item NB-module-item-intro {% if user_profile.has_setup_feeds %}NB-done{% endif %}">
+              <div class="NB-module-item-image">
+                  <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
+              </div>
+              <h3 class="NB-module-content-header">
+                  <span class="NB-module-content-subtitle">
                       It's quick!
-                    </span>
-                    Start by setting up NewsBlur
-                </h3>
-                <div class="NB-module-item-title">
-                    <div class="NB-modal-submit">
+                  </span>
+                  Start by setting up NewsBlur
+              </h3>
+              <div class="NB-module-item-title">
+                  <div class="NB-modal-submit">
                       <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-intro NB-javascript">Setup NewsBlur</div>
-                    </div>
-                </div>
+                  </div>
+                  <div class="NB-done-label">Done</div>
               </div>
-              
-          {% if not user_profile.tutorial_finished %}
-              <div class="NB-module-item NB-module-item-tutorial NB-last {% if user_profile.tutorial_finished %}NB-hidden{% endif %}">
-                <div class="NB-module-item-image">
-                    <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
-                </div>
-                <h3 class="NB-module-content-header">
-                    <span class="NB-module-content-subtitle">
-                      It's quick!
-                    </span>
-                    Tips and Tricks
-                </h3>
-                <div class="NB-module-item-title">
-                    <div class="NB-modal-submit">
-                      <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-tutorial NB-javascript">This is going away...</div>
-                    </div>
-                </div>
-              </div>
-        {% endif %}
-        {% if not user_profile.hide_find_friends %}
-            <div class="NB-module-item NB-module-find-friends">
+          </div>
+
+          <div class="NB-module-item NB-module-find-friends 
+                      {% if not user_profile.has_setup_feeds %}NB-hidden{% endif %}
+                      {% if user_profile.has_found_friends %}NB-done{% endif %}">
               <div class="NB-module-item-image">
                   <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
               </div>
@@ -384,30 +370,33 @@
               </h3>
               <div class="NB-module-item-title">
                   <div class="NB-modal-submit">
-                    <div class="NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">Find and Follow Friends</div>
+                      <div class="NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">Find and Follow Friends</div>
                   </div>
+                  <div class="NB-done-label">Done</div>
               </div>
-            </div>
-        {% endif %}
-        {% if not user_profile.has_trained_intelligence %}
-            <div class="NB-module-item NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
+          </div>
+
+          <div class="NB-module-item NB-module-account-trainer NB-last 
+                      {% if not user_profile.has_setup_feeds %}NB-hidden{% endif %}
+                      {% if user_profile.has_trained_intelligence %}NB-done{% endif %}">
               <div class="NB-module-item-image">
                   <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
               </div>
               <h3 class="NB-module-content-header">
                   <span class="NB-module-content-subtitle">
-                    <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
+                      <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
                   </span>
                   Intelligence Trainer
               </h3>
               <div class="NB-module-item-title">
                   <div class="NB-modal-submit">
-                    <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
+                      <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
                   </div>
+                  <div class="NB-done-label">Done</div>
               </div>
-            </div>
-        {% endif %}
+          </div>
       </div>
+      {% endif %}
       
       {% if not user_profile.hide_mobile %}
         <div class="NB-module NB-module-mobile">
