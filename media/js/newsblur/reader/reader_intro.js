@@ -146,7 +146,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     ])
                 ]),
                 $.make('div', { className: 'NB-intro-section' }, [
-                    'On GitHub'
+                    "You're ready to go! Hope you enjoy NewsBlur."
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit' }, [
@@ -231,7 +231,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
     connect: function(service) {
         var options = "location=0,status=0,width=800,height=500";
-        var url = "/social/" + service + "_connect";
+        var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
     },
     

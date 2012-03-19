@@ -1070,7 +1070,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     disconnect_social_service: function(service, callback) {
-        this.make_request('/social/'+service+'_disconnect/', null, callback);
+        this.make_request('/oauth/'+service+'_disconnect/', null, callback);
     },
     
     save_user_profile: function(data, callback) {
@@ -1116,6 +1116,14 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             'story_id': story_id,
             'feed_id': feed_id
         }, callback, callback, {request_type: 'GET'});
+    },
+    
+    follow_twitter_account: function(username, callback) {
+        this.make_request('/oauth/follow_twitter_account', {'username': username}, callback);
+    },
+    
+    unfollow_twitter_account: function(username, callback) {
+        this.make_request('/oauth/unfollow_twitter_account', {'username': username}, callback);
     },
     
     recalculate_story_scores: function(feed_id) {

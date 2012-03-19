@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'apps.static',
     'apps.mobile',
     'apps.social',
+    'apps.oauth',
     'south',
     'utils',
     'vendor',
