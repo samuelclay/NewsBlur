@@ -32,3 +32,6 @@ def render_to(template):
             return output
         return wrapper
     return renderer
+    
+def is_true(value):
+    return bool(value) and value.lower() not in ('false', '0')

@@ -459,7 +459,7 @@
       
     {% endif %}
     
-    {% if not user.is_authenticated or user_profile.hide_mobile %}
+    {% if not user.is_authenticated or user_profile.hide_getting_started %}
         {% render_statistics_graphs statistics %}
     {% endif %}
 

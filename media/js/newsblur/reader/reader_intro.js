@@ -485,17 +485,19 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     subscribe_to_feed: function(feed) {
         var $input = $('#NB-intro-uptodate-follow-'+feed, this.$modal);
         var $button = $input.closest('.NB-intro-uptodate-follow');
+        var url = feed == 'blog' ? 'http://blog.newsblur.com/' : 'social:popular';
         
         if ($input.is(':checked')) {
             $button.addClass('NB-active');
-            var url = 'http://blog.newsblur.com/';
             this.model.save_add_url(url, "", function() {
                 NEWSBLUR.reader.load_feeds();
-            });
+            }, {auto_active: false});
         } else {
             $button.removeClass('NB-active');
             var feed_id = 0;
-            this.model.delete_feed(feed_id);
+            this.model.delete_feed_by_url(url, "", function() {
+                NEWSBLUR.reader.load_feeds();
+            });
         }
     },
     

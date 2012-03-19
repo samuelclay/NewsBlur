@@ -289,7 +289,7 @@ class Dispatcher:
                 elif self.options.get('quick'):
                     weight = feed.stories_last_month * feed.num_subscribers
                     random_weight = random.randint(1, max(weight, 1))
-                    quick = float(self.options['quick'])
+                    quick = float(self.options.get('quick', 0))
                     rand = random.random()
                     if random_weight < 100 and rand < quick:
                         skip = True

@@ -42,7 +42,7 @@ from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
 from utils.story_functions import story_score
 from utils import log as logging
-from utils.view_functions import get_argument_or_404, render_to
+from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -885,12 +885,16 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
+    auto_active = is_true(request.POST.get('auto_active', True))
+    print auto_active
+    
     if not url:
         code = -1
         message = 'Enter in the website address or the feed URL.'
     else:
         folder = request.POST.get('folder', '')
-        code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, folder=folder)
+        code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, 
+                                                             folder=folder, auto_active=auto_active)
     
     return dict(code=code, message=message)
 
@@ -929,6 +933,30 @@ def delete_feed(request):
         feed[0].count_subscribers()
     
     return dict(code=1)
+
+@ajax_login_required
+@json.json_view
+def delete_feed_by_url(request):
+    message = ""
+    code = 0
+    url = request.POST['url']
+    in_folder = request.POST.get('in_folder', '')
+    if in_folder == ' ':
+        in_folder = ""
+    
+    feed = Feed.get_feed_from_url(url, create=False)
+    if feed:
+        user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
+        user_sub_folders.delete_feed(feed.pk, in_folder)
+        code = 1
+        feed = Feed.objects.filter(pk=feed.pk)
+        if feed:
+            feed[0].count_subscribers()
+    else:
+        code = -1
+        message = "URL not found."
+        
+    return dict(code=code, message=message)
     
 @ajax_login_required
 @json.json_view

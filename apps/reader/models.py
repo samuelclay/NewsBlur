@@ -79,7 +79,7 @@ class UserSubscription(models.Model):
                 self.delete()
                 
     @classmethod
-    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):
+    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True):
         feed = None
         us = None
     
@@ -99,7 +99,7 @@ class UserSubscription(models.Model):
                 user=user,
                 defaults={
                     'needs_unread_recalc': True,
-                    'active': True,
+                    'active': auto_active,
                 }
             )
             code = 1

@@ -747,6 +747,15 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
+    delete_feed_by_url: function(url, in_folder, callback) {
+        this.make_request('/reader/delete_feed_by_url/', {
+            'url': url,
+            'in_folder': in_folder || ''
+        }, callback, function() {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.'});
+        });
+    },
+    
     delete_folder: function(folder_name, in_folder, feeds, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_folder', {
@@ -783,10 +792,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }
     },
     
-    save_add_url: function(url, folder, callback) {
+    save_add_url: function(url, folder, callback, options) {
+        options = _.extend({'auto_active': true}, options);
         this.make_request('/reader/add_url/', {
             'url': url,
-            'folder': folder
+            'folder': folder,
+            'auto_active': options.auto_active
         }, callback, function() {
           callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.'});
         });
