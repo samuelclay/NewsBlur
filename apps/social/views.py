@@ -278,10 +278,15 @@ def save_profile(request):
 @ajax_login_required
 @json.json_view
 def follow(request):
-    follow_user_id = int(request.POST['user_id'])
     profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    try:
+        follow_user_id = int(request.POST['user_id'])
+    except ValueError:
+        follow_username = request.POST['user_id'].replace('social:', '')
+        follow_profile = MSocialProfile.objects.get(username=follow_username)
+        follow_user_id = follow_profile.user_id
+
     profile.follow_user(follow_user_id)
-    
     follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
     
     social_params = {
@@ -303,10 +308,15 @@ def follow(request):
 @ajax_login_required
 @json.json_view
 def unfollow(request):
-    unfollow_user_id = int(request.POST['user_id'])
     profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    try:
+        unfollow_user_id = int(request.POST['user_id'])
+    except ValueError:
+        unfollow_username = request.POST['user_id'].replace('social:', '')
+        unfollow_profile = MSocialProfile.objects.get(username=unfollow_username)
+        unfollow_user_id = unfollow_profile.user_id
+        
     profile.unfollow_user(unfollow_user_id)
-    
     unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
     
     logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)

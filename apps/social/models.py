@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStory
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -606,7 +606,7 @@ class MSharedStory(mongo.Document):
     
     meta = {
         'collection': 'shared_stories',
-        'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
+        'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['-shared_date'],
         'allow_inheritance': False,
@@ -646,6 +646,25 @@ class MSharedStory(mongo.Document):
         r.srem(share_key, self.user_id)
 
         super(MSharedStory, self).delete(*args, **kwargs)
+        
+    @classmethod
+    def count_popular_stories(cls, verbose=True):
+        popular_profile = MSocialProfile.objects.get(username='popular')
+        popular_user = User.objects.get(pk=popular_profile.user_id)
+        shared_story = cls.objects.all().order_by('-shared_date')[0] # TODO: Get actual popular stories.
+        story = MStory.objects(story_feed_id=shared_story.story_feed_id, story_guid=shared_story.story_guid).limit(1).first()
+        if not story:
+            logging.user(popular_user, "~FRPopular stories: story not found")
+            return
+
+        story_db = dict([(k, v) for k, v in story._data.items() 
+                            if k is not None and v is not None])
+        story_values = dict(user_id=popular_profile.user_id,
+                            has_comments=False, **story_db)
+        MSharedStory.objects.create(**story_values)
+        if verbose:
+            shares = cls.objects.filter(story_guid=story.story_guid).count()
+            logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares)" % (story.story_title[:50], shares))
         
     @classmethod
     def sync_all_redis(cls):

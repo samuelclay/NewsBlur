@@ -490,19 +490,31 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     subscribe_to_feed: function(feed) {
         var $input = $('#NB-intro-uptodate-follow-'+feed, this.$modal);
         var $button = $input.closest('.NB-intro-uptodate-follow');
-        var url = feed == 'blog' ? 'http://blog.newsblur.com/' : 'social:popular';
+        var blog_url = 'http://blog.newsblur.com/';
+        var popular_username = 'social:popular';
         
         if ($input.is(':checked')) {
             $button.addClass('NB-active');
-            this.model.save_add_url(url, "", function() {
-                NEWSBLUR.reader.load_feeds();
-            }, {auto_active: false});
+            if (feed == 'blog') {
+                this.model.save_add_url(blog_url, "", function() {
+                    NEWSBLUR.reader.load_feeds();
+                }, {auto_active: false});
+            } else if (feed == 'popular') {
+                this.model.follow_user(popular_username, function() {
+                    NEWSBLUR.reader.make_social_feeds();
+                });
+            }
         } else {
             $button.removeClass('NB-active');
-            var feed_id = 0;
-            this.model.delete_feed_by_url(url, "", function() {
-                NEWSBLUR.reader.load_feeds();
-            });
+            if (feed == 'blog') {
+                this.model.delete_feed_by_url(url, "", function() {
+                    NEWSBLUR.reader.load_feeds();
+                });
+            } else if (feed == 'popular') {
+                this.model.unfollow_user(popular_username, function() {
+                    NEWSBLUR.reader.make_social_feeds();
+                });
+            }
         }
     },
     
