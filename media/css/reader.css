@@ -5641,6 +5641,22 @@ background: transparent;
     padding: 4px 16px;
     cursor: pointer;
 }
+.NB-modal-intro .NB-intro-uptodate-follow .NB-intro-uptodate-newwindow {
+    width: 10px;
+    height: 10px;
+    float: right;
+    margin-top: 22px;
+}
+.NB-modal-intro .NB-intro-uptodate-follow.NB-intro-uptodate-twitter-active .NB-intro-uptodate-newwindow {
+    display: none;
+}
+.NB-modal-intro .NB-intro-uptodate-follow input {
+    display: none;
+}
+.NB-modal-intro .NB-intro-uptodate-follow.NB-intro-uptodate-twitter-active input {
+    display: block;
+}
+
 /* ============ */
 /* = Carousel = */
 /* ============ */

@@ -99,6 +99,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     $.make('div', { className: 'NB-intro-uptodate-follow NB-right' }, [
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
                             $.make('img', { src: 'http://img.tweetimag.es/i/newsblur_n.png', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @newsblur on', 
@@ -111,6 +112,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     $.make('div', { className: 'NB-intro-uptodate-follow' }, [
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
                             $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @samuelclay on', 
@@ -315,6 +317,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == 3) {
           this.make_find_friends_and_services();
       }
+      if (page_number == 4) {
+          this.show_twitter_follow_buttons();
+      }
     },
     
     advance_import_carousel: function(page) {
@@ -474,16 +479,26 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     // = Stay Up To Date =
     // ===================
     
+    show_twitter_follow_buttons: function() {
+        $('.NB-intro-uptodate-follow', this.$modal).toggleClass('NB-intro-uptodate-twitter-active', !!this.services.twitter.twitter_uid);
+    },
+    
     follow_twitter_account: function(username) {
         var $input = $('#NB-intro-uptodate-follow-'+username, this.$modal);
         var $button = $input.closest('.NB-intro-uptodate-follow');
         
         if ($input.is(':checked')) {
             $button.addClass('NB-active');
-            this.model.follow_twitter_account(username);
+            if (this.services.twitter.twitter_uid) {
+                this.model.follow_twitter_account(username);
+            } else {
+                window.open('http://twitter.com/'+username, '_blank');
+            }
         } else {
             $button.removeClass('NB-active');
-            this.model.unfollow_twitter_account(username);
+            if (this.services.twitter.twitter_uid) {
+                this.model.unfollow_twitter_account(username);
+            }
         }
     },
     
@@ -507,7 +522,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         } else {
             $button.removeClass('NB-active');
             if (feed == 'blog') {
-                this.model.delete_feed_by_url(url, "", function() {
+                this.model.delete_feed_by_url(blog_url, "", function() {
                     NEWSBLUR.reader.load_feeds();
                 });
             } else if (feed == 'popular') {
