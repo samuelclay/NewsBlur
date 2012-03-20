@@ -739,17 +739,9 @@ var classifier_prototype = {
     },
     
     end: function() {
-      _.defer(function() {
-        $('.NB-module-account-trainer').animate({
-          'opacity': 0
-        }, {
-          'duration': 1000,
-          'complete': function() {
-            $('.NB-module-account-trainer').slideUp(350);
-          }
-        });
-      }, 1000);
-      $.modal.close();
+        this.model.preference('has_trained_intelligence', true);
+        NEWSBLUR.reader.check_hide_getting_started();
+        $.modal.close();
     },
     
     // ==========
