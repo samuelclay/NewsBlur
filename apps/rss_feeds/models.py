@@ -648,9 +648,6 @@ class Feed(models.Model):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
         
-        self.last_update = datetime.datetime.utcnow()
-        self.set_next_scheduled_update()
-        
         options.update({
             'verbose': verbose,
             'timeout': 10,
@@ -663,6 +660,9 @@ class Feed(models.Model):
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         disp.run_jobs()
+        
+        self.last_update = datetime.datetime.utcnow()
+        self.set_next_scheduled_update()
         
         try:
             feed = Feed.objects.get(pk=self.pk)
