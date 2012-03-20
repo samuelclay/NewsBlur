@@ -19,7 +19,7 @@ from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
 from celery.task import Task
 from utils import json_functions as json
-from utils import feedfinder
+from utils import feedfinder, feedparser
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -187,7 +187,15 @@ class Feed(models.Model):
         if feed and len(feed) > offset:
             feed = feed[offset]
         elif create:
+            create_okay = False
             if feedfinder.isFeed(url):
+                create_okay = True
+            elif aggressive:
+                # Could still be a feed. Just check if there are entries
+                fp = feedparser.parse(url)
+                if len(fp.entries):
+                    create_okay = True
+            if create_okay:
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
