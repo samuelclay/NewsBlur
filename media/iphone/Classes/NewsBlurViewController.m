@@ -237,15 +237,20 @@
         [appDelegate.dictFoldersArray addObject:f];
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
         sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
-            return [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", id1]] objectForKey:@"feed_title"] 
-                    caseInsensitiveCompare:[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", id2]] objectForKey:@"feed_title"]];
+            NSString *feedTitleA = [[appDelegate.dictFeeds 
+                                     objectForKey:[NSString stringWithFormat:@"%@", id1]] 
+                                    objectForKey:@"feed_title"];
+            NSString *feedTitleB = [[appDelegate.dictFeeds 
+                                     objectForKey:[NSString stringWithFormat:@"%@", id2]] 
+                                    objectForKey:@"feed_title"];
+            return [feedTitleA caseInsensitiveCompare:feedTitleB];
         }];
         [sortedFolders setValue:sortedArray forKey:f];
     }
     
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-    
+    NSLog(@"Folders: %@, Array: %@", appDelegate.dictFolders, appDelegate.dictFoldersArray);
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
     

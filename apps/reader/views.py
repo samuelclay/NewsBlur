@@ -268,7 +268,7 @@ def load_feeds_flat(request):
         feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
     folders = json.decode(folders.folders)
-    flat_folders = {}
+    flat_folders = {" ": []}
     
     def make_feeds_folder(items, parent_folder="", depth=0):
         for item in items:

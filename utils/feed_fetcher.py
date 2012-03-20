@@ -179,7 +179,8 @@ class ProcessFeed:
         
         self.fpf.entries = self.fpf.entries[:50]
         
-        self.feed.feed_title = self.fpf.feed.get('title', self.feed.feed_title)
+        if self.fpf.feed.get('title'):
+            self.feed.feed_title = self.fpf.feed['title']
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             self.feed.data.feed_tagline = utf8encode(tagline)
