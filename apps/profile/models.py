@@ -28,6 +28,7 @@ class Profile(models.Model):
     view_settings     = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size    = models.IntegerField(default=240)
+    tutorial_finished = models.BooleanField(default=False)
     hide_getting_started = models.BooleanField(default=False)
     has_setup_feeds   = models.BooleanField(default=False)
     has_found_friends = models.BooleanField(default=False)

@@ -5554,8 +5554,8 @@ background: transparent;
 .NB-modal-intro .NB-intro-services .NB-note {
     display: block;
     clear: both;
-    margin: 6px 24px 12px;
-    color: #606060;
+    margin: 12px 24px 12px;
+    color: #505050;
     font-size: 11px;
     text-align: center;
 }
@@ -5646,15 +5646,13 @@ background: transparent;
     height: 10px;
     float: right;
     margin-top: 22px;
-}
-.NB-modal-intro .NB-intro-uptodate-follow.NB-intro-uptodate-twitter-active .NB-intro-uptodate-newwindow {
     display: none;
 }
-.NB-modal-intro .NB-intro-uptodate-follow input {
-    display: none;
-}
-.NB-modal-intro .NB-intro-uptodate-follow.NB-intro-uptodate-twitter-active input {
+.NB-modal-intro .NB-intro-uptodate-follow-twitter.NB-intro-uptodate-twitter-inactive .NB-intro-uptodate-newwindow {
     display: block;
+}
+.NB-modal-intro .NB-intro-uptodate-follow-twitter.NB-intro-uptodate-twitter-inactive input {
+    display: none;
 }
 
 /* ============ */

@@ -8,9 +8,6 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Deleting field 'Profile.tutorial_finished'
-        db.delete_column('profile_profile', 'tutorial_finished')
-
         # Adding field 'Profile.hide_getting_started'
         db.add_column('profile_profile', 'hide_getting_started', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
@@ -26,9 +23,6 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
-        # Adding field 'Profile.tutorial_finished'
-        db.add_column('profile_profile', 'tutorial_finished', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
-
         # Deleting field 'Profile.hide_getting_started'
         db.delete_column('profile_profile', 'hide_getting_started')
 
@@ -98,6 +92,7 @@ class Migration(SchemaMigration):
             'stripe_4_digits': ('django.db.models.fields.CharField', [], {'max_length': '4', 'null': 'True', 'blank': 'True'}),
             'stripe_id': ('django.db.models.fields.CharField', [], {'max_length': '24', 'null': 'True', 'blank': 'True'}),
             'timezone': ('vendor.timezones.fields.TimeZoneField', [], {'default': "'America/New_York'", 'max_length': '100'}),
+            'tutorial_finished': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': "orm['auth.User']"}),
             'view_settings': ('django.db.models.fields.TextField', [], {'default': "'{}'"})
         }

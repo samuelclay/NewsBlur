@@ -96,7 +96,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-page NB-page-4' }, [
                 $.make('h4', { className: 'NB-page-4-started' }, "Keep up-to-date with NewsBlur"),
                 $.make('div', { className: 'NB-intro-section' }, [
-                    $.make('div', { className: 'NB-intro-uptodate-follow NB-right' }, [
+                    $.make('div', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter NB-right' }, [
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
@@ -109,7 +109,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             ])
                         ])
                     ]),
-                    $.make('div', { className: 'NB-intro-uptodate-follow' }, [
+                    $.make('div', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
@@ -213,7 +213,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
              var $note = $.make('div', { className: 'NB-note'}, [
                 'Feel comfortable connecting to these services.',
                 $.make('br'),
-                'NewsBlur will not spam, email, bother, or do anything without your permission.'
+                'Nothing happens without your permission.'
             ]);
             $services.append($note);
         }
@@ -481,7 +481,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     // ===================
     
     show_twitter_follow_buttons: function() {
-        $('.NB-intro-uptodate-follow', this.$modal).toggleClass('NB-intro-uptodate-twitter-active', !!this.services.twitter.twitter_uid);
+        $('.NB-intro-uptodate-follow', this.$modal).toggleClass('NB-intro-uptodate-twitter-inactive', !this.services.twitter.twitter_uid);
     },
     
     follow_twitter_account: function(username) {

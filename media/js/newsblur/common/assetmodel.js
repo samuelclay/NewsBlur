@@ -307,7 +307,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             data['include_favicons'] = true;
         }
         
-        this.make_request('/reader/feeds', data, pre_callback, error_callback, {request_type: 'GET'});
+        this.make_request('/reader/feeds', data, pre_callback, error_callback, {
+            ajax_group: 'feed',
+            request_type: 'GET'
+        });
     },
     
     detect_any_inactive_feeds: function() {
