@@ -1080,7 +1080,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     search_for_friends: function(query, callback) {
-        this.make_request('/social/find_friends', {'query': query}, callback, callback, {request_type: 'GET'});
+        this.make_request('/social/find_friends', {'query': query}, callback, callback, {
+            ajax_group: 'feed',
+            request_type: 'GET'
+        });
     },
     
     disconnect_social_service: function(service, callback) {

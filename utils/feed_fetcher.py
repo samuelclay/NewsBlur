@@ -43,7 +43,7 @@ class FetchFeed:
         """
         identity = self.get_identity()
         log_msg = u'%2s ---> [%-30s] ~FYFetching feed (~FB%d~FY), last update: %s' % (identity,
-                                                            unicode(self.feed)[:30],
+                                                            self.feed.title[:30],
                                                             self.feed.id,
                                                             datetime.datetime.now() - self.feed.last_update)
         logging.debug(log_msg)
@@ -107,13 +107,13 @@ class ProcessFeed:
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
-                logging.debug(u'   ---> [%-30s] Fetched feed, HTTP status %d: %s (bozo: %s)' % (unicode(self.feed)[:30],
+                logging.debug(u'   ---> [%-30s] Fetched feed, HTTP status %d: %s (bozo: %s)' % (self.feed.title[:30],
                                                      self.fpf.status,
                                                      self.feed.feed_address,
                                                      self.fpf.bozo))
                 if self.fpf.bozo and self.fpf.status != 304:
                     logging.debug(u'   ---> [%-30s] BOZO exception: %s (%s entries)' % (
-                                  unicode(self.feed)[:30],
+                                  self.feed.title[:30],
                                   self.fpf.bozo_exception,
                                   len(self.fpf.entries)))
             if self.fpf.status == 304:
@@ -126,14 +126,14 @@ class ProcessFeed:
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
-                    logging.debug("   ---> [%-30s] Feed is %s'ing. Refetching..." % (unicode(self.feed)[:30], self.fpf.status))
+                    logging.debug("   ---> [%-30s] Feed is %s'ing. Refetching..." % (self.feed.title[:30], self.fpf.status))
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (unicode(self.feed)[:30], self.fpf.status, ' Not' if self.feed.known_good else ''))
+                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (self.feed.title[:30], self.fpf.status, ' Not' if self.feed.known_good else ''))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
@@ -143,7 +143,7 @@ class ProcessFeed:
                 return FEED_ERRHTTP, ret_values
                                     
         if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.feed.known_good and self.fpf.entries else ''))
+            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (self.feed.title[:30], len(self.fpf.entries), ' Not' if self.feed.known_good and self.fpf.entries else ''))
             if not self.fpf.entries:
                 fixed_feed = None
                 if not self.feed.known_good:
@@ -153,7 +153,7 @@ class ProcessFeed:
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
         elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (unicode(self.feed)[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
+            logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (self.feed.title[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
             if not self.fpf.entries:
                 fixed_feed = None
                 if not self.feed.known_good:
@@ -224,7 +224,7 @@ class ProcessFeed:
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, verbose=self.options['verbose'])
         
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
-                      unicode(self.feed)[:30], 
+                      self.feed.title[:30], 
                       ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
         self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]))
         self.feed.trim_feed()
@@ -296,7 +296,7 @@ class Dispatcher:
                         skip = True
                 if skip:
                     logging.debug('   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)...' % (
-                        unicode(feed)[:30],
+                        feed.title[:30],
                         weight,
                         feed.num_subscribers,
                         rand, quick))
@@ -319,7 +319,7 @@ class Dispatcher:
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
-                            logging.debug('   ---> [%-30s] Unread count took too long...' % (unicode(feed)[:30],))
+                            logging.debug('   ---> [%-30s] Unread count took too long...' % (feed.title[:30],))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)
@@ -332,7 +332,7 @@ class Dispatcher:
                 logging.debug('   ---> [%-30s] Feed is now gone...' % (unicode(feed_id)[:30]))
                 continue
             except TimeoutError, e:
-                logging.debug('   ---> [%-30s] Feed fetch timed out...' % (unicode(feed)[:30]))
+                logging.debug('   ---> [%-30s] Feed fetch timed out...' % (feed.title[:30]))
                 feed.save_feed_history(505, 'Timeout', '')
                 fetched_feed = None
             except Exception, e:
@@ -355,12 +355,12 @@ class Dispatcher:
                  (ret_feed == FEED_OK or
                   (ret_feed == FEED_SAME and feed.stories_last_month > 10)))):
                   
-                logging.debug(u'   ---> [%-30s] ~FYFetching page: %s' % (unicode(feed)[:30], feed.feed_link))
+                logging.debug(u'   ---> [%-30s] ~FYFetching page: %s' % (feed.title[:30], feed.feed_link))
                 page_importer = PageImporter(feed)
                 try:
                     page_importer.fetch_page()
                 except TimeoutError, e:
-                    logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (unicode(feed)[:30]))
+                    logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (feed.title[:30]))
                     feed.save_page_history(555, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -371,12 +371,12 @@ class Dispatcher:
                     fetched_feed = None
                     mail_feed_error_to_admin(feed, e)
                     
-                logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
+                logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:
                     icon_importer.save()
                 except TimeoutError, e:
-                    logging.debug('   ---> [%-30s] ~FRIcon fetch timed out...' % (unicode(feed)[:30]))
+                    logging.debug('   ---> [%-30s] ~FRIcon fetch timed out...' % (feed.title[:30]))
                     feed.save_page_history(556, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -386,7 +386,7 @@ class Dispatcher:
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e)
             else:
-                logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (unicode(feed)[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
+                logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
             feed = self.refresh_feed(feed_id)
             delta = time.time() - start_time
@@ -396,7 +396,7 @@ class Dispatcher:
             try:
                 feed.save()
             except IntegrityError:
-                logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (unicode(feed)[:30], feed.feed_address,))
+                logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (feed.title[:30], feed.feed_address,))
             
             if ret_entries[ENTRY_NEW]:
                 self.publish_to_subscribers(feed)
@@ -417,9 +417,9 @@ class Dispatcher:
             r = redis.Redis(connection_pool=settings.REDIS_POOL)
             listeners_count = r.publish(str(feed.pk), 'story:new')
             if listeners_count:
-                logging.debug("   ---> [%-30s] Published to %s subscribers" % (unicode(feed)[:30], listeners_count))
+                logging.debug("   ---> [%-30s] Published to %s subscribers" % (feed.title[:30], listeners_count))
         except redis.ConnectionError:
-            logging.debug("   ***> [%-30s] ~FRRedis is unavailable for real-time." % (unicode(feed)[:30],))
+            logging.debug("   ***> [%-30s] ~FRRedis is unavailable for real-time." % (feed.title[:30],))
         
     @timelimit(20)
     def count_unreads_for_subscribers(self, feed):
@@ -429,7 +429,7 @@ class Dispatcher:
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
         logging.debug(u'   ---> [%-30s] Computing scores: %s (%s/%s/%s) subscribers' % (
-                      unicode(feed)[:30], user_subs.count(),
+                      feed.title[:30], user_subs.count(),
                       feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
         
         stories_db = MStory.objects(story_feed_id=feed.pk,

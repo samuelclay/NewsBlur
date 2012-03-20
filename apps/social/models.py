@@ -22,8 +22,8 @@ from utils import json_functions as json
 
 
 class MSocialProfile(mongo.Document):
-    user_id              = mongo.IntField()
-    username             = mongo.StringField(max_length=30)
+    user_id              = mongo.IntField(unique=True)
+    username             = mongo.StringField(max_length=30, unique=True)
     email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=80)
     blog_title           = mongo.StringField(max_length=256)
@@ -50,6 +50,7 @@ class MSocialProfile(mongo.Document):
         'collection': 'social_profile',
         'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
         'allow_inheritance': False,
+        'index_drop_dups': True,
     }
     
     def __unicode__(self):

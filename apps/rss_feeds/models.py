@@ -78,6 +78,10 @@ class Feed(models.Model):
             self.feed_title = "[Untitled]"
             self.save()
         return "%s (%s)" % (self.feed_title, self.pk)
+    
+    @property
+    def title(self):
+        return self.feed_title or "[Untitled]"
         
     def canonical(self, full=False, include_favicon=True):
         feed = {

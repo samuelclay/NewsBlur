@@ -36,7 +36,6 @@
     <div class="NB-module NB-module-features">
       
       <h5 class="NB-module-header">
-        What's New
         <div class="NB-module-header-right">
           {% if user.is_staff %}
             <div class="NB-features-add">
@@ -47,6 +46,7 @@
         <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
         <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
         </div>
+        What's New
       </h5>
       
       <h3 class="NB-module-content-header">
@@ -162,12 +162,12 @@
 
       <div class="NB-module NB-module-howitworks">
         <h5 class="NB-module-header">
-          <div class="NB-module-header-left">
-            How It Works
-          </div>
           <div class="NB-module-header-right">
             <a href="#" class="NB-module-direction NB-module-next-page"></a>
             <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+          </div>
+          <div class="NB-module-header-left">
+            How It Works
           </div>
         </h5>
         
@@ -264,10 +264,10 @@
       
       <div class="NB-module NB-module-account">
         <h5 class="NB-module-header">
-          Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
           <div class="NB-module-header-right">
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
+          Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
         </h5>
         <div class="NB-module-item {% if train_count == active_count %}NB-last{% endif %}">
           <div class="NB-module-item-image">
@@ -332,10 +332,10 @@
       {% if not user_profile.hide_getting_started %}
         <div class="NB-module NB-module-gettingstarted">
           <h5 class="NB-module-header">
-            Getting Started
             <div class="NB-module-header-right">
               <a href="#" class="NB-splash-link NB-module-gettingstarted-hide">Hide</a>
             </div>
+            Getting Started
           </h5>
 
           <div class="NB-module-item NB-module-item-intro {% if user_profile.has_setup_feeds %}NB-done{% endif %}">
@@ -401,10 +401,10 @@
       {% if not user_profile.hide_mobile %}
         <div class="NB-module NB-module-mobile">
           <h5 class="NB-module-header">
-            Mobile Apps
             <div class="NB-module-header-right">
               <a href="#" class="NB-splash-link NB-module-mobile-hide">Hide</a>
             </div>
+            Mobile Apps
           </h5>
           <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
             <div class="NB-module-mobile-image">

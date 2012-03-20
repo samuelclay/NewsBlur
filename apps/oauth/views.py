@@ -74,7 +74,7 @@ def facebook_connect(request):
         "scope": "offline_access,user_website",
         "display": "popup",
     }
-    
+
     verification_code = request.REQUEST.get('code')
     if verification_code:
         args["client_secret"] = facebook_secret
