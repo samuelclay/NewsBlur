@@ -186,7 +186,7 @@
 		maxWidth: null,
 		autoResize: true,
 		autoPosition: true,
-		zIndex: 1000,
+		zIndex: 10000,
 		close: true,
 		closeHTML: '<a class="modalCloseImg" title="Close"></a>',
 		closeClass: 'simplemodal-close',
