@@ -2749,7 +2749,9 @@ background: transparent;
   overflow: hidden;
     display: none;
 }
-
+#story_taskbar .NB-taskbar {
+    overflow: hidden;
+}
 #story_taskbar .NB-tryfeed-add,
 #story_taskbar .NB-tryfeed-follow {
     margin: 2px auto 0px;
