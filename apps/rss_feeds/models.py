@@ -783,8 +783,12 @@ class Feed(models.Model):
         read_stories = MUserStory.objects.filter(feed_id=self.pk, story_id=old_story_guid)
         for story in read_stories:
             story.story_id = new_story_guid
-            story.save()
-        
+            try:
+                story.save()
+            except OperationError:
+                # User read both new and old. Just toss.
+                pass
+                
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
             all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')

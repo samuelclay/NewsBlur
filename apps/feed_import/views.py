@@ -193,7 +193,7 @@ def import_signup(request):
         if signup_form.is_valid():
             new_user = signup_form.save()
             
-            user_token = None
+            user_token = OAuthToken.objects.filter(user=new_user)
             if not user_token:
                 user_uuid = request.COOKIES.get('newsblur_reader_uuid')
                 if user_uuid:

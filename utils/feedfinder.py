@@ -47,6 +47,7 @@ Also Jason Diamond, Brian Lalor for bug reporting and patches"""
 _debug = 0
 
 import sgmllib, urllib, urlparse, re, sys, robotparser
+import requests
 from StringIO import StringIO
 from lxml import etree
 
@@ -75,7 +76,8 @@ class URLGatekeeper:
         self.urlopener = urllib.FancyURLopener()
         self.urlopener.version = "NewsBlur Feed Finder (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3)"
         _debuglog(self.urlopener.version)
-        self.urlopener.addheaders = [('User-agent', self.urlopener.version), ('Accept', '*')]
+        self.urlopener.addheaders = [('User-Agent', self.urlopener.version)]
+        # self.urlopener.addheaders = [('User-Agent', self.urlopener.version), ('Accept', '*')]
         robotparser.URLopener.version = self.urlopener.version
         robotparser.URLopener.addheaders = self.urlopener.addheaders
         
@@ -103,7 +105,7 @@ class URLGatekeeper:
     def get(self, url, check=True):
         if check and not self.can_fetch(url): return ''
         try:
-            return self.urlopener.open(url).read()
+            return requests.get(url, headers=dict(self.urlopener.addheaders)).content
         except:
             return ''
 
