@@ -180,7 +180,7 @@ class ProcessFeed:
         self.fpf.entries = self.fpf.entries[:50]
         
         if self.fpf.feed.get('title'):
-            self.feed.feed_title = self.fpf.feed['title']
+            self.feed.feed_title = self.fpf.feed.get('title')
         tagline = self.fpf.feed.get('tagline', self.feed.data.feed_tagline)
         if tagline:
             self.feed.data.feed_tagline = utf8encode(tagline)
@@ -409,6 +409,9 @@ class Dispatcher:
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
+                
+            if len(feed_queue) == 1:
+                return feed
         
         # time_taken = datetime.datetime.utcnow() - self.time_start
     
@@ -452,7 +455,7 @@ class Dispatcher:
             
     def run_jobs(self):
         if self.options['single_threaded']:
-            self.process_feed_wrapper(self.feeds_queue[0])
+            return self.process_feed_wrapper(self.feeds_queue[0])
         else:
             for i in range(self.num_threads):
                 feed_queue = self.feeds_queue[i]

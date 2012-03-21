@@ -631,10 +631,7 @@ class Feed(models.Model):
         })
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
-        disp.run_jobs()
-        
-        self.last_update = datetime.datetime.utcnow()
-        self.set_next_scheduled_update()
+        feed = disp.run_jobs()
         
         try:
             feed = Feed.objects.get(pk=self.pk)
@@ -643,7 +640,8 @@ class Feed(models.Model):
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.pk)
             if duplicate_feeds:
                 feed = duplicate_feeds[0].feed
-            
+        
+        
         return feed
 
     def add_update_stories(self, stories, existing_stories, verbose=False):
