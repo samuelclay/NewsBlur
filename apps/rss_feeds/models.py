@@ -633,14 +633,16 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()
         
+        feed.last_update = datetime.datetime.utcnow()
+        feed.set_next_scheduled_update()
+        
         try:
-            feed = Feed.objects.get(pk=self.pk)
+            feed = Feed.objects.get(pk=feed.pk)
         except Feed.DoesNotExist:
             # Feed has been merged after updating. Find the right feed.
-            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.pk)
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=feed.pk)
             if duplicate_feeds:
                 feed = duplicate_feeds[0].feed
-        
         
         return feed
 
