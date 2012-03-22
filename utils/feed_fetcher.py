@@ -410,8 +410,9 @@ class Dispatcher:
             for key, val in ret_entries.items():
                 self.entry_stats[key] += val
                 
-            if len(feed_queue) == 1:
-                return feed
+        if len(feed_queue) == 1:
+            feed = self.refresh_feed(feed_queue[0])
+            return feed
         
         # time_taken = datetime.datetime.utcnow() - self.time_start
     
