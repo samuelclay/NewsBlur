@@ -19,7 +19,7 @@ from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds
 from celery.task import Task
 from utils import json_functions as json
-from utils import feedfinder
+from utils import feedfinder, feedparser
 from utils import urlnorm
 from utils import log as logging
 from utils.fields import AutoOneToOneField
@@ -187,7 +187,15 @@ class Feed(models.Model):
         if feed and len(feed) > offset:
             feed = feed[offset]
         elif create:
+            create_okay = False
             if feedfinder.isFeed(url):
+                create_okay = True
+            elif aggressive:
+                # Could still be a feed. Just check if there are entries
+                fp = feedparser.parse(url)
+                if len(fp.entries):
+                    create_okay = True
+            if create_okay:
                 feed = cls.objects.create(feed_address=url)
                 feed = feed.update()
         
@@ -608,12 +616,9 @@ class Feed(models.Model):
         from utils import feed_fetcher
         if not options:
             options = {}
-        if settings.DEBUG:
+        if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
-        
-        self.last_update = datetime.datetime.utcnow()
-        self.set_next_scheduled_update()
         
         options.update({
             'verbose': verbose,
@@ -626,16 +631,19 @@ class Feed(models.Model):
         })
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
-        disp.run_jobs()
+        feed = disp.run_jobs()
+        
+        feed.last_update = datetime.datetime.utcnow()
+        feed.set_next_scheduled_update()
         
         try:
-            feed = Feed.objects.get(pk=self.pk)
+            feed = Feed.objects.get(pk=feed.pk)
         except Feed.DoesNotExist:
             # Feed has been merged after updating. Find the right feed.
-            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.pk)
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=feed.pk)
             if duplicate_feeds:
                 feed = duplicate_feeds[0].feed
-            
+        
         return feed
 
     def add_update_stories(self, stories, existing_stories, verbose=False):
@@ -645,97 +653,101 @@ class Feed(models.Model):
             ENTRY_SAME:0,
             ENTRY_ERR:0
         }
-        
+
         for story in stories:
             story = pre_process_story(story)
             
-            if story.get('title'):
-                story_content = story.get('story_content')
-                story_tags = self.get_tags(story)
-                story_link = self.get_permalink(story)
-                    
-                existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
-                if existing_story is None:
-                    s = MStory(story_feed_id = self.pk,
-                           story_date = story.get('published'),
-                           story_title = story.get('title'),
-                           story_content = story_content,
-                           story_author_name = story.get('author'),
-                           story_permalink = story_link,
-                           story_guid = story.get('guid'),
-                           story_tags = story_tags
-                    )
-                    try:
-                        s.save()
-                        ret_values[ENTRY_NEW] += 1
-                    except (IntegrityError, OperationError), e:
-                        ret_values[ENTRY_ERR] += 1
-                        if verbose:
-                            logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
-                elif existing_story and story_has_changed:
-                    # update story
-                    # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
-                    
-                    original_content = None
-                    try:
-                        if existing_story and existing_story.id:
-                            try:
-                                existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                    id=existing_story.id)
-                            except ValidationError:
-                                existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                    story_guid=existing_story.id)
-                        elif existing_story and existing_story.story_guid:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
-                                                                story_guid=existing_story.story_guid)
-                        else:
-                            raise MStory.DoesNotExist
-                    except (MStory.DoesNotExist, OperationError), e:
-                        ret_values[ENTRY_ERR] += 1
-                        if verbose:
-                            logging.info('Saving existing story, OperationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
-                        continue
-                    if existing_story.story_original_content_z:
-                        original_content = zlib.decompress(existing_story.story_original_content_z)
-                    elif existing_story.story_content_z:
-                        original_content = zlib.decompress(existing_story.story_content_z)
-                    # print 'Type: %s %s' % (type(original_content), type(story_content))
-                    if story_content and len(story_content) > 10:
-                        diff = HTMLDiff(unicode(original_content), story_content)
-                        story_content_diff = diff.getDiff()
+            if not story.get('title'):
+                continue
+                
+            story_content = story.get('story_content')
+            story_tags = self.get_tags(story)
+            story_link = self.get_permalink(story)
+                
+            existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
+            if existing_story is None:
+                s = MStory(story_feed_id = self.pk,
+                       story_date = story.get('published'),
+                       story_title = story.get('title'),
+                       story_content = story_content,
+                       story_author_name = story.get('author'),
+                       story_permalink = story_link,
+                       story_guid = story.get('guid'),
+                       story_tags = story_tags
+                )
+                try:
+                    s.save()
+                    ret_values[ENTRY_NEW] += 1
+                except (IntegrityError, OperationError), e:
+                    ret_values[ENTRY_ERR] += 1
+                    if verbose:
+                        logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+            elif existing_story and story_has_changed:
+                # update story
+                # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
+                
+                original_content = None
+                try:
+                    if existing_story and existing_story.id:
+                        try:
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
+                                                                id=existing_story.id)
+                        except ValidationError:
+                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
+                                                                story_guid=existing_story.id)
+                    elif existing_story and existing_story.story_guid:
+                        existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
+                                                            story_guid=existing_story.story_guid)
                     else:
-                        story_content_diff = original_content
-                    # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
-                    # logging.debug("\t\tDiff content: %s" % diff.getDiff())
-                    # if existing_story.story_title != story.get('title'):
-                    #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
-                    if existing_story.story_guid != story.get('guid'):
-                        self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
-                    
-                    existing_story.story_feed = self.pk
-                    existing_story.story_date = story.get('published')
-                    existing_story.story_title = story.get('title')
-                    existing_story.story_content = story_content_diff
-                    existing_story.story_original_content = original_content
-                    existing_story.story_author_name = story.get('author')
-                    existing_story.story_permalink = story_link
-                    existing_story.story_guid = story.get('guid')
-                    existing_story.story_tags = story_tags
-                    try:
-                        existing_story.save()
-                        ret_values[ENTRY_UPDATED] += 1
-                    except (IntegrityError, OperationError):
-                        ret_values[ENTRY_ERR] += 1
-                        if verbose:
-                            logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
-                    except ValidationError, e:
-                        ret_values[ENTRY_ERR] += 1
-                        if verbose:
-                            logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        raise MStory.DoesNotExist
+                except (MStory.DoesNotExist, OperationError), e:
+                    ret_values[ENTRY_ERR] += 1
+                    if verbose:
+                        logging.info('Saving existing story, OperationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                    continue
+                if existing_story.story_original_content_z:
+                    original_content = zlib.decompress(existing_story.story_original_content_z)
+                elif existing_story.story_content_z:
+                    original_content = zlib.decompress(existing_story.story_content_z)
+                # print 'Type: %s %s' % (type(original_content), type(story_content))
+                if story_content and len(story_content) > 10:
+                    diff = HTMLDiff(unicode(original_content), story_content)
+                    story_content_diff = diff.getDiff()
                 else:
-                    ret_values[ENTRY_SAME] += 1
-                    # logging.debug("Unchanged story: %s " % story.get('title'))
-            
+                    story_content_diff = original_content
+                # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
+                # logging.debug("\t\tDiff content: %s" % diff.getDiff())
+                # if existing_story.story_title != story.get('title'):
+                #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
+                if existing_story.story_guid != story.get('guid'):
+                    self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
+                
+                existing_story.story_feed = self.pk
+                # Do not allow publishers to change the story date once a story is published.
+                # Leads to incorrect unread story counts.
+                # existing_story.story_date = story.get('published')
+                existing_story.story_title = story.get('title')
+                existing_story.story_content = story_content_diff
+                existing_story.story_original_content = original_content
+                existing_story.story_author_name = story.get('author')
+                existing_story.story_permalink = story_link
+                existing_story.story_guid = story.get('guid')
+                existing_story.story_tags = story_tags
+                try:
+                    existing_story.save()
+                    ret_values[ENTRY_UPDATED] += 1
+                except (IntegrityError, OperationError):
+                    ret_values[ENTRY_ERR] += 1
+                    if verbose:
+                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
+                except ValidationError, e:
+                    ret_values[ENTRY_ERR] += 1
+                    if verbose:
+                        logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+            else:
+                ret_values[ENTRY_SAME] += 1
+                # logging.debug("Unchanged story: %s " % story.get('title'))
+        
         return ret_values
     
     def update_read_stories_with_new_guid(self, old_story_guid, new_story_guid):
@@ -743,8 +755,12 @@ class Feed(models.Model):
         read_stories = MUserStory.objects.filter(feed_id=self.pk, story_id=old_story_guid)
         for story in read_stories:
             story.story_id = new_story_guid
-            story.save()
-        
+            try:
+                story.save()
+            except OperationError:
+                # User read both new and old. Just toss.
+                pass
+                
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
             all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
@@ -913,8 +929,9 @@ class Feed(models.Model):
         story_link = self.get_permalink(story)
         start_date = story_pub_date - datetime.timedelta(hours=8)
         end_date = story_pub_date + datetime.timedelta(hours=8)
-        
+
         for existing_story in existing_stories:
+            
             content_ratio = 0
             existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)

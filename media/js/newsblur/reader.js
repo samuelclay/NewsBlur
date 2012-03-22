@@ -2783,7 +2783,7 @@
         
         send_story_to_readability: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://readability.com/save';
+            var url = 'http://www.readability.com/save';
             var readability_url = [
               url,
               '?url=',
@@ -3672,6 +3672,7 @@
                             }
                             return true;
                         });
+                        $('.NB-feed-story-content', $story).linkify();
                     })($story, story, image_count);
                 }
             }
@@ -3687,7 +3688,7 @@
         },
         
         make_story_content: function(story_content) {
-            var $story_content = $('<div>').html(story_content).autolink();
+            var $story_content = $('<div>').html(story_content);
             return $story_content;
         },
         
@@ -4463,11 +4464,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-instapaper');
                         }, this))),
-                        // (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
-                        //     $(e.target).siblings('.NB-menu-manage-title').text('Readability').parent().addClass('NB-menu-manage-highlight-readability');
-                        // }, this)).bind('mouseleave', _.bind(function(e) {
-                        //     $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
-                        // }, this))),
+                        (NEWSBLUR.Preferences['story_share_readability'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readability'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Readability').parent().addClass('NB-menu-manage-highlight-readability');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readability');
+                        }, this))),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
                     ]).bind('click', _.bind(function(e) {

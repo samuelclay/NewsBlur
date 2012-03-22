@@ -360,7 +360,40 @@ class UserSubscription(models.Model):
         switch_feed_for_classifier(MClassifierAuthor)
         switch_feed_for_classifier(MClassifierFeed)
         switch_feed_for_classifier(MClassifierTag)
+    
+    @classmethod
+    def collect_orphan_feeds(cls, user):
+        us = cls.objects.filter(user=user)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        us_feed_ids = set([sub.feed_id for sub in us])
+        folders = json.decode(usf.folders)
         
+        def collect_ids(folders, found_ids):
+            for item in folders:
+                # print ' --> %s' % item
+                if isinstance(item, int):
+                    # print ' --> Adding feed: %s' % item
+                    found_ids.add(item)
+                elif isinstance(item, dict):
+                    # print ' --> Descending folder dict: %s' % item.values()
+                    found_ids.update(collect_ids(item.values(), found_ids))
+                elif isinstance(item, list):
+                    # print ' --> Descending folder list: %s' % len(item)
+                    found_ids.update(collect_ids(item, found_ids))
+            # print ' --> Returning: %s' % found_ids
+            return found_ids
+        found_ids = collect_ids(folders, set())
+        diff = len(us_feed_ids) - len(found_ids)
+        if diff > 0:
+            logging.info(" ---> Collecting orphans on %s. %s feeds with %s orphans" % (user.username, len(us_feed_ids), diff))
+            orphan_ids = us_feed_ids - found_ids
+            folders.extend(list(orphan_ids))
+            usf.folders = json.encode(folders)
+            usf.save()
+            
     class Meta:
         unique_together = ("user", "feed")
         

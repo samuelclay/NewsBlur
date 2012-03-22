@@ -86,6 +86,14 @@ NEWSBLUR.ReaderGoodies.prototype = {
               }, 'View in Android Market'),
               $.make('div', { className: 'NB-goodies-android' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Blar: User-Created Android App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://projects.developer.nokia.com/feed_reader'
+              }, 'View in Nokia Store'),
+              $.make('div', { className: 'NB-goodies-nokia' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds: User-Created MeeGo App')
             ])
         ]);
     },
