@@ -2145,10 +2145,10 @@ background: transparent;
     -ms-transition: all .12s ease-out;
 }
 #story_pane .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
-    background-image: url('../img/icons/silk/bricks.png');
+    background-image: url('/media/embed/icons/silk/bricks.png');
 }
 #story_pane .NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
-    background-image: url('../img/icons/silk/rainbow.png');
+    background-image: url('/media/embed/icons/silk/rainbow.png');
 }
 
 #story_pane .NB-sideoption .NB-sideoption-title {
@@ -4729,7 +4729,7 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/package_green.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-friends .NB-menu-manage-image {
-    background: transparent url('../img/icons/silk/rainbow.png') no-repeat  0 2px;
+    background: transparent url('/media/embed/icons/silk/rainbow.png') no-repeat  0 2px;
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/color_wheel.png') no-repeat  0 2px;
