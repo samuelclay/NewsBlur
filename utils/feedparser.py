@@ -9,7 +9,7 @@ Required: Python 2.4 or later
 Recommended: iconv_codec <http://cjkpython.i18n.org/>
 """
 
-__version__ = "5.1"
+__version__ = "5.1.1"
 __license__ = """
 Copyright (c) 2010-2012 Kurt McKee <contactme@kurtmckee.org>
 Copyright (c) 2002-2008 Mark Pilgrim
@@ -3835,6 +3835,8 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
             try:
                 data = zlib.decompress(data)
             except zlib.error, e:
+                data = zlib.decompress(data, -zlib.MAX_WBITS)
+            except zlib.error, e:
                 result['bozo'] = 1
                 result['bozo_exception'] = e
                 data = None
@@ -3924,10 +3926,7 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
             break
     # if no luck and we have auto-detection library, try that
     if (not known_encoding) and chardet:
-        # import pdb; pdb.set_trace()
-        proposed_encoding = chardet.detect(data)['encoding']
-        if proposed_encoding:
-            proposed_encoding = unicode(proposed_encoding, 'ascii', 'ignore')
+        proposed_encoding = unicode(chardet.detect(data)['encoding'], 'ascii', 'ignore')
         if proposed_encoding and (proposed_encoding not in tried_encodings):
             tried_encodings.append(proposed_encoding)
             try:
