@@ -259,6 +259,8 @@
     font-weight: bold;
     color: #FCFCFC;
 }
+.NB-modal-submit-save.NB-disabled,
+.NB-modal-submit-button.NB-disabled,
 .NB-modal-submit-back,
 .NB-modal-submit-reset,
 .NB-modal-submit-close,
@@ -277,6 +279,22 @@
         #d5d4dB 84%
     );
     color: #909090;
+}
+.NB-modal-submit-save.NB-disabled:hover,
+.NB-modal-submit-button.NB-disabled:hover {
+    background-color: #d5d4dB;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #CBCAD3),
+        color-stop(0.84, #d5d4dB)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #CBCAD3 16%,
+        #d5d4dB 84%
+    );
 }
 .NB-modal-submit-back:hover,
 .NB-modal-submit-reset:hover,
