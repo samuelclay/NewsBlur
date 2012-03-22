@@ -220,7 +220,6 @@ def exception_change_feed_address(request):
 
     feed = feed.update()
     feed = Feed.objects.get(pk=feed.pk)
-
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
     if usersub:
         usersub.switch_feed(feed, original_feed)
