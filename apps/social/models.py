@@ -542,6 +542,11 @@ class MSocialSubscription(mongo.Document):
         classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
+        # Merge with feed specific classifiers
+        classifier_feeds   = classifier_feeds + list(MClassifierFeed.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
+        classifier_authors = classifier_authors + list(MClassifierAuthor.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
+        classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
+        classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
 
         for story in stories:
             scores = {

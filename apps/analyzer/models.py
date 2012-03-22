@@ -25,8 +25,8 @@ class Category(models.Model):
 
 class MClassifierTitle(mongo.Document):
     user_id = mongo.IntField()
-    feed_id = mongo.IntField(default=0)
-    social_user_id = mongo.IntField(default=0)
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
     title = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -39,8 +39,8 @@ class MClassifierTitle(mongo.Document):
             
 class MClassifierAuthor(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'author'))
-    feed_id = mongo.IntField(default=0)
-    social_user_id = mongo.IntField(default=0)
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
     author = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -54,8 +54,8 @@ class MClassifierAuthor(mongo.Document):
 
 class MClassifierTag(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'tag'))
-    feed_id = mongo.IntField(default=0)
-    social_user_id = mongo.IntField(default=0)
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
     tag = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
@@ -69,8 +69,8 @@ class MClassifierTag(mongo.Document):
 
 class MClassifierFeed(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id'))
-    feed_id = mongo.IntField(default=0)
-    social_user_id = mongo.IntField(default=0)
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     
@@ -128,7 +128,7 @@ def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier
     if social_user_id:
         params['social_user_id'] = int(social_user_id.replace('social:', ''))
     else:
-        params['social_user_id'] = 0
+        params['social_user_id'] = None
     
     if classifier_feeds is None:
         classifier_feeds = list(MClassifierFeed.objects(**params))

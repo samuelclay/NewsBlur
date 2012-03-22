@@ -1934,7 +1934,7 @@ background: transparent;
 }
 #story_pane .NB-feed-story-header .NB-feed-story-date {
     position: absolute;
-    right: 28px;
+    right: 12px;
     top: 6px;
     font-size: 11px;
     text-shadow: 1px 1px 0 #E6E6E6;

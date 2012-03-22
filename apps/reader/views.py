@@ -395,10 +395,10 @@ def load_single_feed(request, feed_id):
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
     # Get intelligence classifier for user
-    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
-    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
-    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
     
     checkpoint1 = time.time()
     
@@ -410,7 +410,7 @@ def load_single_feed(request, feed_id):
                                             feed_id=feed.pk,
                                             story_id__in=story_ids).only('story_id')
         starred_stories = MStarredStory.objects(user_id=user.pk, 
-                                                story_feed_id=feed_id, 
+                                                story_feed_id=feed.pk, 
                                                 story_guid__in=story_ids).only('story_guid', 'starred_date')
         shared_stories = MSharedStory.objects(user_id=user.pk, 
                                               story_feed_id=feed_id, 
