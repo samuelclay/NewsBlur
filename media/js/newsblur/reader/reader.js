@@ -4472,12 +4472,67 @@
                 ]),
                 $.make('div', { className: 'NB-story-comment-author-container' }, [
                     $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
-                    $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago')
+                    $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago'),
+                    $.make('div', { className: 'NB-story-comment-reply-button' }, [
+                        $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
+                    ])
                 ]),
-                $.make('div', { className: 'NB-story-comment-content' }, comment.comments)
+                $.make('div', { className: 'NB-story-comment-content' }, comment.comments),
+                (comment.replies.length && this.make_story_share_comment_replies(comment.replies))
             ]).data('user_id', user.get('id'));
             
             return $comment;
+        },
+        
+        make_story_share_comment_replies: function(replies) {
+            var $replies = _.map(replies, _.bind(function(reply) {
+                var user = this.model.user_profiles.find(reply.user_id);
+                return $.make('div', { className: 'NB-story-comment-reply' }, [
+                    $.make('img', { className: 'NB-story-comment-reply-photo', src: user.get('photo_url') }),
+                    $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, user.get('username')),
+                    $.make('div', { className: 'NB-story-comment-date NB-story-comment-reply-date' }, reply.publish_date + ' ago'),
+                    $.make('div', { className: 'NB-story-comment-content NB-story-comment-reply-content' }, reply.comments)
+                ]);
+            }, this));
+            $replies = $.make('div', { className: 'NB-story-comment-replies' }, $replies);
+
+            return $replies;
+        },
+        
+        open_social_comment_reply_form: function($comment) {
+            var profile = this.model.user_profile;
+            var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
+                $.make('img', { className: 'NB-story-comment-reply-photo', src: profile.get('photo_url') }),
+                $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, profile.get('username')),
+                $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments' }),
+                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Post')
+            ]);
+            $('.NB-story-comment-reply-form', $comment).remove();
+            $comment.append($form);
+            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'enter', 
+                _.bind(this.save_social_comment_reply, this, $comment));
+            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'return', 
+                _.bind(this.save_social_comment_reply, this, $comment));
+            $('input', $form).focus();
+        },
+        
+        save_social_comment_reply: function($comment) {
+            var $feed_story = $comment.closest('.NB-feed-story');
+            var story_id = $comment.closest('.NB-feed-story').data('story_id');
+            var story = this.model.get_story(story_id);
+            var comment_user_id = $comment.data('user_id').replace('social:', '');
+            var comment_reply = $('.NB-story-comment-reply-comments', $comment).val();
+            
+            if (!comment_reply || comment_reply.length <= 1) {
+                $('.NB-story-comment-reply-form', $comment).remove();
+                return;
+            }
+            
+            this.model.save_comment_reply(story_id, story.story_feed_id, comment_user_id, comment_reply, _.bind(function(data) {
+                var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
+                var $old_comments = $comment.closest('.NB-feed-story-comments');
+                $old_comments.replaceWith($new_comments);
+            }, this));
         },
         
         make_story_share_profile: function(user_id) {
@@ -7245,6 +7300,16 @@
                 e.preventDefault();
                 var user_id = $t.closest('.NB-story-comment').data('user_id');
                 self.open_social_profile_modal(user_id);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply-button' }, function($t, $p){
+                e.preventDefault();
+                var $comment = $t.closest('.NB-story-comment');
+                self.open_social_comment_reply_form($comment);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply .NB-modal-submit-button' }, function($t, $p){
+                e.preventDefault();
+                var $comment = $t.closest('.NB-story-comment');
+                self.save_social_comment_reply($comment);
             }); 
             
             // = One-offs =====================================================

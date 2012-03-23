@@ -246,10 +246,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     mark_story_as_shared: function(story_id, feed_id, comments, callback, error_callback) {
         var pre_callback = _.bind(function(data) {
             if (data.user_profiles) {
-                var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
-                    return profile.id in this.user_profiles._byId;
-                }, this));
-                this.user_profiles.add(profiles);
+                this.add_user_profiles(data.user_profiles);
             }
             callback(data);
         }, this);
@@ -259,6 +256,29 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             feed_id: feed_id,
             comments: comments
         }, pre_callback, error_callback);
+    },
+    
+    save_comment_reply: function(story_id, story_feed_id, comment_user_id, reply_comments, callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.user_profiles) {
+                this.add_user_profiles(data.user_profiles);
+            }
+            callback(data);
+        }, this);
+        
+        this.make_request('/social/save_comment_reply', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            reply_comments: reply_comments
+        }, pre_callback);
+    },
+    
+    add_user_profiles: function(user_profiles) {
+        var profiles = _.reject(user_profiles, _.bind(function(profile) {
+            return profile.id in this.user_profiles._byId;
+        }, this));
+        this.user_profiles.add(profiles);    
     },
     
     reset_feeds: function() {

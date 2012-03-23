@@ -591,12 +591,32 @@ class MSocialSubscription(mongo.Document):
             
         return self
         
+
+class MCommentReply(mongo.EmbeddedDocument):
+    user_id                  = mongo.IntField()
+    publish_date             = mongo.DateTimeField()
+    comments                 = mongo.StringField()
     
+    def to_json(self):
+        reply = {
+            'user_id': self.user_id,
+            'publish_date': relative_timesince(self.publish_date),
+            'comments': self.comments,
+        }
+        return reply
+        
+    meta = {
+        'ordering': ['publish_date'],
+    }
+
+
 class MSharedStory(mongo.Document):
     user_id                  = mongo.IntField()
     shared_date              = mongo.DateTimeField()
     comments                 = mongo.StringField()
     has_comments             = mongo.BooleanField(default=False)
+    has_replies              = mongo.BooleanField(default=False)
+    replies                  = mongo.ListField(mongo.EmbeddedDocumentField(MCommentReply))
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -614,14 +634,14 @@ class MSharedStory(mongo.Document):
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
-        'ordering': ['-shared_date'],
+        'ordering': ['shared_date'],
         'allow_inheritance': False,
     }
     
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()
-    
+        
     def save(self, *args, **kwargs):
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
@@ -639,7 +659,8 @@ class MSharedStory(mongo.Document):
         else:
             r.srem(comment_key, self.user_id)
         
-        self.shared_date = datetime.datetime.utcnow()
+        self.shared_date = self.shared_date or datetime.datetime.utcnow()
+        self.has_replies = bool(len(self.replies))
         
         super(MSharedStory, self).save(*args, **kwargs)
         
@@ -695,6 +716,7 @@ class MSharedStory(mongo.Document):
             'user_id': self.user_id,
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
+            'replies': [reply.to_json() for reply in self.replies],
         }
         return comments
     

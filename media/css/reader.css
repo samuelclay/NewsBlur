@@ -2017,11 +2017,72 @@ background: transparent;
     font-size: 10px;
     color: #9D9D9D;
     font-weight: bold;
-    text-shadow: 0 -1px 0 #F0F0F0;
+    float: left;
 }
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: left;
     color: #505050;
+}
+#story_pane .NB-story-comment .NB-story-comment-reply-button {
+    padding: 4px 24px 4px 12px;
+    float: left;
+    cursor: pointer;
+}
+#story_pane .NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
+    text-transform: uppercase;
+    background-color: #E9AF86;
+    color: white;
+    padding: 1px 4px;
+    line-height: 9px;
+    font-size: 9px;
+}
+#story_pane .NB-story-comment .NB-story-comment-reply-button:hover .NB-story-comment-reply-button-wrapper {
+    background-color: #DE772B;
+}
+#story_pane .NB-story-comment .NB-story-comment-reply-button:active .NB-story-comment-reply-button-wrapper {
+    background-color: #9F3A00;
+}
+#story_pane .NB-story-comment-reply {
+    border-top: 1px solid #E0E0E0;
+    padding: 4px 0;
+    overflow: hidden;
+    clear: both;
+    position: relative;
+    padding: 4px 0 2px 30px;
+    line-height: 18px;
+}
+#story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    position: absolute;
+    left: 0px;
+    top: 8px;
+    cursor: pointer;
+}
+#story_pane .NB-story-comment-reply .NB-story-comment-content.NB-story-comment-reply-content {
+    clear: both;
+    padding: 0 0 2px 0;
+}
+#story_pane .NB-story-comment-reply-form {
+    padding-top: 9px;
+}
+#story_pane .NB-story-comment-reply-form .NB-story-comment-reply-username {
+    margin: 1px 8px 6px 0;
+}
+#story_pane .NB-story-comment-reply-form .NB-story-comment-reply-comments {
+    margin: 0 8px 4px 0;
+    width: 70%;
+    display: block;
+    float: left;
+    font-size: 12px;
+}
+#story_pane .NB-story-comment-reply-form .NB-modal-submit-button {
+    float: left;
+    font-size: 10px;
+    padding: 2px 8px;
+    line-height: 16px;
+    margin: 0;
 }
 #story_pane .NB-story-comments-public-teaser-wrapper {
     border-top: 1px solid #353535;
@@ -2138,7 +2199,7 @@ background: transparent;
     padding: 4px;
     height: 100%;
     float: right;
-    background: #EBF6DA url('../img/reader/star_blue.png') no-repeat 8px 4px;
+    background: #EBF6DA url('/media/embed/reader/star_blue.png') no-repeat 8px 4px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;

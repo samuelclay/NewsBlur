@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
-from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription
+from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -206,6 +206,37 @@ def mark_story_as_shared(request):
         logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
     
     story.count_comments()
+    
+    story = Feed.format_story(story)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
+    story = stories[0]
+    
+    return {'code': code, 'story': story, 'user_profiles': profiles}
+
+@ajax_login_required
+@json.json_view
+def save_comment_reply(request):
+    code     = 1
+    feed_id  = int(request.POST['story_feed_id'])
+    story_id = request.POST['story_id']
+    comment_user_id = request.POST['comment_user_id']
+    reply_comments = request.POST.get('reply_comments')
+    
+    if not reply_comments:
+        return {'code': -1, 'message': 'Reply comments cannot be empty.'}
+        
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
+    if not story:
+        return {'code': -1, 'message': 'Story not found.'}
+    
+    shared_story = MSharedStory.objects.get(user_id=comment_user_id, story_feed_id=feed_id, story_guid=story_id)
+    reply = MCommentReply()
+    reply.user_id = request.user.pk
+    reply.publish_date = datetime.datetime.now()
+    reply.comments = reply_comments
+    shared_story.replies.append(reply)
+    shared_story.save()
+    logging.user(request, "~FCReplying to comment in: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], reply_comments[:100]))
     
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
