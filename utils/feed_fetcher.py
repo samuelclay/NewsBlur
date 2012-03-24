@@ -287,7 +287,7 @@ class Dispatcher:
                     weight = "-"
                     quick = "-"
                     rand = "-"
-                elif self.options.get('quick') and feed.known_good and feed.fetched_once:
+                elif self.options.get('quick') and not self.options['force'] and feed.known_good and feed.fetched_once:
                     weight = feed.stories_last_month * feed.num_subscribers
                     random_weight = random.randint(1, max(weight, 1))
                     quick = float(self.options['quick'])
