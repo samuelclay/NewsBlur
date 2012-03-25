@@ -2935,7 +2935,7 @@
             $sideoption_title.one('mouseleave', function() {
                 _.delay(function() {
                     if (!$feed_story.hasClass('NB-story-starred')) {
-                        $sideoption_title.text('Share this story');
+                        $sideoption_title.text('Save this story');
                     }
                 }, 200);
             });
