@@ -79,8 +79,6 @@ DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.load_template_source',
-
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",

@@ -34,7 +34,8 @@ env.roledefs ={
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
+    'task': ['task01.newsblur.com', 'task02.newsblur.com', 
+             'task03.newsblur.com', 'task04.newsblur.com'],
 }
 
 # ================
