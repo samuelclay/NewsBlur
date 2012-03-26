@@ -364,7 +364,7 @@ def load_single_feed(request, feed_id):
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
                                             story_id__in=story_ids
-                                            ).only('story_id').hint('user_id_1_feed_id_1_story_id_1')
+                                            ).only('story_id')
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed_id, 
                                                 story_guid__in=story_ids).only('story_guid', 'starred_date')
@@ -500,7 +500,7 @@ def load_river_stories(request):
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, 
                                       feed_id__in=feed_ids
-                                      ).only('story_id').hint('user_id_1_feed_id_1_story_id_1')
+                                      ).only('story_id')
     read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
