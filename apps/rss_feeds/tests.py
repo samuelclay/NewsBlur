@@ -47,7 +47,7 @@ class FeedTest(TestCase):
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 0)
         
-        management.call_command('refresh_feed', force=1, feed=4, single_threaded=True, daemonize=False)
+        feed.update(force=True)
         
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 42)
@@ -58,7 +58,7 @@ class FeedTest(TestCase):
         self.assertEquals(len(content['stories']), 6)
         
         management.call_command('loaddata', 'gothamist_aug_2009_2.json', verbosity=0)
-        management.call_command('refresh_feed', force=1, feed=4, single_threaded=True, daemonize=False)
+        feed.update(force=True)
         
         stories = MStory.objects(story_feed_id=feed.pk)
         self.assertEquals(stories.count(), 42)

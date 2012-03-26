@@ -277,45 +277,25 @@ def load_feeds_flat(request):
 @ratelimit(minutes=1, requests=20)
 @json.json_view
 def refresh_feeds(request):
-    start = datetime.datetime.utcnow()
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id')
-    feeds = {}
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
-    if feed_ids:
-        user_subs = user_subs.filter(feed__in=feed_ids)
-    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
-    feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
+    check_fetch_status = request.REQUEST.get('check_fetch_status')
+    favicons_fetching = request.REQUEST.getlist('favicons_fetching')
+    start = datetime.datetime.utcnow()
+    
+    feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
 
-    for i, sub in enumerate(user_subs):
-        pk = sub.feed.pk
-        if (sub.needs_unread_recalc or 
-            sub.unread_count_updated < UNREAD_CUTOFF or 
-            sub.oldest_unread_story_date < UNREAD_CUTOFF):
-            sub = sub.calculate_feed_scores(silent=True)
-        if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
-        feeds[pk] = {
-            'ps': sub.unread_count_positive,
-            'nt': sub.unread_count_neutral,
-            'ng': sub.unread_count_negative,
-        }
-        if sub.feed.has_feed_exception or sub.feed.has_page_exception:
-            feeds[pk]['has_exception'] = True
-            feeds[pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
-            feeds[pk]['feed_address'] = sub.feed.feed_address
-            feeds[pk]['exception_code'] = sub.feed.exception_code
-        if request.REQUEST.get('check_fetch_status', False):
-            feeds[pk]['not_yet_fetched'] = not sub.feed.fetched_once
-            
-        if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
-            feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
-            feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
-            feeds[pk]['favicon_fetching'] = sub.feed.favicon_fetching
+    favicons_fetching = [int(f) for f in favicons_fetching if f]
+    feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
     
+    for feed_id, feed in feeds.items():
+        if feed_id in favicons_fetching and feed_id in feed_icons:
+            feeds[feed_id]['favicon'] = feed_icons[feed_id].data
+            feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
+            feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
+
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    
+
     if favicons_fetching:
         sub_feed_ids = [s.feed.pk for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
@@ -324,12 +304,13 @@ def refresh_feeds(request):
             if duplicate_feeds and duplicate_feeds[0].feed.pk in feeds:
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
-        
-    if settings.DEBUG or request.REQUEST.get('check_fetch_status'):
+
+    if settings.DEBUG or check_fetch_status:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))
-    
+        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (
+            len(feeds.keys()), timediff, check_fetch_status, len(favicons_fetching)))
+        
     return {'feeds': feeds}
 
 def refresh_feed(request, feed_id):

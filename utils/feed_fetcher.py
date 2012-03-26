@@ -65,7 +65,7 @@ class FetchFeed:
                                     agent=USER_AGENT,
                                     etag=etag,
                                     modified=modified)
-        
+
         return FEED_OK, self.fpf
         
     def get_identity(self):

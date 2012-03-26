@@ -122,7 +122,47 @@ class UserSubscription(models.Model):
                 feed.update()
 
         return code, message, us
+    
+    @classmethod
+    def feeds_with_updated_counts(cls, user, feed_ids=None):
+        feeds = {}
+        
+        # Get subscriptions for user
+        user_subs = cls.objects.select_related('feed').filter(user=user, active=True)
+        feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
+        if feed_ids:
+            user_subs = user_subs.filter(feed__in=feed_ids)
+        
+        
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
+        for i, sub in enumerate(user_subs):
+            # Count unreads if subscription is stale.
+            if (sub.needs_unread_recalc or 
+                sub.unread_count_updated < UNREAD_CUTOFF or 
+                sub.oldest_unread_story_date < UNREAD_CUTOFF):
+                sub = sub.calculate_feed_scores(silent=True)
+            if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
+
+            feed_id = sub.feed.pk
+            feeds[feed_id] = {
+                'ps': sub.unread_count_positive,
+                'nt': sub.unread_count_neutral,
+                'ng': sub.unread_count_negative,
+                'id': feed_id,
+            }
+            if not sub.feed.fetched_once:
+                feeds[feed_id]['not_yet_fetched'] = True
+            if sub.feed.favicon_fetching:
+                feeds[feed_id]['favicon_fetching'] = True
+            if sub.feed.has_feed_exception or sub.feed.has_page_exception:
+                feeds[feed_id]['has_exception'] = True
+                feeds[feed_id]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
+                feeds[feed_id]['feed_address'] = sub.feed.feed_address
+                feeds[feed_id]['exception_code'] = sub.feed.exception_code
+
+        return feeds
+        
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
         
