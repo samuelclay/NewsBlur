@@ -36,7 +36,10 @@ class NewFeeds(Task):
         from apps.rss_feeds.models import Feed
         if not isinstance(feed_pks, list):
             feed_pks = [feed_pks]
-            
+        
+        options = {
+            'force': True,
+        }
         for feed_pk in feed_pks:
             feed = Feed.objects.get(pk=feed_pk)
-            feed.update()
+            feed.update(options=options)

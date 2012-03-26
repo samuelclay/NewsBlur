@@ -226,7 +226,7 @@ class ProcessFeed:
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
                       unicode(self.feed)[:30], 
                       ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
-        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]))
+        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]), force=self.options['force'])
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         

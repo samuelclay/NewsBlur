@@ -233,10 +233,13 @@ class Feed(models.Model):
 
         publisher.connection.close()
 
-    def update_all_statistics(self, full=True):
+    def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
-        self.count_stories()
-        if full:
+        count_extra = False
+        if random.random() > .9 or not self.data.popular_tags or not self.data.popular_authors:
+            count_extra = True
+        if force or (full and count_extra):
+            self.count_stories()
             self.save_popular_authors()
             self.save_popular_tags()
     
@@ -691,14 +694,15 @@ class Feed(models.Model):
                 try:
                     if existing_story and existing_story.id:
                         try:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                id=existing_story.id)
+                            existing_story = MStory.objects.get(id=existing_story.id)
                         except ValidationError:
                             existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                story_guid=existing_story.id)
+                                                                story_guid=existing_story.id).hint(
+                                                                'story_feed_id_1_story_guid_1')
                     elif existing_story and existing_story.story_guid:
                         existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
-                                                            story_guid=existing_story.story_guid)
+                                                            story_guid=existing_story.story_guid).hint(
+                                                            'story_feed_id_1_story_guid_1')
                     else:
                         raise MStory.DoesNotExist
                 except (MStory.DoesNotExist, OperationError), e:
