@@ -697,12 +697,10 @@ class Feed(models.Model):
                             existing_story = MStory.objects.get(id=existing_story.id)
                         except ValidationError:
                             existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                story_guid=existing_story.id).hint(
-                                                                'story_feed_id_1_story_guid_1')
+                                                                story_guid=existing_story.id)
                     elif existing_story and existing_story.story_guid:
                         existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id,
-                                                            story_guid=existing_story.story_guid).hint(
-                                                            'story_feed_id_1_story_guid_1')
+                                                            story_guid=existing_story.story_guid)
                     else:
                         raise MStory.DoesNotExist
                 except (MStory.DoesNotExist, OperationError), e:
@@ -1222,7 +1220,7 @@ class MStory(mongo.Document):
 class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
        mongoengine's inheritance model on every single row."""
-    user_id                  = mongo.IntField()
+    user_id                  = mongo.IntField(unique_with=('story_guid',))
     starred_date             = mongo.DateTimeField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
@@ -1234,12 +1232,12 @@ class MStarredStory(mongo.Document):
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
-    story_guid               = mongo.StringField(unique_with=('user_id',))
+    story_guid               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
 
     meta = {
         'collection': 'starred_stories',
-        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'user_id', 'story_feed_id'],
+        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['-starred_date'],
         'allow_inheritance': False,

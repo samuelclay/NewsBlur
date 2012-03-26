@@ -364,7 +364,7 @@ def load_single_feed(request, feed_id):
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
                                             story_id__in=story_ids
-                                            ).only('story_id')
+                                            ).only('story_id').hint([('user_id', 1), ('feed_id', 1), ('story_id', 1)])
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed_id, 
                                                 story_guid__in=story_ids).only('story_guid', 'starred_date')
@@ -500,7 +500,7 @@ def load_river_stories(request):
     # Read stories to exclude
     read_stories = MUserStory.objects(user_id=user.pk, 
                                       feed_id__in=feed_ids
-                                      ).only('story_id')
+                                      ).only('story_id').hint([('user_id', 1), ('feed_id', 1), ('story_id', 1)])
     read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
@@ -569,17 +569,20 @@ def load_river_stories(request):
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     
     # Find starred stories
-    try:
+    # try:
+    if found_feed_ids:
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
             story_feed_id__in=found_feed_ids
         ).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) 
                                 for story in starred_stories])
-    except OperationFailure:
-        logging.info(" ***> Starred stories failure")
+    else:
         starred_stories = {}
-    
+    # except OperationFailure:
+    #     logging.info(" ***> Starred stories failure")
+    #     starred_stories = {}
+    # 
     # Intelligence classifiers for all feeds involved
     def sort_by_feed(classifiers):
         feed_classifiers = defaultdict(list)
@@ -587,19 +590,20 @@ def load_river_stories(request):
             feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
     classifiers = {}
-    try:
+    # try:
+    if found_feed_ids:
         classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
         classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
         classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
         classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    except OperationFailure:
-        logging.info(" ***> Classifiers failure")
-    else:
+
         for feed_id in found_feed_ids:
             classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
                                                             classifier_authors[feed_id],
                                                             classifier_titles[feed_id],
                                                             classifier_tags[feed_id])
+    # except OperationFailure:
+    #     logging.info(" ***> Classifiers failure")
     
     # Just need to format stories
     for story in stories:
