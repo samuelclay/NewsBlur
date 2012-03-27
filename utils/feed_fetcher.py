@@ -70,7 +70,7 @@ class FetchFeed:
                                     etag=etag,
                                     modified=modified)
 
-        if getattr(self.fpf, 'status') == 200:
+        if getattr(self.fpf, 'status', None) == 200:
             stathat.ez_post_value('newsblur', 'Fetcher: feed fetch time', time.time() - start)
         
         return FEED_OK, self.fpf
