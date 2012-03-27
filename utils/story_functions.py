@@ -76,7 +76,7 @@ def pre_process_story(entry):
         entry['story_content'] = entry.get('summary', '')
     
     # Add each media enclosure as a Download link
-    for media_content in chain(entry.get('media_content', []), entry.get('links', [])):
+    for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):
         media_url = media_content.get('url', '')
         media_type = media_content.get('type', '')
         if media_url and media_type and entry['story_content'] and media_url not in entry['story_content']:

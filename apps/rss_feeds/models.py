@@ -615,24 +615,23 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, options=None):
+    def update(self, **kwargs):
         from utils import feed_fetcher
-        if not options:
-            options = {}
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.save()
         
-        options.update({
-            'verbose': verbose,
+        options = {
+            'verbose': kwargs.get('verbose'),
             'timeout': 10,
-            'single_threaded': single_threaded,
-            'force': force,
-            'compute_scores': compute_scores,
-            'fake': options.get('fake'),
-            'quick': options.get('quick'),
-        })
+            'single_threaded': kwargs.get('single_threaded', True),
+            'force': kwargs.get('force'),
+            'compute_scores': kwargs.get('compute_scores', True),
+            'fake': kwargs.get('fake'),
+            'quick': kwargs.get('quick'),
+            'debug': kwargs.get('debug'),
+        }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()

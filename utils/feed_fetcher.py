@@ -65,7 +65,7 @@ class FetchFeed:
                                     agent=USER_AGENT,
                                     etag=etag,
                                     modified=modified)
-
+                                                
         return FEED_OK, self.fpf
         
     def get_identity(self):
@@ -107,9 +107,9 @@ class ProcessFeed:
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
-                logging.debug(u'   ---> [%-30s] Fetched feed, HTTP status %d: %s (bozo: %s)' % (unicode(self.feed)[:30],
+                logging.debug(u'   ---> [%-30s] Fetched feed, status %d: %s entries (bozo: %s)' % (unicode(self.feed)[:30],
                                                      self.fpf.status,
-                                                     self.feed.feed_address,
+                                                     len(self.fpf.entries),
                                                      self.fpf.bozo))
                 if self.fpf.bozo and self.fpf.status != 304:
                     logging.debug(u'   ---> [%-30s] BOZO exception: %s (%s entries)' % (
