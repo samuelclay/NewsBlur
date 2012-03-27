@@ -17,6 +17,9 @@ from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
+from vendor.stathat import StatHat
+
+stathat = StatHat()
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -41,6 +44,7 @@ class FetchFeed:
         """ 
         Uses feedparser to download the feed. Will be parsed later.
         """
+        start = time.time()
         identity = self.get_identity()
         log_msg = u'%2s ---> [%-30s] ~FYFetching feed (~FB%d~FY), last update: %s' % (identity,
                                                             self.feed.title[:30],
@@ -65,6 +69,9 @@ class FetchFeed:
                                     agent=USER_AGENT,
                                     etag=etag,
                                     modified=modified)
+
+        if getattr(self.fpf, 'status', None) == 200:
+            stathat.ez_post_value('newsblur', 'Fetcher: feed fetch time', time.time() - start)
         
         return FEED_OK, self.fpf
         
@@ -95,6 +102,7 @@ class ProcessFeed:
     def process(self):
         """ Downloads and parses a feed.
         """
+        start = time.time()
         self.refresh_feed()
         
         ret_values = {
@@ -107,10 +115,10 @@ class ProcessFeed:
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
-                logging.debug(u'   ---> [%-30s] Fetched feed, HTTP status %d: %s (bozo: %s)' % (self.feed.title[:30],
-                                                     self.fpf.status,
-                                                     self.feed.feed_address,
-                                                     self.fpf.bozo))
+                logging.debug(u'   ---> [%-30s] Fetched feed, status %d: %s entries (bozo: %s)' % (self.feed.title[:30],
+                              self.fpf.status,
+                              len(self.fpf.entries),
+                              self.fpf.bozo))
                 if self.fpf.bozo and self.fpf.status != 304:
                     logging.debug(u'   ---> [%-30s] BOZO exception: %s (%s entries)' % (
                                   self.feed.title[:30],
@@ -226,9 +234,11 @@ class ProcessFeed:
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
                       self.feed.title[:30], 
                       ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
-        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]))
+        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]), force=self.options['force'])
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
+        
+        stathat.ez_post_value('newsblur', 'Fetcher: feed parse time', time.time() - start)
         
         return FEED_OK, ret_values
 
@@ -287,7 +297,7 @@ class Dispatcher:
                     weight = "-"
                     quick = "-"
                     rand = "-"
-                elif self.options.get('quick'):
+                elif self.options.get('quick') and not self.options['force'] and feed.known_good and feed.fetched_once:
                     weight = feed.stories_last_month * feed.num_subscribers
                     random_weight = random.randint(1, max(weight, 1))
                     quick = float(self.options.get('quick', 0))
@@ -312,6 +322,7 @@ class Dispatcher:
                     feed = self.refresh_feed(feed_id)
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force']:
+                        start = time.time()
                         if not feed.known_good:
                             feed.known_good = True
                             feed.save()
@@ -320,6 +331,7 @@ class Dispatcher:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
                             logging.debug('   ---> [%-30s] Unread count took too long...' % (feed.title[:30],))
+                        stathat.ez_post_value('newsblur', 'Fetcher: unread count time', time.time() - start)
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)
@@ -405,6 +417,7 @@ class Dispatcher:
                 identity, feed.feed_title[:30], delta,
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
+            stathat.ez_post_value('newsblur', 'Fetcher: total processing time', delta)
             
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():

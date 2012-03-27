@@ -79,8 +79,6 @@ DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.load_template_source',
-
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -349,7 +347,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'db02',
+    'host': 'db02:27017',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)

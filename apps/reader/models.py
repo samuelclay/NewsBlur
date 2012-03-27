@@ -130,7 +130,47 @@ class UserSubscription(models.Model):
                 feed.update()
         
         return code, message, us
+    
+    @classmethod
+    def feeds_with_updated_counts(cls, user, feed_ids=None):
+        feeds = {}
+        
+        # Get subscriptions for user
+        user_subs = cls.objects.select_related('feed').filter(user=user, active=True)
+        feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
+        if feed_ids:
+            user_subs = user_subs.filter(feed__in=feed_ids)
+        
+        
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
+        for i, sub in enumerate(user_subs):
+            # Count unreads if subscription is stale.
+            if (sub.needs_unread_recalc or 
+                sub.unread_count_updated < UNREAD_CUTOFF or 
+                sub.oldest_unread_story_date < UNREAD_CUTOFF):
+                sub = sub.calculate_feed_scores(silent=True)
+            if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
+
+            feed_id = sub.feed.pk
+            feeds[feed_id] = {
+                'ps': sub.unread_count_positive,
+                'nt': sub.unread_count_neutral,
+                'ng': sub.unread_count_negative,
+                'id': feed_id,
+            }
+            if not sub.feed.fetched_once:
+                feeds[feed_id]['not_yet_fetched'] = True
+            if sub.feed.favicon_fetching:
+                feeds[feed_id]['favicon_fetching'] = True
+            if sub.feed.has_feed_exception or sub.feed.has_page_exception:
+                feeds[feed_id]['has_exception'] = True
+                feeds[feed_id]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
+                feeds[feed_id]['feed_address'] = sub.feed.feed_address
+                feeds[feed_id]['exception_code'] = sub.feed.exception_code
+
+        return feeds
+        
     def mark_feed_read(self):
         now = datetime.datetime.utcnow()
         
@@ -185,7 +225,7 @@ class UserSubscription(models.Model):
             try:
                 m.save()
             except OperationError, e:
-                original_m = MUserStory.objects.get(story=story, user_id=self.user_id, feed_id=self.feed_id)
+                original_m = MUserStory.objects.get(user_id=self.user_id, feed_id=self.feed_id, story_id=story_id)
                 logging.user(request, "~BRMarked story as read error: %s" % (e))
                 logging.user(request, "~BRMarked story as read: %s" % (story_id))
                 logging.user(request, "~BROrigin story as read: %s" % (m.story.story_guid))
@@ -407,7 +447,7 @@ class MUserStory(mongo.Document):
     Stories read by the user. These are deleted as the mark_read_date for the
     UserSubscription passes the UserStory date.
     """
-    user_id = mongo.IntField()
+    user_id = mongo.IntField(unique_with=('feed_id', 'story_id'))
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
@@ -416,7 +456,10 @@ class MUserStory(mongo.Document):
     
     meta = {
         'collection': 'userstories',
-        'indexes': [('user_id', 'feed_id'), ('feed_id', 'read_date'), ('feed_id', 'story_id')],
+        'indexes': [
+            ('feed_id', 'story_id'),   # Updating stories with new guids
+            ('feed_id', 'story_date'), # Trimming feeds
+        ],
         'allow_inheritance': False,
         'index_drop_dups': True,
     }
@@ -424,14 +467,14 @@ class MUserStory(mongo.Document):
     @classmethod
     def delete_old_stories(cls, feed_id):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        cls.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF).delete()
+        cls.objects(feed_id=feed_id, story_date__lte=UNREAD_CUTOFF).delete()
         
     @classmethod
     def delete_marked_as_read_stories(cls, user_id, feed_id, mark_read_date=None):
         if not mark_read_date:
             usersub = UserSubscription.objects.get(user__pk=user_id, feed__pk=feed_id)
             mark_read_date = usersub.mark_read_date
-        cls.objects(user_id=user_id, feed_id=feed_id, read_date__lte=usersub.mark_read_date).delete()
+        cls.objects(user_id=user_id, feed_id=feed_id, read_date__lte=mark_read_date).delete()
     
         
 class UserSubscriptionFolders(models.Model):

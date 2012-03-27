@@ -34,7 +34,11 @@ env.roledefs ={
     'app': ['app01.newsblur.com', 'app02.newsblur.com'],
     'web': ['www.newsblur.com', 'app02.newsblur.com'],
     'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
+    'task': ['task01.newsblur.com', 
+             'task02.newsblur.com', 
+             'task03.newsblur.com', 
+             # 'task04.newsblur.com',
+            ],
 }
 
 # ================
@@ -199,7 +203,7 @@ def setup_common():
     setup_local_files()
     setup_libxml()
     setup_python()
-    setup_psycopg()
+    # setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
@@ -319,7 +323,7 @@ def setup_python():
         sudo('python setup.py install')
         
     with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python/sitecustomize.py\'')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
