@@ -125,10 +125,11 @@ class ProcessFeed:
                                   unicode(self.feed)[:30],
                                   self.fpf.bozo_exception,
                                   len(self.fpf.entries)))
-            if not self.feed.is_push and self.fpf.feed.links:
+            if (not self.feed.is_push and hasattr(self.fpf, 'feeds') and 
+                hasattr(self.fpf.feeds, 'links') and self.fpf.feed.links):
                 hub_url = None
                 self_url = self.feed.feed_link
-                for link in parsed.feed.links:
+                for link in self.fpf.feed.links:
                     if link['rel'] == 'hub':
                         hub_url = link['href']
                     elif link['rel'] == 'self':
