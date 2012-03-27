@@ -34,7 +34,7 @@ from utils.diff import HTMLDiff
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
-    feed_address = models.URLField(max_length=255, verify_exists=True)
+    feed_address = models.URLField(max_length=255)
     feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
@@ -233,10 +233,13 @@ class Feed(models.Model):
 
         publisher.connection.close()
 
-    def update_all_statistics(self, full=True):
+    def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
-        self.count_stories()
-        if full:
+        count_extra = False
+        if random.random() > .9 or not self.data.popular_tags or not self.data.popular_authors:
+            count_extra = True
+        if force or (full and count_extra):
+            self.count_stories()
             self.save_popular_authors()
             self.save_popular_tags()
     
@@ -612,23 +615,23 @@ class Feed(models.Model):
             self.data.feed_classifier_counts = json.encode(scores)
             self.data.save()
         
-    def update(self, verbose=False, force=False, single_threaded=True, compute_scores=True, options=None):
+    def update(self, **kwargs):
         from utils import feed_fetcher
-        if not options:
-            options = {}
         if getattr(settings, 'TEST_DEBUG', False):
             self.feed_address = self.feed_address % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
             self.feed_link = self.feed_link % {'NEWSBLUR_DIR': settings.NEWSBLUR_DIR}
+            self.save()
         
-        options.update({
-            'verbose': verbose,
+        options = {
+            'verbose': kwargs.get('verbose'),
             'timeout': 10,
-            'single_threaded': single_threaded,
-            'force': force,
-            'compute_scores': compute_scores,
-            'fake': options.get('fake'),
-            'quick': options.get('quick'),
-        })
+            'single_threaded': kwargs.get('single_threaded', True),
+            'force': kwargs.get('force'),
+            'compute_scores': kwargs.get('compute_scores', True),
+            'fake': kwargs.get('fake'),
+            'quick': kwargs.get('quick'),
+            'debug': kwargs.get('debug'),
+        }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()
@@ -690,8 +693,7 @@ class Feed(models.Model):
                 try:
                     if existing_story and existing_story.id:
                         try:
-                            existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
-                                                                id=existing_story.id)
+                            existing_story = MStory.objects.get(id=existing_story.id)
                         except ValidationError:
                             existing_story = MStory.objects.get(story_feed_id=existing_story.story_feed_id, 
                                                                 story_guid=existing_story.id)
@@ -1217,7 +1219,7 @@ class MStory(mongo.Document):
 class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
        mongoengine's inheritance model on every single row."""
-    user_id                  = mongo.IntField()
+    user_id                  = mongo.IntField(unique_with=('story_guid',))
     starred_date             = mongo.DateTimeField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
@@ -1229,12 +1231,12 @@ class MStarredStory(mongo.Document):
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
-    story_guid               = mongo.StringField(unique_with=('user_id',))
+    story_guid               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
 
     meta = {
         'collection': 'starred_stories',
-        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'user_id', 'story_feed_id'],
+        'indexes': [('user_id', '-starred_date'), ('user_id', 'story_feed_id'), 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['-starred_date'],
         'allow_inheritance': False,
