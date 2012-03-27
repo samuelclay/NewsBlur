@@ -48,7 +48,7 @@ class MockResponse(object):
 
 class PSHBTestBase:
 
-    urls = 'djpubsubhubbub.urls'
+    urls = 'apps.djpubsubhubbub.urls'
 
     def setUp(self):
         self._old_send_request = SubscriptionManager._send_request

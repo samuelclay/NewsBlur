@@ -6,8 +6,8 @@ import feedparser
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 
-from djpubsubhubbub.models import Subscription
-from djpubsubhubbub.signals import verified, updated
+from apps.push.models import PushSubscription
+from apps.push.signals import verified, updated
 
 def callback(request, pk):
     if request.method == 'GET':
@@ -20,7 +20,7 @@ def callback(request, pk):
         if mode == 'subscribe':
             if not verify_token.startswith('subscribe'):
                 raise Http404
-            subscription = get_object_or_404(Subscription,
+            subscription = get_object_or_404(PushSubscription,
                                              pk=pk,
                                              topic=topic,
                                              verify_token=verify_token)
@@ -30,7 +30,7 @@ def callback(request, pk):
 
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
-        subscription = get_object_or_404(Subscription, pk=pk)
+        subscription = get_object_or_404(PushSubscription, pk=pk)
         parsed = feedparser.parse(request.raw_post_data)
         if parsed.feed.links: # single notification
             hub_url = subscription.hub
@@ -52,8 +52,8 @@ def callback(request, pk):
             if needs_update:
                 expiration_time = subscription.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
-                Subscription.objects.subscribe(
-                    self_url, hub_url,
+                PushSubscription.objects.subscribe(
+                    self_url, hub_url, feed=subscription.feed,
                     callback=request.build_absolute_uri(),
                     lease_seconds=seconds)
 

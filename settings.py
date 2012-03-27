@@ -209,6 +209,7 @@ INSTALLED_APPS = (
     'apps.statistics',
     'apps.static',
     'apps.mobile',
+    'apps.push',
     'south',
     'utils',
     'vendor',

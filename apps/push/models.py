@@ -11,13 +11,14 @@ from django.core.urlresolvers import reverse, Resolver404
 from django.db import models
 from django.utils.hashcompat import sha_constructor
 
-from djpubsubhubbub import signals
+from apps.push import signals
+from apps.rss_feeds.models import Feed
 
 DEFAULT_LEASE_SECONDS = 2592000 # 30 days in seconds
 
-class SubscriptionManager(models.Manager):
+class PushSubscriptionManager(models.Manager):
 
-    def subscribe(self, topic, hub=None, callback=None,
+    def subscribe(self, topic, feed, hub=None, callback=None,
                   lease_seconds=None):
         if hub is None:
             hub = self._get_hub(topic)
@@ -31,7 +32,7 @@ class SubscriptionManager(models.Manager):
                                    DEFAULT_LEASE_SECONDS)
 
         subscription, created = self.get_or_create(
-            hub=hub, topic=topic)
+            hub=hub, topic=topic, feed=feed)
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)
 
@@ -43,7 +44,8 @@ class SubscriptionManager(models.Manager):
                 raise TypeError(
                     'callback cannot be None if there is not a reverable URL')
             else:
-                callback = 'http://' + Site.objects.get_current() + \
+                # callback = 'http://' + Site.objects.get_current() + \
+                callback = 'http://' + "dev.newsblur.com" + \
                     callback_path
 
         response = self._send_request(hub, {
@@ -66,6 +68,8 @@ class SubscriptionManager(models.Manager):
                     topic, hub, error))
 
         subscription.save()
+        feed.is_push = subscription.verified
+        feed.save()
         if subscription.verified:
             signals.verified.send(sender=subscription)
         return subscription
@@ -89,15 +93,15 @@ class SubscriptionManager(models.Manager):
         encoded_data = urlencode(list(data_generator()))
         return urllib2.urlopen(url, encoded_data)
 
-class Subscription(models.Model):
-
-    hub = models.URLField()
-    topic = models.URLField()
+class PushSubscription(models.Model):
+    feed = models.OneToOneField(Feed, db_index=True, related_name='push')
+    hub = models.URLField(db_index=True)
+    topic = models.URLField(db_index=True)
     verified = models.BooleanField(default=False)
     verify_token = models.CharField(max_length=60)
     lease_expires = models.DateTimeField(default=datetime.now)
 
-    objects = SubscriptionManager()
+    objects = PushSubscriptionManager()
 
     # class Meta:
     #     unique_together = [

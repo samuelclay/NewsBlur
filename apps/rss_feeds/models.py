@@ -40,6 +40,7 @@ class Feed(models.Model):
     feed_link_locked = models.BooleanField(default=False)
     hash_address_and_link = models.CharField(max_length=64, unique=True, db_index=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
+    is_push = models.NullBooleanField(default=False, blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)

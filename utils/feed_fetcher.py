@@ -13,6 +13,7 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
+from apps.push.models import PushSubscription
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
@@ -124,6 +125,17 @@ class ProcessFeed:
                                   unicode(self.feed)[:30],
                                   self.fpf.bozo_exception,
                                   len(self.fpf.entries)))
+            if not self.feed.is_push and self.fpf.feed.links:
+                hub_url = None
+                self_url = self.feed.feed_link
+                for link in parsed.feed.links:
+                    if link['rel'] == 'hub':
+                        hub_url = link['href']
+                    elif link['rel'] == 'self':
+                        self_url = link['href']
+                if hub_url and self_url:
+                    PushSubscription.objects.subscribe(self_url, hub_url, self.feed)
+                    
             if self.fpf.status == 304:
                 self.feed.save()
                 self.feed.save_feed_history(304, "Not modified")
