@@ -6,6 +6,7 @@ client = redis.createClient 6379, 'db01'
 io.sockets.on 'connection', (socket) ->
 
     socket.on 'subscribe:feeds', (feeds) ->
+        socket.subscribe?.end()
         socket.subscribe = redis.createClient 6379, 'db01'
         
         console.log "Subscribing to #{feeds.length} feeds"
