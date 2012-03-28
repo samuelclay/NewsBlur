@@ -92,7 +92,12 @@ class PushSubscription(models.Model):
     #     unique_together = [
     #         ('hub', 'topic')
     #         ]
-
+    
+    def unsubscribe(self):
+        feed = self.feed
+        self.delete()
+        feed.setup_push()
+        
     def set_expiration(self, lease_seconds):
         self.lease_expires = datetime.now() + timedelta(
             seconds=lease_seconds)

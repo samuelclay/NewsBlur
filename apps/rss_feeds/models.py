@@ -1073,13 +1073,13 @@ class Feed(models.Model):
         
     def setup_push(self):
         from apps.push.models import PushSubscription
-        if not self.is_push:
-            try:
-                push = self.push
-            except PushSubscription.DoesNotExist:
-                return
+        try:
+            push = self.push
+        except PushSubscription.DoesNotExist:
+            self.is_push = False
+        else:
             self.is_push = push.verified
-            self.save()
+        self.save()
     
     def queue_pushed_feed_xml(self, xml):
         
