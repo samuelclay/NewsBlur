@@ -16,7 +16,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
-from apps.rss_feeds.tasks import UpdateFeeds
+from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder, feedparser
@@ -172,17 +172,16 @@ class Feed(models.Model):
         def by_url(address):
             feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
-                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
-            if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
+            if not feed and aggressive:
+                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
                 
             return feed
         
         # Normalize and check for feed_address, dupes, and feed_link
-        if not aggressive:
-            url = urlnorm.normalize(url)
+        url = urlnorm.normalize(url)
         feed = by_url(url)
         
         # Create if it looks good
@@ -634,6 +633,7 @@ class Feed(models.Model):
             'quick': kwargs.get('quick'),
             'debug': kwargs.get('debug'),
             'fpf': kwargs.get('fpf'),
+            'feed_xml': kwargs.get('feed_xml'),
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -1039,7 +1039,8 @@ class Feed(models.Model):
         
         if self.active_premium_subscribers > 0:
             total = min(total, 60) # 1 hour minimum for premiums
-            
+        if self.is_push:
+            total = total * 20
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
                                                 self.num_subscribers, self.active_subscribers,
@@ -1054,7 +1055,7 @@ class Feed(models.Model):
         
         if error_count:
             total = total * error_count
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors. Total: %s' % (unicode(self)[:30], error_count, non_error_count, total))
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s/%s errors. Time: %s min' % (unicode(self)[:30], error_count, non_error_count, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
@@ -1079,6 +1080,19 @@ class Feed(models.Model):
                 return
             self.is_push = push.verified
             self.save()
+    
+    def queue_pushed_feed_xml(self, xml):
+        
+        logging.debug('   ---> [%-30s] Queuing pushed stories...' % (unicode(self)[:30]))
+        
+        publisher = Task.get_publisher()
+
+        self.queued_date = datetime.datetime.utcnow()
+        self.set_next_scheduled_update()
+
+        PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds', publisher=publisher)
+
+        publisher.connection.close()
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,

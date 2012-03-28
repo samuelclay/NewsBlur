@@ -242,6 +242,10 @@ CELERY_ROUTES = {
         "queue": "new_feeds",
         "binding_key": "new_feeds"
     },
+    "push-feeds": {
+        "queue": "push_feeds",
+        "binding_key": "push_feeds"
+    },
     "update-feeds": {
         "queue": "update_feeds",
         "binding_key": "update_feeds"
@@ -252,6 +256,11 @@ CELERY_QUEUES = {
         "exchange": "new_feeds",
         "exchange_type": "direct",
         "binding_key": "new_feeds"
+    },
+    "push_feeds": {
+        "exchange": "push_feeds",
+        "exchange_type": "direct",
+        "binding_key": "push_feeds"
     },
     "update_feeds": {
         "exchange": "update_feeds",

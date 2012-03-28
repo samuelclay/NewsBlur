@@ -63,7 +63,10 @@ class FetchFeed:
             's' if self.feed.num_subscribers != 1 else '',
             settings.NEWSBLUR_URL
         )
-        
+        if self.options.get('feed_xml'):
+            feed_xml = self.options.get('feed_xml')
+            logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
+                          unicode(self.feed)[:30], len(feed_xml)))
         if self.options.get('fpf'):
             self.fpf = self.options.get('fpf')
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (

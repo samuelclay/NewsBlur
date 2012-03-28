@@ -58,7 +58,7 @@ def push_callback(request, push_id):
                     callback=request.build_absolute_uri(),
                     lease_seconds=seconds)
 
-            subscription.feed.update(fpf=parsed)
+            subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
 
             updated.send(sender=subscription, update=parsed)
             return HttpResponse('')
