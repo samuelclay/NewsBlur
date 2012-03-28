@@ -63,11 +63,16 @@ class FetchFeed:
             's' if self.feed.num_subscribers != 1 else '',
             settings.NEWSBLUR_URL
         )
-
-        self.fpf = feedparser.parse(self.feed.feed_address,
-                                    agent=USER_AGENT,
-                                    etag=etag,
-                                    modified=modified)
+        
+        if self.options.get('fpf'):
+            self.fpf = self.options.get('fpf')
+            logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (
+                          unicode(self.feed)[:30]))
+        else:
+            self.fpf = feedparser.parse(self.feed.feed_address,
+                                        agent=USER_AGENT,
+                                        etag=etag,
+                                        modified=modified)
 
         if self.options['verbose'] and getattr(self.fpf, 'status', None) == 200:
             logging.debug(u'   ---> [%-30s] ~FBTIME: feed fetch in ~FM%.4ss' % (
@@ -240,7 +245,7 @@ class ProcessFeed:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
-            if hub_url and self_url:
+            if hub_url and self_url and not settings.DEBUG:
                 logging.debug(u'   ---> [%-30s] ~BB~SK~FWSubscribing to PuSH hub: %s' % (
                               unicode(self.feed)[:30], hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
@@ -314,7 +319,8 @@ class Dispatcher:
                     weight = "-"
                     quick = "-"
                     rand = "-"
-                elif self.options.get('quick') and not self.options['force'] and feed.known_good and feed.fetched_once:
+                elif (self.options.get('quick') and not self.options['force'] and 
+                      feed.known_good and feed.fetched_once and not feed.is_push):
                     weight = feed.stories_last_month * feed.num_subscribers
                     random_weight = random.randint(1, max(weight, 1))
                     quick = float(self.options['quick'])

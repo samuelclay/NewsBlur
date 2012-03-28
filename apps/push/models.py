@@ -41,8 +41,7 @@ class PushSubscriptionManager(models.Manager):
                 callback_path = reverse('push-callback',
                                         args=(subscription.pk,))
             except Resolver404:
-                raise TypeError(
-                    'callback cannot be None if there is not a reverable URL')
+                raise TypeError('callback cannot be None if there is not a reverable URL')
             else:
                 # callback = 'http://' + Site.objects.get_current() + \
                 callback = 'http://' + "dev.newsblur.com" + \
@@ -56,7 +55,7 @@ class PushSubscriptionManager(models.Manager):
             'hub.verify_token': subscription.generate_token('subscribe'),
             'hub.lease_seconds': lease_seconds,
         })
-        import pdb; pdb.set_trace()
+
         if response.status_code == 204:
             subscription.verified = True
         elif response.status_code == 202: # async verification
@@ -67,8 +66,7 @@ class PushSubscriptionManager(models.Manager):
                     topic, hub, error))
 
         subscription.save()
-        feed.is_push = subscription.verified
-        feed.save()
+        feed.setup_push()
         if subscription.verified:
             signals.verified.send(sender=subscription)
         return subscription

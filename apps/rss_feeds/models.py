@@ -633,6 +633,7 @@ class Feed(models.Model):
             'fake': kwargs.get('fake'),
             'quick': kwargs.get('quick'),
             'debug': kwargs.get('debug'),
+            'fpf': kwargs.get('fpf'),
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -1068,6 +1069,16 @@ class Feed(models.Model):
         self.next_scheduled_update = datetime.datetime.utcnow()
 
         return self.save()
+        
+    def setup_push(self):
+        from apps.push.models import PushSubscription
+        if not self.is_push:
+            try:
+                push = self.push
+            except PushSubscription.DoesNotExist:
+                return
+            self.is_push = push.verified
+            self.save()
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
