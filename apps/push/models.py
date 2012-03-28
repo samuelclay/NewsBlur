@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 import feedparser
-from urllib import urlencode
+import requests
 import urllib2
 
 from django.conf import settings
@@ -38,7 +38,7 @@ class PushSubscriptionManager(models.Manager):
 
         if callback is None:
             try:
-                callback_path = reverse('pubsubhubbub_callback',
+                callback_path = reverse('push-callback',
                                         args=(subscription.pk,))
             except Resolver404:
                 raise TypeError(
@@ -49,21 +49,20 @@ class PushSubscriptionManager(models.Manager):
                     callback_path
 
         response = self._send_request(hub, {
-                'mode': 'subscribe',
-                'callback': callback,
-                'topic': topic,
-                'verify': ('async', 'sync'),
-                'verify_token': subscription.generate_token('subscribe'),
-                'lease_seconds': lease_seconds,
-                })
-
-        info = response.info()
-        if info.status == 204:
+            'hub.mode': 'subscribe',
+            'hub.callback': callback,
+            'hub.topic': topic,
+            'hub.verify': ['async', 'sync'],
+            'hub.verify_token': subscription.generate_token('subscribe'),
+            'hub.lease_seconds': lease_seconds,
+        })
+        import pdb; pdb.set_trace()
+        if response.status_code == 204:
             subscription.verified = True
-        elif info.status == 202: # async verification
+        elif response.status_code == 202: # async verification
             subscription.verified = False
         else:
-            error = response.read()
+            error = response.content
             raise urllib2.URLError('error subscribing to %s on %s:\n%s' % (
                     topic, hub, error))
 
@@ -82,16 +81,7 @@ class PushSubscriptionManager(models.Manager):
                 return link['href']
 
     def _send_request(self, url, data):
-        def data_generator():
-            for key, value in data.items():
-                key = 'hub.' + key
-                if isinstance(value, (basestring, int)):
-                    yield key, str(value)
-                else:
-                    for subvalue in value:
-                        yield key, value
-        encoded_data = urlencode(list(data_generator()))
-        return urllib2.urlopen(url, encoded_data)
+        return requests.post(url, data=data)
 
 class PushSubscription(models.Model):
     feed = models.OneToOneField(Feed, db_index=True, related_name='push')

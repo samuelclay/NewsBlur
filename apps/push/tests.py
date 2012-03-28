@@ -402,8 +402,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
 
         self.responses.append(MockResponse(204))
 
-        response = self.client.post(reverse('pubsubhubbub_callback',
-                                            args=(sub.pk,)),
+        response = self.client.post(reverse('pubsubhubbub_callback', kwargs={'push_id': sub.pk}),
                                     update_data, 'application/atom+xml')
         self.assertEquals(response.status_code, 200)
         self.assertEquals(

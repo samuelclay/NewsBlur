@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from apps.push.models import PushSubscription
 from apps.push.signals import verified, updated
 
-def callback(request, pk):
+def push_callback(request, push_id):
     if request.method == 'GET':
         mode = request.GET['hub.mode']
         topic = request.GET['hub.topic']
@@ -21,7 +21,7 @@ def callback(request, pk):
             if not verify_token.startswith('subscribe'):
                 raise Http404
             subscription = get_object_or_404(PushSubscription,
-                                             pk=pk,
+                                             pk=push_id,
                                              topic=topic,
                                              verify_token=verify_token)
             subscription.verified = True
@@ -30,7 +30,7 @@ def callback(request, pk):
 
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
-        subscription = get_object_or_404(PushSubscription, pk=pk)
+        subscription = get_object_or_404(PushSubscription, pk=push_id)
         parsed = feedparser.parse(request.raw_post_data)
         if parsed.feed.links: # single notification
             hub_url = subscription.hub

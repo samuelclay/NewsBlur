@@ -145,7 +145,8 @@ class Feed(models.Model):
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
             if duplicate_feed:
-                merge_feeds(self.pk, duplicate_feed[0].pk)
+                if self.pk != duplicate_feed[0].pk:
+                    merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
             # Feed has been deleted. Just ignore it.
             return
@@ -1066,7 +1067,7 @@ class Feed(models.Model):
         logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
         self.next_scheduled_update = datetime.datetime.utcnow()
 
-        self.save()
+        return self.save()
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
