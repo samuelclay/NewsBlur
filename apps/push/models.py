@@ -24,8 +24,7 @@ class PushSubscriptionManager(models.Manager):
             hub = self._get_hub(topic)
 
         if hub is None:
-            raise TypeError(
-                'hub cannot be None if the feed does not provide it')
+            raise TypeError('hub cannot be None if the feed does not provide it')
 
         if lease_seconds is None:
             lease_seconds = getattr(settings, 'PUBSUBHUBBUB_LEASE_SECONDS',
@@ -38,14 +37,12 @@ class PushSubscriptionManager(models.Manager):
 
         if callback is None:
             try:
-                callback_path = reverse('push-callback',
-                                        args=(subscription.pk,))
+                callback_path = reverse('push-callback', args=(subscription.pk,))
             except Resolver404:
                 raise TypeError('callback cannot be None if there is not a reverable URL')
             else:
-                # callback = 'http://' + Site.objects.get_current() + \
-                callback = 'http://' + "dev.newsblur.com" + \
-                    callback_path
+                # callback = 'http://' + Site.objects.get_current() + callback_path
+                callback = 'http://' + "dev.newsblur.com" + callback_path
 
         response = self._send_request(hub, {
             'hub.mode': 'subscribe',
@@ -64,8 +61,6 @@ class PushSubscriptionManager(models.Manager):
             error = response.content
             logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s' % (
                           unicode(subscription.feed)[:30], error))
-            # raise urllib2.URLError('error subscribing to %s on %s:\n%s' % (
-            #         topic, hub, error))
 
         subscription.save()
         feed.setup_push()
