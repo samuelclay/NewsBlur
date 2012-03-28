@@ -42,7 +42,7 @@ class PushSubscriptionManager(models.Manager):
                 raise TypeError('callback cannot be None if there is not a reverable URL')
             else:
                 # callback = 'http://' + Site.objects.get_current() + callback_path
-                callback = 'http://' + "dev.newsblur.com" + callback_path
+                callback = "http://push.newsblur.com" + callback_path
 
         response = self._send_request(hub, {
             'hub.mode': 'subscribe',

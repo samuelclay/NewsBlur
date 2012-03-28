@@ -65,7 +65,7 @@ class FetchFeed:
         )
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
-                          unicode(self.feed)[:30], len(feed_xml)))
+                          unicode(self.feed)[:30], len(self.options.get('feed_xml'))))
         if self.options.get('fpf'):
             self.fpf = self.options.get('fpf')
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (
