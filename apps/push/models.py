@@ -3,7 +3,6 @@
 from datetime import datetime, timedelta
 import feedparser
 import requests
-import urllib2
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -13,6 +12,7 @@ from django.utils.hashcompat import sha_constructor
 
 from apps.push import signals
 from apps.rss_feeds.models import Feed
+from utils import log as logging
 
 DEFAULT_LEASE_SECONDS = 2592000 # 30 days in seconds
 
@@ -62,8 +62,10 @@ class PushSubscriptionManager(models.Manager):
             subscription.verified = False
         else:
             error = response.content
-            raise urllib2.URLError('error subscribing to %s on %s:\n%s' % (
-                    topic, hub, error))
+            logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s' % (
+                          unicode(subscription.feed)[:30], error))
+            # raise urllib2.URLError('error subscribing to %s on %s:\n%s' % (
+            #         topic, hub, error))
 
         subscription.save()
         feed.setup_push()
