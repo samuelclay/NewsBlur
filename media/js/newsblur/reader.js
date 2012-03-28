@@ -5261,10 +5261,10 @@
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {
-                    console.log(["Connected to pubsub", this.socket, active_feeds.length]);
+                    console.log(["Connected to real-time pubsub."]);
                     this.send_socket_active_feeds();
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
-                        console.log(['Feed update', feed_id, message]);
+                        console.log(['Real-time feed update', feed_id, message]);
                         this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
                     }, this));
                 
@@ -5281,6 +5281,7 @@
                 return feed.active && feed.id;
             }));
             
+            console.log(["send_socket_active_feeds", active_feeds.length]);
             this.socket.emit('subscribe:feeds', active_feeds);
         },
         
