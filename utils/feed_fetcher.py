@@ -17,9 +17,7 @@ from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_admin, utf8encode
-from vendor.stathat import StatHat
 
-stathat = StatHat()
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
@@ -70,8 +68,9 @@ class FetchFeed:
                                     etag=etag,
                                     modified=modified)
 
-        if getattr(self.fpf, 'status', None) == 200:
-            stathat.ez_post_value('newsblur', 'Fetcher: feed fetch time', time.time() - start)
+        if self.options['verbose'] and getattr(self.fpf, 'status', None) == 200:
+            logging.debug(u'   ---> [%-30s] ~FBTIME: feed fetch in ~FM%.4ss' % (
+                          self.feed.title[:30], time.time() - start))
         
         return FEED_OK, self.fpf
         
@@ -97,7 +96,12 @@ class ProcessFeed:
         self.entry_keys = sorted(self.entry_trans.keys())
     
     def refresh_feed(self):
-        self.feed = Feed.objects.using('default').get(pk=self.feed_id) 
+        try:
+            self.feed = Feed.objects.using('default').get(pk=self.feed_id)
+        except Feed.DoesNotExist:
+            duplicate_feed = Feed.objects.filter(feed_address=self.feed.feed_address, feed_link=self.feed.feed_link)
+            if duplicate_feed:
+                self.feed = duplicate_feed[0].feed
         
     def process(self):
         """ Downloads and parses a feed.
@@ -115,12 +119,8 @@ class ProcessFeed:
 
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
-                logging.debug(u'   ---> [%-30s] Fetched feed, status %d: %s entries (bozo: %s)' % (self.feed.title[:30],
-                              self.fpf.status,
-                              len(self.fpf.entries),
-                              self.fpf.bozo))
                 if self.fpf.bozo and self.fpf.status != 304:
-                    logging.debug(u'   ---> [%-30s] BOZO exception: %s (%s entries)' % (
+                    logging.debug(u'   ---> [%-30s] ~FRBOZO exception: %s ~SB(%s entries)' % (
                                   self.feed.title[:30],
                                   self.fpf.bozo_exception,
                                   len(self.fpf.entries)))
@@ -134,14 +134,14 @@ class ProcessFeed:
                     self.feed.feed_address = self.fpf.href
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
-                    logging.debug("   ---> [%-30s] Feed is %s'ing. Refetching..." % (self.feed.title[:30], self.fpf.status))
+                    logging.debug("   ---> [%-30s] ~SB~SK~FRFeed is %s'ing. Refetching..." % (self.feed.title[:30], self.fpf.status))
                     self.feed.schedule_feed_fetch_immediately()
                 if not self.fpf.entries:
                     self.feed.save()
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] HTTP Status code: %s.%s Checking address..." % (self.feed.title[:30], self.fpf.status, ' Not' if self.feed.known_good else ''))
+                logging.debug("   ---> [%-30s] ~SB~FRHTTP Status code: %s.%s Checking address..." % (self.feed.title[:30], self.fpf.status))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
@@ -149,25 +149,24 @@ class ProcessFeed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Error")
                 self.feed.save()
                 return FEED_ERRHTTP, ret_values
-                                    
-        if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
-            logging.debug("   ---> [%-30s] Feed is Non-XML. %s entries.%s Checking address..." % (self.feed.title[:30], len(self.fpf.entries), ' Not' if self.feed.known_good and self.fpf.entries else ''))
-            if not self.fpf.entries:
+
+        if not self.fpf.entries:
+            if self.fpf.bozo and isinstance(self.fpf.bozo_exception, feedparser.NonXMLContentType):
+                logging.debug("   ---> [%-30s] ~SB~FRFeed is Non-XML. %s entries. Checking address..." % (self.feed.title[:30], len(self.fpf.entries)))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
-                    self.feed.save_feed_history(502, 'Non-xml feed', self.fpf.bozo_exception)
+                    self.feed.save_feed_history(552, 'Non-xml feed', self.fpf.bozo_exception)
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
-        elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
-            logging.debug("   ---> [%-30s] Feed has SAX/XML parsing issues. %s entries.%s Checking address..." % (self.feed.title[:30], len(self.fpf.entries), ' Not' if self.fpf.entries else ''))
-            if not self.fpf.entries:
+            elif self.fpf.bozo and isinstance(self.fpf.bozo_exception, xml.sax._exceptions.SAXException):
+                logging.debug("   ---> [%-30s] ~SB~FRFeed has SAX/XML parsing issues. %s entries. Checking address..." % (self.feed.title[:30], len(self.fpf.entries)))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
-                    self.feed.save_feed_history(503, 'SAX Exception', self.fpf.bozo_exception)
+                    self.feed.save_feed_history(553, 'SAX Exception', self.fpf.bozo_exception)
                 self.feed.save()
                 return FEED_ERRPARSE, ret_values
                 
@@ -238,7 +237,9 @@ class ProcessFeed:
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
-        stathat.ez_post_value('newsblur', 'Fetcher: feed parse time', time.time() - start)
+        if self.options['verbose']:
+            logging.debug(u'   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss' % (
+                          self.feed.title[:30], time.time() - start))
         
         return FEED_OK, ret_values
 
@@ -331,7 +332,9 @@ class Dispatcher:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
                             logging.debug('   ---> [%-30s] Unread count took too long...' % (feed.title[:30],))
-                        stathat.ez_post_value('newsblur', 'Fetcher: unread count time', time.time() - start)
+                        if self.options['verbose']:
+                            logging.debug(u'   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
+                                          feed.title[:30], time.time() - start))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)
@@ -417,7 +420,6 @@ class Dispatcher:
                 identity, feed.feed_title[:30], delta,
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
-            stathat.ez_post_value('newsblur', 'Fetcher: total processing time', delta)
             
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
@@ -445,7 +447,7 @@ class Dispatcher:
                                                     active=True,
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
-        logging.debug(u'   ---> [%-30s] Computing scores: %s (%s/%s/%s) subscribers' % (
+        logging.debug(u'   ---> [%-30s] ~FYComputing scores for ~SB%s subscribers ~SN(%s/%s/%s)' % (
                       feed.title[:30], user_subs.count(),
                       feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
         

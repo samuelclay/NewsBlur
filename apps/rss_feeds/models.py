@@ -709,10 +709,10 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values[ENTRY_NEW] += 1
-                except (IntegrityError, OperationError), e:
+                except (IntegrityError, OperationError):
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             elif existing_story and story_has_changed:
                 # update story
                 # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
@@ -730,10 +730,10 @@ class Feed(models.Model):
                                                             story_guid=existing_story.story_guid)
                     else:
                         raise MStory.DoesNotExist
-                except (MStory.DoesNotExist, OperationError), e:
+                except (MStory.DoesNotExist, OperationError):
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving existing story, OperationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s' % (self.feed_title[:30], story.get('title')[:30]))
                     continue
                 if existing_story.story_original_content_z:
                     original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -769,11 +769,11 @@ class Feed(models.Model):
                 except (IntegrityError, OperationError):
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
-                except ValidationError, e:
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
+                except ValidationError:
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('   ---> [%-30s] ~SN~FRValidationError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             else:
                 ret_values[ENTRY_SAME] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
