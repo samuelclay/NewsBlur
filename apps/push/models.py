@@ -36,13 +36,13 @@ class PushSubscriptionManager(models.Manager):
         subscription.set_expiration(lease_seconds)
 
         if callback is None:
-            try:
-                callback_path = reverse('push-callback', args=(subscription.pk,))
-            except Resolver404:
-                raise TypeError('callback cannot be None if there is not a reverable URL')
-            else:
-                # callback = 'http://' + Site.objects.get_current() + callback_path
-                callback = "http://push.newsblur.com" + callback_path
+            # try:
+            #     callback_path = reverse('push-callback', args=(subscription.pk,))
+            # except Resolver404:
+            #     raise TypeError('callback cannot be None if there is not a reverable URL')
+            # else:
+            #     # callback = 'http://' + Site.objects.get_current() + callback_path
+            callback = "http://push.newsblur.com/push/%s" % subscription.pk # + callback_path
 
         response = self._send_request(hub, {
             'hub.mode': 'subscribe',
