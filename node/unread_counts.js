@@ -1,5 +1,5 @@
 (function() {
-  var client, fs, io, redis;
+  var REDIS_SERVER, client, fs, io, redis;
 
   fs = require('fs');
 
@@ -7,13 +7,15 @@
 
   redis = require('redis');
 
-  client = redis.createClient(6379, 'db01');
+  REDIS_SERVER = 'db01';
+
+  client = redis.createClient(6379, REDIS_SERVER);
 
   io.sockets.on('connection', function(socket) {
     socket.on('subscribe:feeds', function(feeds) {
       var _ref;
       if ((_ref = socket.subscribe) != null) _ref.end();
-      socket.subscribe = redis.createClient(6379, 'db01');
+      socket.subscribe = redis.createClient(6379, REDIS_SERVER);
       console.log("Subscribing to " + feeds.length + " feeds");
       socket.subscribe.subscribe(feeds);
       return socket.subscribe.on('message', function(channel, message) {
