@@ -54,7 +54,7 @@ def push_callback(request, push_id):
                 expiration_time = subscription.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
                 PushSubscription.objects.subscribe(
-                    self_url, hub_url, feed=subscription.feed,
+                    self_url, feed=subscription.feed, hub=hub_url,
                     callback=request.build_absolute_uri(),
                     lease_seconds=seconds)
 

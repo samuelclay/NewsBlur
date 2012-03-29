@@ -1083,8 +1083,7 @@ class Feed(models.Model):
         self.save()
     
     def queue_pushed_feed_xml(self, xml):
-        
-        logging.debug('   ---> [%-30s] [%s] ~FKQueuing pushed stories...' % (unicode(self)[:30], self.pk))
+        logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
         
         publisher = Task.get_publisher()
 
