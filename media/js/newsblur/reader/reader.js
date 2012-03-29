@@ -1120,13 +1120,14 @@
                 this.force_feed_refresh();
             }
             _.defer(_.bind(function() {
-              this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.model.flags['has_chosen_feeds']);
-              if (this.socket) {
-                  this.send_socket_active_feeds();
-              } else {
-                  var force_socket = NEWSBLUR.Globals.is_admin;
-                  this.setup_socket_realtime_unread_counts(force_socket);
-              }
+                this.make_feed_favicons();
+                // this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.model.flags['has_chosen_feeds']);
+                if (this.socket) {
+                    this.send_socket_active_feeds();
+                } else {
+                    var force_socket = NEWSBLUR.Globals.is_admin;
+                    this.setup_socket_realtime_unread_counts(force_socket);
+                }
             }, this));
         },
         

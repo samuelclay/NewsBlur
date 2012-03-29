@@ -100,7 +100,7 @@ class Feed(models.Model):
             'favicon_border': self.favicon_border(),
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': self.favicon_fetching,
-            'favicon_url': reverse('feed-icon', kwargs={'feed_id': self.pk}),
+            'favicon_url': reverse('feed-favicon', kwargs={'feed_id': self.pk}),
         }
         
         if include_favicon:
@@ -1178,11 +1178,11 @@ class FeedData(models.Model):
 
 
 class MFeedIcon(mongo.Document):
-    feed_id   = mongo.IntField(primary_key=True)
-    color     = mongo.StringField(max_length=6)
-    data      = mongo.StringField()
-    icon_url  = mongo.StringField()
-    not_found = mongo.BooleanField(default=False)
+    feed_id       = mongo.IntField(primary_key=True)
+    color         = mongo.StringField(max_length=6)
+    data          = mongo.StringField()
+    icon_url      = mongo.StringField()
+    not_found     = mongo.BooleanField(default=False)
     
     meta = {
         'collection'        : 'feed_icons',

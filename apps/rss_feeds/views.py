@@ -1,6 +1,7 @@
 import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
+from django.views.decorators.http import condition
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.conf import settings
@@ -43,12 +44,17 @@ def load_single_feed(request, feed_id):
 
     return payload
 
-def load_feed_icon(request, feed_id):
-    not_found = False
+def feed_favicon_etag(request, feed_id):
     try:
-        feed = get_object_or_404(Feed, id=feed_id)
-    except Feed.DoesNotExist:
-        not_found = True
+        feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
+    except MFeedIcon.DoesNotExist:
+        return
+    
+    return feed_icon.color
+    
+@condition(etag_func=feed_favicon_etag)
+def load_feed_favicon(request, feed_id):
+    not_found = False
     try:
         feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
     except MFeedIcon.DoesNotExist:

@@ -45,18 +45,21 @@ class IconImporter(object):
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
 
-            self.feed_icon.data      = image_str
-            self.feed_icon.icon_url  = icon_url
-            self.feed_icon.color     = color
-            self.feed_icon.not_found = False
-            self.feed_icon.save()
+            if (self.feed_icon.color != color or 
+                self.feed_icon.data != image_str or 
+                self.feed_icon.icon_url != icon_url or
+                self.feed_icon.not_found):
+                self.feed_icon.data      = image_str
+                self.feed_icon.icon_url  = icon_url
+                self.feed_icon.color     = color
+                self.feed_icon.not_found = False
+                self.feed_icon.save()
             self.feed.favicon_color     = color
             self.feed.favicon_not_found = False
         else:
             self.feed_icon.not_found = True
             self.feed.favicon_not_found = True
             
-        self.feed_icon.save()
         self.feed.save()
         return not self.feed.favicon_not_found
      
