@@ -130,7 +130,7 @@ class PushSubscription(models.Model):
                 needs_update = True
 
             if needs_update:
-                expiration_time = self.lease_expires - datetime.datetime.now()
+                expiration_time = self.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
                 PushSubscription.objects.subscribe(
                     self_url, feed=self.feed, hub=hub_url,
