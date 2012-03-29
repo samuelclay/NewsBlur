@@ -130,6 +130,10 @@ class PushSubscription(models.Model):
                 needs_update = True
 
             if needs_update:
+                logging.debug(u'   ---> [%-30s] ~FR~BKUpdating PuSH hub/topic: %s / %s' % (
+                              unicode(self.feed)[:30], hub_url, self_url))
+                logging.debug(u'   ---> [%-30s] ~FR~BKParsed: %s' % (
+                              unicode(self.feed)[:30], parsed))
                 expiration_time = self.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
                 PushSubscription.objects.subscribe(
