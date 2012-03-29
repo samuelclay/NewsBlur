@@ -58,7 +58,7 @@ class PageImporter(object):
                     data = response.read()
                 else:
                     response = requests.get(feed_link, headers=self.headers)
-                    data = response.content
+                    data = response.text
             elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
                 return

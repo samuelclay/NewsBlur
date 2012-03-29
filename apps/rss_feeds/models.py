@@ -1228,7 +1228,7 @@ class MFeedPage(mongo.Document):
                 feed_page = MFeedPage.objects.filter(feed_id=feed.pk)
                 if feed_page:
                     data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
-                    
+
         return data
 
 class MStory(mongo.Document):
