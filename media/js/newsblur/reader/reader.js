@@ -5133,7 +5133,7 @@
               'inverse':  false
             }, options);
             var $manage_menu_container = $('.NB-menu-manage-container');
-            // NEWSBLUR.log(['show_manage_menu', type, $item, $manage_menu_container.data('item'), $item && $item[0] == $manage_menu_container.data('item')]);
+            NEWSBLUR.log(['show_manage_menu', type, $item, $manage_menu_container.data('item'), $item && $item[0] == $manage_menu_container.data('item')]);
             clearTimeout(this.flags.closed_manage_menu);
             
             // If another menu is open, hide it first.
@@ -6668,6 +6668,13 @@
                     }
                 }
             });
+            $.targetIs(e, { tagSelector: '.NB-socialfeeds .NB-feedlist-manage-icon' }, function($t, $p) {
+                e.preventDefault();
+                if (!self.flags['sorting_feed']) {
+                    stopPropagation = true;
+                    self.show_manage_menu('socialfeed', $t.closest('.feed'));
+                }
+            });
             if (stopPropagation) return;
             $.targetIs(e, { tagSelector: '#feed_list .feed.NB-feed-exception' }, function($t, $p){
                 e.preventDefault();
@@ -6717,7 +6724,12 @@
             
             $.targetIs(e, { tagSelector: '.NB-feedbar .NB-feedlist-manage-icon' }, function($t, $p) {
                 e.preventDefault();
-                self.show_manage_menu('feed', $t.closest('.feed'), {toplevel: true});
+                var $feed = $t.closest('.feed');
+                if (_.string.include($feed.data('id'), 'social:')) {
+                    self.show_manage_menu('socialfeed', $t.closest('.feed'), {toplevel: true});
+                } else {
+                    self.show_manage_menu('feed', $t.closest('.feed'), {toplevel: true});
+                }
             });
             $.targetIs(e, { tagSelector: '.NB-feedbar-mark-feed-read' }, function($t, $p){
                 e.preventDefault();
@@ -7421,6 +7433,10 @@
             
             // NEWSBLUR.log(['right click', e.button, e, e.target, e.currentTarget]);
             
+            $.targetIs(e, { tagSelector: '.feed', childOf: '.NB-socialfeeds' }, function($t, $p) {
+                e.preventDefault();
+                self.show_manage_menu('socialfeed', $t);
+            });
             $.targetIs(e, { tagSelector: '.feed', childOf: '#feed_list' }, function($t, $p) {
                 e.preventDefault();
                 self.show_manage_menu('feed', $t);

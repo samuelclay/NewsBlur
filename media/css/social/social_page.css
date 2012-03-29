@@ -59,6 +59,10 @@ header {
     width: 16px;
     height: 16px;
 }
+.NB-feed-favicon img {
+    width: 16px;
+    height: 16px;
+}
 
 .NB-feed a {
     color: white;
