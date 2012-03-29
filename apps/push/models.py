@@ -116,8 +116,10 @@ class PushSubscription(models.Model):
             hub_url = self.hub
             self_url = self.topic
             for link in parsed.feed.links:
-                if 'wp-admin' in link['href']:
+                href = link.get('href', '')
+                if any(w in href for w in ['wp-admin', 'wp-cron']):
                     continue
+                    
                 if link['rel'] == 'hub':
                     hub_url = link['href']
                 elif link['rel'] == 'self':

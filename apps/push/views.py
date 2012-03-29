@@ -31,12 +31,14 @@ def push_callback(request, push_id):
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
         subscription = get_object_or_404(PushSubscription, pk=push_id)
+        # XXX TODO: Optimize this by removing feedparser. It just needs to find out
+        # the hub_url or topic has changed. ElementTree could do it.
         parsed = feedparser.parse(request.raw_post_data)
         subscription.check_urls_against_pushed_data(parsed)
         updated.send(sender=subscription, update=parsed)
 
-        # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
         # Don't give fat ping, just fetch.
+        # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
         subscription.feed.queue_pushed_feed_xml("Fetch me")
 
         return HttpResponse('')
