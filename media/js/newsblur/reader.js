@@ -5304,9 +5304,8 @@
             if (feed_count > 500) {
                 refresh_interval *= 1.5;
             }
-            if (this.flags.feed_refreshing_in_realtime) {
+            if (this.flags['feed_refreshing_in_realtime'] && !this.flags['has_unfetched_feeds']) {
                 if (this.socket && this.socket.socket.connected) {
-                    CHECK FOR ERRORS/IMPORTING. ALTHOUGH IT SHOULD BE HANDLED BY THE FEEDFETCHER
                     refresh_interval *= 20;
                 }
             }
