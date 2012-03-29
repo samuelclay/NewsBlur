@@ -116,6 +116,8 @@ class PushSubscription(models.Model):
             hub_url = self.hub
             self_url = self.topic
             for link in parsed.feed.links:
+                if 'wp-admin' in link['href']:
+                    continue
                 if link['rel'] == 'hub':
                     hub_url = link['href']
                 elif link['rel'] == 'self':
@@ -132,8 +134,6 @@ class PushSubscription(models.Model):
             if needs_update:
                 logging.debug(u'   ---> [%-30s] ~FR~BKUpdating PuSH hub/topic: %s / %s' % (
                               unicode(self.feed)[:30], hub_url, self_url))
-                logging.debug(u'   ---> [%-30s] ~FR~BKParsed: %s' % (
-                              unicode(self.feed)[:30], parsed))
                 expiration_time = self.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
                 PushSubscription.objects.subscribe(
