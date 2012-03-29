@@ -88,6 +88,7 @@ class Feed(models.Model):
             'updated': relative_timesince(self.last_update),
             'updated_seconds_ago': seconds_timesince(self.last_update),
             'subs': self.num_subscribers,
+            'is_push': self.is_push,
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
             'favicon_text_color': self.favicon_text_color(),
