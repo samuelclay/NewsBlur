@@ -442,7 +442,7 @@ def load_feed_page(request, feed_id):
     if not data:
         data = "Fetching feed..."
     
-    return HttpResponse(data, mimetype='text/html')
+    return HttpResponse(data, mimetype="text/html; charset=utf-8")
     
 @json.json_view
 def load_starred_stories(request):
