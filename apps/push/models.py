@@ -110,7 +110,32 @@ class PushSubscription(models.Model):
         self.verify_token = token
         self.save()
         return token
+    
+    def check_urls_against_pushed_data(self, parsed):
+        if hasattr(parsed.feed, 'links'): # single notification
+            hub_url = self.hub
+            self_url = self.topic
+            for link in parsed.feed.links:
+                if link['rel'] == 'hub':
+                    hub_url = link['href']
+                elif link['rel'] == 'self':
+                    self_url = link['href']
 
+            needs_update = False
+            if hub_url and self.hub != hub_url:
+                # hub URL has changed; let's update our subscription
+                needs_update = True
+            elif self_url != self.topic:
+                # topic URL has changed
+                needs_update = True
+
+            if needs_update:
+                expiration_time = self.lease_expires - datetime.datetime.now()
+                seconds = expiration_time.days*86400 + expiration_time.seconds
+                PushSubscription.objects.subscribe(
+                    self_url, feed=self.feed, hub=hub_url,
+                    lease_seconds=seconds)
+                    
     def __unicode__(self):
         if self.verified:
             verified = u'verified'
