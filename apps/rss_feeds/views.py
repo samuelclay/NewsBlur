@@ -102,11 +102,17 @@ def load_feed_statistics(request, feed_id):
     # Dates of last and next update
     stats['active'] = feed.active
     stats['last_update'] = relative_timesince(feed.last_update)
-    stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
+    if feed.is_push:
+        stats['next_update'] = "real-time..."
+    else:
+        stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
 
     # Minutes between updates
     update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
-    stats['update_interval_minutes'] = update_interval_minutes
+    if feed.is_push:
+        stats['update_interval_minutes'] = 0
+    else:
+        stats['update_interval_minutes'] = update_interval_minutes
     original_active_premium_subscribers = feed.active_premium_subscribers
     original_premium_subscribers = feed.premium_subscribers
     feed.active_premium_subscribers = max(feed.active_premium_subscribers+1, 1)
@@ -114,7 +120,10 @@ def load_feed_statistics(request, feed_id):
     premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
-    stats['premium_update_interval_minutes'] = premium_update_interval_minutes
+    if feed.is_push:
+        stats['premium_update_interval_minutes'] = 0
+    else:
+        stats['premium_update_interval_minutes'] = premium_update_interval_minutes
     
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history

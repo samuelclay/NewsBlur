@@ -1,6 +1,5 @@
 from django.utils.dateformat import DateFormat
 import datetime
-from django.utils.http import urlquote
 from django.conf import settings
 from itertools import chain
 
@@ -59,21 +58,21 @@ def pre_process_story(entry):
     publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
     entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
     
-    entry_link = entry.get('link') or ''
-    protocol_index = entry_link.find("://")
-    if protocol_index != -1:
-        entry['link'] = (entry_link[:protocol_index+3]
-                        + urlquote(entry_link[protocol_index+3:]))
-    else:
-        entry['link'] = urlquote(entry_link)
+    # entry_link = entry.get('link') or ''
+    # protocol_index = entry_link.find("://")
+    # if protocol_index != -1:
+    #     entry['link'] = (entry_link[:protocol_index+3]
+    #                     + urlquote(entry_link[protocol_index+3:]))
+    # else:
+    #     entry['link'] = urlquote(entry_link)
     if isinstance(entry.get('guid'), dict):
         entry['guid'] = unicode(entry['guid'])
 
     # Normalize story content/summary
     if entry.get('content'):
-        entry['story_content'] = entry['content'][0].get('value', '')
+        entry['story_content'] = entry['content'][0].get('value', '').strip()
     else:
-        entry['story_content'] = entry.get('summary', '')
+        entry['story_content'] = entry.get('summary', '').strip()
     
     # Add each media enclosure as a Download link
     for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):

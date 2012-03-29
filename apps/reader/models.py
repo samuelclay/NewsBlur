@@ -371,7 +371,9 @@ class UserSubscription(models.Model):
         
         # Switch read stories
         user_stories = MUserStory.objects(user_id=self.user_id, feed_id=old_feed.pk)
-        logging.info(" ---> %s read stories" % user_stories.count())
+        if user_stories.count() > 0:
+            logging.info(" ---> %s read stories" % user_stories.count())
+
         for user_story in user_stories:
             user_story.feed_id = new_feed.pk
             duplicate_story = user_story.story

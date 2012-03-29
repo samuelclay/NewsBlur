@@ -11,6 +11,8 @@
 
   io.sockets.on('connection', function(socket) {
     socket.on('subscribe:feeds', function(feeds) {
+      var _ref;
+      if ((_ref = socket.subscribe) != null) _ref.end();
       socket.subscribe = redis.createClient(6379, 'db01');
       console.log("Subscribing to " + feeds.length + " feeds");
       socket.subscribe.subscribe(feeds);

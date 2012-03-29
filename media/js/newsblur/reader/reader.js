@@ -1121,8 +1121,12 @@
             }
             _.defer(_.bind(function() {
               this.model.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], this.model.flags['has_chosen_feeds']);
-              var force_socket = NEWSBLUR.Globals.is_admin;
-              this.setup_socket_realtime_unread_counts(force_socket);
+              if (this.socket) {
+                  this.send_socket_active_feeds();
+              } else {
+                  var force_socket = NEWSBLUR.Globals.is_admin;
+                  this.setup_socket_realtime_unread_counts(force_socket);
+              }
             }, this));
         },
         
@@ -5873,11 +5877,10 @@
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {
-                    var active_feeds = _.compact(_.map(this.model.feeds, function(feed) { return feed.active && feed.id; }));
-                    console.log(["Connected to pubsub", this.socket, active_feeds.length]);
-                    this.socket.emit('subscribe:feeds', active_feeds);
+                    console.log(["Connected to real-time pubsub."]);
+                    this.send_socket_active_feeds();
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
-                        console.log(['Feed update', feed_id, message]);
+                        console.log(['Real-time feed update', feed_id, message]);
                         this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
                     }, this));
                 
@@ -5885,6 +5888,17 @@
                     this.setup_feed_refresh();
                 }, this));
             }
+        },
+        
+        send_socket_active_feeds: function() {
+            if (!this.socket) return;
+            
+            var active_feeds = _.compact(_.map(this.model.feeds, function(feed) { 
+                return feed.active && feed.id;
+            }));
+            
+            console.log(["send_socket_active_feeds", active_feeds.length]);
+            this.socket.emit('subscribe:feeds', active_feeds);
         },
         
         setup_feed_refresh: function(new_feeds) {
