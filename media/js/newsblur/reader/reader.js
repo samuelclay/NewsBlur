@@ -5877,14 +5877,18 @@
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {
-                    console.log(["Connected to real-time pubsub."]);
-                    this.send_socket_active_feeds();
+                    var active_feeds = this.send_socket_active_feeds();
+                    console.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         console.log(['Real-time feed update', feed_id, message]);
                         this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
                     }, this));
                 
                     this.flags.feed_refreshing_in_realtime = true;
+                    this.setup_feed_refresh();
+                }, this));
+                this.socket.on('disconnect', _.bind(function() {
+                    console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
                     this.setup_feed_refresh();
                 }, this));
             }
@@ -5897,8 +5901,9 @@
                 return feed.active && feed.id;
             }));
             
-            console.log(["send_socket_active_feeds", active_feeds.length]);
             this.socket.emit('subscribe:feeds', active_feeds);
+            
+            return active_feeds;
         },
         
         setup_feed_refresh: function(new_feeds) {
@@ -5915,8 +5920,10 @@
             if (feed_count > 500) {
                 refresh_interval *= 1.5;
             }
-            if (this.flags.feed_refreshing_in_realtime) {
-                refresh_interval *= 20;
+            if (this.flags['feed_refreshing_in_realtime'] && !this.flags['has_unfetched_feeds']) {
+                if (this.socket && this.socket.socket.connected) {
+                    refresh_interval *= 20;
+                }
             }
 
             if (new_feeds && feed_count < 250) {
@@ -5934,6 +5941,7 @@
                   }, self), self.flags['has_unfetched_feeds']);
                 }
             }, refresh_interval);
+            console.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
         },
         
         force_feed_refresh: function(feed_id, new_feed_id) {

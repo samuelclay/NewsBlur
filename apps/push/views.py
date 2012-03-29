@@ -1,6 +1,5 @@
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
-from datetime import datetime
 import feedparser
 
 from django.http import HttpResponse, Http404
@@ -32,36 +31,15 @@ def push_callback(request, push_id):
         return HttpResponse(challenge, content_type='text/plain')
     elif request.method == 'POST':
         subscription = get_object_or_404(PushSubscription, pk=push_id)
+        # XXX TODO: Optimize this by removing feedparser. It just needs to find out
+        # the hub_url or topic has changed. ElementTree could do it.
         parsed = feedparser.parse(request.raw_post_data)
-        if parsed.feed.links: # single notification
-            hub_url = subscription.hub
-            self_url = subscription.topic
-            for link in parsed.feed.links:
-                if link['rel'] == 'hub':
-                    hub_url = link['href']
-                elif link['rel'] == 'self':
-                    self_url = link['href']
+        subscription.check_urls_against_pushed_data(parsed)
+        updated.send(sender=subscription, update=parsed)
 
-            needs_update = False
-            if hub_url and subscription.hub != hub_url:
-                # hub URL has changed; let's update our subscription
-                needs_update = True
-            elif self_url != subscription.topic:
-                # topic URL has changed
-                needs_update = True
+        # Don't give fat ping, just fetch.
+        # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
+        subscription.feed.queue_pushed_feed_xml("Fetch me")
 
-            if needs_update:
-                expiration_time = subscription.lease_expires - datetime.now()
-                seconds = expiration_time.days*86400 + expiration_time.seconds
-                PushSubscription.objects.subscribe(
-                    self_url, feed=subscription.feed, hub=hub_url,
-                    callback=request.build_absolute_uri(),
-                    lease_seconds=seconds)
-
-            # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
-            # Don't give fat ping, just fetch.
-            subscription.feed.queue_pushed_feed_xml("Fetch me")
-
-            updated.send(sender=subscription, update=parsed)
-            return HttpResponse('')
+        return HttpResponse('')
     return Http404

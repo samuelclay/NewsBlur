@@ -30,8 +30,7 @@ class PushSubscriptionManager(models.Manager):
             lease_seconds = getattr(settings, 'PUBSUBHUBBUB_LEASE_SECONDS',
                                    DEFAULT_LEASE_SECONDS)
 
-        subscription, created = self.get_or_create(
-            hub=hub, topic=topic, feed=feed)
+        subscription, created = self.get_or_create(feed=feed)
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)
 
@@ -111,7 +110,38 @@ class PushSubscription(models.Model):
         self.verify_token = token
         self.save()
         return token
+    
+    def check_urls_against_pushed_data(self, parsed):
+        if hasattr(parsed.feed, 'links'): # single notification
+            hub_url = self.hub
+            self_url = self.topic
+            for link in parsed.feed.links:
+                href = link.get('href', '')
+                if any(w in href for w in ['wp-admin', 'wp-cron']):
+                    continue
+                    
+                if link['rel'] == 'hub':
+                    hub_url = link['href']
+                elif link['rel'] == 'self':
+                    self_url = link['href']
 
+            needs_update = False
+            if hub_url and self.hub != hub_url:
+                # hub URL has changed; let's update our subscription
+                needs_update = True
+            elif self_url != self.topic:
+                # topic URL has changed
+                needs_update = True
+
+            if needs_update:
+                logging.debug(u'   ---> [%-30s] ~FR~BKUpdating PuSH hub/topic: %s / %s' % (
+                              unicode(self.feed)[:30], hub_url, self_url))
+                expiration_time = self.lease_expires - datetime.now()
+                seconds = expiration_time.days*86400 + expiration_time.seconds
+                PushSubscription.objects.subscribe(
+                    self_url, feed=self.feed, hub=hub_url,
+                    lease_seconds=seconds)
+                    
     def __unicode__(self):
         if self.verified:
             verified = u'verified'
