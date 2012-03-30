@@ -229,6 +229,7 @@ def setup_app():
     setup_app_motd()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
+    setup_node()
 
 def setup_db():
     setup_common()
@@ -466,11 +467,13 @@ def setup_staging():
 def setup_node():
     sudo('add-apt-repository ppa:chris-lea/node.js')
     sudo('apt-get update')
-    sudo('apt-get install nodejs')
+    sudo('apt-get install -y nodejs')
     run('curl http://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
     put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
+    sudo('supervisorctl reload')
+    sudo('supervisorctl start node')
 
 def copy_certificates():
     # with cd(env.NEWSBLUR_PATH):

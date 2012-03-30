@@ -156,6 +156,7 @@ def load_social_page(request, user_id, username=None):
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
 
     params = {
+        'user': user,
         'social_user': social_user,
         'stories': stories,
         'social_profile': social_profile.page(),
@@ -278,7 +279,7 @@ def profile(request):
 
     user_id = request.GET.get('user_id', request.user.pk)
     user_profile = MSocialProfile.objects.get(user_id=user_id)
-    current_profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    current_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
     followers_youknow, followers_everybody = current_profile.common_follows(user_id, direction='followers')
     following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
     profile_ids = set(followers_youknow + followers_everybody + following_youknow + following_everybody)
@@ -298,7 +299,7 @@ def profile(request):
 def save_profile(request):
     data = request.POST
 
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
     profile.location = data['location']
     profile.bio = data['bio']
     profile.website = data['website']
@@ -314,7 +315,7 @@ def save_profile(request):
 @ajax_login_required
 @json.json_view
 def follow(request):
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
     try:
         follow_user_id = int(request.POST['user_id'])
     except ValueError:

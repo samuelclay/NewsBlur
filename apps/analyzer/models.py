@@ -127,8 +127,6 @@ def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier
         params['feed_id__in'] = feed_id
     if social_user_id:
         params['social_user_id'] = int(social_user_id.replace('social:', ''))
-    else:
-        params['social_user_id'] = None
     
     if classifier_feeds is None:
         classifier_feeds = list(MClassifierFeed.objects(**params))
