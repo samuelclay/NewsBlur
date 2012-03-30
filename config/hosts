@@ -2,9 +2,12 @@
 
 199.15.250.228  app01   app01.newsblur.com
 199.15.250.229  app02   app02.newsblur.com
+199.15.252.156  app03   app03.newsblur.com
+199.15.252.156  dev     dev.newsblur.com
 199.15.253.218  db01    db01.newsblur.com
 199.15.252.50   db02    db02.newsblur.com
 199.15.253.226  db03    db03.newsblur.com
+199.15.249.98   db04    db04.newsblur.com
 199.15.250.231  task01  task01.newsblur.com
 199.15.250.250  task02  task02.newsblur.com
 199.15.250.233  task03  task03.newsblur.com

@@ -16,7 +16,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
-from apps.rss_feeds.tasks import UpdateFeeds
+from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from celery.task import Task
 from utils import json_functions as json
 from utils import feedfinder, feedparser
@@ -40,6 +40,7 @@ class Feed(models.Model):
     feed_link_locked = models.BooleanField(default=False)
     hash_address_and_link = models.CharField(max_length=64, unique=True, db_index=True)
     feed_title = models.CharField(max_length=255, default="[Untitled]", blank=True, null=True)
+    is_push = models.NullBooleanField(default=False, blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
@@ -87,6 +88,7 @@ class Feed(models.Model):
             'updated': relative_timesince(self.last_update),
             'updated_seconds_ago': seconds_timesince(self.last_update),
             'subs': self.num_subscribers,
+            'is_push': self.is_push,
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
             'favicon_text_color': self.favicon_text_color(),
@@ -144,7 +146,8 @@ class Feed(models.Model):
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
             logging.debug(' ***> [%-30s] Feed deleted. Could not save: %s' % (unicode(self)[:30], e))
             if duplicate_feed:
-                merge_feeds(self.pk, duplicate_feed[0].pk)
+                if self.pk != duplicate_feed[0].pk:
+                    merge_feeds(self.pk, duplicate_feed[0].pk)
                 return duplicate_feed[0]
             # Feed has been deleted. Just ignore it.
             return
@@ -170,17 +173,16 @@ class Feed(models.Model):
         def by_url(address):
             feed = cls.objects.filter(**criteria('feed_address', address)).order_by('-num_subscribers')
             if not feed:
-                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
-            if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria('duplicate_address', address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
+            if not feed and aggressive:
+                feed = cls.objects.filter(**criteria('feed_link', address)).order_by('-num_subscribers')
                 
             return feed
         
         # Normalize and check for feed_address, dupes, and feed_link
-        if not aggressive:
-            url = urlnorm.normalize(url)
+        url = urlnorm.normalize(url)
         feed = by_url(url)
         
         # Create if it looks good
@@ -631,6 +633,8 @@ class Feed(models.Model):
             'fake': kwargs.get('fake'),
             'quick': kwargs.get('quick'),
             'debug': kwargs.get('debug'),
+            'fpf': kwargs.get('fpf'),
+            'feed_xml': kwargs.get('feed_xml'),
         }
         disp = feed_fetcher.Dispatcher(options, 1)        
         disp.add_jobs([[self.pk]])
@@ -681,10 +685,10 @@ class Feed(models.Model):
                 try:
                     s.save()
                     ret_values[ENTRY_NEW] += 1
-                except (IntegrityError, OperationError), e:
+                except (IntegrityError, OperationError):
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving new story, IntegrityError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             elif existing_story and story_has_changed:
                 # update story
                 # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
@@ -702,10 +706,10 @@ class Feed(models.Model):
                                                             story_guid=existing_story.story_guid)
                     else:
                         raise MStory.DoesNotExist
-                except (MStory.DoesNotExist, OperationError), e:
+                except (MStory.DoesNotExist, OperationError):
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving existing story, OperationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s' % (self.feed_title[:30], story.get('title')[:30]))
                     continue
                 if existing_story.story_original_content_z:
                     original_content = zlib.decompress(existing_story.story_original_content_z)
@@ -741,11 +745,11 @@ class Feed(models.Model):
                 except (IntegrityError, OperationError):
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving updated story, IntegrityError: %s - %s' % (self.feed_title, story.get('title')))
-                except ValidationError, e:
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
+                except ValidationError:
                     ret_values[ENTRY_ERR] += 1
                     if verbose:
-                        logging.info('Saving updated story, ValidationError: %s - %s: %s' % (self.feed_title, story.get('title'), e))
+                        logging.info('   ---> [%-30s] ~SN~FRValidationError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             else:
                 ret_values[ENTRY_SAME] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
@@ -1036,7 +1040,8 @@ class Feed(models.Model):
         
         if self.active_premium_subscribers > 0:
             total = min(total, 60) # 1 hour minimum for premiums
-            
+        if self.is_push:
+            total = total * 20
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
                                                 self.num_subscribers, self.active_subscribers,
@@ -1051,7 +1056,7 @@ class Feed(models.Model):
         
         if error_count:
             total = total * error_count
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors, %s non-errors. Total: %s' % (unicode(self)[:30], error_count, non_error_count, total))
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s/%s errors. Time: %s min' % (unicode(self)[:30], error_count, non_error_count, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
@@ -1065,7 +1070,29 @@ class Feed(models.Model):
         logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
         self.next_scheduled_update = datetime.datetime.utcnow()
 
+        return self.save()
+        
+    def setup_push(self):
+        from apps.push.models import PushSubscription
+        try:
+            push = self.push
+        except PushSubscription.DoesNotExist:
+            self.is_push = False
+        else:
+            self.is_push = push.verified
         self.save()
+    
+    def queue_pushed_feed_xml(self, xml):
+        logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
+        
+        publisher = Task.get_publisher()
+
+        self.queued_date = datetime.datetime.utcnow()
+        self.set_next_scheduled_update()
+
+        PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds', publisher=publisher)
+
+        publisher.connection.close()
         
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
@@ -1174,7 +1201,7 @@ class MFeedPage(mongo.Document):
                 feed_page = MFeedPage.objects.filter(feed_id=feed.pk)
                 if feed_page:
                     data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
-                    
+
         return data
 
 class MStory(mongo.Document):

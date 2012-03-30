@@ -31,14 +31,19 @@ env.VENDOR_PATH   = "~/projects/code"
 env.user = 'sclay'
 env.roledefs ={
     'local': ['localhost'],
-    'app': ['app01.newsblur.com', 'app02.newsblur.com'],
-    'web': ['www.newsblur.com', 'app02.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
+    'app': ['app01.newsblur.com', 
+            'app02.newsblur.com'],
+    'dev': ['dev.newsblur.com'],
+    'web': ['www.newsblur.com', 
+            'app02.newsblur.com'],
+    'db': ['db01.newsblur.com', 
+           'db02.newsblur.com', 
+           'db03.newsblur.com', 
+           'db04.newsblur.com'],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
-             # 'task04.newsblur.com',
-            ],
+             'task04.newsblur.com'],
 }
 
 # ================
@@ -52,6 +57,10 @@ def server():
 def app():
     server()
     env.roles = ['app']
+    
+def dev():
+    server()
+    env.roles = ['dev']
 
 def web():
     server()

@@ -43,3 +43,17 @@ class NewFeeds(Task):
         for feed_pk in feed_pks:
             feed = Feed.objects.get(pk=feed_pk)
             feed.update(options=options)
+
+class PushFeeds(Task):
+    name = 'push-feeds'
+    max_retries = 0
+    ignore_result = True
+
+    def run(self, feed_id, xml, **kwargs):
+        from apps.rss_feeds.models import Feed
+        
+        options = {
+            'feed_xml': xml
+        }
+        feed = Feed.objects.get(pk=feed_id)
+        feed.update(options=options)
