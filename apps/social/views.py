@@ -148,9 +148,11 @@ def load_social_page(request, user_id, username=None):
     feeds = Feed.objects.filter(pk__in=story_feed_ids)
     feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in feeds)
     for story in stories:
-        story['feed'] = feeds[story['story_feed_id']]
+        if story['story_feed_id'] in feeds:
+            # Feed could have been deleted.
+            story['feed'] = feeds[story['story_feed_id']]
         shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
-        story['shared_date'] = format_story_link_date__long(shared_date, now)
+        story['shared_date'] = shared_date
     
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)

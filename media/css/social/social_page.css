@@ -14,8 +14,31 @@ body {
 /* ========== */
 
 header {
-    padding: 12px 28px;
-    text-shadow: 1px 1px 0 white;
+    padding: 64px 14px;
+    text-shadow: 1px 1px 0 #E0E0E0;
+    background-color: #EBC55F;
+    overflow: hidden;
+}
+
+.NB-title-photo {
+    float: left;
+    margin: 24px 12px 0 14px;
+    z-index: 1;
+    position: relative;
+}
+.NB-title-photo img {
+    max-width: 48px;
+    max-height: 48px;
+}
+.NB-title {
+    font-weight: bold;
+    overflow: hidden;
+    margin: 0;
+    position: relative;
+}
+.NB-title .NB-title-background {
+    width: 100%;
+    height: 100%;
     background-image: -webkit-gradient(
       linear,
       left bottom,
@@ -28,9 +51,52 @@ header {
       #E9EAEF 10%,
       #F5F8FA 84%
     );
-
+    border-radius: 8px;
+    opacity: .8;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
 }
-
+.NB-title-content {
+    float: left;
+    padding: 24px 14px 24px 0;
+    z-index: 1;
+    position: relative;
+}
+.NB-title .NB-title-name {
+    font-size: 24px;
+    line-height: 24px;
+    float: left;
+}
+.NB-title.NB-title-no-bio .NB-title-name {
+    line-height: 48px;
+}
+.NB-title .NB-title-location {
+    float: left;
+    color: #F0F0F0;
+    text-shadow: none;
+    background-color: #C0C0C0;
+    border-radius: 8px;
+    font-size: 12px;
+    display: block;
+    padding: 2px 8px 1px;
+    margin: 4px 0 0 16px;
+    text-transform: uppercase;
+}
+.NB-title.NB-title-no-bio .NB-title-location {
+    margin-top: 14px;
+}
+.NB-title .NB-title-bio {
+    clear: both;
+    color: #909090;
+    font-size: 18px;
+    line-height: 18px;
+    padding-top: 4px;
+}
+.NB-title.NB-title-no-bio .NB-title-bio {
+    padding: 0;
+}
 /* ===================== */
 /* = Story Feed Header = */
 /* ===================== */
@@ -125,7 +191,7 @@ header {
     float: left;
     text-transform: uppercase;
     font-weight: bold;
-    font-size: 10px;
+    font-size: 13px;
     color: #B0B0B0;
     margin: 0 16px 4px 0;
 }
@@ -140,8 +206,8 @@ header {
 .NB-story-tag {
     float: left;
     font-weight: normal;
-    font-size: 9px;
-    padding: 0px 4px 1px;
+    font-size: 10px;
+    padding: 1px 4px 1px;
     margin: 0 2px 2px;
     background-color: #DBDBDB;
     color: #6F6D69;
@@ -153,8 +219,16 @@ header {
     position: absolute;
     right: 24px;
     top: 12px;
-    font-size: 10px;
+    font-size: 15px;
     font-weight: bold;
+    color: silver;
+    text-transform: uppercase;
+}
+.NB-story-date small {
+    font-weight: normal;
+}
+.NB-story-date sup {
+    font-size: 7px;
 }
 
 /* =========== */

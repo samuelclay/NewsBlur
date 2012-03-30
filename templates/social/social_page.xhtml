@@ -16,9 +16,33 @@
 <body>
     
     <header class="NB-header">
-        <h1 class="NB-title">{{ social_profile.feed_title }}</h1>
+        <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
+            <div class="NB-title-background"></div>
+            <div class="NB-title-photo">
+                {% if social_profile.photo_url %}
+                    <img src="{{ social_profile.photo_url }}" />
+                {% else %}
+                    <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png" />
+                {% endif %}
+            </div>
+            <div class="NB-title-content">
+                <div class="NB-title-name">
+                    {{ social_profile.feed_title }}
+                </div>
+                {% if social_profile.location %}
+                    <div class="NB-title-location">
+                        {{ social_profile.location }}
+                    </div>
+                {% endif %}
+                {% if social_profile.bio %}
+                    <div class="NB-title-bio">
+                        {{ social_profile.bio }}
+                    </div>
+                {% endif %}
+            </div>
+        </h1>
         <div class="NB-header-feed">
-            <a type="application/rss+xml" href="{% url shared-stories-rss-feed user.pk user.username %}">RSS feed for this page</a>
+            {# <a type="application/rss+xml" href="{% url shared-stories-rss-feed user.pk user.username %}">RSS feed for this page</a> #}
         </div>
     </header>
 
@@ -31,12 +55,14 @@
                 border-top-color: #{{ story.feed.favicon_border }};
                 border-bottom-color: #{{ story.feed.favicon_border }};
                 ">
-                <div class="NB-feed-favicon">
-                    <img src="{{ story.feed.favicon_url }}" />
-                </div>
-                <div class="NB-feed-title">
-                    <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
-                </div>
+                {% if story.feed %}
+                    <div class="NB-feed-favicon">
+                        <img src="{{ story.feed.favicon_url }}" />
+                    </div>
+                    <div class="NB-feed-title">
+                        <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
+                    </div>
+                {% endif %}
             </div>
             
             <div class="NB-story-header">
@@ -53,7 +79,9 @@
                 <div class="NB-story-title">
                     <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
                 </div>
-                <div class="NB-story-date">Shared {{ story.shared_date }}</div>
+                <div class="NB-story-date">
+                    {{ story.shared_date|date:"g:i A <\s\m\a\l\l>\o\n</\s\m\a\l\l> l, F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
+                </div>
             </div>
             
             <div class="NB-story">
