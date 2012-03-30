@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 import feedparser
 import requests
+import re
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -19,7 +20,7 @@ DEFAULT_LEASE_SECONDS = 2592000 # 30 days in seconds
 class PushSubscriptionManager(models.Manager):
 
     def subscribe(self, topic, feed, hub=None, callback=None,
-                  lease_seconds=None):
+                  lease_seconds=None, force_retry=False):
         if hub is None:
             hub = self._get_hub(topic)
 
@@ -63,6 +64,12 @@ class PushSubscriptionManager(models.Manager):
             error = response.content
             logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s' % (
                           unicode(subscription.feed)[:30], error))
+                          
+            if not force_retry and 'You may only subscribe to' in error:
+                extracted_topic = re.search("You may only subscribe to (.*?) ", error)
+                if extracted_topic:
+                    subscription = self.objects.subscribe(extracted_topic.group(1), 
+                                                          feed=feed, hub=hub, force_retry=True)
 
         subscription.save()
         feed.setup_push()
