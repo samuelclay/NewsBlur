@@ -241,6 +241,7 @@ def setup_db():
     setup_mongo()
     setup_gunicorn(supervisor=False)
     setup_redis()
+    setup_db_munin()
 
 def setup_task():
     setup_common()
@@ -408,10 +409,10 @@ def setup_nginx():
         with settings(warn_only=True):
             sudo("groupadd nginx")
             sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://nginx.org/download/nginx-1.1.12.tar.gz')
-            run('tar -xzf nginx-1.1.12.tar.gz')
-            run('rm nginx-1.1.12.tar.gz')
-            with cd('nginx-1.1.12'):
+            run('wget http://nginx.org/download/nginx-1.1.18.tar.gz')
+            run('tar -xzf nginx-1.1.18.tar.gz')
+            run('rm nginx-1.1.18.tar.gz')
+            with cd('nginx-1.1.18'):
                 run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
                 run('make')
                 sudo('make install')

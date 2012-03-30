@@ -321,6 +321,9 @@ def follow(request):
     try:
         follow_user_id = int(request.POST['user_id'])
     except ValueError:
+        follow_user_id = request.POST['user_id'].replace('social:', '')
+        follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
+    except MSocialProfile.DoesNotExist:
         follow_username = request.POST['user_id'].replace('social:', '')
         follow_profile = MSocialProfile.objects.get(username=follow_username)
         follow_user_id = follow_profile.user_id
@@ -351,7 +354,10 @@ def unfollow(request):
     try:
         unfollow_user_id = int(request.POST['user_id'])
     except ValueError:
-        unfollow_username = request.POST['user_id'].replace('social:', '')
+        unfollow_user_id = request.POST['user_id'].replace('social:', '')
+        unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
+    except MSocialProfile.DoesNotExist:
+        unfollow_username = request.POST['user_id']
         unfollow_profile = MSocialProfile.objects.get(username=unfollow_username)
         unfollow_user_id = unfollow_profile.user_id
         

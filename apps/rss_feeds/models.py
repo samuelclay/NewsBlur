@@ -1420,6 +1420,8 @@ class DuplicateFeed(models.Model):
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     from apps.reader.models import UserSubscription
+    from apps.social.models import MSharedStory
+    
     if original_feed_id == duplicate_feed_id:
         logging.info(" ***> Merging the same feed. Ignoring...")
         return
@@ -1469,6 +1471,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         
     duplicate_feed.delete()
     original_feed.count_subscribers()
+    
+    MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
     
 def rewrite_folders(folders, original_feed, duplicate_feed):
     new_folders = []

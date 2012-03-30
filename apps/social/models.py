@@ -81,7 +81,8 @@ class MSocialProfile(mongo.Document):
             feed_titles = dict((f.id, f.feed_title) 
                                for f in Feed.objects.filter(pk__in=publishers.keys()).only('id', 'feed_title'))
             feed_publishers = sorted([{'id': k, 'feed_title': feed_titles[k], 'story_count': v} 
-                                      for k, v in publishers.items()],
+                                      for k, v in publishers.items()
+                                      if k in feed_titles],
                                      key=lambda f: f['story_count'],
                                      reverse=True)[:20]
 
@@ -239,6 +240,9 @@ class MSocialProfile(mongo.Document):
         
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        
+        if not isinstance(user_id, int):
+            user_id = int(user_id)
         
         if user_id == self.user_id:
             # Only unfollow other people, not yourself.
@@ -673,6 +677,14 @@ class MSharedStory(mongo.Document):
         r.srem(share_key, self.user_id)
 
         super(MSharedStory, self).delete(*args, **kwargs)
+    
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        shared_stories = cls.objects.filter(story_feed_id=duplicate_feed_id)
+        logging.info(" ---> %s shared stories" % shared_stories.count())
+        for story in shared_stories:
+            story.story_feed_id = original_feed_id
+            story.save()
         
     @classmethod
     def count_popular_stories(cls, verbose=True):
