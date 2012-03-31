@@ -608,7 +608,9 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     
     post_refresh_feeds: function(data, callback) {
         var updated_feeds = [];
-
+        
+        if (!data.feeds) return;
+        
         for (var f in data.feeds) {
             if (!this.feeds[f]) continue;
             var updated = false;
@@ -616,7 +618,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             var feed = data.feeds[f];
             var feed_id = feed.id || f;
             if (feed.id && f != feed.id) {
-                NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f]]);
+                NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f], feed]);
                 this.feeds[feed.id] = this.feeds[f];
             }
             if ((feed['has_exception'] && !this.feeds[feed_id]['has_exception']) ||
@@ -632,7 +634,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                     updated = true;
                 }
             }
-            if (feed['favicon']) {
+            if (feed['favicon'] && this.feeds[feed_id]['favicon'] != feed['favicon']) {
                 this.feeds[feed_id]['favicon'] = feed['favicon'];
                 this.feeds[feed_id]['favicon_color'] = feed['favicon_color'];
                 this.feeds[feed_id]['favicon_fetching'] = false;
@@ -679,10 +681,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             var feed = this.feeds[f];
             
             if (feed.active) {
-                if (feed['not_yet_fetched']) {
-                    counts['unfetched_feeds'] += 1;
-                } else {
+                if (!feed['not_yet_fetched'] || feed['has_exception']) {
                     counts['fetched_feeds'] += 1;
+                } else {
+                    counts['unfetched_feeds'] += 1;
                 }
             }
         }

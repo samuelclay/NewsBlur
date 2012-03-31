@@ -5961,7 +5961,10 @@
         },
         
         setup_socket_realtime_unread_counts: function(force) {
-            if (force && !this.socket) {
+            if (!force && NEWSBLUR.Globals.is_anonymous) return;
+            if (!force && !NEWSBLUR.Globals.is_premium) return;
+            
+            if (force || !this.socket) {
                 this.socket = this.socket || io.connect('http://' + window.location.hostname + ':8888');
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
@@ -5990,7 +5993,9 @@
                 return feed.active && feed.id;
             }));
             
-            this.socket.emit('subscribe:feeds', active_feeds);
+            if (active_feeds.length) {
+                this.socket.emit('subscribe:feeds', active_feeds, NEWSBLUR.Globals.username);
+            }
             
             return active_feeds;
         },
@@ -6027,7 +6032,9 @@
                 if (!self.flags['pause_feed_refreshing']) {
                   self.model.refresh_feeds(_.bind(function(updated_feeds) {
                       self.post_feed_refresh(updated_feeds);
-                  }, self), self.flags['has_unfetched_feeds']);
+                  }, self), self.flags['has_unfetched_feeds'], null, function(e) {
+                      console.log(["Feed refresh error", e]);
+                  });
                 }
             }, refresh_interval);
             console.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);

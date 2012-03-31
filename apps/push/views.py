@@ -25,6 +25,7 @@ def push_callback(request, push_id):
                                              verify_token=verify_token)
             subscription.verified = True
             subscription.set_expiration(int(lease_seconds))
+            subscription.save()
             subscription.feed.setup_push()
             verified.send(sender=subscription)
 
