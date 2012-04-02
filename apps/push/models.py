@@ -65,14 +65,14 @@ class PushSubscriptionManager(models.Manager):
             subscription.verified = False
         else:
             error = response.content
-            logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s' % (
-                          unicode(subscription.feed)[:30], error))
-                          
             if not force_retry and 'You may only subscribe to' in error:
                 extracted_topic = re.search("You may only subscribe to (.*?) ", error)
                 if extracted_topic:
                     subscription = self.subscribe(extracted_topic.group(1), 
                                                   feed=feed, hub=hub, force_retry=True)
+            else:
+                logging.debug(u'   ---> [%-30s] ~FR~BKFeed failed to subscribe to push: %s' % (
+                              unicode(subscription.feed)[:30], error))
 
         subscription.save()
         feed.setup_push()
