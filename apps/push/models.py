@@ -34,7 +34,10 @@ class PushSubscriptionManager(models.Manager):
         subscription, created = self.get_or_create(feed=feed)
         signals.pre_subscribe.send(sender=subscription, created=created)
         subscription.set_expiration(lease_seconds)
-        subscription.topic = topic
+        if len(topic) < 200:
+            subscription.topic = topic
+        else:
+            subscription.topic = feed.feed_link[:200]
         subscription.hub = hub
         subscription.save()
         
