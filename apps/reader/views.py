@@ -49,7 +49,7 @@ SINGLE_DAY = 60*60*24
 @never_cache
 def index(request):
     if request.method == "POST":
-        if request.POST['submit'] == 'login':
+        if request.POST.get('submit') == 'login':
             login_form  = LoginForm(request.POST, prefix='login')
             signup_form = SignupForm(prefix='signup')
         else:
@@ -283,7 +283,8 @@ def refresh_feeds(request):
     favicons_fetching = request.REQUEST.getlist('favicons_fetching')
     start = datetime.datetime.utcnow()
     
-    feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
+    feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, 
+                                                       check_fetch_status=check_fetch_status)
 
     favicons_fetching = [int(f) for f in favicons_fetching if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
@@ -295,15 +296,22 @@ def refresh_feeds(request):
             feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
 
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+    sub_feed_ids = [s.feed_id for s in user_subs]
 
     if favicons_fetching:
-        sub_feed_ids = [s.feed.pk for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
         for moved_feed_id in moved_feed_ids:
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=moved_feed_id)
             if duplicate_feeds and duplicate_feeds[0].feed.pk in feeds:
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
+    
+    if check_fetch_status:
+        missing_feed_ids = list(set(feed_ids) - set(sub_feed_ids))
+        if missing_feed_ids:
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id__in=missing_feed_ids)
+            for duplicate_feed in duplicate_feeds:
+                feeds[duplicate_feed.duplicate_feed_id] = {'id': duplicate_feed.feed.pk}
 
     if settings.DEBUG or check_fetch_status:
         diff = datetime.datetime.utcnow()-start

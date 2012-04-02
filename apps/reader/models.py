@@ -124,7 +124,7 @@ class UserSubscription(models.Model):
         return code, message, us
     
     @classmethod
-    def feeds_with_updated_counts(cls, user, feed_ids=None):
+    def feeds_with_updated_counts(cls, user, feed_ids=None, check_fetch_status=False):
         feeds = {}
         
         # Get subscriptions for user
@@ -144,15 +144,15 @@ class UserSubscription(models.Model):
                 sub = sub.calculate_feed_scores(silent=True)
             if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
 
-            feed_id = sub.feed.pk
+            feed_id = sub.feed_id
             feeds[feed_id] = {
                 'ps': sub.unread_count_positive,
                 'nt': sub.unread_count_neutral,
                 'ng': sub.unread_count_negative,
                 'id': feed_id,
             }
-            if not sub.feed.fetched_once:
-                feeds[feed_id]['not_yet_fetched'] = True
+            if not sub.feed.fetched_once or check_fetch_status:
+                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once
             if sub.feed.favicon_fetching:
                 feeds[feed_id]['favicon_fetching'] = True
             if sub.feed.has_feed_exception or sub.feed.has_page_exception:

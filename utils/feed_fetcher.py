@@ -241,7 +241,7 @@ class ProcessFeed:
         if (not self.feed.is_push and hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
-            self_url = self.feed.feed_link
+            self_url = self.feed.feed_address
             for link in self.fpf.feed.links:
                 if link['rel'] == 'hub':
                     hub_url = link['href']
