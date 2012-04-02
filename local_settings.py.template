@@ -18,6 +18,7 @@ NEWSBLUR_URL          = 'http://www.newsblur.com'
 # ==================
 
 DEBUG = True
+DEBUG_ASSETS = DEBUG
 MEDIA_URL = '/media/'
 SECRET_KEY = 'YOUR SECRET KEY'
 
