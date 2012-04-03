@@ -99,7 +99,9 @@ WebSocket.prototype.onSocketConnect = function () {
   }
 
   var origin = this.req.headers['sec-websocket-origin']
-    , location = (this.socket.encrypted ? 'wss' : 'ws')
+    , location = ((this.manager.settings['match origin protocol'] ?
+                      origin.match(/^https/) : this.socket.encrypted) ?
+                        'wss' : 'ws')
                + '://' + this.req.headers.host + this.req.url;
   
   if (!this.verifyOrigin(origin)) {
@@ -159,6 +161,7 @@ WebSocket.prototype.verifyOrigin = function (origin) {
   if (origin) {
     try {
       var parts = url.parse(origin);
+      parts.port = parts.port || 80;
       var ok =
         ~origins.indexOf(parts.hostname + ':' + parts.port) ||
         ~origins.indexOf(parts.hostname + ':*') ||
@@ -505,7 +508,9 @@ Parser.prototype.expect = function(what, length, handler) {
  */
 
 Parser.prototype.processPacket = function (data) {
-  if ((data[0] & 0x70) != 0) this.error('reserved fields must be empty');
+  if ((data[0] & 0x70) != 0) {
+    this.error('reserved fields must be empty');
+  }
   this.state.lastFragment = (data[0] & 0x80) == 0x80; 
   this.state.masked = (data[1] & 0x80) == 0x80;
   var opcode = data[0] & 0xf;
