@@ -53,7 +53,7 @@ javascripts:
         - media/js/vendor/jquery.linkify.js
         - media/js/vendor/bootstrap.*.js
         - media/js/vendor/audio.js
-        - media/js/vendor/socket.io-client.0.8.7.js
+        - media/js/vendor/socket.io-client.*.js
         - media/js/vendor/inflector.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
