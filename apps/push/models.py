@@ -6,8 +6,6 @@ import requests
 import re
 
 from django.conf import settings
-from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse, Resolver404
 from django.db import models
 from django.utils.hashcompat import sha_constructor
 
@@ -48,12 +46,12 @@ class PushSubscriptionManager(models.Manager):
             callback = "http://push.newsblur.com/push/%s" % subscription.pk # + callback_path
 
         response = self._send_request(hub, {
-            'hub.mode': 'subscribe',
-            'hub.callback': callback,
-            'hub.topic': topic,
-            'hub.verify': ['async', 'sync'],
-            'hub.verify_token': subscription.generate_token('subscribe'),
-            'hub.lease_seconds': lease_seconds,
+            'hub.mode'          : 'subscribe',
+            'hub.callback'      : callback,
+            'hub.topic'         : topic,
+            'hub.verify'        : ['async', 'sync'],
+            'hub.verify_token'  : subscription.generate_token('subscribe'),
+            'hub.lease_seconds' : lease_seconds,
         })
 
         if response.status_code == 204:

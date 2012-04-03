@@ -299,6 +299,10 @@
                 $('.NB-task-add').tipsy('disable');
                 $('.NB-task-manage').tipsy('disable');
             }
+            $('.NB-module-content-account-realtime').tipsy({
+                gravity: 's',
+                delayIn: 0
+            });
         },
         
         save_feed_pane_size: function(w, pane, $pane, state, options, name) {
@@ -5257,10 +5261,12 @@
         
         setup_socket_realtime_unread_counts: function(force) {
             if (!force && NEWSBLUR.Globals.is_anonymous) return;
-            if (!force && !NEWSBLUR.Globals.is_premium) return;
-            
-            if (force || !this.socket) {
-                this.socket = this.socket || io.connect('http://' + window.location.hostname + ':8888');
+            // if (!force && !NEWSBLUR.Globals.is_premium) return;
+            if (this.socket && !this.socket.socket.connected) {
+                this.socket.socket.connect();
+            } else if (force || !this.socket || !this.socket.socket.connected) {
+                var server = window.location.protocol + '//' + window.location.hostname + ':8888';
+                this.socket = this.socket || io.connect(server);
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function() {
@@ -5273,12 +5279,22 @@
                 
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating in real-time').removeClass('NB-error');
                 }, this));
                 this.socket.on('disconnect', _.bind(function() {
                     console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
+                    this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
+                    $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
+                }, this));
+                this.socket.on('error', _.bind(function() {
+                    console.log(["Can't connect to real-time pubsub."]);
+                    this.flags.feed_refreshing_in_realtime = false;
+                    $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
+                    _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
                 }, this));
             }
+            
         },
         
         send_socket_active_feeds: function() {
@@ -5309,10 +5325,9 @@
             if (feed_count > 500) {
                 refresh_interval *= 1.5;
             }
-            if (this.flags['feed_refreshing_in_realtime'] && !this.flags['has_unfetched_feeds']) {
-                if (this.socket && this.socket.socket.connected) {
-                    refresh_interval *= 20;
-                }
+            if (this.flags['feed_refreshing_in_realtime'] && !this.flags['has_unfetched_feeds'] &&
+                this.socket && this.socket.socket.connected) {
+                refresh_interval *= 20;
             }
 
             if (new_feeds && feed_count < 250) {
