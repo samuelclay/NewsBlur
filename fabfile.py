@@ -114,6 +114,10 @@ def deploy_code(copy_assets=False, full=False):
             run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+
+def deploy_node():
+    with cd(env.NEWSBLUR_PATH):
+        run('sudo supervisorctl restart node')
         
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
