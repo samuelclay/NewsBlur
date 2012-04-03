@@ -413,8 +413,6 @@ class MSocialSubscription(mongo.Document):
         if 'subscription_user_id' in kwargs:
             params["subscription_user_id"] = kwargs["subscription_user_id"]
         social_subs = cls.objects.filter(**params)
-        for sub in social_subs:
-            sub.calculate_feed_scores()
         social_feeds = []
         if social_subs:
             social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
@@ -431,6 +429,35 @@ class MSocialSubscription(mongo.Document):
 
         return social_feeds
     
+    @classmethod
+    def feeds_with_updated_counts(cls, user, social_feed_ids=None):
+        feeds = {}
+        
+        # Get social subscriptions for user
+        user_subs = cls.objects.filter(user_id=user.pk)
+        if social_feed_ids:
+            social_user_ids = [int(f.replace('social:', '')) for f in social_feed_ids]
+            user_subs = user_subs.filter(subscription_user_id__in=social_user_ids)
+        
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
+        for i, sub in enumerate(user_subs):
+            # Count unreads if subscription is stale.
+            if (sub.needs_unread_recalc or 
+                sub.unread_count_updated < UNREAD_CUTOFF or 
+                sub.oldest_unread_story_date < UNREAD_CUTOFF):
+                sub = sub.calculate_feed_scores(silent=True)
+
+            feed_id = "social:%s" % sub.subscription_user_id
+            feeds[feed_id] = {
+                'ps': sub.unread_count_positive,
+                'nt': sub.unread_count_neutral,
+                'ng': sub.unread_count_negative,
+                'id': feed_id,
+            }
+
+        return feeds
+        
     def to_json(self):
         return {
             'user_id': self.user_id,
@@ -505,7 +532,7 @@ class MSocialSubscription(mongo.Document):
         if user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
-            return
+            return self
             
         feed_scores = dict(negative=0, neutral=0, positive=0)
         
@@ -523,14 +550,16 @@ class MSocialSubscription(mongo.Document):
         for s in stories_db:
             story_feed_ids.append(s['story_feed_id'])
             story_ids.append(s['story_guid'])
-        if not story_feed_ids: return
+        # if not story_feed_ids: return self
 
         # usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
         # usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
-        read_stories = MUserStory.objects(user_id=self.user_id,
-                                          feed_id__in=story_feed_ids,
-                                          story_id__in=story_ids)
-        read_stories_ids = [rs.story_id for rs in read_stories]
+        read_stories_ids = []
+        if story_feed_ids:
+            read_stories = MUserStory.objects(user_id=self.user_id,
+                                              feed_id__in=story_feed_ids,
+                                              story_id__in=story_ids)
+            read_stories_ids = [rs.story_id for rs in read_stories]
 
         oldest_unread_story_date = now
         unread_stories_db = []
@@ -547,10 +576,15 @@ class MSocialSubscription(mongo.Document):
         classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         # Merge with feed specific classifiers
-        classifier_feeds   = classifier_feeds + list(MClassifierFeed.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
-        classifier_authors = classifier_authors + list(MClassifierAuthor.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
-        classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
-        classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=self.user_id, feed_id__in=story_feed_ids))
+        if story_feed_ids:
+            classifier_feeds   = classifier_feeds + list(MClassifierFeed.objects(user_id=self.user_id,
+                                                                                 feed_id__in=story_feed_ids))
+            classifier_authors = classifier_authors + list(MClassifierAuthor.objects(user_id=self.user_id,
+                                                                                     feed_id__in=story_feed_ids))
+            classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=self.user_id,
+                                                                                   feed_id__in=story_feed_ids))
+            classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=self.user_id,
+                                                                               feed_id__in=story_feed_ids))
 
         for story in stories:
             scores = {

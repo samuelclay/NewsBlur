@@ -297,15 +297,18 @@ def load_feeds_flat(request):
 @ratelimit(minutes=1, requests=20)
 @json.json_view
 def refresh_feeds(request):
+    time.sleep(2)
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id')
+    social_feed_ids = request.REQUEST.getlist('social_feed_id')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
     favicons_fetching = request.REQUEST.getlist('favicons_fetching')
     start = datetime.datetime.utcnow()
     
     feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, 
                                                        check_fetch_status=check_fetch_status)
-
+    social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
+    
     favicons_fetching = [int(f) for f in favicons_fetching if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
     
@@ -340,7 +343,7 @@ def refresh_feeds(request):
         logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (
             len(feeds.keys()), timediff, check_fetch_status, len(favicons_fetching)))
         
-    return {'feeds': feeds}
+    return {'feeds': feeds, 'social_feeds': social_feeds}
 
 def refresh_feed(request, feed_id):
     user = get_user(request)
