@@ -413,6 +413,8 @@ class MSocialSubscription(mongo.Document):
         if 'subscription_user_id' in kwargs:
             params["subscription_user_id"] = kwargs["subscription_user_id"]
         social_subs = cls.objects.filter(**params)
+        # for sub in social_subs:
+        #     sub.calculate_feed_scores()
         social_feeds = []
         if social_subs:
             social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
@@ -545,12 +547,14 @@ class MSocialSubscription(mongo.Document):
 
         stories_db = MSharedStory.objects(user_id=self.subscription_user_id,
                                           shared_date__gte=date_delta)
-        story_feed_ids = []
+        story_feed_ids = set()
         story_ids = []
         for s in stories_db:
-            story_feed_ids.append(s['story_feed_id'])
+            story_feed_ids.add(s['story_feed_id'])
             story_ids.append(s['story_guid'])
-        # if not story_feed_ids: return self
+        story_feed_ids = list(story_feed_ids)
+        usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
+        usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
 
         # usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
         # usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
@@ -564,11 +568,15 @@ class MSocialSubscription(mongo.Document):
         oldest_unread_story_date = now
         unread_stories_db = []
         for story in stories_db:
-            if (hasattr(story, 'story_guid') and 
-                story.story_guid not in read_stories_ids):
-                unread_stories_db.append(story)
-                if story.story_date < oldest_unread_story_date:
-                    oldest_unread_story_date = story.story_date
+            if getattr(story, 'story_guid', None) in read_stories_ids:
+                continue
+            feed_id = story.story_feed_id
+            if usersubs_map.get(feed_id) and story.story_date < usersubs_map[feed_id].mark_read_date:
+                continue
+                
+            unread_stories_db.append(story)
+            if story.story_date < oldest_unread_story_date:
+                oldest_unread_story_date = story.story_date
         stories = Feed.format_stories(unread_stories_db)
         
         classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
