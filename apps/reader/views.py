@@ -299,14 +299,20 @@ def load_feeds_flat(request):
 def refresh_feeds(request):
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id')
-    social_feed_ids = request.REQUEST.getlist('social_feed_id')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
     favicons_fetching = request.REQUEST.getlist('favicons_fetching')
     start = datetime.datetime.utcnow()
     
-    feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, 
-                                                       check_fetch_status=check_fetch_status)
-    social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
+    social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
+    feed_ids = list(set(feed_ids) - set(social_feed_ids))
+    
+    feeds = {}
+    if feed_ids or (not social_feed_ids and not feed_ids):
+        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, 
+                                                           check_fetch_status=check_fetch_status)
+    social_feeds = {}
+    if social_feed_ids or (not social_feed_ids and not feed_ids):
+        social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
     
     favicons_fetching = [int(f) for f in favicons_fetching if f]
     feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])

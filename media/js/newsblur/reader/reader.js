@@ -5981,7 +5981,7 @@
                     console.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         console.log(['Real-time feed update', feed_id, message]);
-                        this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
+                        this.force_feeds_refresh(false, false, feed_id);
                     }, this));
                 
                     this.flags.feed_refreshing_in_realtime = true;
@@ -6010,6 +6010,7 @@
             var active_feeds = _.compact(_.map(this.model.feeds, function(feed) { 
                 return feed.active && feed.id;
             }));
+            active_feeds = active_feeds.concat(this.model.social_feeds.pluck('id'));
             
             if (active_feeds.length) {
                 this.socket.emit('subscribe:feeds', active_feeds, NEWSBLUR.Globals.username);
@@ -6042,7 +6043,7 @@
             } else if (new_feeds && feed_count < 500) {
                 refresh_interval = (1000 * 60) * 1/4;
             }
-            refresh_interval = 5000;
+
             clearInterval(this.flags.feed_refresh);
             
             this.flags.feed_refresh = setInterval(function() {
@@ -6084,7 +6085,6 @@
             }
 
             this.flags['pause_feed_refreshing'] = true;
-            
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
               this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
             }, this), this.flags['has_unfetched_feeds'], feed_id, error_callback);

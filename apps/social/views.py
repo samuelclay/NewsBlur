@@ -200,7 +200,7 @@ def mark_story_as_shared(request):
                                 if k is not None and v is not None])
         story_values = dict(user_id=request.user.pk, comments=comments, 
                             has_comments=bool(comments), **story_db)
-        MSharedStory.objects.create(**story_values)
+        shared_story = MSharedStory.objects.create(**story_values)
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
         for socialsub in socialsubs:
             socialsub.needs_unread_recalc = True
@@ -214,6 +214,7 @@ def mark_story_as_shared(request):
         logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
     
     story.count_comments()
+    shared_story.publish_update_to_subscribers()
     
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)

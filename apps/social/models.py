@@ -764,7 +764,17 @@ class MSharedStory(mongo.Document):
             redis_conn.sadd(comment_key, self.user_id)
         else:
             redis_conn.srem(comment_key, self.user_id)
-        
+
+    def publish_update_to_subscribers(self):
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_POOL)
+            feed_id = "social:%s" % self.user_id
+            listeners_count = r.publish(feed_id, 'story:new')
+            if listeners_count:
+                logging.debug("   ---> ~FMPublished to %s subscribers" % (listeners_count))
+        except redis.ConnectionError:
+            logging.debug("   ***> ~BMRedis is unavailable for real-time.")
+
     def comments_with_author(self):
         comments = {
             'user_id': self.user_id,
