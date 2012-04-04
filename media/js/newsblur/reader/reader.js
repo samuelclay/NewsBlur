@@ -522,7 +522,8 @@
             if (feed_id) {
                 $('.feed', $feed_list).each(function() {
                     var data_id = $(this).data('id');
-                    if (data_id == feed_id || parseInt(data_id, 10) == feed_id) {
+                    if (data_id == feed_id || 
+                        (!_.string.contains(data_id, 'social:') && parseInt(data_id, 10) == feed_id)) {
                         $feeds.push($(this).get(0));
                     }
                 });
@@ -6040,7 +6041,7 @@
             } else if (new_feeds && feed_count < 500) {
                 refresh_interval = (1000 * 60) * 1/4;
             }
-            
+            refresh_interval = 5000;
             clearInterval(this.flags.feed_refresh);
             
             this.flags.feed_refresh = setInterval(function() {
@@ -6100,48 +6101,11 @@
                 var feed_id = updated_feeds[f];
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) continue;
-                var $feed = $(this.make_feed_title_template(feed, 'feed'));
-                var $feed_on_page = this.find_feed_in_feed_list(feed_id);
-                
-                if (feed_id == this.active_feed) {
-                    NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page, replace_active_feed]);
-                    if (!replace_active_feed) {
-                        // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this));
-                        // Set the unread counts to what the client thinks they are, so when
-                        // the counts can be updated, they will force a refresh of the feed.
-                        this.model.feeds[feed_id].ps = parseInt($('.unread_count_positive', $feed_on_page).text(), 10);
-                        this.model.feeds[feed_id].nt = parseInt($('.unread_count_neutral', $feed_on_page).text(), 10);
-                        this.model.feeds[feed_id].ng = parseInt($('.unread_count_negative', $feed_on_page).text(), 10);
-                    } else {
-                        if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
-                        $feed_on_page.replaceWith($feed);
-                        this.cache.$feed_in_feed_list[feed_id] = null;
-                        this.mark_feed_as_selected(this.active_feed);
-                        if (!single_feed_id) this.recalculate_story_scores(feed_id);
-                        this.show_feed_hidden_story_title_indicator();
-                        this.make_content_pane_feed_counter();
-                    }
+                if (_.string.include(feed_id, 'social:')) {
+                    this.replace_social_feed_in_feedlist(feed_id);
                 } else {
-                    if (!this.flags['has_unfetched_feeds']) {
-                        NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
-                    }
-                    if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
-                    $feed_on_page.replaceWith($feed);
-                    this.cache.$feed_in_feed_list[feed_id] = null;
-                    (function($feed) {
-                      $feed.css({'backgroundColor': '#D7DDE6'});
-                      $feed.animate({
-                        'backgroundColor': '#F0F076'
-                      }, {
-                        'duration': 800, 
-                        'queue': false, 
-                        'complete': function() {
-                          $feed.animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000, 'queue': false});
-                        }
-                      });
-                    })($feed);
+                    this.replace_feed_in_feedlist(feed_id, {'replace_active_feed': replace_active_feed});
                 }
-                this.hover_over_feed_titles($feed);
             }
             
             this.check_feed_fetch_progress();
@@ -6149,6 +6113,88 @@
             this.count_collapsed_unread_stories();
 
             this.flags['pause_feed_refreshing'] = false;
+        },
+        
+        replace_feed_in_feedlist: function(feed_id, options) {
+            options = _.extend({'replace_active_feed': false}, options);
+            var feed = this.model.get_feed(feed_id);
+            var $feed = $(this.make_feed_title_template(feed, 'feed'));
+            var $feed_on_page = this.find_feed_in_feed_list(feed_id);
+            
+            if (feed_id == this.active_feed) {
+                NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page, options.replace_active_feed]);
+                if (!options.replace_active_feed) {
+                    // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this));
+                    // Set the unread counts to what the client thinks they are, so when
+                    // the counts can be updated, they will force a refresh of the feed.
+                    this.model.feeds[feed_id].ps = parseInt($('.unread_count_positive', $feed_on_page).text(), 10);
+                    this.model.feeds[feed_id].nt = parseInt($('.unread_count_neutral', $feed_on_page).text(), 10);
+                    this.model.feeds[feed_id].ng = parseInt($('.unread_count_negative', $feed_on_page).text(), 10);
+                } else {
+                    if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
+                    $feed_on_page.replaceWith($feed);
+                    this.cache.$feed_in_feed_list[feed_id] = null;
+                    this.mark_feed_as_selected(this.active_feed);
+                    if (!single_feed_id) this.recalculate_story_scores(feed_id);
+                    this.show_feed_hidden_story_title_indicator();
+                    this.make_content_pane_feed_counter();
+                }
+            } else {
+                if (!this.flags['has_unfetched_feeds']) {
+                    NEWSBLUR.log(['UPDATING', feed.feed_title, $feed, $feed_on_page]);
+                }
+                if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
+                $feed_on_page.replaceWith($feed);
+                this.cache.$feed_in_feed_list[feed_id] = null;
+                (function($feed) {
+                  $feed.css({'backgroundColor': '#D7DDE6'});
+                  $feed.animate({
+                    'backgroundColor': '#F0F076'
+                  }, {
+                    'duration': 800, 
+                    'queue': false, 
+                    'complete': function() {
+                      $feed.animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000, 'queue': false});
+                    }
+                  });
+                })($feed);
+            }
+            this.hover_over_feed_titles($feed);
+        },
+        
+        replace_social_feed_in_feedlist: function(feed_id) {
+            var feed = this.model.get_feed(feed_id);
+            var $feed = $(this.make_feed_title_template(feed, 'feed', 0));
+            var $feed_on_page = this.find_feed_in_feed_list(feed_id);
+            if (feed_id == this.active_feed) {
+                NEWSBLUR.log(['UPDATING INLINE (social)', feed.feed_title]);
+                // Set the unread counts to what the client thinks they are, so when
+                // the counts can be updated, they will force a refresh of the feed.
+                var social_feed = this.model.social_feeds.get(feed_id);
+                social_feed.set('ps', parseInt($('.unread_count_positive', $feed_on_page).text(), 10));
+                social_feed.set('nt', parseInt($('.unread_count_neutral', $feed_on_page).text(), 10));
+                social_feed.set('ng', parseInt($('.unread_count_negative', $feed_on_page).text(), 10));
+            } else {
+                if (!this.flags['has_unfetched_feeds']) {
+                    NEWSBLUR.log(['UPDATING (social)', feed.feed_title]);
+                }
+                if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
+                $feed_on_page.replaceWith($feed);
+                this.cache.$feed_in_feed_list[feed_id] = null;
+                (function($feed) {
+                  $feed.css({'backgroundColor': '#C6D3E6'});
+                  $feed.animate({
+                    'backgroundColor': '#F0F076'
+                  }, {
+                    'duration': 800, 
+                    'queue': false, 
+                    'complete': function() {
+                      $feed.animate({'backgroundColor': '#C6D3E6'}, {'duration': 1000, 'queue': false});
+                    }
+                  });
+                })($feed);
+            }
+            
         },
         
         post_refresh_active_feed: function(e, data, first_load) {

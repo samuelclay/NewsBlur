@@ -644,6 +644,23 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 updated_feeds.push(f);
             }
         }
+        
+        _.each(data.social_feeds, _.bind(function(feed) {
+            var updated = false;
+            var social_feed = this.social_feeds.get(feed.id);
+            if (!social_feed) return;
+            
+            for (var k in feed) {
+                if (social_feed.get(k) != feed[k]) {
+                    social_feed.set(k, feed[k]);
+                    updated = true;
+                }
+            }
+            if (updated && !_.contains(updated_feeds, feed.id)) {
+                updated_feeds.push(feed.id);
+            }
+        }, this));
+        
         callback(updated_feeds);
     },
     

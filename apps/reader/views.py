@@ -297,7 +297,6 @@ def load_feeds_flat(request):
 @ratelimit(minutes=1, requests=20)
 @json.json_view
 def refresh_feeds(request):
-    time.sleep(2)
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id')
     social_feed_ids = request.REQUEST.getlist('social_feed_id')

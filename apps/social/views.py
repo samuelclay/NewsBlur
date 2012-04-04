@@ -201,6 +201,10 @@ def mark_story_as_shared(request):
         story_values = dict(user_id=request.user.pk, comments=comments, 
                             has_comments=bool(comments), **story_db)
         MSharedStory.objects.create(**story_values)
+        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
+        for socialsub in socialsubs:
+            socialsub.needs_unread_recalc = True
+            socialsub.save()
         logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
     else:
         shared_story = shared_story[0]
