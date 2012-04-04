@@ -446,8 +446,10 @@ class MSocialSubscription(mongo.Document):
         for i, sub in enumerate(user_subs):
             # Count unreads if subscription is stale.
             if (sub.needs_unread_recalc or 
-                sub.unread_count_updated < UNREAD_CUTOFF or 
-                sub.oldest_unread_story_date < UNREAD_CUTOFF):
+                (sub.unread_count_updated and
+                 sub.unread_count_updated < UNREAD_CUTOFF) or 
+                (sub.oldest_unread_story_date and
+                 sub.oldest_unread_story_date < UNREAD_CUTOFF)):
                 sub = sub.calculate_feed_scores(silent=True)
 
             feed_id = "social:%s" % sub.subscription_user_id
