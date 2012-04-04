@@ -12,22 +12,23 @@
   client = redis.createClient(6379, REDIS_SERVER);
 
   io.sockets.on('connection', function(socket) {
-    console.log("   ---> New connection brings total to" + (" " + (io.sockets.clients().length) + " consumers."));
     socket.on('subscribe:feeds', function(feeds, username) {
       var _ref;
+      this.feeds = feeds;
+      this.username = username;
+      console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on)"));
       if ((_ref = socket.subscribe) != null) _ref.end();
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
-      console.log("   ---> [" + username + "] Subscribing to " + feeds.length + " feeds");
-      socket.subscribe.subscribe(feeds);
+      socket.subscribe.subscribe(this.feeds);
       return socket.subscribe.on('message', function(channel, message) {
-        console.log("   ---> [" + username + "] Update on " + channel + ": " + message);
+        console.log("   ---> [" + this.username + "] Update on " + channel + ": " + message);
         return socket.emit('feed:update', channel);
       });
     });
     return socket.on('disconnect', function() {
       var _ref;
       if ((_ref = socket.subscribe) != null) _ref.end();
-      return console.log("   ---> [] Disconnect, there are now" + (" " + (io.sockets.clients().length - 1) + " consumers."));
+      return console.log(("   ---> [" + this.username + "] Disconnect, there are now") + (" " + (io.sockets.clients().length - 1) + " users."));
     });
   });
 
