@@ -52,7 +52,7 @@ javascripts:
         - media/js/jquery.chosen.js
         - media/js/jquery.linkify.js
         - media/js/audio.js
-        - media/js/socket.io-client.0.8.7.js
+        - media/js/socket.io-client.*.js
         - media/js/inflector.js
         - media/js/underscore.js
         - media/js/underscore.string.js

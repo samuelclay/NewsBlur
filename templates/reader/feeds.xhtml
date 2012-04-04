@@ -280,8 +280,9 @@
           <h3 class="NB-module-content-header">
             {% if user.profile.is_premium %}
               <span class="NB-module-content-subtitle">
-                {{ active_count }} site{{ active_count|pluralize }}
+                  {{ active_count }} site{{ active_count|pluralize }}
               </span>
+              <div class="NB-module-content-account-realtime" title=""></div>
               Premium Account
             {% else %}
               <span class="NB-module-content-subtitle">
@@ -292,7 +293,7 @@
           </h3>
           <div class="NB-module-item-title">
             {% if user.profile.is_premium %}
-              
+
             {% else %}
               
               <div class="NB-modal-submit">
