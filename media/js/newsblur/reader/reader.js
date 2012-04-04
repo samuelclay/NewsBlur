@@ -1110,6 +1110,7 @@
             this.open_dialog_after_feeds_loaded();
             if (NEWSBLUR.Globals.is_authenticated && this.model.flags['has_chosen_feeds']) {
                 _.delay(_.bind(this.start_count_unreads_after_import, this), 1000);
+                this.flags['refresh_inline_feed_delay'] = true;
                 this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this), true);
             }
             
@@ -6107,7 +6108,8 @@
                     this.replace_feed_in_feedlist(feed_id, {'replace_active_feed': replace_active_feed});
                 }
             }
-            
+
+            this.flags['refresh_inline_feed_delay'] = false;
             this.check_feed_fetch_progress();
             this.update_header_counts();
             this.count_collapsed_unread_stories();
@@ -6121,7 +6123,7 @@
             var $feed = $(this.make_feed_title_template(feed, 'feed'));
             var $feed_on_page = this.find_feed_in_feed_list(feed_id);
             
-            if (feed_id == this.active_feed) {
+            if (feed_id == this.active_feed && !this.flags.refresh_inline_feed_delay) {
                 NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page, options.replace_active_feed]);
                 if (!options.replace_active_feed) {
                     // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this));
@@ -6154,7 +6156,15 @@
                     'duration': 800, 
                     'queue': false, 
                     'complete': function() {
-                      $feed.animate({'backgroundColor': '#D7DDE6'}, {'duration': 1000, 'queue': false});
+                      $feed.animate({'backgroundColor': '#D7DDE6'}, {
+                          'duration': 1000, 
+                          'queue': false, 
+                          'complete': function() {
+                            if ($feed_on_page.hasClass('NB-selected')) {
+                                $feed.addClass('NB-selected');
+                            }
+                          }
+                      });
                     }
                   });
                 })($feed);
@@ -6166,7 +6176,7 @@
             var feed = this.model.get_feed(feed_id);
             var $feed = $(this.make_feed_title_template(feed, 'feed', 0));
             var $feed_on_page = this.find_feed_in_feed_list(feed_id);
-            if (feed_id == this.active_feed) {
+            if (feed_id == this.active_feed && !this.flags.refresh_inline_feed_delay) {
                 NEWSBLUR.log(['UPDATING INLINE (social)', feed.feed_title]);
                 // Set the unread counts to what the client thinks they are, so when
                 // the counts can be updated, they will force a refresh of the feed.
@@ -6189,7 +6199,15 @@
                     'duration': 800, 
                     'queue': false, 
                     'complete': function() {
-                      $feed.animate({'backgroundColor': '#C6D3E6'}, {'duration': 1000, 'queue': false});
+                      $feed.animate({'backgroundColor': '#C6D3E6'}, {
+                          'duration': 1000, 
+                          'queue': false, 
+                          'complete': function() {
+                            if ($feed_on_page.hasClass('NB-selected')) {
+                                $feed.addClass('NB-selected');
+                            }
+                          }
+                      });
                     }
                   });
                 })($feed);
