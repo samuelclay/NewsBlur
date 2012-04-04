@@ -3889,8 +3889,12 @@
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({'score': score});
         },    
             
-        open_friends_modal: function(score) {
+        open_friends_modal: function() {
             NEWSBLUR.reader_friends = new NEWSBLUR.ReaderFriends();
+        },
+        
+        open_profile_editor_modal: function() {
+            NEWSBLUR.reader_profile_editor = new NEWSBLUR.ReaderProfileEditor();
         },
         
         open_recommend_modal: function(feed_id) {
@@ -4869,7 +4873,15 @@
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-account' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'My Account')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Account')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-profile-editor' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Profile')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-friends' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Friends')
                     ]),
                     $.make('li', { className: 'NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4899,11 +4911,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Extensions and extras.')
-                    ]),
-                    $.make('li', { className: 'NB-menu-manage-friends' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Friends'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Find friends to follow.')
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -7289,6 +7296,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_friends_modal();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-profile-editor' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_profile_editor_modal();
                 }
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-preferences' }, function($t, $p){

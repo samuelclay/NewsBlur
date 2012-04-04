@@ -262,29 +262,10 @@ def shared_stories_public(request, username):
     shared_stories = MSharedStory.objects.filter(user_id=user.pk)
         
     return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
-
-@json.json_view
-def friends(request):
-    user = get_user(request)
-    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=user.pk)
-    social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
-    following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
-    follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
-
-    return {
-        'services': social_services,
-        'autofollow': social_services.autofollow,
-        'user_profile': social_profile.to_json(full=True),
-        'following_profiles': following_profiles,
-        'follower_profiles': follower_profiles,
-    }
     
 @ajax_login_required
 @json.json_view
 def profile(request):
-    if request.method == 'POST':
-        return save_profile(request)
-
     user_id = request.GET.get('user_id', request.user.pk)
     user_profile = MSocialProfile.objects.get(user_id=user_id)
     current_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
@@ -303,8 +284,21 @@ def profile(request):
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
     }
     return payload
+
+@ajax_login_required
+@json.json_view
+def load_user_profile(request):
+    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+
+    return {
+        'services': social_services,
+        'user_profile': social_profile.to_json(full=True),
+    }
     
-def save_profile(request):
+@ajax_login_required
+@json.json_view
+def save_user_profile(request):
     data = request.POST
 
     profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
@@ -319,6 +313,22 @@ def save_profile(request):
     logging.user(request, "~BB~FRSaving social profile")
     
     return dict(code=1, user_profile=profile.to_json(full=True))
+
+@ajax_login_required
+@json.json_view
+def load_user_friends(request):
+    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+    following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
+    follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
+
+    return {
+        'services': social_services,
+        'autofollow': social_services.autofollow,
+        'user_profile': social_profile.to_json(full=True),
+        'following_profiles': following_profiles,
+        'follower_profiles': follower_profiles,
+    }
 
 @ajax_login_required
 @json.json_view
@@ -377,11 +387,11 @@ def unfollow(request):
 @json.json_view
 def find_friends(request):
     query = request.GET.get('query')
-    profiles = MSocialProfile.objects.filter(username__icontains=query)
+    profiles = MSocialProfile.objects.filter(username__icontains=query)[:3]
     if not profiles:
-        profiles = MSocialProfile.objects.filter(email__icontains=query)
+        profiles = MSocialProfile.objects.filter(email__icontains=query)[:3]
     if not profiles:
-        profiles = MSocialProfile.objects.filter(blog_title__icontains=query)
+        profiles = MSocialProfile.objects.filter(blog_title__icontains=query)[:3]
     
     return dict(profiles=profiles)
     

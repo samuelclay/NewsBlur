@@ -260,6 +260,7 @@
     color: #FCFCFC;
 }
 .NB-modal-submit-save.NB-disabled,
+.NB-modal-submit-green.NB-disabled,
 .NB-modal-submit-button.NB-disabled,
 .NB-modal-submit-back,
 .NB-modal-submit-reset,
@@ -281,6 +282,7 @@
     color: #909090;
 }
 .NB-modal-submit-save.NB-disabled:hover,
+.NB-modal-submit-green.NB-disabled:hover,
 .NB-modal-submit-button.NB-disabled:hover {
     background-color: #d5d4dB;
     background-image: -webkit-gradient(

@@ -26,7 +26,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         this.$modal.bind('change', $.rescope(this.handle_change, this));
         this.$modal.bind('keyup', $.rescope(this.handle_keyup, this));
         this.handle_profile_counts();
-        this.delegate_change();
     },
     
     make_modal: function() {
@@ -36,19 +35,18 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-findfriends' }, 'Find Friends'),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-profile' }, 'Profile'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-following' }, 'I\'m Following'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-followers' }, 'Following Me')
             ]),
             $.make('h2', { className: 'NB-modal-title' }, 'Friends and Followers'),
             $.make('div', { className: 'NB-tab NB-tab-findfriends NB-active' }, [
                 $.make('fieldset', [
-                    $.make('legend', 'Social Connections'),
-                    $.make('div', { className: 'NB-modal-section NB-friends-services'})
-                ]),
-                $.make('fieldset', [
                     $.make('legend', 'Your profile'),
                     $.make('div', { className: 'NB-modal-section NB-friends-findfriends-profile' })
+                ]),
+                $.make('fieldset', [
+                    $.make('legend', 'Social Connections'),
+                    $.make('div', { className: 'NB-modal-section NB-friends-services'})
                 ]),
                 $.make('fieldset', [
                     $.make('legend', 'Search for friends'),
@@ -90,7 +88,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.autofollow = data.autofollow;
             this.make_find_friends_and_services();
             this.make_profile_section();
-            this.make_profile_tab();
             this.make_followers_tab();
             this.make_following_tab();
             callback && callback();
@@ -151,59 +148,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }
         
         $badge.append($profile_badge);
-    },
-    
-    make_profile_tab: function() {
-        var $profile_container = $('.NB-friends-profile', this.$modal).empty();
-        var $profile = $.make('form', [
-            $.make('label', 'Username'),
-            $.make('div', { className: 'NB-profile-username' }, [
-                NEWSBLUR.Globals.username,
-                $.make('a', { className: 'NB-splash-link NB-account-link', href: '#' }, 'Change')
-            ]),
-            $.make('label', { 'for': 'NB-profile-location' }, 'Location'),
-            $.make('input', { id: 'NB-profile-location', name: 'location', type: 'text', className: 'NB-input', style: 'width: 220px', value: this.profile.get('location'), "data-max": 40 }),
-            $.make('span', { className: 'NB-count NB-count-location' }),
-            $.make('label', { 'for': 'NB-profile-website' }, 'Website'),
-            $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 300px', value: this.profile.get('website'), "data-max": 200 }),
-            $.make('span', { className: 'NB-count NB-count-website' }),
-            $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
-            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 380px', value: this.profile.get('bio'), "data-max": 80 }),
-            $.make('span', { className: 'NB-count NB-count-bio' })
-        ]);
-        $profile_container.html($profile);
-        this.make_profile_photo_chooser();
-        this.disable_save();
-    },
-    
-    make_profile_photo_chooser: function() {
-        var $profiles = $('.NB-friends-profilephoto', this.$modal).empty();
-        
-        _.each(['twitter', 'facebook', 'gravatar'], _.bind(function(service) {
-            var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-'+service }, [
-                $.make('div', { className: 'NB-friends-photo-title' }, [
-                    $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-'+service }),
-                    $.make('label', { 'for': 'NB-profile-photo-service-'+service }, _.string.capitalize(service))
-                ]),
-                $.make('div', { className: 'NB-friends-photo-image' }, [
-                    $.make('label', { 'for': 'NB-profile-photo-service-'+service }, [
-                        $.make('div', { className: 'NB-photo-loader' }),
-                        $.make('img', { src: this.services[service][service+'_picture_url'] })
-                    ])
-                ]),
-                (service == 'upload' && $.make('div', { className: 'NB-photo-link' }, [
-                    $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, 'Upload picture'),
-                    $.make('input', { type: 'file', name: 'photo' })
-                ])),
-                (service == 'gravatar' && $.make('div', { className: 'NB-gravatar-link' }, [
-                    $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
-                ]))
-            ]);
-            if (service == this.profile.get('photo_service')) {
-                $('input[type=radio]', $profile).attr('checked', true);
-            }
-            $profiles.append($profile);
-        }, this));
     },
     
     make_followers_tab: function() {
@@ -325,7 +269,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.services = data.services;
             this.make_find_friends_and_services();
             this.make_profile_section();
-            this.make_profile_tab();
         }, this));
     },
     
@@ -347,51 +290,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         NEWSBLUR.reader.check_hide_getting_started();
     },
 
-    close_and_load_account: function() {
-        this.close(function() {
-            NEWSBLUR.reader.open_account_modal();
-        });
-    },
-    
-    save_profile: function() {
-        var data = {
-            'photo_service': $('input[name=profile_photo_service]:checked', this.$modal).val(),
-            'location': $('input[name=location]', this.$modal).val(),
-            'website': $('input[name=website]', this.$modal).val(),
-            'bio': $('input[name=bio]', this.$modal).val()
-        };
-        this.model.save_user_profile(data, _.bind(function() {
-            this.fetch_friends(_.bind(function() {
-                this.animate_profile_badge();
-            }, this));
-            this.switch_tab('findfriends');
-        }, this));
-        this.disable_save();
-        $('.NB-profile-save-button', this.$modal).text('Saving...');
-    },
-    
-    animate_profile_badge: function($badge) {
-        $badge = $badge || $('.NB-friends-findfriends-profile .NB-profile-badge', this.$modal);
-        _.delay(_.bind(function() {
-            $badge.css('backgroundColor', 'white').animate({
-                'backgroundColor': 'gold'
-            }, {
-                'queue': false,
-                'duration': 600,
-                'easing': 'linear',
-                'complete': function() {
-                    $badge.animate({
-                        'backgroundColor': 'white'
-                    }, {
-                        'queue': false,
-                        'duration': 1250,
-                        'easing': 'easeOutQuad'
-                    });
-                }
-            });
-        }, this), 200);
-    },
-    
     search_for_friends: function(query) {
         var $loading = $('.NB-friends-search .NB-loading', this.$modal);
         var $badges = $('.NB-friends-search .NB-friends-search-badges', this.$modal);
@@ -440,8 +338,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var newtab;
             if ($t.hasClass('NB-modal-tab-findfriends')) {
                 newtab = 'findfriends';
-            } else if ($t.hasClass('NB-modal-tab-profile')) {
-                newtab = 'profile';
             } else if ($t.hasClass('NB-modal-tab-followers')) {
                 newtab = 'followers';
             } else if ($t.hasClass('NB-modal-tab-following')) {
@@ -467,17 +363,9 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $.targetIs(e, { tagSelector: '.NB-friends-profile-link' }, function($t, $p) {
             e.preventDefault();
             
-            self.switch_tab('profile');
-        });
-        $.targetIs(e, { tagSelector: '.NB-profile-save-button' }, function($t, $p) {
-            e.preventDefault();
-            
-            self.save_profile();
-        });
-        $.targetIs(e, { tagSelector: '.NB-account-link' }, function($t, $p) {
-            e.preventDefault();
-            
-            self.close_and_load_account();
+            self.close(function() {
+                NEWSBLUR.reader.open_profile_editor_modal();
+            });
         });
     },
     
@@ -526,25 +414,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $count = $input.next('.NB-count').eq(0);
             $count.hide();
         });
-    },
-    
-    delegate_change: function() {
-        $('.NB-tab-profile', this.$modal).delegate('input[type=radio],input[type=checkbox],select,input[type=text]', 'change', _.bind(this.enable_save, this));
-        $('.NB-tab-profile', this.$modal).delegate('input[type=text]', 'keydown', _.bind(this.enable_save, this));
-    },
-    
-    enable_save: function() {
-        $('.NB-profile-save-button', this.$modal)
-            .removeClass('NB-modal-submit-close')
-            .addClass('NB-modal-submit-green')
-            .text('Save My Profile');
-    },
-    
-    disable_save: function() {
-        $('.NB-profile-save-button', this.$modal)
-            .addClass('NB-modal-submit-close')
-            .removeClass('NB-modal-submit-green')
-            .text('Change what you like above...');
     }
     
 });

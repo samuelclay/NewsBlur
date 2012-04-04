@@ -3,8 +3,10 @@ from apps.social import views
 
 urlpatterns = patterns('',
     url(r'^share_story/?$', views.mark_story_as_shared, name='mark-story-as-shared'),
-    url(r'^friends/?$', views.friends, name='friends'),
+    url(r'^load_user_friends/?$', views.load_user_friends, name='load-user-friends'),
     url(r'^profile/?$', views.profile, name='profile'),
+    url(r'^load_user_profile/?$', views.load_user_profile, name='load-user-profile'),
+    url(r'^save_user_profile/?$', views.save_user_profile, name='save-user-profile'),
     url(r'^follow/?$', views.follow, name='social-follow'),
     url(r'^unfollow/?$', views.unfollow, name='social-unfollow'),
     url(r'^feed_trainer', views.social_feed_trainer, name='social-feed-trainer'),

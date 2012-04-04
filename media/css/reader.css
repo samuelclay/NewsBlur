@@ -4801,13 +4801,16 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bricks.png') no-repeat  0 1px;
 }
 .NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/package_green.png') no-repeat  0 2px;
+    background: transparent url('/media/embed/icons/silk/package_green.png') no-repeat  0 1px;
 }
 .NB-menu-manage .NB-menu-manage-friends .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/rainbow.png') no-repeat  0 2px;
+    background: transparent url('/media/embed/icons/silk/rainbow.png') no-repeat  0 1px;
+}
+.NB-menu-manage .NB-menu-manage-profile-editor .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/silk/color_wheel.png') no-repeat  0 2px;
+    background: transparent url('/media/embed/icons/silk/color_wheel.png') no-repeat  0 1px;
 }
 .NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/weather_sun.png') no-repeat  0 1px;
@@ -7280,87 +7283,6 @@ background: transparent;
 }
 
 
-.NB-modal-friends .NB-modal-section.NB-friends-profile {
-    overflow: hidden;
-}
-.NB-modal-friends .NB-modal-section.NB-friends-profilephoto {
-    overflow: hidden;
-}
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group {
-    float: left;
-    margin: 12px 0 0 12px;
-    position: relative;
-    width: 120px;
-    font-size: 14px;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-photo-title input {
-    margin-right: 8px;
-}
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-photo-title label {
-    margin: 2px 0 0 0;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group img {
-    width: 50px;
-    height: 50px;
-    border: 1px solid #A0A0A0;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group.is_disabled {
-    opacity: .4;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-photo-image {
-    position: relative;
-    margin: 8px 0 0 22px;
-}
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group .NB-photo-loader {
-    display: none;
-}
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group.NB-loading .NB-photo-loader {
-    display: block;
-    width: 32px;
-    height: 32px;
-    position: absolute;
-    top: 9px;
-    left: 9px;
-    z-index: 1;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-friends-profile-photo-group.is_loading .photo-upload-placeholder {
-    opacity: .25;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-photo-link {
-    position: relative;
-    left: 0px;
-    bottom: -6px;
-    width: 120px;
-    height: 20px;
-    overflow: hidden;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-photo-link input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    border: 300px solid transparent;
-    opacity: 0;
-    filter: alpha(opacity=0);
-    -o-transform: translate(-300px, -300px) scale(10);
-    -moz-transform: translate(-800px, 0) scale(10);
-    cursor: pointer;
-}
-
-.NB-modal-friends .NB-friends-profilephoto .NB-gravatar-link {
-    position: relative;
-    left: 10px;
-    bottom: -6px;
-    height: 20px;
-}
-
 .NB-modal-friends .NB-friends-findfriends-profile {
     text-align: left;
 }
@@ -7405,38 +7327,8 @@ background: transparent;
     color: #999;
     font-size: 13px;
 }
-.NB-modal-friends .NB-friends-profile .NB-profile-username,
-.NB-modal-friends input[type=text] {
-    float: left;
-    width: 200px;
-    margin: 12px 8px 0 0;
-}
-.NB-modal-friends .NB-friends-profile .NB-count {
-    float: left;
-    color: #404040;
-    font-size: 10px;
-    font-weight: bold;
-    margin: 16px 0 0 4px;
-}
-.NB-modal-friends .NB-friends-profile .NB-count.NB-red {
-    color: #7F0000;
-}
-.NB-modal-friends .NB-friends-profile .NB-profile-username {
-    width: auto;
-}
-.NB-modal-friends .NB-account-link {
-    margin-left: 12px;
-    font-size: 10px;
-    text-transform: uppercase;
-}
 .NB-modal-friends .NB-tab-findfriends label {
     width: auto ;
-}
-
-.NB-modal-friends .NB-tab-profile .NB-modal-submit-button {
-    float: left;
-    margin: 12px 0 0 12px;
-    text-align: center;
 }
 .NB-modal-friends .NB-profile-section-heading {
     text-align: center;
@@ -7444,6 +7336,150 @@ background: transparent;
     border-bottom: 1px solid #E0E0E0;
     padding: 0 0 16px;
 }
+
+
+
+/* ======================== */
+/* = Profile Editor Modal = */
+/* ======================== */
+
+.NB-modal-profile-editor .NB-tab {
+    min-height: 80px;
+    padding: 12px 0;
+}
+.NB-modal-profile-editor .NB-modal-tabs .NB-modal-loading {
+    margin: 6px 8px 0 0;
+    float: left;
+}
+.NB-modal-profile-editor fieldset {
+    border: 0;
+    border-top: 1px solid #E6E6E6;
+    padding: 0 12px;
+    margin: 0;
+}
+.NB-modal-profile-editor fieldset legend {
+    padding: 0 12px;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #151775;
+}
+.NB-modal-profile-editor .NB-tab-profile .NB-modal-submit-button {
+    float: left;
+    margin: 12px 0 0 12px;
+    text-align: center;
+}
+.NB-modal-profile-editor .NB-modal-section.NB-friends-profile {
+    overflow: hidden;
+}
+.NB-modal-profile-editor .NB-modal-section.NB-friends-profilephoto {
+    overflow: hidden;
+}
+.NB-modal-profile-editor .NB-friends-profile-photo-group {
+    float: left;
+    margin: 12px 0 0 12px;
+    position: relative;
+    width: 120px;
+    font-size: 14px;
+}
+
+.NB-modal-profile-editor .NB-friends-photo-title input {
+    margin-right: 8px;
+}
+.NB-modal-profile-editor .NB-friends-photo-title label {
+    margin: 2px 0 0 0;
+}
+
+.NB-modal-profile-editor .NB-friends-profile-photo-group img {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #A0A0A0;
+}
+
+.NB-modal-profile-editor .NB-friends-profile-photo-group.is_disabled {
+    opacity: .4;
+}
+
+.NB-modal-profile-editor .NB-friends-photo-image {
+    position: relative;
+    margin: 8px 0 0 22px;
+}
+.NB-modal-profile-editor .NB-friends-profile-photo-group .NB-photo-loader {
+    display: none;
+}
+.NB-modal-profile-editor .NB-friends-profile-photo-group.NB-loading .NB-photo-loader {
+    display: block;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    z-index: 1;
+}
+
+.NB-modal-profile-editor .NB-friends-profile-photo-group.is_loading .photo-upload-placeholder {
+    opacity: .25;
+}
+
+.NB-modal-profile-editor .NB-photo-link {
+    position: relative;
+    left: 0px;
+    bottom: -6px;
+    width: 120px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.NB-modal-profile-editor .NB-photo-link input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border: 300px solid transparent;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -o-transform: translate(-300px, -300px) scale(10);
+    -moz-transform: translate(-800px, 0) scale(10);
+    cursor: pointer;
+}
+
+.NB-modal-profile-editor .NB-gravatar-link {
+    position: relative;
+    left: 10px;
+    bottom: -6px;
+    height: 20px;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-profile-username,
+.NB-modal-profile-editor input[type=text] {
+    float: left;
+    width: 200px;
+    margin: 12px 8px 0 0;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-count {
+    float: left;
+    color: #404040;
+    font-size: 10px;
+    font-weight: bold;
+    margin: 16px 0 0 4px;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-count.NB-red {
+    color: #7F0000;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-profile-username {
+    width: auto;
+}
+.NB-modal-profile-editor .NB-friends-profile label {
+    clear: both;
+    float: left;
+    width: 100px;
+    padding: 12px 8px 0 12px;
+}
+.NB-modal-profile-editor .NB-account-link {
+    margin-left: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
 
 /* ================= */
 /* = Profile Badge = */

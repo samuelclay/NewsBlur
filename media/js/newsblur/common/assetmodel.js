@@ -1101,21 +1101,26 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     load_tutorial: function(data, callback) {
-      this.make_request('/reader/load_tutorial', data, callback);
+      this.make_request('/reader/load_tutorial', data, callback, null, {
+          request_type: 'GET'
+      });
     },
     
     fetch_friends: function(callback) {
-        var pre_callback = _.bind(function(data) {
-            this.user_profile = new NEWSBLUR.Models.User(data.user_profile);
+        this.make_request('/social/load_user_friends', null, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
             this.follower_profiles = new NEWSBLUR.Collections.Users(data.follower_profiles);
             this.following_profiles = new NEWSBLUR.Collections.Users(data.following_profiles);
             callback(data);
-        }, this);
-        this.make_request('/social/friends', null, pre_callback);
+        }, this), null, {
+            request_type: 'GET'
+        });
     },
     
     fetch_user_profile: function(user_id, callback) {
-        this.make_request('/social/profile', {'user_id': user_id}, callback, callback, {request_type: 'GET'});
+        this.make_request('/social/profile', {'user_id': user_id}, callback, callback, {
+            request_type: 'GET'
+        });
     },
     
     search_for_friends: function(query, callback) {
@@ -1129,12 +1134,24 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/oauth/'+service+'_disconnect/', null, callback);
     },
     
+    load_current_user_profile: function(callback) {
+        this.make_request('/social/load_user_profile', null, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            callback(data);
+        }, this), null, {
+            request_type: 'GET'
+        });
+    },
+    
     save_user_profile: function(data, callback) {
-        this.make_request('/social/profile/', data, callback);
+        this.make_request('/social/save_user_profile/', data, _.bind(function(response) {
+            this.user_profile.set(response.user_profile);
+            callback(response);
+        }, this));
     },
     
     follow_user: function(user_id, callback) {
-        var pre_callback = _.bind(function(data) {
+        this.make_request('/social/follow', {'user_id': user_id}, _.bind(function(data) {
             console.log(["follow data", data]);
             this.user_profile.set(data.user_profile);
             var following_profile = this.following_profiles.detect(function(profile) {
@@ -1150,12 +1167,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.social_feeds.remove(data.follow_subscription);
             this.social_feeds.add(data.follow_subscription);
             callback(data, follow_user);
-        }, this);
-        this.make_request('/social/follow', {'user_id': user_id}, pre_callback);
+        }, this));
     },
     
     unfollow_user: function(user_id, callback) {
-        var pre_callback = _.bind(function(data) {
+        this.make_request('/social/unfollow', {'user_id': user_id}, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
             this.following_profiles.remove(function(profile) {
                 return profile.get('user_id') == data.unfollow_profile.user_id;
@@ -1163,8 +1179,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             this.social_feeds.remove(data.unfollow_profile.id);
             var unfollow_user = new NEWSBLUR.Models.User(data.unfollow_profile);
             callback(data, unfollow_user);
-        }, this);
-        this.make_request('/social/unfollow', {'user_id': user_id}, pre_callback);
+        }, this));
     },
     
     load_public_story_comments: function(story_id, feed_id, callback) {
