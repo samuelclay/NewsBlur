@@ -4503,11 +4503,11 @@
             var $replies = _.map(replies, _.bind(function(reply) {
                 var user = this.model.get_user(reply.user_id);
                 return $.make('div', { className: 'NB-story-comment-reply' }, [
-                    $.make('img', { className: 'NB-story-comment-reply-photo', src: user.get('photo_url') }),
+                    $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: user.get('photo_url') }),
                     $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, user.get('username')),
                     $.make('div', { className: 'NB-story-comment-date NB-story-comment-reply-date' }, reply.publish_date + ' ago'),
                     $.make('div', { className: 'NB-story-comment-content NB-story-comment-reply-content' }, reply.comments)
-                ]);
+                ]).data('user_id', user.get('id'));
             }, this));
             $replies = $.make('div', { className: 'NB-story-comment-replies' }, $replies);
 
@@ -7531,12 +7531,20 @@
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-comment .NB-user-avatar' }, function($t, $p){
                 e.preventDefault();
-                var user_id = $t.closest('.NB-story-comment').data('user_id');
+                var $parent = $t.closest('.NB-story-comment-reply');
+                if (!$parent.length) {
+                    $parent = $t.closest('.NB-story-comment');
+                }
+                var user_id = $parent.data('user_id');
                 self.open_social_profile_modal(user_id);
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-username' }, function($t, $p){
                 e.preventDefault();
-                var user_id = $t.closest('.NB-story-comment').data('user_id');
+                var $parent = $t.closest('.NB-story-comment-reply');
+                if (!$parent.length) {
+                    $parent = $t.closest('.NB-story-comment');
+                }
+                var user_id = $parent.data('user_id');
                 self.open_social_profile_modal(user_id);
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply-button' }, function($t, $p){
