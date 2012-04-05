@@ -4548,10 +4548,11 @@
                 return;
             }
             
-            this.model.save_comment_reply(story_id, story.story_feed_id, comment_user_id, comment_reply, _.bind(function(data) {
-                var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
-                var $old_comments = $comment.closest('.NB-feed-story-comments');
-                $old_comments.replaceWith($new_comments);
+            this.model.save_comment_reply(story_id, story.story_feed_id, 
+                                          comment_user_id, comment_reply, 
+                                          _.bind(function(data) {
+                var $new_comment = this.make_story_share_comment(data.comment);
+                $comment.replaceWith($new_comment);
                 this.fetch_story_locations_in_feed_view();
             }, this));
         },

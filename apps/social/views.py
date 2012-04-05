@@ -137,7 +137,6 @@ def load_social_page(request, user_id, username=None):
     limit = int(request.REQUEST.get('limit', 12))
     page = request.REQUEST.get('page')
     if page: offset = limit * (int(page) - 1)
-    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
@@ -248,11 +247,13 @@ def save_comment_reply(request):
     shared_story.save()
     logging.user(request, "~FCReplying to comment in: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], reply_comments[:100]))
     
-    story = Feed.format_story(story)
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
-    story = stories[0]
+    comment = shared_story.comments_with_author()
+    profile_user_ids = set([comment['user_id']])
+    profile_user_ids = profile_user_ids.union([reply['user_id'] for reply in comment['replies']])
+    profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
+    profiles = [profile.to_json(compact=True) for profile in profiles]
     
-    return {'code': code, 'story': story, 'user_profiles': profiles}
+    return {'code': code, 'comment': comment, 'user_profiles': profiles}
     
 def shared_stories_public(request, username):
     try:
