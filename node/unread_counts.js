@@ -13,7 +13,8 @@
 
   io.sockets.on('connection', function(socket) {
     socket.on('subscribe:feeds', function(feeds, username) {
-      var _ref;
+      var _ref,
+        _this = this;
       this.feeds = feeds;
       this.username = username;
       console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on)"));
@@ -21,7 +22,7 @@
       socket.subscribe = redis.createClient(6379, REDIS_SERVER);
       socket.subscribe.subscribe(this.feeds);
       return socket.subscribe.on('message', function(channel, message) {
-        console.log("   ---> [" + this.username + "] Update on " + channel + ": " + message);
+        console.log("   ---> [" + _this.username + "] Update on " + channel + ": " + message);
         return socket.emit('feed:update', channel);
       });
     });

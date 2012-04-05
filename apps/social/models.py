@@ -21,6 +21,16 @@ from utils.feed_functions import relative_timesince
 from utils import json_functions as json
 
 
+
+class MRequestInvite(mongo.Document):
+    username = mongo.StringField()
+    
+    meta = {
+        'collection': 'social_invites',
+        'allow_inheritance': False,
+    }
+    
+    
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
     username             = mongo.StringField(max_length=30, unique=True)
@@ -160,7 +170,8 @@ class MSocialProfile(mongo.Document):
         return params
         
     def to_json(self, compact=False, full=False):
-        domain = Site.objects.get_current().domain
+        # domain = Site.objects.get_current().domain
+        domain = Site.objects.get_current().domain.replace('www', 'dev')
         params = {
             'id': 'social:%s' % self.user_id,
             'user_id': self.user_id,

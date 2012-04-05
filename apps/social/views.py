@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
+from apps.social.models import MRequestInvite
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -20,6 +21,12 @@ from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from vendor.timezones.utilities import localtime_for_timezone
 
+@json.json_view
+def request_invite(request):
+    MRequestInvite.objects.create(username=request.POST['username'])
+    logging.user(request, " ---> ~BG~FB~SBInvite requested: %s" % request.POST['username'])
+    return {}
+    
 @json.json_view
 def load_social_stories(request, user_id, username=None):
     user = get_user(request)

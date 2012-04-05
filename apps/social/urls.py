@@ -2,6 +2,7 @@ from django.conf.urls.defaults import url, patterns
 from apps.social import views
 
 urlpatterns = patterns('',
+    url(r'^request_invite/?$', views.request_invite, name='request-invite'),
     url(r'^share_story/?$', views.mark_story_as_shared, name='mark-story-as-shared'),
     url(r'^load_user_friends/?$', views.load_user_friends, name='load-user-friends'),
     url(r'^profile/?$', views.profile, name='profile'),

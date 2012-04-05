@@ -14,7 +14,7 @@ io.sockets.on 'connection', (socket) ->
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.subscribe @feeds
         
-        socket.subscribe.on 'message', (channel, message) ->
+        socket.subscribe.on 'message', (channel, message) =>
             console.log "   ---> [#{@username}] Update on #{channel}: #{message}"
             socket.emit 'feed:update', channel
     

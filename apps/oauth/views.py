@@ -70,7 +70,8 @@ def facebook_connect(request):
     
     args = {
         "client_id": facebook_app_id,
-        "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
+        # "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
+        "redirect_uri": "http://" + Site.objects.get_current().domain.replace('www', 'dev') + reverse('facebook-connect'),
         "scope": "offline_access,user_website",
         "display": "popup",
     }
@@ -126,7 +127,7 @@ def twitter_disconnect(request):
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.disconnect_twitter()
     
-    return HttpResponseRedirect(reverse('friends'))
+    return HttpResponseRedirect(reverse('load-user-friends'))
 
 @ajax_login_required
 def facebook_disconnect(request):
@@ -134,7 +135,7 @@ def facebook_disconnect(request):
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     social_services.disconnect_facebook()
     
-    return HttpResponseRedirect(reverse('friends'))
+    return HttpResponseRedirect(reverse('load-user-friends'))
     
 @ajax_login_required
 @json.json_view

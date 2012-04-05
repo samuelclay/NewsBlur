@@ -51,6 +51,10 @@ SINGLE_DAY = 60*60*24
 @never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
+    # XXX TODO: Remove me on launch.
+    if request.user.is_anonymous():
+        return {}, 'reader/social_signup.xhtml'
+        
     if request.method == "POST":
         if request.POST.get('submit') == 'login':
             login_form  = LoginForm(request.POST, prefix='login')
@@ -82,7 +86,7 @@ def index(request):
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
     if start_import_from_google_reader:
         del request.session['import_from_google_reader']
-
+    
     return {
         'user_profile'      : hasattr(user, 'profile') and user.profile,
         'login_form'        : login_form,
