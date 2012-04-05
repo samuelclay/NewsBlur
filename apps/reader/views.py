@@ -52,7 +52,7 @@ SINGLE_DAY = 60*60*24
 @render_to('reader/feeds.xhtml')
 def index(request):
     # XXX TODO: Remove me on launch.
-    if request.user.is_anonymous():
+    if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
         return {}, 'reader/social_signup.xhtml'
         
     if request.method == "POST":

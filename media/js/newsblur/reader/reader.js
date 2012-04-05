@@ -1154,7 +1154,11 @@
             });            
             $social_feeds.html($feeds);
             $social_feeds.animate({'opacity': 1}, {'duration': 700});
-            
+
+            if (this.socket) {
+                this.send_socket_active_feeds();
+            }
+
             callback && callback();
         },
         
@@ -4060,11 +4064,11 @@
                         ]),
                         $.make('div', { className: 'NB-sideoption NB-feed-story-save' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
-                            $.make('div', { className: 'NB-sideoption-title'}, story.starred_date ? 'Saved' : 'Save this story')
+                            $.make('div', { className: 'NB-sideoption-title'}, story.starred ? 'Saved' : 'Save this story')
                         ]),
                         $.make('div', { className: 'NB-sideoption NB-feed-story-share' }, [
                             $.make('div', { className: 'NB-sideoption-icon'}, '&nbsp;'),
-                            $.make('div', { className: 'NB-sideoption-title'}, story.shared_date ? 'Shared' : 'Share this story')
+                            $.make('div', { className: 'NB-sideoption-title'}, story.shared ? 'Shared' : 'Share this story')
                         ]),
                         $.make('div', { className: 'NB-sideoption-share-wrapper' }, [
                             $.make('div', { className: 'NB-sideoption-share' }, [
