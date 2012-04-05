@@ -4501,7 +4501,7 @@
         
         make_story_share_comment_replies: function(replies) {
             var $replies = _.map(replies, _.bind(function(reply) {
-                var user = this.model.user_profiles.find(reply.user_id);
+                var user = this.model.get_user(reply.user_id);
                 return $.make('div', { className: 'NB-story-comment-reply' }, [
                     $.make('img', { className: 'NB-story-comment-reply-photo', src: user.get('photo_url') }),
                     $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, user.get('username')),
@@ -4528,7 +4528,11 @@
                 _.bind(this.save_social_comment_reply, this, $comment));
             $('.NB-story-comment-reply-comments', $form).bind('keydown', 'return', 
                 _.bind(this.save_social_comment_reply, this, $comment));
+            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'esc', function() {
+                $('.NB-story-comment-reply-form', $comment).remove();
+            });
             $('input', $form).focus();
+            this.fetch_story_locations_in_feed_view();
         },
         
         save_social_comment_reply: function($comment) {
@@ -4540,6 +4544,7 @@
             
             if (!comment_reply || comment_reply.length <= 1) {
                 $('.NB-story-comment-reply-form', $comment).remove();
+                this.fetch_story_locations_in_feed_view();
                 return;
             }
             
@@ -4547,6 +4552,7 @@
                 var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
                 var $old_comments = $comment.closest('.NB-feed-story-comments');
                 $old_comments.replaceWith($new_comments);
+                this.fetch_story_locations_in_feed_view();
             }, this));
         },
         

@@ -807,7 +807,11 @@ class MSharedStory(mongo.Document):
                     shared_stories = cls.objects.filter(**params)
                 story['comments'] = []
                 for shared_story in shared_stories:
-                    story['comments'].append(shared_story.comments_with_author())
+                    comments = shared_story.comments_with_author()
+                    story['comments'].append(comments)
+                profile_user_ids = profile_user_ids.union([reply['user_id'] 
+                                                           for c in story['comments'] 
+                                                           for reply in c['replies']])
                 story['comment_count_public'] = story['comment_count'] - len(shared_stories)
                 story['comment_count_friends'] = len(shared_stories)
                 
@@ -823,7 +827,7 @@ class MSharedStory(mongo.Document):
                 story['shared_by_friends'] = friends_with_shares
                 story['share_count_public'] = story['share_count'] - len(friends_with_shares)
                 story['share_count_friends'] = len(friends_with_shares)
-
+            
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]
         
@@ -1006,8 +1010,13 @@ class MSocialServices(mongo.Document):
         
     def set_photo(self, service):
         profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
+        if service == 'nothing':
+            service = None
+
         profile.photo_service = service
-        if service == 'twitter':
+        if not service:
+            profile.photo_url = None
+        elif service == 'twitter':
             profile.photo_url = self.twitter_picture_url
         elif service == 'facebook':
             profile.photo_url = self.facebook_picture_url
@@ -1018,3 +1027,4 @@ class MSocialServices(mongo.Document):
             profile.photo_url = "http://www.gravatar.com/avatar/" + \
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
+        return profile

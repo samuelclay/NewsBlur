@@ -762,6 +762,15 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return null;
     },
     
+    get_user: function(user_id) {
+        var user = this.user_profiles.find(user_id);
+        if (!user && user_id == this.user_profile.get('user_id')) {
+            user = this.profile;
+        }
+        
+        return user;
+    },
+    
     save_classifier: function(data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
@@ -1186,7 +1195,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.make_request('/social/comments', {
             'story_id': story_id,
             'feed_id': feed_id
-        }, callback, callback, {request_type: 'GET'});
+        }, _.bind(function(data) {
+            if (data.user_profiles) {
+                this.add_user_profiles(data.user_profiles);
+            }
+            callback(data);
+        }, this), null, {request_type: 'GET'});
     },
     
     follow_twitter_account: function(username, callback) {

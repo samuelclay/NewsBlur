@@ -176,11 +176,12 @@ def story_comments(request):
     shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id, has_comments=True)
     comments = [s.comments_with_author() for s in shared_stories]
 
-    profile_user_ids = [c['user_id'] for c in comments]
+    profile_user_ids = set([c['user_id'] for c in comments])
+    profile_user_ids = profile_user_ids.union([r['user_id'] for c in comments for r in c['replies']])
     profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
     profiles = [profile.to_json(compact=True) for profile in profiles]
     
-    return {'comments': comments, 'profiles': profiles}
+    return {'comments': comments, 'user_profiles': profiles}
 
 @ajax_login_required
 @json.json_view
@@ -308,7 +309,7 @@ def save_user_profile(request):
     profile.save()
 
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
-    social_services.set_photo(data['photo_service'])
+    profile = social_services.set_photo(data['photo_service'])
     
     logging.user(request, "~BB~FRSaving social profile")
     
@@ -334,15 +335,20 @@ def load_user_friends(request):
 @json.json_view
 def follow(request):
     profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    user_id = request.POST['user_id']
     try:
-        follow_user_id = int(request.POST['user_id'])
+        follow_user_id = int(user_id)
     except ValueError:
-        follow_user_id = request.POST['user_id'].replace('social:', '')
-        follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
-    except MSocialProfile.DoesNotExist:
-        follow_username = request.POST['user_id'].replace('social:', '')
-        follow_profile = MSocialProfile.objects.get(username=follow_username)
-        follow_user_id = follow_profile.user_id
+        try:
+            follow_user_id = int(user_id.replace('social:', ''))
+            follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
+        except (ValueError, MSocialProfile.DoesNotExist):
+            follow_username = user_id.replace('social:', '')
+            try:
+                follow_profile = MSocialProfile.objects.get(username=follow_username)
+            except MSocialProfile.DoesNotExist:
+                raise Http404
+            follow_user_id = follow_profile.user_id
 
     profile.follow_user(follow_user_id)
     follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
@@ -367,15 +373,20 @@ def follow(request):
 @json.json_view
 def unfollow(request):
     profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    user_id = request.POST['user_id']
     try:
-        unfollow_user_id = int(request.POST['user_id'])
+        unfollow_user_id = int(user_id)
     except ValueError:
-        unfollow_user_id = request.POST['user_id'].replace('social:', '')
-        unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
-    except MSocialProfile.DoesNotExist:
-        unfollow_username = request.POST['user_id']
-        unfollow_profile = MSocialProfile.objects.get(username=unfollow_username)
-        unfollow_user_id = unfollow_profile.user_id
+        try:
+            unfollow_user_id = int(user_id.replace('social:', ''))
+            unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
+        except (ValueError, MSocialProfile.DoesNotExist):
+            unfollow_username = user_id.replace('social:', '')
+            try:
+                unfollow_profile = MSocialProfile.objects.get(username=unfollow_username)
+            except MSocialProfile.DoesNotExist:
+                raise Http404
+            unfollow_user_id = unfollow_profile.user_id
         
     profile.unfollow_user(unfollow_user_id)
     unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)

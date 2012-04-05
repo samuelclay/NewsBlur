@@ -95,26 +95,14 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         var $profile_badge;
         var profile = this.profile;
         
-        if (!profile.get('location') && !profile.get('bio') && !profile.get('website')) {
-            $profile_badge = $.make('a', { 
-                className: 'NB-friends-profile-link NB-modal-submit-button NB-modal-submit-green', 
-                href: '#'
-            }, [
-                'Fill out your profile ',
-                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png', style: 'padding-left: 10px' }),
-                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png' })
-            ]);
-        } else {
-            $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({model: profile});
-        }
-        
+        $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({model: profile});
         $badge.append($profile_badge);
     },
     
     make_profile_photo_chooser: function() {
         var $profiles = $('.NB-friends-profilephoto', this.$modal).empty();
         
-        _.each(['twitter', 'facebook', 'gravatar'], _.bind(function(service) {
+        _.each(['nothing', 'twitter', 'facebook', 'gravatar'], _.bind(function(service) {
             var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-'+service }, [
                 $.make('div', { className: 'NB-friends-photo-title' }, [
                     $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-'+service }),
@@ -123,7 +111,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 $.make('div', { className: 'NB-friends-photo-image' }, [
                     $.make('label', { 'for': 'NB-profile-photo-service-'+service }, [
                         $.make('div', { className: 'NB-photo-loader' }),
-                        $.make('img', { src: this.services[service][service+'_picture_url'] })
+                        $.make('img', { src: service == 'nothing' || !this.services[service][service+'_picture_url'] ?
+                            NEWSBLUR.Globals.MEDIA_URL + 'img/reader/default_profile_photo.png' :
+                            this.services[service][service+'_picture_url']
+                        })
                     ])
                 ]),
                 (service == 'upload' && $.make('div', { className: 'NB-photo-link' }, [
@@ -132,9 +123,13 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 ])),
                 (service == 'gravatar' && $.make('div', { className: 'NB-gravatar-link' }, [
                     $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
+                ])),
+                (_.contains(['facebook', 'twitter'], service) && $.make('div', { className: 'NB-friends-link' }, [
+                    $.make('div', { className: 'NB-splash-link' }, 'connect')
                 ]))
             ]);
-            if (service == this.profile.get('photo_service')) {
+            if (service == this.profile.get('photo_service') ||
+                (service == 'nothing' && !this.profile.get('photo_service'))) {
                 $('input[type=radio]', $profile).attr('checked', true);
             }
             $profiles.append($profile);
@@ -224,6 +219,12 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
     },
     
+    close_and_load_friends: function() {
+        this.close(function() {
+            NEWSBLUR.reader.open_friends_modal();
+        });
+    },
+    
     save_profile: function() {
         console.log(["save_profile"]);
         var data = {
@@ -295,6 +296,11 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             e.preventDefault();
             
             self.close_and_load_account();
+        });
+        $.targetIs(e, { tagSelector: '.NB-friends-link' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close_and_load_friends();
         });
     },
     
