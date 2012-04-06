@@ -5,7 +5,6 @@ import re
 import math
 import mongoengine as mongo
 import zlib
-import urllib
 import hashlib
 from collections import defaultdict
 from operator import itemgetter
@@ -879,7 +878,7 @@ class Feed(models.Model):
         story['story_authors']    = story_db.story_author_name
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
-        story['story_permalink']  = urllib.unquote(urllib.unquote(story_db.story_permalink))
+        story['story_permalink']  = story_db.story_permalink
         story['story_feed_id']    = feed_id or story_db.story_feed_id
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
