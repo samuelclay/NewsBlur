@@ -50,19 +50,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 ]),
                 $.make('fieldset', [
                     $.make('legend', 'Search for friends'),
-                    $.make('div', { className: 'NB-modal-section NB-friends-search'}, [
-                        $.make('label', { 'for': 'NB-friends-search-input' }, 'Username or email:'),
-                        $.make('input', { type: 'text', className: 'NB-input', id: 'NB-friends-search-input' }),
-                        $.make('div', { className: 'NB-loading' }),
-                        $.make('div', { className: 'NB-friends-search-badges' })
-                    ])
-                ]),
-                $.make('fieldset', [
-                    $.make('legend', 'People You Know'),
-                    $.make('div', { className: 'NB-modal-section NB-friends-findlist'}, [
-                        $.make('div', { className: 'NB-ghost' }, 'You\'re auto-following new friends, so no need to manually follow them. Score!')
-                    ])
+                    $.make('div', { className: 'NB-modal-section NB-friends-search'})
                 ])
+                // $.make('fieldset', [
+                //     $.make('legend', 'People You Know'),
+                //     $.make('div', { className: 'NB-modal-section NB-friends-findlist'}, [
+                //         $.make('div', { className: 'NB-ghost' }, 'You\'re auto-following new friends, so no need to manually follow them. Score!')
+                //     ])
+                // ])
             ]),
             $.make('div', { className: 'NB-tab NB-tab-profile' }, [
                 $.make('fieldset', [
@@ -91,6 +86,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.make_followers_tab();
             this.make_following_tab();
             callback && callback();
+            _.defer(_.bind(this.resize, this));
         }, this));
     },
     
@@ -126,7 +122,13 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ])
         ]);
         $services.prepend($autofollow);
-        this.resize();
+        
+        $('.NB-friends-search').html($.make('div', [
+            $.make('label', { 'for': 'NB-friends-search-input' }, 'Username or email:'),
+            $.make('input', { type: 'text', className: 'NB-input', id: 'NB-friends-search-input' }),
+            $.make('div', { className: 'NB-loading NB-friends-search-loading' }),
+            $.make('div', { className: 'NB-friends-search-badges' })
+        ]));
     },
     
     make_profile_section: function() {
@@ -228,12 +230,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $tab = $('.NB-tab.NB-active', this.$modal);
         var $modal = this.$modal;
         var $modal_container = $modal.closest('.simplemodal-container');
-        
+
         if (count > 50) return;
         
         if ($modal.height() > $modal_container.height() - 24) {
             $tab.height($tab.height() - 5);
             this.resize_modal(count+1);
+        } else {
+            this.resize();
         }
         
     },
@@ -253,7 +257,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         } else if (newtab == 'followers') {
             this.make_followers_tab();
         }
-        this.resize_modal();
+        _.defer(_.bind(this.resize_modal, this));
     },
     
     connect: function(service) {
@@ -269,6 +273,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.services = data.services;
             this.make_find_friends_and_services();
             this.make_profile_section();
+            _.defer(_.bind(this.resize_modal, this));
         }, this));
     },
     
@@ -281,7 +286,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]).css('opacity', 0);
             $('.NB-friends-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
-            this.resize();
+            _.defer(_.bind(this.resize_modal, this));
         } else {
             this.fetch_friends();
         }
@@ -291,7 +296,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
 
     search_for_friends: function(query) {
-        var $loading = $('.NB-friends-search .NB-loading', this.$modal);
+        var $loading = $('.NB-friends-search .NB-friends-search-loading', this.$modal);
         var $badges = $('.NB-friends-search .NB-friends-search-badges', this.$modal);
         
         if (this.last_query && this.last_query == query) {
@@ -323,6 +328,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 var user = new NEWSBLUR.Models.User(profile);
                 return new NEWSBLUR.Views.SocialProfileBadge({model: user});
             })));
+            
+            _.defer(_.bind(this.resize_modal, this));
         }, this));
     },
     

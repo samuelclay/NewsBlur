@@ -7306,7 +7306,6 @@ background: transparent;
 }
 .NB-modal.NB-modal-friends .NB-friends-search {
     overflow: hidden;
-    padding-bottom: 0;
 }
 .NB-modal-friends #NB-friends-search-input {
     float: left;
@@ -7319,7 +7318,7 @@ background: transparent;
 .NB-modal-friends .NB-friends-search-badges {
     clear: both;
     float: left;
-    margin: 12px 12px 18px;
+    margin: 12px 12px 0;
     width: 100%;
 }
 
@@ -7495,6 +7494,12 @@ background: transparent;
 /* ================= */
 
 .NB-profile-badge {
+    border-bottom: 1px solid #F0F0F0;
+}
+.NB-profile-badge:last-child {
+    border-bottom: none;
+}
+.NB-profile-badge table {
     clear: both;
     padding: 12px 12px 12px 12px;
     position: relative;
@@ -7603,6 +7608,16 @@ background: transparent;
     box-shadow: none;
     -moz-box-shadow: none;
     opacity: .25;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-preview.NB-disabled:hover {
+    background: white;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-buttons {
+    float: right;
+}
+.NB-profile-badge-info .NB-profile-badge-actions .NB-loading {
+    margin: 6px 12px 0 0;
+    float: left;
 }
 /* ======================== */
 /* = Social Profile Modal = */
