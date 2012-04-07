@@ -5954,6 +5954,8 @@
         // ====================
         
         setup_dashboard_graphs: function() {
+            if (NEWSBLUR.Globals.debug) return;
+            
           // Reload dashboard graphs every 10 minutes.
           clearInterval(this.locks.load_dashboard_graphs);
           this.locks.load_dashboard_graphs = setInterval(_.bind(function() {
@@ -5976,6 +5978,8 @@
         
         
         setup_feedback_table: function() {
+            if (NEWSBLUR.Globals.debug) return;
+            
           // Reload feedback module every 10 minutes.
           clearInterval(this.locks.load_feedback_table);
           this.locks.load_feedback_table = setInterval(_.bind(function() {
