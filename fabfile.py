@@ -234,6 +234,7 @@ def setup_app():
     setup_gunicorn(supervisor=True)
     update_gunicorn()
     setup_node()
+    configure_node()
 
 def setup_db():
     setup_common()
@@ -476,9 +477,14 @@ def setup_node():
     run('curl http://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
-    put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
+
+def configure_node():
+    sudo('rm -fr /etc/supervisor/conf.d/node.conf')
+    put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
+    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
-    sudo('supervisorctl start node')
+    sudo('supervisorctl start node_unread')
+    sudo('supervisorctl start node_favicons')
 
 def copy_certificates():
     # with cd(env.NEWSBLUR_PATH):
