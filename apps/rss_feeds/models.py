@@ -1219,7 +1219,6 @@ class MFeedPage(mongo.Document):
     def get_data(cls, feed_id):
         data = None
         feed_page = cls.objects(feed_id=feed_id)
-        
         if feed_page:
             data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
         

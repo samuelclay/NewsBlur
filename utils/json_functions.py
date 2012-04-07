@@ -1,4 +1,3 @@
-from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.db import models
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
@@ -108,6 +107,7 @@ def json_view(func):
     def wrap(request, *a, **kw):
         response = func(request, *a, **kw)
         return json_response(request, response)
+
     if isinstance(func, HttpResponse):
         return func
     else:
@@ -140,15 +140,14 @@ def json_response(request, response=None):
             '\n'.join(traceback.format_exception(*exc_info)),
             request_repr,
             )
+        
+        response = {'result': 'error',
+                    'text': unicode(e)}
+        code = 500
         if not settings.DEBUG:
             mail_admins(subject, message, fail_silently=True)
-
-            response = {'result': 'error',
-                        'text': unicode(e)}
-            code = 500
         else:
-            print message
-            raise e
+            print '\n'.join(traceback.format_exception(*exc_info))
 
     if isinstance(response, HttpResponseForbidden):
         return response

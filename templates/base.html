@@ -18,8 +18,8 @@
       'username'                : "{{ user.username|safe }}",
       'email'                   : "{{ user.email|safe }}",
       'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
-      'debug'                   : {{ debug|yesno:"true,false" }},
-      'MEDIA_URL'               : "{{ MEDIA_URL }}"
+      'MEDIA_URL'               : "{{ MEDIA_URL }}",
+      'debug'                   : {{ debug|yesno:"true,false" }}
     };
     NEWSBLUR.Flags = {
       'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}

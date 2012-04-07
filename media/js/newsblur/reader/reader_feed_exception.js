@@ -252,35 +252,49 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
     
     change_feed_address: function() {
-        var $loading = $('.NB-modal-loading', this.$modal);
-        $loading.addClass('NB-active');
-        
-        $('.NB-modal-submit-address', this.$modal).addClass('NB-disabled').attr('value', 'Parsing...');
-        
         var feed_id = this.feed_id;
-        var feed_address = $('input[name=feed_address]', this.$modal).val();
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var $feed_address = $('input[name=feed_address]', this.$modal);
+        var $submit = $('.NB-modal-submit-address', this.$modal);
+        var $error = $feed_address.closest('.NB-exception-option').find('.NB-error');
+        var feed_address = $feed_address.val();
+        
+        $loading.addClass('NB-active');
+        $submit.addClass('NB-disabled').attr('value', 'Parsing...');
+        $error.hide().html('');
         
         if (feed_address.length) {
             this.model.save_exception_change_feed_address(feed_id, feed_address, function(code) {
                 NEWSBLUR.reader.force_feed_refresh(feed_id);
                 $.modal.close();
+            }, function(data) {
+                $error.show().html((data && data.message) || "There was a problem fetching the feed from this URL.");
+                $loading.removeClass('NB-active');
+                $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
             });
         }
     },
     
     change_feed_link: function() {
-        var $loading = $('.NB-modal-loading', this.$modal);
-        $loading.addClass('NB-active');
-        
-        $('.NB-modal-submit-link', this.$modal).addClass('NB-disabled').attr('value', 'Fetching...');
-        
         var feed_id = this.feed_id;
-        var feed_link = $('input[name=feed_link]', this.$modal).val();
-        
+        var $feed_link = $('input[name=feed_link]', this.$modal);
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var $submit = $('.NB-modal-submit-link', this.$modal);
+        var $error = $feed_link.closest('.NB-exception-option').find('.NB-error');
+        var feed_link = $feed_link.val();
+
+        $loading.addClass('NB-active');
+        $submit.addClass('NB-disabled').attr('value', 'Fetching...');
+        $error.hide().html('');
+
         if (feed_link.length) {
             this.model.save_exception_change_feed_link(feed_id, feed_link, function(code) {
                 NEWSBLUR.reader.force_feed_refresh(feed_id);
                 $.modal.close();
+            }, function(data) {
+                $error.show().html((data && data.message) || "There was a problem fetching the feed from this URL.");
+                $loading.removeClass('NB-active');
+                $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
             });
         }
     },

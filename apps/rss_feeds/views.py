@@ -201,7 +201,7 @@ def exception_change_feed_address(request):
     original_feed = feed
     feed_address = request.POST['feed_address']
     code = -1
-    
+
     if feed.has_page_exception or feed.has_feed_exception:
         # Fix broken feed
         logging.user(request, "~FRFixing feed exception by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
@@ -248,6 +248,10 @@ def exception_change_feed_address(request):
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
     }
+    
+    if feed and feed.has_feed_exception:
+        code = -1
+    
     return {
         'code': code, 
         'feeds': feeds, 
@@ -308,6 +312,9 @@ def exception_change_feed_link(request):
     
     feed.update_all_statistics()
     classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
+    
+    if feed and feed.has_feed_exception:
+        code = -1
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
