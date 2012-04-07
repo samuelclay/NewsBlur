@@ -134,11 +134,11 @@ class Feed(models.Model):
         if len(self.feed_title) > max_feed_title:
             self.feed_title = self.feed_title[:max_feed_title]
         max_feed_address = Feed._meta.get_field('feed_address').max_length
-        if len(self.feed_address) > max_feed_address:
-            self.feed_address = self.feed_address[:max_feed_address]
+        if len(feed_address) > max_feed_address:
+            self.feed_address = feed_address[:max_feed_address]
         max_feed_link = Feed._meta.get_field('feed_link').max_length
-        if len(self.feed_link) > max_feed_link:
-            self.feed_link = self.feed_link[:max_feed_link]
+        if len(feed_link) > max_feed_link:
+            self.feed_link = feed_link[:max_feed_link]
         
         try:
             super(Feed, self).save(*args, **kwargs)
