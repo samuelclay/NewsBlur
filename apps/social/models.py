@@ -21,7 +21,6 @@ from utils.feed_functions import relative_timesince
 from utils import json_functions as json
 
 
-
 class MRequestInvite(mongo.Document):
     username = mongo.StringField()
     
@@ -397,6 +396,7 @@ class MSocialSubscription(mongo.Document):
 
     user_id = mongo.IntField()
     subscription_user_id = mongo.IntField(unique_with='user_id')
+    follow_date = mongo.DateTimeField(default=datetime.datetime.utcnow())
     last_read_date = mongo.DateTimeField(default=UNREAD_CUTOFF)
     mark_read_date = mongo.DateTimeField(default=UNREAD_CUTOFF)
     unread_count_neutral = mongo.IntField(default=0)
