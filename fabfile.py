@@ -117,7 +117,8 @@ def deploy_code(copy_assets=False, full=False):
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
-        run('sudo supervisorctl restart node')
+        run('sudo supervisorctl restart node_unread')
+        run('sudo supervisorctl restart node_favicons')
         
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):

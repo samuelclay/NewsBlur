@@ -1,5 +1,5 @@
 (function() {
-  var MONGODB_SERVER, app, db, express, mongo, server,
+  var MONGODB_SERVER, app, db, express, findFeedIcon, mongo, server,
     _this = this;
 
   express = require('express');
@@ -26,27 +26,42 @@
   });
 
   app.get(/^\/rss_feeds\/icon\/(\d+)\/?/, function(req, res) {
-    var feed_id;
+    var etag, feed_id;
     feed_id = parseInt(req.params, 10);
+    etag = req.header('If-None-Match');
+    if (etag) {
+      console.log("Req: " + feed_id + ", etag: " + etag);
+      return _this.collection.findOne({
+        _id: feed_id
+      }, {
+        color: true
+      }, function(err, docs) {
+        if (!err && docs && docs.color === etag) {
+          return res.send(304);
+        } else {
+          return findFeedIcon(feed_id, res);
+        }
+      });
+    } else {
+      return findFeedIcon(feed_id, res);
+    }
+  });
+
+  findFeedIcon = function(feed_id, res) {
+    console.log("No etag, finding: " + feed_id);
     return _this.collection.findOne({
       _id: feed_id
     }, function(err, docs) {
-      var etag;
       if (!err && docs && docs.data) {
-        etag = req.header('If-None-Match');
-        if (etag && docs.color === etag) {
-          return res.send(304);
-        } else {
-          res.header('etag', docs.color);
-          return res.send(new Buffer(docs.data, 'base64'), {
-            "Content-Type": "image/png"
-          });
-        }
+        res.header('etag', docs.color);
+        return res.send(new Buffer(docs.data, 'base64'), {
+          "Content-Type": "image/png"
+        });
       } else {
         return res.redirect('/media/img/icons/silk/world.png');
       }
     });
-  });
+  };
 
   app.listen(3030);
 

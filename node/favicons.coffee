@@ -14,18 +14,26 @@ db.open (err, client) =>
     client.collection "feed_icons", (err, @collection) =>
     
 app.get /^\/rss_feeds\/icon\/(\d+)\/?/, (req, res) =>
-    # console.log "Req: #{req.params}"
     feed_id = parseInt(req.params, 10)
-    @collection.findOne _id: feed_id, (err, docs) ->
-        if not err and docs and docs.data
-            etag = req.header('If-None-Match')
-            if etag and docs.color == etag
+    etag = req.header('If-None-Match')
+    if etag
+        console.log "Req: #{feed_id}, etag: #{etag}"
+        @collection.findOne {_id: feed_id}, {color: true}, (err, docs) ->
+            if not err and docs and docs.color == etag
                 res.send 304
             else
-                res.header 'etag', docs.color
-                res.send new Buffer(docs.data, 'base64'), 
-                    "Content-Type": "image/png"
+                findFeedIcon feed_id, res
+    else
+        findFeedIcon feed_id, res
+        
+findFeedIcon = (feed_id, res) =>
+    console.log "No etag, finding: #{feed_id}"
+    @collection.findOne _id: feed_id, (err, docs) ->
+        if not err and docs and docs.data
+            res.header 'etag', docs.color
+            res.send new Buffer(docs.data, 'base64'), 
+                "Content-Type": "image/png"
         else
             res.redirect '/media/img/icons/silk/world.png' 
-        
+
 app.listen 3030
