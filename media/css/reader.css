@@ -5058,6 +5058,9 @@ background: transparent;
 .NB-modal-exception .NB-modal-loading {
     margin: 6px 8px 0;
 }
+.NB-modal-exception .NB-fieldset-fields .NB-error {
+    padding: 6px 0 6px 4px;
+}
 .NB-modal-feed-settings .NB-preference-label {
     float: left;
     margin: 6px 0;

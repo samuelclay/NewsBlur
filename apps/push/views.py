@@ -1,12 +1,13 @@
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
 import feedparser
+import random
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 
 from apps.push.models import PushSubscription
-from apps.push.signals import verified, updated
+from apps.push.signals import verified
 
 def push_callback(request, push_id):
     if request.method == 'GET':
@@ -34,9 +35,9 @@ def push_callback(request, push_id):
         subscription = get_object_or_404(PushSubscription, pk=push_id)
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
-        parsed = feedparser.parse(request.raw_post_data)
-        subscription.check_urls_against_pushed_data(parsed)
-        updated.send(sender=subscription, update=parsed)
+        if random.random() < 0.1:
+            parsed = feedparser.parse(request.raw_post_data)
+            subscription.check_urls_against_pushed_data(parsed)
 
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)

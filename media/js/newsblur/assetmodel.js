@@ -852,39 +852,35 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, pre_callback, error_callback);
     },
         
-    save_exception_change_feed_link: function(feed_id, feed_link, callback) {
+    save_exception_change_feed_link: function(feed_id, feed_link, callback, error_callback) {
         var self = this;
-        
-        var pre_callback = function(data) {
-            // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
-            self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
-        };
         
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/rss_feeds/exception_change_feed_link', {
                 'feed_id': feed_id,
                 'feed_link': feed_link
-            }, pre_callback);
+            }, function(data) {
+                // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
+                self.post_refresh_feeds(data, callback);
+                NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
+            }, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
     },
         
-    save_exception_change_feed_address: function(feed_id, feed_address, callback) {
+    save_exception_change_feed_address: function(feed_id, feed_address, callback, error_callback) {
         var self = this;
-        
-        var pre_callback = function(data) {
-            // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
-            self.post_refresh_feeds(data, callback);
-            NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
-        };
         
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/rss_feeds/exception_change_feed_address', {
                 'feed_id': feed_id,
                 'feed_address': feed_address
-            }, pre_callback);
+            }, function(data) {
+                // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
+                self.post_refresh_feeds(data, callback);
+                NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
+            }, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }

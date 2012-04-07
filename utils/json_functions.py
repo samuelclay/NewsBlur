@@ -129,12 +129,11 @@ def json_view(func):
                 request_repr,
                 )
             # print message
+            response = {'result': 'error',
+                        'text': unicode(e)}
+            code = 500
             if not settings.DEBUG:
                 mail_admins(subject, message, fail_silently=True)
-
-                response = {'result': 'error',
-                            'text': unicode(e)}
-                code = 500
             else:
                 print '\n'.join(traceback.format_exception(*exc_info))
 
