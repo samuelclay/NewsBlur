@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from apps.push.models import PushSubscription
 from apps.push.signals import verified
 from apps.rss_feeds.models import MFeedPushHistory
+from utils import log as logging
 
 def push_callback(request, push_id):
     if request.method == 'GET':
@@ -29,6 +30,9 @@ def push_callback(request, push_id):
             subscription.set_expiration(int(lease_seconds))
             subscription.save()
             subscription.feed.setup_push()
+
+            logging.debug('   ---> [%-30s] [%s] ~BBVerified PuSH' % (unicode(subscription.feed)[:30], subscription.feed_id))
+
             verified.send(sender=subscription)
 
         return HttpResponse(challenge, content_type='text/plain')
