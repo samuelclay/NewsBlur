@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from apps.push.models import PushSubscription
 from apps.push.signals import verified
+from apps.rss_feeds.models import MFeedPushHistory
 
 def push_callback(request, push_id):
     if request.method == 'GET':
@@ -42,6 +43,7 @@ def push_callback(request, push_id):
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.raw_post_data)
         subscription.feed.queue_pushed_feed_xml("Fetch me")
-
+        MFeedPushHistory.objects.create(feed_id=subscription.feed_id)
+        
         return HttpResponse('')
     return Http404

@@ -141,11 +141,11 @@ class Feed(models.Model):
         if len(self.feed_title) > max_feed_title:
             self.feed_title = self.feed_title[:max_feed_title]
         max_feed_address = Feed._meta.get_field('feed_address').max_length
-        if len(self.feed_address) > max_feed_address:
-            self.feed_address = self.feed_address[:max_feed_address]
+        if len(feed_address) > max_feed_address:
+            self.feed_address = feed_address[:max_feed_address]
         max_feed_link = Feed._meta.get_field('feed_link').max_length
-        if len(self.feed_link) > max_feed_link:
-            self.feed_link = self.feed_link[:max_feed_link]
+        if len(feed_link) > max_feed_link:
+            self.feed_link = feed_link[:max_feed_link]
         
         try:
             super(Feed, self).save(*args, **kwargs)
@@ -1355,7 +1355,7 @@ class MFeedFetchHistory(mongo.Document):
         for fetch in fetches:
             history                = {}
             history['message']     = fetch.message
-            history['fetch_date']  = fetch.fetch_date
+            history['fetch_date']  = fetch.fetch_date.strftime("%Y-%m-%d %H:%M:%S")
             history['status_code'] = fetch.status_code
             history['exception']   = fetch.exception
             fetch_history.append(history)
@@ -1388,12 +1388,35 @@ class MPageFetchHistory(mongo.Document):
         for fetch in fetches:
             history                = {}
             history['message']     = fetch.message
-            history['fetch_date']  = fetch.fetch_date
+            history['fetch_date']  = fetch.fetch_date.strftime("%Y-%m-%d %H:%M:%S")
             history['status_code'] = fetch.status_code
             history['exception']   = fetch.exception
             fetch_history.append(history)
         return fetch_history
-
+        
+        
+class MFeedPushHistory(mongo.Document):
+    feed_id = mongo.IntField()
+    push_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'feed_push_history',
+        'allow_inheritance': False,
+        'ordering': ['-push_date'],
+        'indexes': ['feed_id', '-push_date'],
+    }
+    
+    @classmethod
+    def feed_history(cls, feed_id):
+        pushes = cls.objects(feed_id=feed_id).order_by('-push_date')[:5]
+        push_history = []
+        for push in pushes:
+            history = {}
+            history['push_date']  = push.push_date.strftime("%Y-%m-%d %H:%M:%S")
+            push_history.append(history)
+        return push_history
+        
+        
 class FeedLoadtime(models.Model):
     feed = models.ForeignKey(Feed)
     date_accessed = models.DateTimeField(auto_now=True)
