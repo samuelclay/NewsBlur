@@ -126,13 +126,17 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             ])),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches'}, [
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Feed'),
-                    $.make('div', this.make_history(data, 'feed'))
+                    $.make('div', { className: 'NB-statistics-label' }, 'Feed Fetch'),
+                    $.make('div', this.make_history(data, 'feed_fetch'))
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half'}, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Page'),
-                    $.make('div', this.make_history(data, 'page'))
-                ])
+                    $.make('div', { className: 'NB-statistics-label' }, 'Page Fetch'),
+                    $.make('div', this.make_history(data, 'page_fetch'))
+                ]),
+                (this.feed.is_push && $.make('div', { className: 'NB-statistics-fetches-half'}, [
+                    $.make('div', { className: 'NB-statistics-label' }, 'Feed Push'),
+                    $.make('div', this.make_history(data, 'feed_push'))
+                ]))
             ])
         ]);
         
@@ -209,17 +213,17 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
     },
     
     make_history: function(data, fetch_type) {
-        var fetches = data[fetch_type+'_fetch_history'];
+        var fetches = data[fetch_type+'_history'];
         if (!fetches) return;
         
         var $history = _.map(fetches, function(fetch) {
-            var feed_ok = _.contains([200, 304], fetch.status_code);
+            var feed_ok = _.contains([200, 304], fetch.status_code) || !fetch.status_code;
             var status_class = feed_ok ? ' NB-ok ' : ' NB-errorcode ';
             return $.make('div', { className: 'NB-statistics-history-fetch' + status_class, title: feed_ok ? '' : fetch.exception }, [
                 $.make('div', { className: 'NB-statistics-history-fetch-date' }, fetch.fetch_date),
                 $.make('div', { className: 'NB-statistics-history-fetch-message' }, [
                     fetch.message,
-                    $.make('div', { className: 'NB-statistics-history-fetch-code' }, ' ('+fetch.status_code+')')
+                    (fetch.status_code && $.make('div', { className: 'NB-statistics-history-fetch-code' }, ' ('+fetch.status_code+')'))
                 ])
             ]);
         });

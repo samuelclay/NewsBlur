@@ -4588,8 +4588,11 @@ background: transparent;
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {
   float: left;
-  width: 50%;
   text-align: center;
+  margin-right: 18px;
+}
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half:last-child {
+    margin-right: 0;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-stat {
@@ -4631,7 +4634,7 @@ background: transparent;
 }
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-message {
   padding-right: 4px;
-  margin-left: 120px;
+  margin-left: 110px;
   font-weight: bold;
 }
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-exception {
