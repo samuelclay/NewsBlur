@@ -7,9 +7,17 @@
 
   redis = require('redis');
 
-  REDIS_SERVER = process.env.NODE_ENV === 'dev' ? 'localhost' : 'db01';
+  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db01';
 
   client = redis.createClient(6379, REDIS_SERVER);
+
+  io.configure('production', function() {
+    return io.set('log level', 1);
+  });
+
+  io.configure('development', function() {
+    return io.set('log level', 2);
+  });
 
   io.sockets.on('connection', function(socket) {
     socket.on('subscribe:feeds', function(feeds, username) {
