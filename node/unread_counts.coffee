@@ -2,8 +2,14 @@ fs     = require 'fs'
 io     = require('socket.io').listen 8888
 redis  = require 'redis'
 
-REDIS_SERVER = if process.env.NODE_ENV == 'dev' then 'localhost' else 'db01'
+REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db01'
 client = redis.createClient 6379, REDIS_SERVER
+
+io.configure 'production', ->
+    io.set 'log level', 1
+
+io.configure 'development', ->
+    io.set 'log level', 2
 
 io.sockets.on 'connection', (socket) ->
     socket.on 'subscribe:feeds', (@feeds, @username) ->
