@@ -33,48 +33,11 @@
 
   <div class="NB-modules-center">
     
-    <div class="NB-module NB-module-features">
-      
-      <h5 class="NB-module-header">
-        <div class="NB-module-header-right">
-          {% if user.is_staff %}
-            <div class="NB-features-add">
-              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
-            </div>
-          {% endif %}
-          <div class="NB-spinner NB-left"></div>
-        <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
-        <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-        </div>
-        What's New
-      </h5>
-      
-      <h3 class="NB-module-content-header">
-        New Features
-      </h3>
-          
-      <table class="NB-features" cellpadding="0" cellspacing="0">
-        {% for feature in features %}
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
-            <td class="NB-module-feature-date">{% localdatetime feature.date "%b %d, %Y" %}</td>
-            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-      {% if user.is_staff %}
-        <form action="{% url add-feature %}" id="add-feature-form" method="post">
-          {{ feature_form.description }}
-          <input type="submit" value="Add feature" />
-        </form>
-      {% endif %}
+    {% if user.is_authenticated %}
+        {% render_interactions_module %}
+    {% endif %}
     
-      <h3 class="NB-module-content-header">
-        Community Feedback
-      </h3>
-
-      {% render_feedback_table feedbacks %}
-
-    </div>
+    {% render_features_module %}
     
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}

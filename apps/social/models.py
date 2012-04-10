@@ -14,6 +14,7 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
+from apps.profile.models import MInteraction
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -243,6 +244,7 @@ class MSocialProfile(mongo.Document):
         follower_key = "F:%s:f" % (user_id)
         r.sadd(follower_key, self.user_id)
         
+        MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
         MSocialSubscription.objects.get_or_create(user_id=self.user_id, subscription_user_id=user_id)
     
     def is_following_user(self, user_id):

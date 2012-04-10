@@ -3,6 +3,9 @@ from django import template
 from django.conf import settings
 from utils.user_functions import get_user
 from vendor.timezones.utilities import localtime_for_timezone
+from apps.reader.forms import FeatureForm
+from apps.reader.models import Feature
+from apps.profile.models import MInteraction
 
 register = template.Library()
 
@@ -16,6 +19,28 @@ def localdatetime(context, date, date_format):
     user = get_user(context['user'])
     date = localtime_for_timezone(date, user.profile.timezone).strftime(date_format)
     return date
+    
+@register.inclusion_tag('reader/features_module.xhtml', takes_context=True)
+def render_features_module(context):
+    user         = get_user(context['user'])
+    features     = Feature.objects.all()[:3]
+    feature_form = FeatureForm() if user.is_staff else None
+
+    return {
+        'user': user,
+        'features': features,
+        'feature_form': feature_form,
+    }
+          
+@register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
+def render_interactions_module(context):
+    user         = get_user(context['user'])
+    interactions = MInteraction.objects.filter(user_id=user.pk)[0:5]
+    
+    return {
+        'user': user,
+        'interactions': interactions,
+    }
         
 @register.filter
 def get_range( value ):

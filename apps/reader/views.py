@@ -28,7 +28,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
-from apps.statistics.models import MStatistics, MFeedback
+from apps.statistics.models import MStatistics
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
@@ -52,8 +52,8 @@ SINGLE_DAY = 60*60*24
 @render_to('reader/feeds.xhtml')
 def index(request):
     # XXX TODO: Remove me on launch.
-    if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
-        return {}, 'reader/social_signup.xhtml'
+    # if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
+    #     return {}, 'reader/social_signup.xhtml'
         
     if request.method == "POST":
         if request.POST.get('submit') == 'login':
@@ -68,8 +68,6 @@ def index(request):
     
     user              = get_user(request)
     authed            = request.user.is_authenticated()
-    features          = Feature.objects.all()[:3]
-    feature_form      = FeatureForm() if request.user.is_staff else None
     feed_count        = UserSubscription.objects.filter(user=request.user).count() if authed else 0
     active_count      = UserSubscription.objects.filter(user=request.user, active=True).count() if authed else 0
     train_count       = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False,
@@ -81,7 +79,6 @@ def index(request):
                                                        declined_date__isnull=True).select_related('feed')[:2]
     statistics        = MStatistics.all()
     user_statistics   = MSocialProfile.user_statistics(user)
-    feedbacks         = MFeedback.all()
 
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
     if start_import_from_google_reader:
@@ -91,8 +88,6 @@ def index(request):
         'user_profile'      : hasattr(user, 'profile') and user.profile,
         'login_form'        : login_form,
         'signup_form'       : signup_form,
-        'feature_form'      : feature_form,
-        'features'          : features,
         'feed_count'        : feed_count,
         'active_count'      : active_count,
         'train_count'       : active_count - train_count,
@@ -101,7 +96,6 @@ def index(request):
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
         'user_statistics'   : user_statistics,
-        'feedbacks'         : feedbacks,
         'start_import_from_google_reader': start_import_from_google_reader,
     }
 

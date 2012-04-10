@@ -1,4 +1,5 @@
 import datetime
+import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -175,7 +176,46 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             'secret': self.secret_token
         }) + ('?' + next + '=1' if next else '')
         
-        
+
+class MInteraction(mongo.Document):
+    user_id          = mongo.IntField()
+    activity_date    = mongo.DateTimeField(default=datetime.datetime.now)
+    activity_type    = mongo.StringField()
+    activity_content = mongo.StringField()
+    activity_user_id = mongo.IntField()
+    
+    meta = {
+        'collection': 'interactions',
+        'indexes': [('user_id', 'activity_date')],
+        'allow_inheritance': False,
+        'index_drop_dups': True,
+    }
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s on %s: %s - %s" % (user.username, self.activity_date, 
+                                      self.activity_type, self.activity_content[:20])
+    
+    @classmethod
+    def new_follow(cls, follower_user_id, followee_user_id):
+        cls.objects.create(user_id=followee_user_id, 
+                           activity_user_id=follower_user_id,
+                           activity_type='follow')
+    
+    @classmethod
+    def new_reply(cls, user_id, reply_user_id, reply_content):
+        cls.objects.create(user_id=user_id,
+                           activity_user_id=reply_user_id,
+                           activity_type='reply',
+                           activity_content=reply_content)
+    @classmethod
+    def new_starred_story(cls, user_id, story_title, story_feed_id):
+        feed = Feed.objects.get(pk=story_feed_id)
+        cls.objects.create(user_id=user_id,
+                           activity_type='star',
+                           activity_content=story_title)
+
+
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
