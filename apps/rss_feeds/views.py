@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
@@ -125,6 +125,7 @@ def load_feed_statistics(request, feed_id):
     # Fetch histories
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
     stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
+    stats['feed_push_history'] = MFeedPushHistory.feed_history(feed_id)
     
     logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 

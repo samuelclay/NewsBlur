@@ -4588,8 +4588,11 @@ background: transparent;
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {
   float: left;
-  width: 50%;
   text-align: center;
+  margin-right: 18px;
+}
+.NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half:last-child {
+    margin-right: 0;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-stat {
@@ -4631,11 +4634,16 @@ background: transparent;
 }
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-message {
   padding-right: 4px;
-  margin-left: 120px;
+  margin-left: 110px;
   font-weight: bold;
 }
 .NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-exception {
   display: none;
+}
+.NB-modal-statistics .NB-statistics-history-empty {
+    color: #C0C0C0;
+    font-size: 10px;
+    padding: 4px 12px;
 }
 .NB-modal-statistics .NB-statistics-classifiers {
     border: 1px solid #e6e6e6;
