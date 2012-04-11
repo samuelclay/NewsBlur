@@ -130,7 +130,7 @@ class UserSubscription(models.Model):
                 feed = feed.update()
 
             from apps.profile.models import MActivity
-            MActivity.new_feed_subscription(cls, user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
+            MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
             feed.setup_feed_for_premium_subscribers()
         
         return code, message, us

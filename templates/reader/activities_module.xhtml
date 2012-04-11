@@ -4,11 +4,11 @@
 
 <div class="NB-module-item NB-module-activity">
     <h3 class="NB-module-content-header">
-        <div class="NB-module-header-right">
-            <div class="NB-spinner NB-left"></div>
-            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if activities|length <= 5 %}NB-disabled{% endif %}"></a>
-            <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-        </div>
+        {# <div class="NB-module-header-right"> #}
+        {#     <div class="NB-spinner NB-left"></div> #}
+        {#     <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if activities|length <= 5 %}NB-disabled{% endif %}"></a> #}
+        {#     <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a> #}
+        {# </div> #}
 
         Your Activity
     </h3>
@@ -34,7 +34,7 @@
                     {{ activity.date }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    You subscribed to "<span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>".
+                    You subscribed to <span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>.
                 </div>
             {% endif %}
             

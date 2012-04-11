@@ -3964,7 +3964,7 @@ background: transparent;
 .NB-module .NB-module-content-header {
     border-bottom: 1px solid #F0F0F0;
     padding: 4px 0 0px;
-    margin: 12px 0 4px 12px;
+    margin: 12px 0 4px 128px;
     font-size: 13px;
     text-transform: uppercase;
     color: #134160;
@@ -3972,9 +3972,14 @@ background: transparent;
     clear: both;
 }
 
+.NB-module-stats .NB-module-content-header {
+    margin-left: 12px;
+}
 .NB-modules-center .NB-module-content-header {
     margin-right: 12px;
+    margin-left: 12px;
 }
+
 .NB-module .NB-module-content-subtitle {
     float: right;
     color: #C0C0C0;
@@ -4021,9 +4026,6 @@ background: transparent;
 }
 .NB-module .NB-module-item.NB-done .NB-done-label {
     display: block;
-}
-.NB-module.NB-module-account .NB-module-content-header {
-    margin-left: 128px;
 }
 .NB-module .NB-module-item-image {
     position: absolute;
@@ -7770,5 +7772,8 @@ background: transparent;
     cursor: pointer;
 }
 .NB-interaction-starred-story-title {
+    cursor: pointer;
+}
+.NB-interaction-reply-content {
     cursor: pointer;
 }

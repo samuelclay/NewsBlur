@@ -31,9 +31,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     social: function(user_id, slug) {
-        // console.log(["social", user_id, slug]);
-        user_id = "social:" + user_id;
-        NEWSBLUR.reader.open_social_stories(user_id, {force: true});
+        console.log(["router:social", user_id, slug]);
+        var feed_id = "social:" + user_id;
+        NEWSBLUR.reader.open_social_stories(feed_id, {force: true});
     },
     
     user: function(user) {

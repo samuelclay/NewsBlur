@@ -4,11 +4,11 @@
 <div class="NB-module NB-module-features">
 
     <h5 class="NB-module-header">
-        <div class="NB-module-header-right">
-            <div class="NB-spinner NB-left"></div>
-            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if interactions|length <= 5 %}NB-disabled{% endif %}"></a>
-            <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-        </div>
+        {# <div class="NB-module-header-right"> #}
+        {#     <div class="NB-spinner NB-left"></div> #}
+        {#     <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if interactions|length <= 5 %}NB-disabled{% endif %}"></a> #}
+        {#     <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a> #}
+        {# </div> #}
         Interactions
     </h5>
 
@@ -39,7 +39,7 @@
                     </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
                 </div>
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-starred-story-title NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|truncatewords:16 }}</span>"
+                    "<span class="NB-interaction-reply-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|truncatewords:16 }}</span>"
                 </div>
             {% endif %}
         </li>
