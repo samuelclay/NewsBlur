@@ -256,26 +256,6 @@
             {% endif %}
           </h3>
           <div class="NB-module-item-title">
-            {% if user.profile.is_premium %}
-
-            {% else %}
-              
-              <div class="NB-modal-submit">
-                {% if feed_count == 0 %}
-                    {# <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add NB-javascript">Add Sites</div> #}
-                {% else %}
-                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade NB-javascript">Choose Your 64 Sites</div>
-                {% endif %}
-              </div>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="NB-module-user-statistics {% if not user_statistics.shared_stories or not user_statistics %}NB-hidden{% endif %}">
-            <h3 class="NB-module-content-header">
-                Your statistics
-            </h3>
-
             <div class="NB-module-item NB-module-stats NB-module-account-stats">
                 <div class="NB-module-stats-count">
                     <div class="NB-module-stats-count-number">{{ user_statistics.shared_stories|commify }}</div>
@@ -290,6 +270,10 @@
                     <div class="NB-module-stats-count-description">Follower{{ user_statistics.followers|pluralize }}</div>
                 </div>
             </div>
+          </div>
+          
+          {% render_activities_module %}
+          
         </div>
 
       </div>

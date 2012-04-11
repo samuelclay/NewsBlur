@@ -3961,7 +3961,7 @@ background: transparent;
 .NB-module.NB-loading .NB-spinner {
     display: block;
 }
-.NB-module h3.NB-module-content-header {
+.NB-module .NB-module-content-header {
     border-bottom: 1px solid #F0F0F0;
     padding: 4px 0 0px;
     margin: 12px 0 4px 12px;
@@ -3972,7 +3972,7 @@ background: transparent;
     clear: both;
 }
 
-.NB-modules-center .NB-module h3.NB-module-content-header {
+.NB-modules-center .NB-module-content-header {
     margin-right: 12px;
 }
 .NB-module .NB-module-content-subtitle {
@@ -4022,10 +4022,10 @@ background: transparent;
 .NB-module .NB-module-item.NB-done .NB-done-label {
     display: block;
 }
-.NB-module .NB-module-item .NB-module-content-header {
+.NB-module.NB-module-account .NB-module-content-header {
     margin-left: 128px;
 }
-.NB-module .NB-module-item .NB-module-item-image {
+.NB-module .NB-module-item-image {
     position: absolute;
     left: 0;
     top: 0;
@@ -4088,6 +4088,14 @@ background: transparent;
     width: 33%;
     margin: 0 0 0 72px;
     clear: none;
+}
+.NB-account .NB-module-account-stats {
+    margin-top: 0;
+    overflow: hidden;
+}
+.NB-module .NB-module-activity .NB-module-content-header {
+    margin-left: 12px;
+    padding-right: 12px;
 }
 
 /* ======================= */
@@ -7720,8 +7728,8 @@ background: transparent;
 .NB-interaction {
     list-style: none;
     position: relative;
-    margin: 0;
-    padding: 6px 12px 6px 36px;
+    margin: 0 12px;
+    padding: 6px 0 6px 24px;
     border-bottom: 1px solid #F0F0F0;
     overflow: hidden;
 }
@@ -7735,7 +7743,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    left: 12px;
+    left: 0;
     top: 10px;
     cursor: pointer;
 }

@@ -266,11 +266,15 @@ def save_comment_reply(request):
     # Interaction for every other replier and original commenter
     MInteraction.new_comment_reply(user_id=comment['user_id'], 
                                    reply_user_id=request.user.pk, 
-                                   reply_content=reply_comments)
-    for user_id in reply_user_ids.difference([comment['user_id']]):
+                                   reply_content=reply_comments,
+                                   social_feed_id=comment_user_id,
+                                   story_id=story_id)
+    for user_id in set(reply_user_ids).difference([comment['user_id']]):
         MInteraction.new_reply_reply(user_id=user_id, 
                                      reply_user_id=request.user.pk, 
-                                     reply_content=reply_comments)
+                                     reply_content=reply_comments,
+                                     social_feed_id=comment_user_id,
+                                     story_id=story_id)
     
     return {'code': code, 'comment': comment, 'user_profiles': profiles}
     

@@ -1,0 +1,46 @@
+{% load utils_tags typogrify_tags statistics_tags %}
+
+{% if activities %}
+
+<div class="NB-module-item NB-module-activity">
+    <h3 class="NB-module-content-header">
+        <div class="NB-module-header-right">
+            <div class="NB-spinner NB-left"></div>
+            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if activities|length <= 5 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+        </div>
+
+        Your Activity
+    </h3>
+
+    <ul class="NB-interactions">
+        {% for activity in activities|slice:":5" %}
+        <li class="NB-interaction NB-interaction-{{ activity.category }}"
+            {% if activity.content_id %}data-content-id="{{ activity.content_id }}"{% endif %}>
+
+            {% if activity.category == 'star' %}
+                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.date }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    You starred "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>".
+                </div>
+            {% endif %}
+
+            {% if activity.category == 'feed_sub' %}
+                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.date }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    You subscribed to "<span class="NB-interaction-feed-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>".
+                </div>
+            {% endif %}
+            
+        </li>
+        {% endfor %}
+    </ul>
+
+</div>
+{% endif %}

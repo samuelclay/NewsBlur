@@ -118,16 +118,20 @@ class UserSubscription(models.Model):
             user_sub_folders_object.folders = json.encode(user_sub_folders)
             user_sub_folders_object.save()
             
-            if not auto_active:
+            if auto_active:
+                us.active = True
+            else:
                 feed_count = cls.objects.filter(user=user).count()
                 if feed_count < 64 or user.profile.is_premium:
                     us.active = True
-                    us.save()
-        
-            feed.setup_feed_for_premium_subscribers()
+            us.save()
         
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
-                feed.update()
+                feed = feed.update()
+
+            from apps.profile.models import MActivity
+            MActivity.new_feed_subscription(cls, user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
+            feed.setup_feed_for_premium_subscribers()
         
         return code, message, us
     

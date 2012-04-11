@@ -2067,7 +2067,7 @@
             }
         },
         
-        open_starred_stories: function() {
+        open_starred_stories: function(story_guid) {
             var $story_titles = this.$s.$story_titles;
             
             $story_titles.empty().scrollTop('0px');
@@ -7582,6 +7582,11 @@
                 var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
                 self.model.add_user_profiles([{user_id: user_id, username: username}]);
                 self.open_social_profile_modal(user_id);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title' }, function($t, $p){
+                e.preventDefault();
+                var story_guid = $t.closest('.NB-interaction').data('contentId');
+                self.open_starred_stories(story_guid);
             }); 
             
             // = One-offs =====================================================

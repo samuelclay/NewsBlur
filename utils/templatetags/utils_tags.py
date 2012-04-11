@@ -1,10 +1,9 @@
 from django.contrib.sites.models import Site
-from django.contrib.auth.models import User
 from django.conf import settings
 from django import template
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
-from apps.profile.models import MInteraction
+from apps.profile.models import MInteraction, MActivity
 from apps.social.models import MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.feed_functions import relative_timesince
@@ -39,23 +38,38 @@ def render_features_module(context):
 def render_interactions_module(context):
     user = get_user(context['user'])
     interactions_db = MInteraction.objects.filter(user_id=user.pk)[0:5]
-    user_ids = [i.activity_user_id for i in interactions_db if i.activity_user_id]
-    users = dict((u.pk, u) for u in User.objects.filter(pk__in=user_ids))
-    social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=user_ids))
+    with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
+    social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
     
     interactions = []
     for interaction_db in interactions_db:
         interaction = interaction_db.to_mongo()
-        interaction['photo_url'] = getattr(social_profiles.get(interaction_db.activity_user_id), 'photo_url', None)
-        interaction['activity_user'] = social_profiles.get(interaction_db.activity_user_id)
+        interaction['photo_url'] = getattr(social_profiles.get(interaction_db.with_user_id), 'photo_url', None)
+        interaction['with_user'] = social_profiles.get(interaction_db.with_user_id)
         interaction['date'] = relative_timesince(interaction_db.date)
         interactions.append(interaction)
         
     return {
         'user': user,
         'interactions': interactions,
-        'users': users,
-        'social_profiles': social_profiles,
+    }
+    
+@register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
+def render_activities_module(context):
+    user = get_user(context['user'])
+    activities_db = MActivity.objects.filter(user_id=user.pk)[:6]
+    
+    activities = []
+    for activity_db in activities_db[:5]:
+        activity = activity_db.to_mongo()
+        activity['date'] = relative_timesince(activity_db.date)
+        activities.append(activity)
+    if len(activities_db) > 5:
+        activities.append(activities_db[5].to_mongo())
+        
+    return {
+        'user': user,
+        'activities': activities,
     }
 
 @register.filter

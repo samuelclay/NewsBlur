@@ -178,18 +178,18 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
 
 class MInteraction(mongo.Document):
-    user_id          = mongo.IntField()
-    date             = mongo.DateTimeField(default=datetime.datetime.now)
-    activity         = mongo.StringField()
-    title            = mongo.StringField()
-    content          = mongo.StringField()
-    activity_user_id = mongo.IntField()
-    feed_id          = mongo.IntField()
-    content_id       = mongo.StringField()
+    user_id      = mongo.IntField()
+    date         = mongo.DateTimeField(default=datetime.datetime.now)
+    category     = mongo.StringField()
+    title        = mongo.StringField()
+    content      = mongo.StringField()
+    with_user_id = mongo.IntField()
+    feed_id      = mongo.IntField()
+    content_id   = mongo.StringField()
     
     meta = {
         'collection': 'interactions',
-        'indexes': [('user_id', 'date'), 'activity'],
+        'indexes': [('user_id', 'date'), 'category'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],
@@ -197,38 +197,71 @@ class MInteraction(mongo.Document):
     
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
-        activity_user = self.activity_user_id and User.objects.get(pk=self.activity_user_id)
-        return "<%s> %s on %s: %s - %s" % (user.username, activity_user and activity_user.username, self.date, 
-                                      self.activity, self.content and self.content[:20])
+        with_user = self.with_user_id and User.objects.get(pk=self.with_user_id)
+        return "<%s> %s on %s: %s - %s" % (user.username, with_user and with_user.username, self.date, 
+                                      self.category, self.content and self.content[:20])
     
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
         cls.objects.create(user_id=followee_user_id, 
-                           activity_user_id=follower_user_id,
-                           activity='follow')
+                           with_user_id=follower_user_id,
+                           category='follow')
     
     @classmethod
-    def new_comment_reply(cls, user_id, reply_user_id, reply_content):
+    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
         cls.objects.create(user_id=user_id,
-                           activity_user_id=reply_user_id,
-                           activity='comment_reply',
-                           content=reply_content)
+                           with_user_id=reply_user_id,
+                           category='comment_reply',
+                           content=reply_content,
+                           feed_id=social_feed_id,
+                           content_id=story_id)
 
     @classmethod
-    def new_reply_reply(cls, user_id, reply_user_id, reply_content):
+    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
         cls.objects.create(user_id=user_id,
-                           activity_user_id=reply_user_id,
-                           activity='reply_reply',
-                           content=reply_content)
+                           with_user_id=reply_user_id,
+                           category='reply_reply',
+                           content=reply_content,
+                           feed_id=social_feed_id,
+                           content_id=story_id)
 
+
+class MActivity(mongo.Document):
+    user_id      = mongo.IntField()
+    date         = mongo.DateTimeField(default=datetime.datetime.now)
+    category     = mongo.StringField()
+    title        = mongo.StringField()
+    content      = mongo.StringField()
+    feed_id      = mongo.IntField()
+    content_id   = mongo.StringField()
+    
+    meta = {
+        'collection': 'activities',
+        'indexes': [('user_id', 'date'), 'category'],
+        'allow_inheritance': False,
+        'index_drop_dups': True,
+        'ordering': ['-date'],
+    }
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
+    
     @classmethod
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
         cls.objects.create(user_id=user_id,
-                           activity='star',
+                           category='star',
                            content=story_title,
                            feed_id=story_feed_id,
                            content_id=story_id)
-
+                           
+    @classmethod
+    def new_feed_subscription(cls, user_id, feed_id, feed_title):
+        cls.objects.create(user_id=user_id,
+                           category='feed_sub',
+                           content=feed_title,
+                           feed_id=feed_id)
+                           
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
