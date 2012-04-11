@@ -258,7 +258,7 @@ class MActivity(mongo.Document):
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
         cls.objects.create(user_id=user_id,
-                           category='feed_sub',
+                           category='feedsub',
                            content=feed_title,
                            feed_id=feed_id)
                            

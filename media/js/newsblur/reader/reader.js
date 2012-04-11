@@ -2097,13 +2097,17 @@
             }
         },
         
-        open_starred_stories: function(story_guid) {
+        open_starred_stories: function(options) {
+            options = options || {};
             var $story_titles = this.$s.$story_titles;
             
             $story_titles.empty().scrollTop('0px');
             this.reset_feed();
             this.hide_splash_page();
             this.active_feed = 'starred';
+            if (options.story_id) {
+                this.flags['show_story_in_feed'] = options.story_id;
+            }
 
             $story_titles.data('feed_id', null);
             this.iframe_scroll = null;
@@ -2136,6 +2140,9 @@
                 this.create_story_titles(data.stories, {'river_stories': true});
                 this.make_story_feed_entries(data.stories, first_load, {'river_stories': true});
                 this.find_story_with_action_preference_on_open_feed();
+                if (this.counts['show_story_in_feed']) {
+                    this.show_story_in_feed();
+                }
                 this.show_story_titles_above_intelligence_level({'animate': false});
                 // $('.NB-feedbar-last-updated-date').text(data.last_update + ' ago');
                 this.flags['story_titles_loaded'] = true;
@@ -7634,21 +7641,34 @@
                 self.model.add_user_profiles([{user_id: user_id, username: username}]);
                 self.open_social_profile_modal(user_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title' }, function($t, $p){
-                e.preventDefault();
-                var story_guid = $t.closest('.NB-interaction').data('contentId');
-                self.open_starred_stories(story_guid);
-            }); 
             $.targetIs(e, { tagSelector: '.NB-interaction-reply-content' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = 'social:' + $t.data('socialUserId');
                 var story_id = $t.closest('.NB-interaction').data('contentId');
                 
-                console.log(["hit reply content", feed_id, story_id, self.model.social_feeds.get(feed_id)]);
+                // console.log(["hit reply content", feed_id, story_id, self.model.social_feeds.get(feed_id)]);
                 if (self.model.social_feeds.get(feed_id)) {
                     self.open_social_stories(feed_id, {'story_id': story_id});
                 } else {
                     self.load_social_feed_in_tryfeed_view(feed_id, {'story_id': story_id});
+                }
+            }); 
+            
+            // = Activities Module ==========================================
+            
+            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title,.NB-interaction-star .NB-interaction-photo' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-interaction').data('contentId');
+                self.open_starred_stories({'story_id': story_id});
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-interaction-feed-title,.NB-interaction-feedsub .NB-interaction-photo' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-interaction').data('feedId');
+                
+                if (self.model.feeds[feed_id]) {
+                    self.open_feed(feed_id);
+                } else {
+                    self.load_feed_in_tryfeed_view(feed_id);
                 }
             }); 
             

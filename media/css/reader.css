@@ -7777,3 +7777,6 @@ background: transparent;
 .NB-interaction-reply-content {
     cursor: pointer;
 }
+.NB-interaction-feed-title {
+    cursor: pointer;
+}
