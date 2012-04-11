@@ -22,9 +22,10 @@ from collections import defaultdict
 from operator import itemgetter
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
+from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
+from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
-from apps.profile.models import Profile
+from apps.profile.models import Profile, MInteraction
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
@@ -1199,6 +1200,10 @@ def mark_story_as_starred(request):
             defaults=story_values)
         if created:
             logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+            MInteraction.new_starred_story(user_id=request.user.pk, 
+                                           story_title=story[0].story_title, 
+                                           story_feed_id=feed_id,
+                                           content_id=starred_story.story_guid)
         else:
             logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story[0].story_title[:50]))
     else:

@@ -12,6 +12,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import MUserStory, UserSubscription
+from apps.profile.models import MInteraction
 from utils import json_functions as json
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
@@ -252,13 +253,24 @@ def save_comment_reply(request):
     reply.comments = reply_comments
     shared_story.replies.append(reply)
     shared_story.save()
+    
     logging.user(request, "~FCReplying to comment in: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], reply_comments[:100]))
     
     comment = shared_story.comments_with_author()
     profile_user_ids = set([comment['user_id']])
-    profile_user_ids = profile_user_ids.union([reply['user_id'] for reply in comment['replies']])
+    reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+    profile_user_ids = profile_user_ids.union(reply_user_ids)
     profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
     profiles = [profile.to_json(compact=True) for profile in profiles]
+    
+    # Interaction for every other replier and original commenter
+    MInteraction.new_comment_reply(user_id=comment['user_id'], 
+                                   reply_user_id=request.user.pk, 
+                                   reply_content=reply_comments)
+    for user_id in reply_user_ids.difference([comment['user_id']]):
+        MInteraction.new_reply_reply(user_id=user_id, 
+                                     reply_user_id=request.user.pk, 
+                                     reply_content=reply_comments)
     
     return {'code': code, 'comment': comment, 'user_profiles': profiles}
     
@@ -299,7 +311,7 @@ def profile(request):
 def load_user_profile(request):
     social_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
-
+    
     return {
         'services': social_services,
         'user_profile': social_profile.to_json(full=True),

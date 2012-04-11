@@ -179,41 +179,55 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
 
 class MInteraction(mongo.Document):
     user_id          = mongo.IntField()
-    activity_date    = mongo.DateTimeField(default=datetime.datetime.now)
-    activity_type    = mongo.StringField()
-    activity_content = mongo.StringField()
+    date             = mongo.DateTimeField(default=datetime.datetime.now)
+    activity         = mongo.StringField()
+    title            = mongo.StringField()
+    content          = mongo.StringField()
     activity_user_id = mongo.IntField()
+    feed_id          = mongo.IntField()
+    content_id       = mongo.StringField()
     
     meta = {
         'collection': 'interactions',
-        'indexes': [('user_id', 'activity_date')],
+        'indexes': [('user_id', 'date'), 'activity'],
         'allow_inheritance': False,
         'index_drop_dups': True,
+        'ordering': ['-date'],
     }
     
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s on %s: %s - %s" % (user.username, self.activity_date, 
-                                      self.activity_type, self.activity_content[:20])
+        activity_user = self.activity_user_id and User.objects.get(pk=self.activity_user_id)
+        return "<%s> %s on %s: %s - %s" % (user.username, activity_user and activity_user.username, self.date, 
+                                      self.activity, self.content and self.content[:20])
     
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
         cls.objects.create(user_id=followee_user_id, 
                            activity_user_id=follower_user_id,
-                           activity_type='follow')
+                           activity='follow')
     
     @classmethod
-    def new_reply(cls, user_id, reply_user_id, reply_content):
+    def new_comment_reply(cls, user_id, reply_user_id, reply_content):
         cls.objects.create(user_id=user_id,
                            activity_user_id=reply_user_id,
-                           activity_type='reply',
-                           activity_content=reply_content)
+                           activity='comment_reply',
+                           content=reply_content)
+
     @classmethod
-    def new_starred_story(cls, user_id, story_title, story_feed_id):
-        feed = Feed.objects.get(pk=story_feed_id)
+    def new_reply_reply(cls, user_id, reply_user_id, reply_content):
         cls.objects.create(user_id=user_id,
-                           activity_type='star',
-                           activity_content=story_title)
+                           activity_user_id=reply_user_id,
+                           activity='reply_reply',
+                           content=reply_content)
+
+    @classmethod
+    def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
+        cls.objects.create(user_id=user_id,
+                           activity='star',
+                           content=story_title,
+                           feed_id=story_feed_id,
+                           content_id=story_id)
 
 
 def create_profile(sender, instance, created, **kwargs):

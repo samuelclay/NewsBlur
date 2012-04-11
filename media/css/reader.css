@@ -7707,3 +7707,60 @@ background: transparent;
     color: #909090;
     text-transform: uppercase;
 }
+
+/* ======================= */
+/* = Interactions Module = */
+/* ======================= */
+
+.NB-interactions {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+}
+.NB-interaction {
+    list-style: none;
+    position: relative;
+    margin: 0;
+    padding: 6px 12px 6px 36px;
+    border-bottom: 1px solid #F0F0F0;
+    overflow: hidden;
+}
+.NB-interaction:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+.NB-interaction-photo {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    left: 12px;
+    top: 10px;
+    cursor: pointer;
+}
+.NB-interaction-date {
+    color: #B0B0B0;
+    font-size: 11px;
+    float: right;
+    text-transform: uppercase;
+    padding: 4px 0 4px 4px;
+}
+.NB-interaction-title {
+    font-size: 13px;
+    line-height: 18px;
+    color: #404040;
+    padding: 2px 0 0 0;
+}
+.NB-interaction-content {
+    font-size: 11px;
+    padding-top: 2px;
+    line-height: 14px;
+    color: #808080;
+}
+.NB-interaction-username {
+    cursor: pointer;
+}
+.NB-interaction-starred-story-title {
+    cursor: pointer;
+}

@@ -6,7 +6,8 @@ NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
     this.options = $.extend({}, defaults, options);
     this.model   = NEWSBLUR.AssetModel.reader();
     this.profiles = new NEWSBLUR.Collections.Users();
-    user_id = _.string.ltrim(user_id, 'social:');
+    user_id = parseInt(_.string.ltrim(user_id, 'social:'), 10);
+    console.log(["user_id", user_id]);
     this.runner(user_id);
 };
 
@@ -19,7 +20,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.make_modal();
         this.open_modal();
         _.defer(_.bind(this.fetch_profile, this, user_id));
-
+        
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
     

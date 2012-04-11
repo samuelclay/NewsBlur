@@ -1123,7 +1123,10 @@ NEWSBLUR.AssetModel.Reader.prototype = {
     },
     
     fetch_user_profile: function(user_id, callback) {
-        this.make_request('/social/profile', {'user_id': user_id}, callback, callback, {
+        this.make_request('/social/profile', {'user_id': user_id}, _.bind(function(data) {
+            this.add_user_profiles(data.profiles);
+            callback(data);
+        }, this), callback, {
             request_type: 'GET'
         });
     },

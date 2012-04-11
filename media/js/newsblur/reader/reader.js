@@ -7567,6 +7567,23 @@
                 self.save_social_comment_reply($comment);
             }); 
             
+            // = Interactions Module ==========================================
+            
+            $.targetIs(e, { tagSelector: '.NB-interaction-username' }, function($t, $p){
+                e.preventDefault();
+                var user_id = $t.data('userId');
+                var username = $t.text();
+                self.model.add_user_profiles([{user_id: user_id, username: username}]);
+                self.open_social_profile_modal(user_id);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-interaction-profile-photo' }, function($t, $p){
+                e.preventDefault();
+                var user_id = $t.data('userId');
+                var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
+                self.model.add_user_profiles([{user_id: user_id, username: username}]);
+                self.open_social_profile_modal(user_id);
+            }); 
+            
             // = One-offs =====================================================
             
             var clicked = false;
