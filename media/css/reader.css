@@ -2021,7 +2021,7 @@ background: transparent;
 }
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: left;
-    color: #505050;
+    color: #303030;
 }
 #story_pane .NB-story-comment .NB-story-comment-reply-button {
     padding: 4px 24px 4px 12px;
@@ -2859,6 +2859,9 @@ background: transparent;
 .NB-taskbar .task_button.NB-task-feed-settings .NB-task-image {
     left: 12px;
     background: transparent url('/media/embed/icons/silk/cog.png') no-repeat 0 0;
+}
+.NB-view-river .NB-task-feed-settings {
+    display: none;
 }
 .NB-taskbar .task_button.task_story_next_positive .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
