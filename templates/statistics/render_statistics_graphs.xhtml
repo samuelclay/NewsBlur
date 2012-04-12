@@ -49,15 +49,17 @@
   </div>
   <div class="NB-module-stats-count">
     <div class="NB-module-stats-count-graph">
-      {% for i in 24|get_range %}
+      {% for i in statistics.stories_shared %}
       <div class="NB-graph-value">
-        <div class="NB-graph-label">0</div>
-        <div class="NB-graph-bar" style="height:1px"></div>
+        <div class="NB-graph-label">{{ i|commify }}</div>
+        <div class="NB-graph-bar" style="height:{{ i|format_graph:statistics.max_stories_shared }}px"></div>
       </div>
       {% endfor %}
     </div>
-    <div class="NB-module-stats-count-number">0</div>
-    <div class="NB-module-stats-count-description">Stories Shared</div>
+    <div class="NB-module-stats-count-number">{{ statistics.latest_stories_shared|commify }}</div>
+    <div class="NB-module-stats-count-description">
+        {% if statistics.latest_stories_shared == 1 %}Story{% else %}Stories{% endif %} Shared
+    </div>
   </div>
   
 </div>
