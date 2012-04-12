@@ -35,9 +35,12 @@
     
     {% if user.is_authenticated %}
         {% render_interactions_module %}
+        {% render_activities_module %}
     {% endif %}
     
-    {% render_features_module %}
+    {% if not user.is_authenticated %}
+        {% render_features_module %}
+    {% endif %}
     
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}
@@ -272,8 +275,6 @@
             </div>
           </div>
           
-          {% render_activities_module %}
-          
         </div>
 
       </div>
@@ -406,6 +407,10 @@
         </div>
       {% endif %}
       
+    {% endif %}
+    
+    {% if user.is_authenticated and user_profile.hide_getting_started %}
+        {% render_features_module %}
     {% endif %}
     
     {% if not user.is_authenticated or user_profile.hide_getting_started %}

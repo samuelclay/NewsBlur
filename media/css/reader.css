@@ -4099,7 +4099,7 @@ background: transparent;
     margin-top: 0;
     overflow: hidden;
 }
-.NB-module .NB-module-activities .NB-module-content-header {
+.NB-module.NB-module-features .NB-module-content-header {
     margin-left: 12px;
     padding-right: 12px;
 }

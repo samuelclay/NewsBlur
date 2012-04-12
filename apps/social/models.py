@@ -244,7 +244,8 @@ class MSocialProfile(mongo.Document):
         follower_key = "F:%s:f" % (user_id)
         r.sadd(follower_key, self.user_id)
         
-        MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
+        if self.user_id != user_id:
+            MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
         MSocialSubscription.objects.get_or_create(user_id=self.user_id, subscription_user_id=user_id)
     
     def is_following_user(self, user_id):

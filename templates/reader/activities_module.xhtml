@@ -2,8 +2,8 @@
 
 {% if activities %}
 
-<div class="NB-module-item NB-module-activities NB-page-{{ page }}">
-    <h3 class="NB-module-content-header">
+<div class="NB-module NB-module-activities NB-page-{{ page }}">
+    <h5 class="NB-module-header">
         <div class="NB-module-header-right">
             <div class="NB-spinner NB-left"></div>
             <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if activities|length <= 5 %}NB-disabled{% endif %}"></a>
@@ -11,7 +11,7 @@
         </div>
 
         Your Activity
-    </h3>
+    </h5>
 
     <ul class="NB-interactions">
         {% for activity in activities|slice:":5" %}
