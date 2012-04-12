@@ -179,7 +179,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user    = self.user
         text    = render_to_string('mail/email_social_beta.txt', locals())
         html    = render_to_string('mail/email_social_beta.xhtml', locals())
-        subject = "Psst, your're in..."
+        subject = "Psst, you're in..."
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])

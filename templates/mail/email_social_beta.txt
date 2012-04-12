@@ -1,10 +1,9 @@
 {% extends "mail/email_base.txt" %}
-
 {% block body %}Sweet! It's beta time.
 
 OK, you made it into the private beta for NewsBlur's new social features. There's a whole world of story sharing and interaction waiting for you.
 
-Go here and login: http://dev.newsblur.com/?letmein={{ user.username }}
+Go here and sign in: http://dev.newsblur.com/?letmein={{ user.username }}
 
 The backend for the private beta is the same. In other words, what you do on the private beta is no different than the normal website. Best not to use both at the same time.
 
