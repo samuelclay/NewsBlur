@@ -384,7 +384,7 @@ class Dispatcher:
                 feed = self.refresh_feed(feed.pk)
                 feed.save_feed_history(500, "Error", tb)
                 fetched_feed = None
-                mail_feed_error_to_admin(feed, e)
+                mail_feed_error_to_admin(feed, e, local_vars=locals())
             
             feed = self.refresh_feed(feed.pk)
             if ((self.options['force']) or 
@@ -409,7 +409,7 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
-                    mail_feed_error_to_admin(feed, e)
+                    mail_feed_error_to_admin(feed, e, local_vars=locals())
                     
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
@@ -424,7 +424,7 @@ class Dispatcher:
                     logging.error(tb)
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
-                    mail_feed_error_to_admin(feed, e)
+                    mail_feed_error_to_admin(feed, e, local_vars=locals())
             else:
                 logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
