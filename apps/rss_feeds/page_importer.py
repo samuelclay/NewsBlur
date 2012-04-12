@@ -58,7 +58,10 @@ class PageImporter(object):
                     data = response.read()
                 else:
                     response = requests.get(feed_link, headers=self.headers)
-                    data = response.text
+                    try:
+                        data = response.text
+                    except LookupError:
+                        data = response.content
             elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
                 return
@@ -86,7 +89,6 @@ class PageImporter(object):
         except (httplib.IncompleteRead), e:
             self.feed.save_page_history(500, "IncompleteRead", e)
         except (requests.exceptions.RequestException, 
-                LookupError, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
             mail_feed_error_to_admin(self.feed, e, local_vars=locals())
