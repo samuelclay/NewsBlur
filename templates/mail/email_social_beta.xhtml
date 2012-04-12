@@ -1,0 +1,9 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% block body %}
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Sweet! It's beta time.</p>
+    <p style="line-height: 20px;">OK, you made it into the private beta for NewsBlur's new social features. There's a whole world of story sharing and interaction waiting for you.</p>
+    <p style="line-height: 20px;">Go here and login: <a href="http://dev.newsblur.com/?letmein={{ user.username }}">http://dev.newsblur.com/?letmein={{ user.username }}</a></p>
+    <p style="line-height: 20px;">The backend for the private beta is the same. In other words, what you do on the private beta is no different than the normal website. Best not to use both at the same time.</p>
+    <p style="line-height: 20px;">If you notice anything oddball, incorrect, or doesn't have that new website smell, just reply to this email. I'm all ears and then some.</p>
+{% endblock %}

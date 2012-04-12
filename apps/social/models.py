@@ -24,6 +24,7 @@ from utils import json_functions as json
 
 class MRequestInvite(mongo.Document):
     username = mongo.StringField()
+    email_sent = mongo.BooleanField()
     
     meta = {
         'collection': 'social_invites',

@@ -169,7 +169,36 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user.save()
         
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
+    
+    def send_social_beta_email(self):
+        from apps.social.models import MRequestInvite
+        if not self.user.email:
+            print "Please provide an email address."
+            return
         
+        user    = self.user
+        text    = render_to_string('mail/email_social_beta.txt', locals())
+        html    = render_to_string('mail/email_social_beta.xhtml', locals())
+        subject = "Psst, your're in..."
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+        invites = MRequestInvite.objects.filter(username=self.user.username)
+        if not invites:
+            invites = MRequestInvite.objects.filter(username=self.user.email)
+        if not invites:
+            print "User not on invite list"
+        else:
+            for invite in invites:
+                print "Invite listed as: %s" % invite.username
+                invite.email_sent = True
+                invite.save()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for social beta: %s" % self.user.email)
+    
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
             'username': self.user.username, 
