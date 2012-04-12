@@ -118,6 +118,8 @@
         this.setup_dashboard_graphs();
         this.setup_feedback_table();
         this.setup_howitworks_hovers();
+        this.setup_interactions_module();
+        this.setup_activities_module();
     };
 
     NEWSBLUR.Reader.prototype = {
@@ -6575,7 +6577,7 @@
         load_activities_page: function(direction) {
             var self = this;
             var $module = $('.NB-module-activities');
-            
+
             $module.addClass('NB-loading');
             direction = direction || 0;
             
@@ -6591,6 +6593,24 @@
             }, function() {
                 $module.removeClass('NB-loading');
             });
+        },
+        
+        setup_interactions_module: function() {
+            clearInterval(this.locks.load_interactions_module);
+            if (!NEWSBLUR.Globals.debug) {
+                this.locks.load_interactions_module = setInterval(_.bind(function() {
+                    this.load_interactions_page();
+                }, this), 10*60*1000);
+            }
+        },
+        
+        setup_activities_module: function() {
+            clearInterval(this.locks.load_activities_module);
+            if (!NEWSBLUR.Globals.debug) {
+                this.locks.load_activities_module = setInterval(_.bind(function() {
+                    this.load_activities_page();
+                }, this), 10*60*1000);
+            }
         },
         
         // ========
