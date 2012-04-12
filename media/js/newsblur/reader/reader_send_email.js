@@ -13,7 +13,9 @@ NEWSBLUR.ReaderSendEmail = function(story_id, options) {
     this.runner();
 };
 
-NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
+NEWSBLUR.ReaderSendEmail.prototype = new NEWSBLUR.Modal;
+
+_.extend(NEWSBLUR.ReaderSendEmail.prototype, {
     
     runner: function() {
         this.make_modal();
