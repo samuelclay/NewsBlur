@@ -7,12 +7,11 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
-from apps.social.models import MRequestInvite
+from apps.social.models import MRequestInvite, MInteraction
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import MUserStory, UserSubscription
-from apps.profile.models import MInteraction
 from utils import json_functions as json
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
@@ -121,12 +120,14 @@ def load_social_stories(request, user_id, username=None):
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         if story['id'] in shared_stories:
             story['shared'] = True
-            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'], user.profile.timezone)
+            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
+                                                 user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = shared_stories[story['id']]['comments']
 
         story['intelligence'] = {
-            'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id'], social_user_id=social_user_id),
+            'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
+                                           social_user_id=social_user_id),
             'author': apply_classifier_authors(classifier_authors, story),
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
@@ -180,7 +181,9 @@ def story_comments(request):
     feed_id  = int(request.REQUEST['feed_id'])
     story_id = request.REQUEST['story_id']
     
-    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id, has_comments=True)
+    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, 
+                                                 story_guid=story_id, 
+                                                 has_comments=True)
     comments = [s.comments_with_author() for s in shared_stories]
 
     profile_user_ids = set([c['user_id'] for c in comments])
@@ -202,7 +205,9 @@ def mark_story_as_shared(request):
     if not story:
         return {'code': -1, 'message': 'Story not found.'}
     
-    shared_story = MSharedStory.objects.filter(user_id=request.user.pk, story_feed_id=feed_id, story_guid=story_id)
+    shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
+                                               story_feed_id=feed_id, 
+                                               story_guid=story_id)
     if not shared_story:
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
@@ -219,7 +224,8 @@ def mark_story_as_shared(request):
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
-        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
+        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (
+                     story.story_title[:50], comments[:100]))
     
     story.count_comments()
     shared_story.publish_update_to_subscribers()
@@ -246,7 +252,9 @@ def save_comment_reply(request):
     if not story:
         return {'code': -1, 'message': 'Story not found.'}
     
-    shared_story = MSharedStory.objects.get(user_id=comment_user_id, story_feed_id=feed_id, story_guid=story_id)
+    shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
+                                            story_feed_id=feed_id, 
+                                            story_guid=story_id)
     reply = MCommentReply()
     reply.user_id = request.user.pk
     reply.publish_date = datetime.datetime.now()
@@ -254,7 +262,8 @@ def save_comment_reply(request):
     shared_story.replies.append(reply)
     shared_story.save()
     
-    logging.user(request, "~FCReplying to comment in: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], reply_comments[:100]))
+    logging.user(request, "~FCReplying to comment in: ~SB~FM%s (~FB%s~FM)" % (
+                 story.story_title[:50], reply_comments[:100]))
     
     comment = shared_story.comments_with_author()
     profile_user_ids = set([comment['user_id']])
@@ -483,7 +492,8 @@ def social_feed_trainer(request):
     classifier['feed_tags'] = []
     classifier['feed_authors'] = []
     
-    logging.user(user, "~FGLoading social trainer on ~SB%s: %s" % (social_user.username, social_profile.title))
+    logging.user(user, "~FGLoading social trainer on ~SB%s: %s" % (
+                 social_user.username, social_profile.title))
     
     return [classifier]
     
@@ -506,7 +516,8 @@ def load_social_statistics(request, social_user_id, username=None):
     # Classifier counts
     stats['classifier_counts'] = social_profile.feed_classifier_counts
     
-    logging.user(request, "~FBStatistics social: ~SB%s ~FG(%s subs)" % (social_profile.user_id, social_profile.follower_count))
+    logging.user(request, "~FBStatistics social: ~SB%s ~FG(%s subs)" % (
+                 social_profile.user_id, social_profile.follower_count))
 
     return stats
 
@@ -515,3 +526,14 @@ def load_social_settings(request, social_user_id, username=None):
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
     
     return social_profile.to_json()
+
+@render_to('reader/interactions_module.xhtml')
+def load_interactions(request):
+    user = get_user(request)
+    page = max(1, int(request.REQUEST.get('page', 1)))
+    interactions = MInteraction.user(user, page=page)
+
+    return {
+        'interactions': interactions,
+        'page': page,
+    }

@@ -1,7 +1,7 @@
 express = require 'express'
 mongo = require 'mongodb'
 
-MONGODB_SERVER = if process.env.NODE_ENV == 'dev' then 'localhost' else 'db04'
+MONGODB_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db04'
 server = new mongo.Server(MONGODB_SERVER, 27017, 
     auto_reconnect: true
     poolSize: 12)

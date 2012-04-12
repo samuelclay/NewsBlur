@@ -1,14 +1,14 @@
 {% load utils_tags typogrify_tags statistics_tags %}
 
 {% if interactions %}
-<div class="NB-module NB-module-features">
+<div class="NB-module NB-module-interactions NB-page-{{ page }}">
 
     <h5 class="NB-module-header">
-        {# <div class="NB-module-header-right"> #}
-        {#     <div class="NB-spinner NB-left"></div> #}
-        {#     <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if interactions|length <= 5 %}NB-disabled{% endif %}"></a> #}
-        {#     <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a> #}
-        {# </div> #}
+        <div class="NB-module-header-right">
+            <div class="NB-spinner NB-left"></div>
+            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if interactions|length <= 5 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-previous-page {% if page <= 1 %}NB-disabled{% endif %}"></a>
+        </div>
         Interactions
     </h5>
 

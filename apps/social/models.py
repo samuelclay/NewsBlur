@@ -14,7 +14,6 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
-from apps.profile.models import MInteraction
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -1042,3 +1041,72 @@ class MSocialServices(mongo.Document):
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
         return profile
+
+
+class MInteraction(mongo.Document):
+    user_id      = mongo.IntField()
+    date         = mongo.DateTimeField(default=datetime.datetime.now)
+    category     = mongo.StringField()
+    title        = mongo.StringField()
+    content      = mongo.StringField()
+    with_user_id = mongo.IntField()
+    feed_id      = mongo.IntField()
+    content_id   = mongo.StringField()
+    
+    meta = {
+        'collection': 'interactions',
+        'indexes': [('user_id', 'date'), 'category'],
+        'allow_inheritance': False,
+        'index_drop_dups': True,
+        'ordering': ['-date'],
+    }
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        with_user = self.with_user_id and User.objects.get(pk=self.with_user_id)
+        return "<%s> %s on %s: %s - %s" % (user.username, with_user and with_user.username, self.date, 
+                                           self.category, self.content and self.content[:20])
+    
+    @classmethod
+    def user(cls, user, page=1):
+        page = max(1, page)
+        limit = 5
+        offset = (page-1) * limit
+        interactions_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
+        with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
+        social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
+    
+        interactions = []
+        for interaction_db in interactions_db:
+            interaction = interaction_db.to_mongo()
+            interaction['photo_url'] = getattr(social_profiles.get(interaction_db.with_user_id), 'photo_url', None)
+            interaction['with_user'] = social_profiles.get(interaction_db.with_user_id)
+            interaction['date'] = relative_timesince(interaction_db.date)
+            interactions.append(interaction)
+
+        print len(interactions), len(interactions_db)
+        return interactions
+        
+    @classmethod
+    def new_follow(cls, follower_user_id, followee_user_id):
+        cls.objects.create(user_id=followee_user_id, 
+                           with_user_id=follower_user_id,
+                           category='follow')
+    
+    @classmethod
+    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
+        cls.objects.create(user_id=user_id,
+                           with_user_id=reply_user_id,
+                           category='comment_reply',
+                           content=reply_content,
+                           feed_id=social_feed_id,
+                           content_id=story_id)
+
+    @classmethod
+    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
+        cls.objects.create(user_id=user_id,
+                           with_user_id=reply_user_id,
+                           category='reply_reply',
+                           content=reply_content,
+                           feed_id=social_feed_id,
+                           content_id=story_id)

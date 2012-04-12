@@ -46,7 +46,9 @@
             'fetched_feeds': 0,
             'page_fill_outs': 0,
             'recommended_feed_page': 0,
-            'feed_view_positions_timer': 0
+            'feed_view_positions_timer': 0,
+            'interactions_page': 1,
+            'activities_page': 1
         };
         this.cache = {
             'iframe_stories': {},
@@ -6542,6 +6544,53 @@
             }
         },
         
+        // ===============================
+        // = Interactions and Activities =
+        // ===============================
+        
+        load_interactions_page: function(direction) {
+            var self = this;
+            var $module = $('.NB-module-interactions');
+            
+            $module.addClass('NB-loading');
+            direction = direction || 0;
+            console.log(["loading page", self.counts['interactions_page']+direction]);
+            this.model.load_interactions_page(this.counts['interactions_page']+direction, 
+                                              function(resp) {
+                $module.removeClass('NB-loading');
+                if (!resp) return;
+                $module.replaceWith(resp);
+                $module = $('.NB-module-interactions');
+                var page = $module[0].className.match(/NB-page-(\d+)/)[1];
+                console.log(["now on page", page]);
+                self.counts['interactions_page'] = parseInt(page, 10);
+                self.load_javascript_elements_on_page();
+            }, function() {
+                $module.removeClass('NB-loading');
+            });
+        },
+        
+        load_activities_page: function(direction) {
+            var self = this;
+            var $module = $('.NB-module-activities');
+            
+            $module.addClass('NB-loading');
+            direction = direction || 0;
+            
+            this.model.load_activities_page(this.counts['activities_page']+direction, 
+                                              function(resp) {
+                $module.removeClass('NB-loading');
+                if (!resp) return;
+                $module.replaceWith(resp);
+                $module = $('.NB-module-activities');
+                var page = $module[0].className.match(/NB-page-(\d+)/)[1];
+                self.counts['activities_page'] = parseInt(page, 10);
+                self.load_javascript_elements_on_page();
+            }, function() {
+                $module.removeClass('NB-loading');
+            });
+        },
+        
         // ========
         // = FTUX =
         // ========
@@ -6833,13 +6882,14 @@
             
             this.model.load_recommended_feed(this.counts['recommended_feed_page']+direction, 
                                              !!refresh, unmoderated, function(resp) {
-                if (!resp) return;
-                self.counts['recommended_feed_page'] += direction;
-
                 $module.removeClass('NB-loading');
+                if (!resp) return;
                 $module.replaceWith(resp);
+                self.counts['recommended_feed_page'] += direction;
                 self.load_javascript_elements_on_page();
-            }, $.noop);
+            }, function() {
+                $module.removeClass('NB-loading');
+            });
         },
         
         // ====================
@@ -6864,11 +6914,13 @@
             $module.addClass('NB-loading');
             
             this.model.load_dashboard_graphs(function(resp) {
-                if (!resp) return;
                 $module.removeClass('NB-loading');
+                if (!resp) return;
                 $module.replaceWith(resp);
                 self.load_javascript_elements_on_page();
-            }, $.noop);
+            }, function() {
+                $module.removeClass('NB-loading');
+            });
         },
         
         
@@ -7706,6 +7758,30 @@
                 var page = $t.prevAll('.NB-module-page-indicator').length;
                 self.load_howitworks_page(page);
             }); 
+            $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-interactions' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.load_interactions_page(1);
+                }
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-module-previous-page', childOf: '.NB-module-interactions' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.load_interactions_page(-1);
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-activities' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.load_activities_page(1);
+                }
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-module-previous-page', childOf: '.NB-module-activities' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.load_activities_page(-1);
+                }
+            });
             $.targetIs(e, { tagSelector: '.NB-splash-meta-about' }, function($t, $p){
               e.preventDefault();
               NEWSBLUR.about = new NEWSBLUR.About();

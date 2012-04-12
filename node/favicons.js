@@ -6,7 +6,7 @@
 
   mongo = require('mongodb');
 
-  MONGODB_SERVER = process.env.NODE_ENV === 'dev' ? 'localhost' : 'db04';
+  MONGODB_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db04';
 
   server = new mongo.Server(MONGODB_SERVER, 27017, {
     auto_reconnect: true,

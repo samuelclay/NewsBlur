@@ -9,12 +9,14 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, change_password
+from apps.profile.models import Profile, change_password, MActivity
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
 from apps.social.models import MSocialServices
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
+from utils.view_functions import render_to
+from utils.user_functions import get_user
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
@@ -247,3 +249,14 @@ def stripe_form(request):
         },
         context_instance=RequestContext(request)
     )
+
+@render_to('reader/activities_module.xhtml')
+def load_activities(request):
+    user = get_user(request)
+    page = max(1, int(request.REQUEST.get('page', 1)))
+    activities = MActivity.user(user, page=page)
+
+    return {
+        'activities': activities,
+        'page': page,
+    }

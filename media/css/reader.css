@@ -3961,7 +3961,8 @@ background: transparent;
     opacity: .6;
     display: none;
 }
-.NB-module.NB-loading .NB-spinner {
+.NB-module.NB-loading .NB-spinner,
+.NB-module-item.NB-loading .NB-spinner {
     display: block;
 }
 .NB-module .NB-module-content-header {
@@ -4098,7 +4099,7 @@ background: transparent;
     margin-top: 0;
     overflow: hidden;
 }
-.NB-module .NB-module-activity .NB-module-content-header {
+.NB-module .NB-module-activities .NB-module-content-header {
     margin-left: 12px;
     padding-right: 12px;
 }

@@ -3,10 +3,9 @@ from django.conf import settings
 from django import template
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
-from apps.profile.models import MInteraction, MActivity
-from apps.social.models import MSocialProfile
+from apps.profile.models import MActivity
+from apps.social.models import MInteraction
 from vendor.timezones.utilities import localtime_for_timezone
-from utils.feed_functions import relative_timesince
 from utils.user_functions import get_user
 
 register = template.Library()
@@ -35,41 +34,25 @@ def render_features_module(context):
     }
           
 @register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
-def render_interactions_module(context):
+def render_interactions_module(context, page=1):
     user = get_user(context['user'])
-    interactions_db = MInteraction.objects.filter(user_id=user.pk)[0:5]
-    with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
-    social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
-    
-    interactions = []
-    for interaction_db in interactions_db:
-        interaction = interaction_db.to_mongo()
-        interaction['photo_url'] = getattr(social_profiles.get(interaction_db.with_user_id), 'photo_url', None)
-        interaction['with_user'] = social_profiles.get(interaction_db.with_user_id)
-        interaction['date'] = relative_timesince(interaction_db.date)
-        interactions.append(interaction)
+    interactions = MInteraction.user(user, page)
         
     return {
         'user': user,
         'interactions': interactions,
+        'page': page,
     }
     
 @register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
-def render_activities_module(context):
+def render_activities_module(context, page=1):
     user = get_user(context['user'])
-    activities_db = MActivity.objects.filter(user_id=user.pk)[:6]
+    activities = MActivity.user(user, page)
     
-    activities = []
-    for activity_db in activities_db[:5]:
-        activity = activity_db.to_mongo()
-        activity['date'] = relative_timesince(activity_db.date)
-        activities.append(activity)
-    if len(activities_db) > 5:
-        activities.append(activities_db[5].to_mongo())
-        
     return {
         'user': user,
         'activities': activities,
+        'page': page,
     }
 
 @register.filter
