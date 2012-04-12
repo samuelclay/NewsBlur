@@ -4535,6 +4535,8 @@
         
         make_story_share_comment: function(comment) {
             var user = this.model.user_profiles.find(comment.user_id);
+            var comments = comment.comments;
+            comments = comments.replace(/\n+/g, '<br><br>');
             
             var $comment = $.make('div', { className: 'NB-story-comment' }, [
                 $.make('div', { className: 'NB-user-avatar' }, [
@@ -4547,7 +4549,7 @@
                         $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
                     ])
                 ]),
-                $.make('div', { className: 'NB-story-comment-content' }, comment.comments),
+                $.make('div', { className: 'NB-story-comment-content' }, comments),
                 (comment.replies.length && this.make_story_share_comment_replies(comment.replies))
             ]).data('user_id', user.get('id'));
             
