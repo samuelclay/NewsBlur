@@ -1,7 +1,6 @@
 {% load utils_tags typogrify_tags statistics_tags %}
 
-{% if interactions %}
-<div class="NB-module NB-module-interactions NB-page-{{ page }}">
+<div class="NB-module NB-module-interactions NB-page-{{ page }} {% if not interactions %} NB-hidden {% endif %}">
 
     <h5 class="NB-module-header">
         <div class="NB-module-header-right">
@@ -47,4 +46,3 @@
     </ul>
 
 </div>
-{% endif %}

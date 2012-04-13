@@ -6558,7 +6558,7 @@
             
             $module.addClass('NB-loading');
             direction = direction || 0;
-            console.log(["loading page", self.counts['interactions_page']+direction]);
+
             this.model.load_interactions_page(this.counts['interactions_page']+direction, 
                                               function(resp) {
                 $module.removeClass('NB-loading');
@@ -6566,7 +6566,6 @@
                 $module.replaceWith(resp);
                 $module = $('.NB-module-interactions');
                 var page = $module[0].className.match(/NB-page-(\d+)/)[1];
-                console.log(["now on page", page]);
                 self.counts['interactions_page'] = parseInt(page, 10);
                 self.load_javascript_elements_on_page();
             }, function() {
@@ -6600,7 +6599,7 @@
             if (!NEWSBLUR.Globals.debug) {
                 this.locks.load_interactions_module = setInterval(_.bind(function() {
                     this.load_interactions_page();
-                }, this), 10*60*1000);
+                }, this), 5*60*1000);
             }
         },
         
@@ -6609,7 +6608,7 @@
             if (!NEWSBLUR.Globals.debug) {
                 this.locks.load_activities_module = setInterval(_.bind(function() {
                     this.load_activities_page();
-                }, this), 10*60*1000);
+                }, this), 5*60*1000);
             }
         },
         

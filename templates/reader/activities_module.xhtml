@@ -1,8 +1,6 @@
 {% load utils_tags typogrify_tags statistics_tags %}
 
-{% if activities %}
-
-<div class="NB-module NB-module-activities NB-page-{{ page }}">
+<div class="NB-module NB-module-activities NB-page-{{ page }} {% if not activities %}NB-hidden{% endif %}">
     <h5 class="NB-module-header">
         <div class="NB-module-header-right">
             <div class="NB-spinner NB-left"></div>
@@ -44,4 +42,3 @@
     </ul>
 
 </div>
-{% endif %}
