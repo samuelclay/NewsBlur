@@ -185,9 +185,9 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.attach_alternative(html, "text/html")
         msg.send()
         
-        invites = MRequestInvite.objects.filter(username=self.user.username)
+        invites = MRequestInvite.objects.filter(username__iexact=self.user.username)
         if not invites:
-            invites = MRequestInvite.objects.filter(username=self.user.email)
+            invites = MRequestInvite.objects.filter(username__iexact=self.user.email)
         if not invites:
             print "User not on invite list"
         else:
