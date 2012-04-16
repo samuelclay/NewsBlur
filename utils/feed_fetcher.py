@@ -238,7 +238,8 @@ class ProcessFeed:
         # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, verbose=self.options['verbose'])
 
-        if (not self.feed.is_push and hasattr(self.fpf, 'feed') and 
+        if ((not self.feed.is_push or self.options.get('force'))
+            and hasattr(self.fpf, 'feed') and 
             hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
             hub_url = None
             self_url = self.feed.feed_address
