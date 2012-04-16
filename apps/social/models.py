@@ -168,6 +168,12 @@ class MSocialProfile(mongo.Document):
             'custom_css': self.custom_css,
         })
         return params
+    
+    @property
+    def profile_photo_url(self):
+        if self.photo_url:
+            return self.photo_url
+        return settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def to_json(self, compact=False, full=False):
         # domain = Site.objects.get_current().domain
@@ -176,7 +182,7 @@ class MSocialProfile(mongo.Document):
             'id': 'social:%s' % self.user_id,
             'user_id': self.user_id,
             'username': self.username,
-            'photo_url': self.photo_url,
+            'photo_url': self.profile_photo_url,
             'num_subscribers': self.follower_count,
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
                                     kwargs={'user_id': self.user_id, 'username': self.username})),
@@ -246,6 +252,7 @@ class MSocialProfile(mongo.Document):
         
         if self.user_id != user_id:
             MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
+            MActivity.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
         MSocialSubscription.objects.get_or_create(user_id=self.user_id, subscription_user_id=user_id)
     
     def is_following_user(self, user_id):
@@ -729,6 +736,10 @@ class MSharedStory(mongo.Document):
         author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         author.count()
         
+        MActivity.new_shared_story(user_id=self.user_id, story_title=self.story_title, 
+                                   comments=self.comments, story_feed_id=self.story_feed_id,
+                                   story_id=self.story_guid, share_date=self.shared_date)
+        
     def delete(self, *args, **kwargs):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
@@ -1080,12 +1091,13 @@ class MInteraction(mongo.Document):
         interactions = []
         for interaction_db in interactions_db:
             interaction = interaction_db.to_mongo()
-            interaction['photo_url'] = getattr(social_profiles.get(interaction_db.with_user_id), 'photo_url', None)
+            social_profile = social_profiles.get(interaction_db.with_user_id)
+            if social_profile:
+                interaction['photo_url'] = social_profile.profile_photo_url
             interaction['with_user'] = social_profiles.get(interaction_db.with_user_id)
             interaction['date'] = relative_timesince(interaction_db.date)
             interactions.append(interaction)
 
-        print len(interactions), len(interactions_db)
         return interactions
         
     @classmethod
@@ -1111,3 +1123,95 @@ class MInteraction(mongo.Document):
                            content=reply_content,
                            feed_id=social_feed_id,
                            content_id=story_id)
+                           
+
+class MActivity(mongo.Document):
+    user_id      = mongo.IntField()
+    date         = mongo.DateTimeField(default=datetime.datetime.now)
+    category     = mongo.StringField()
+    title        = mongo.StringField()
+    content      = mongo.StringField()
+    with_user_id = mongo.IntField()
+    feed_id      = mongo.IntField()
+    content_id   = mongo.StringField()
+    
+    meta = {
+        'collection': 'activities',
+        'indexes': [('user_id', 'date'), 'category'],
+        'allow_inheritance': False,
+        'index_drop_dups': True,
+        'ordering': ['-date'],
+    }
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
+    
+    @classmethod
+    def user(cls, user, page=1):
+        page = max(1, page)
+        limit = 5
+        offset = (page-1) * limit
+
+        activities_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
+        with_user_ids = [a.with_user_id for a in activities_db if a.with_user_id]
+        social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
+        activities = []
+        for activity_db in activities_db:
+            activity = activity_db.to_mongo()
+            activity['date'] = relative_timesince(activity_db.date)
+            social_profile = social_profiles.get(activity_db.with_user_id)
+            if social_profile:
+                activity['photo_url'] = social_profile.profile_photo_url
+            activity['with_user'] = social_profiles.get(activity_db.with_user_id)
+            activities.append(activity)
+        
+        return activities
+            
+    @classmethod
+    def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
+        cls.objects.create(user_id=user_id,
+                           category='star',
+                           content=story_title,
+                           feed_id=story_feed_id,
+                           content_id=story_id)
+                           
+    @classmethod
+    def new_feed_subscription(cls, user_id, feed_id, feed_title):
+        cls.objects.create(user_id=user_id,
+                           category='feedsub',
+                           content=feed_title,
+                           feed_id=feed_id)
+                           
+    @classmethod
+    def new_follow(cls, follower_user_id, followee_user_id):
+        cls.objects.create(user_id=follower_user_id, 
+                           with_user_id=followee_user_id,
+                           category='follow')
+    
+    @classmethod
+    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id):
+        cls.objects.create(user_id=user_id,
+                           with_user_id=comment_user_id,
+                           category='comment_reply',
+                           content=reply_content,
+                           feed_id=story_feed_id,
+                           content_id=story_id)
+    
+    @classmethod
+    def new_shared_story(cls, user_id, story_title, comments, story_feed_id, story_id, share_date=None):
+        a, _ = cls.objects.get_or_create(user_id=user_id,
+                                         with_user_id=user_id,
+                                         category='sharedstory',
+                                         feed_id=story_feed_id,
+                                         content_id=story_id,
+                                         defaults={
+                                             'title': story_title,
+                                             'content': comments,
+                                         })
+        if a.content != comments:
+            a.content = comments
+            a.save()
+        if share_date:
+            a.date = share_date
+            a.save()

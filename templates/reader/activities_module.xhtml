@@ -15,8 +15,49 @@
         {% for activity in activities|slice:":5" %}
         <li class="NB-interaction NB-interaction-{{ activity.category }}"
             {% if activity.content_id %}data-content-id="{{ activity.content_id }}"{% endif %}
-            {% if activity.feed_id %}data-feed-id="{{ activity.feed_id }}"{% endif %}>
+            {% if activity.feed_id %}data-feed-id="{{ activity.feed_id }}"{% endif %}
+            {% if activity.with_user_id %}data-user-id="{{ activity.with_user_id }}"{% endif %}
+            {% if activity.with_user %}data-username="{{ activity.with_user.username }}"{% endif %}>
 
+            {% if activity.category == 'follow' %}
+                <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.date }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    You followed
+                    <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>.
+                </div>
+            {% endif %}
+
+            {% if activity.category == 'comment_reply' %}
+                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}" data-feed-id="{{ activity.feed_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.date }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    You replied to <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>:
+                </div>
+                <div class="NB-interaction-content">
+                    "<span class="NB-interaction-reply-content NB-splash-link" data-story-id="{{ activity.content_id }}">{{ activity.content|truncatewords:16 }}</span>"
+                </div>
+            {% endif %}
+
+            {% if activity.category == 'sharedstory' %}
+                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}" data-feed-id="{{ activity.feed_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.date }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    You shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|truncatewords:6 }}</span>{% if activity.content %}:{% else %}.{% endif %}
+                </div>
+                {% if activity.content %}
+                    <div class="NB-interaction-content">
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|truncatewords:16 }}</span>"
+                    </div>
+                {% endif %}
+            {% endif %}
+            
             {% if activity.category == 'star' %}
                 <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}">
                 <div class="NB-interaction-date">

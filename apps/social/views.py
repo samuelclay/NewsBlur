@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
-from apps.social.models import MRequestInvite, MInteraction
+from apps.social.models import MRequestInvite, MInteraction, MActivity
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
@@ -273,12 +273,18 @@ def save_comment_reply(request):
     profiles = [profile.to_json(compact=True) for profile in profiles]
     
     # Interaction for every other replier and original commenter
-    if request.user.pk != comment_user_id:
+    MActivity.new_comment_reply(user_id=request.user.pk,
+                                comment_user_id=comment['user_id'],
+                                reply_content=reply_comments,
+                                story_feed_id=feed_id,
+                                story_id=story_id)
+    if comment['user_id'] != request.user.pk:
         MInteraction.new_comment_reply(user_id=comment['user_id'], 
                                        reply_user_id=request.user.pk, 
                                        reply_content=reply_comments,
                                        social_feed_id=comment_user_id,
                                        story_id=story_id)
+    
     for user_id in set(reply_user_ids).difference([comment['user_id']]):
         if request.user.pk != user_id:
             MInteraction.new_reply_reply(user_id=user_id, 

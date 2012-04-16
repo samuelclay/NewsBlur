@@ -25,7 +25,7 @@ from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifie
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user
-from apps.profile.models import Profile, MActivity
+from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
@@ -34,7 +34,7 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
-from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription
+from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription, MActivity
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince

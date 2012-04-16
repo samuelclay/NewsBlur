@@ -1,5 +1,4 @@
 import datetime
-import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -17,7 +16,6 @@ from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import NewFeeds
 from utils import log as logging
 from utils.user_functions import generate_secret_token
-from utils.feed_functions import relative_timesince
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
 from zebra.signals import zebra_webhook_customer_subscription_created
@@ -207,60 +205,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         }) + ('?' + next + '=1' if next else '')
         
 
-
-class MActivity(mongo.Document):
-    user_id      = mongo.IntField()
-    date         = mongo.DateTimeField(default=datetime.datetime.now)
-    category     = mongo.StringField()
-    title        = mongo.StringField()
-    content      = mongo.StringField()
-    feed_id      = mongo.IntField()
-    content_id   = mongo.StringField()
-    
-    meta = {
-        'collection': 'activities',
-        'indexes': [('user_id', 'date'), 'category'],
-        'allow_inheritance': False,
-        'index_drop_dups': True,
-        'ordering': ['-date'],
-    }
-    
-    def __unicode__(self):
-        user = User.objects.get(pk=self.user_id)
-        return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
-    
-    @classmethod
-    def user(cls, user, page=1):
-        page = max(1, page)
-        limit = 5
-        offset = (page-1) * limit
-
-        activities_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
-    
-        activities = []
-        for activity_db in activities_db:
-            activity = activity_db.to_mongo()
-            activity['date'] = relative_timesince(activity_db.date)
-            activities.append(activity)
-        
-        return activities
-        
-    @classmethod
-    def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
-        cls.objects.create(user_id=user_id,
-                           category='star',
-                           content=story_title,
-                           feed_id=story_feed_id,
-                           content_id=story_id)
-                           
-    @classmethod
-    def new_feed_subscription(cls, user_id, feed_id, feed_title):
-        cls.objects.create(user_id=user_id,
-                           category='feedsub',
-                           content=feed_title,
-                           feed_id=feed_id)
-                           
-
+            
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)

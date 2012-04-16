@@ -1876,6 +1876,9 @@
                 $story_titles.empty().scrollTop(0);
                 this.reset_feed();
                 this.hide_splash_page();
+                if (options.story_id) {
+                    this.flags['show_story_in_feed'] = options.story_id;
+                }
             
                 this.active_feed = feed_id;
                 this.next_feed = feed_id;
@@ -4647,6 +4650,7 @@
                 
                 var $story = this.find_story_in_feed_view(story_id);
                 $('.NB-story-comments-public-teaser-wrapper', $story).replaceWith($comments);
+                this.fetch_story_locations_in_feed_view();
             }, this));
         },
         
@@ -6805,15 +6809,11 @@
 
             this.reset_feed();
             
-            if (options.story_id) {
-                this.flags['show_story_in_feed'] = options.story_id;
-            }
-
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
             $('.NB-feeds-header-icon',  this.$s.$tryfeed_header).attr('src', $.favicon(social_feed.attributes));
 
             $tryfeed_container.slideDown(350, _.bind(function() {
-                this.open_social_stories(social_feed.get('id'));
+                this.open_social_stories(social_feed.get('id'), options);
                 this.switch_taskbar_view('feed');
                 this.flags['showing_social_feed_in_tryfeed_view'] = true;
                 this.$s.$tryfeed_header.addClass('NB-selected');
@@ -7700,30 +7700,29 @@
             
             // = Interactions Module ==========================================
             
-            $.targetIs(e, { tagSelector: '.NB-interaction-username' }, function($t, $p){
-                e.preventDefault();
-                var user_id = $t.data('userId');
-                var username = $t.text();
-                self.model.add_user_profiles([{user_id: user_id, username: username}]);
-                self.open_social_profile_modal(user_id);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-profile-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-username, .NB-interaction-follow .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var user_id = $t.data('userId');
                 var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
                 self.model.add_user_profiles([{user_id: user_id, username: username}]);
                 self.open_social_profile_modal(user_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-reply-content' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply .NB-interaction-reply-content, .NB-interaction-reply_reply .NB-interaction-reply-content, .NB-interaction-comment_reply .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
-                var feed_id = 'social:' + $t.data('socialUserId');
+                var user_id = $t.closest('.NB-interaction').data('userId');
+                var feed_id = 'social:' + user_id;
                 var story_id = $t.closest('.NB-interaction').data('contentId');
-                
-                // console.log(["hit reply content", feed_id, story_id, self.model.social_feeds.get(feed_id)]);
-                if (self.model.social_feeds.get(feed_id)) {
+                var username = $t.closest('.NB-interaction').data('username');
+
+                if (self.model.get_feed(feed_id)) {
                     self.open_social_stories(feed_id, {'story_id': story_id});
                 } else {
-                    self.load_social_feed_in_tryfeed_view(feed_id, {'story_id': story_id});
+                    var socialsub = self.model.add_social_feed({
+                        id: feed_id, 
+                        user_id: user_id, 
+                        username: username
+                    });
+                    self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
                 }
             }); 
             
@@ -7744,6 +7743,21 @@
                     self.load_feed_in_tryfeed_view(feed_id);
                 }
             }); 
+            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-interaction').data('feedId');
+                var story_id = $t.closest('.NB-interaction').data('contentId');
+                var user_id = $t.closest('.NB-interaction').data('userId');
+                console.log(["shared story", feed_id, story_id]);
+                if ($t.hasClass('NB-interaction-sharedstory-content')) {
+                    self.open_social_stories('social:'+user_id, {'story_id': story_id});
+                } else if (self.model.feeds[feed_id]) {
+                    self.open_feed(feed_id, {'story_id': story_id});
+                } else {
+                    self.load_feed_in_tryfeed_view(feed_id, {'story_id': story_id});
+                }
+            }); 
+
             
             // = One-offs =====================================================
             

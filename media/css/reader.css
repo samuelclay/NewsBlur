@@ -7758,7 +7758,7 @@ background: transparent;
     font-size: 11px;
     float: right;
     text-transform: uppercase;
-    padding: 4px 0 4px 4px;
+    padding: 5px 0 3px 4px;
 }
 .NB-interaction-title {
     font-size: 13px;
@@ -7782,5 +7782,11 @@ background: transparent;
     cursor: pointer;
 }
 .NB-interaction-feed-title {
+    cursor: pointer;
+}
+.NB-interaction-sharedstory-title {
+    cursor: pointer;
+}
+.NB-interaction-sharedstory-content {
     cursor: pointer;
 }

@@ -128,8 +128,8 @@ class UserSubscription(models.Model):
         
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed = feed.update()
-
-            from apps.profile.models import MActivity
+            
+            from apps.social.models import MActivity
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
             feed.setup_feed_for_premium_subscribers()
         

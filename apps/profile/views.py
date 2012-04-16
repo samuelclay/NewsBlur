@@ -9,10 +9,10 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, change_password, MActivity
+from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
-from apps.social.models import MSocialServices
+from apps.social.models import MSocialServices, MActivity
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to

@@ -14,21 +14,23 @@
     <ul class="NB-interactions">
         {% for interaction in interactions|slice:":5" %}
         <li class="NB-interaction NB-interaction-{{ interaction.category }}"
-            {% if interaction.content_id %}data-content-id="{{ interaction.content_id }}"{% endif %}>
+            {% if interaction.content_id %}data-content-id="{{ interaction.content_id }}"{% endif %}
+            {% if interaction.feed_id %}data-user-id="{{ interaction.feed_id }}"{% endif %}
+            {% if interaction.with_user_id %}data-user-id="{{ interaction.with_user_id }}"{% endif %}>
             {% if interaction.category == 'follow' %}
-                <img class="NB-interaction-photo NB-interaction-profile-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
+                <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
                 <div class="NB-interaction-date">
                     {{ interaction.date }} ago
                 </div>
                 <div class="NB-interaction-title">
                     <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                         {{ interaction.with_user.username }}
-                    </span> started following you.
+                    </span> is now following you.
                 </div>
             {% endif %}
 
             {% if interaction.category == 'comment_reply' or interaction.category == 'reply_reply' %}
-                <img class="NB-interaction-photo NB-interaction-profile-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
+                <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
                 <div class="NB-interaction-date">
                     {{ interaction.date }} ago
                 </div>
