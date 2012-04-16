@@ -10,6 +10,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
 from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -30,6 +32,38 @@ class MRequestInvite(mongo.Document):
         'allow_inheritance': False,
     }
     
+    def send_email(self):
+        user = User.objects.filter(username__iexact=self.username)
+        if not user:
+            user = User.objects.filter(email__iexact=self.username)
+        if user:
+            user = user[0]
+            email = user.email or self.username
+        else:
+            user = {
+                'username': self.username,
+                'profile': {
+                    'autologin_url': '/',
+                }
+            }
+            email = self.username
+        params = {
+            'user': user,
+        }
+        text    = render_to_string('mail/email_social_beta.txt', params)
+        html    = render_to_string('mail/email_social_beta.xhtml', params)
+        subject = "Psst, you're in..."
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['<%s>' % (email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+        self.email_sent = True
+        self.save()
+                
+        logging.debug(" ---> ~BB~FM~SBSending email for social beta: %s" % self.username)
+
     
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
