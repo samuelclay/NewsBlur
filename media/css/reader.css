@@ -7558,6 +7558,7 @@ background: transparent;
 .NB-profile-badge .NB-profile-badge-username {
     font-weight: bold;
     float: left;
+    cursor: pointer;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-username {
     font-size: 22px;

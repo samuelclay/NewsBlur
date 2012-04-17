@@ -87,6 +87,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             $('.NB-profile-follower-count', this.$modal).text(this.profile.get('follower_count'));
             $('.NB-profile-following-count', this.$modal).text(this.profile.get('following_count'));
             this.populate_friends(data);
+            this.load_images_and_resize();
             callback && callback();
             _.defer(_.bind(this.resize, this));
         }, this));
@@ -98,6 +99,18 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);
             $f.html(this.make_profile_badges(user_ids, data.profiles));
             $f.closest('fieldset').toggle(!!user_ids.length);
+        }, this));
+    },
+    
+    load_images_and_resize: function() {
+        var $images = $('img', this.$modal);
+        var image_count = $images.length;
+        $images.load(_.bind(function() {
+            if (image_count > 1) {
+                image_count -= 1;
+            } else {
+                this.resize();
+            }
         }, this));
     },
     

@@ -430,7 +430,7 @@
     clear: both;
     border-top: 1px solid #A0A0A0;
     overflow: auto;
-    max-height: 500px;
+    height: 400px;
     width: 100%;
     padding-right: 12px;
 }

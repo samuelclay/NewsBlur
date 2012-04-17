@@ -14,10 +14,6 @@ NEWSBLUR.ReaderFriends.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     runner: function() {
-        this.options.onOpen = _.bind(function() {
-            this.resize_modal();
-        }, this);
-
         this.make_modal();
         this.open_modal();
         this.fetch_friends();
@@ -226,22 +222,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         });
     },
     
-    resize_modal: function(count) {
-        var $tab = $('.NB-tab.NB-active', this.$modal);
-        var $modal = this.$modal;
-        var $modal_container = $modal.closest('.simplemodal-container');
-
-        if (count > 50) return;
-        
-        if ($modal.height() > $modal_container.height() - 24) {
-            $tab.height($tab.height() - 5);
-            this.resize_modal(count+1);
-        } else {
-            this.resize();
-        }
-        
-    },
-    
     switch_tab: function(newtab) {
         var $modal_tabs = $('.NB-modal-tab', this.$modal);
         var $tabs = $('.NB-tab', this.$modal);
@@ -257,7 +237,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         } else if (newtab == 'followers') {
             this.make_followers_tab();
         }
-        _.defer(_.bind(this.resize_modal, this));
     },
     
     connect: function(service) {
@@ -273,7 +252,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.services = data.services;
             this.make_find_friends_and_services();
             this.make_profile_section();
-            _.defer(_.bind(this.resize_modal, this));
         }, this));
     },
     
@@ -286,7 +264,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ]).css('opacity', 0);
             $('.NB-friends-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
-            _.defer(_.bind(this.resize_modal, this));
         } else {
             this.fetch_friends();
         }
@@ -329,7 +306,6 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 return new NEWSBLUR.Views.SocialProfileBadge({model: user});
             })));
             
-            _.defer(_.bind(this.resize_modal, this));
         }, this));
     },
     

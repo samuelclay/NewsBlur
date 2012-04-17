@@ -6,6 +6,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
         "click .NB-profile-badge-action-follow": "follow_user",
         "click .NB-profile-badge-action-unfollow": "unfollow_user",
         "click .NB-profile-badge-action-preview": "preview_user",
+        "click .NB-profile-badge-username": "open_profile",
         "mouseenter .NB-profile-badge-action-unfollow": "mouseenter_unfollow",
         "mouseleave .NB-profile-badge-action-unfollow": "mouseleave_unfollow",
         "mouseenter .NB-profile-badge-action-follow": "mouseenter_follow",
@@ -37,7 +38,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     $.make('div', { className: 'NB-profile-badge-actions' }, [
                         $.make('div', { className: 'NB-loading' })
                     ]),
-                    $.make('div', { className: 'NB-profile-badge-username' }, profile.get('username')),
+                    $.make('div', { className: 'NB-profile-badge-username NB-splash-link' }, profile.get('username')),
                     $.make('div', { className: 'NB-profile-badge-location' }, profile.get('location')),
                     (profile.get('website') && $.make('a', { 
                         href: profile.get('website'), 
@@ -131,6 +132,15 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             var socialsub = NEWSBLUR.reader.model.add_social_feed(this.model);
             NEWSBLUR.reader.load_social_feed_in_tryfeed_view(socialsub);
         }, this));
+    },
+    
+    open_profile: function() {
+        var user_id = this.model.get('user_id');
+        NEWSBLUR.reader.model.add_user_profiles([this.model]);
+
+        $.modal.close(function() {
+            NEWSBLUR.reader.open_social_profile_modal(user_id);
+        });
     },
     
     mouseenter_unfollow: function() {
