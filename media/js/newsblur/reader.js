@@ -696,7 +696,8 @@
             var $feeds = $('.feed:not(.NB-empty)', $folder);
             var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
                 var feed_id = parseInt($(o).attr('data-id'), 10);
-                if (self.model.get_feed(feed_id).active) {
+                if (self.model.get_feed(feed_id) && 
+                    self.model.get_feed(feed_id).active) {
                   return feed_id;
                 }
             }));
