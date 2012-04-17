@@ -2763,7 +2763,7 @@
         
         send_story_to_readitlater: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://readitlaterlist.com/save';
+            var url = 'https://getpocket.com/save';
             var readitlater_url = [
               url,
               '?url=',
