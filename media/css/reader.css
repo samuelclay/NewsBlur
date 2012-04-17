@@ -4436,7 +4436,7 @@ background: transparent;
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
-    background: transparent url('/media/embed/reader/readitlater.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
@@ -5790,7 +5790,7 @@ background: transparent;
     background: transparent url('/media/embed/reader/facebook.gif') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
-    background: transparent url('/media/embed/reader/readitlater.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-tumblr] {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
