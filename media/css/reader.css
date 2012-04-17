@@ -4714,6 +4714,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/cut.png') no-repeat  0 2px;    
 }
+.NB-menu-manage .NB-menu-manage-social-profile .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
+}
 .NB-menu-manage .NB-menu-manage-keyboard .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/keyboard.png') no-repeat  0 1px;    
 }

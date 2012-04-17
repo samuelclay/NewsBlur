@@ -16,6 +16,9 @@ NEWSBLUR.ReaderSocialProfile.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     
     runner: function(user_id) {
+        if (!this.model.user_profiles.find(user_id)) {
+            this.model.add_user_profiles([{user_id: user_id}]);
+        }
         this.profile = this.model.user_profiles.find(user_id).clone();
         this.make_modal();
         this.open_modal();

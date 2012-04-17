@@ -4901,6 +4901,9 @@
         },
         
         open_social_profile_modal: function(user_id) {
+            if (_.string.contains(user_id, 'social:')) {
+                user_id = parseInt(user_id.replace('social:', ''), 10);
+            }
             NEWSBLUR.social_profile = new NEWSBLUR.ReaderSocialProfile(user_id);
         },
         
@@ -5079,6 +5082,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
                     ])),
                     (feed.has_exception && $.make('li', { className: 'NB-menu-separator-inverse' })),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-social-profile' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'View profile')
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
                     (feed.exception_type != 'feed' && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
@@ -7421,6 +7429,11 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_mark_read_modal();
                 }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-social-profile' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                self.open_social_profile_modal(feed_id);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
                 e.preventDefault();
