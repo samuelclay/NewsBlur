@@ -1204,11 +1204,11 @@ class MActivity(mongo.Document):
             
     @classmethod
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
-        cls.objects.create(user_id=user_id,
-                           category='star',
-                           content=story_title,
-                           feed_id=story_feed_id,
-                           content_id=story_id)
+        cls.objects.get_or_create(user_id=user_id,
+                                  category='star',
+                                  content=story_title,
+                                  feed_id=story_feed_id,
+                                  content_id=story_id)
                            
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
