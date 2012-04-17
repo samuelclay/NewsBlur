@@ -1136,9 +1136,9 @@ class MInteraction(mongo.Document):
         
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
-        cls.objects.create(user_id=followee_user_id, 
-                           with_user_id=follower_user_id,
-                           category='follow')
+        cls.objects.get_or_create(user_id=followee_user_id, 
+                                  with_user_id=follower_user_id,
+                                  category='follow')
     
     @classmethod
     def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
@@ -1219,9 +1219,9 @@ class MActivity(mongo.Document):
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
-        cls.objects.create(user_id=follower_user_id, 
-                           with_user_id=followee_user_id,
-                           category='follow')
+        cls.objects.get_or_create(user_id=follower_user_id, 
+                                  with_user_id=followee_user_id,
+                                  category='follow')
     
     @classmethod
     def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id):
