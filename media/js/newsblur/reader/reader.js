@@ -725,7 +725,8 @@
             var $feeds = $('.feed:not(.NB-empty)', $folder);
             var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
                 var feed_id = parseInt($(o).data('id'), 10);
-                if (self.model.get_feed(feed_id).active) {
+                if (self.model.get_feed(feed_id) && 
+                    self.model.get_feed(feed_id).active) {
                   return feed_id;
                 }
             }));
@@ -3164,7 +3165,7 @@
         
         send_story_to_readitlater: function(story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://readitlaterlist.com/save';
+            var url = 'https://getpocket.com/save';
             var readitlater_url = [
               url,
               '?url=',
@@ -5186,7 +5187,7 @@
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-twitter');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_readitlater'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater'}).bind('mouseenter', _.bind(function(e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Read It Later').parent().addClass('NB-menu-manage-highlight-readitlater');
+                            $(e.target).siblings('.NB-menu-manage-title').text('Pocket (RIL)').parent().addClass('NB-menu-manage-highlight-readitlater');
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),

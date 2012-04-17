@@ -466,7 +466,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-googleplus', name: 'story_share_googleplus' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-googleplus' })
                             ]),
-                            $.make('div', { className: 'NB-preference-option', title: 'Read It Later' }, [
+                            $.make('div', { className: 'NB-preference-option', title: 'Pocket (RIL)' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
                             ]),

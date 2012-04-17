@@ -986,8 +986,8 @@ class Feed(models.Model):
                     story_in_system = existing_story
                 
                 # Title distance + content distance, checking if story changed
-                story_title_difference = levenshtein_distance(story.get('title'),
-                                                              existing_story.story_title)
+                story_title_difference = abs(levenshtein_distance(story.get('title'),
+                                                                  existing_story.story_title))
                 
                 seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
                 
@@ -998,7 +998,7 @@ class Feed(models.Model):
                     and seq.quick_ratio() > .95):
                     content_ratio = seq.ratio()
                     
-                if story_title_difference > 0 and story_title_difference < 5 and content_ratio > .98:
+                if story_title_difference > 0 and content_ratio > .98:
                     story_in_system = existing_story
                     if story_title_difference > 0 or content_ratio < 1.0:
                         # print "Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
