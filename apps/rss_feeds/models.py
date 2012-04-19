@@ -33,7 +33,7 @@ from utils.diff import HTMLDiff
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 class Feed(models.Model):
-    feed_address = models.URLField(max_length=255)
+    feed_address = models.URLField(max_length=255, db_index=True)
     feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
