@@ -1116,7 +1116,7 @@ class MInteraction(mongo.Document):
     @classmethod
     def user(cls, user, page=1):
         page = max(1, page)
-        limit = 5
+        limit = 4 # Also set in template
         offset = (page-1) * limit
         interactions_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
         with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
@@ -1184,7 +1184,7 @@ class MActivity(mongo.Document):
     @classmethod
     def user(cls, user, page=1):
         page = max(1, page)
-        limit = 5
+        limit = 4 # Also set in template
         offset = (page-1) * limit
 
         activities_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
