@@ -1,7 +1,8 @@
-from django.utils.dateformat import DateFormat
 import datetime
-from django.conf import settings
+from HTMLParser import HTMLParser
 from itertools import chain
+from django.utils.dateformat import DateFormat
+from django.conf import settings
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -102,6 +103,12 @@ def pre_process_story(entry):
             }
     
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
+
+    if not entry.get('title') and entry.get('story_content'):
+        story_title = strip_tags(entry['story_content'])
+        if len(story_title) > 80:
+            story_title = story_title[:80] + '...'
+        entry['title'] = story_title
     
     return entry
     
@@ -138,3 +145,18 @@ class bunch(dict):
             dict.__setattr__(self, item, value)
         else:
             self.__setitem__(item, value)
+            
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ' '.join(self.fed)
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
