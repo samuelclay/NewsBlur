@@ -3,6 +3,7 @@ import zlib
 import hashlib
 import redis
 import re
+import random
 import mongoengine as mongo
 from collections import defaultdict
 # from mongoengine.queryset import OperationError
@@ -113,6 +114,24 @@ class MSocialProfile(mongo.Document):
             self.follow_user(self.user_id)
             self.count()
     
+    @classmethod
+    def recommended_users(cls, for_user_id):
+        profile_count = cls.objects.filter(**{
+            'shared_stories_count__gte': 1, 
+            'user_id__ne': for_user_id,
+        }).count()
+        profiles = []
+        # for i in range(3):
+        #     skip = random.randint(0, max(profile_count-2, 0))
+        #     profile = cls.objects.filter(**{
+        #         'shared_stories_count__gte': 1, 
+        #         'user_id__ne': for_user_id,
+        #     })
+        #     if profile:
+        #         profiles.append(profile[0])
+        # profiles = sorted(profiles, key=lambda p: p.shared_stories_count)
+        return profiles
+        
     def count_stories(self):
         # Popular Publishers
         self.save_popular_publishers()

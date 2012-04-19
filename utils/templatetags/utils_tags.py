@@ -3,7 +3,7 @@ from django.conf import settings
 from django import template
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
-from apps.social.models import MInteraction, MActivity
+from apps.social.models import MInteraction, MActivity, MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
 
@@ -30,6 +30,16 @@ def render_features_module(context):
         'user': user,
         'features': features,
         'feature_form': feature_form,
+    }
+          
+@register.inclusion_tag('reader/recommended_users.xhtml', takes_context=True)
+def render_recommended_users(context):
+    user              = get_user(context['user'])
+    recommended_users = MSocialProfile.recommended_users(user.pk)
+
+    return {
+        'user': user,
+        'recommended_users': recommended_users,
     }
           
 @register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
