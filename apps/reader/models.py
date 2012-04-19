@@ -220,7 +220,7 @@ class UserSubscription(models.Model):
                 # Story has been deleted, probably by feed_fetcher.
                 continue
             except MStory.MultipleObjectsReturned:
-                continue
+                story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             m = MUserStory(story=story, user_id=self.user_id, 

@@ -3,7 +3,6 @@ import zlib
 import hashlib
 import redis
 import re
-import random
 import mongoengine as mongo
 from collections import defaultdict
 # from mongoengine.queryset import OperationError
@@ -116,10 +115,10 @@ class MSocialProfile(mongo.Document):
     
     @classmethod
     def recommended_users(cls, for_user_id):
-        profile_count = cls.objects.filter(**{
-            'shared_stories_count__gte': 1, 
-            'user_id__ne': for_user_id,
-        }).count()
+        # profile_count = cls.objects.filter(**{
+        #     'shared_stories_count__gte': 1, 
+        #     'user_id__ne': for_user_id,
+        # }).count()
         profiles = []
         # for i in range(3):
         #     skip = random.randint(0, max(profile_count-2, 0))
@@ -548,6 +547,7 @@ class MSocialSubscription(mongo.Document):
     
     def mark_story_ids_as_read(self, story_ids, feed_id, request=None):
         data = dict(code=0, payload=story_ids)
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if not request:
             request = self.user
@@ -571,6 +571,28 @@ class MSocialSubscription(mongo.Document):
                            feed_id=feed_id, read_date=date, 
                            story_id=story.story_guid, story_date=story.story_date)
             m.save()
+            
+            # Find other social feeds with this story to update their counts
+            friend_key = "F:%s:F" % (self.user_id)
+            share_key = "S:%s:%s" % (feed_id, story.guid_hash)
+            friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
+            if self.user_id in friends_with_shares:
+                friends_with_shares.remove(self.user_id)
+            if friends_with_shares:
+                socialsubs = MSocialSubscription.objects.filter(user_id=self.user_id,
+                                                                subscription_user_id__in=friends_with_shares)
+                for socialsub in socialsubs:
+                    if not socialsub.needs_unread_recalc:
+                        socialsub.needs_unread_recalc = True
+                        socialsub.save()
+            
+            # Also count on original subscription
+            usersubs = UserSubscription.objects.filter(user=self.user_id, feed=feed_id)
+            if usersubs:
+                usersub = usersubs[0]
+                if not usersub.needs_unread_recalc:
+                    usersub.needs_unread_recalc = True
+                    usersub.save()
                 
         return data
         
