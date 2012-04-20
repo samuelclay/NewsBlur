@@ -442,8 +442,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.stories = data.stories;
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
-                this.active_feed = this.get_feed(feed_id);
-                console.log(["feed_id", feed_id, this.active_feed]);
+                this.active_feed = this.get_feed(feed_id) || {};
                 this.active_feed.feed_title = data.feed_title || this.active_feed.feed_title;
                 this.active_feed.last_update = data.last_update;
                 this.active_feed.updated = data.updated;
