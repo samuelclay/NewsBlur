@@ -259,4 +259,5 @@ def load_activities(request):
     return {
         'activities': activities,
         'page': page,
+        'username': 'You',
     }
