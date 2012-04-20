@@ -148,6 +148,12 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             self.save();
             return false;
         });
+        $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.close();
+            return false;
+        });
     }
     
 });

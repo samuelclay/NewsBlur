@@ -13,7 +13,7 @@ from utils.user_functions import get_user, ajax_login_required, admin_only
 
 def load_recommended_feed(request):
     user        = get_user(request)
-    page        = int(request.REQUEST.get('page', 0))
+    page        = max(int(request.REQUEST.get('page', 0)), 0)
     usersub     = None
     refresh     = request.REQUEST.get('refresh')
     now         = datetime.datetime.now
