@@ -25,9 +25,15 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     site: function(site_id, slug) {
-        // console.log(["site", site_id, slug]);
+        console.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
-        NEWSBLUR.reader.open_feed(site_id, {force: true});
+        if (NEWSBLUR.reader.model.get_feed(site_id)) {
+            NEWSBLUR.reader.open_feed(site_id, {force: true});
+        } else {
+            NEWSBLUR.reader.load_feed_in_tryfeed_view(site_id, {force: true, feed: {
+                feed_title: _.string.humanize(slug)
+            }});
+        }
     },
     
     social: function(user_id, slug) {

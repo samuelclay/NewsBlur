@@ -478,7 +478,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
     
     close_and_load_newsblur_blog: function() {
       this.close();
-      NEWSBLUR.reader.load_feed_in_tryfeed_view(this.newsblur_feed.id, this.newsblur_feed);
+      NEWSBLUR.reader.load_feed_in_tryfeed_view(this.newsblur_feed.id, {'feed': this.newsblur_feed});
     },
     
     // ===========

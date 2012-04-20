@@ -209,6 +209,6 @@ class MFeedback(mongo.Document):
     
     @classmethod
     def all(cls):
-        feedbacks = cls.objects.all()[:3]
+        feedbacks = cls.objects.all()[:4]
 
         return feedbacks

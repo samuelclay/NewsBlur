@@ -442,6 +442,11 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.stories = data.stories;
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
+                this.active_feed = this.get_feed(feed_id);
+                console.log(["feed_id", feed_id, this.active_feed]);
+                this.active_feed.feed_title = data.feed_title || this.active_feed.feed_title;
+                this.active_feed.last_update = data.last_update;
+                this.active_feed.updated = data.updated;
                 this.feed_id = feed_id;
                 if (_.string.include(feed_id, ':')) {
                     _.extend(this.classifiers, data.classifiers);
@@ -709,8 +714,12 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         return counts;
     },
     
-    set_feed: function(feed) {
-        this.feeds[feed.id] = feed;
+    set_feed: function(feed_id, feed) {
+        if (!feed) {
+            feed = feed_id;
+            feed_id = feed.id;
+        }
+        this.feeds[feed_id] = feed;
     },
 
     add_social_feed: function(feed) {
