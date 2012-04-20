@@ -3,6 +3,7 @@ import zlib
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
@@ -315,6 +316,12 @@ def profile(request):
     following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
     profile_ids = set(followers_youknow + followers_everybody + following_youknow + following_everybody)
     profiles = MSocialProfile.profiles(profile_ids)
+    activities = MActivity.user(user_id, page=1, public=True)
+    activities_html = render_to_string('reader/activities_module.xhtml', {
+        'activities': activities,
+        'username': user_profile.username,
+        'public': True,
+    })
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile.username)
     
     payload = {
@@ -324,6 +331,8 @@ def profile(request):
         'following_youknow': following_youknow,
         'following_everybody': following_everybody,
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
+        'activities': activities,
+        'activities_html': activities_html,
     }
     return payload
 
@@ -537,7 +546,7 @@ def load_social_settings(request, social_user_id, username=None):
 def load_interactions(request):
     user = get_user(request)
     page = max(1, int(request.REQUEST.get('page', 1)))
-    interactions = MInteraction.user(user, page=page)
+    interactions = MInteraction.user(user.pk, page=page)
 
     return {
         'interactions': interactions,

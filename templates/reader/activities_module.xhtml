@@ -1,5 +1,6 @@
 {% load utils_tags typogrify_tags statistics_tags %}
 
+{% if not public %}
 <div class="NB-module NB-module-activities NB-page-{{ page }} {% if not activities %}NB-hidden{% endif %}">
     <h5 class="NB-module-header">
         <div class="NB-module-header-right">
@@ -10,6 +11,8 @@
 
         Your Activity
     </h5>
+    
+{% endif %}
 
     <ul class="NB-interactions">
         {% for activity in activities|slice:":4" %}
@@ -25,7 +28,7 @@
                     {{ activity.date }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    You followed
+                    {{ username }} followed
                     <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>.
                 </div>
             {% endif %}
@@ -36,7 +39,7 @@
                     {{ activity.date }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    You replied to <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>:
+                    {{ username }} replied to <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>:
                 </div>
                 <div class="NB-interaction-content">
                     "<span class="NB-interaction-reply-content NB-splash-link" data-story-id="{{ activity.content_id }}">{{ activity.content|truncatewords:16 }}</span>"
@@ -49,7 +52,7 @@
                     {{ activity.date }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    You shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|truncatewords:6 }}</span>{% if activity.content %}:{% else %}.{% endif %}
+                    {{ username }} shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|truncatewords:6 }}</span>{% if activity.content %}:{% else %}.{% endif %}
                 </div>
                 {% if activity.content %}
                     <div class="NB-interaction-content">
@@ -82,4 +85,6 @@
         {% endfor %}
     </ul>
 
+{% if not public %}
 </div>
+{% endif %}

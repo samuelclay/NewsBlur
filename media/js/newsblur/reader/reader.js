@@ -4918,6 +4918,12 @@
             NEWSBLUR.social_profile = new NEWSBLUR.ReaderSocialProfile(user_id);
         },
         
+        close_social_profile: function() {
+            if (NEWSBLUR.social_profile) {
+                NEWSBLUR.social_profile.close();
+            }
+        },
+        
         close_sidebar: function() {
             this.$s.$body.layout().close('west');
             this.resize_window();
@@ -7738,7 +7744,8 @@
                 var feed_id = 'social:' + user_id;
                 var story_id = $t.closest('.NB-interaction').data('contentId');
                 var username = $t.closest('.NB-interaction').data('username');
-
+                
+                self.close_social_profile();
                 if (self.model.get_feed(feed_id)) {
                     self.open_social_stories(feed_id, {'story_id': story_id});
                 } else {
@@ -7756,12 +7763,15 @@
             $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title,.NB-interaction-star .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.NB-interaction').data('contentId');
+                
+                self.close_social_profile();
                 self.open_starred_stories({'story_id': story_id});
             }); 
             $.targetIs(e, { tagSelector: '.NB-interaction-feed-title,.NB-interaction-feedsub .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-interaction').data('feedId');
                 
+                self.close_social_profile();
                 if (self.model.feeds[feed_id]) {
                     self.open_feed(feed_id);
                 } else {
@@ -7774,6 +7784,8 @@
                 var story_id = $t.closest('.NB-interaction').data('contentId');
                 var user_id = $t.closest('.NB-interaction').data('userId');
                 console.log(["shared story", feed_id, story_id]);
+                
+                self.close_social_profile();
                 if ($t.hasClass('NB-interaction-sharedstory-content')) {
                     self.open_social_stories('social:'+user_id, {'story_id': story_id});
                 } else if (self.model.feeds[feed_id]) {

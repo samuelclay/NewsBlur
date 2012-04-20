@@ -45,7 +45,7 @@ def render_recommended_users(context):
 @register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
 def render_interactions_module(context, page=1):
     user = get_user(context['user'])
-    interactions = MInteraction.user(user, page)
+    interactions = MInteraction.user(user.pk, page)
         
     return {
         'user': user,
@@ -56,12 +56,13 @@ def render_interactions_module(context, page=1):
 @register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
 def render_activities_module(context, page=1):
     user = get_user(context['user'])
-    activities = MActivity.user(user, page)
+    activities = MActivity.user(user.pk, page)
     
     return {
         'user': user,
         'activities': activities,
         'page': page,
+        'username': 'You',
     }
 
 @register.filter

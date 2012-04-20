@@ -38,6 +38,9 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile' }, [
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('div', { className: 'NB-profile-info-header' }, $(this.$profile)),
+            $.make('div', { className: 'NB-profile-section NB-profile-section-activities' }, [
+                $.make('div', { className: 'NB-profile-activities' })
+            ]),
             $.make('div', { className: 'NB-profile-section' }, [
                 $.make('table', { className: 'NB-profile-followers' }, [
                     $.make('tr', [
@@ -87,9 +90,13 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.model.fetch_user_profile(user_id, _.bind(function(data) {
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
             this.profile.set(data.user_profile);
+            this.profiles = data.profiles;
+            this.activities = data.activities;
+            this.data = data;
             $('.NB-profile-follower-count', this.$modal).text(this.profile.get('follower_count'));
             $('.NB-profile-following-count', this.$modal).text(this.profile.get('following_count'));
             this.populate_friends(data);
+            this.populate_activities(data.activities_html);
             this.load_images_and_resize();
             callback && callback();
             _.defer(_.bind(this.resize, this));
@@ -100,9 +107,22 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function(f) {
             var user_ids = data[f];
             var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);
-            $f.html(this.make_profile_badges(user_ids, data.profiles));
+            $f.html(this.make_profile_badges(user_ids, this.profiles));
             $f.closest('fieldset').toggle(!!user_ids.length);
         }, this));
+    },
+    
+    populate_activities: function(activities_html) {
+        var $activities = $('.NB-profile-activities', this.$modal).empty();
+        var $section = $(".NB-profile-section-activities", this.$modal);
+        
+        if (!this.activities.length) {
+            $section.hide();
+        } else {
+            $section.show();
+            // Ugh, hate how this is in a Django template.
+            $activities.html(activities_html);
+        }
     },
     
     load_images_and_resize: function() {
@@ -192,6 +212,15 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             $t.tipsy('hide').tipsy('disable');
             self.fetch_profile(user_id);
         });
+        
+        $.targetIs(e, { tagSelector: '.NB-interaction-username, .NB-interaction-follow .NB-interaction-photo' }, function($t, $p){
+            e.preventDefault();
+            e.stopPropagation();    
+            var user_id = $t.data('userId');
+            var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
+            self.model.add_user_profiles([{user_id: user_id, username: username}]);
+            self.fetch_profile(user_id);
+        }); 
     }
     
 });

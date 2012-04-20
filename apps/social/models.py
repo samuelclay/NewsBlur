@@ -1070,7 +1070,7 @@ class MSocialServices(mongo.Document):
                     followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import: following ~SB%s~SN with ~SB%s~SN follower-backs" % (following, followers))
+        logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
         
@@ -1096,7 +1096,7 @@ class MSocialServices(mongo.Document):
                     followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRFacebook import: following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(following), followers))
+        logging.user(user, "~BB~FRFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))
         
         return following
         
@@ -1154,12 +1154,23 @@ class MInteraction(mongo.Document):
         return "<%s> %s on %s: %s - %s" % (user.username, with_user and with_user.username, self.date, 
                                            self.category, self.content and self.content[:20])
     
+    def to_json(self):
+        return {
+            'date': self.date,
+            'category': self.category,
+            'title': self.title,
+            'content': self.content,
+            'with_user_id': self.with_user_id,
+            'feed_id': self.feed_id,
+            'content_id': self.content_id,
+        }
+        
     @classmethod
-    def user(cls, user, page=1):
+    def user(cls, user_id, page=1):
         page = max(1, page)
         limit = 4 # Also set in template
         offset = (page-1) * limit
-        interactions_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
+        interactions_db = cls.objects.filter(user_id=user_id)[offset:offset+limit+1]
         with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
         social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
     
@@ -1222,18 +1233,32 @@ class MActivity(mongo.Document):
         user = User.objects.get(pk=self.user_id)
         return "<%s> %s - %s" % (user.username, self.category, self.content and self.content[:20])
     
+    def to_json(self):
+        return {
+            'date': self.date,
+            'category': self.category,
+            'title': self.title,
+            'content': self.content,
+            'with_user_id': self.with_user_id,
+            'feed_id': self.feed_id,
+            'content_id': self.content_id,
+        }
+        
     @classmethod
-    def user(cls, user, page=1):
+    def user(cls, user_id, page=1, public=False):
         page = max(1, page)
         limit = 4 # Also set in template
         offset = (page-1) * limit
-
-        activities_db = cls.objects.filter(user_id=user.pk)[offset:offset+limit+1]
+        
+        activities_db = cls.objects.filter(user_id=user_id)
+        if public:
+            activities_db = activities_db.filter(category__nin=['star', 'feedsub'])
+        activities_db = activities_db[offset:offset+limit+1]
         with_user_ids = [a.with_user_id for a in activities_db if a.with_user_id]
         social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
         activities = []
         for activity_db in activities_db:
-            activity = activity_db.to_mongo()
+            activity = activity_db.to_json()
             activity['date'] = relative_timesince(activity_db.date)
             social_profile = social_profiles.get(activity_db.with_user_id)
             if social_profile:

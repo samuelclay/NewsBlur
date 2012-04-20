@@ -7725,7 +7725,9 @@ background: transparent;
     color: #909090;
     text-transform: uppercase;
 }
-
+.NB-modal-profile .NB-interactions {
+    margin: 12px 0 36px;
+}
 /* ======================= */
 /* = Interactions Module = */
 /* ======================= */
