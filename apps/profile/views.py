@@ -12,7 +12,7 @@ from django.conf import settings
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
-from apps.social.models import MSocialServices, MActivity
+from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -82,6 +82,9 @@ def set_account_settings(request):
         except User.DoesNotExist:
             request.user.username = post_settings['username']
             request.user.save()
+            social_profile = MSocialProfile.objects.get(user_id=request.user.pk)
+            social_profile.username = post_settings['username']
+            social_profile.save()
         else:
             code = -1
             message = "This username is already taken. Try something different."
@@ -102,6 +105,7 @@ def set_account_settings(request):
     payload = {
         "username": request.user.username,
         "email": request.user.email,
+        "social_profile": MSocialProfile.profile(request.user.pk)
     }
     return dict(code=code, message=message, payload=payload)
     
