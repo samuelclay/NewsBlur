@@ -1869,7 +1869,7 @@
         open_feed: function(feed_id, options) {
             options = options || {};
             var self = this;
-            var feed = this.model.get_feed(feed_id);
+            var feed = this.model.get_feed(feed_id) || options.feed;
             var $story_titles = this.$s.$story_titles;
             this.flags['opening_feed'] = true;
             
@@ -6812,7 +6812,8 @@
             options = options || {};
             feed = _.extend({
                 id           : feed_id,
-                feed_id      : feed_id
+                feed_id      : feed_id,
+                feed_title   : options.feed && options.feed.feed_title
             }, options.feed);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
@@ -7652,7 +7653,7 @@
                 var $recommended_feeds = $('.NB-module-recommended');
                 var feed_id = $t.closest('.NB-recommended').data('feed-id');
                 self.load_feed_in_tryfeed_view(feed_id, {'feed': {
-                    'title': $('.NB-recommended-title', $recommended_feeds).text(),
+                    'feed_title': $('.NB-recommended-title', $recommended_feeds).text(),
                     'favicon_url': $('.NB-recommended-favicon', $recommended_feeds).attr('src')
                 }});
             }); 
