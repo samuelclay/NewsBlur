@@ -847,31 +847,33 @@ def mark_story_as_unread(request):
 @ajax_login_required
 @json.json_view
 def mark_feed_as_read(request):
-    feed_ids = [int(f) for f in request.REQUEST.getlist('feed_id') if f]
-    feed_count = len(feed_ids)
-    multiple = feed_count > 1
-    code = 0
-    for feed_id in feed_ids:
-        try:
-            feed = Feed.objects.get(id=feed_id)
-        except Feed.DoesNotExist:
-            continue
-        code = 0
+    feed_ids = request.REQUEST.getlist('feed_id')
+    multiple = len(feed_ids) > 1
+    code = 1
     
-        us = UserSubscription.objects.get(feed=feed, user=request.user)
+    for feed_id in feed_ids:
+        if 'social:' in feed_id:
+            user_id = int(feed_id.replace('social:', ''))
+            sub = MSocialSubscription.objects.get(user_id=request.user.pk, subscription_user_id=user_id)
+            if not multiple:
+                sub_user = User.objects.get(pk=sub.subscription_user_id)
+                logging.user(request, "~FMMarking social feed as read: ~SB%s" % (sub_user.username,))
+        else:
+            try:
+                feed = Feed.objects.get(id=feed_id)
+                sub = UserSubscription.objects.get(feed=feed, user=request.user)
+                if not multiple:
+                    logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
+            except Feed.DoesNotExist:
+                continue
+    
         try:
-            if us:
-                us.mark_feed_read()
+            sub.mark_feed_read()
         except IntegrityError:
             code = -1
-        else:
-            code = 1
-        
-        if not multiple:
-            logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
             
     if multiple:
-        logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % (feed_count,))
+        logging.user(request, "~FMMarking ~SB%s~SN feeds as read" % len(feed_ids))
         
     return dict(code=code)
 
