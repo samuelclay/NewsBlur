@@ -311,25 +311,25 @@ def shared_stories_public(request, username):
 def profile(request):
     user_id = request.GET.get('user_id', request.user.pk)
     user_profile = MSocialProfile.objects.get(user_id=user_id)
-    current_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
-    followers_youknow, followers_everybody = current_profile.common_follows(user_id, direction='followers')
-    following_youknow, following_everybody = current_profile.common_follows(user_id, direction='following')
-    profile_ids = set(followers_youknow + followers_everybody + following_youknow + following_everybody)
+    user_profile = user_profile.to_json(full=True, common_follows_with_user=request.user.pk)
+    profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
+                      user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
     activities = MActivity.user(user_id, page=1, public=True)
     activities_html = render_to_string('reader/activities_module.xhtml', {
         'activities': activities,
-        'username': user_profile.username,
+        'username': user_profile['username'],
         'public': True,
     })
-    logging.user(request, "~BB~FRLoading social profile: %s" % user_profile.username)
-    
+    logging.user(request, "~BB~FRLoading social profile: %s" % user_profile['username'])
+        
     payload = {
-        'user_profile': user_profile.to_json(full=True),
-        'followers_youknow': followers_youknow,
-        'followers_everybody': followers_everybody,
-        'following_youknow': following_youknow,
-        'following_everybody': following_everybody,
+        'user_profile': user_profile,
+        # XXX TODO: Remove following 4 vestigial params.
+        'followers_youknow': user_profile['followers_youknow'],
+        'followers_everybody': user_profile['followers_everybody'],
+        'following_youknow': user_profile['following_youknow'],
+        'following_everybody': user_profile['following_everybody'],
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
         'activities_html': activities_html,
@@ -415,7 +415,7 @@ def follow(request):
     
     return {
         "user_profile": profile.to_json(full=True), 
-        "follow_profile": follow_profile,
+        "follow_profile": follow_profile.to_json(common_follows_with_user=request.user.pk),
         "follow_subscription": follow_subscription,
     }
     
@@ -443,7 +443,10 @@ def unfollow(request):
     
     logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
     
-    return dict(user_profile=profile.to_json(full=True), unfollow_profile=unfollow_profile)
+    return {
+        'user_profile': profile.to_json(full=True),
+        'unfollow_profile': unfollow_profile.to_json(common_follows_with_user=request.user.pk),
+    }
 
 @json.json_view
 def find_friends(request):

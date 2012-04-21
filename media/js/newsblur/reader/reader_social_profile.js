@@ -23,7 +23,8 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.make_modal();
         this.open_modal();
         _.defer(_.bind(this.fetch_profile, this, user_id));
-        
+
+        this.profile.bind('change', _.bind(this.populate_friends, this));
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
     
@@ -93,9 +94,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             this.profiles = data.profiles;
             this.activities = data.activities;
             this.data = data;
-            $('.NB-profile-follower-count', this.$modal).text(this.profile.get('follower_count'));
-            $('.NB-profile-following-count', this.$modal).text(this.profile.get('following_count'));
-            this.populate_friends(data);
+            this.populate_friends();
             this.populate_activities(data.activities_html);
             this.load_images_and_resize();
             callback && callback();
@@ -104,12 +103,15 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     },
     
     populate_friends: function(data) {
+        console.log(["populate_friends", data, this.profile.get('followers_youknow')]);
         _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function(f) {
-            var user_ids = data[f];
+            var user_ids = this.profile.get(f);
             var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);
             $f.html(this.make_profile_badges(user_ids, this.profiles));
             $f.closest('fieldset').toggle(!!user_ids.length);
         }, this));
+        $('.NB-profile-follower-count', this.$modal).text(this.profile.get('follower_count'));
+        $('.NB-profile-following-count', this.$modal).text(this.profile.get('following_count'));
     },
     
     populate_activities: function(activities_html) {

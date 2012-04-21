@@ -227,7 +227,7 @@ class MSocialProfile(mongo.Document):
             return self.photo_url
         return settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
-    def to_json(self, compact=False, full=False):
+    def to_json(self, compact=False, full=False, common_follows_with_user=None):
         # domain = Site.objects.get_current().domain
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         params = {
@@ -260,6 +260,15 @@ class MSocialProfile(mongo.Document):
                 'following_user_ids': self.following_user_ids,
                 'follower_user_ids': self.follower_user_ids,
             })
+        if common_follows_with_user:
+            with_user, _ = MSocialProfile.objects.get_or_create(user_id=common_follows_with_user)
+            followers_youknow, followers_everybody = with_user.common_follows(self.user_id, direction='followers')
+            following_youknow, following_everybody = with_user.common_follows(self.user_id, direction='following')
+            params['followers_youknow'] = followers_youknow
+            params['followers_everybody'] = followers_everybody
+            params['following_youknow'] = following_youknow
+            params['following_everybody'] = following_everybody
+
         return params
     
     def import_user_fields(self, skip_save=False):
