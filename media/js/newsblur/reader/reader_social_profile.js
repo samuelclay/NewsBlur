@@ -98,7 +98,6 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             this.populate_activities(data.activities_html);
             this.load_images_and_resize();
             callback && callback();
-            _.defer(_.bind(this.resize, this));
         }, this));
     },
     
@@ -112,6 +111,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         }, this));
         $('.NB-profile-follower-count', this.$modal).text(this.profile.get('follower_count'));
         $('.NB-profile-following-count', this.$modal).text(this.profile.get('following_count'));
+        _.defer(_.bind(this.resize, this));
     },
     
     populate_activities: function(activities_html) {
