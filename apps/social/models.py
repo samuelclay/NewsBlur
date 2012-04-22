@@ -16,6 +16,7 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
+from apps.profile.models import Profile
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -1176,6 +1177,8 @@ class MInteraction(mongo.Document):
         
     @classmethod
     def user(cls, user_id, page=1):
+        user_profile = Profile.objects.get(user=user_id)
+        dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
         limit = 4 # Also set in template
         offset = (page-1) * limit
@@ -1190,7 +1193,9 @@ class MInteraction(mongo.Document):
             if social_profile:
                 interaction['photo_url'] = social_profile.profile_photo_url
             interaction['with_user'] = social_profiles.get(interaction_db.with_user_id)
-            interaction['date'] = relative_timesince(interaction_db.date)
+            interaction['time_since'] = relative_timesince(interaction_db.date)
+            interaction['date'] = interaction_db.date
+            interaction['is_new'] = interaction_db.date > dashboard_date
             interactions.append(interaction)
 
         return interactions
@@ -1255,6 +1260,8 @@ class MActivity(mongo.Document):
         
     @classmethod
     def user(cls, user_id, page=1, public=False):
+        user_profile = Profile.objects.get(user=user_id)
+        dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
         limit = 4 # Also set in template
         offset = (page-1) * limit
@@ -1268,10 +1275,12 @@ class MActivity(mongo.Document):
         activities = []
         for activity_db in activities_db:
             activity = activity_db.to_json()
-            activity['date'] = relative_timesince(activity_db.date)
+            activity['date'] = activity_db.date
+            activity['time_since'] = relative_timesince(activity_db.date)
             social_profile = social_profiles.get(activity_db.with_user_id)
             if social_profile:
                 activity['photo_url'] = social_profile.profile_photo_url
+            activity['is_new'] = activity_db.date > dashboard_date
             activity['with_user'] = social_profiles.get(activity_db.with_user_id)
             activities.append(activity)
         

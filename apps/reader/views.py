@@ -220,6 +220,9 @@ def load_feeds(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     
+    user.profile.dashboard_date = datetime.datetime.now()
+    user.profile.save()
+    
     data = {
         'feeds': feeds,
         'social_feeds': social_feeds,

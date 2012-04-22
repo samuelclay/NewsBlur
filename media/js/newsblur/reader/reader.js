@@ -395,7 +395,7 @@
             if (!skip_router) {
                 NEWSBLUR.router.navigate('');
             }
-
+            this.model.preference('dashboard_date', new Date);
         },
         
         iframe_buster_buster: function() {

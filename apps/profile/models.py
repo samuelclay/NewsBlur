@@ -36,6 +36,7 @@ class Profile(models.Model):
     hide_mobile       = models.BooleanField(default=False)
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
+    dashboard_date    = models.DateTimeField(default=datetime.datetime.now)
     timezone          = TimeZoneField(default="America/New_York")
     secret_token      = models.CharField(max_length=12, blank=True, null=True)
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)

@@ -1,4 +1,5 @@
 import stripe
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect
@@ -22,7 +23,7 @@ from vendor.paypal.standard.forms import PayPalPaymentsForm
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
                       'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
                       'has_trained_intelligence',)
-SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends',)
+SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends', 'dashboard_date',)
 
 @ajax_login_required
 @require_POST
@@ -41,8 +42,9 @@ def set_preference(request):
             if preference_name == 'autofollow_friends':
                 social_services = MSocialServices.objects.get(user_id=request.user.pk)
                 social_services.autofollow = preference_value
-                print social_services.autofollow
                 social_services.save()
+            elif preference_name == 'dashboard_date':
+                request.user.profile.dashboard_date = datetime.datetime.utcnow()
         else:
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False
