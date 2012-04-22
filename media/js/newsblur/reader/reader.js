@@ -1873,8 +1873,7 @@
             var $story_titles = this.$s.$story_titles;
             this.flags['opening_feed'] = true;
             
-            if ((options.try_feed || this.model.get_feed(feed_id)) && 
-                (feed_id != this.active_feed || options.force)) {
+            if ((options.try_feed || this.model.get_feed(feed_id))) {
                 $story_titles.empty().scrollTop(0);
                 this.reset_feed();
                 this.hide_splash_page();
@@ -6246,7 +6245,10 @@
                 if (_.string.include(feed_id, 'social:')) {
                     this.replace_social_feed_in_feedlist(feed_id);
                 } else {
-                    this.replace_feed_in_feedlist(feed_id, {'replace_active_feed': replace_active_feed});
+                    this.replace_feed_in_feedlist(feed_id, {
+                        replace_active_feed: replace_active_feed,
+                        single_feed_id: single_feed_id
+                    });
                 }
             }
 
@@ -6266,7 +6268,7 @@
             
             if (feed_id == this.active_feed && !this.flags.refresh_inline_feed_delay) {
                 NEWSBLUR.log(['UPDATING INLINE', feed.feed_title, $feed, $feed_on_page, options.replace_active_feed]);
-                if (!options.replace_active_feed) {
+                if (!options.replace_active_feed && false) {
                     // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this));
                     // Set the unread counts to what the client thinks they are, so when
                     // the counts can be updated, they will force a refresh of the feed.
@@ -6278,7 +6280,7 @@
                     $feed_on_page.replaceWith($feed);
                     this.cache.$feed_in_feed_list[feed_id] = null;
                     this.mark_feed_as_selected(this.active_feed);
-                    if (!single_feed_id) this.recalculate_story_scores(feed_id);
+                    if (!options.single_feed_id) this.recalculate_story_scores(feed_id);
                     this.show_feed_hidden_story_title_indicator();
                     this.make_content_pane_feed_counter();
                 }
