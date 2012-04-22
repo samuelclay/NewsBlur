@@ -14,9 +14,9 @@
     "installs_allowed_from": [
         "http://www.newsblur.com",
         "http://dev.newsblur.com",
-        "http://newsblur.com"
+        "http://newsblur.com",
+        "https://www.newsblur.com",
         "https://dev.newsblur.com",
-        "https://dev.newsblur.com"
         "https://newsblur.com"
     ],
     "locales": {},
