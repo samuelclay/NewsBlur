@@ -12,6 +12,7 @@
         "url": "http://www.newsblur.com"
     },
     "installs_allowed_from": [
+        "https://marketplace.mozilla.org",
         "http://www.newsblur.com",
         "http://dev.newsblur.com",
         "http://newsblur.com",
@@ -20,13 +21,5 @@
         "https://newsblur.com"
     ],
     "locales": {},
-    "default_locale": "en",
-    "screen_size": {
-        "min_width": "800",
-        "min_height": "800"
-    },
-    "required_features": [
-    ],
-    "orientation": "landscape",
-    "fullscreen": "true"
+    "default_locale": "en"
 }
