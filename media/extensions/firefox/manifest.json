@@ -1,0 +1,32 @@
+{
+    "version": "1.0",
+    "name": "NewsBlur",
+    "description": "Visual RSS feed reader with intelligence.",
+    "icons": {
+        "16": "/media/img/favicon.png",
+        "48": "/media/img/logo_128.png",
+        "128": "/media/img/logo_128.png"
+    },
+    "developer": {
+        "name": "Samuel Clay",
+        "url": "http://www.newsblur.com"
+    },
+    "installs_allowed_from": [
+        "http://www.newsblur.com",
+        "http://dev.newsblur.com",
+        "http://newsblur.com"
+        "https://dev.newsblur.com",
+        "https://dev.newsblur.com"
+        "https://newsblur.com"
+    ],
+    "locales": {},
+    "default_locale": "en",
+    "screen_size": {
+        "min_width": "800",
+        "min_height": "800"
+    },
+    "required_features": [
+    ],
+    "orientation": "landscape",
+    "fullscreen": "true"
+}

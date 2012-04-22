@@ -38,3 +38,9 @@ def feedback(request):
 def iphone(request):
     return render_to_response('static/iphone.xhtml', {}, 
                               context_instance=RequestContext(request))
+
+def firefox(request):
+    filename = settings.MEDIA_ROOT + '/extensions/firefox/manifest.json'
+    manifest = open(filename).read()
+    
+    return HttpResponse(manifest, content_type='application/x-web-app-manifest+json')
