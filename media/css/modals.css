@@ -498,6 +498,7 @@
 }
 .NB-bookmarklet .NB-modal-submit {
   margin: 24px 0 8px;
+  padding: 0 0 6px;
 }
 .NB-bookmarklet .NB-modal-submit-button {
   clear: both;
@@ -505,6 +506,7 @@
   line-height: 24px;
   width: 200px;
   text-align: center;
+  text-shadow: none;
 }
 .NB-bookmarklet .NB-modal-submit-button img {
   margin: 5px 6px 0 0;
@@ -530,4 +532,16 @@
 }
 .NB-bookmarklet .NB-folders {
   float: right;
+}
+.NB-bookmarklet .NB-error-invalid {
+    padding: 12px 12px;
+    font-size: 13px;
+    text-shadow: none;
+    color: white;
+    background-color: #690F0F;
+    border-radius: 8px;
+}
+.NB-bookmarklet .NB-error-invalid a {
+    color: #9FC6F5;
+    text-decoration: underline;
 }
