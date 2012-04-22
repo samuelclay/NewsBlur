@@ -1310,6 +1310,20 @@ background: transparent;
 #story_titles .story.NB-story-starred:hover a.story_title {
     
 }
+#story_titles .story.NB-story-shared .NB-storytitles-share,
+#story_titles .story.read.NB-story-shared .NB-storytitles-share {
+    width: 16px;
+    height: 16px;
+    margin: -2px 6px -2px 0;
+    background: transparent url('/media/embed/icons/silk/rainbow.png') no-repeat 0 0;
+    float: left;
+    display: none;
+}
+#story_titles .story.NB-story-shared .NB-storytitles-share,
+#story_titles .story.read.NB-story-shared .NB-storytitles-share {
+    display: block;
+}
+
 #story_titles .story.read {
     font-weight: normal;
 }

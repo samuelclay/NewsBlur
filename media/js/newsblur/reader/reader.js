@@ -3139,10 +3139,12 @@
             var story = this.model.get_story(story_id);
             var $story_title = this.find_story_in_story_titles(story_id);
             var $feed_story = this.find_story_in_feed_view(story_id);
+            var $share_star = $('.NB-storytitles-share', $story_title);
             var $share_button = $('.NB-sideoption-share-save', $feed_story);
             var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $feed_story);
             var comments = _.string.trim($('.NB-sideoption-share-comments', $feed_story).val());
             
+            $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').text('Sharing...');
             this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
                 this.toggle_feed_story_share_dialog(story_id, story.story_feed_id);
@@ -3156,6 +3158,31 @@
                     $('.NB-feed-story-content', $feed_story).after($old_comments);
                 }
                 $old_comments.replaceWith($new_comments);
+                
+                $share_star.attr({'title': 'Shared!'});
+                $share_star.tipsy({
+                    gravity: 'sw',
+                    fade: true,
+                    trigger: 'manual',
+                    offsetOpposite: -1
+                });
+                var tipsy = $share_star.data('tipsy');
+                tipsy.enable();
+                tipsy.show();
+
+                $share_star.animate({
+                    'opacity': 1
+                }, {
+                    'duration': 850,
+                    'queue': false,
+                    'complete': function() {
+                        if (tipsy.enabled) {
+                            tipsy.hide();
+                            tipsy.disable();
+                        }
+                    }
+                });
+        
             }, this));
         },
         
@@ -3344,6 +3371,7 @@
             var score = this.compute_story_score(story);
             var score_color = 'neutral';
             var starred = story.starred ? ' NB-story-starred ' : '';
+            var shared = story.shared ? ' NB-story-shared ' : '';
             if (options.river_stories) {
                 var feed = this.model.get_feed(story.story_feed_id);
             }
@@ -3357,7 +3385,7 @@
                 $story_tags.append($tag);
                 break;
             }
-            var $story_title = $.make('div', { className: 'story ' + read + starred + 'NB-story-' + score_color }, [
+            var $story_title = $.make('div', { className: 'story ' + read + starred + shared + 'NB-story-' + score_color }, [
                 $.make('div', { className: 'NB-storytitles-sentiment'}),
                 $.make('a', { href: story.story_permalink, className: 'story_title' }, [
                     (options['river_stories'] && feed &&
@@ -3366,6 +3394,7 @@
                             $.make('span', { className: 'feed_title' }, feed.feed_title)
                         ])),
                     $.make('div', { className: 'NB-storytitles-star'}),
+                    $.make('div', { className: 'NB-storytitles-share'}),
                     $.make('span', { className: 'NB-storytitles-title' }, story.story_title),
                     $.make('span', { className: 'NB-storytitles-author' }, story.story_authors),
                     $story_tags

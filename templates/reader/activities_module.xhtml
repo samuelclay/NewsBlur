@@ -52,7 +52,7 @@
                     {{ activity.time_since }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    {{ username }} shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|truncatewords:6 }}</span>{% if activity.content %}:{% else %}.{% endif %}
+                    {{ username }} shared <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>{% if activity.content %}:{% else %}.{% endif %}
                 </div>
                 {% if activity.content %}
                     <div class="NB-interaction-content">
@@ -67,7 +67,7 @@
                     {{ activity.time_since }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    You starred "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|truncatewords:8 }}</span>".
+                    You starred "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:8 }}</span>".
                 </div>
             {% endif %}
 
