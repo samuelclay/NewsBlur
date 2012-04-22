@@ -62,12 +62,12 @@
             {% endif %}
             
             {% if activity.category == 'star' %}
-                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}">
+                <img class="NB-interaction-photo" src="{{ MEDIA_URL}}/img/reader/star_blue.png">
                 <div class="NB-interaction-date">
                     {{ activity.time_since }} ago
                 </div>
                 <div class="NB-interaction-title">
-                    You starred "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:8 }}</span>".
+                    You saved "<span class="NB-interaction-starred-story-title NB-splash-link">{{ activity.content|safe|truncatewords:8 }}</span>".
                 </div>
             {% endif %}
 
