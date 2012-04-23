@@ -83,7 +83,7 @@ def add_site_load_script(request, token):
     return render_to_response('api/bookmarklet_subscribe.js', {
         'code': code,
         'token': token,
-        'folders': usf and usf.folders,
+        'folders': (usf and usf.folders) or [],
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
