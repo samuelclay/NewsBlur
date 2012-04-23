@@ -2087,7 +2087,7 @@ background: transparent;
 }
 #story_pane .NB-story-comment-reply-form .NB-story-comment-reply-comments {
     margin: 0 8px 4px 0;
-    width: 70%;
+    width: 62%;
     display: block;
     float: left;
     font-size: 12px;
@@ -2098,6 +2098,14 @@ background: transparent;
     padding: 2px 8px;
     line-height: 16px;
     margin: 0;
+}
+#story_pane .NB-story-comment-reply-form .NB-error {
+    font-size: 10px;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
+    clear: both;
 }
 #story_pane .NB-story-comments-public-teaser-wrapper {
     border-top: 1px solid #353535;
@@ -2298,7 +2306,13 @@ background: transparent;
 #story_pane .NB-sideoption-share .NB-sideoption-share-save.NB-saving {
     background-color: #b5b4bB;
 }
-
+#story_pane .NB-sideoption-share .NB-error {
+    font-size: 10px;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
+}
 #story_pane .NB-feed-story-endbar {
     height: 8px;
     border-top: 1px solid #404040;

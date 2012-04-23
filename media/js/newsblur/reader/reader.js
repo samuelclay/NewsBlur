@@ -3048,7 +3048,7 @@
             this.update_starred_count();
         },
         
-        toggle_feed_story_share_dialog: function(story_id, feed_id) {
+        toggle_feed_story_share_dialog: function(story_id, feed_id, resize_open) {
             var $feed_story = this.find_story_in_feed_view(story_id);
             var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
             var $share = $('.NB-sideoption-share-wrapper', $feed_story);
@@ -3056,13 +3056,16 @@
             var $comment_input = $('.NB-sideoption-share-comments', $share);
             var $story_comments = $('.NB-feed-story-comments', $feed_story);
             
-            if ($sideoption.hasClass('NB-active')) {
+            if ($sideoption.hasClass('NB-active') && !resize_open) {
                 $share.animate({
                     'height': 0
                 }, {
                     'duration': 300,
                     'easing': 'easeInOutQuint',
-                    'queue': false
+                    'queue': false,
+                    'complete': function() {
+                        $('.NB-error', $share).remove();
+                    }
                 });
                 $sideoption.removeClass('NB-active');
                 if ($story_content.data('original_height')) {
@@ -3144,10 +3147,10 @@
             var comments = _.string.trim($('.NB-sideoption-share-comments', $feed_story).val());
             
             $story_title.addClass('NB-story-shared');
-            $share_button.addClass('NB-saving').text('Sharing...');
+            $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
             this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
                 this.toggle_feed_story_share_dialog(story_id, story.story_feed_id);
-                $share_button.removeClass('NB-saving').text('Share');
+                $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
                 $share_sideoption.text('Shared').closest('.NB-sideoption');
                 $feed_story.addClass('NB-story-shared');
                 var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
@@ -3182,6 +3185,13 @@
                     }
                 });
         
+            }, this), _.bind(function(data) {
+                var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
+                var $error = $.make('div', { className: 'NB-error' }, message);
+                $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
+                $share_button.siblings('.NB-error').remove();
+                $share_button.after($error);
+                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, true);
             }, this));
         },
         
@@ -4648,6 +4658,8 @@
         
         save_social_comment_reply: function($comment) {
             var $feed_story = $comment.closest('.NB-feed-story');
+            var $form = $(".NB-story-comment-reply-form", $feed_story);
+            var $submit = $(".NB-modal-submit-button", $form);
             var story_id = $comment.closest('.NB-feed-story').data('story_id');
             var story = this.model.get_story(story_id);
             var comment_user_id = $comment.data('user_id').replace('social:', '');
@@ -4659,11 +4671,23 @@
                 return;
             }
             
+            if ($submit.hasClass('NB-disabled')) {
+                return;
+            }
+            
+            $submit.addClass('NB-disabled').text('Posting...');
             this.model.save_comment_reply(story_id, story.story_feed_id, 
                                           comment_user_id, comment_reply, 
                                           _.bind(function(data) {
                 var $new_comment = this.make_story_share_comment(data.comment);
                 $comment.replaceWith($new_comment);
+                this.fetch_story_locations_in_feed_view();
+            }, this), _.bind(function(data) {
+                var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
+                var $error = $.make('div', { className: 'NB-error' }, message);
+                $submit.removeClass('NB-disabled').text('Post');
+                $form.find('.NB-error').remove();
+                $form.append($error);
                 this.fetch_story_locations_in_feed_view();
             }, this));
         },
@@ -7202,6 +7226,8 @@
             });
             $.targetIs(e, { tagSelector: '.NB-sideoption-share-save' }, function($t, $p){
                 e.preventDefault();
+                if ($t.hasClass('NB-disabled')) return;
+                
                 var story_id = $t.closest('.NB-feed-story').data('story_id');
                 self.mark_story_as_shared(story_id);
             });
@@ -7773,6 +7799,8 @@
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply .NB-modal-submit-button' }, function($t, $p){
                 e.preventDefault();
+                if ($t.hasClass('NB-disabled')) return;
+                
                 var $comment = $t.closest('.NB-story-comment');
                 self.save_social_comment_reply($comment);
             }); 

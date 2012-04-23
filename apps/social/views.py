@@ -204,7 +204,7 @@ def mark_story_as_shared(request):
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {'code': -1, 'message': 'Story not found.'}
+        return {'code': -1, 'message': 'Story not found. Reload this site.'}
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
@@ -251,7 +251,7 @@ def save_comment_reply(request):
         
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {'code': -1, 'message': 'Story not found.'}
+        return {'code': -1, 'message': 'Story not found. Reload this site.'}
     
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
