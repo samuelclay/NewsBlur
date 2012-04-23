@@ -294,7 +294,7 @@ class GoogleReaderImporter(Importer):
                     "user_id": self.user.pk,
                     "starred_date": datetime.datetime.fromtimestamp(story['updated']),
                     "story_date": datetime.datetime.fromtimestamp(story['published']),
-                    "story_title": story.get('title'),
+                    "story_title": story.get('title', story.get('origin', {}).get('title', '[Untitled]')),
                     "story_permalink": story['alternate'][0]['href'],
                     "story_guid": story['id'],
                     "story_content": content.get('content'),
@@ -306,6 +306,6 @@ class GoogleReaderImporter(Importer):
                 MStarredStory.objects.create(**story_db)
             except OperationError:
                 logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
-            except:
-                logging.user(self.user, "~FC~BRFailed to star: ~SB%s" % (story))
+            except Exception, e:
+                logging.user(self.user, "~FC~BRFailed to star: ~SB%s / %s" % (story, e))
                 
