@@ -200,9 +200,16 @@ def backup_postgresql():
 # ===============
 
 def sync_time():
-    sudo("/etc/init.d/ntp stop")
+    sudo("/etc/init.d/ntp stop", warn_only=True)
     sudo("ntpdate pool.ntp.org")
-    sudo("/etc/init.d/ntp start")
+    sudo("/etc/init.d/ntp start", warn_only=True)
+    
+def setup_time_calibration():
+    sudo('apt-get -y remove ntp')
+    put('config/ntpdate.cron', env.NEWSBLUR_PATH)
+    sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
+    sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
+    sudo('/etc/cron.hourly/ntpdate')
     
 # =============
 # = Bootstrap =
@@ -230,6 +237,7 @@ def setup_common():
 
 def setup_app():
     setup_common()
+    setup_vps()
     setup_app_firewall()
     setup_app_motd()
     setup_gunicorn(supervisor=True)
@@ -239,6 +247,7 @@ def setup_app():
 
 def setup_db():
     setup_common()
+    setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
     # setup_rabbitmq()
@@ -251,6 +260,7 @@ def setup_db():
 
 def setup_task():
     setup_common()
+    setup_vps()
     setup_task_firewall()
     setup_task_motd()
     enable_celery_supervisor()
@@ -265,7 +275,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -432,6 +442,14 @@ def configure_nginx():
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
+
+def setup_vps():
+    # VPS suffer from severe time drift. Force blunt hourly time recalibration.
+    setup_time_calibration()
+
+def setup_baremetal():
+    # Bare metal doesn't suffer from severe time drift. Use standard ntp slow-drift-calibration.
+    sudo('apt-get -y install ntp')
     
 # ===============
 # = Setup - App =
