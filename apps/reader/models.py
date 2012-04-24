@@ -277,9 +277,7 @@ class UserSubscription(models.Model):
                                           read_date__gte=self.mark_read_date)
         # if not silent:
         #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
-        read_stories_ids = []
-        for us in read_stories:
-            read_stories_ids.append(us.story_id)
+        read_stories_ids = [us.story_id for us in read_stories]
         stories_db = stories_db or MStory.objects(story_feed_id=self.feed_id,
                                                   story_date__gte=date_delta)
         # if not silent:
