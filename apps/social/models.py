@@ -36,6 +36,18 @@ class MRequestInvite(mongo.Document):
     def __unicode__(self):
         return "%s%s" % (self.username, '*' if self.email_sent else '')
     
+    @classmethod
+    def blast(cls):
+        invites = cls.objects.filter(email_sent=None)
+        print ' ---> Found %s invites...' % invites.count()
+        
+        for invite in invites:
+            try:
+                invite.send_email()
+            except:
+                print ' ***> Could not send invite to: %s. Deleting.' % invite.username
+                invite.delete()
+        
     def send_email(self):
         user = User.objects.filter(username__iexact=self.username)
         if not user:
