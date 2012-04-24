@@ -326,6 +326,10 @@
           optional: true
           default: "[Top Level]"
           example: "Blogs"
+      tips:
+        - >
+          If you want to just show the Add Site dialog on the site, you can use this URL:
+          <code>http://www.newsblur.com/?url=%u</code>
   
     - url: /reader/add_folder
       method: POST
