@@ -33,6 +33,9 @@ class MRequestInvite(mongo.Document):
         'allow_inheritance': False,
     }
     
+    def __unicode__(self):
+        return "%s%s" % (self.username, '*' if self.email_sent else '')
+    
     def send_email(self):
         user = User.objects.filter(username__iexact=self.username)
         if not user:

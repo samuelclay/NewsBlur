@@ -77,6 +77,7 @@
         $(window).bind('resize.reader', _.throttle($.rescope(this.resize_window, this), 1000));
         this.$s.$body.bind('dblclick.reader', $.rescope(this.handle_dblclicks, this));
         this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
+        this.$s.$body.bind('keyup.reader', $.rescope(this.handle_keyup, this));
         this.$s.$body.live('contextmenu.reader', $.rescope(this.handle_rightclicks, this));
         this.$s.$story_titles.scroll($.rescope(this.handle_scroll_story_titles, this));
         this.$s.$feed_stories.scroll($.rescope(this.handle_scroll_feed_view, this));
@@ -3048,7 +3049,8 @@
             this.update_starred_count();
         },
         
-        toggle_feed_story_share_dialog: function(story_id, feed_id, resize_open) {
+        toggle_feed_story_share_dialog: function(story_id, feed_id, options) {
+            options = options || {};
             var $feed_story = this.find_story_in_feed_view(story_id);
             var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
             var $share = $('.NB-sideoption-share-wrapper', $feed_story);
@@ -3056,7 +3058,9 @@
             var $comment_input = $('.NB-sideoption-share-comments', $share);
             var $story_comments = $('.NB-feed-story-comments', $feed_story);
             
-            if ($sideoption.hasClass('NB-active') && !resize_open) {
+            if (options.close ||
+                ($sideoption.hasClass('NB-active') && !options.resize_open)) {
+                // Close
                 $share.animate({
                     'height': 0
                 }, {
@@ -3079,80 +3083,74 @@
                     });
                     $story_content.removeData('original_height');
                 }
-                return;
-            }
-            
-            $sideoption.addClass('NB-active');
-            var $share_clone = $share.clone();
-            var full_height = $share_clone.css({
-                'height': 'auto',
-                'position': 'absolute',
-                'visibility': 'hidden'
-            }).appendTo($share.parent()).height();
-            $share_clone.remove();
-            $share.animate({
-                'height': full_height
-            }, {
-                'duration': 350,
-                'easing': 'easeInOutQuint',
-                'queue': false,
-                'complete': function() {
-                    $comment_input.focus();
-                }
-            });
-            
-            var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight() + 12;
-            var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
-            // console.log(["heights", full_height + sideoptions_height, content_height]);
-            if (sideoptions_height + full_height > content_height) {
-                // this.$s.$feed_stories.scrollTo(this.$s.$feed_stories.scrollTop() + sideoptions_height, {
-                //     'duration': 350,
-                //     'queue': false,
-                //     'easing': 'easeInOutQuint'
-                // });
-                var original_height = $story_content.height();
-                $story_content.animate({
-                    'height': original_height + ((full_height + sideoptions_height) - content_height)
+            } else {
+                // Open/resize
+                $sideoption.addClass('NB-active');
+                var $share_clone = $share.clone();
+                var full_height = $share_clone.css({
+                    'height': 'auto',
+                    'position': 'absolute',
+                    'visibility': 'hidden'
+                }).appendTo($share.parent()).height();
+                $share_clone.remove();
+                $share.animate({
+                    'height': full_height
                 }, {
                     'duration': 350,
                     'easing': 'easeInOutQuint',
                     'queue': false,
-                    'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
-                }).data('original_height', original_height);
-            }
+                    'complete': function() {
+                        $comment_input.focus();
+                    }
+                });
             
-            this.attach_handlers_to_share_comments($share);
-        },
-        
-        attach_handlers_to_share_comments: function($share) {
-            var $comment_input = $('.NB-sideoption-share-comments', $share);
-            var $share_button = $('.NB-sideoption-share-save', $share);
-            
-            $comment_input.bind('keyup', function() {
-                if (!_.string.isBlank($comment_input.val())) {
-                    $share_button.text('Share with comment');
-                } else {
-                    $share_button.text('Share');
+                var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight() + 12;
+                var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
+                // console.log(["heights", full_height + sideoptions_height, content_height]);
+                if (sideoptions_height + full_height > content_height) {
+                    // this.$s.$feed_stories.scrollTo(this.$s.$feed_stories.scrollTop() + sideoptions_height, {
+                    //     'duration': 350,
+                    //     'queue': false,
+                    //     'easing': 'easeInOutQuint'
+                    // });
+                    var original_height = $story_content.height();
+                    $story_content.animate({
+                        'height': original_height + ((full_height + sideoptions_height) - content_height)
+                    }, {
+                        'duration': 350,
+                        'easing': 'easeInOutQuint',
+                        'queue': false,
+                        'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
+                    }).data('original_height', original_height);
                 }
-            });
+                this.update_share_button_label($comment_input);
+            }
         },
         
-        mark_story_as_shared: function(story_id) {
+        mark_story_as_shared: function(story_id, options) {
+            options = options || {};
             var story = this.model.get_story(story_id);
             var $story_title = this.find_story_in_story_titles(story_id);
             var $feed_story = this.find_story_in_feed_view(story_id);
             var $share_star = $('.NB-storytitles-share', $story_title);
             var $share_button = $('.NB-sideoption-share-save', $feed_story);
+            var $share_button_menu = $('.NB-menu-manage-story-share-save');
+            var $share_menu = $share_button_menu.closest('.NB-sideoption-share');
             var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $feed_story);
-            var comments = _.string.trim($('.NB-sideoption-share-comments', $feed_story).val());
+            var $comments_sideoptions = $('.NB-sideoption-share-comments', $feed_story);
+            var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
+            var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
             
             $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
             this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
-                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id);
+                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'close': true});
+                this.hide_confirm_story_share_menu_item(true);
                 $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
                 $share_sideoption.text('Shared').closest('.NB-sideoption');
                 $feed_story.addClass('NB-story-shared');
+                $comments_menu.val(comments);
+                $comments_sideoptions.val(comments);
                 var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
                 var $old_comments = $('.NB-feed-story-comments', $feed_story);
                 if (!$old_comments.length) {
@@ -3184,15 +3182,32 @@
                         }
                     }
                 });
-        
             }, this), _.bind(function(data) {
                 var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
                 var $error = $.make('div', { className: 'NB-error' }, message);
                 $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
                 $share_button.siblings('.NB-error').remove();
                 $share_button.after($error);
-                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, true);
+                if ($share_button_menu.length) {
+                    $share_button_text.removeClass('NB-disabled').text('Share');
+                    $share_button_text.siblings('.NB-error').remove();
+                    $share_button_text.after($error.clone());
+                }
+                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'resize_open': true});
             }, this));
+        },
+        
+        update_share_button_label: function($t) {
+            if (!$t) $t = $('.NB-menu-manage-story-share-save');
+            var $share = $t.closest('.NB-sideoption-share');
+            var $comment_input = $('.NB-sideoption-share-comments', $share);
+            var $share_button = $('.NB-sideoption-share-save,.NB-menu-manage-story-share-save', $share);
+
+            if (!_.string.isBlank($comment_input.val())) {
+                $share_button.text('Share with comment');
+            } else {
+                $share_button.text('Share');
+            }
         },
         
         count_selected_words_when_sharing_story: function($feed_story) {
@@ -5243,10 +5258,12 @@
             } else if (type == 'story') {
                 var feed          = this.model.get_feed(feed_id);
                 var story         = this.model.get_story(story_id);
-                var starred_class = story.starred ? 'NB-story-starred' : '';
+                var starred_class = story.starred ? ' NB-story-starred ' : '';
                 var starred_title = story.starred ? 'Remove bookmark' : 'Save This Story';
+                var shared_class = story.shared ? ' NB-story-shared ' : '';
+                var shared_title = story.shared ? 'Shared' : 'Share story';
 
-                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class }, [
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class + shared_class }, [
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-open' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -5328,6 +5345,21 @@
                           this.send_story_to_email(story.id);
                       }
                     }, this)),
+                    $.make('li', { className: 'NB-menu-manage-story NB-menu-manage-story-share' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, shared_title)
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-story NB-menu-manage-confirm NB-menu-manage-story-share-confirm NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-menu-manage-confirm-position' }, [
+                            $.make('div', { className: 'NB-sideoption-share'}, [
+                                $.make('div', { className: 'NB-sideoption-share-wordcount' }),
+                                $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
+                                $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
+                                $.make('textarea', { className: 'NB-sideoption-share-comments' }, story.shared_comments),
+                                $.make('div', { className: 'NB-menu-manage-story-share-save NB-modal-submit-green NB-modal-submit-button' }, 'Share')
+                            ])
+                        ])
+                    ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -5338,6 +5370,8 @@
                 $manage_menu.data('feed_id', feed_id);
                 $manage_menu.data('story_id', story_id);
                 $manage_menu.data('$story', $item);
+                
+                this.update_share_button_label($('.NB-sideoption-share-comments', $manage_menu));
             }
             
             if (inverse) $manage_menu.addClass('NB-inverse');
@@ -5865,6 +5899,46 @@
             this.hide_confirm_rename_menu_item(true);
             
             $('.NB-menu-manage-folder-rename').parents('.NB-menu-manage').data('folder_name', new_folder_name);
+        },
+        
+        // =============================
+        // = Manage Menu - Share Story =
+        // =============================
+        
+        show_confirm_story_share_menu_item: function() {
+            var self = this;
+            var $share = $('.NB-menu-manage-story-share');
+            var $confirm = $('.NB-menu-manage-story-share-confirm');
+            var $position = $('.NB-menu-manage-confirm-position', $confirm);
+            
+            $share.addClass('NB-menu-manage-story-share-cancel');
+            $('.NB-menu-manage-title', $share).text('Cancel share');
+            $position.css('position', 'relative');
+            var height = $confirm.height();
+            $position.css('position', 'absolute');
+            $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
+                'duration': 500, 
+                'easing': 'easeOutQuart'
+            });
+            $('textarea', $confirm).focus().select();
+            this.flags['showing_confirm_input_on_manage_menu'] = true;
+        },
+        
+        hide_confirm_story_share_menu_item: function(shared) {
+            var $share = $('.NB-menu-manage-story-share');
+            var $confirm = $('.NB-menu-manage-story-share-confirm');
+            
+            $share.removeClass('NB-menu-manage-story-share-cancel');
+            var text = 'Share story';
+            if (shared) {
+                text = 'Shared';
+                $share.addClass('NB-active');
+            } else {
+                $share.removeClass('NB-active');
+            }
+            $('.NB-menu-manage-title', $share).text(text);
+            $confirm.slideUp(500);
+            this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
         
         // ==========================
@@ -7232,7 +7306,7 @@
                 if ($t.hasClass('NB-disabled')) return;
                 
                 var story_id = $t.closest('.NB-feed-story').data('story_id');
-                self.mark_story_as_shared(story_id);
+                self.mark_story_as_shared(story_id, {'source': 'sideoption'});
             });
             $.targetIs(e, { tagSelector: '.NB-feed-story-hide-changes' }, function($t, $p){
                 e.preventDefault();
@@ -7500,6 +7574,25 @@
                 e.stopPropagation();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-rename-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if ($t.hasClass('NB-menu-manage-story-share-cancel')) {
+                    self.hide_confirm_story_share_menu_item();
+                } else {
+                    self.show_confirm_story_share_menu_item();
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share-save' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                var story_id = $t.closest('.NB-menu-manage').data('story_id'); 
+                self.mark_story_as_shared(story_id, {'source': 'menu'});
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share-confirm' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
             });  
@@ -8149,6 +8242,16 @@
                 
                 this.show_correct_feed_in_feed_title_floater(story);
             }
+        },
+        
+        handle_keyup: function(elem, e) {
+            var self = this;
+            
+            $.targetIs(e, { tagSelector: '.NB-sideoption-share-comments' }, function($t, $p) {
+                e.preventDefault();
+                
+                self.update_share_button_label($t);
+            });
         },
         
         handle_keystrokes: function() {      

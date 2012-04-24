@@ -51,6 +51,7 @@ def render_interactions_module(context, page=1):
         'user': user,
         'interactions': interactions,
         'page': page,
+        'MEDIA_URL': context['MEDIA_URL'],
     }
     
 @register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
@@ -63,6 +64,7 @@ def render_activities_module(context, page=1):
         'activities': activities,
         'page': page,
         'username': 'You',
+        'MEDIA_URL': context['MEDIA_URL'],
     }
 
 @register.filter

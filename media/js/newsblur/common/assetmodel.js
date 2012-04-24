@@ -249,6 +249,8 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                 this.add_user_profiles(data.user_profiles);
             }
             callback(data);
+            var story = this.get_story(story_id);
+            if (story) story.shared_comments = comments;
         }, this);
         
         this.make_request('/social/share_story', {
