@@ -6203,11 +6203,14 @@
             }
 
             if (new_feeds && feed_count < 250) {
-                refresh_interval = (1000 * 60) * 1/10;
+                refresh_interval = (1000 * 60) * 1/6;
             } else if (new_feeds && feed_count < 500) {
                 refresh_interval = (1000 * 60) * 1/4;
             }
-
+            
+            // 10 second minimum
+            refresh_interval = Math.max(10*1000, refresh_interval);
+            
             clearInterval(this.flags.feed_refresh);
             
             this.flags.feed_refresh = setInterval(function() {
