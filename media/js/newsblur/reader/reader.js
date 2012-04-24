@@ -2311,7 +2311,7 @@
             var explicit_view_setting = this.model.view_setting(this.active_feed);
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
             this.show_feedbar_loading();
-            this.switch_taskbar_view(this.story_view);
+            this.switch_taskbar_view('feed');
             this.setup_mousemove_on_views();
             
             this.show_stories_progress_bar();
