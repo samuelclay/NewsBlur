@@ -739,6 +739,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-feedlist-hide-read-feeds .NB-feedlist .feed.NB-empty {
   display: block;
 }
+.NB-feedlist-hide-read-feeds .NB-feedlist .feed.selected {
+    display: block;
+}
 
 /* ================= */
 /* = Unread Counts = */
