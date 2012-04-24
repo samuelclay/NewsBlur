@@ -1,3 +1,4 @@
+import time
 import datetime
 import zlib
 from django.shortcuts import get_object_or_404
@@ -30,6 +31,7 @@ def request_invite(request):
     
 @json.json_view
 def load_social_stories(request, user_id, username=None):
+    start = time.time()
     user = get_user(request)
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
@@ -133,8 +135,13 @@ def load_social_stories(request, user_id, username=None):
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
         }
-
-    logging.user(request, "~FCLoading shared stories: ~SB%s stories" % (len(stories)))
+    
+    if socialsub:
+        socialsub.feed_opens += 1
+        socialsub.save()
+    
+    end = time.time()
+    logging.user(request, "~FCLoading shared stories: ~SB%s stories ~SN(%.2f sec)" % (len(stories), end-start))
     
     return dict(stories=stories, user_profiles=user_profiles, feeds=unsub_feeds)
 
