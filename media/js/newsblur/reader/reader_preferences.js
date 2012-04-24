@@ -649,6 +649,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             if (self.original_preferences['feed_order'] != form['feed_order'] ||
                 self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.reader.make_feeds();
+              NEWSBLUR.reader.make_social_feeds();
             }
             if (self.original_preferences['story_pane_anchor'] != form['story_pane_anchor']) {
               NEWSBLUR.reader.apply_resizable_layout(true);

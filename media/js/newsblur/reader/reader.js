@@ -1175,7 +1175,7 @@
             $social_feeds.empty();
             
             var $feeds = "";
-            this.model.social_feeds.each(_.bind(function(feed) {
+            this.model.social_feeds.sort().each(_.bind(function(feed) {
                 var $feed = this.make_feed_title_template(feed.attributes, 'feed', 0);
                 $feeds += $feed;
             }, this));

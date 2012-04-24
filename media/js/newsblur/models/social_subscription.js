@@ -10,6 +10,24 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
 
 NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
     
-    model : NEWSBLUR.Models.SocialSubscription
+    model : NEWSBLUR.Models.SocialSubscription,
+    
+    comparator: function(a, b) {
+        var sort_order = NEWSBLUR.reader.model.preference('feed_order');
+        var title_a = a.get('feed_title').toLowerCase();
+        var title_b = b.get('feed_title').toLowerCase();
+
+        if (sort_order == 'MOSTUSED') {
+            var opens_a = a.get('feed_opens');
+            var opens_b = b.get('feed_opens');
+            if (opens_a > opens_b) return -1;
+            if (opens_a < opens_b) return 1;
+        }
+        
+        // if (!sort_order || sort_order == 'ALPHABETICAL')
+        if (title_a > title_b)      return 1;
+        else if (title_a < title_b) return -1;
+        return 0;
+    }
     
 });

@@ -568,6 +568,7 @@ class MSocialSubscription(mongo.Document):
             'ps': self.unread_count_positive,
             'ng': self.unread_count_negative,
             'is_trained': self.is_trained,
+            'feed_opens': self.feed_opens,
         }
     
     def mark_story_ids_as_read(self, story_ids, feed_id, request=None):
