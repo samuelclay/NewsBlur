@@ -478,7 +478,6 @@ class Dispatcher:
         stories_db = MStory.objects(story_feed_id=feed.pk,
                                     story_date__gte=UNREAD_CUTOFF)
         for sub in user_subs:
-            cache.delete('usersub:%s' % sub.user_id)
             sub.needs_unread_recalc = True
             sub.save()
             
