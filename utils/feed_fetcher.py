@@ -410,7 +410,8 @@ class Dispatcher:
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    
+
+                feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:

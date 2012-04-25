@@ -67,7 +67,7 @@ class Command(BaseCommand):
             num_workers = 1
         
         options['compute_scores'] = True
-        options['quick'] = ".5"
+        options['quick'] = "0"
         
         disp = feed_fetcher.Dispatcher(options, num_workers)        
         

@@ -199,12 +199,13 @@ def backup_postgresql():
 # ===============
 
 def sync_time():
-    sudo("/etc/init.d/ntp stop", warn_only=True)
-    sudo("ntpdate pool.ntp.org")
-    sudo("/etc/init.d/ntp start", warn_only=True)
+    with settings(warn_only=True):
+        sudo("/etc/init.d/ntp stop")
+        sudo("ntpdate pool.ntp.org")
+        sudo("/etc/init.d/ntp start")
     
 def setup_time_calibration():
-    sudo('apt-get -y remove ntp')
+    sudo('apt-get -y install ntp')
     put('config/ntpdate.cron', env.NEWSBLUR_PATH)
     sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
     sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
