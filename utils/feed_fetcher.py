@@ -150,7 +150,7 @@ class ProcessFeed:
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
             if self.fpf.status >= 400:
-                logging.debug("   ---> [%-30s] ~SB~FRHTTP Status code: %s.%s Checking address..." % (self.feed.title[:30], self.fpf.status))
+                logging.debug("   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..." % (self.feed.title[:30], self.fpf.status))
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed = self.feed.check_feed_link_for_feed_address()
@@ -411,7 +411,8 @@ class Dispatcher:
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    
+
+                feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:

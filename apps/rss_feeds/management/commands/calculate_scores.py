@@ -2,9 +2,11 @@ from django.core.management.base import BaseCommand
 from apps.reader.models import UserSubscription
 from django.conf import settings
 from optparse import make_option
+from django.contrib.auth.models import User
 import os
 import errno
 import re
+import datetime
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -18,20 +20,25 @@ class Command(BaseCommand):
         settings.LOG_TO_STREAM = True
         if options['daemonize']:
             daemonize()
-        
-        if options['all']:
-            feeds = UserSubscription.objects.all()
-        else:
-            feeds = UserSubscription.objects.filter(needs_unread_recalc=True)
 
         if options['user']:
             if re.match(r"([0-9]+)", options['user']):
-                feeds = feeds.filter(user=int(options['user']))
+                users = User.objects.filter(pk=int(options['user']))
             else:
-                feeds = feeds.filter(user__username=options['user'])
-            
-        for f in feeds:
-            f.calculate_feed_scores(silent=options['silent'])
+                users = User.objects.filter(username=options['user'])
+        else:
+            users = User.objects.filter(profile__last_seen_on__gte=datetime.datetime.now()-datetime.timedelta(days=1))
+        
+        user_count = users.count()
+        for i, u in enumerate(users):
+            if options['all']:
+                usersubs = UserSubscription.objects.filter(user=u, active=True)
+            else:
+                usersubs = UserSubscription.objects.filter(user=u, needs_unread_recalc=True)
+            print " ---> %s has %s feeds (%s/%s)" % (u.username, usersubs.count(), i+1, user_count)
+
+            for sub in usersubs:
+                sub.calculate_feed_scores(silent=options['silent'])
         
 def daemonize():
     """

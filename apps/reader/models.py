@@ -179,12 +179,13 @@ class UserSubscription(models.Model):
         now = datetime.datetime.utcnow()
         
         # Use the latest story to get last read time.
-        if MStory.objects(story_feed_id=self.feed_id).first():
-            latest_story_date = MStory.objects(story_feed_id=self.feed_id).order_by('-story_date').only('story_date')[0]['story_date']\
+        latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date')
+        if latest_story:
+            latest_story_date = latest_story[0]['story_date']\
                                 + datetime.timedelta(seconds=1)
         else:
             latest_story_date = now
-
+        
         self.last_read_date = latest_story_date
         self.mark_read_date = latest_story_date
         self.unread_count_negative = 0

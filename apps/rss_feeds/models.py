@@ -1220,7 +1220,9 @@ class MFeedPage(mongo.Document):
         data = None
         feed_page = cls.objects(feed_id=feed_id)
         if feed_page:
-            data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+            page_data_z = feed_page[0].page_data
+            if page_data_z:
+                data = zlib.decompress(page_data_z)
         
         if not data:
             dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
@@ -1228,7 +1230,9 @@ class MFeedPage(mongo.Document):
                 feed = dupe_feed[0].feed
                 feed_page = MFeedPage.objects.filter(feed_id=feed.pk)
                 if feed_page:
-                    data = feed_page[0].page_data and zlib.decompress(feed_page[0].page_data)
+                    page_data_z = feed_page[0].page_data
+                    if page_data_z:
+                        data = zlib.decompress(feed_page[0].page_data)
 
         return data
 
