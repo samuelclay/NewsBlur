@@ -2315,6 +2315,7 @@ background: transparent;
 }
 .NB-sideoption-share .NB-sideoption-share-comments {
     width: 100%;
+    height: 52px;
 }
 .NB-sideoption-share .NB-sideoption-share-save {
   font-size: 10px;

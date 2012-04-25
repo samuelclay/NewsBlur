@@ -5716,9 +5716,8 @@
             });
             $('select', $confirm).focus().select();
             this.flags['showing_confirm_input_on_manage_menu'] = true;
-            console.log(["$select", $select, $('option', $select)]);
+
             $('option', $select).each(function() {
-                console.log(["show_confirm_move_menu_item", in_folder, $(this).attr('value')]);
                 if ($(this).attr('value') == in_folder) {
                     $(this).attr('selected', 'selected');
                     return false;
@@ -7836,7 +7835,6 @@
             $.targetIs(e, { tagSelector: '.NB-module-recommended .NB-module-next-page' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    console.log(['parent', $t.closest('.NB-module-recommended'), $t.closest('.NB-module-recommended').hasClass('NB-recommended-unmoderated')]);
                     var unmoderated = $t.closest('.NB-module-recommended').hasClass('NB-recommended-unmoderated');
                     self.load_recommended_feed(1, false, unmoderated);
                 }
@@ -7846,7 +7844,6 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     var unmoderated = $t.closest('.NB-module-recommended').hasClass('NB-recommended-unmoderated');
-                    console.log(['parent', $t.closest('.NB-module-recommended')]);
                     self.load_recommended_feed(-1, false, unmoderated);
                 }
             }); 
@@ -8041,7 +8038,7 @@
             
             
             
-            NEWSBLUR.log(['End', (new Date()) - start]);
+            // NEWSBLUR.log(['End', (new Date()) - start]);
         },
         
         handle_dblclicks: function(elem, e) {
@@ -8411,7 +8408,6 @@
             $document.bind('keydown', 'shift+u', function(e) {
                 e.preventDefault();
                 var story_id = self.active_story.id;
-                console.log(["self.active_story", self.active_story]);
                 if (self.active_story && !self.active_story.read_status) {
                     self.mark_story_as_read(story_id);
                 } else if (self.active_story && self.active_story.read_status) {

@@ -611,6 +611,7 @@ class MSocialSubscription(mongo.Document):
                     if not socialsub.needs_unread_recalc:
                         socialsub.needs_unread_recalc = True
                         socialsub.save()
+                    # XXX TODO: Real-time notification, just for this user
             
             # Also count on original subscription
             usersubs = UserSubscription.objects.filter(user=self.user_id, feed=feed_id)
@@ -619,7 +620,7 @@ class MSocialSubscription(mongo.Document):
                 if not usersub.needs_unread_recalc:
                     usersub.needs_unread_recalc = True
                     usersub.save()
-                
+                # XXX TODO: Real-time notification, just for this user
         return data
         
     def mark_feed_read(self):

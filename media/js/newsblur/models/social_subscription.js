@@ -14,8 +14,10 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
     
     comparator: function(a, b) {
         var sort_order = NEWSBLUR.reader.model.preference('feed_order');
-        var title_a = a.get('feed_title').toLowerCase();
-        var title_b = b.get('feed_title').toLowerCase();
+        var title_a = a.get('feed_title') || '';
+        var title_b = b.get('feed_title') || '';
+        title_a = title_a.toLowerCase();
+        title_b = title_b.toLowerCase();
 
         if (sort_order == 'MOSTUSED') {
             var opens_a = a.get('feed_opens');

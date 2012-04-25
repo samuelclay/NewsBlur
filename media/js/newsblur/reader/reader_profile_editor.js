@@ -226,7 +226,6 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     },
     
     save_profile: function() {
-        console.log(["save_profile"]);
         var data = {
             'photo_service': $('input[name=profile_photo_service]:checked', this.$modal).val(),
             'location': $('input[name=location]', this.$modal).val(),
@@ -242,7 +241,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     },
     
     animate_profile_badge: function($badge) {
-        $badge = $badge || $('.NB-friends-findfriends-profile .NB-profile-badge', this.$modal);
+        $badge = $('table', $badge) || $('.NB-friends-findfriends-profile .NB-profile-badge table', this.$modal);
         _.delay(_.bind(function() {
             $badge.css('backgroundColor', 'white').animate({
                 'backgroundColor': 'gold'
