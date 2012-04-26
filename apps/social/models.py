@@ -3,6 +3,7 @@ import zlib
 import hashlib
 import redis
 import re
+import math
 import mongoengine as mongo
 from collections import defaultdict
 # from mongoengine.queryset import OperationError
@@ -858,23 +859,65 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def count_popular_stories(cls, verbose=True):
+    def collect_popular_stories(cls):
+        from apps.statistics.models import MStatistics
+        shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
+        cutoff = max(math.floor(.05 * shared_stories_count), 3)
+        today = datetime.datetime.now() - datetime.timedelta(days=1)
+        
+        map_f = """
+            function() {
+                emit(this.story_guid, {'guid': this.story_guid, 'feed_id': this.story_feed_id, 'count': 1});
+            }
+        """
+        reduce_f = """
+            function(key, values) {
+                var r = {'guid': key, 'count': 0};
+                for (var i=0; i < values.length; i++) {
+                    r.feed_id = values[i].feed_id;
+                    r.count += 1;
+                }
+                return r;
+            }
+        """
+        finalize_f = """
+            function(key, value) {
+                if (value.count >= %(cutoff)s) {
+                    return value;
+                }
+            }
+        """ % {'cutoff': cutoff}
+        res = cls.objects(shared_date__gte=today).map_reduce(map_f, reduce_f, finalize_f=finalize_f, output='inline')
+        stories = dict([(r.key, r.value) for r in res if r.value])
+        return stories
+        
+    @classmethod
+    def share_popular_stories(cls, verbose=True):
+        published = False
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
-        shared_story = cls.objects.all().order_by('-shared_date')[0] # TODO: Get actual popular stories.
-        story = MStory.objects(story_feed_id=shared_story.story_feed_id, story_guid=shared_story.story_guid).limit(1).first()
-        if not story:
-            logging.user(popular_user, "~FRPopular stories: story not found")
-            return
+        shared_stories_today = cls.collect_popular_stories()
+        for guid, story_info in shared_stories_today.items():
+            story = MStory.objects(story_feed_id=story_info['feed_id'], story_guid=story_info['guid']).limit(1).first()
+            if not story:
+                logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
+                continue
 
-        story_db = dict([(k, v) for k, v in story._data.items() 
-                            if k is not None and v is not None])
-        story_values = dict(user_id=popular_profile.user_id,
-                            has_comments=False, **story_db)
-        MSharedStory.objects.create(**story_values)
-        if verbose:
-            shares = cls.objects.filter(story_guid=story.story_guid).count()
-            logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares)" % (story.story_title[:50], shares))
+            story_db = dict([(k, v) for k, v in story._data.items() 
+                                if k is not None and v is not None])
+            story_values = {
+                'user_id': popular_profile.user_id,
+                'story_guid': story_db['story_guid'],
+                'story_feed_id': story_db['story_feed_id'],
+                'defaults': story_db,
+            }
+            shared_story, created = MSharedStory.objects.get_or_create(**story_values)
+            if created and not published:
+                published = True
+                shared_story.publish_update_to_subscribers()
+            if verbose and created:
+                logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares)" % (story.story_title[:50],
+                                                                                 story_info['count']))
         
     @classmethod
     def sync_all_redis(cls):
