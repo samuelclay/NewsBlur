@@ -889,14 +889,14 @@ class MSharedStory(mongo.Document):
         """ % {'cutoff': cutoff}
         res = cls.objects(shared_date__gte=today).map_reduce(map_f, reduce_f, finalize_f=finalize_f, output='inline')
         stories = dict([(r.key, r.value) for r in res if r.value])
-        return stories
+        return stories, cutoff
         
     @classmethod
     def share_popular_stories(cls, verbose=True):
-        published = False
+        publish_new_stories = False
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
-        shared_stories_today = cls.collect_popular_stories()
+        shared_stories_today, cutoff = cls.collect_popular_stories()
         for guid, story_info in shared_stories_today.items():
             story = MStory.objects(story_feed_id=story_info['feed_id'], story_guid=story_info['guid']).limit(1).first()
             if not story:
@@ -912,13 +912,21 @@ class MSharedStory(mongo.Document):
                 'defaults': story_db,
             }
             shared_story, created = MSharedStory.objects.get_or_create(**story_values)
-            if created and not published:
-                published = True
-                shared_story.publish_update_to_subscribers()
+            if created:
+                publish_new_stories = True
             if verbose and created:
-                logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares)" % (story.story_title[:50],
-                                                                                 story_info['count']))
-        
+                logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares, %s min)" % (
+                    story.story_title[:50],
+                    story_info['count'],
+                    cutoff))
+
+        if publish_new_stories:
+            socialsubs = MSocialSubscription.objects.filter(subscription_user_id=popular_user.pk)
+            for socialsub in socialsubs:
+                socialsub.needs_unread_recalc = True
+                socialsub.save()
+            shared_story.publish_update_to_subscribers()
+            
     @classmethod
     def sync_all_redis(cls):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)

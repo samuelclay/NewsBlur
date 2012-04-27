@@ -3,9 +3,7 @@ from apps.social.models import MSharedStory
 from optparse import make_option
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-V", "--verbose", dest="verbose", action="store_true"),
-    )
+    option_list = BaseCommand.option_list
 
     def handle(self, *args, **options):
-        MSharedStory.count_popular_stories(verbose=options['verbose'])
+        MSharedStory.share_popular_stories(verbose=True)
