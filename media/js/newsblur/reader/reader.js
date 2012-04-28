@@ -489,6 +489,10 @@
             }
         },
         
+        blur_to_page: function() {
+            $(':focus').blur();
+        },
+        
         // =======================
         // = Getters and Finders =
         // =======================
@@ -561,7 +565,7 @@
                     var $this = $(this);
                     if ($this.data('story_id') == story.id) {
                         $story_title = $this;
-                        // NEWSBLUR.log(['Finding story in story titles', $this, story]);
+                        // NEWSBLUR.log(['Finding story in story titles', $this, story_id, story]);
                         return false;
                     }
                 });
@@ -1640,14 +1644,18 @@
                     var $this = $(this);
                     // _.defer(function() { $('.NB-hover', $folder).not($this).removeClass('NB-hover'); });
                     // NEWSBLUR.log(['scroll', $this.scrollTop(), $this.offset(), $this.position()]);
-                    if ($this.offset().top > $(window).height() - 314) {
-                        $this.addClass('NB-hover-inverse');
-                    } 
+                    self.add_hover_inverse_to_feed($this);
                 }
             }, function() {
                 var $this = $(this);
                 $this.removeClass('NB-hover-inverse');
             });
+        },
+        
+        add_hover_inverse_to_feed: function($feed) {
+            if ($feed.offset().top > $(window).height() - 314) {
+                $feed.addClass('NB-hover-inverse');
+            } 
         },
         
         show_feed_chooser_button: function() {
@@ -3124,11 +3132,19 @@
                     }).data('original_height', original_height);
                 }
                 this.update_share_button_label($comment_input);
+                var share = _.bind(function(e) {
+                    e.preventDefault();
+                    this.mark_story_as_shared(story_id, {'source': 'sideoption'});
+                }, this);
+                $('.NB-sideoption-share-comments', $share).bind('keydown', 'ctrl+return', share);
+                $('.NB-sideoption-share-comments', $share).bind('keydown', 'meta+return', share);
+
             }
         },
         
         mark_story_as_shared: function(story_id, options) {
             options = options || {};
+            story_id = story_id || this.active_story.id;
             var story = this.model.get_story(story_id);
             var $story_title = this.find_story_in_story_titles(story_id);
             var $feed_story = this.find_story_in_feed_view(story_id);
@@ -3143,6 +3159,7 @@
             
             $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
+            $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
             this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
                 this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'close': true});
                 this.hide_confirm_story_share_menu_item(true);
@@ -3195,6 +3212,8 @@
                 }
                 this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'resize_open': true});
             }, this));
+            
+            this.blur_to_page();
         },
         
         update_share_button_label: function($t) {
@@ -5450,11 +5469,16 @@
                         left = 4;
                         top = 24    ;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
+                        if (!$align.is(':visible')) {
+                            $align = $('.NB-storytitles-sentiment', $item);
+                        }
                     }
+                    
                     $manage_menu_container.align($align, '-bottom -left', {
                         'top': -1 * top, 
                         'left': left
                     });
+
                     $manage_menu_container.corner('br 8px');
                     $('li', $manage_menu_container).each(function() {
                         $(this).prependTo($(this).parent());
@@ -5476,6 +5500,9 @@
                         left = 4;
                         top = 18;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
+                        if (!$align.is(':visible')) {
+                            $align = $('.NB-storytitles-sentiment', $item);
+                        }
                     }
                     $manage_menu_container.align($align, '-top -left', {
                         'top': top, 
@@ -5518,6 +5545,21 @@
                     }
                 }, 1000);
             });
+            
+            // Hide menu on esc.
+            $('input,textarea', $manage_menu_container).bind('keydown', 'esc', function(e) {
+                e.preventDefault();
+                self.flags['showing_confirm_input_on_manage_menu'] = false;
+                self.hide_manage_menu(type, $item, true);
+            });
+            if (type == 'story') {
+                var share = _.bind(function(e) {
+                    e.preventDefault();
+                    this.mark_story_as_shared(story_id, {'source': 'menu'});
+                }, this);
+                $('.NB-sideoption-share-comments', $manage_menu_container).bind('keydown', 'ctrl+return', share);
+                $('.NB-sideoption-share-comments', $manage_menu_container).bind('keydown', 'meta+return', share);
+            }
             
             // Hide menu on scroll.
             var $scroll;
@@ -5566,6 +5608,8 @@
                 $manage_menu_container.css({'display': 'none', 'opacity': 0});
             }
             $('.NB-task-manage').removeClass('NB-hover');
+            
+            this.blur_to_page();
         },
         
         // ========================
@@ -8412,6 +8456,16 @@
                     self.mark_story_as_read(story_id);
                 } else if (self.active_story && self.active_story.read_status) {
                     self.mark_story_as_unread(story_id);
+                }
+            });
+            $document.bind('keydown', 'shift+s', function(e) {
+                e.preventDefault();
+                if (self.active_story) {
+                    var story_id = self.active_story.id;
+                    var $story_title = self.find_story_in_story_titles(story_id);
+                    self.add_hover_inverse_to_feed($story_title);
+                    self.show_manage_menu('story', $story_title);
+                    self.show_confirm_story_share_menu_item();
                 }
             });
         }

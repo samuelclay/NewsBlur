@@ -2334,6 +2334,7 @@ background: transparent;
 }
 .NB-sideoption-share .NB-sideoption-share-save.NB-saving {
     background-color: #b5b4bB;
+    text-shadow: none;
 }
 .NB-sideoption-share .NB-error {
     font-size: 10px;
@@ -4663,7 +4664,9 @@ background: transparent;
     opacity: .4;
     cursor: default;
 }
-
+.NB-menu-manage .NB-menu-manage-story-share-save.NB-disabled {
+    opacity: 1;
+}
 .NB-menu-manage .NB-menu-manage-subtitle {
   font-size: 11px;
   color: #718C7B;
