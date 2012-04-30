@@ -955,17 +955,22 @@ class MSharedStory(mongo.Document):
             redis_conn.srem(comment_key, self.user_id)
 
     def set_source_user_id(self, source_user_id):
-        def find_source(source_user_id):
+        def find_source(source_user_id, seen_user_ids):
             parent_shared_story = MSharedStory.objects.filter(user_id=source_user_id, 
                                                               story_guid=self.story_guid, 
                                                               story_feed_id=self.story_feed_id).limit(1)
             if parent_shared_story and parent_shared_story[0].source_user_id:
-                return find_source(parent_shared_story[0].source_user_id)
+                user_id = parent_shared_story[0].source_user_id
+                if user_id in seen_user_ids:
+                    return source_user_id
+                else:
+                    seen.append(user_id)
+                    return find_source(user_id, seen)
             else:
                 return source_user_id
         
         if source_user_id:
-            self.source_user_id = find_source(source_user_id)
+            self.source_user_id = find_source(source_user_id, [])
             logging.debug("   ---> Re-share from %s." % source_user_id)
             self.save()
         
