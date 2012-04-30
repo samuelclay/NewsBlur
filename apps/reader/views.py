@@ -815,19 +815,24 @@ def mark_social_stories_as_read(request):
 def mark_story_as_unread(request):
     story_id = request.POST['story_id']
     feed_id = int(request.POST['feed_id'])
-
-    usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
-                
-    if not usersub.needs_unread_recalc:
+    
+    try:
+        usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
+        feed = usersub.feed
+    except UserSubscription.DoesNotExist:
+        usersub = None
+        feed = Feed.objects.get(pk=feed_id)
+        
+    if usersub and not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
         usersub.save()
         
     data = dict(code=0, payload=dict(story_id=story_id))
-    logging.user(request, "~FY~SBUnread~SN story in feed: %s" % (usersub.feed))
+    logging.user(request, "~FY~SBUnread~SN story in feed: %s" % (feed))
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
     
-    if story.story_date < usersub.mark_read_date:
+    if usersub and story.story_date < usersub.mark_read_date:
         # Story is outside the mark as read range, so invert all stories before.
         newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,

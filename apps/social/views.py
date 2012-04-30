@@ -25,6 +25,9 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 @json.json_view
 def request_invite(request):
+    if not request.POST.get('username'):
+        return {}
+        
     MRequestInvite.objects.create(username=request.POST['username'])
     logging.user(request, " ---> ~BG~FB~SBInvite requested: %s" % request.POST['username'])
     return {}
