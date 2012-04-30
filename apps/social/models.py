@@ -789,6 +789,7 @@ class MSharedStory(mongo.Document):
     has_comments             = mongo.BooleanField(default=False)
     has_replies              = mongo.BooleanField(default=False)
     replies                  = mongo.ListField(mongo.EmbeddedDocumentField(MCommentReply))
+    source_user_id           = mongo.IntField()
     story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
@@ -804,7 +805,8 @@ class MSharedStory(mongo.Document):
     
     meta = {
         'collection': 'shared_stories',
-        'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 'shared_date', 'story_guid', 'story_feed_id'],
+        'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
+                    'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['shared_date'],
         'allow_inheritance': False,
@@ -867,7 +869,11 @@ class MSharedStory(mongo.Document):
         
         map_f = """
             function() {
-                emit(this.story_guid, {'guid': this.story_guid, 'feed_id': this.story_feed_id, 'count': 1});
+                emit(this.story_guid, {
+                    'guid': this.story_guid, 
+                    'feed_id': this.story_feed_id, 
+                    'count': 1
+                });
             }
         """
         reduce_f = """
@@ -887,7 +893,9 @@ class MSharedStory(mongo.Document):
                 }
             }
         """ % {'cutoff': cutoff}
-        res = cls.objects(shared_date__gte=today).map_reduce(map_f, reduce_f, finalize_f=finalize_f, output='inline')
+        res = cls.objects(shared_date__gte=today).map_reduce(map_f, reduce_f, 
+                                                             finalize_f=finalize_f, 
+                                                             output='inline')
         stories = dict([(r.key, r.value) for r in res if r.value])
         return stories, cutoff
         
@@ -898,7 +906,8 @@ class MSharedStory(mongo.Document):
         popular_user = User.objects.get(pk=popular_profile.user_id)
         shared_stories_today, cutoff = cls.collect_popular_stories()
         for guid, story_info in shared_stories_today.items():
-            story = MStory.objects(story_feed_id=story_info['feed_id'], story_guid=story_info['guid']).limit(1).first()
+            story = MStory.objects(story_feed_id=story_info['feed_id'], 
+                                   story_guid=story_info['guid']).limit(1).first()
             if not story:
                 logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
                 continue
@@ -937,7 +946,7 @@ class MSharedStory(mongo.Document):
         if not redis_conn:
             redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
         
-        share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
+        share_key   = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
         comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
         redis_conn.sadd(share_key, self.user_id)
         if self.has_comments:
@@ -945,6 +954,20 @@ class MSharedStory(mongo.Document):
         else:
             redis_conn.srem(comment_key, self.user_id)
 
+    def set_source_user_id(self, source_user_id):
+        def find_source(self, source_user_id):
+            parent_shared_story = MSharedStory.objects.filter(user_id=source_user_id, 
+                                                              story_guid=self.story_guid, 
+                                                              story_feed_id=self.story_feed_id).limit(1)
+            if parent_shared_story and parent_shared_story[0].source_user_id:
+                return find_source(parent_shared_story[0].source_user_id)
+            else:
+                return source_user_id
+        
+        if source_user_id:
+            self.source_user_id = find_source(source_user_id)
+            self.save()
+        
     def publish_update_to_subscribers(self):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1001,10 +1024,12 @@ class MSharedStory(mongo.Document):
                 nonfriend_user_ids = [int(f) for f in r.sdiff(share_key, friend_key)]
                 profile_user_ids.update(nonfriend_user_ids)
                 profile_user_ids.update(friends_with_shares)
-                story['shared_by_public'] = nonfriend_user_ids
-                story['shared_by_friends'] = friends_with_shares
-                story['share_count_public'] = story['share_count'] - len(friends_with_shares)
+                story['shared_by_public']    = nonfriend_user_ids
+                story['shared_by_friends']   = friends_with_shares
+                story['share_count_public']  = story['share_count'] - len(friends_with_shares)
                 story['share_count_friends'] = len(friends_with_shares)
+                if story['source_user_id']:
+                    profile_user_ids.add(story['source_user_id'])
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]

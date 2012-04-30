@@ -905,6 +905,8 @@ class Feed(models.Model):
         story['share_count']      = story_db.share_count if hasattr(story_db, 'share_count') else 0
         story['share_user_ids']   = story_db.share_user_ids if hasattr(story_db, 'share_user_ids') else []
         story['guid_hash']        = story_db.guid_hash if hasattr(story_db, 'guid_hash') else None
+        if hasattr(story_db, 'source_user_id'):
+            story['source_user_id']   = story_db.source_user_id
         story['id']               = story_db.story_guid or story_db.story_date
         if hasattr(story_db, 'starred_date'):
             story['starred_date'] = story_db.starred_date

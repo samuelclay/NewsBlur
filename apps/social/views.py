@@ -208,6 +208,7 @@ def mark_story_as_shared(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
     comments = request.POST.get('comments', '')
+    source_user_id = request.POST.get('source_user_id')
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
@@ -222,6 +223,7 @@ def mark_story_as_shared(request):
         story_values = dict(user_id=request.user.pk, comments=comments, 
                             has_comments=bool(comments), **story_db)
         shared_story = MSharedStory.objects.create(**story_values)
+        shared_story.set_source_user_id(source_user_id)
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
         for socialsub in socialsubs:
             socialsub.needs_unread_recalc = True

@@ -523,6 +523,7 @@ def setup_db_firewall():
     sudo('ufw allow 80')
     sudo('ufw allow from 199.15.248.0/21 to any port 5432 ') # PostgreSQL
     sudo('ufw allow from 199.15.248.0/21 to any port 27017') # MongoDB
+    sudo('ufw allow from 199.15.248.0/21 to any port 28017') # MongoDB web
     # sudo('ufw allow from 199.15.248.0/21 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.248.0/21 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
