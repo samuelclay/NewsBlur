@@ -955,7 +955,7 @@ class MSharedStory(mongo.Document):
             redis_conn.srem(comment_key, self.user_id)
 
     def set_source_user_id(self, source_user_id):
-        def find_source(self, source_user_id):
+        def find_source(source_user_id):
             parent_shared_story = MSharedStory.objects.filter(user_id=source_user_id, 
                                                               story_guid=self.story_guid, 
                                                               story_feed_id=self.story_feed_id).limit(1)
@@ -966,6 +966,7 @@ class MSharedStory(mongo.Document):
         
         if source_user_id:
             self.source_user_id = find_source(source_user_id)
+            logging.debug("   ---> Re-share from %s." % source_user_id)
             self.save()
         
     def publish_update_to_subscribers(self):
@@ -984,6 +985,7 @@ class MSharedStory(mongo.Document):
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
             'replies': [reply.to_json() for reply in self.replies],
+            'source_user_id': self.source_user_id,
         }
         return comments
     

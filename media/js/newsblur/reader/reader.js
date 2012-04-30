@@ -3156,11 +3156,12 @@
             var $comments_sideoptions = $('.NB-sideoption-share-comments', $feed_story);
             var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
             var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
+            var source_user_id = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed)['user_id'];
             
             $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
             $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-            this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, _.bind(function(data) {
+            this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, source_user_id, _.bind(function(data) {
                 this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'close': true});
                 this.hide_confirm_story_share_menu_item(true);
                 $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
@@ -3199,6 +3200,7 @@
                         }
                     }
                 });
+                this.fetch_story_locations_in_feed_view({'reset_timer': true});
             }, this), _.bind(function(data) {
                 var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
                 var $error = $.make('div', { className: 'NB-error' }, message);
@@ -4635,12 +4637,16 @@
             var user = this.model.user_profiles.find(comment.user_id);
             var comments = comment.comments;
             comments = comments.replace(/\n+/g, '<br><br>');
+            var reshare_class = comment.source_user_id ? 'NB-story-comment-reshare' : '';
             
             var $comment = $.make('div', { className: 'NB-story-comment' }, [
-                $.make('div', { className: 'NB-user-avatar' }, [
+                $.make('div', { className: 'NB-user-avatar ' + reshare_class }, [
                     $.make('img', { src: user.get('photo_url') })
                 ]),
                 $.make('div', { className: 'NB-story-comment-author-container' }, [
+                    (comment.source_user_id && $.make('div', { className: 'NB-story-comment-reshares' }, [
+                        this.make_story_share_profile(comment.source_user_id)
+                    ])),
                     $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
                     $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago'),
                     $.make('div', { className: 'NB-story-comment-reply-button' }, [

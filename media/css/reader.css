@@ -2010,15 +2010,34 @@ background: transparent;
     top: 6px;
     cursor: pointer;
 }
+#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    top: 22px;
+    left: 6px;
+    z-index: 1;
+}
 #story_pane .NB-story-comment .NB-user-avatar img {
     border-radius: 6px;
     margin: 2px 0 0 1px;
     width: 38px;
     height: 38px;
 }
+#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+    height: 24px;
+    width: 24px;
+}
 #story_pane .NB-story-comment .NB-story-comment-author-container {
     overflow: hidden;
     margin: 6px 0 0;
+}
+#story_pane .NB-story-comment .NB-story-comment-reshares {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    z-index: 0;
+}
+#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    top: 8px;
+    left: 12px;
 }
 #story_pane .NB-story-comment .NB-story-comment-username {
     float: left;
