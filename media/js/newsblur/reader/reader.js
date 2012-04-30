@@ -7011,6 +7011,12 @@
             options = options || {};
             if (_.isNumber(social_feed)) {
                 social_feed = this.model.get_feed('social:' + social_feed);
+            } else if (_.isString(social_feed)) {
+                social_feed = this.model.get_feed(social_feed);
+            }
+
+            if (!social_feed) {
+                social_feed = this.model.add_social_feed(options.feed);
             }
             
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');

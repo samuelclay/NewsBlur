@@ -1028,7 +1028,7 @@ class MSharedStory(mongo.Document):
                 story['shared_by_friends']   = friends_with_shares
                 story['share_count_public']  = story['share_count'] - len(friends_with_shares)
                 story['share_count_friends'] = len(friends_with_shares)
-                if story['source_user_id']:
+                if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
