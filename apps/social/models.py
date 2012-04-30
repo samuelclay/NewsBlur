@@ -762,7 +762,20 @@ class MSocialSubscription(mongo.Document):
             logging.info(' ---> [%s] Computing social scores: %s (%s/%s/%s)' % (user.username, self.subscription_user_id, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
         return self
+    
+    @classmethod
+    def mark_dirty_sharing_story(cls, user_id, story_feed_id, story_guid_hash):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
+        friends_key = "F:%s:F" % (user_id)
+        share_key = "S:%s:%s" % (story_feed_id, story_guid_hash)
+        following_user_ids = r.sinter(friends_key, share_key)
+        following_user_ids = [int(f) for f in following_user_ids]
+        social_subs = cls.objects.filter(user_id=user_id, subscription_user_id__in=following_user_ids)
+        for social_sub in social_subs:
+            social_sub.needs_unread_recalc = True
+            social_sub.save()
+        return social_subs
 
 class MCommentReply(mongo.EmbeddedDocument):
     user_id                  = mongo.IntField()
@@ -964,8 +977,8 @@ class MSharedStory(mongo.Document):
                 if user_id in seen_user_ids:
                     return source_user_id
                 else:
-                    seen.append(user_id)
-                    return find_source(user_id, seen)
+                    seen_user_ids.append(user_id)
+                    return find_source(user_id, seen_user_ids)
             else:
                 return source_user_id
         

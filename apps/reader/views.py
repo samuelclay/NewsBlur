@@ -828,7 +828,6 @@ def mark_story_as_unread(request):
         usersub.save()
         
     data = dict(code=0, payload=dict(story_id=story_id))
-    logging.user(request, "~FY~SBUnread~SN story in feed: %s" % (feed))
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
     
@@ -846,9 +845,17 @@ def mark_story_as_unread(request):
         # Mark stories as read only after the mark_read_date has been moved, otherwise
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
+    
+    social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
+                                                               story_feed_id=feed_id, 
+                                                               story_guid_hash=story.guid_hash)
+    dirty_count = social_subs.count()
+    dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
         
     m = MUserStory.objects(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
     m.delete()
+    
+    logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
     
     return data
     
