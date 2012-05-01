@@ -5,6 +5,4 @@ OK, you made it into the private beta for NewsBlur's new social features. There'
 
 Go here and sign in: http://dev.newsblur.com/?letmein={{ user.username }}
 
-The backend for the private beta is the same. In other words, what you do on the private beta is no different than the normal website. Best not to use both at the same time.
-
 If you notice anything oddball, incorrect, or doesn't have that new website smell, just reply to this email. I'm all ears and then some.{% endblock body %}
