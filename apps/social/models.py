@@ -1364,13 +1364,6 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
-            
-        cls.objects.create(user_id=user_id,
-                           with_user_id=reply_user_id,
-                           category='reply_reply',
-                           content=reply_content,
-                           feed_id=social_feed_id,
-                           content_id=story_id)
                            
 
 class MActivity(mongo.Document):
