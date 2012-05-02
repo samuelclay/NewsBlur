@@ -6011,8 +6011,15 @@
                 $share.removeClass('NB-active');
             }
             $('.NB-menu-manage-title', $share).text(text);
-            $confirm.slideUp(500);
+            $confirm.slideUp(500, _.bind(function() {
+                if (shared) {
+                    var story_id = this.active_story.id;
+                    var $story_title = this.find_story_in_story_titles(story_id);
+                    this.hide_manage_menu('story', $story_title, true);
+                }
+            }, this));
             this.flags['showing_confirm_input_on_manage_menu'] = false;
+            
         },
         
         // ==========================
