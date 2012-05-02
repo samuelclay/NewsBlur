@@ -410,7 +410,8 @@ class Dispatcher:
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    
+
+                feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (unicode(feed)[:30], feed.feed_link))
                 icon_importer = IconImporter(feed, force=self.options['force'])
                 try:
@@ -464,24 +465,28 @@ class Dispatcher:
         except redis.ConnectionError:
             logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (unicode(feed)[:30],))
         
-    @timelimit(20)
     def count_unreads_for_subscribers(self, feed):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         user_subs = UserSubscription.objects.filter(feed=feed, 
                                                     active=True,
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
-        logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s subscribers ~SN(%s/%s/%s)' % (
-                      unicode(feed)[:30], user_subs.count(),
-                      feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
-        
         stories_db = MStory.objects(story_feed_id=feed.pk,
                                     story_date__gte=UNREAD_CUTOFF)
+                                    
+        logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
+                      unicode(feed)[:30], stories_db.count(), user_subs.count(),
+                      feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
+        
         for sub in user_subs:
-            cache.delete('usersub:%s' % sub.user_id)
-            sub.needs_unread_recalc = True
-            sub.save()
+            if not sub.needs_unread_recalc:
+                sub.needs_unread_recalc = True
+                sub.save()
             
+        self.calculate_feed_scores_with_stories(user_subs, stories_db)
+    
+    @timelimit(10)
+    def calculate_feed_scores_with_stories(self, user_subs, stories_db):
         if self.options['compute_scores']:
             for sub in user_subs:
                 silent = False if self.options['verbose'] >= 2 else True

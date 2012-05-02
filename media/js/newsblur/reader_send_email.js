@@ -76,7 +76,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Send this story' }),
                     ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'open in an email client')
                 ])
             ])
         ]);
@@ -133,6 +133,33 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
     },
     
+    open_email_client: function() {
+        var from_name  = $('input[name=from_name]', this.$modal).val();
+        var from_email = $('input[name=from_email]', this.$modal).val();
+        var to         = $('input[name=to]', this.$modal).val();
+        var comments   = $('textarea', this.$modal).val();
+
+        var url = [
+            'mailto:',
+            to,
+            '?subject=',
+            from_name,
+            ' is sharing a story: ',
+            this.story.story_title,
+            '&body=',
+            comments,
+            '%0D%0A%0D%0A--%0D%0A%0D%0A',
+            this.story.story_permalink,
+            '%0D%0A%0D%0A',
+            $(this.story.story_content).text(),
+            '%0D%0A%0D%0A',
+            '--',
+            '%0D%0A%0D%0A',
+            'Shared with NewsBlur.com'
+        ].join('');
+        window.open(url);
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -144,6 +171,12 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
             e.preventDefault();
             
             self.save();
+            return false;
+        });
+        $.targetIs(e, { tagSelector: '.NB-modal-emailclient' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.open_email_client();
             return false;
         });
     }
