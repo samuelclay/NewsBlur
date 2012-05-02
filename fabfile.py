@@ -240,6 +240,7 @@ def setup_app():
     setup_vps()
     setup_app_firewall()
     setup_app_motd()
+    copy_app_settings()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
 
@@ -249,6 +250,7 @@ def setup_db():
     setup_db_firewall()
     setup_db_motd()
     # setup_rabbitmq()
+    copy_task_settings()
     setup_memcached()
     setup_postgres()
     setup_mongo()
@@ -260,6 +262,7 @@ def setup_task():
     setup_vps()
     setup_task_firewall()
     setup_task_motd()
+    copy_task_settings()
     enable_celery_supervisor()
     setup_gunicorn(supervisor=False)
     update_gunicorn()
@@ -495,6 +498,9 @@ def setup_node():
     sudo('ufw allow 8888')
     put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
 
+def copy_app_settings():
+    put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
     
 # ==============
 # = Setup - DB =
@@ -572,6 +578,10 @@ def setup_task_motd():
 def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     
+def copy_task_settings():
+    put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+
 # ======
 # = S3 =
 # ======
