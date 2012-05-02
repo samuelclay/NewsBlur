@@ -559,7 +559,7 @@ var classifier_prototype = {
     },
     
     make_publisher: function(publisher) {
-        var $publisher = this.make_classifier(publisher.feed_title, this.feed_id, 'feed');
+        var $publisher = this.make_classifier(_.truncate(publisher.feed_title, 50), this.feed_id, 'feed');
         return $publisher;
     },
     
