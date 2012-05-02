@@ -3156,7 +3156,8 @@
             var $comments_sideoptions = $('.NB-sideoption-share-comments', $feed_story);
             var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
             var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
-            var source_user_id = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed)['user_id'];
+            var feed = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed) || {};
+            var source_user_id = feed['user_id'];
             
             $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
