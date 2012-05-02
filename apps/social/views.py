@@ -264,7 +264,7 @@ def save_comment_reply(request):
         
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {'code': -1, 'message': 'Story not found. Reload this site.'}
+        return {'code': -1, 'message': 'Story not found. Reload NewsBlur.'}
     
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
@@ -304,12 +304,14 @@ def save_comment_reply(request):
     MActivity.new_comment_reply(user_id=request.user.pk,
                                 comment_user_id=comment['user_id'],
                                 reply_content=reply_comments,
+                                original_message=original_message,
                                 story_feed_id=feed_id,
                                 story_id=story_id)
     if comment['user_id'] != request.user.pk:
         MInteraction.new_comment_reply(user_id=comment['user_id'], 
                                        reply_user_id=request.user.pk, 
                                        reply_content=reply_comments,
+                                       original_message=original_message,
                                        social_feed_id=comment_user_id,
                                        story_id=story_id)
     
@@ -318,6 +320,7 @@ def save_comment_reply(request):
             MInteraction.new_reply_reply(user_id=user_id, 
                                          reply_user_id=request.user.pk, 
                                          reply_content=reply_comments,
+                                         original_message=original_message,
                                          social_feed_id=comment_user_id,
                                          story_id=story_id)
     

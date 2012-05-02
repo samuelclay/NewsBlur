@@ -1320,16 +1320,51 @@ class MInteraction(mongo.Document):
                                   category='follow')
     
     @classmethod
-    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
-        cls.objects.create(user_id=user_id,
-                           with_user_id=reply_user_id,
-                           category='comment_reply',
-                           content=reply_content,
-                           feed_id=social_feed_id,
-                           content_id=story_id)
+    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
+        params = {
+            'user_id': user_id,
+            'with_user_id': reply_user_id,
+            'category': 'comment_reply',
+            'content': reply_content,
+            'feed_id': social_feed_id,
+            'content_id': story_id,
+        }
+        if original_message:
+            params['content'] = original_message
+            original = cls.objects.filter(**params).limit(1)
+            if original:
+                original = original[0]
+                original.content = reply_content
+                original.save()
+            else:
+                original_message = None
+
+        if not original_message:
+            cls.objects.create(**params)
 
     @classmethod
-    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id):
+    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
+        params = {
+            'user_id': user_id,
+            'with_user_id': reply_user_id,
+            'category': 'reply_reply',
+            'content': reply_content,
+            'feed_id': social_feed_id,
+            'content_id': story_id,
+        }
+        if original_message:
+            params['content'] = original_message
+            original = cls.objects.filter(**params).limit(1)
+            if original:
+                original = original[0]
+                original.content = reply_content
+                original.save()
+            else:
+                original_message = None
+
+        if not original_message:
+            cls.objects.create(**params)
+            
         cls.objects.create(user_id=user_id,
                            with_user_id=reply_user_id,
                            category='reply_reply',
@@ -1421,13 +1456,27 @@ class MActivity(mongo.Document):
                                   category='follow')
     
     @classmethod
-    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id):
-        cls.objects.create(user_id=user_id,
-                           with_user_id=comment_user_id,
-                           category='comment_reply',
-                           content=reply_content,
-                           feed_id=story_feed_id,
-                           content_id=story_id)
+    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id, original_message=None):
+        params = {
+            'user_id': user_id,
+            'with_user_id': comment_user_id,
+            'category': 'comment_reply',
+            'content': reply_content,
+            'feed_id': story_feed_id,
+            'content_id': story_id,
+        }
+        if original_message:
+            params['content'] = original_message
+            original = cls.objects.filter(**params).limit(1)
+            if original:
+                original = original[0]
+                original.content = reply_content
+                original.save()
+            else:
+                original_message = None
+
+        if not original_message:
+            cls.objects.create(**params)
     
     @classmethod
     def new_shared_story(cls, user_id, story_title, comments, story_feed_id, story_id, share_date=None):
