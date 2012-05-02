@@ -231,14 +231,14 @@ def mark_story_as_shared(request):
         for socialsub in socialsubs:
             socialsub.needs_unread_recalc = True
             socialsub.save()
-        logging.user(request, "~FCSharing: ~SB~FM%s (~FB%s~FM)" % (story.story_title[:50], comments[:100]))
+        logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
         shared_story = shared_story[0]
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
-        logging.user(request, "~FCUpdating shared story: ~SB~FM%s (~FB%s~FM)" % (
-                     story.story_title[:50], comments[:100]))
+        logging.user(request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (
+                     story.story_title[:20], comments[:30]))
     
     story.count_comments()
     shared_story.publish_update_to_subscribers()
@@ -257,6 +257,7 @@ def save_comment_reply(request):
     story_id = request.POST['story_id']
     comment_user_id = request.POST['comment_user_id']
     reply_comments = request.POST.get('reply_comments')
+    original_message = request.POST.get('original_message')
     
     if not reply_comments:
         return {'code': -1, 'message': 'Reply comments cannot be empty.'}
@@ -272,11 +273,25 @@ def save_comment_reply(request):
     reply.user_id = request.user.pk
     reply.publish_date = datetime.datetime.now()
     reply.comments = reply_comments
-    shared_story.replies.append(reply)
+    
+    if original_message:
+        replies = []
+        for story_reply in shared_story.replies:
+            if (story_reply.user_id == reply.user_id and 
+                story_reply.comments == original_message):
+                reply.publish_date = story_reply.publish_date
+                replies.append(reply)
+            else:
+                replies.append(story_reply)
+        shared_story.replies = replies
+        logging.user(request, "~FCUpdating comment reply in ~FM%s: ~SB~FB%s~FM" % (
+                 story.story_title[:20], reply_comments[:30]))
+    else:
+        logging.user(request, "~FCReplying to comment in: ~FM%s: ~SB~FB%s~FM" % (
+                     story.story_title[:20], reply_comments[:30]))
+        shared_story.replies.append(reply)
     shared_story.save()
     
-    logging.user(request, "~FCReplying to comment in: ~SB~FM%s (~FB%s~FM)" % (
-                 story.story_title[:50], reply_comments[:100]))
     
     comment = shared_story.comments_with_author()
     profile_user_ids = set([comment['user_id']])

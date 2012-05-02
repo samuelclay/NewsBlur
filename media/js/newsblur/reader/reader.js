@@ -4661,13 +4661,17 @@
         },
         
         make_story_share_comment_replies: function(replies) {
+            var user_id = NEWSBLUR.Globals.user_id;
             var $replies = _.map(replies, _.bind(function(reply) {
                 var user = this.model.get_user(reply.user_id);
                 return $.make('div', { className: 'NB-story-comment-reply' }, [
                     $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: user.get('photo_url') }),
                     $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, user.get('username')),
                     $.make('div', { className: 'NB-story-comment-date NB-story-comment-reply-date' }, reply.publish_date + ' ago'),
-                    $.make('div', { className: 'NB-story-comment-content NB-story-comment-reply-content' }, reply.comments)
+                    (reply.user_id == user_id && $.make('div', { className: 'NB-story-comment-reply-edit-button' }, [
+                        $.make('div', { className: 'NB-story-comment-reply-edit-button-wrapper' }, 'edit')
+                    ])),
+                    $.make('div', { className: 'NB-story-comment-reply-content' }, reply.comments)
                 ]).data('user_id', user.get('id'));
             }, this));
             $replies = $.make('div', { className: 'NB-story-comment-replies' }, $replies);
@@ -4675,38 +4679,57 @@
             return $replies;
         },
         
-        open_social_comment_reply_form: function($comment) {
+        open_social_comment_reply_form: function($comment, $reply) {
             var profile = this.model.user_profile;
+            var is_editing = !!$reply;
+            
             var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
                 $.make('img', { className: 'NB-story-comment-reply-photo', src: profile.get('photo_url') }),
                 $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, profile.get('username')),
                 $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments' }),
-                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Post')
+                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, is_editing ? 'Save' : 'Post')
             ]);
-            $('.NB-story-comment-reply-form', $comment).remove();
-            $comment.append($form);
+            this.remove_social_comment_reply_form();
+            
+            if (is_editing) {
+                var original_message = $('.NB-story-comment-reply-content', $reply).text();
+                $('input', $form).val(original_message);
+                $form.data('original_message', original_message);
+                $reply.hide().addClass('NB-story-comment-reply-hidden');
+                $reply.after($form);
+            } else {
+                $comment.append($form);
+            }
+            
             $('.NB-story-comment-reply-comments', $form).bind('keydown', 'enter', 
-                _.bind(this.save_social_comment_reply, this, $comment));
+                _.bind(this.save_social_comment_reply, this, $comment, $form));
             $('.NB-story-comment-reply-comments', $form).bind('keydown', 'return', 
-                _.bind(this.save_social_comment_reply, this, $comment));
-            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'esc', function() {
-                $('.NB-story-comment-reply-form', $comment).remove();
-            });
+                _.bind(this.save_social_comment_reply, this, $comment, $form));
+            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'esc', _.bind(function(e) {
+                e.preventDefault();
+                this.remove_social_comment_reply_form();
+            }, this));
             $('input', $form).focus();
             this.fetch_story_locations_in_feed_view();
         },
         
-        save_social_comment_reply: function($comment) {
+        remove_social_comment_reply_form: function() {
+            $('.NB-story-comment-reply-form').remove();
+            $('.NB-story-comment-reply-hidden').show();
+        },
+        
+        save_social_comment_reply: function($comment, $form) {
             var $feed_story = $comment.closest('.NB-feed-story');
-            var $form = $(".NB-story-comment-reply-form", $feed_story);
+            $form = $form || $(".NB-story-comment-reply-form", $feed_story);
             var $submit = $(".NB-modal-submit-button", $form);
             var story_id = $comment.closest('.NB-feed-story').data('story_id');
             var story = this.model.get_story(story_id);
             var comment_user_id = $comment.data('user_id').replace('social:', '');
-            var comment_reply = $('.NB-story-comment-reply-comments', $comment).val();
+            var comment_reply = $('.NB-story-comment-reply-comments', $form).val();
+            var original_message = $form.data('original_message');
             
             if (!comment_reply || comment_reply.length <= 1) {
-                $('.NB-story-comment-reply-form', $comment).remove();
+                this.remove_social_comment_reply_form();
                 this.fetch_story_locations_in_feed_view();
                 return;
             }
@@ -4718,6 +4741,7 @@
             $submit.addClass('NB-disabled').text('Posting...');
             this.model.save_comment_reply(story_id, story.story_feed_id, 
                                           comment_user_id, comment_reply, 
+                                          original_message,
                                           _.bind(function(data) {
                 var $new_comment = this.make_story_share_comment(data.comment);
                 $comment.replaceWith($new_comment);
@@ -7945,6 +7969,12 @@
                 e.preventDefault();
                 var $comment = $t.closest('.NB-story-comment');
                 self.open_social_comment_reply_form($comment);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply-edit-button' }, function($t, $p){
+                e.preventDefault();
+                var $comment = $t.closest('.NB-story-comment');
+                var $reply = $t.closest('.NB-story-comment-reply');
+                self.open_social_comment_reply_form($comment, $reply);
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply .NB-modal-submit-button' }, function($t, $p){
                 e.preventDefault();

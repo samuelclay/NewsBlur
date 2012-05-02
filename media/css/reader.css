@@ -2097,10 +2097,32 @@ background: transparent;
     top: 10px;
     cursor: pointer;
 }
-#story_pane .NB-story-comment-reply .NB-story-comment-content.NB-story-comment-reply-content {
-    clear: both;
-    padding: 0;
+
+#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button {
+    padding: 4px 24px 4px 12px;
+    float: left;
+    cursor: pointer;
 }
+#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button .NB-story-comment-reply-edit-button-wrapper {
+    text-transform: uppercase;
+    background-color: #74A2E7;
+    color: white;
+    padding: 1px 4px;
+    line-height: 9px;
+    font-size: 9px;
+}
+#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button:hover .NB-story-comment-reply-edit-button-wrapper {
+    background-color: #5073BC;
+}
+#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button:active .NB-story-comment-reply-edit-button-wrapper {
+    background-color: #2A3B72;
+}
+#story_pane .NB-story-comment-reply .NB-story-comment-reply-content {
+    clear: both;
+    color: #303030;
+    float: left;
+}
+
 #story_pane .NB-story-comment-reply-form {
     padding-top: 11px;
 }
