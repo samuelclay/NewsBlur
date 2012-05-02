@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
 from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
@@ -147,6 +148,10 @@ class MSocialProfile(mongo.Document):
         #         profiles.append(profile[0])
         # profiles = sorted(profiles, key=lambda p: p.shared_stories_count)
         return profiles
+    
+    @property
+    def username_slug(self):
+        return slugify(self.username)
         
     def count_stories(self):
         # Popular Publishers
@@ -226,7 +231,7 @@ class MSocialProfile(mongo.Document):
         params = self.to_json(compact=True)
         params.update({
             'feed_title': self.title,
-            'page_url': reverse('load-social-page', kwargs={'user_id': self.user_id, 'username': self.username})
+            'page_url': reverse('load-social-page', kwargs={'user_id': self.user_id, 'username': self.username_slug})
         })
         return params
         
@@ -254,9 +259,9 @@ class MSocialProfile(mongo.Document):
             'photo_url': self.profile_photo_url,
             'num_subscribers': self.follower_count,
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
-                                    kwargs={'user_id': self.user_id, 'username': self.username})),
+                                    kwargs={'user_id': self.user_id, 'username': self.username_slug})),
             'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
-                                 kwargs={'user_id': self.user_id, 'username': self.username})),
+                                 kwargs={'user_id': self.user_id, 'username': self.username_slug})),
         }
         if not compact:
             params.update({
