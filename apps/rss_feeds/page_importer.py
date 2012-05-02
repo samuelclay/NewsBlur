@@ -150,6 +150,10 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
+            feed_page, created = MFeedPage.objects.get_or_create(feed_id=self.feed.pk, auto_save=True)
             feed_page.page_data = html
-            feed_page.save()
+            if not created:
+                feed_page.save()
+            else:
+                feed_page.save(force_insert=True)
+            return feed_page
