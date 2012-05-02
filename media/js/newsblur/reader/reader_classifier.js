@@ -584,8 +584,8 @@ var classifier_prototype = {
     },
         
     make_publisher: function(publisher) {
-        console.log(["publisher", publisher]);
-        var $publisher = this.make_classifier(publisher.feed_title, publisher.id, 'feed', publisher.story_count, publisher);
+        var $publisher = this.make_classifier(_.string.truncate(publisher.feed_title, 50), 
+                                              publisher.id, 'feed', publisher.story_count, publisher);
         return $publisher;
     },
     
