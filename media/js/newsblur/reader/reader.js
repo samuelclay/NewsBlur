@@ -2056,6 +2056,17 @@
         // = Feed Header =
         // ===============
         
+        count_unreads_across_all_sites: function() {
+            return _.reduce(this.model.feeds, function(m, v) {
+                if (v.active) {
+                    m['positive'] += v.ps;
+                    m['neutral'] += v.nt;
+                    m['negative'] += v.ng;
+                }
+                return m;
+            }, {'positive': 0, 'negative': 0, 'neutral': 0});
+        },
+        
         update_header_counts: function(skip_sites, unread_view) {
             if (!skip_sites) {
                 var feeds_count = _.select(this.model.feeds, function(f) {
@@ -2066,14 +2077,7 @@
                 }
             }
               
-            var unread_counts = _.reduce(this.model.feeds, function(m, v) {
-                if (v.active) {
-                    m['positive'] += v.ps;
-                    m['neutral'] += v.nt;
-                    m['negative'] += v.ng;
-                }
-                return m;
-            }, {'positive': 0, 'negative': 0, 'neutral': 0});
+            var unread_counts = this.count_unreads_across_all_sites();
             _(['positive', 'neutral', 'negative']).each(function(level) {
                 // This is for .NB-feeds-header-count
                 var $count = $('.NB-feeds-header-'+level);
