@@ -31,11 +31,14 @@ env.VENDOR_PATH   = "~/projects/code"
 env.user = 'sclay'
 env.roledefs ={
     'local': ['localhost'],
-    'app': ['app01.newsblur.com', 
-            'app02.newsblur.com'],
-    'dev': ['dev.newsblur.com'],
+    
     'web': ['www.newsblur.com', 
             'app02.newsblur.com'],
+    'dev': ['dev.newsblur.com'],
+    
+    'app': ['app01.newsblur.com',
+            'app02.newsblur.com',
+            'app03.newsblur.com'],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
            'db03.newsblur.com', 
@@ -119,7 +122,10 @@ def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
         run('sudo supervisorctl restart node_favicons')
-        
+
+def gunicorn_restart():
+    restart_gunicorn()
+    
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):

@@ -21,10 +21,11 @@ header {
 }
 
 .NB-title-photo {
-    float: left;
-    margin: 24px 12px 0 14px;
+    margin: 36px 12px 0 14px;
     z-index: 1;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .NB-title-photo img {
     max-width: 48px;
@@ -59,8 +60,7 @@ header {
     z-index: 0;
 }
 .NB-title-content {
-    float: left;
-    padding: 24px 14px 24px 0;
+    padding: 36px 14px 24px 74px;
     z-index: 1;
     position: relative;
 }
@@ -68,6 +68,7 @@ header {
     font-size: 24px;
     line-height: 24px;
     float: left;
+    margin-right: 16px;
 }
 .NB-title.NB-title-no-bio .NB-title-name {
     line-height: 48px;
@@ -81,14 +82,14 @@ header {
     font-size: 12px;
     display: block;
     padding: 2px 8px 1px;
-    margin: 4px 0 0 16px;
+    margin: 4px 16px 0 0;
     text-transform: uppercase;
 }
 .NB-title.NB-title-no-bio .NB-title-location {
     margin-top: 14px;
 }
 .NB-title .NB-title-bio {
-    clear: both;
+    clear: left;
     color: #909090;
     font-size: 18px;
     line-height: 18px;
@@ -96,6 +97,36 @@ header {
 }
 .NB-title.NB-title-no-bio .NB-title-bio {
     padding: 0;
+}
+.NB-title .NB-title-logo {
+    float: right;
+    z-index: 1;
+    position: relative;
+    width: 92px;
+    height: 92px;
+    margin: 12px;
+}
+.NB-title .NB-title-logo img {
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    right: 0;
+    top: 0;
+    border: none;
+    opacity: .4;
+}
+.NB-title .NB-title-logo .NB-hover-on {
+    opacity: 0;
+    -webkit-transition: all .22s ease-out;
+    -moz-transition: all .22s ease-out;
+    -o-transition: all .22s ease-out;
+    -ms-transition: all .22s ease-out;
+}
+.NB-title .NB-title-logo:hover .NB-hover-on {
+    opacity: 1;
+}
+.NB-title .NB-title-left {
+    overflow: hidden;
 }
 /* ===================== */
 /* = Story Feed Header = */
@@ -133,19 +164,21 @@ header {
 .NB-feed a {
     color: white;
     text-decoration: none;
-    text-shadow: 1px 1px 0 black;
+    text-shadow: 0 1px 0 #202020;
 }
 
 .NB-feed.NB-feed-black a {
     color: black;
-    text-shadow: 1px 1px 0 white;
+    text-shadow: 0 1px 0 #F0F0F0;
 }
     
 .NB-feed a:hover {
-    color: #C8DFFF;
+    color: #274C63;
+    text-shadow: 0 1px 0 #F0F0F0;
 }
 .NB-feed.NB-feed-black a:hover {
-    color: #1E2655;
+    color: #274C63;
+    text-shadow: 0 1px 0 #E0E0E0;
 }
 
 /* ================ */

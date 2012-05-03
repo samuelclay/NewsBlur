@@ -496,7 +496,8 @@ def shared_stories_rss_feed(request, user_id, username):
         raise Http404
     
     if user.username != username:
-        params = {'username': user.username, 'user_id': user.pk}
+        profile = MSocialProfile.objects.get(user_id=user.pk)
+        params = {'username': profile.username_slug, 'user_id': user.pk}
         return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
 
     social_profile = MSocialProfile.objects.get(user_id=user_id)
