@@ -12,7 +12,10 @@
   client = redis.createClient(6379, REDIS_SERVER);
 
   io.configure('production', function() {
-    return io.set('log level', 1);
+    io.set('log level', 1);
+    io.enable('browser client minification');
+    io.enable('browser client etag');
+    return io.enable('browser client gzip');
   });
 
   io.configure('development', function() {
