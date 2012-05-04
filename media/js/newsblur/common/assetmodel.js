@@ -305,6 +305,7 @@ NEWSBLUR.AssetModel.Reader.prototype = {
 
             _.each(subscriptions.feeds, function(feed, feed_id) {
                 if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
+                    feed.subscribed = true;
                     self.feeds[feed_id] = feed;
                     if (feed.favicon_fetching) self.flags['favicons_fetching'] = true;
                 }

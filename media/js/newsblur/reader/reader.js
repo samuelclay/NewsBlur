@@ -1880,8 +1880,9 @@
             var self = this;
             var feed = this.model.get_feed(feed_id) || options.feed;
             var $story_titles = this.$s.$story_titles;
+            var temp = feed.temp || !feed.subscribed;
             
-            if (!feed || (feed.temp && !options.try_feed)) {
+            if (!feed || (temp && !options.try_feed)) {
                 return this.load_feed_in_tryfeed_view(feed_id, options);
             }
 
@@ -7414,7 +7415,8 @@
             $.targetIs(e, { tagSelector: '.NB-feed-story-header-title' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-feed-story').data('feed_id') || self.cache.feed_title_floater_feed_id;
-                self.open_feed(feed_id);
+                var feed = self.model.get_feed(feed_id);
+                self.open_feed(feed_id, {'feed': feed});
             });
             
             if (story_prevent_bubbling) return false;
