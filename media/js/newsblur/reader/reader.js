@@ -1880,6 +1880,11 @@
             var self = this;
             var feed = this.model.get_feed(feed_id) || options.feed;
             var $story_titles = this.$s.$story_titles;
+            
+            if (!feed || (feed.temp && !options.try_feed)) {
+                return this.load_feed_in_tryfeed_view(feed_id, options);
+            }
+
             this.flags['opening_feed'] = true;
             
             if ((options.try_feed || this.model.get_feed(feed_id))) {
@@ -4177,7 +4182,7 @@
                             (options.river_stories && feed && // !river_same_feed
                                 $.make('div', { className: 'NB-feed-story-feed' }, [
                                    $.make('img', { className: 'feed_favicon', src: $.favicon(feed) }),
-                                   $.make('span', { className: 'feed_title' }, feed.feed_title)
+                                   $.make('span', { className: 'NB-feed-story-header-title' }, feed.feed_title)
                                 ])
                             )
                         ]).css('background-image', NEWSBLUR.utils.generate_gradient(feed, 'webkit'))
@@ -7030,7 +7035,8 @@
             feed = _.extend({
                 id           : feed_id,
                 feed_id      : feed_id,
-                feed_title   : options.feed && options.feed.feed_title
+                feed_title   : options.feed && options.feed.feed_title,
+                temp         : true
             }, options.feed);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
@@ -7404,6 +7410,11 @@
                 var $story = $t.closest('.NB-feed-story');
                 self.hide_story_changes($story);
                 story_prevent_bubbling = true;
+            });
+            $.targetIs(e, { tagSelector: '.NB-feed-story-header-title' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.closest('.NB-feed-story').data('feed_id') || self.cache.feed_title_floater_feed_id;
+                self.open_feed(feed_id);
             });
             
             if (story_prevent_bubbling) return false;
@@ -7896,9 +7907,10 @@
                 e.preventDefault();
                 var $recommended_feeds = $('.NB-module-recommended');
                 var feed_id = $t.closest('.NB-recommended').data('feed-id');
-                self.load_feed_in_tryfeed_view(feed_id, {'feed': {
+                self.open_feed(feed_id, {'feed': {
                     'feed_title': $('.NB-recommended-title', $recommended_feeds).text(),
-                    'favicon_url': $('.NB-recommended-favicon', $recommended_feeds).attr('src')
+                    'favicon_url': $('.NB-recommended-favicon', $recommended_feeds).attr('src'),
+                    'temp': true
                 }});
             }); 
             
@@ -8040,11 +8052,7 @@
                 var feed_id = $t.closest('.NB-interaction').data('feedId');
                 
                 self.close_social_profile();
-                if (self.model.feeds[feed_id]) {
-                    self.open_feed(feed_id);
-                } else {
-                    self.load_feed_in_tryfeed_view(feed_id);
-                }
+                self.open_feed(feed_id);
             }); 
             $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
@@ -8056,10 +8064,8 @@
                 self.close_social_profile();
                 if ($t.hasClass('NB-interaction-sharedstory-content')) {
                     self.open_social_stories('social:'+user_id, {'story_id': story_id});
-                } else if (self.model.feeds[feed_id] && self.model.feeds[feed_id].id) {
-                    self.open_feed(feed_id, {'story_id': story_id});
                 } else {
-                    self.load_feed_in_tryfeed_view(feed_id, {'story_id': story_id, 'feed': {
+                    self.open_feed(feed_id, {'story_id': story_id, 'feed': {
                         'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
                         'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
                     }});
