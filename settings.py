@@ -272,8 +272,8 @@ CELERY_QUEUES = {
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
 BROKER_BACKEND       = "redis"
-BROKER_URL = "redis://db02:6379/0"
-CELERY_REDIS_HOST          = "db02"
+BROKER_URL = "redis://db01:6379/0"
+CELERY_REDIS_HOST          = "db01"
 
 CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
@@ -315,7 +315,7 @@ class MasterSlaveRouter(object):
 # =========
 
 REDIS = {
-    'host': 'db02',
+    'host': 'db01',
 }
 
 # ===============
