@@ -1320,9 +1320,18 @@ class MInteraction(mongo.Document):
         
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
-        cls.objects.get_or_create(user_id=followee_user_id, 
-                                  with_user_id=follower_user_id,
-                                  category='follow')
+        params = {
+            'user_id': followee_user_id, 
+            'with_user_id': follower_user_id,
+            'category': 'follow',
+        }
+        try:
+            cls.objects.get_or_create(**params)
+        except cls.MultipleObjectsReturned:
+            dupes = cls.objects.filter(**params).order_by('-date')
+            logging.debug(" ---> ~FRDeleting dupe follow interactions. %s found." % dupes.count())
+            for dupe in dupes[1:]:
+                dupe.delete()
     
     @classmethod
     def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
@@ -1449,9 +1458,18 @@ class MActivity(mongo.Document):
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
-        cls.objects.get_or_create(user_id=follower_user_id, 
-                                  with_user_id=followee_user_id,
-                                  category='follow')
+        params = {
+            'user_id': follower_user_id, 
+            'with_user_id': followee_user_id,
+            'category': 'follow',
+        }
+        try:
+            cls.objects.get_or_create(**params)
+        except cls.MultipleObjectsReturned:
+            dupes = cls.objects.filter(**params).order_by('-date')
+            logging.debug(" ---> ~FRDeleting dupe follow activities. %s found." % dupes.count())
+            for dupe in dupes[1:]:
+                dupe.delete()
     
     @classmethod
     def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id, original_message=None):
