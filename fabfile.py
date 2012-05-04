@@ -561,6 +561,12 @@ def setup_memcached():
 
 def setup_postgres():
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
+    put('config/postgresql.conf', '/etc/postgresql/9.0/main/postgresql.conf', use_sudo=True)
+    sudo('echo "569827328" > /proc/sys/kernel/shmmax')
+    sudo('echo "\nkernel.shmmax = 569827328" > /etc/sysctl.conf')
+    sudo('sysctl -p')
+    sudo('/etc/init.d/postgresql stop')
+    sudo('/etc/init.d/postgresql start')
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
