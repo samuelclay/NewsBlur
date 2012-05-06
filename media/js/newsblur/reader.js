@@ -2794,6 +2794,20 @@
             this.mark_story_as_read(story_id);
         },
         
+        send_story_to_delicious: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://www.delicious.com/save';
+            var delicious_url = [
+              url,
+              '?v=6&url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(delicious_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
         send_story_to_readability: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'http://www.readability.com/save';
@@ -4462,6 +4476,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-delicious');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -4496,6 +4515,8 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
                           this.send_story_to_tumblr(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
+                          this.send_story_to_delicious(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
                           this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
