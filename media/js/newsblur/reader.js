@@ -962,15 +962,14 @@
                     this.active_story = story;
                     this.mark_story_title_as_selected($next_story_title);
                     this.mark_story_as_read(story.id);
-                    this.mark_story_as_read_in_feed_view(story, {'animate': this.story_view == 'feed'});
                 }
             }
         },
         
-        mark_story_as_read_in_feed_view: function(story, options) {
-            if (!story) return;
+        mark_story_as_read_in_feed_view: function(story_id, options) {
+            if (!story_id) return;
             options = options || {};
-            $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story.id);
+            $story = this.cache.feed_view_stories[story_id] || this.find_story_in_feed_view(story_id);
             if ($story) {
                 $story.addClass('read');
             }
@@ -1730,6 +1729,7 @@
                 'feed_title_floater_feed_id': null,
                 'feed_title_floater_story_id': null,
                 'last_feed_view_story_feed_id': null,
+                'last_read_story_id': null,
                 '$feed_in_feed_list': {},
                 '$feed_counts_in_feed_list': {}
             });
@@ -2227,7 +2227,6 @@
             if (this.active_story != story) {
                 this.active_story = story;
                 this.mark_story_title_as_selected($story_title);
-                this.mark_story_as_read_in_feed_view(story, {'animate': true});
                 this.unload_story_iframe();
                 
                 // Used when auto-tracking the user as they move over the feed/page.
@@ -2502,14 +2501,29 @@
             // $story_title.parent('.story').next('.story').children('a').addClass('after_selected');
         },
         
-        mark_story_as_read: function(story_id) {
+        mark_story_as_read: function(story_id, skip_delay) {
             var self = this;
-            var $story_title = this.find_story_in_story_titles(story_id);
-            var feed_id = parseInt($story_title.data('feed_id'), 10) || this.active_feed;
+            var delay = this.model.preference('read_story_delay');
+
+            if (skip_delay) {
+                delay = 0;
+            } else if (delay == -1) {
+                return;
+            }
             
-            this.model.mark_story_as_read(story_id, feed_id, function(read) {
-                self.update_read_count(story_id, feed_id, false, read);
-            });
+            this.cache.last_read_story_id = story_id;
+            clearTimeout(this.cache.read_story_delay);
+            
+            this.cache.read_story_delay = _.delay(_.bind(function() {
+                if (skip_delay || this.cache.last_read_story_id == story_id || delay == 0) {
+                    var $story_title = this.find_story_in_story_titles(story_id);
+                    var feed_id = parseInt($story_title.data('feed_id'), 10) || this.active_feed;
+                    this.model.mark_story_as_read(story_id, feed_id, function(read) {
+                        self.update_read_count(story_id, feed_id, false, read);
+                    });
+                    this.mark_story_as_read_in_feed_view(story_id, {'animate': this.story_view == 'feed'});
+                }
+            }, this), delay * 1000);
         },
         
         mark_story_as_unread: function(story_id, feed_id) {
@@ -2640,7 +2654,7 @@
             if (_.includes(this.active_feed, folder_name)) {
                 $('.story:not(.read)', this.$s.$story_titles).addClass('read');
                 _.each(this.model.stories, _.bind(function(story) {
-                    this.mark_story_as_read_in_feed_view(story);
+                    this.mark_story_as_read_in_feed_view(story.id);
                 }, this));
             }
         },
@@ -6217,7 +6231,7 @@
             $.targetIs(e, { tagSelector: 'a.mark_story_as_read' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.attr('href').slice(1).split('/');
-                self.mark_story_as_read(story_id);
+                self.mark_story_as_read(story_id, true);
             });
             $.targetIs(e, { tagSelector: '.NB-feed-story-premium-only a' }, function($t, $p){
                 e.preventDefault();
@@ -6941,7 +6955,7 @@
                 e.preventDefault();
                 self.page_in_story(0.65, -1);
             });
-            $document.bind('keydown', 'u', function(e) {
+            $document.bind('keydown', 'shift+u', function(e) {
                 e.preventDefault();
                 if (self.flags['sidebar_closed']) {
                     self.open_sidebar();
@@ -7013,12 +7027,12 @@
                 e.preventDefault();
                 self.open_river_stories();
             });
-            $document.bind('keydown', 'shift+u', function(e) {
+            $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
                 var story_id = self.active_story.id;
                 console.log(["self.active_story", self.active_story]);
                 if (self.active_story && !self.active_story.read_status) {
-                    self.mark_story_as_read(story_id);
+                    self.mark_story_as_read(story_id, true);
                 } else if (self.active_story && self.active_story.read_status) {
                     self.mark_story_as_unread(story_id);
                 }
