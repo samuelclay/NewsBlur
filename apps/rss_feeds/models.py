@@ -34,6 +34,12 @@ from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
+BROKEN_PAGE_URLS = [
+    'nytimes.com',
+    'stackoverflow.com',
+    'twitter.com',
+]
+
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, db_index=True)
     feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
@@ -118,6 +124,11 @@ class Feed(models.Model):
             feed['has_exception'] = False
             feed['exception_type'] = None
             feed['exception_code'] = self.exception_code
+        
+        for broken_page in BROKEN_PAGE_URLS:
+            if broken_page in self.feed_link:
+                feed['disabled_page'] = True
+                break
         
         if full:
             feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
