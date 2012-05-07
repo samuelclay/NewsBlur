@@ -2491,11 +2491,17 @@ background: transparent;
 .NB-taskbar .task_button.task_view_page.NB-exception-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/exclamation.png');
 }
+.NB-taskbar .task_button.task_view_page.NB-disabled-page .NB-task-image {
+    background-image: url('/media/embed/icons/silk/error.png');
+}
 .NB-taskbar .task_button.task_view_feed .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_list.png') no-repeat 0 0;
 }
 .NB-taskbar .task_button.task_view_story .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
+}
+.NB-taskbar .task_button.task_view_story.NB-disabled-page .NB-task-image {
+    background-image: url('/media/embed/icons/silk/error.png');
 }
 .NB-taskbar .task_button.task_story_next_positive .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;

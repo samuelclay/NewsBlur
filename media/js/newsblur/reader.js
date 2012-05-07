@@ -1753,6 +1753,7 @@
             $('.NB-selected', this.$s.$feed_list).removeClass('NB-selected');
             this.$s.$body.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
+            $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
             this.hide_content_pane_feed_counter();
             // $('.feed_counts_floater').remove();
@@ -1913,8 +1914,20 @@
               view = 'feed';
             }
             $('.task_view_page').addClass('NB-exception-page');
+          } else if (feed && feed.disabled_page) {
+            if (view == 'page') {
+              view = 'feed';
+            }
+            $('.task_view_page').addClass('NB-disabled-page')
+                                .addClass('NB-disabled');
+            $('.task_view_story').addClass('NB-disabled-page')
+                                 .addClass('NB-disabled');
           } else {
-            $('.task_view_page').removeClass('NB-exception-page');
+            $('.task_view_page').removeClass('NB-disabled-page')
+                                .removeClass('NB-disabled')
+                                .removeClass('NB-exception-page');
+            $('.task_view_story').removeClass('NB-disabled-page')
+                                 .removeClass('NB-disabled');
           }
           
           this.story_view = view;
@@ -3079,7 +3092,6 @@
         unload_feed_iframe: function() {
             var $feed_iframe = this.$s.$feed_iframe;
             var $taskbar_view_page = $('.NB-taskbar .task_view_page');
-            $taskbar_view_page.removeClass('NB-disabled');
             $taskbar_view_page.removeClass('NB-task-return');
             
             this.flags['iframe_view_loaded'] = false;
@@ -4023,6 +4035,8 @@
             if (view == 'page' && feed && feed.has_exception && feed.exception_type == 'page') {
               this.open_feed_exception_modal(this.active_feed);
               return;
+            } else if (_.contains(['page', 'story'], view) && feed && feed.disabled_page) {
+                view = 'feed';
             } else if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
                 return;
             }
