@@ -1021,15 +1021,14 @@
                     this.active_story = story;
                     this.mark_story_title_as_selected($next_story_title);
                     this.mark_story_as_read(story.id);
-                    this.mark_story_as_read_in_feed_view(story, {'animate': this.story_view == 'feed'});
                 }
             }
         },
         
-        mark_story_as_read_in_feed_view: function(story, options) {
-            if (!story) return;
+        mark_story_as_read_in_feed_view: function(story_id, options) {
+            if (!story_id) return;
             options = options || {};
-            $story = this.cache.feed_view_stories[story.id] || this.find_story_in_feed_view(story.id);
+            $story = this.cache.feed_view_stories[story_id] || this.find_story_in_feed_view(story_id);
             if ($story) {
                 $story.addClass('read');
             }
@@ -1838,6 +1837,7 @@
                 'feed_title_floater_feed_id': null,
                 'feed_title_floater_story_id': null,
                 'last_feed_view_story_feed_id': null,
+                'last_read_story_id': null,
                 '$feed_in_feed_list': {},
                 '$feed_counts_in_feed_list': {},
                 '$feed_in_social_feed_list': {}
@@ -2498,7 +2498,6 @@
             if (this.active_story != story || options.story_id) {
                 this.active_story = story;
                 this.mark_story_title_as_selected($story_title);
-                this.mark_story_as_read_in_feed_view(story, {'animate': true});
                 this.unload_story_iframe();
                 
                 // Used when auto-tracking the user as they move over the feed/page.
@@ -2785,19 +2784,35 @@
             // $story_title.parent('.story').next('.story').children('a').addClass('after_selected');
         },
         
-        mark_story_as_read: function(story_id) {
+        mark_story_as_read: function(story_id, skip_delay) {
             var self = this;
-            var story = this.model.get_story(story_id);
-            var feed_id = story.story_feed_id;
-            
-            var mark_read_fn = this.model.mark_story_as_read;
-            if (NEWSBLUR.utils.is_feed_social(this.active_feed)) {
-                mark_read_fn = this.model.mark_social_story_as_read;
-                feed_id = this.active_feed;
+            var delay = this.model.preference('read_story_delay');
+
+            if (skip_delay) {
+                delay = 0;
+            } else if (delay == -1) {
+                return;
             }
-            mark_read_fn.call(this.model, story_id, feed_id, function(read) {
-                self.update_read_count(story_id, feed_id, false, read);
-            });
+
+            this.cache.last_read_story_id = story_id;
+            clearTimeout(this.cache.read_story_delay);
+            
+            this.cache.read_story_delay = _.delay(_.bind(function() {
+                if (skip_delay || this.cache.last_read_story_id == story_id || delay == 0) {
+                    var $story_title = this.find_story_in_story_titles(story_id);
+                    var story = this.model.get_story(story_id);
+                    var feed_id = story.story_feed_id;
+                    var mark_read_fn = this.model.mark_story_as_read;
+                    if (NEWSBLUR.utils.is_feed_social(this.active_feed)) {
+                        mark_read_fn = this.model.mark_social_story_as_read;
+                        feed_id = this.active_feed;
+                    }
+                    mark_read_fn.call(this.model, story_id, feed_id, function(read) {
+                        self.update_read_count(story_id, feed_id, false, read);
+                    });
+                    this.mark_story_as_read_in_feed_view(story_id, {'animate': this.story_view == 'feed'});
+                }
+            }, this), delay * 1000);
         },
         
         mark_story_as_unread: function(story_id, feed_id) {
@@ -2928,7 +2943,7 @@
             if (_.string.include(this.active_feed, folder_name)) {
                 $('.story:not(.read)', this.$s.$story_titles).addClass('read');
                 _.each(this.model.stories, _.bind(function(story) {
-                    this.mark_story_as_read_in_feed_view(story);
+                    this.mark_story_as_read_in_feed_view(story.id);
                 }, this));
             }
         },
@@ -3286,6 +3301,20 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(tumblr_url, '_blank');
+            this.mark_story_as_read(story_id);
+        },
+        
+        send_story_to_delicious: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://www.delicious.com/save';
+            var delicious_url = [
+              url,
+              '?v=6&url=',
+              encodeURIComponent(story.story_permalink),
+              '&title=',
+              encodeURIComponent(story.story_title)
+            ].join('');
+            window.open(delicious_url, '_blank');
             this.mark_story_as_read(story_id);
         },
         
@@ -5359,6 +5388,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-delicious');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -5393,6 +5427,8 @@
                           this.send_story_to_readitlater(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
                           this.send_story_to_tumblr(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
+                          this.send_story_to_delicious(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-readability')) {
                           this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
@@ -7485,7 +7521,7 @@
             $.targetIs(e, { tagSelector: 'a.mark_story_as_read' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.attr('href').slice(1).split('/');
-                self.mark_story_as_read(story_id);
+                self.mark_story_as_read(story_id, true);
             });
             $.targetIs(e, { tagSelector: '.NB-feed-story-premium-only a' }, function($t, $p){
                 e.preventDefault();
@@ -8439,7 +8475,7 @@
                 e.preventDefault();
                 self.page_in_story(0.65, -1);
             });
-            $document.bind('keydown', 'u', function(e) {
+            $document.bind('keydown', 'shift+u', function(e) {
                 e.preventDefault();
                 if (self.flags['sidebar_closed']) {
                     self.open_sidebar();
@@ -8511,11 +8547,11 @@
                 e.preventDefault();
                 self.open_river_stories();
             });
-            $document.bind('keydown', 'shift+u', function(e) {
+            $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
                 var story_id = self.active_story.id;
                 if (self.active_story && !self.active_story.read_status) {
-                    self.mark_story_as_read(story_id);
+                    self.mark_story_as_read(story_id, true);
                 } else if (self.active_story && self.active_story.read_status) {
                     self.mark_story_as_unread(story_id);
                 }

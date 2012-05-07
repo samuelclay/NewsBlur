@@ -313,6 +313,37 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'When opening a site'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-readstorydelay-1', type: 'radio', name: 'read_story_delay', value: '0' }),
+                                $.make('label', { 'for': 'NB-preference-readstorydelay-1' }, [
+                                    'Immediately'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-readstorydelay-2', type: 'radio', name: 'read_story_delay', value: '1' }),
+                                $.make('label', { 'for': 'NB-preference-readstorydelay-2' }, [
+                                    'After ',
+                                    $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
+                                    $.make('span', { className: 'NB-tangle-seconds' }, ' second.')
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-readstorydelay-0', type: 'radio', name: 'read_story_delay', value: "-1" }),
+                                $.make('label', { 'for': 'NB-preference-readstorydelay-0' }, [
+                                    'Manually by hitting ',
+                                    $.make('div', { className: 'NB-keyboard-shortcut-key', 
+                                                    style: 'display: inline; float: none' }, [
+                                        'u'
+                                    ])
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Mark a story as read'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-hidestorychanges' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -473,6 +504,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-option', title: 'Tumblr' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-tumblr', name: 'story_share_tumblr' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-tumblr' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Delicious' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-delicious', name: 'story_share_delicious' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-delicious' })
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -515,8 +550,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
     
     select_preferences: function() {
+        var $modal = this.$modal;
+        
         if (NEWSBLUR.Preferences.timezone) {
-            $('select[name=timezone] option', this.$modal).each(function() {
+            $('select[name=timezone] option', $modal).each(function() {
                 if ($(this).val() == NEWSBLUR.Preferences.timezone) {
                     $(this).attr('selected', true);
                     return false;
@@ -524,85 +561,91 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             });
         }
         
-        $('input[name=default_view]', this.$modal).each(function() {
+        $('input[name=default_view]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.default_view) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=story_pane_anchor]', this.$modal).each(function() {
+        $('input[name=story_pane_anchor]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.story_pane_anchor) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-         $('input[name=new_window]', this.$modal).each(function() {
+         $('input[name=new_window]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.new_window) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=hide_read_feeds]', this.$modal).each(function() {
+        $('input[name=hide_read_feeds]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_read_feeds) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=feed_order]', this.$modal).each(function() {
+        $('input[name=feed_order]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.feed_order) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=ssl]', this.$modal).each(function() {
+        $('input[name=ssl]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.ssl) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=show_unread_counts_in_title]', this.$modal).each(function() {
+        $('input[name=show_unread_counts_in_title]', $modal).each(function() {
             if (NEWSBLUR.Preferences.show_unread_counts_in_title) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=open_feed_action]', this.$modal).each(function() {
+        $('input[name=open_feed_action]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=hide_story_changes]', this.$modal).each(function() {
+        $('input[name=read_story_delay]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.read_story_delay) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=hide_story_changes]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.hide_story_changes) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=feed_view_single_story]', this.$modal).each(function() {
+        $('input[name=feed_view_single_story]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.feed_view_single_story) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=animations]', this.$modal).each(function() {
+        $('input[name=animations]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.animations) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=folder_counts]', this.$modal).each(function() {
+        $('input[name=folder_counts]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.folder_counts) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=show_tooltips]', this.$modal).each(function() {
+        $('input[name=show_tooltips]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.show_tooltips) {
                 $(this).attr('checked', true);
                 return false;
             }
         });
-        $('input[name=story_styling]', this.$modal).each(function() {
+        $('input[name=story_styling]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.story_styling) {
                 $(this).attr('checked', true);
                 return false;
@@ -612,10 +655,32 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var share_preferences = _.select(_.keys(NEWSBLUR.Preferences), function(p) { 
             return p.indexOf('story_share') != -1; 
         });
-        _.each(share_preferences, _.bind(function(share) {
+        _.each(share_preferences, function(share) {
             var share_name = share.match(/story_share_(.*)/)[1];
-            $('input#NB-preference-story-share-'+share_name, this.$modal).attr('checked', NEWSBLUR.Preferences[share]);
-        }, this));
+            $('input#NB-preference-story-share-'+share_name, $modal).attr('checked', NEWSBLUR.Preferences[share]);
+        });
+        
+        $(".NB-tangle-readstorydelay", $modal).slider({
+            range: 'min',
+            min: 1,
+            max: 60,
+            step: 1,
+            value: NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1,
+            slide: _.bind(this.slide_read_story_delay_slider, this)
+        });
+        this.slide_read_story_delay_slider();
+    },
+    
+    slide_read_story_delay_slider: function(e, ui) {
+        var value = (ui && ui.value) ||
+                    (NEWSBLUR.Preferences.read_story_delay > 0 ? NEWSBLUR.Preferences.read_story_delay : 1);
+        $(".NB-tangle-seconds", this.$modal).text(value == 1 ? value + ' second.' : value + ' seconds.');
+        if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
+            $("#NB-preference-readstorydelay-2", this.$modal).attr('checked', true).val(value);
+            if (ui) {
+                this.enable_save();
+            }
+        }
     },
     
     serialize_preferences: function() {
