@@ -2491,11 +2491,17 @@ background: transparent;
 .NB-taskbar .task_button.task_view_page.NB-exception-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/exclamation.png');
 }
+.NB-taskbar .task_button.task_view_page.NB-disabled-page .NB-task-image {
+    background-image: url('/media/embed/icons/silk/error.png');
+}
 .NB-taskbar .task_button.task_view_feed .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_list.png') no-repeat 0 0;
 }
 .NB-taskbar .task_button.task_view_story .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
+}
+.NB-taskbar .task_button.task_view_story.NB-disabled-page .NB-task-image {
+    background-image: url('/media/embed/icons/silk/error.png');
 }
 .NB-taskbar .task_button.task_story_next_positive .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
@@ -4441,6 +4447,9 @@ background: transparent;
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-delicious {
+    background: transparent url('/media/embed/reader/delicious.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
 }
@@ -4486,6 +4495,13 @@ background: transparent;
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-tumblr {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-delicious {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-image,
@@ -5590,7 +5606,7 @@ background: transparent;
   margin-right: 0;
 } 
 
-.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-key {
+.NB-keyboard-shortcut-key {
   border-radius: 6px;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -5607,12 +5623,12 @@ background: transparent;
   margin: 0 4px 0 0;
 }
 
-.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-key span {
+.NB-keyboard-shortcut-key span {
   color: #A0A0A0;
   padding: 0 4px;
 }
 
-.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-explanation {
+.NB-keyboard-shortcut-explanation {
   float: right;
   font-size: 14px;
   font-weight: bold;
@@ -5621,11 +5637,11 @@ background: transparent;
   color: #404030;
   text-shadow: 1px 1px 0 #E0E0E0;
 }
-.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-image {
+.NB-keyboard-shortcut-image {
   clear: both;
 }
 
-.NB-modal-keyboard .NB-keyboard-shortcut .NB-keyboard-shortcut-image img {
+.NB-keyboard-shortcut-image img {
   margin: 8px 0 0 0;
   border: 1px solid #202020;
   width: 268px;
@@ -5771,6 +5787,12 @@ background: transparent;
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
 }
+.NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay {
+    display: inline-block;
+    margin: 0 16px 0 8px;
+    top: 2px;
+    width: 100px;
+}
 .NB-modal-preferences .NB-preference.NB-preference-story-share .NB-preference-option {
   float: left;
   margin: 0 8px 4px 0;
@@ -5794,6 +5816,9 @@ background: transparent;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-tumblr] {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-delicious] {
+    background: transparent url('/media/embed/reader/delicious.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;

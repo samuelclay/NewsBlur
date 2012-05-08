@@ -240,6 +240,7 @@ def setup_app():
     setup_vps()
     setup_app_firewall()
     setup_app_motd()
+    copy_app_settings()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
 
@@ -249,6 +250,7 @@ def setup_db():
     setup_db_firewall()
     setup_db_motd()
     # setup_rabbitmq()
+    copy_task_settings()
     setup_memcached()
     setup_postgres()
     setup_mongo()
@@ -260,6 +262,7 @@ def setup_task():
     setup_vps()
     setup_task_firewall()
     setup_task_motd()
+    copy_task_settings()
     enable_celery_supervisor()
     setup_gunicorn(supervisor=False)
     update_gunicorn()
@@ -495,6 +498,9 @@ def setup_node():
     sudo('ufw allow 8888')
     put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
 
+def copy_app_settings():
+    put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
     
 # ==============
 # = Setup - DB =
@@ -539,17 +545,19 @@ def setup_mongo():
     sudo('apt-get -y install mongodb-10gen')
 
 def setup_redis():
+    redis_version = '2.4.13'
     with cd(env.VENDOR_PATH):
-        run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
-        run('tar -xzf redis-2.4.2.tar.gz')
-        run('rm redis-2.4.2.tar.gz')
-    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
+        run('tar -xzf redis-%s.tar.gz' % redis_version)
+        run('rm redis-%s.tar.gz' % redis_version)
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-%s' % redis_version)):
         sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis stop')
     sudo('/etc/init.d/redis start')
 
 def setup_db_munin():
@@ -571,6 +579,23 @@ def setup_task_motd():
     
 def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    
+def copy_task_settings():
+    put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+
+
+# ==============
+# = Tasks - DB =
+# ==============
+
+def restore_postgres():
+    backup_date = '2012-05-03-08-00'
+    run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_postgresql_%s.sql.gz' % backup_date)
+    sudo('su postgres -c "createuser -U newsblur"')
+    sudo('su postgres -c "createdb newsblur -O newsblur"')
+    sudo('su postgres -c "pg_restore --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % backup_date)
+    
     
 # ======
 # = S3 =
