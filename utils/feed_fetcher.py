@@ -58,7 +58,7 @@ class FetchFeed:
             modified = None
             etag = None
             
-        USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3 (NewsBlur Feed Fetcher - %s subscriber%s - %s)' % (
+        USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2 (NewsBlur Feed Fetcher - %s subscriber%s - %s)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
             settings.NEWSBLUR_URL
@@ -253,9 +253,10 @@ class ProcessFeed:
                               unicode(self.feed)[:30], hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
         
-        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s' % (
+        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s~SN~FY total=~SB%s' % (
                       unicode(self.feed)[:30], 
-                      ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR]))
+                      ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR],
+                      len(self.fpf.entries)))
         self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]), force=self.options['force'])
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
@@ -337,7 +338,7 @@ class Dispatcher:
                         feed.num_subscribers,
                         rand, quick))
                     continue
-                
+
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
                 
