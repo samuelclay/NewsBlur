@@ -125,10 +125,11 @@ class Feed(models.Model):
             feed['exception_type'] = None
             feed['exception_code'] = self.exception_code
         
-        for broken_page in BROKEN_PAGE_URLS:
-            if broken_page in self.feed_link:
-                feed['disabled_page'] = True
-                break
+        if self.feed_link:
+            for broken_page in BROKEN_PAGE_URLS:
+                if broken_page in self.feed_link:
+                    feed['disabled_page'] = True
+                    break
         
         if full:
             feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
