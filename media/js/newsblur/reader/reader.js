@@ -2821,7 +2821,7 @@
                         feed_id = this.active_feed;
                     }
                     mark_read_fn.call(this.model, story_id, feed_id, function(read) {
-                        self.update_read_count(story_id, feed_id, false, read);
+                        self.update_read_count(story_id, feed_id, {previously_read: read});
                     });
                     this.mark_story_as_read_in_feed_view(story_id, {'animate': this.story_view == 'feed'});
                 }
@@ -2833,13 +2833,14 @@
             feed_id = feed_id || this.model.get_story(story_id).story_feed_id;
             
             this.model.mark_story_as_unread(story_id, feed_id, function() {
-                self.update_read_count(story_id, feed_id, true);
+                self.update_read_count(story_id, feed_id, {unread: true});
             });
         },
         
-        update_read_count: function(story_id, feed_id, unread, previously_read) {
-            // NEWSBLUR.log(['update_read_count', feed_id, unread, previously_read]);
-            if (previously_read) return;
+        update_read_count: function(story_id, feed_id, options) {
+            options = options || {};
+            // NEWSBLUR.log(['update_read_count', feed_id, options.unread, options.previously_read]);
+            if (options.previously_read) return;
             
             var feed                  = this.model.get_feed(feed_id);
             var $feed_list            = this.$s.$feed_list;
@@ -2853,12 +2854,12 @@
             
             this.cache.$feed_counts_in_feed_list[feed_id] = $feed_counts;
 
-            $story_title.toggleClass('read', !unread);
-            $story.toggleClass('read', !unread);
+            $story_title.toggleClass('read', !options.unread);
+            $story.toggleClass('read', !options.unread);
             // NEWSBLUR.log(['marked read', feed.ps, feed.nt, feed.ng, $story_title.is('.NB-story-positive'), $story_title.is('.NB-story-neutral'), $story_title.is('.NB-story-negative')]);
             
             if ($story_title.is('.NB-story-positive')) {
-                var count = Math.max(feed.ps + (unread?1:-1), 0);
+                var count = Math.max(feed.ps + (options.unread?1:-1), 0);
                 feed.ps = count;
                 $('.unread_count_positive', $feed).text(count);
                 $('.unread_count_positive', $content_pane).text(count);
@@ -2870,7 +2871,7 @@
                     $feed_counts.addClass('unread_positive');
                 }
             } else if ($story_title.is('.NB-story-neutral')) {
-                var count = Math.max(feed.nt + (unread?1:-1), 0);
+                var count = Math.max(feed.nt + (options.unread?1:-1), 0);
                 feed.nt = count;
                 $('.unread_count_neutral', $feed).text(count);
                 $('.unread_count_neutral', $content_pane).text(count);
@@ -2882,7 +2883,7 @@
                     $feed_counts.addClass('unread_neutral');
                 }
             } else if ($story_title.is('.NB-story-negative')) {
-                var count = Math.max(feed.ng + (unread?1:-1), 0);
+                var count = Math.max(feed.ng + (options.unread?1:-1), 0);
                 feed.ng = count;
                 $('.unread_count_negative', $feed).text(count);
                 $('.unread_count_negative', $content_pane).text(count);
