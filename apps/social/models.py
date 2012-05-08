@@ -336,7 +336,10 @@ class MSocialProfile(mongo.Document):
         if self.user_id != user_id:
             MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
             MActivity.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
-        MSocialSubscription.objects.get_or_create(user_id=self.user_id, subscription_user_id=user_id)
+        socialsub, _ = MSocialSubscription.objects.get_or_create(user_id=self.user_id, 
+                                                                 subscription_user_id=user_id)
+        socialsub.needs_unread_recalc = True
+        socialsub.save()
     
     def is_following_user(self, user_id):
         return user_id in self.following_user_ids
@@ -521,6 +524,8 @@ class MSocialSubscription(mongo.Document):
         #     sub.calculate_feed_scores()
         social_feeds = []
         if social_subs:
+            if kwargs.get('calculate_scores'):
+                for s in social_subs: s.calculate_feed_scores()
             social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
             social_user_ids = social_subs.keys()
             

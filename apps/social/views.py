@@ -439,7 +439,7 @@ def follow(request):
         'include_favicon': True,
         'update_counts': True,
     }
-    follow_subscription = MSocialSubscription.feeds(**social_params)
+    follow_subscription = MSocialSubscription.feeds(calculate_scores=True, **social_params)
     
     logging.user(request, "~BB~FRFollowing: %s" % follow_profile.username)
     
