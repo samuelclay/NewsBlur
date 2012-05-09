@@ -2788,7 +2788,7 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(instapaper_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_readitlater: function(story_id) {
@@ -2802,7 +2802,7 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(readitlater_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_tumblr: function(story_id) {
@@ -2816,7 +2816,7 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(tumblr_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_delicious: function(story_id) {
@@ -2830,7 +2830,7 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(delicious_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_readability: function(story_id) {
@@ -2844,7 +2844,7 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(readability_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_twitter: function(story_id) {
@@ -2858,7 +2858,7 @@
               encodeURIComponent(story.story_permalink)
             ].join('');
             window.open(twitter_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_facebook: function(story_id) {
@@ -2872,7 +2872,7 @@
               encodeURIComponent(story.story_title)
             ].join('');
             window.open(facebook_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_pinboard: function(story_id) {
@@ -2888,7 +2888,7 @@
               encodeURIComponent(story.story_tags.join(', '))
             ].join('');
             window.open(pinboard_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_googleplus: function(story_id) {
@@ -2904,12 +2904,12 @@
               encodeURIComponent(story.story_tags.join(', '))
             ].join('');
             window.open(googleplus_url, '_blank');
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         send_story_to_email: function(story_id) {
             NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story_id);
-            this.mark_story_as_read(story_id);
+            this.mark_story_as_read(story_id, true);
         },
         
         // =====================
@@ -3507,6 +3507,7 @@
                 var story = this.model.get_story(story_id);
                 window.open(story['story_permalink'], '_blank');
                 window.focus();
+                this.mark_story_as_read(story_id, true);
             }
         },
         
