@@ -1906,31 +1906,29 @@
         },
         
         set_correct_story_view_for_feed: function(feed_id, view) {
-          var feed = this.model.get_feed(feed_id);
-          view = view || this.model.view_setting(feed_id);
-          
-          if (feed && feed.has_exception && feed.exception_type == 'page') {
-            if (view == 'page') {
-              view = 'feed';
+            var feed = this.model.get_feed(feed_id);
+            view = view || this.model.view_setting(feed_id);
+
+            if (feed && feed.disabled_page) {
+                view = 'feed';
+                $('.task_view_page').addClass('NB-disabled-page')
+                                    .addClass('NB-disabled');
+                $('.task_view_story').addClass('NB-disabled-page')
+                                     .addClass('NB-disabled');
+            } else if (feed && feed.has_exception && feed.exception_type == 'page') {
+                if (view == 'page') {
+                    view = 'feed';
+                }
+                $('.task_view_page').addClass('NB-exception-page');
+            } else {
+                $('.task_view_page').removeClass('NB-disabled-page')
+                                    .removeClass('NB-disabled')
+                                    .removeClass('NB-exception-page');
+                $('.task_view_story').removeClass('NB-disabled-page')
+                                     .removeClass('NB-disabled');
             }
-            $('.task_view_page').addClass('NB-exception-page');
-          } else if (feed && feed.disabled_page) {
-            if (view == 'page') {
-              view = 'feed';
-            }
-            $('.task_view_page').addClass('NB-disabled-page')
-                                .addClass('NB-disabled');
-            $('.task_view_story').addClass('NB-disabled-page')
-                                 .addClass('NB-disabled');
-          } else {
-            $('.task_view_page').removeClass('NB-disabled-page')
-                                .removeClass('NB-disabled')
-                                .removeClass('NB-exception-page');
-            $('.task_view_story').removeClass('NB-disabled-page')
-                                 .removeClass('NB-disabled');
-          }
           
-          this.story_view = view;
+            this.story_view = view;
         },
         
         // ===============
@@ -4182,8 +4180,16 @@
         
         open_story_in_story_view: function(story, is_temporary) {
             if (!story) story = this.active_story;
-            this.switch_taskbar_view('story', is_temporary ? 'story' : false);
-            this.load_story_iframe(story, story.story_feed_id);
+            var feed = this.model.get_feed(story.story_feed_id);
+            if ((feed && feed.disabled_page) || 
+                NEWSBLUR.utils.is_url_iframe_buster(story.story_permalink)) {
+                if (!is_temporary) {
+                    this.switch_taskbar_view('feed', 'story');
+                }
+            } else {
+                this.switch_taskbar_view('story', is_temporary ? 'story' : false);
+                this.load_story_iframe(story, story.story_feed_id);
+            }
         },
         
         load_story_iframe: function(story, feed_id) {
