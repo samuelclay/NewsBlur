@@ -488,7 +488,8 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
   color: #A0A0A0;
 }
 
-#feed_list.NB-feedlist .feed.NB-feed-inactive {
+#feed_list.NB-feedlist .feed.NB-feed-inactive,
+.NB-feedlist.NB-socialfeeds .feed.NB-feed-inactive {
   display: none;
 }
 

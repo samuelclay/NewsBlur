@@ -1332,8 +1332,11 @@
             if (feed.not_yet_fetched && !feed.has_exception) {
                 exception_class += ' NB-feed-unfetched';
             }
-            if (!feed.active) {
+            if (!feed.active && !feed.subscription_user_id) {
                 exception_class += ' NB-feed-inactive';
+            }
+            if (feed.subscription_user_id && !feed.shared_stories_count) {
+                unread_class += ' NB-feed-inactive';
             }
             var feed_counts_floater = this.make_feed_counts_floater(feed.ps, feed.nt, feed.ng, true);
             var $feed = _.template('\
@@ -6574,6 +6577,9 @@
                 if (!this.flags['has_unfetched_feeds']) {
                     NEWSBLUR.log(['UPDATING (social)', feed.feed_title]);
                 }
+                // If the social feed has no shared stories but is updating, it's because it now does.
+                // But it's only provided in real-time. This is a fallback for polling refreshes.
+                if (!feed.shared_stories_count) this.model.social_feeds.get(feed_id).set('shared_stories_count', 1);
                 if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
                 $feed_on_page.replaceWith($feed);
                 this.cache.$feed_in_feed_list[feed_id] = null;

@@ -208,7 +208,7 @@ class MSocialProfile(mongo.Document):
 
     @classmethod
     def profile_feeds(cls, user_ids):
-        profiles = cls.objects.filter(user_id__in=user_ids, shared_stories_count__gte=1)
+        profiles = cls.objects.filter(user_id__in=user_ids)
         profiles = dict((p.user_id, p.feed()) for p in profiles)
         return profiles
         
@@ -231,7 +231,8 @@ class MSocialProfile(mongo.Document):
         params = self.to_json(compact=True)
         params.update({
             'feed_title': self.title,
-            'page_url': reverse('load-social-page', kwargs={'user_id': self.user_id, 'username': self.username_slug})
+            'page_url': reverse('load-social-page', kwargs={'user_id': self.user_id, 'username': self.username_slug}),
+            'shared_stories_count': self.shared_stories_count,
         })
         return params
         
@@ -532,11 +533,9 @@ class MSocialSubscription(mongo.Document):
             # Fetch user profiles of subscriptions
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for user_id, social_sub in social_subs.items():
-                # Check if the social feed has any stories, otherwise they aren't active.
-                if user_id in social_profiles:
-                    # Combine subscription read counts with feed/user info
-                    feed = dict(social_sub.items() + social_profiles[user_id].items())
-                    social_feeds.append(feed)
+                # Combine subscription read counts with feed/user info
+                feed = dict(social_sub.items() + social_profiles[user_id].items())
+                social_feeds.append(feed)
 
         return social_feeds
     
@@ -549,6 +548,8 @@ class MSocialSubscription(mongo.Document):
         if social_feed_ids:
             social_user_ids = [int(f.replace('social:', '')) for f in social_feed_ids]
             user_subs = user_subs.filter(subscription_user_id__in=social_user_ids)
+            profiles = MSocialProfile.objects.filter(user_id__in=social_user_ids)
+            profiles = dict((p.user_id, p) for p in profiles)
         
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
@@ -568,6 +569,8 @@ class MSocialSubscription(mongo.Document):
                 'ng': sub.unread_count_negative,
                 'id': feed_id,
             }
+            if social_feed_ids and sub.subscription_user_id in profiles:
+                feeds[feed_id]['shared_stories_count'] = profiles[sub.subscription_user_id].shared_stories_count
 
         return feeds
         
