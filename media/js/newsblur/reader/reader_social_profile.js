@@ -140,6 +140,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     },
     
     make_profile_badges: function(user_ids, profiles) {
+        $('.tipsy').remove();
         var $badges = $.make('div', { className: 'NB-profile-links' }, _.map(user_ids, function(user_id) {
             var user = new NEWSBLUR.Models.User(profiles[user_id]);
             return $.make('div', { className: 'NB-profile-link', title: user.get('username') }, [

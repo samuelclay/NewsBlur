@@ -234,9 +234,11 @@ def mark_story_as_shared(request):
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
         shared_story = shared_story[0]
+        original_comments = shared_story.comments
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
+        shared_story.set_source_user_id(source_user_id, original_comments=original_comments)
         logging.user(request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (
                      story.story_title[:20], comments[:30]))
     

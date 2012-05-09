@@ -878,6 +878,36 @@ class MSharedStory(mongo.Document):
 
         super(MSharedStory, self).delete(*args, **kwargs)
     
+    def set_source_user_id(self, source_user_id, original_comments=None):
+        def find_source(source_user_id, seen_user_ids):
+            parent_shared_story = MSharedStory.objects.filter(user_id=source_user_id, 
+                                                              story_guid=self.story_guid, 
+                                                              story_feed_id=self.story_feed_id).limit(1)
+            if parent_shared_story and parent_shared_story[0].source_user_id:
+                user_id = parent_shared_story[0].source_user_id
+                if user_id in seen_user_ids:
+                    return source_user_id
+                else:
+                    seen_user_ids.append(user_id)
+                    return find_source(user_id, seen_user_ids)
+            else:
+                return source_user_id
+        
+        if source_user_id:
+            source_user_id = find_source(source_user_id, [])
+            if not self.source_user_id or source_user_id != self.source_user_id or original_comments:
+                self.source_user_id = source_user_id
+                logging.debug("   ---> Re-share from %s." % source_user_id)
+                self.save()
+                
+                MInteraction.new_reshared_story(user_id=self.source_user_id,
+                                                reshare_user_id=self.user_id,
+                                                comments=self.comments,
+                                                story_title=self.story_title,
+                                                story_feed_id=self.story_feed_id,
+                                                story_id=self.story_guid,
+                                                original_comments=original_comments)
+        
     @classmethod
     def switch_feed(cls, original_feed_id, duplicate_feed_id):
         shared_stories = cls.objects.filter(story_feed_id=duplicate_feed_id)
@@ -980,26 +1010,6 @@ class MSharedStory(mongo.Document):
         else:
             redis_conn.srem(comment_key, self.user_id)
 
-    def set_source_user_id(self, source_user_id):
-        def find_source(source_user_id, seen_user_ids):
-            parent_shared_story = MSharedStory.objects.filter(user_id=source_user_id, 
-                                                              story_guid=self.story_guid, 
-                                                              story_feed_id=self.story_feed_id).limit(1)
-            if parent_shared_story and parent_shared_story[0].source_user_id:
-                user_id = parent_shared_story[0].source_user_id
-                if user_id in seen_user_ids:
-                    return source_user_id
-                else:
-                    seen_user_ids.append(user_id)
-                    return find_source(user_id, seen_user_ids)
-            else:
-                return source_user_id
-        
-        if source_user_id:
-            self.source_user_id = find_source(source_user_id, [])
-            logging.debug("   ---> Re-share from %s." % source_user_id)
-            self.save()
-        
     def publish_update_to_subscribers(self):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1386,7 +1396,30 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
-                           
+    
+    @classmethod
+    def new_reshared_story(cls, user_id, reshare_user_id, comments, story_title, story_feed_id, story_id, original_comments=None):
+        params = {
+            'user_id': user_id,
+            'with_user_id': reshare_user_id,
+            'category': 'story_reshare',
+            'content': comments,
+            'title': story_title,
+            'feed_id': story_feed_id,
+            'content_id': story_id,
+        }
+        if original_comments:
+            params['content'] = original_comments
+            original = cls.objects.filter(**params).limit(1)
+            if original:
+                original = original[0]
+                original.content = comments
+                original.save()
+            else:
+                original_comments = None
+
+        if not original_comments:
+            cls.objects.create(**params)
 
 class MActivity(mongo.Document):
     user_id      = mongo.IntField()
