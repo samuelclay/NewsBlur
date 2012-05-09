@@ -9,6 +9,7 @@
         this.story_view = 'page';
         this.$s = {
             $body: $('body'),
+            $feed_lists: $('.NB-feedlists'),
             $feed_list: $('#feed_list'),
             $social_feeds: $('.NB-socialfeeds'),
             $story_titles: $('#story_titles'),
@@ -826,8 +827,13 @@
                 } else {
                     // Find next feed with unreads
                     var $next_feed = this.get_next_unread_feed(1);
-                    var next_feed_id = parseInt($next_feed.data('id'), 10);
-                    this.open_feed(next_feed_id, {force: true, $feed_link: $next_feed});
+                    var next_feed_id = $next_feed.data('id');
+                    if (NEWSBLUR.utils.is_feed_social(next_feed_id)) {
+                        this.open_social_stories(next_feed_id, {force: true, $feed_link: $next_feed});
+                    } else {
+                        next_feed_id = parseInt(next_feed_id, 10);
+                        this.open_feed(next_feed_id, {force: true, $feed_link: $next_feed});
+                    }
                 }
             }
 
@@ -923,29 +929,38 @@
             }    
         },
         
+        scroll_feed_list_to_show_selected_feed: function($feed) {
+            $feed = $feed || this.find_feed_in_feed_list(this.active_feed);
+            if (!$feed) return;
+            var $feed_lists = this.$s.$feed_lists;
+            var is_feed_visible = $feed_lists.isScrollVisible($feed);
+            if (!is_feed_visible) {
+                var container_offset = $feed_lists.position().top;
+                var scroll = $feed.position().top;
+                var container = $feed_lists.scrollTop();
+                var height = $feed_lists.outerHeight();
+                $feed_lists.scrollTop(scroll+container-height/5);
+            }    
+        },
+        
         show_next_feed: function(direction, $current_feed) {
-            var $feed_list = this.$s.$feed_list;
+            var $feed_list = this.$s.$feed_list.add(this.$s.$social_feeds);
             var $next_feed = this.get_next_feed(direction, $current_feed);
 
-            var feed_id = parseInt($next_feed.data('id'), 10);
-            if (feed_id && feed_id == this.active_feed) {
+            var next_feed_id = $next_feed.data('id');
+            if (next_feed_id && next_feed_id == this.active_feed) {
                 this.show_next_feed(direction, $next_feed);
-            } else if (feed_id) {
-                var position = $feed_list.scrollTop() + $next_feed.offset().top - $next_feed.outerHeight();
-                var showing = $feed_list.height() - 100;
-                if (position > showing) {
-                    scroll = position;
-                } else {
-                    scroll = 0;
-                }
-                $feed_list.scrollTop(scroll);
-                this.open_feed(feed_id, {delay: 350, $feed_link: $next_feed});
+            } else if (NEWSBLUR.utils.is_feed_social(next_feed_id)) {
+                this.open_social_stories(next_feed_id, {force: true, $feed_link: $next_feed});
+            } else {
+                next_feed_id = parseInt(next_feed_id, 10);
+                this.open_feed(next_feed_id, {force: true, $feed_link: $next_feed});
             }
         },
         
         get_next_feed: function(direction, $current_feed) {
             var self = this;
-            var $feed_list = this.$s.$feed_list;
+            var $feed_list = this.$s.$feed_list.add(this.$s.$social_feeds);
             var $current_feed = $current_feed || $('.selected', $feed_list);
             var $next_feed,
                 scroll;
@@ -968,7 +983,7 @@
         
         get_next_unread_feed: function(direction, $current_feed) {
             var self = this;
-            var $feed_list = this.$s.$feed_list;
+            var $feed_list = this.$s.$feed_list.add(this.$s.$social_feeds);
             $current_feed = $current_feed || $('.selected', $feed_list);
             var unread_view = this.get_unread_view_name();
             var $next_feed;
@@ -1433,7 +1448,7 @@
                 axis: 'y',
                 distance: 4,
                 cursor: 'move',
-                containment: '.NB-feedlist',
+                containment: '#feed_list',
                 tolerance: 'pointer',
                 scrollSensitivity: 35,
                 start: function(e, ui) {
@@ -1912,6 +1927,7 @@
                 this.make_feed_title_in_stories(feed_id);
                 this.show_feedbar_loading();
                 this.switch_taskbar_view(this.story_view);
+                this.scroll_feed_list_to_show_selected_feed();
 
                 _.delay(_.bind(function() {
                     if (!options.delay || feed_id == self.next_feed) {
@@ -2345,6 +2361,7 @@
             this.show_feedbar_loading();
             this.switch_taskbar_view('feed');
             this.setup_mousemove_on_views();
+            this.scroll_feed_list_to_show_selected_feed();
             
             this.show_stories_progress_bar();
             this.model.fetch_social_stories(this.active_feed, feed.user_id, 1, 
