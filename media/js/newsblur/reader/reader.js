@@ -6369,17 +6369,21 @@
                 
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
-                    $('.NB-module-content-account-realtime').attr('title', 'Updating in real-time').removeClass('NB-error');
+                    
+                    $('.NB-module-content-account-realtime-subtitle').text('In Real-time').attr('width', 'auto');
+                    $('.NB-module-content-account-realtime').attr('title', 'Reticulating splines').removeClass('NB-error');
                 }, this));
                 this.socket.on('disconnect', _.bind(function() {
                     console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
+                    $('.NB-module-content-account-realtime-subtitle').text('Updating every 60 sec').attr('width', 'auto');
                     $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
                 }, this));
                 this.socket.on('error', _.bind(function() {
                     console.log(["Can't connect to real-time pubsub."]);
                     this.flags.feed_refreshing_in_realtime = false;
+                    $('.NB-module-content-account-realtime-subtitle').text('Updating every 60 sec').attr('width', 'auto');
                     $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
                 }, this));

@@ -4088,7 +4088,8 @@ background: transparent;
     float: right;
     color: #C0C0C0;
     text-shadow: none;
-    margin-right: 12px;
+    margin: 2px 12px 0 0;
+    font-size: 10px;
 }
 
 .NB-module .NB-module-content-account-realtime {
