@@ -132,7 +132,7 @@ NEWSBLUR.utils = {
             'mlb.com'
         ];
         return _.any(BROKEN_URLS, function(broken_url) {
-            return _.includes(url, broken_url);
+            return _.string.contains(url, broken_url);
         });
     }
   
