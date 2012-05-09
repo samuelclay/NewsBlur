@@ -4090,6 +4090,7 @@ background: transparent;
     text-shadow: none;
     margin: 2px 12px 0 0;
     font-size: 10px;
+    white-space: nowrap;
 }
 
 .NB-module .NB-module-content-account-realtime {
