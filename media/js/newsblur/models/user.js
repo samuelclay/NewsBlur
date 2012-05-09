@@ -15,6 +15,8 @@ NEWSBLUR.Models.User = Backbone.Model.extend({
         var url = this.get('photo_url');
         if (options.size && _.string.include(url, 'graph.facebook.com')) {
             url += '?type=' + options.size;
+        } else if (options.size == 'large' && _.string.include(url, 'twimg')) {
+            url = url.replace(/_normal.(\w+)/, '.$1');
         }
         return url;
     }
