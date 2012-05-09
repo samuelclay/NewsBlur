@@ -128,8 +128,7 @@ NEWSBLUR.utils = {
          var BROKEN_URLS = [
             'nytimes.com',
             'stackoverflow.com',
-            'twitter.com',
-            'mlb.com'
+            'twitter.com'
         ];
         return _.any(BROKEN_URLS, function(broken_url) {
             return _.string.contains(url, broken_url);
