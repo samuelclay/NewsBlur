@@ -846,7 +846,7 @@
             var $next_story;
             var unread_count = this.get_unread_count(true);
             
-            NEWSBLUR.log(['show_last_unread_story', unread_count, $current_story]);
+            // NEWSBLUR.log(['show_last_unread_story', unread_count, $current_story]);
             
             if (unread_count) {
                 var unread_stories_visible = $('.story:not(.read):visible', $story_titles).length;
@@ -877,7 +877,7 @@
             var $story_titles = this.$s.$story_titles;
             var story_id = this.flags['show_story_in_feed'];
             var $story = this.find_story_in_story_titles(story_id);
-            NEWSBLUR.log(['show_story_in_feed', story_id, $story, this.story_view, this.counts['show_story_in_feed'], this.flags['no_more_stories']]);
+            // NEWSBLUR.log(['show_story_in_feed', story_id, $story, this.story_view, this.counts['show_story_in_feed'], this.flags['no_more_stories']]);
             
             if ($story && $story.length) {
                 this.counts['show_story_in_feed'] = 0;
@@ -8107,8 +8107,7 @@
             $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply .NB-interaction-reply-content, .NB-interaction-reply_reply .NB-interaction-reply-content, .NB-interaction-comment_reply .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
-                var user_id = $interaction.data('userId');
-                var feed_id = 'social:' + user_id;
+                var feed_id = 'social:' + $interaction.data('feedId');
                 var story_id = $interaction.data('contentId');
                 var username = $interaction.data('username');
                 
