@@ -7391,7 +7391,7 @@ background: transparent;
     border: 0;
     border-top: 1px solid #E6E6E6;
     padding: 0 12px;
-    margin: 0;
+    margin: 12px 0 0;
 }
 .NB-modal-friends fieldset legend {
     padding: 0 12px;
@@ -7516,7 +7516,7 @@ background: transparent;
 }
 .NB-modal-friends .NB-profile-section-heading {
     text-align: center;
-    margin: 4px 0;
+    margin: 18px 0 0px;
     border-bottom: 1px solid #E0E0E0;
     padding: 0 0 16px;
 }

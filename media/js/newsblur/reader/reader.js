@@ -917,7 +917,7 @@
         
         scroll_story_titles_to_show_selected_story_title: function($story) {
             var $story = $story || this.find_story_in_story_titles();
-            if (!$story) return;
+            if (!$story || !$story.length) return;
             var $story_titles = this.$s.$story_titles;
             var story_title_visisble = $story_titles.isScrollVisible($story);
             if (!story_title_visisble) {
@@ -931,7 +931,7 @@
         
         scroll_feed_list_to_show_selected_feed: function($feed) {
             $feed = $feed || this.find_feed_in_feed_list(this.active_feed);
-            if (!$feed) return;
+            if (!$feed || !$feed.length) return;
             var $feed_lists = this.$s.$feed_lists;
             var is_feed_visible = $feed_lists.isScrollVisible($feed);
             if (!is_feed_visible) {
@@ -1336,6 +1336,12 @@
         make_feed_title_template: function(feed, type, depth) {
             var unread_class = '';
             var exception_class = '';
+            if (NEWSBLUR.utils.is_feed_social(feed)) {
+                if (!feed.feed_title) {
+                    var profile = this.model.user_profiles.get(feed.user_id) || {};
+                    feed.feed_title = profile.feed_title;
+                }
+            }
             if (feed.ps) {
                 unread_class += ' unread_positive';
             }
@@ -2420,6 +2426,7 @@
                 
                 if (this.flags['showing_social_feed_in_tryfeed_view']) {
                     this.show_tryfeed_follow_button();
+                    this.correct_tryfeed_title();
                 }
             }
         },
@@ -7163,6 +7170,7 @@
             
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
             $('.NB-feeds-header-icon',  this.$s.$tryfeed_header).attr('src', $.favicon(social_feed.attributes));
+            $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
 
             $tryfeed_container.slideDown(350, _.bind(function() {
                 this.open_social_stories(social_feed.get('id'), options);

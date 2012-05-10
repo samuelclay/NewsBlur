@@ -264,10 +264,6 @@ def save_comment_reply(request):
     if not reply_comments:
         return {'code': -1, 'message': 'Reply comments cannot be empty.'}
         
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
-    if not story:
-        return {'code': -1, 'message': 'Story not found. Reload NewsBlur.'}
-    
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
                                             story_guid=story_id)
@@ -287,10 +283,10 @@ def save_comment_reply(request):
                 replies.append(story_reply)
         shared_story.replies = replies
         logging.user(request, "~FCUpdating comment reply in ~FM%s: ~SB~FB%s~FM" % (
-                 story.story_title[:20], reply_comments[:30]))
+                 shared_story.story_title[:20], reply_comments[:30]))
     else:
         logging.user(request, "~FCReplying to comment in: ~FM%s: ~SB~FB%s~FM" % (
-                     story.story_title[:20], reply_comments[:30]))
+                     shared_story.story_title[:20], reply_comments[:30]))
         shared_story.replies.append(reply)
     shared_story.save()
     

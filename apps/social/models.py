@@ -259,6 +259,7 @@ class MSocialProfile(mongo.Document):
             'username': self.username,
             'photo_url': self.profile_photo_url,
             'num_subscribers': self.follower_count,
+            'feed_title': self.title,
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
                                     kwargs={'user_id': self.user_id, 'username': self.username_slug})),
             'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
