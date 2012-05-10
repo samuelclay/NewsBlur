@@ -1189,6 +1189,7 @@
         
         make_social_feeds: function(callback) {
             var $social_feeds = this.$s.$social_feeds;
+            var profile = this.model.user_profile;
             
             $social_feeds.empty();
             
@@ -1208,7 +1209,10 @@
             if (this.socket) {
                 this.send_socket_active_feeds();
             }
-
+            
+            $('.NB-module-stats-count-shared-stories .NB-module-stats-count-number').text(profile.get('shared_stories_count'));
+            $('.NB-module-stats-count-followers .NB-module-stats-count-number').text(profile.get('follower_count'));
+            $('.NB-module-stats-count-following .NB-module-stats-count-number').text(profile.get('following_count'));
             callback && callback();
         },
         
