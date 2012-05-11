@@ -32,7 +32,7 @@
         <div class="NB-graph-bar" style="height:{{ i|format_graph:statistics.max_sites_loaded }}px"></div>
       </div>{% endfor %}
     </div>
-    <div class="NB-module-stats-count-number">{{ statistics.latest_sites_loaded|commify }}</div>
+    <div class="NB-module-stats-count-number">{{ statistics.total_sites_loaded|commify }}</div>
     <div class="NB-module-stats-count-description">Sites loaded</div>
   </div>
   <div class="NB-module-stats-count">
@@ -56,7 +56,7 @@
       </div>
       {% endfor %}
     </div>
-    <div class="NB-module-stats-count-number">{{ statistics.latest_stories_shared|commify }}</div>
+    <div class="NB-module-stats-count-number">{{ statistics.total_stories_shared|commify }}</div>
     <div class="NB-module-stats-count-description">
         {% if statistics.latest_stories_shared == 1 %}Story{% else %}Stories{% endif %} Shared
     </div>

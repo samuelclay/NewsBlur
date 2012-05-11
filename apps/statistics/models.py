@@ -46,7 +46,10 @@ class MStatistics(mongo.Document):
                 values[key] = int(value)
             elif key in ('latest_avg_time_taken', 'max_avg_time_taken'):
                 values[key] = float(value)
-                
+
+        values['total_sites_loaded'] = sum(values['sites_loaded'])
+        values['total_stories_shared'] = sum(values['stories_shared'])
+
         return values
         
     @classmethod
