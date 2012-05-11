@@ -7170,7 +7170,6 @@
             
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
             $('.NB-feeds-header-icon',  this.$s.$tryfeed_header).attr('src', $.favicon(social_feed.attributes));
-            $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
 
             $tryfeed_container.slideDown(350, _.bind(function() {
                 this.open_social_stories(social_feed.get('id'), options);
@@ -8121,6 +8120,7 @@
                 var $interaction = $t.closest('.NB-interaction');
                 var feed_id = 'social:' + $interaction.data('feedId');
                 var story_id = $interaction.data('contentId');
+                var user_id = $interaction.data('userId');
                 var username = $interaction.data('username');
                 
                 self.close_social_profile();
