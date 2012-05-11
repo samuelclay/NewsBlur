@@ -8138,21 +8138,21 @@
             
             // = Activities Module ==========================================
             
-            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title,.NB-interaction-star .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title,.NB-activity-star .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.NB-interaction').data('contentId');
                 
                 self.close_social_profile();
                 self.open_starred_stories({'story_id': story_id});
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-feed-title,.NB-interaction-feedsub .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-feed-title,.NB-activity-feedsub .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-interaction').data('feedId');
                 
                 self.close_social_profile();
                 self.open_feed(feed_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo, .NB-activity-sharedstory .NB-interaction-sharedstory-title, .NB-activity-sharedstory .NB-interaction-sharedstory-content, .NB-activity-sharedstory .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
                 var feed_id = $interaction.data('feedId');
@@ -8167,6 +8167,26 @@
                         'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
                         'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
                     }});
+                }
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-activity-comment_reply .NB-interaction-reply-content, .NB-activity-comment_reply .NB-interaction-photo' }, function($t, $p){
+                e.preventDefault();
+                var $interaction = $t.closest('.NB-interaction');
+                var feed_id = 'social:' + $interaction.data('userId');
+                var story_id = $interaction.data('contentId');
+                var user_id = $interaction.data('userId');
+                var username = $interaction.data('username');
+                
+                self.close_social_profile();
+                if (self.model.get_feed(feed_id)) {
+                    self.open_social_stories(feed_id, {'story_id': story_id});
+                } else {
+                    var socialsub = self.model.add_social_feed({
+                        id: feed_id, 
+                        user_id: user_id, 
+                        username: username
+                    });
+                    self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
                 }
             }); 
 
