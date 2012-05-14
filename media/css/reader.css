@@ -7707,6 +7707,11 @@ form.opml_import_form input {
     max-height: 48px;
     border-radius: 3px;
 }
+.NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo-wrapper {
+    width: 108px;
+    height: 108px;
+    vertical-align: middle;
+}
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo img {
     max-width: 108px;
     max-height: 108px;
