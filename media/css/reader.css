@@ -3758,12 +3758,12 @@ form.opml_import_form input {
 }
 
 
-.NB-classifiers ::-moz-selection {
-background: transparent;
+.NB-classifiers .NB-classifier ::-moz-selection {
+    background: transparent;
 } 
 
-.NB-classifiers ::selection {
-background: transparent;
+.NB-classifiers .NB-classifier ::selection {
+    background: transparent;
 }
 
 .NB-classifiers .NB-classifier {
