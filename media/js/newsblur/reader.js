@@ -1907,25 +1907,34 @@
         
         set_correct_story_view_for_feed: function(feed_id, view) {
             var feed = this.model.get_feed(feed_id);
+            var $original_tabs = $('.task_view_page, .task_view_story');
             view = view || this.model.view_setting(feed_id);
 
             if (feed && feed.disabled_page) {
                 view = 'feed';
-                $('.task_view_page').addClass('NB-disabled-page')
-                                    .addClass('NB-disabled');
-                $('.task_view_story').addClass('NB-disabled-page')
-                                     .addClass('NB-disabled');
+                $original_tabs.addClass('NB-disabled-page')
+                              .addClass('NB-disabled')
+                              .attr('title', 'The original page has been disabled by the publisher.')
+                              .tipsy({
+                    gravity: 's',
+                    fade: true,
+                    delayIn: 200
+                });
+                $original_tabs.each(function() {
+                    $(this).tipsy('enable');
+                });
             } else if (feed && feed.has_exception && feed.exception_type == 'page') {
                 if (view == 'page') {
                     view = 'feed';
                 }
                 $('.task_view_page').addClass('NB-exception-page');
             } else {
-                $('.task_view_page').removeClass('NB-disabled-page')
-                                    .removeClass('NB-disabled')
-                                    .removeClass('NB-exception-page');
-                $('.task_view_story').removeClass('NB-disabled-page')
-                                     .removeClass('NB-disabled');
+                $original_tabs.removeClass('NB-disabled-page')
+                              .removeClass('NB-disabled')
+                              .removeClass('NB-exception-page');
+                $original_tabs.each(function() {
+                    $(this).tipsy('disable');
+                });
             }
           
             this.story_view = view;
