@@ -148,7 +148,7 @@ class OPMLImporter(Importer):
 
                 if user_feed_title == feed_db.feed_title:
                     user_feed_title = None
-
+                
                 us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
                     user=self.user,
