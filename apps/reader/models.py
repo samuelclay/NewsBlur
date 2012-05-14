@@ -63,6 +63,9 @@ class UserSubscription(models.Model):
         return feed
             
     def save(self, *args, **kwargs):
+        user_title_max = self._meta.get_field('user_title').max_length
+        if self.user_title and len(self.user_title) > user_title_max:
+            self.user_title = self.user_title[:user_title_max]
         if not self.active and self.user.profile.is_premium:
             self.active = True
         try:

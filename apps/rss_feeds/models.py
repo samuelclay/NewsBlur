@@ -34,9 +34,11 @@ from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
+# Also change in reader_utils.js.
 BROKEN_PAGE_URLS = [
     'nytimes.com',
     'stackoverflow.com',
+    'stackexchange.com',
     'twitter.com',
 ]
 
