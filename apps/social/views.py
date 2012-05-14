@@ -103,7 +103,9 @@ def load_social_stories(request, user_id, username=None):
         story['short_parsed_date'] = format_story_link_date__short(shared_date, now)
         story['long_parsed_date'] = format_story_link_date__long(shared_date, now)
         
-        if story['id'] in userstories:
+        if not socialsub:
+            story['read_status'] = 1
+        elif story['id'] in userstories:
             story['read_status'] = 1
         elif story['shared_date'] < date_delta:
             story['read_status'] = 1
@@ -334,12 +336,12 @@ def shared_stories_public(request, username):
         
     return HttpResponse("There are %s stories shared by %s." % (shared_stories.count(), username))
     
-@ajax_login_required
 @json.json_view
 def profile(request):
-    user_id = request.GET.get('user_id', request.user.pk)
+    user = get_user(request.user)
+    user_id = request.GET.get('user_id', user.pk)
     user_profile = MSocialProfile.objects.get(user_id=user_id)
-    user_profile = user_profile.to_json(full=True, common_follows_with_user=request.user.pk)
+    user_profile = user_profile.to_json(full=True, common_follows_with_user=user.pk)
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
@@ -393,11 +395,11 @@ def save_user_profile(request):
     
     return dict(code=1, user_profile=profile.to_json(full=True))
 
-@ajax_login_required
 @json.json_view
 def load_user_friends(request):
-    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
-    social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
+    user = get_user(request.user)
+    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=user.pk)
+    social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
     follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
 

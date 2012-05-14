@@ -3281,6 +3281,9 @@
                 this.fetch_story_locations_in_feed_view({'reset_timer': true});
             }, this), _.bind(function(data) {
                 var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
+                if (!NEWSBLUR.Globals.is_authenticated) {
+                    message = "You need to be logged in to share a story.";
+                }
                 var $error = $.make('div', { className: 'NB-error' }, message);
                 $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
                 $share_button.siblings('.NB-error').remove();
@@ -4840,6 +4843,9 @@
                 this.fetch_story_locations_in_feed_view();
             }, this), _.bind(function(data) {
                 var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
+                if (!NEWSBLUR.Globals.is_authenticated) {
+                    message = "You need to be logged in to reply to a comment.";
+                }
                 var $error = $.make('div', { className: 'NB-error' }, message);
                 $submit.removeClass('NB-disabled').text('Post');
                 $form.find('.NB-error').remove();

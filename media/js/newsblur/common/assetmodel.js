@@ -253,12 +253,16 @@ NEWSBLUR.AssetModel.Reader.prototype = {
             if (story) story.shared_comments = comments;
         }, this);
         
-        this.make_request('/social/share_story', {
-            story_id: story_id,
-            feed_id: feed_id,
-            comments: comments,
-            source_user_id: source_user_id
-        }, pre_callback, error_callback);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/social/share_story', {
+                story_id: story_id,
+                feed_id: feed_id,
+                comments: comments,
+                source_user_id: source_user_id
+            }, pre_callback, error_callback);
+        } else {
+            error_callback();
+        }
     },
     
     save_comment_reply: function(story_id, story_feed_id, comment_user_id, reply_comments, original_message, callback, error_callback) {
