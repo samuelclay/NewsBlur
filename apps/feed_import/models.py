@@ -107,11 +107,13 @@ class OPMLImporter(Importer):
     def process_outline(self, outline):
         folders = []
         for item in outline:
-            if not hasattr(item, 'xmlUrl') and hasattr(item, 'text'):
+            if (not hasattr(item, 'xmlUrl') and 
+                (hasattr(item, 'text') or hasattr(item, 'title'))):
                 folder = item
+                title = getattr(item, 'text', None) or getattr(item, 'title', None)
                 # if hasattr(folder, 'text'):
                 #     logging.info(' ---> [%s] ~FRNew Folder: %s' % (self.user, folder.text))
-                folders.append({folder.text: self.process_outline(folder)})
+                folders.append({title: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
                 if not hasattr(feed, 'htmlUrl'):
