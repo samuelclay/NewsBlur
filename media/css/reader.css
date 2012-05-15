@@ -7460,7 +7460,7 @@ form.opml_import_form input {
 
 .NB-modal-friends .NB-tab .NB-ghost {
     margin: 0 auto;
-    padding: 24px 0;
+    padding: 6px 0 0;
     color: #A0A0A0;
     font-size: 14px;
     text-align: center;
@@ -7810,6 +7810,11 @@ form.opml_import_form input {
 }
 .NB-profile-badge-actions .NB-profile-badge-action-preview.NB-disabled:hover {
     background: white;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-edit {
+    color: #404040;
+    line-height: 1;
+    font-size: 11px;
 }
 .NB-profile-badge-actions .NB-profile-badge-action-buttons {
     float: right;

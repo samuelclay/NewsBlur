@@ -1,24 +1,12 @@
-{% if recommended_users %}
+{% if profile %}
 
 <div class="NB-module NB-module-recommended-users">
 
     <h5 class="NB-module-header">
-        Active Blurblogs
+        People to follow
     </h5>
 
     <ul class="NB-recommended-users">
-        {% for recommended_user in recommended_users %}
-        <li class="NB-recommended-user"
-            {% if interaction.user_id %}data-user-id="{{ recommended_user.user_id }}"{% endif %}>
-            <img class="NB-interaction-photo" src="{{ recommended_user.photo_url }}">
-            <div class="NB-recommended-user-count NB-right">
-                {{ recommended_user.shared_stories_count }} shared stor{{ recommended_user.shared_stories_count|pluralize:"y,ies" }}
-            </div>
-            <div class="NB-recommended-user-name">
-                {{ recommended_user.username }}
-            </div>
-        </li>
-        {% endfor %}
     </ul>
 
 </div>

@@ -402,6 +402,7 @@ def load_user_friends(request):
     social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
     follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
+    recommended_users = social_profile.recommended_users()
 
     return {
         'services': social_services,
@@ -409,6 +410,7 @@ def load_user_friends(request):
         'user_profile': social_profile.to_json(full=True),
         'following_profiles': following_profiles,
         'follower_profiles': follower_profiles,
+        'recommended_users': recommended_users,
     }
 
 @ajax_login_required

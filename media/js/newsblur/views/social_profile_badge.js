@@ -7,6 +7,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
         "click .NB-profile-badge-action-unfollow": "unfollow_user",
         "click .NB-profile-badge-action-preview": "preview_user",
         "click .NB-profile-badge-username": "open_profile",
+        "click .NB-profile-badge-action-edit": "open_edit_profile",
         "mouseenter .NB-profile-badge-action-unfollow": "mouseenter_unfollow",
         "mouseleave .NB-profile-badge-action-unfollow": "mouseleave_unfollow",
         "mouseenter .NB-profile-badge-action-follow": "mouseenter_follow",
@@ -62,7 +63,15 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
         
         var $actions;
         if (NEWSBLUR.reader.model.user_profile.get('user_id') == profile.get('user_id')) {
-            $actions = $.make('div', { className: 'NB-profile-badge-action-self NB-profile-badge-action-buttons NB-modal-submit-button' }, 'You');
+            $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
+                $.make('div', { 
+                    className: 'NB-profile-badge-action-self NB-modal-submit-button' 
+                }, 'You'),
+                (this.options.show_edit_button && $.make('div', { 
+                    className: 'NB-profile-badge-action-edit NB-modal-submit-button NB-modal-submit-grey ' +
+                               (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
+                }, 'Edit Profile'))
+            ]);
         } else if (_.contains(NEWSBLUR.reader.model.user_profile.get('following_user_ids'), profile.get('user_id'))) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-close' 
@@ -138,6 +147,12 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
 
         $.modal.close(function() {
             NEWSBLUR.reader.open_social_profile_modal(user_id);
+        });
+    },
+    
+    open_edit_profile: function() {
+        $.modal.close(function() {
+            NEWSBLUR.reader.open_profile_editor_modal();
         });
     },
     

@@ -34,12 +34,12 @@ def render_features_module(context):
           
 @register.inclusion_tag('reader/recommended_users.xhtml', takes_context=True)
 def render_recommended_users(context):
-    user              = get_user(context['user'])
-    recommended_users = MSocialProfile.recommended_users(user.pk)
+    user    = get_user(context['user'])
+    profile = MSocialProfile.profile(user.pk)
 
     return {
         'user': user,
-        'recommended_users': recommended_users,
+        'profile': profile,
     }
           
 @register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)

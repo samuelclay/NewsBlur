@@ -5,6 +5,7 @@ import redis
 import re
 import math
 import mongoengine as mongo
+import random
 from collections import defaultdict
 # from mongoengine.queryset import OperationError
 from django.conf import settings
@@ -25,6 +26,7 @@ from utils import log as logging
 from utils.feed_functions import relative_timesince
 from utils import json_functions as json
 
+RECOMMENDATIONS_LIMIT = 5
 
 class MRequestInvite(mongo.Document):
     username = mongo.StringField()
@@ -131,23 +133,41 @@ class MSocialProfile(mongo.Document):
             self.follow_user(self.user_id)
             self.count()
     
-    @classmethod
-    def recommended_users(cls, for_user_id):
-        # profile_count = cls.objects.filter(**{
-        #     'shared_stories_count__gte': 1, 
-        #     'user_id__ne': for_user_id,
-        # }).count()
-        profiles = []
-        # for i in range(3):
-        #     skip = random.randint(0, max(profile_count-2, 0))
-        #     profile = cls.objects.filter(**{
-        #         'shared_stories_count__gte': 1, 
-        #         'user_id__ne': for_user_id,
-        #     })
-        #     if profile:
-        #         profiles.append(profile[0])
-        # profiles = sorted(profiles, key=lambda p: p.shared_stories_count)
-        return profiles
+    def recommended_users(self):
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        following_key = "F:%s:F" % (self.user_id)
+        social_follow_key = "FF:%s:F" % (self.user_id)
+        profile_user_ids = []
+        
+        # Find potential twitter/fb friends
+        services = MSocialServices.objects.get(user_id=self.user_id)
+        facebook_user_ids = [u.user_id for u in 
+                            MSocialServices.objects.filter(facebook_uid__in=services.facebook_friend_ids).only('user_id')]
+        twitter_user_ids = [u.user_id for u in 
+                            MSocialServices.objects.filter(twitter_uid__in=services.twitter_friend_ids).only('user_id')]
+        social_user_ids = facebook_user_ids + twitter_user_ids
+        # Find users not currently followed by this user
+        r.delete(social_follow_key)
+        r.sadd(social_follow_key, *social_user_ids)
+        nonfriend_user_ids = r.sdiff(social_follow_key, following_key)
+        profile_user_ids = [int(f) for f in nonfriend_user_ids]
+        r.delete(social_follow_key)
+        
+        # Not enough? Grab popular users.
+        if len(nonfriend_user_ids) < RECOMMENDATIONS_LIMIT:
+            homepage_user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+            suggested_users_list = r.sdiff("F:%s:F" % homepage_user.pk, following_key)
+            suggested_users_list = [int(f) for f in suggested_users_list]
+            suggested_user_ids = []
+            slots_left = min(len(suggested_users_list), RECOMMENDATIONS_LIMIT - len(nonfriend_user_ids))
+            for slot in range(slots_left):
+                suggested_user_ids.append(random.choice(suggested_users_list))
+            profile_user_ids.extend(suggested_user_ids)
+        
+        # Sort by shared story count
+        profiles = MSocialProfile.profiles(profile_user_ids).order_by('-shared_stories_count')
+        
+        return profiles[:RECOMMENDATIONS_LIMIT]
     
     @property
     def username_slug(self):
