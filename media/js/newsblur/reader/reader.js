@@ -4878,6 +4878,11 @@
                 var comments = _.select(data.comments, _.bind(function(comment) {
                     return !_.contains(this.model.user_profile.get('following_user_ids'), comment.user_id);
                 }, this));
+                var $header = $.make('div', { 
+                    className: 'NB-story-comments-public-header-wrapper' 
+                }, $.make('div', { 
+                    className: 'NB-story-comments-public-header' 
+                }, Inflector.pluralize(' public comment', comments.length, true))).prependTo($comments);
                 _.each(comments, _.bind(function(comment) {
                     var $comment = this.make_story_share_comment(comment);
                     $comments.append($comment);

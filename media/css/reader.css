@@ -2164,16 +2164,21 @@ background: transparent;
     font-weight: bold;
     clear: both;
 }
-#story_pane .NB-story-comments-public-teaser-wrapper {
+#story_pane .NB-story-comments-public-teaser-wrapper,
+#story_pane .NB-story-comments-public-header-wrapper {
     border-top: 1px solid #353535;
     padding: 1px 0;
     cursor: pointer;
+}
+#story_pane .NB-story-comments-public-header-wrapper {
+    cursor: default;
 }
 #story_pane .NB-story-comments-shares-teaser-wrapper {
     border-top: 0;
     padding-top: 0;
 }
-#story_pane .NB-story-comments-public-teaser {
+#story_pane .NB-story-comments-public-teaser,
+#story_pane .NB-story-comments-public-header {
     background-color: #B1B6B4;
     color: white;
     text-shadow: 0 1px 0 #505050;
@@ -2187,9 +2192,15 @@ background: transparent;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
 }
+#story_pane .NB-story-comments-public-header {
+    background-color: whiteSmoke;
+    color: #404040;
+    text-shadow: 0 1px 0 white;
+}
 #story_pane .NB-story-comments-shares-teaser {
     background-color: whiteSmoke;
     color: #202020;
+    cursor: default;
     text-shadow: 0 1px 0 #FFF;
     font-weight: bold;
     text-transform: uppercase;
@@ -7701,6 +7712,7 @@ form.opml_import_form input {
 }
 .NB-profile-badge .NB-profile-badge-photo {
     padding: 0 8px 0 0;
+    line-height: 0;
 }
 .NB-profile-badge .NB-profile-badge-photo img {
     max-width: 48px;
