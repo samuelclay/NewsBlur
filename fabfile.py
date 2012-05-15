@@ -379,6 +379,7 @@ def config_pgbouncer():
     sudo('/etc/init.d/pgbouncer stop')
     with settings(warn_only=True):
         sudo('pkill pgbouncer')
+        run('sleep 2')
     sudo('/etc/init.d/pgbouncer start')
     
 def config_monit():
@@ -559,12 +560,19 @@ def setup_rabbitmq():
 def setup_memcached():
     sudo('apt-get -y install memcached')
 
-def setup_postgres():
-    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
-    put('config/postgresql.conf', '/etc/postgresql/9.0/main/postgresql.conf', use_sudo=True)
-    sudo('echo "569827328" > /proc/sys/kernel/shmmax')
-    sudo('echo "\nkernel.shmmax = 569827328" > /etc/sysctl.conf')
+def setup_postgres(standby=False):
+    shmmax = 572506112
+#    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
+    put('config/postgresql%s.conf' % (
+        ('_standby' if standby else ''),
+    ), '/etc/postgresql/9.0/main/postgresql.conf', use_sudo=True)
+    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
+    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
     sudo('sysctl -p')
+    
+    if standby:
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.0/recovery.conf', use_sudo=True)
+        
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
