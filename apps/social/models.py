@@ -148,6 +148,7 @@ class MSocialProfile(mongo.Document):
         social_user_ids = facebook_user_ids + twitter_user_ids
         # Find users not currently followed by this user
         r.delete(social_follow_key)
+        nonfriend_user_ids = []
         if social_user_ids:
             r.sadd(social_follow_key, social_user_ids)
             nonfriend_user_ids = r.sdiff(social_follow_key, following_key)
