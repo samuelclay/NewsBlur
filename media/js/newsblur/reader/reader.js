@@ -1937,7 +1937,7 @@
                 this.make_feed_title_in_stories(feed_id);
                 this.show_feedbar_loading();
                 this.switch_taskbar_view(this.story_view);
-                this.scroll_feed_list_to_show_selected_feed();
+                this.scroll_feed_list_to_show_selected_feed(options.$feed_link);
 
                 _.delay(_.bind(function() {
                     if (!options.delay || feed_id == self.next_feed) {
