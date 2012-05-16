@@ -150,7 +150,7 @@ class MSocialProfile(mongo.Document):
         r.delete(social_follow_key)
         nonfriend_user_ids = []
         if social_user_ids:
-            r.sadd(social_follow_key, social_user_ids)
+            r.sadd(social_follow_key, *social_user_ids)
             nonfriend_user_ids = r.sdiff(social_follow_key, following_key)
             profile_user_ids = [int(f) for f in nonfriend_user_ids]
             r.delete(social_follow_key)
