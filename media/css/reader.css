@@ -1734,6 +1734,7 @@ background: transparent;
 
 #story_pane .NB-feed-story-feed .NB-feed-story-header-title {
     cursor: pointer;
+    font-weight: bold;
 }
 #story_pane .NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #DFE2F3;
@@ -2111,12 +2112,12 @@ background: transparent;
     cursor: pointer;
 }
 
-#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button {
+#story_pane .NB-story-comment-edit-button {
     padding: 4px 24px 4px 12px;
     float: left;
     cursor: pointer;
 }
-#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button .NB-story-comment-reply-edit-button-wrapper {
+#story_pane .NB-story-comment-edit-button .NB-story-comment-edit-button-wrapper {
     text-transform: uppercase;
     background-color: #74A2E7;
     color: white;
@@ -2124,13 +2125,16 @@ background: transparent;
     line-height: 9px;
     font-size: 9px;
 }
-#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button:hover .NB-story-comment-reply-edit-button-wrapper {
+#story_pane .NB-story-comment-edit-button:hover .NB-story-comment-edit-button-wrapper {
     background-color: #5073BC;
 }
-#story_pane .NB-story-comment-reply .NB-story-comment-reply-edit-button:active .NB-story-comment-reply-edit-button-wrapper {
+#story_pane .NB-story-comment-edit-button:active .NB-story-comment-edit-button-wrapper {
     background-color: #2A3B72;
 }
-#story_pane .NB-story-comment-reply .NB-story-comment-reply-content {
+#story_pane .NB-story-comment-share-edit-button {
+    padding-right: 0;
+}
+#story_pane .NB-story-comment-reply-content {
     clear: both;
     color: #303030;
     float: left;

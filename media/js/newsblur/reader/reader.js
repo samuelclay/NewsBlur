@@ -4744,6 +4744,9 @@
                     ])),
                     $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
                     $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago'),
+                    (comment.user_id == NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-share-edit-button' }, [
+                        $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
+                    ])),
                     $.make('div', { className: 'NB-story-comment-reply-button' }, [
                         $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
                     ])
@@ -4763,8 +4766,8 @@
                     $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: user.get('photo_url') }),
                     $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, user.get('username')),
                     $.make('div', { className: 'NB-story-comment-date NB-story-comment-reply-date' }, reply.publish_date + ' ago'),
-                    (reply.user_id == user_id && $.make('div', { className: 'NB-story-comment-reply-edit-button' }, [
-                        $.make('div', { className: 'NB-story-comment-reply-edit-button-wrapper' }, 'edit')
+                    (reply.user_id == user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-reply-edit-button' }, [
+                        $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
                     ])),
                     $.make('div', { className: 'NB-story-comment-reply-content' }, reply.comments)
                 ]).data('user_id', user.get('id'));
@@ -8113,6 +8116,13 @@
                 e.preventDefault();
                 var $comment = $t.closest('.NB-story-comment');
                 self.open_social_comment_reply_form($comment);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-share-edit-button' }, function($t, $p){
+                e.preventDefault();
+                var $story = $t.closest('.NB-feed-story');
+                var feed_id = $story.data('feed_id');
+                var story_id = $story.data('story_id');
+                self.toggle_feed_story_share_dialog(story_id, feed_id);
             }); 
             $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply-edit-button' }, function($t, $p){
                 e.preventDefault();
