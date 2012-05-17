@@ -4244,7 +4244,6 @@ background: transparent;
   margin: -5px 0 0 36px;
   padding: 0 0 5px 0;
 }
-
 .NB-menu-manage .NB-menu-manage-image {
   padding: 0;
   position: absolute;
@@ -4368,7 +4367,8 @@ background: transparent;
     width: 100%;
 }
 .NB-menu-manage .NB-menu-manage-confirm select,
-.NB-menu-manage .NB-menu-manage-confirm input.NB-menu-manage-title {
+.NB-menu-manage .NB-menu-manage-confirm input.NB-menu-manage-title,
+.NB-menu-manage .NB-menu-manage-open-input {
     padding: 1px;
     font-size: 11px;
     margin: 2px 0 2px 36px;
@@ -4380,6 +4380,10 @@ background: transparent;
     -moz-box-shadow:2px 2px 0 #95AB76;
     -webkit-box-shadow:2px 2px 0 #95AB76;
     box-shadow:2px 2px 0 #95AB76;
+}
+.NB-menu-manage .NB-menu-manage-open-input {
+    float: right;
+    margin: 4px 8px 0 0;
 }
 .NB-menu-manage .NB-menu-manage-confirm select {
     height: auto;

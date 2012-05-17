@@ -4488,6 +4488,7 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-open' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input', value: story.story_permalink }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Open')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -4598,6 +4599,7 @@
             var $manage_menu_container = $('.NB-menu-manage-container');
             // NEWSBLUR.log(['show_manage_menu', type, $item, $manage_menu_container.data('item'), $item && $item[0] == $manage_menu_container.data('item')]);
             clearTimeout(this.flags.closed_manage_menu);
+            this.flags['showing_confirm_input_on_manage_menu'] = false;
             
             // If another menu is open, hide it first.
             // If this menu is already open, then hide it instead.
@@ -4886,9 +4888,8 @@
             });
             $('select', $confirm).focus().select();
             this.flags['showing_confirm_input_on_manage_menu'] = true;
-            console.log(["$select", $select, $('option', $select)]);
+
             $('option', $select).each(function() {
-                console.log(["show_confirm_move_menu_item", in_folder, $(this).attr('value')]);
                 if ($(this).attr('value') == in_folder) {
                     $(this).attr('selected', 'selected');
                     return false;
@@ -6199,23 +6200,6 @@
                 story_prevent_bubbling = true;
                 self.show_manage_menu('story', $t.closest('.NB-feed-story'));
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
-                e.preventDefault();
-                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
-                self.open_story_in_new_tab(story_id);
-                story_prevent_bubbling = true;
-            });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-star' }, function($t, $p){
-                e.preventDefault();
-                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
-                var $story = self.find_story_in_story_titles(story_id);
-                if ($story.hasClass('NB-story-starred')) {
-                  self.mark_story_as_unstarred(story_id, $story);
-                } else {
-                  self.mark_story_as_starred(story_id, $story);
-                }
-                story_prevent_bubbling = true;
-            });
             $.targetIs(e, { tagSelector: '.NB-feed-story-hide-changes' }, function($t, $p){
                 e.preventDefault();
                 var $story = $t.closest('.NB-feed-story');
@@ -6288,6 +6272,17 @@
             $.targetIs(e, { tagSelector: '.NB-taskbar-sidebar-toggle-open' }, function($t, $p){
                 e.preventDefault();
                 self.open_sidebar();
+            });  
+            
+            // = Context Menu ================================================
+            
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-open-input' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                self.flags['showing_confirm_input_on_manage_menu'] = true;
+                $t.select().blur(function() {
+                    self.flags['showing_confirm_input_on_manage_menu'] = false;
+                });
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-train' }, function($t, $p){
                 e.preventDefault();
@@ -6446,6 +6441,23 @@
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.mark_folder_as_read(folder_name, $folder);
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
+                e.preventDefault();
+                if (!self.flags['showing_confirm_input_on_manage_menu']) {
+                    var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
+                    self.open_story_in_new_tab(story_id);
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-star' }, function($t, $p){
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
+                var $story = self.find_story_in_story_titles(story_id);
+                if ($story.hasClass('NB-story-starred')) {
+                  self.mark_story_as_unstarred(story_id, $story);
+                } else {
+                  self.mark_story_as_starred(story_id, $story);
+                }
+            });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-site-mark-read' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
