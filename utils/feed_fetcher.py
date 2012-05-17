@@ -76,9 +76,8 @@ class FetchFeed:
                                         etag=etag,
                                         modified=modified)
 
-        if self.options['verbose'] and getattr(self.fpf, 'status', None) == 200:
-            logging.debug(u'   ---> [%-30s] ~FBTIME: feed fetch in ~FM%.4ss' % (
-                          unicode(self.feed)[:30], time.time() - start))
+        logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
+                      unicode(self.feed)[:30], time.time() - start))
         
         return FEED_OK, self.fpf
         
@@ -249,7 +248,7 @@ class ProcessFeed:
                 elif link['rel'] == 'self':
                     self_url = link['href']
             if hub_url and self_url and not settings.DEBUG:
-                logging.debug(u'   ---> [%-30s] ~BB~SK~FWSubscribing to PuSH hub: %s' % (
+                logging.debug(u'   ---> [%-30s] ~BB~FWSubscribing to PuSH hub: %s' % (
                               unicode(self.feed)[:30], hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
         
