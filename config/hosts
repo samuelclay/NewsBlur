@@ -1,9 +1,8 @@
 127.0.0.1 localhost
 
 199.15.250.228  app01   app01.newsblur.com
-199.15.250.229  app02   app02.newsblur.com
-199.15.252.156  app03   app03.newsblur.com
-199.15.252.156  dev     dev.newsblur.com
+199.15.250.229  app02   app02.newsblur.com  push
+199.15.252.156  app03   app03.newsblur.com  dev
 199.15.253.218  db01    db01.newsblur.com
 199.15.252.50   db02    db02.newsblur.com
 199.15.253.226  db03    db03.newsblur.com
@@ -12,3 +11,6 @@
 199.15.250.250  task02  task02.newsblur.com
 199.15.250.233  task03  task03.newsblur.com
 199.15.252.148  task04  task04.newsblur.com
+199.15.252.106  task05  task05.newsblur.com
+199.15.252.107  task06  task06.newsblur.com
+199.15.252.108  task07  task07.newsblur.com

@@ -51,7 +51,6 @@ class MClassifierAuthor(mongo.Document):
         'allow_inheritance': False,
     }
 
-
 class MClassifierTag(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'tag'))
     feed_id = mongo.IntField()

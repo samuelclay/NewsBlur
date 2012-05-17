@@ -46,7 +46,10 @@ env.roledefs ={
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
-             'task04.newsblur.com'],
+             'task04.newsblur.com', 
+             'task05.newsblur.com', 
+             'task06.newsblur.com', 
+             'task07.newsblur.com'],
 }
 
 # ================
@@ -216,7 +219,8 @@ def setup_time_calibration():
     put('config/ntpdate.cron', '%s/' % env.NEWSBLUR_PATH)
     sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
     sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
-    sudo('/etc/cron.hourly/ntpdate')
+    with settings(warn_only=True):
+        sudo('/etc/cron.hourly/ntpdate')
     
 # =============
 # = Bootstrap =
@@ -235,8 +239,8 @@ def setup_common():
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
-    setup_mongoengine()
-    setup_forked_mongoengine()
+    # setup_mongoengine()
+    # setup_forked_mongoengine()
     setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
@@ -285,7 +289,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -352,15 +356,15 @@ def setup_psycopg():
     sudo('easy_install -U psycopg2')
     
 def setup_python():
-    sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    # sudo('easy_install -U pip')
+    # sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-        sudo('python setup.py install')
+    # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
+    #     sudo('python setup.py install')
         
     with settings(warn_only=True):
-        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python/sitecustomize.py\'')
+        sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
 
 # PIL - Only if python-imaging didn't install through apt-get, like on Mac OS X.
 def setup_imaging():
@@ -392,7 +396,7 @@ def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('rm -fr mongoengine')
-            run('git clone https://github.com/hmarr/mongoengine.git')
+            run('git clone https://github.com/mongoengine/mongoengine.git')
             sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
             sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
@@ -432,14 +436,15 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % env.user)
 
 def setup_nginx():
+    NGINX_VERSION = '1.2.0'
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             sudo("groupadd nginx")
             sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://nginx.org/download/nginx-1.1.18.tar.gz')
-            run('tar -xzf nginx-1.1.18.tar.gz')
-            run('rm nginx-1.1.18.tar.gz')
-            with cd('nginx-1.1.18'):
+            run('wget http://nginx.org/download/nginx-%s.tar.gz' % NGINX_VERSION)
+            run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
+            run('rm nginx-%s.tar.gz' % NGINX_VERSION)
+            with cd('nginx-%s' % NGINX_VERSION):
                 run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
                 run('make')
                 sudo('make install')
