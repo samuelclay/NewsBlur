@@ -1717,11 +1717,11 @@ background: transparent;
     padding: 2px 0;
     color: white;
     font-size: 13px;
-    text-shadow: 0 1px 0 #000;
+/*    text-shadow: 0 1px 0 #000;*/
 }
 #story_pane .NB-inverse .NB-feed-story-feed {
     color: black;
-    text-shadow: 0 1px 0 #E0E0E0;
+/*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
 #story_pane .NB-feed-story-feed .feed_favicon {
@@ -1738,12 +1738,12 @@ background: transparent;
 }
 #story_pane .NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #DFE2F3;
-    text-shadow: 0 1px 0 #000;
+/*    text-shadow: 0 1px 0 #000;*/
 }
 
 #story_pane .NB-inverse .NB-feed-story-feed .NB-feed-story-header-title:hover {
     color: #274C63;
-    text-shadow: 0 1px 0 #E0E0E0;
+/*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
 #story_pane .NB-feed-stories .NB-feed-story img {

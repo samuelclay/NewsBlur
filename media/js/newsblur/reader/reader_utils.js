@@ -25,9 +25,9 @@ NEWSBLUR.utils = {
         var g = parseInt(color.substr(2, 2), 16);
         var b = parseInt(color.substr(4, 2), 16);
     
-        if (type == 'border') {
+        if (type == 'border' || type == 'border-color') {
             return [
-                '1px solid rgb(',
+                (type == 'border' ? '1px solid ' : '') + 'rgb(',
                 [
                     parseInt(r*(6/8), 10),
                     parseInt(g*(6/8), 10),

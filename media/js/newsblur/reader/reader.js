@@ -4261,6 +4261,7 @@
                 if (this.cache.last_feed_view_story_feed_id == story.story_feed_id) {
                     river_same_feed = 'NB-feed-story-river-same-feed';
                 }
+                console.log(["feed story", NEWSBLUR.utils.generate_gradient(feed, 'border')]);
                 var $story = $.make('li', { className: 'NB-feed-story ' + read + starred + shared + river_stories + ' NB-story-' + score_color }, [
                     $.make('div', { className: 'NB-feed-story-header' }, [
                         $.make('div', { className: 'NB-feed-story-header-feed' }, [
@@ -4274,6 +4275,7 @@
                           .css('background-image', NEWSBLUR.utils.generate_gradient(feed, 'moz'))
                           .css('borderBottom', NEWSBLUR.utils.generate_gradient(feed, 'border'))
                           .css('borderTop', NEWSBLUR.utils.generate_gradient(feed, 'border'))
+                          .css('textShadow', '0 1px 0 ' + NEWSBLUR.utils.generate_gradient(feed, 'border-color'))
                           .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
