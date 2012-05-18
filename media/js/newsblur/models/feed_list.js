@@ -2,7 +2,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
     initialize: function() {
         this.$s = NEWSBLUR.reader.$s;
-        this.model = NEWSBLUR.reader.model;
+        this.model = NEWSBLUR.assets;
         
         if (!$('#feed_list').length) return;
         $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
@@ -12,7 +12,6 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             this.make_feeds();
             this.make_social_feeds();
             this.load_router();
-            callback && callback();
         }, this));
         NEWSBLUR.assets.load_feeds();
     },
@@ -27,14 +26,14 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $feed_list.empty();
         
         this.$s.$story_taskbar.css({'display': 'block'});
-        var $feeds = this.make_feeds_folder(folders, 0);
+        var $feeds = new NEWSBLUR.Views.Folder(this.model.folders).render().el;
         $feed_list.css({
             'display': 'block', 
             'opacity': 0
         });
         $feed_list.html($feeds);
-        this.count_collapsed_unread_stories();
         $feed_list.animate({'opacity': 1}, {'duration': 700});
+        this.count_collapsed_unread_stories();
         this.hover_over_feed_titles($feed_list);
         this.$s.$feed_link_loader.fadeOut(250);
 

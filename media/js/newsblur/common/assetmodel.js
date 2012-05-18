@@ -275,11 +275,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(feeds, subscriptions) {
             NEWSBLUR.log(['subscriptions', feeds, subscriptions]);
             self.flags['favicons_fetching'] = self.feeds.any(function(feed) { return feed.get('favicons_fetching'); });
-            self.folders = subscriptions.folders;
+
+            self.folders = new NEWSBLUR.Collections.Folders();
+            self.folders.parse(subscriptions.folders);
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);
-            
+                    
             if (!_.isEqual(self.favicons, {})) {
                 self.feeds.each(function(feed) {
                     if (self.favicons[feed.id]) {
@@ -289,6 +291,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             
             self.detect_any_inactive_feeds();
+            
+            self.feeds.trigger('reset');
         };
         
         var data = {
