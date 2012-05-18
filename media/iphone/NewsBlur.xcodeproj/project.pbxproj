@@ -103,28 +103,18 @@
 		4307BEE51565EDF8007A932A /* warning.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE7F1565EDF8007A932A /* warning.png */; };
 		4307BEE61565EDF8007A932A /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE801565EDF8007A932A /* world.png */; };
 		4307BEE71565EDF8007A932A /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE801565EDF8007A932A /* world.png */; };
-		4307BEE81565EDF8007A932A /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE821565EDF8007A932A /* AddSiteAutocompleteCell.xib */; };
-		4307BEE91565EDF8007A932A /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE821565EDF8007A932A /* AddSiteAutocompleteCell.xib */; };
-		4307BEEA1565EDF8007A932A /* AddSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE831565EDF8007A932A /* AddSiteViewController.xib */; };
-		4307BEEB1565EDF8007A932A /* AddSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE831565EDF8007A932A /* AddSiteViewController.xib */; };
-		4307BEEC1565EDF8007A932A /* FeedDetailTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE841565EDF8007A932A /* FeedDetailTableCell.xib */; };
-		4307BEED1565EDF8007A932A /* FeedDetailTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE841565EDF8007A932A /* FeedDetailTableCell.xib */; };
-		4307BEEE1565EDF8007A932A /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE851565EDF8007A932A /* FeedDetailViewController.xib */; };
-		4307BEEF1565EDF8007A932A /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE851565EDF8007A932A /* FeedDetailViewController.xib */; };
-		4307BEF01565EDF8007A932A /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE861565EDF8007A932A /* LoginViewController.xib */; };
-		4307BEF11565EDF8007A932A /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE861565EDF8007A932A /* LoginViewController.xib */; };
-		4307BEF21565EDF8007A932A /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE871565EDF8007A932A /* MainWindow.xib */; };
-		4307BEF31565EDF8007A932A /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE871565EDF8007A932A /* MainWindow.xib */; };
-		4307BEF41565EDF8007A932A /* MoveSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE881565EDF8007A932A /* MoveSiteViewController.xib */; };
-		4307BEF51565EDF8007A932A /* MoveSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE881565EDF8007A932A /* MoveSiteViewController.xib */; };
-		4307BEF61565EDF8007A932A /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE891565EDF8007A932A /* NewsBlurViewController.xib */; };
-		4307BEF71565EDF8007A932A /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE891565EDF8007A932A /* NewsBlurViewController.xib */; };
-		4307BEF81565EDF8007A932A /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE8A1565EDF8007A932A /* OriginalStoryViewController.xib */; };
-		4307BEF91565EDF8007A932A /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE8A1565EDF8007A932A /* OriginalStoryViewController.xib */; };
-		4307BEFA1565EDF8007A932A /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE8B1565EDF8007A932A /* StoryDetailViewController.xib */; };
-		4307BEFB1565EDF8007A932A /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE8B1565EDF8007A932A /* StoryDetailViewController.xib */; };
 		4307BEFE1565EEBC007A932A /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4307BEFD1565EEBC007A932A /* Base64.m */; };
 		4307BEFF1565EEBC007A932A /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4307BEFD1565EEBC007A932A /* Base64.m */; };
+		43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */; };
+		43B8F023156603180008733D /* AddSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F019156603170008733D /* AddSiteViewController.xib */; };
+		43B8F024156603180008733D /* FeedDetailTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01A156603170008733D /* FeedDetailTableCell.xib */; };
+		43B8F025156603180008733D /* FeedDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01B156603170008733D /* FeedDetailViewController.xib */; };
+		43B8F026156603180008733D /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01C156603170008733D /* LoginViewController.xib */; };
+		43B8F027156603180008733D /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01D156603170008733D /* MainWindow.xib */; };
+		43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01E156603170008733D /* MoveSiteViewController.xib */; };
+		43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* NewsBlurViewController.xib */; };
+		43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F020156603170008733D /* OriginalStoryViewController.xib */; };
+		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
 		43D0447C1565BC090085F811 /* Entitlements.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */; };
 		43D044931565BC090085F811 /* SHKSharers.plist in Resources */ = {isa = PBXBuildFile; fileRef = FF2D8B8A1487EFF000057B80 /* SHKSharers.plist */; };
 		43D044941565BC090085F811 /* ShareKit.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FF2D8B991487EFF000057B80 /* ShareKit.bundle */; };
@@ -409,18 +399,18 @@
 		4307BE7E1565EDF8007A932A /* warning.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = warning.gif; sourceTree = "<group>"; };
 		4307BE7F1565EDF8007A932A /* warning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = warning.png; sourceTree = "<group>"; };
 		4307BE801565EDF8007A932A /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
-		4307BE821565EDF8007A932A /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
-		4307BE831565EDF8007A932A /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
-		4307BE841565EDF8007A932A /* FeedDetailTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailTableCell.xib; sourceTree = "<group>"; };
-		4307BE851565EDF8007A932A /* FeedDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailViewController.xib; sourceTree = "<group>"; };
-		4307BE861565EDF8007A932A /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
-		4307BE871565EDF8007A932A /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		4307BE881565EDF8007A932A /* MoveSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoveSiteViewController.xib; sourceTree = "<group>"; };
-		4307BE891565EDF8007A932A /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
-		4307BE8A1565EDF8007A932A /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
-		4307BE8B1565EDF8007A932A /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
 		4307BEFC1565EEBC007A932A /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		4307BEFD1565EEBC007A932A /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
+		43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
+		43B8F019156603170008733D /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
+		43B8F01A156603170008733D /* FeedDetailTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailTableCell.xib; sourceTree = "<group>"; };
+		43B8F01B156603170008733D /* FeedDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailViewController.xib; sourceTree = "<group>"; };
+		43B8F01C156603170008733D /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
+		43B8F01D156603170008733D /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		43B8F01E156603170008733D /* MoveSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoveSiteViewController.xib; sourceTree = "<group>"; };
+		43B8F01F156603170008733D /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
+		43B8F020156603170008733D /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
+		43B8F021156603170008733D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
 		43D045081565BC090085F811 /* NewsBlur-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NewsBlur-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		43D0451D1565BC090085F811 /* NewsBlur-iPad-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NewsBlur-iPad-Info.plist"; path = "/Users/roycyang/github/NewsBlur/media/iphone/NewsBlur-iPad-Info.plist"; sourceTree = "<absolute>"; };
 		43D0451F1565BC150085F811 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = "Resources-iPad/MainWindow.xib"; sourceTree = "<group>"; };
@@ -733,8 +723,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				43B8F017156603170008733D /* Resources-iPhone */,
 				4307BE511565EDF8007A932A /* Resources */,
-				4307BE811565EDF8007A932A /* Resources-iPhone */,
 				43D0451C1565BC090085F811 /* Resources-iPad */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -852,19 +842,19 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		4307BE811565EDF8007A932A /* Resources-iPhone */ = {
+		43B8F017156603170008733D /* Resources-iPhone */ = {
 			isa = PBXGroup;
 			children = (
-				4307BE821565EDF8007A932A /* AddSiteAutocompleteCell.xib */,
-				4307BE831565EDF8007A932A /* AddSiteViewController.xib */,
-				4307BE841565EDF8007A932A /* FeedDetailTableCell.xib */,
-				4307BE851565EDF8007A932A /* FeedDetailViewController.xib */,
-				4307BE861565EDF8007A932A /* LoginViewController.xib */,
-				4307BE871565EDF8007A932A /* MainWindow.xib */,
-				4307BE881565EDF8007A932A /* MoveSiteViewController.xib */,
-				4307BE891565EDF8007A932A /* NewsBlurViewController.xib */,
-				4307BE8A1565EDF8007A932A /* OriginalStoryViewController.xib */,
-				4307BE8B1565EDF8007A932A /* StoryDetailViewController.xib */,
+				43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */,
+				43B8F019156603170008733D /* AddSiteViewController.xib */,
+				43B8F01A156603170008733D /* FeedDetailTableCell.xib */,
+				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
+				43B8F01C156603170008733D /* LoginViewController.xib */,
+				43B8F01D156603170008733D /* MainWindow.xib */,
+				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
+				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
+				43B8F020156603170008733D /* OriginalStoryViewController.xib */,
+				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 			);
 			path = "Resources-iPhone";
 			sourceTree = "<group>";
@@ -1404,16 +1394,16 @@
 				4307BEE21565EDF8007A932A /* warning.gif in Resources */,
 				4307BEE41565EDF8007A932A /* warning.png in Resources */,
 				4307BEE61565EDF8007A932A /* world.png in Resources */,
-				4307BEE81565EDF8007A932A /* AddSiteAutocompleteCell.xib in Resources */,
-				4307BEEA1565EDF8007A932A /* AddSiteViewController.xib in Resources */,
-				4307BEEC1565EDF8007A932A /* FeedDetailTableCell.xib in Resources */,
-				4307BEEE1565EDF8007A932A /* FeedDetailViewController.xib in Resources */,
-				4307BEF01565EDF8007A932A /* LoginViewController.xib in Resources */,
-				4307BEF21565EDF8007A932A /* MainWindow.xib in Resources */,
-				4307BEF41565EDF8007A932A /* MoveSiteViewController.xib in Resources */,
-				4307BEF61565EDF8007A932A /* NewsBlurViewController.xib in Resources */,
-				4307BEF81565EDF8007A932A /* OriginalStoryViewController.xib in Resources */,
-				4307BEFA1565EDF8007A932A /* StoryDetailViewController.xib in Resources */,
+				43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */,
+				43B8F023156603180008733D /* AddSiteViewController.xib in Resources */,
+				43B8F024156603180008733D /* FeedDetailTableCell.xib in Resources */,
+				43B8F025156603180008733D /* FeedDetailViewController.xib in Resources */,
+				43B8F026156603180008733D /* LoginViewController.xib in Resources */,
+				43B8F027156603180008733D /* MainWindow.xib in Resources */,
+				43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */,
+				43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */,
+				43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */,
+				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1480,16 +1470,6 @@
 				4307BEE31565EDF8007A932A /* warning.gif in Resources */,
 				4307BEE51565EDF8007A932A /* warning.png in Resources */,
 				4307BEE71565EDF8007A932A /* world.png in Resources */,
-				4307BEE91565EDF8007A932A /* AddSiteAutocompleteCell.xib in Resources */,
-				4307BEEB1565EDF8007A932A /* AddSiteViewController.xib in Resources */,
-				4307BEED1565EDF8007A932A /* FeedDetailTableCell.xib in Resources */,
-				4307BEEF1565EDF8007A932A /* FeedDetailViewController.xib in Resources */,
-				4307BEF11565EDF8007A932A /* LoginViewController.xib in Resources */,
-				4307BEF31565EDF8007A932A /* MainWindow.xib in Resources */,
-				4307BEF51565EDF8007A932A /* MoveSiteViewController.xib in Resources */,
-				4307BEF71565EDF8007A932A /* NewsBlurViewController.xib in Resources */,
-				4307BEF91565EDF8007A932A /* OriginalStoryViewController.xib in Resources */,
-				4307BEFB1565EDF8007A932A /* StoryDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
