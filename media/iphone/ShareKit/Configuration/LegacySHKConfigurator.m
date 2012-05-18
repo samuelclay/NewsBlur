@@ -41,7 +41,6 @@
 - (void)dealloc 
 {
     [configuration release];
-    [super dealloc];
 }
 
 - (id)init
