@@ -349,7 +349,7 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlur_Prefix.pch; sourceTree = "<group>"; };
 		43D045081565BC090085F811 /* NewsBlur-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NewsBlur-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		43D0451D1565BC090085F811 /* NewsBlur-iPad-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NewsBlur-iPad-Info.plist"; path = "/Users/roycyang/github/NewsBlur/media/iphone/NewsBlur-iPad-Info.plist"; sourceTree = "<absolute>"; };
+		43D0451D1565BC090085F811 /* NewsBlur copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NewsBlur copy-Info.plist"; path = "/Users/roycyang/github/NewsBlur/media/iphone/NewsBlur copy-Info.plist"; sourceTree = "<absolute>"; };
 		43D0451F1565BC150085F811 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = "Resources-iPad/MainWindow.xib"; sourceTree = "<group>"; };
 		43D045201565BC150085F811 /* NewsBlurViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = NewsBlurViewController.xib; path = "Resources-iPad/NewsBlurViewController.xib"; sourceTree = "<group>"; };
 		43D045211565BC150085F811 /* FeedDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = FeedDetailViewController.xib; path = "Resources-iPad/Classes/FeedDetailViewController.xib"; sourceTree = "<group>"; };
@@ -719,7 +719,7 @@
 				43D0451C1565BC090085F811 /* Resources-iPad */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				43D0451D1565BC090085F811 /* NewsBlur-iPad-Info.plist */,
+				43D0451D1565BC090085F811 /* NewsBlur copy-Info.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
