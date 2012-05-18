@@ -422,7 +422,7 @@
 		4307BEFC1565EEBC007A932A /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		4307BEFD1565EEBC007A932A /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		43D045081565BC090085F811 /* NewsBlur-iPad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NewsBlur-iPad.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		43D0451D1565BC090085F811 /* NewsBlur copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NewsBlur copy-Info.plist"; path = "/Users/roycyang/github/NewsBlur/media/iphone/NewsBlur copy-Info.plist"; sourceTree = "<absolute>"; };
+		43D0451D1565BC090085F811 /* NewsBlur-iPad-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "NewsBlur-iPad-Info.plist"; path = "/Users/roycyang/github/NewsBlur/media/iphone/NewsBlur-iPad-Info.plist"; sourceTree = "<absolute>"; };
 		43D0451F1565BC150085F811 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = "Resources-iPad/MainWindow.xib"; sourceTree = "<group>"; };
 		43D045201565BC150085F811 /* NewsBlurViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = NewsBlurViewController.xib; path = "Resources-iPad/NewsBlurViewController.xib"; sourceTree = "<group>"; };
 		43D045211565BC150085F811 /* FeedDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = FeedDetailViewController.xib; path = "Resources-iPad/Classes/FeedDetailViewController.xib"; sourceTree = "<group>"; };
@@ -476,7 +476,7 @@
 		78FC34F411CA94900055C312 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
 		78FC34F511CA94900055C312 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		78FC34F611CA94900055C312 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* NewsBlur-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "NewsBlur-iPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Entitlements.entitlements; sourceTree = "<group>"; };
 		FF2D8B321487250200057B80 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		FF2D8B341487250C00057B80 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -691,30 +691,30 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
-				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
-				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
-				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
-				784B50EA127E3F68008F90EA /* LoginViewController.h */,
-				784B50EB127E3F68008F90EA /* LoginViewController.m */,
-				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
-				28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */,
-				FFCE7AE513D49165009A98F6 /* FeedTableCell.h */,
-				FFCE7AE613D49165009A98F6 /* FeedTableCell.m */,
-				FF5EA47C143B691000B7563D /* AddSiteViewController.h */,
-				FF5EA47D143B691000B7563D /* AddSiteViewController.m */,
 				FFD887ED1445F1E800385399 /* AddSiteAutocompleteCell.h */,
 				FFD887EE1445F1E800385399 /* AddSiteAutocompleteCell.m */,
-				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
-				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
+				FF5EA47C143B691000B7563D /* AddSiteViewController.h */,
+				FF5EA47D143B691000B7563D /* AddSiteViewController.m */,
+				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
+				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
 				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
 				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
+				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
+				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
+				FFCE7AE513D49165009A98F6 /* FeedTableCell.h */,
+				FFCE7AE613D49165009A98F6 /* FeedTableCell.m */,
+				784B50EA127E3F68008F90EA /* LoginViewController.h */,
+				784B50EB127E3F68008F90EA /* LoginViewController.m */,
 				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
-				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
-				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
+				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
+				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
+				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
+				28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
+				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
+				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 			);
@@ -740,7 +740,8 @@
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				43D0451D1565BC090085F811 /* NewsBlur copy-Info.plist */,
+				8D1107310486CEB800E47090 /* NewsBlur-iPhone-Info.plist */,
+				43D0451D1565BC090085F811 /* NewsBlur-iPad-Info.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -748,31 +749,30 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				FF38DB1813F21B2C00251891 /* ABTableViewCell.h */,
+				FF38DB1913F21B2C00251891 /* ABTableViewCell.m */,
 				4307BEFC1565EEBC007A932A /* Base64.h */,
 				4307BEFD1565EEBC007A932A /* Base64.m */,
-				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-				FFD2BB891401AD85004277DA /* TestFlight.h */,
+				FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */,
+				FF38679F13D8916E00F8AB3A /* GTMDefines.h */,
+				FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */,
+				FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */,
 				FFD2BB8A1401AD85004277DA /* libTestFlight.a */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+				FF56EC7913F755E40009D8E0 /* MBProgressHUD.h */,
+				FF56EC7A13F755E40009D8E0 /* MBProgressHUD.m */,
+				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
+				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
+				FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */,
 				FF79E11B13EB756A0095C852 /* PullToRefreshView.h */,
 				FF79E11C13EB756A0095C852 /* PullToRefreshView.m */,
 				FF70DD2B1457A76E0053CFB0 /* StringHelper.h */,
 				FF70DD2C1457A76E0053CFB0 /* StringHelper.m */,
-				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
-				FF38679C13D8914A00F8AB3A /* GTMNString+HTML.h */,
-				FF38679F13D8916E00F8AB3A /* GTMDefines.h */,
-				FF56EC7913F755E40009D8E0 /* MBProgressHUD.h */,
-				FF56EC7A13F755E40009D8E0 /* MBProgressHUD.m */,
-				FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */,
-				FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */,
-				FF38DB1113F2112D00251891 /* UIView+TKCategory.h */,
-				FF38DB1213F2112D00251891 /* UIView+TKCategory.m */,
-				FF38DB1813F21B2C00251891 /* ABTableViewCell.h */,
-				FF38DB1913F21B2C00251891 /* ABTableViewCell.m */,
+				FFD2BB891401AD85004277DA /* TestFlight.h */,
 				FF4BBC1C13F7487A001EBEBD /* TransparentToolbar.h */,
 				FF4BBC1D13F7487A001EBEBD /* TransparentToolbar.m */,
-				8D1107310486CEB800E47090 /* NewsBlur-Info.plist */,
-				FF032DCD13F9F01900FA3F76 /* Entitlements.entitlements */,
+				FF38DB1113F2112D00251891 /* UIView+TKCategory.h */,
+				FF38DB1213F2112D00251891 /* UIView+TKCategory.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -780,22 +780,22 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FF2D8C6B1487F05100057B80 /* Twitter.framework */,
-				FF2D8CAC1488633A00057B80 /* Reachability */,
-				FF2D8C6D1487F11500057B80 /* facebook */,
-				FF2D8B481487EFF000057B80 /* ShareKit */,
-				FF2D8B341487250C00057B80 /* MessageUI.framework */,
-				FF2D8B321487250200057B80 /* Security.framework */,
 				FFAD4970144A386100BA6919 /* libz.dylib */,
 				78095E3E128EF35400230C8E /* CFNetwork.framework */,
-				78095E42128EF37E00230C8E /* MobileCoreServices.framework */,
-				78095E44128EF37E00230C8E /* SystemConfiguration.framework */,
-				78095E23128EF30C00230C8E /* ASI */,
-				78FC34E911CA94900055C312 /* JSON */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				FF2D8B341487250C00057B80 /* MessageUI.framework */,
+				78095E42128EF37E00230C8E /* MobileCoreServices.framework */,
 				788EF355127E5BC80088EDC5 /* QuartzCore.framework */,
+				FF2D8B321487250200057B80 /* Security.framework */,
+				78095E44128EF37E00230C8E /* SystemConfiguration.framework */,
+				FF2D8C6B1487F05100057B80 /* Twitter.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				78095E23128EF30C00230C8E /* ASI */,
+				FF2D8C6D1487F11500057B80 /* facebook */,
+				78FC34E911CA94900055C312 /* JSON */,
+				FF2D8CAC1488633A00057B80 /* Reachability */,
+				FF2D8B481487EFF000057B80 /* ShareKit */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -872,16 +872,16 @@
 		43D0451C1565BC090085F811 /* Resources-iPad */ = {
 			isa = PBXGroup;
 			children = (
-				43D0451F1565BC150085F811 /* MainWindow.xib */,
-				43D045201565BC150085F811 /* NewsBlurViewController.xib */,
-				43D045211565BC150085F811 /* FeedDetailViewController.xib */,
-				43D045221565BC150085F811 /* StoryDetailViewController.xib */,
-				43D045231565BC150085F811 /* FeedDetailTableCell.xib */,
-				43D045241565BC150085F811 /* LoginViewController.xib */,
-				43D045251565BC150085F811 /* OriginalStoryViewController.xib */,
-				43D045261565BC150085F811 /* AddSiteViewController.xib */,
 				43D045271565BC150085F811 /* AddSiteAutocompleteCell.xib */,
+				43D045261565BC150085F811 /* AddSiteViewController.xib */,
+				43D045231565BC150085F811 /* FeedDetailTableCell.xib */,
+				43D045211565BC150085F811 /* FeedDetailViewController.xib */,
+				43D045241565BC150085F811 /* LoginViewController.xib */,
+				43D0451F1565BC150085F811 /* MainWindow.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController.xib */,
+				43D045201565BC150085F811 /* NewsBlurViewController.xib */,
+				43D045251565BC150085F811 /* OriginalStoryViewController.xib */,
+				43D045221565BC150085F811 /* StoryDetailViewController.xib */,
 			);
 			name = "Resources-iPad";
 			sourceTree = "<group>";
@@ -1723,7 +1723,7 @@
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "NewsBlur-Info.plist";
+				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1754,7 +1754,7 @@
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "NewsBlur-Info.plist";
+				INFOPLIST_FILE = "NewsBlur-iPhone-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1788,7 +1788,7 @@
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "NewsBlur copy-Info.plist";
+				INFOPLIST_FILE = "NewsBlur-iPad-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1821,7 +1821,7 @@
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = "NewsBlur copy-Info.plist";
+				INFOPLIST_FILE = "NewsBlur-iPad-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
