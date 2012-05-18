@@ -437,6 +437,9 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     padding: 0 0 0 22px;
     list-style: none;
 }
+.NB-feedlist ul.folder.NB-root {
+    padding-left: 0;
+}
 
 .NB-feedlist .folder_title {
     padding: 4px 0 4px 22px;

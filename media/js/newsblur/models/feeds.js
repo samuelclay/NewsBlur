@@ -1,5 +1,9 @@
 NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
+    is_social: function() {
+        return false;
+    }
+    
 });
 
 NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
