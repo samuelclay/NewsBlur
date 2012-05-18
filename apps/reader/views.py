@@ -173,6 +173,7 @@ def load_feeds(request):
     include_favicons = request.REQUEST.get('include_favicons', False)
     flat             = request.REQUEST.get('flat', False)
     update_counts    = request.REQUEST.get('update_counts', False)
+    version          = int(request.REQUEST.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -224,7 +225,7 @@ def load_feeds(request):
     user.profile.save()
     
     data = {
-        'feeds': feeds,
+        'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
         'social_profile': social_profile,
         'folders': json.decode(folders.folders),

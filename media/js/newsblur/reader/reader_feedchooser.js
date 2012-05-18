@@ -2,7 +2,7 @@ NEWSBLUR.ReaderFeedchooser = function(options) {
     var defaults = {};
 
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner();
 };
 
@@ -47,7 +47,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   $.make('div', { className: 'NB-feedchooser-info-counts'}),
                   $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity')
               ]),
-              this.make_feeds(),
+              NEWSBLUR.app.feed_list.make_feeds(),
               $.make('form', { className: 'NB-feedchooser-form' }, [
                   $.make('div', { className: 'NB-modal-submit' }, [
                       // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
@@ -388,7 +388,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
             NEWSBLUR.reader.hide_feed_chooser_button();
-            NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.app.feed_list.fetch();
             $.modal.close();
         });
     },

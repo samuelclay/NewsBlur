@@ -1,55 +1,36 @@
-NEWSBLUR.AssetModel = function() {
-    var _Reader = null;
-    var _Prefs = null;
-    
-    return {
-        reader: function(){
-            if(!_Reader){
-                _Reader = new NEWSBLUR.AssetModel.Reader();
-                _Reader.init();
-            } else {
-                _Reader.init();
+NEWSBLUR.AssetModel = Backbone.Router.extend({
+
+    initialize: function() {
+        this.defaults = {
+            classifiers: {
+                titles: {},
+                tags: {},
+                authors: {},
+                feeds: {}
             }
-            return _Reader;
-        }
-    };
-}();
+        };
+        this.feeds = new NEWSBLUR.Collections.Feeds();
+        this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
+        this.favicons = {};
+        this.folders = [];
+        this.stories = {};
+        this.story_keys = {};
+        this.queued_read_stories = {};
+        this.classifiers = {};
+        this.friends = {};
+        this.profile = {};
+        this.user_profile = new NEWSBLUR.Models.User();
+        this.user_profiles = new NEWSBLUR.Collections.Users();
+        this.follower_profiles = new NEWSBLUR.Collections.Users();
+        this.following_profiles = new NEWSBLUR.Collections.Users();
+        this.starred_stories = [];
+        this.starred_count = 0;
+        this.read_stories_river_count = 0;
+        this.flags = {
+            'favicons_fetching': false,
+            'has_chosen_feeds': false
+        };
 
-NEWSBLUR.AssetModel.Reader = function() {
-    this.defaults = {
-        classifiers: {
-            titles: {},
-            tags: {},
-            authors: {},
-            feeds: {}
-        }
-    };
-    this.feeds = {};
-    this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
-    this.favicons = {};
-    this.folders = [];
-    this.stories = {};
-    this.story_keys = {};
-    this.queued_read_stories = {};
-    this.classifiers = {};
-    this.friends = {};
-    this.profile = {};
-    this.user_profile = new NEWSBLUR.Models.User();
-    this.user_profiles = new NEWSBLUR.Collections.Users();
-    this.follower_profiles = new NEWSBLUR.Collections.Users();
-    this.following_profiles = new NEWSBLUR.Collections.Users();
-    this.starred_stories = [];
-    this.starred_count = 0;
-    this.read_stories_river_count = 0;
-    this.flags = {
-        'favicons_fetching': false,
-        'has_chosen_feeds': false
-    };
-};
-
-NEWSBLUR.AssetModel.Reader.prototype = {
-    
-    init: function() {
         this.ajax = {};
         this.ajax['rapid']       = $.manageAjax.create('rapid', {queue: false});
         this.ajax['queue']       = $.manageAjax.create('queue', {queue: true}); 
@@ -61,7 +42,6 @@ NEWSBLUR.AssetModel.Reader.prototype = {
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
-        return;
     },
     
     make_request: function(url, data, callback, error_callback, options) {
@@ -289,61 +269,45 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         this.user_profiles.add(profiles);
     },
     
-    reset_feeds: function() {
-        this.feeds = {};
-    },
-    
-    load_feeds: function(callback, error_callback) {
+    load_feeds: function(error_callback) {
         var self = this;
         
-        var pre_callback = function(subscriptions) {
-            // NEWSBLUR.log(['subscriptions', subscriptions]);
-            var flat_feeds = function(feeds) {
-                var flattened = _.flatten(_.map(feeds, _.values));
-                return _.flatten(_.map(flattened, function(feed) {
-                    if (!_.isNumber(feed) && feed) return flat_feeds(feed);
-                    else return feed;
-                }));
-            };
-            var valid_feeds = flat_feeds({'root': subscriptions.folders});
-
-            _.each(subscriptions.feeds, function(feed, feed_id) {
-                if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
-                    feed.subscribed = true;
-                    self.feeds[feed_id] = feed;
-                    if (feed.favicon_fetching) self.flags['favicons_fetching'] = true;
-                }
-            });
+        var pre_callback = function(feeds, subscriptions) {
+            NEWSBLUR.log(['subscriptions', feeds, subscriptions]);
+            self.flags['favicons_fetching'] = self.feeds.any(function(feed) { return feed.get('favicons_fetching'); });
             self.folders = subscriptions.folders;
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);
             
             if (!_.isEqual(self.favicons, {})) {
-                _.each(self.feeds, function(feed) {
+                self.feeds.each(function(feed) {
                     if (self.favicons[feed.id]) {
-                        feed.favicon = self.favicons[feed.id];
+                        feed.set('favicon', self.favicons[feed.id]);
                     }
                 });
             }
             
             self.detect_any_inactive_feeds();
-            callback();
         };
         
-        var data = {};
+        var data = {
+            'v': 2
+        };
         if (NEWSBLUR.Flags['start_import_from_google_reader']) {
             data['include_favicons'] = true;
         }
         
-        this.make_request('/reader/feeds', data, pre_callback, error_callback, {
-            ajax_group: 'feed',
-            request_type: 'GET'
+        if (this.feeds.length) this.feeds.destroy();
+        
+        this.feeds.fetch({
+            success: pre_callback,
+            error: error_callback
         });
     },
     
     detect_any_inactive_feeds: function() {
-        this.flags['has_chosen_feeds'] = _.any(this.feeds, function(feed) {
+        this.flags['has_chosen_feeds'] = this.feeds.any(function(feed) {
             return feed.active;
         });
     },
@@ -1285,6 +1249,4 @@ NEWSBLUR.AssetModel.Reader.prototype = {
         }, this));
     }
 
-};
-
-
+});

@@ -4,7 +4,7 @@ NEWSBLUR.ReaderSendEmail = function(story_id, options) {
     _.bindAll(this, 'close', 'save_callback', 'error');
 
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.story_id = story_id;
     this.story = this.model.get_story(story_id);
     this.feed_id = this.story.story_feed_id;

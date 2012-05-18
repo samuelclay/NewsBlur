@@ -6,7 +6,7 @@ NEWSBLUR.ReaderAddFeed = function(options) {
     };
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner();
 };
 
@@ -214,7 +214,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.app.feed_list.fetch();
             NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
@@ -251,7 +251,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.app.feed_list.fetch();
             _.defer(function() {
               NEWSBLUR.reader.open_add_feed_modal();
             });

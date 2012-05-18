@@ -2,7 +2,7 @@ NEWSBLUR.ReaderRecommendFeed = function(feed_id, options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.feed_id = feed_id;
     this.feed = this.model.get_feed(feed_id);
     this.feeds = this.model.get_feeds();

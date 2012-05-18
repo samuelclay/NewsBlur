@@ -13,7 +13,7 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
     this.trainer_iterator = -1;
     this.feed_id = null;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner_trainer();
 };
 
@@ -33,7 +33,7 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     this.feed_id = feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner_feed();
 };
 
@@ -54,7 +54,7 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.feed_id = feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner_story();
 };
 

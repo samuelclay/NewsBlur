@@ -6,7 +6,7 @@
         // = Globals =
         // ===========
         
-        this.model      = NEWSBLUR.AssetModel.reader();
+        this.model      = NEWSBLUR.assets;
         this.story_view = 'page';
         this.pages      = {
             'feeds' : $('#NB-page-feeds'),
