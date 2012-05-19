@@ -387,7 +387,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: page,
-                    feed_address: this.feeds[feed_id].feed_address
+                    feed_address: this.feeds.get(feed_id).get('feed_address')
                 }, pre_callback,
                 error_callback,
                 {
@@ -710,7 +710,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             var social_feed = this.social_feeds.get(feed_id);
             return social_feed && social_feed.attributes;
         } else {
-            return this.feeds[feed_id];
+            return this.feeds.get(feed_id);
         }
     },
     

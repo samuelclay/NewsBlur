@@ -3,6 +3,7 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     initialize: function(model) {
         if (_.isNumber(model)) {
             this.feed = NEWSBLUR.assets.feeds.get(model);
+            this.feed.set('subscribed', true, {silent: true});
             this.set('is_feed', true);
         } else if (model) {
             var title = _.keys(model)[0];

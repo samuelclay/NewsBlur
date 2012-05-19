@@ -4,7 +4,8 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         "contextmenu" : "show_manage_menu",
         "click .NB-feedlist-manage-icon" : "show_manage_menu",
         "mouseenter" : "add_hover_inverse_to_feed",
-        "mouseleave" : "remove_hover_inverse_from_feed"
+        "mouseleave" : "remove_hover_inverse_from_feed",
+        "click"      : "open"
     },
     
     render: function() {
@@ -100,6 +101,14 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     // ==========
     // = Events =
     // ==========
+    
+    open: function(e) {
+        if (NEWSBLUR.hotkeys.command) {
+            NEWSBLUR.reader.open_unread_stories_in_tabs(this.id);
+        } else {
+            NEWSBLUR.reader.open_feed(this.model, {$feed_link: this.$el});
+        }
+    },
     
     show_manage_menu: function(e) {
         e.preventDefault();
