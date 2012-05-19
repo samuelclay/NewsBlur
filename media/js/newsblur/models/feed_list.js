@@ -1,17 +1,22 @@
 NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
+    options: {
+        sorting: false
+    },
+    
     initialize: function() {
         this.$s = NEWSBLUR.reader.$s;
         
         if (!$('#feed_list').length) return;
         $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
         this.$s.$feed_link_loader.css({'display': 'block'});
-        NEWSBLUR.reader.flags['favicons_downloaded'] = false;
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
+            console.log(["reset feeds"]);
             this.make_feeds();
             this.load_router();
         }, this));
         NEWSBLUR.assets.social_feeds.bind('reset', _.bind(function() {
+            console.log(["reset social feeds"]);
             this.make_social_feeds();
         }, this));
         NEWSBLUR.assets.load_feeds();
@@ -33,14 +38,16 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $feed_list.html($feeds);
         $feed_list.animate({'opacity': 1}, {'duration': 700});
         // this.count_collapsed_unread_stories();
-        // this.hover_over_feed_titles();
         this.$s.$feed_link_loader.fadeOut(250);
 
-        NEWSBLUR.reader.open_dialog_after_feeds_loaded();
         if (NEWSBLUR.Globals.is_authenticated && NEWSBLUR.assets.flags['has_chosen_feeds']) {
-            _.delay(_.bind(this.start_count_unreads_after_import, this), 1000);
-            this.flags['refresh_inline_feed_delay'] = true;
-            this.force_feeds_refresh($.rescope(this.finish_count_unreads_after_import, this), true);
+            _.delay(function() {
+                NEWSBLUR.reader.start_count_unreads_after_import();
+            }, 1000);
+            NEWSBLUR.reader.flags['refresh_inline_feed_delay'] = true;
+            NEWSBLUR.reader.force_feeds_refresh(function() {
+                NEWSBLUR.reader.finish_count_unreads_after_import();
+            }, true);
         }
         
         if (folders.length) {
@@ -55,16 +62,16 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         //     NEWSBLUR.reader.hide_tryfeed_view();
         //     NEWSBLUR.reader.force_feed_refresh();
         // }
-        // _.defer(_.bind(function() {
-        //     NEWSBLUR.reader.make_feed_favicons();
-        //     // NEWSBLUR.assets.load_feed_favicons($.rescope(this.make_feed_favicons, this), this.flags['favicons_downloaded'], NEWSBLUR.assets.flags['has_chosen_feeds']);
-        //     if (NEWSBLUR.reader.socket) {
-        //         NEWSBLUR.reader.send_socket_active_feeds();
-        //     } else {
-        //         var force_socket = NEWSBLUR.Globals.is_admin;
-        //         NEWSBLUR.reader.setup_socket_realtime_unread_counts(force_socket);
-        //     }
-        // }, NEWSBLUR.reader));
+        _.defer(_.bind(function() {
+            // NEWSBLUR.reader.open_dialog_after_feeds_loaded();
+
+            // if (NEWSBLUR.reader.socket) {
+            //     NEWSBLUR.reader.send_socket_active_feeds();
+            // } else {
+            //     var force_socket = NEWSBLUR.Globals.is_admin;
+            //     NEWSBLUR.reader.setup_socket_realtime_unread_counts(force_socket);
+            // }
+        }, this));
     },
     
     make_social_feeds: function() {
@@ -117,8 +124,18 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
         }
+    },
+    
+    start_sorting: function() {
+        this.options.sorting = true;
+    },
+    
+    end_sorting: function() {
+        this.options.sorting = false;
+    },
+    
+    is_sorting: function() {
+        return this.options.sorting;
     }
-
-
     
 });

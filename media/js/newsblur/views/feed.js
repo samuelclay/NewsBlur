@@ -1,9 +1,18 @@
 NEWSBLUR.Views.Feed = Backbone.View.extend({
     
+    events: {
+        "contextmenu" : "show_manage_menu",
+        "click .NB-feedlist-manage-icon" : "show_manage_menu",
+        "mouseenter" : "add_hover_inverse_to_feed",
+        "mouseleave" : "remove_hover_inverse_from_feed"
+    },
+    
     render: function() {
         var feed = this.model;
         var unread_class = '';
         var exception_class = '';
+        var empty_on_missing = !NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] &&
+                               !NEWSBLUR.reader.flags['showing_social_feed_in_tryfeed_view'];
         if (feed.is_social() && !feed.get('feed_title')) {
             var profile = NEWSBLUR.assets.user_profiles.get(feed.get('user_id')) || {};
             feed.set('feed_title', profile.feed_title);
@@ -34,7 +43,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
           <div class="feed_counts">\
             <%= feed_counts_floater %>\
           </div>\
-          <img class="feed_favicon" src="<%= $.favicon(feed, empty_on_missing) %>">\
+          <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
@@ -67,13 +76,36 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
           exception_class     : exception_class,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          empty_on_missing    : !NEWSBLUR.reader.flags['favicons_downloaded'] && 
-                                !NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] &&
-                                !NEWSBLUR.reader.flags['showing_social_feed_in_tryfeed_view']
+          empty_on_missing    : empty_on_missing
         });
-        
+
         this.setElement($feed);
         return this;
+    },
+    
+    add_hover_inverse_to_feed: function() {
+        if (NEWSBLUR.app.feed_list.is_sorting()) {
+            return;
+        }
+
+        if (this.$el.offset().top > $(window).height() - 314) {
+            this.$el.addClass('NB-hover-inverse');
+        } 
+    },
+    
+    remove_hover_inverse_from_feed: function() {
+        this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    // ==========
+    // = Events =
+    // ==========
+    
+    show_manage_menu: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), {toplevel: this.options.depth == 0});
+        return false;
     }
 
 });

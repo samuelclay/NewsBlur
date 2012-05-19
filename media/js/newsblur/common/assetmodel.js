@@ -290,7 +290,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 });
             }
             
-            self.detect_any_inactive_feeds();
+            self.flags['has_chosen_feeds'] = self.feeds.has_chosen_feeds();
             
             self.feeds.trigger('reset');
         };
@@ -307,12 +307,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.feeds.fetch({
             success: pre_callback,
             error: error_callback
-        });
-    },
-    
-    detect_any_inactive_feeds: function() {
-        this.flags['has_chosen_feeds'] = this.feeds.any(function(feed) {
-            return feed.active;
         });
     },
     

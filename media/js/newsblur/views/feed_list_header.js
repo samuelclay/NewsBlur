@@ -1,7 +1,7 @@
 NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     
     events: {
-        'click .NB-feeds-header-sites' : 'switch_preferences_hide_read_feeds',
+        'click .NB-feeds-header-sites'     : 'switch_preferences_hide_read_feeds',
         'click .NB-feeds-header-dashboard' : 'show_splash_page'
     },
     
@@ -20,8 +20,8 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
         if (!skip_count) {
             this.count();
         }
-        var hide_read_feeds = parseInt(NEWSBLUR.assets.preference('hide_read_feeds'), 10);
-        console.log(["render feed list header", this.collection.length, this.feeds_count]);
+        var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
+        console.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
         var $header = _.template('\
             <div class="NB-feeds-header-dashboard">\
                 <div class="NB-feeds-header-right">\
@@ -39,11 +39,11 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
             positive_count  : this.unread_counts['positive'],
             neutral_count   : this.unread_counts['neutral'],
             negative_count  : this.unread_counts['negative'],
-            hide_read_feeds : hide_read_feeds
+            hide_read_feeds : !!hide_read_feeds
         });
             
         $(this.el).html($header);
-        $("body").toggleClass("NB-feedlist-hide-read-feeds", hide_read_feeds);
+        $("body").toggleClass("NB-feedlist-hide-read-feeds", !!hide_read_feeds);
         
         if (NEWSBLUR.assets.preference('show_tooltips')) {
             this.$('.NB-feeds-header-sites').tipsy({
@@ -106,7 +106,7 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     switch_preferences_hide_read_feeds: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        var hide_read_feeds = parseInt(NEWSBLUR.assets.preference('hide_read_feeds'), 10);
+        var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
         NEWSBLUR.assets.preference('hide_read_feeds', hide_read_feeds ? 0 : 1);
 
         if (NEWSBLUR.assets.preference('show_tooltips')) {
