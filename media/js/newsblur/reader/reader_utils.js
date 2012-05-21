@@ -18,7 +18,7 @@ NEWSBLUR.utils = {
   
     generate_gradient: function(feed, type) {
         if (!feed) return '';
-        var color = feed.favicon_color;
+        var color = feed.get('favicon_color');
         if (!color) return '';
     
         var r = parseInt(color.substr(0, 2), 16);
@@ -82,7 +82,7 @@ NEWSBLUR.utils = {
   
     is_feed_floater_gradient_light: function(feed) {
         if (!feed) return false;
-        var color = feed.favicon_color;
+        var color = feed.get('favicon_color');
         if (!color) return false;
     
         var r = parseInt(color.substr(0, 2), 16) / 255.0;

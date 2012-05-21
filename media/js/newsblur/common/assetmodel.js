@@ -707,8 +707,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         if (_.string.include(feed_id, 'social:')) {
-            var social_feed = this.social_feeds.get(feed_id);
-            return social_feed && social_feed.attributes;
+            return this.social_feeds.get(feed_id);
         } else {
             return this.feeds.get(feed_id);
         }
