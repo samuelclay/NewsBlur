@@ -24,8 +24,8 @@ NEWSBLUR.utils = {
         var r = parseInt(color.substr(0, 2), 16);
         var g = parseInt(color.substr(2, 2), 16);
         var b = parseInt(color.substr(4, 2), 16);
-    
-        if (type == 'border' || type == 'border-color') {
+        
+        if (type == 'border' || (type == 'shadow' && !this.is_feed_floater_gradient_light(feed))) {
             return [
                 (type == 'border' ? '1px solid ' : '') + 'rgb(',
                 [
@@ -33,6 +33,12 @@ NEWSBLUR.utils = {
                     parseInt(g*(6/8), 10),
                     parseInt(b*(6/8), 10)
                 ].join(','),
+                ')'
+            ].join('');
+        } else if (type == 'shadow') {
+            return [
+                'rgb(',
+                [r+35, g+35, b+35].join(','),
                 ')'
             ].join('');
         } else if (type == 'webkit') {
@@ -82,6 +88,11 @@ NEWSBLUR.utils = {
   
     is_feed_floater_gradient_light: function(feed) {
         if (!feed) return false;
+        var is_light = feed.get('is_light');
+        console.log(["is_feed_floater_gradient_light", is_light]);
+        if (!_.isUndefined(is_light)) {
+            return is_light;
+        }
         var color = feed.get('favicon_color');
         if (!color) return false;
     
@@ -89,7 +100,10 @@ NEWSBLUR.utils = {
         var g = parseInt(color.substr(2, 2), 16) / 255.0;
         var b = parseInt(color.substr(4, 2), 16) / 255.0;
 
-        return $.textColor({r: r, g: g, b: b}) != 'white';
+        is_light = $.textColor({r: r, g: g, b: b}) != 'white';
+        feed.set('is_light', is_light, {silent: true});
+        
+        return is_light;
     },
     
     is_feed_social: function(feed_id) {

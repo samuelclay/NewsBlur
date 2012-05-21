@@ -3828,7 +3828,7 @@
                           .css('background-image', NEWSBLUR.utils.generate_gradient(feed, 'moz'))
                           .css('borderBottom', NEWSBLUR.utils.generate_gradient(feed, 'border'))
                           .css('borderTop', NEWSBLUR.utils.generate_gradient(feed, 'border'))
-                          .css('textShadow', '0 1px 0 ' + NEWSBLUR.utils.generate_gradient(feed, 'border-color'))
+                          .css('textShadow', '0 1px 0 ' + NEWSBLUR.utils.generate_gradient(feed, 'shadow'))
                           .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed)),
                         $.make('div', { className: 'NB-feed-story-header-info' }, [
                             (story.story_authors &&
