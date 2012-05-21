@@ -13,6 +13,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
             console.log(["reset feeds"]);
             this.make_feeds();
+            
+            // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
         }, this));
         NEWSBLUR.assets.social_feeds.bind('reset', _.bind(function() {

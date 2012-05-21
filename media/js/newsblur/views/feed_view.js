@@ -1,11 +1,15 @@
 NEWSBLUR.Views.Feed = Backbone.View.extend({
     
+    options: {
+        depth: 0
+    },
+    
     events: {
-        "contextmenu" : "show_manage_menu",
+        "contextmenu"                    : "show_manage_menu",
         "click .NB-feedlist-manage-icon" : "show_manage_menu",
-        "mouseenter" : "add_hover_inverse_to_feed",
-        "mouseleave" : "remove_hover_inverse_from_feed",
-        "click"      : "open"
+        "click"                          : "open",
+        "mouseenter"                     : "add_hover_inverse_to_feed",
+        "mouseleave"                     : "remove_hover_inverse_from_feed"
     },
     
     render: function() {
@@ -105,15 +109,20 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     open: function(e) {
         if (NEWSBLUR.hotkeys.command) {
             NEWSBLUR.reader.open_unread_stories_in_tabs(this.id);
+        } else if (this.model.is_social()) {
+            NEWSBLUR.reader.open_social_stories(this.model.id, {force: true, $feed_link: this.$el});
         } else {
-            NEWSBLUR.reader.open_feed(this.model, {$feed_link: this.$el});
+            NEWSBLUR.reader.open_feed(this.model.id, {$feed_link: this.$el});
         }
     },
     
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), {toplevel: this.options.depth == 0});
+        console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), {
+            toplevel: this.options.depth == 0
+        });
         return false;
     }
 
