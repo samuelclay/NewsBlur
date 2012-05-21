@@ -1097,14 +1097,17 @@ def send_story_email(request):
     message    = 'OK'
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
-    to_address = request.POST['to']
+    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').split(' ')
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
 
-    if not email_re.match(to_address):
+    if not to_addresses:
+        code = -1
+        message = 'Please provide at least one email address.'
+    elif not all(email_re.match(to_address) for to_address in to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
     elif not email_re.match(from_email):
@@ -1123,7 +1126,7 @@ def send_story_email(request):
         subject = subject.replace('\n', ' ')
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % from_address,
-                                         to=[to_address], 
+                                         to=to_addresses, 
                                          cc=['%s <%s>' % (from_name, from_email)],
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
@@ -1132,8 +1135,9 @@ def send_story_email(request):
         except boto.ses.connection.ResponseError, e:
             code = -1
             message = "Email error: %s" % str(e)
-        logging.user(request, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
-                                   (story['story_title'][:50], feed.feed_title[:50]))
+        logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
+                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
+                               story['story_title'][:50], feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
 

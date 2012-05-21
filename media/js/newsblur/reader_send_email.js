@@ -44,7 +44,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
             $.make('div', { className: 'NB-modal-email-to-container' }, [
               $.make('label', { 'for': 'NB-send-email-to' }, [
                 $.make('span', { className: 'NB-raquo' }, '&raquo;'),
-                ' Recipient\'s email: '
+                ' Recipient\'s emails: '
               ]),
               $.make('input', { className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value: 
           ($.cookie('NB:email:to') || "") })
