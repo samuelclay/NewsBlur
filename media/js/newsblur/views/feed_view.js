@@ -14,50 +14,39 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'render');
-        this.model.bind('change', this.render);
+        _.bindAll(this, 'render', 'changed');
+        this.model.bind('change', this.changed);
+        
+        if (this.model.is_social() && !this.model.get('feed_title')) {
+            var profile = NEWSBLUR.assets.user_profiles.get(this.model.get('user_id')) || {};
+            this.model.set('feed_title', profile.feed_title);
+        }
     },
     
     destroy: function() {
         this.remove();
-        this.model.unbind('change', this.render);
+        this.model.unbind('change', this.changed);
     },
     
-    render: function(model, options) {
+    changed: function(model, options) {
+        var only_counts_changed = options.changes && !_.any(_.keys(options.changes), function(key) { 
+            return !_.contains(['ps', 'nt', 'ng'], key);
+        });
+        
+        if (only_counts_changed && !options.instant) {
+            this.flash_changes();
+            this.add_extra_classes();
+        } else if (!only_counts_changed) {
+            this.render();
+        }
+    },
+    
+    render: function() {
         var feed = this.model;
-        var unread_class = '';
-        var exception_class = '';
-        var empty_on_missing = !NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] &&
-                               !NEWSBLUR.reader.flags['showing_social_feed_in_tryfeed_view'];
-        if (feed.is_social() && !feed.get('feed_title')) {
-            var profile = NEWSBLUR.assets.user_profiles.get(feed.get('user_id')) || {};
-            feed.set('feed_title', profile.feed_title);
-        }
-        if (feed.get('ps')) {
-            unread_class += ' unread_positive';
-        }
-        if (feed.get('nt')) {
-            unread_class += ' unread_neutral';
-        }
-        if (feed.get('ng')) {
-            unread_class += ' unread_negative';
-        }
-        if (feed.get('has_exception') && feed.get('exception_type') == 'feed') {
-            exception_class += ' NB-feed-exception';
-        }
-        if (feed.get('not_yet_fetched') && !feed.get('has_exception')) {
-            exception_class += ' NB-feed-unfetched';
-        }
-        if (!feed.get('active') && !feed.get('subscription_user_id')) {
-            exception_class += ' NB-feed-inactive';
-        }
-        if (feed.get('subscription_user_id') && !feed.get('shared_stories_count')) {
-            unread_class += ' NB-feed-inactive';
-        }
+        var extra_classes = this.extra_classes();
         var $feed = $(_.template('\
-        <<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= unread_class %> <%= exception_class %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+        <<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= extra_classes %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
-            <%= feed_counts_floater %>\
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
@@ -88,28 +77,54 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         ', {
           feed                : feed,
           type                : this.options.type,
-          feed_counts_floater : new NEWSBLUR.Views.FeedCount({model: feed}).render_to_string(),
-          unread_class        : unread_class,
-          exception_class     : exception_class,
+          extra_classes       : extra_classes,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          empty_on_missing    : empty_on_missing,
           selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
         }));
         
         this.$el.replaceWith($feed);
         this.setElement($feed);
+        this.render_counts();
         
-        if (options && options.changes &&
-            (options.changes.ps || options.changes.nt || options.changes.ng)) {
-            this.alert_changes_to_feed();
-        }
         return this;
     },
     
-    alert_changes_to_feed: function() {
+    extra_classes: function() {
+        var feed = this.model;
+        var extra_classes = '';
+        if (feed.get('ps')) {
+            extra_classes += ' unread_positive';
+        }
+        if (feed.get('nt')) {
+            extra_classes += ' unread_neutral';
+        }
+        if (feed.get('ng')) {
+            extra_classes += ' unread_negative';
+        }
+        if (feed.get('has_exception') && feed.get('exception_type') == 'feed') {
+            extra_classes += ' NB-feed-exception';
+        }
+        if (feed.get('not_yet_fetched') && !feed.get('has_exception')) {
+            extra_classes += ' NB-feed-unfetched';
+        }
+        if (!feed.get('active') && !feed.get('subscription_user_id')) {
+            extra_classes += ' NB-feed-inactive';
+        }
+        if (feed.get('subscription_user_id') && !feed.get('shared_stories_count')) {
+            extra_classes += ' NB-feed-inactive';
+        }
+        return extra_classes;
+    },
+    
+    render_counts: function() {
+        this.counts_view = new NEWSBLUR.Views.FeedCount({model: this.model}).render();
+        this.$('.feed_counts').html(this.counts_view.el);
+    },
+    
+    flash_changes: function() {
         var $highlight = this.$('.NB-feed-highlight');
-        console.log(["update", $highlight, this.el]);
+        console.log(["flash_changes", $highlight, this.el]);
         $highlight.css({
             'backgroundColor': '#F0F076',
             'display': 'block'
@@ -129,6 +144,12 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
                 });
             }
         });
+    },
+    
+    add_extra_classes: function() {
+        var extra_classes = this.extra_classes();
+        $(this.el).removeClass("unread_positive unread_neutral unread_negative");
+        $(this.el).addClass(extra_classes);
     },
     
     add_hover_inverse_to_feed: function() {
