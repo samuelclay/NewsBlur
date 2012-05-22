@@ -14,14 +14,16 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'render', 'update_and_render');
-        this.model.bind('change:ps', this.update_and_render);
-        this.model.bind('change:nt', this.update_and_render);
-        this.model.bind('change:ng', this.update_and_render);
+        _.bindAll(this, 'render');
         this.model.bind('change', this.render);
     },
     
-    render: function() {
+    destroy: function() {
+        this.remove();
+        this.model.unbind('change', this.render);
+    },
+    
+    render: function(model, options) {
         var feed = this.model;
         var unread_class = '';
         var exception_class = '';
@@ -81,6 +83,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
           <div class="NB-feed-exception-icon"></div>\
           <div class="NB-feed-unfetched-icon"></div>\
           <div class="NB-feedlist-manage-icon"></div>\
+          <div class="NB-feed-highlight"></div>\
         </<%= list_type %>>\
         ', {
           feed                : feed,
@@ -94,16 +97,38 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
           selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
         }));
         
-        if (this.$el) {
-            this.$el.replaceWith($feed);
-        }
+        this.$el.replaceWith($feed);
         this.setElement($feed);
         
+        if (options && options.changes &&
+            (options.changes.ps || options.changes.nt || options.changes.ng)) {
+            this.alert_changes_to_feed();
+        }
         return this;
     },
     
-    update_and_render: function() {
-        return this.render();
+    alert_changes_to_feed: function() {
+        var $highlight = this.$('.NB-feed-highlight');
+        console.log(["update", $highlight, this.el]);
+        $highlight.css({
+            'backgroundColor': '#F0F076',
+            'display': 'block'
+        });
+        $highlight.animate({
+            'opacity': .7
+        }, {
+            'duration': 800, 
+            'queue': false, 
+            'complete': function() {
+                $highlight.animate({'opacity': 0}, {
+                    'duration': 1000, 
+                    'queue': false,
+                    'complete': function() {
+                        $highlight.css('display', 'none');
+                    }
+                });
+            }
+        });
     },
     
     add_hover_inverse_to_feed: function() {
@@ -137,7 +162,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), {
             feed_id: this.model.id,
             toplevel: this.options.depth == 0

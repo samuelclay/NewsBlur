@@ -1,4 +1,8 @@
 NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
+
+    options: {
+        el: '.NB-feeds-header-dashboard'
+    },
     
     events: {
         'click .NB-feeds-header-sites'     : 'switch_preferences_hide_read_feeds',
@@ -10,10 +14,9 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
         this.collection.bind('reset', this.render);
         this.collection.bind('add', this.render);
         this.collection.bind('remove', this.render);
-        this.collection.bind('change', this.render);
-        
-        var $onpage = $('.NB-feeds-header-dashboard');
-        this.setElement($onpage);
+        this.collection.bind('change:ps', this.render);
+        this.collection.bind('change:nt', this.render);
+        this.collection.bind('change:ng', this.render);
     },
     
     render: function() {

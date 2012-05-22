@@ -342,7 +342,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.feed_id = feed_id;
 
-        // NEWSBLUR.log(['load_feed', feed_id, page, first_load, callback, pre_callback, this.feeds[feed_id].feed_address]);
         if (feed_id) {
             this.make_request('/reader/feed/'+feed_id,
                 {
@@ -415,7 +414,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     load_canonical_feed: function(feed_id, callback) {
         var pre_callback = _.bind(function(data) {
-            this.feeds[data.id] = data;
+            this.feeds.get(data.id).set(data);
             this.feed_tags = data.feed_tags || {};
             this.feed_authors = data.feed_authors || {};
             this.feed_id = feed_id;
@@ -554,7 +553,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (!existing_feed) return;
             var feed_id = feed.id || feed_id;
             if (feed.id && feed_id != feed.id) {
-                NEWSBLUR.log(['Dupe feed being refreshed', feed_id, feed.id, this.feeds[f], feed]);
+                NEWSBLUR.log(['Dupe feed being refreshed', feed_id, feed.id, this.feeds.get(f), feed]);
                 this.feeds.get(feed.id).set(feed);
             }
             if ((feed['has_exception'] && !existing_feed.get('has_exception')) ||
@@ -569,7 +568,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
 
             if (existing_feed.hasChanged() && !_.contains(updated_feeds, feed.id)) {
-                // NEWSBLUR.log(['New Feed', this.feeds[feed_id][k], feed[k], f, k]);
                 NEWSBLUR.log(['Different', existing_feed.changedAttributes(), existing_feed.previousAttributes()]);
                 updated_feeds.push(feed_id);
             }
@@ -605,7 +603,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: 0,
-                    feed_address: this.feeds[feed_id].feed_address
+                    feed_address: this.feeds.get(feed_id).get('feed_address')
                 }, pre_callback,
                 null,
                 {
@@ -639,7 +637,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             feed = feed_id;
             feed_id = feed.id;
         }
-        this.feeds[feed_id] = feed;
+        this.feeds.get(feed_id).set(feed);
     },
 
     add_social_feed: function(feed) {
@@ -718,7 +716,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     delete_feed: function(feed_id, in_folder, callback, duplicate_feed) {
-        if (!duplicate_feed) delete this.feeds[feed_id];
+        if (!duplicate_feed) this.feeds.get(feed_id).destroy();
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_feed', {
                 'feed_id': feed_id, 
@@ -751,7 +749,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     rename_feed: function(feed_id, feed_title, callback) {
-        this.feeds[feed_id].feed_title = feed_title;
+        this.feeds.get(feed_id).set('feed_title', feed_title);
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/rename_feed', {
                 'feed_id'    : feed_id, 
@@ -998,7 +996,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/rss_feeds/exception_retry', {
           'feed_id': feed_id, 
-          'reset_fetch': !!(this.feeds[feed_id].has_feed_exception || this.feeds[feed_id].has_page_exception)
+          'reset_fetch': !!(this.feeds.get(feed_id).get('has_feed_exception') ||
+                            this.feeds.get(feed_id).get('has_page_exception'))
         }, pre_callback, error_callback);
     },
         

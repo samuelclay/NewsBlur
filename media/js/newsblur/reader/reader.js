@@ -1424,6 +1424,11 @@
         // ===============================
         
         reset_feed: function() {
+            if (this.cache.feed_title_view) {
+                console.log(["removing old view", this.cache.feed_title_view]);
+                this.cache.feed_title_view.destroy();
+            }
+            
             $.extend(this.flags, {
                 'iframe_story_locations_fetched': false,
                 'iframe_view_loaded': false,
@@ -3470,9 +3475,12 @@
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id);
             if (!feed) return;
-
+            
+            var feed_title_view = new NEWSBLUR.Views.Feed({model: feed, type: 'story'});
+            this.cache.feed_title_view = feed_title_view;
+            
             var $feedbar = $.make('div', { className: 'NB-feedbar' }, [
-                new NEWSBLUR.Views.Feed({model: feed, type: 'story'}).render().el,
+                feed_title_view.render().el,
                 // $.make('div', { className: 'NB-feedbar-intelligence' }, [
                 //     $.make('div', { className: 'NB-feed-sentiment NB-feed-like', title: 'What I like about this site...' }),
                 //     $.make('div', { className: 'NB-feed-sentiment NB-feed-dislike', title: 'What I dislike about this site...' })
@@ -4748,7 +4756,7 @@
 
         make_manage_menu: function(type, feed_id, story_id, inverse, $item) {
             var $manage_menu;
-            console.log(["make_manage_menu", type, feed_id, story_id, inverse, $item]);
+            // console.log(["make_manage_menu", type, feed_id, story_id, inverse, $item]);
 
             if (type == 'site') {
                 var show_chooser = !NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated;
@@ -5626,13 +5634,7 @@
             
             if (new_title.length <= 0) return this.hide_confirm_rename_menu_item();
             
-            this.model.rename_feed(feed_id, new_title, function() {
-            });
-
-            $('.feed_title', $feed).eq(0).text(new_title);
-            if (feed_id == this.active_feed) {
-                $('.feed_title', this.$s.$story_titles).eq(0).text(new_title);
-            }
+            this.model.rename_feed(feed_id, new_title, function() {});
             this.hide_confirm_rename_menu_item(true);
         },
         
