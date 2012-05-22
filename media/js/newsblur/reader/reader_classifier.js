@@ -165,7 +165,7 @@ var classifier_prototype = {
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
         this.feed_publishers = trainer_data['popular_publishers'];
-        this.feed.num_subscribers = trainer_data['num_subscribers'];
+        this.feed.set('num_subscribers', trainer_data['num_subscribers'], {silent: true});
         this.options.feed_loaded = true;
         
         if (!this.model.classifiers[this.feed_id]) {
@@ -242,8 +242,8 @@ var classifier_prototype = {
           this.feed_tags = this.model.get_feed_tags();
           this.feed_authors = this.model.get_feed_authors();
           $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
-          $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
-          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed['num_subscribers']) + ' subscribers');
+          $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
+          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
         }
     },
     
@@ -362,8 +362,8 @@ var classifier_prototype = {
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
-                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
                 ])
             ]),
             (this.options['feed_loaded'] &&

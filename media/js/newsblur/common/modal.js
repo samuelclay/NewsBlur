@@ -62,18 +62,17 @@ NEWSBLUR.Modal.prototype = {
     
     make_feed_chooser: function() {
         var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        var current_feed_id = this.feed_id;
+        this.feeds = this.model.get_feeds();
         
-        this.feeds = this.feeds || this.model.get_feeds();
-        
-        for (var f in this.feeds) {
-            var feed = this.feeds[f];
-            var $option = $.make('option', { value: feed.id }, feed.feed_title);
+        this.feeds.each(function(feed) {
+            var $option = $.make('option', { value: feed.id }, feed.get('feed_title'));
             $option.appendTo($chooser);
             
-            if (feed.id == this.feed_id) {
+            if (feed.id == current_feed_id) {
                 $option.attr('selected', true);
             }
-        }
+        });
         
         $('option', $chooser).tsort();
         return $chooser;
@@ -82,11 +81,11 @@ NEWSBLUR.Modal.prototype = {
     initialize_feed: function(feed_id) {
         this.feed_id = feed_id;
         this.feed = this.model.get_feed(feed_id);
-        this.options.social_feed = NEWSBLUR.utils.is_feed_social(feed_id);
+        this.options.social_feed = this.feed.is_social();
         
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
-        $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
-        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers));
+        $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
+        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
     }
     
 

@@ -3,11 +3,11 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     initialize: function(model) {
         if (_.isNumber(model)) {
             this.feed = NEWSBLUR.assets.feeds.get(model);
-            this.feed.set('subscribed', true, {silent: true});
             this.set('is_feed', true);
         } else if (model) {
             var title = _.keys(model)[0];
             var children = model[title];
+            this.set('is_folder', true);
             this.set('folder_title', title);
             this.folders = new NEWSBLUR.Collections.Folders([], {title: title});
             this.folders.parse(children);
@@ -16,6 +16,10 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     
     is_feed: function() {
         return this.get('is_feed', false);
+    },
+    
+    is_folder: function() {
+        return this.get('is_folder', false);
     }
     
 });

@@ -89,7 +89,6 @@ NEWSBLUR.utils = {
     is_feed_floater_gradient_light: function(feed) {
         if (!feed) return false;
         var is_light = feed.get('is_light');
-        console.log(["is_feed_floater_gradient_light", is_light]);
         if (!_.isUndefined(is_light)) {
             return is_light;
         }
@@ -123,17 +122,16 @@ NEWSBLUR.utils = {
     },
 
     make_folder_options: function($options, items, depth) {
-        for (var i in items) {
-            var item = items[i];
-            if (typeof item == "object") {
-                for (var o in item) {
-                    var folder = item[o];
-                    var $option = $.make('option', { value: o }, depth + ' ' + o);
-                    $options.append($option);
-                    $options = this.make_folder_options($options, folder, depth+'&nbsp;&nbsp;&nbsp;');
-                }
+        var self = this;
+        items.each(function(item) {
+            if (item.is_folder()) {
+                var $option = $.make('option', { 
+                    value: item.get('folder_title')
+                }, depth + ' ' + item.get('folder_title'));
+                $options.append($option);
+                $options = self.make_folder_options($options, item.folders, depth+'&nbsp;&nbsp;&nbsp;');
             }
-        }
+        });
     
         return $options;
     },

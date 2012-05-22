@@ -390,7 +390,6 @@
             this.reset_feed();
             this.unload_feed_iframe();
             this.unload_story_iframe();
-            this.mark_feed_as_selected(null);
             $('.right-pane').hide();
             $('.NB-splash-info').show();
             $('#NB-splash').show();
@@ -1487,8 +1486,8 @@
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$river_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
-            $('.NB-selected', this.$s.$feed_list).removeClass('NB-selected');
-            $('.NB-selected', this.$s.$social_feeds).removeClass('NB-selected');
+            this.model.feeds.deselect();
+            this.model.social_feeds.deselect();
             this.$s.$body.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
@@ -1501,6 +1500,7 @@
             if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
                 this.hide_tryfeed_view();
             }
+            
         },
         
         open_feed: function(feed_id, options) {
@@ -1532,7 +1532,7 @@
                 this.iframe_scroll = null;
                 this.set_correct_story_view_for_feed(feed.id);
                 $feed_link = options.$feed_link || $('.feed.selected', this.$s.$feed_list).eq(0);
-                this.mark_feed_as_selected(feed.id);
+                feed.set('selected', true);
                 this.make_feed_title_in_stories(feed.id);
                 this.show_feedbar_loading();
                 this.switch_taskbar_view(this.story_view);
@@ -1922,7 +1922,7 @@
             $story_titles.data('user_id', feed.get('user_id'));
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
-            this.mark_feed_as_selected(null);
+            feed.set('selected', true);
             this.make_feed_title_in_stories(feed.id);
             this.show_correct_feed_in_feed_title_floater();
             this.$s.$body.addClass('NB-view-river');
@@ -2786,8 +2786,8 @@
             var $comments_sideoptions = $('.NB-sideoption-share-comments', $feed_story);
             var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
             var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
-            var feed = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed) || {};
-            var source_user_id = feed['user_id'];
+            var feed = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed);
+            var source_user_id = feed && feed.get('user_id');
             
             $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
@@ -3626,7 +3626,7 @@
             if (!feed_id) feed_id = this.active_feed;
             this.mark_feed_as_read(feed_id);
             var feed = this.model.get_feed(feed_id);
-            window.open(feed['feed_link'], '_blank');
+            window.open(feed.get('feed_link'), '_blank');
             // window.focus();
         },
         
@@ -4748,7 +4748,7 @@
 
         make_manage_menu: function(type, feed_id, story_id, inverse, $item) {
             var $manage_menu;
-            // console.log(["make_manage_menu", type, feed_id, story_id, inverse, $item]);
+            console.log(["make_manage_menu", type, feed_id, story_id, inverse, $item]);
 
             if (type == 'site') {
                 var show_chooser = !NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated;
@@ -5137,7 +5137,7 @@
                 feed_id = $('.folder_title_text', $item).eq(0).text();
                 inverse = options.inverse || $('.folder_title', $item).hasClass("NB-hover-inverse");
             } else if (type == 'feed') {
-                feed_id = $item && parseInt($item.data('id'), 10);
+                feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'socialfeed') {
                 feed_id = $item && $item.data('id');

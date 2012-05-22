@@ -175,7 +175,7 @@ NEWSBLUR.log = function(msg) {
         },
         
         favicon: function(feed, empty_on_missing) {
-            if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1) return feed.favicon;
+            if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1) return feed.get('favicon');
             else if (feed.get('favicon') && feed.get('favicon').length) return 'data:image/png;base64,' + feed.get('favicon');
             else if (feed.get('favicon_url') && !empty_on_missing) return feed.get('favicon_url');
             else if (feed.get('photo_url')) return feed.get('photo_url');

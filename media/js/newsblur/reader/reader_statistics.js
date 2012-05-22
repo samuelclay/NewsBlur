@@ -41,8 +41,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
-                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
                 ])
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
@@ -193,18 +193,18 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             if (facet == 'feed') {
                 key = [$.make('div', [
                     $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed) }),
-                    $.make('span', { className: 'NB-modal-feed-title' }, self.feed.feed_title)
+                    $.make('span', { className: 'NB-modal-feed-title' }, self.feed.get('feed_title'))
                 ])];
             }
             if (!key || (!pos && !neg)) return;
             var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
                 (pos && $.make('div', { className: 'NB-statistics-facet-pos' }, [
                     $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(pos)),
-                    $.make('div', { className: 'NB-statistics-facet-count' }, pos + Inflector.pluralize(' like', pos)).css('margin-left', calculate_width(pos)+5)
+                    $.make('div', { className: 'NB-statistics-facet-count' }, Inflector.pluralize(' like', pos, true)).css('margin-left', calculate_width(pos)+5)
                 ])),
                 (neg && $.make('div', { className: 'NB-statistics-facet-neg' }, [
                     $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(neg)),
-                    $.make('div', { className: 'NB-statistics-facet-count' }, neg + Inflector.pluralize(' dislike', neg)).css('margin-right', calculate_width(neg)+5)
+                    $.make('div', { className: 'NB-statistics-facet-count' }, Inflector.pluralize(' dislike', neg, true)).css('margin-right', calculate_width(neg)+5)
                 ])),
                 $.make('div', { className: 'NB-statistics-facet-separator' }),
                 $.make('div', { className: 'NB-statistics-facet-name' }, key)

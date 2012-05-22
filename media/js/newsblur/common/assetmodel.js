@@ -310,55 +310,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    load_feeds_flat: function(callback, error_callback) {
-        var self = this;
-        var data = {
-            flat: true,
-            include_favicons: true
-        };
-        
-        var pre_callback = function(subscriptions) {
-            // NEWSBLUR.log(['subscriptions', subscriptions.flat_folders]);
-            var flat_feeds = function(feeds) {
-                var flattened = _.flatten(_.map(feeds, _.values));
-                return _.flatten(_.map(flattened, function(feed) {
-                    if (!_.isNumber(feed) && feed) return flat_feeds(feed);
-                    else return feed;
-                }));
-            };
-            var valid_feeds = flat_feeds({'root': subscriptions.flat_folders});
-
-            _.each(subscriptions.feeds, function(feed, feed_id) {
-                if (_.contains(valid_feeds, parseInt(feed_id, 10))) {
-                    self.feeds[feed_id] = feed;
-                    if (feed.favicon_fetching) self.flags['favicons_fetching'] = true;
-                }
-            });
-            self.folders = subscriptions.flat_folders;
-            self.starred_count = subscriptions.starred_count;
-            
-            if (!_.isEqual(self.favicons, {})) {
-                _.each(self.feeds, function(feed) {
-                    if (self.favicons[feed.id]) {
-                        feed.favicon = self.favicons[feed.id];
-                    }
-                });
-            }
-            callback();
-        };
-        
-        this.make_request('/reader/feeds', data, pre_callback, error_callback, {request_type: 'GET'});
-    },
-    
     load_feed_favicons: function(callback, loaded_once, load_all) {
         var pre_callback = _.bind(function(favicons) {
           this.favicons = favicons;
           if (!_.isEqual(this.feeds, {})) {
-            _.each(this.feeds, _.bind(function(feed) {
+            this.feeds.each(function(feed) {
                 if (favicons[feed.id]) {
-                    feed.favicon = favicons[feed.id];
+                    feed.set('favicon', favicons[feed.id]);
                 }
-            }, this));
+            });
           }
           callback();
         }, this);
@@ -366,8 +326,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
           load_all : load_all
         };
         if (loaded_once) {
-          data['feed_ids'] = _.compact(_.map(this.feeds, function(feed) {
-            return !feed.favicon && feed.id;
+          data['feed_ids'] = _.compact(this.feeds.map(function(feed) {
+            return !feed.get('favicon') && feed.id;
           }));
         }
         this.make_request('/reader/favicons', data, pre_callback, pre_callback, {request_type: 'GET'});
@@ -407,16 +367,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
         if (feed_id == this.feed_id) {
             if (data.feeds) {
-                _.extend(this.feeds, data.feeds);
+                this.feeds.add(data.feeds);
             }
             if (data && first_load) {
                 this.stories = data.stories;
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id) || {};
-                this.active_feed.feed_title = data.feed_title || this.active_feed.feed_title;
-                this.active_feed.last_update = data.last_update;
-                this.active_feed.updated = data.updated;
+                this.active_feed.set({
+                    feed_title: data.feed_title || this.active_feed.get('feed_title'),
+                    last_update: data.last_update || this.active_feed.get('last_update'),
+                    last_update: data.updated || this.active_feed.get('updated'),
+                    feed_address: data.feed_address || this.active_feed.get('feed_address')
+                }, {silent: true});
+                if (this.active_feed.hasChanged()) {
+                    this.active_feed.change();
+                }
                 this.feed_id = feed_id;
                 if (_.string.include(feed_id, ':')) {
                     _.extend(this.classifiers, data.classifiers);
@@ -427,9 +393,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.story_keys = {};
                 for (var s in data.stories) {
                     this.story_keys[data.stories[s].id] = true;
-                }
-                if (data.feed_address) {
-                  this.feeds[feed_id].feed_address = data.feed_address;
                 }
             } else if (data) {
                 data.stories = _.select(data.stories, function(story) {
@@ -563,9 +526,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             data['check_fetch_status'] = has_unfetched_feeds;
         }
         if (this.flags['favicons_fetching']) {
-            var favicons_fetching = _.compact(_.map(this.feeds, function(feed, k) { 
-                if (feed.favicon_fetching && feed.active) return k;
-            }));
+            var favicons_fetching = _.pluck(this.feeds.select(function(feed, k) { 
+                return feed.get('favicon_fetching') && feed.get('active');
+            }), 'id');
             if (favicons_fetching.length) {
                 data['favicons_fetching'] = favicons_fetching;
             } else {
@@ -586,52 +549,42 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         if (!data.feeds) return;
         
-        for (var f in data.feeds) {
-            if (!this.feeds[f]) continue;
-            var updated = false;
-            f = parseInt(f, 10);
-            var feed = data.feeds[f];
-            var feed_id = feed.id || f;
-            if (feed.id && f != feed.id) {
-                NEWSBLUR.log(['Dupe feed being refreshed', f, feed.id, this.feeds[f], feed]);
-                this.feeds[feed.id] = this.feeds[f];
+        _.each(data.feeds, _.bind(function(feed, feed_id) {
+            var existing_feed = this.feeds.get(feed_id);
+            if (!existing_feed) return;
+            var feed_id = feed.id || feed_id;
+            if (feed.id && feed_id != feed.id) {
+                NEWSBLUR.log(['Dupe feed being refreshed', feed_id, feed.id, this.feeds[f], feed]);
+                this.feeds.get(feed.id).set(feed);
             }
-            if ((feed['has_exception'] && !this.feeds[feed_id]['has_exception']) ||
-                (this.feeds[feed_id]['has_exception'] && !feed['has_exception'])) {
-                updated = true;
-                this.feeds[feed_id]['has_exception'] = !!feed['has_exception'];
+            if ((feed['has_exception'] && !existing_feed.get('has_exception')) ||
+                (existing_feed.get('has_exception') && !feed['has_exception'])) {
+                existing_feed.set('has_exception', !!feed['has_exception']);
             }
-            for (var k in feed) {
-                if (this.feeds[feed_id][k] != feed[k]) {
-                    // NEWSBLUR.log(['New Feed', this.feeds[feed_id][k], feed[k], f, k]);
-                    NEWSBLUR.log(['Different', k, this.feeds[feed_id].feed_title, this.feeds[feed_id][k], feed[k]]);
-                    this.feeds[feed_id][k] = feed[k];
-                    updated = true;
-                }
+            existing_feed.set(feed, {silent: true});
+            if (feed['favicon'] && existing_feed.get('favicon') != feed['favicon']) {
+                existing_feed.set('favicon', feed['favicon']);
+                existing_feed.set('favicon_color', feed['favicon_color']);
+                existing_feed.set('favicon_fetching', false);
             }
-            if (feed['favicon'] && this.feeds[feed_id]['favicon'] != feed['favicon']) {
-                this.feeds[feed_id]['favicon'] = feed['favicon'];
-                this.feeds[feed_id]['favicon_color'] = feed['favicon_color'];
-                this.feeds[feed_id]['favicon_fetching'] = false;
-                updated = true;
+
+            if (existing_feed.hasChanged() && !_.contains(updated_feeds, feed.id)) {
+                // NEWSBLUR.log(['New Feed', this.feeds[feed_id][k], feed[k], f, k]);
+                NEWSBLUR.log(['Different', existing_feed.changedAttributes(), existing_feed.previousAttributes()]);
+                updated_feeds.push(feed_id);
             }
-            if (updated && !(f in updated_feeds)) {
-                updated_feeds.push(f);
-            }
-        }
+        }, this));
         
         _.each(data.social_feeds, _.bind(function(feed) {
-            var updated = false;
             var social_feed = this.social_feeds.get(feed.id);
             if (!social_feed) return;
             
             for (var k in feed) {
                 if (social_feed.get(k) != feed[k]) {
                     social_feed.set(k, feed[k]);
-                    updated = true;
                 }
             }
-            if (updated && !_.contains(updated_feeds, feed.id)) {
+            if (social_feed.hasChanged() && !_.contains(updated_feeds, feed.id)) {
                 updated_feeds.push(feed.id);
             }
         }, this));
@@ -664,22 +617,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     count_unfetched_feeds: function() {
-        var counts = {
-            'unfetched_feeds': 0,
-            'fetched_feeds': 0
-        };
-        
-        for (var f in this.feeds) {
-            var feed = this.feeds[f];
-            
-            if (feed.active) {
-                if (!feed['not_yet_fetched'] || feed['has_exception']) {
+        var counts = this.feeds.reduce(function(counts, feed) {
+            if (feed.get('active')) {
+                if (!feed.get('not_yet_fetched') || feed.get('has_exception')) {
                     counts['fetched_feeds'] += 1;
                 } else {
                     counts['unfetched_feeds'] += 1;
                 }
             }
-        }
+            return counts;
+        }, {
+            'unfetched_feeds': 0,
+            'fetched_feeds': 0
+        });
         
         return counts;
     },

@@ -53,6 +53,7 @@ class UserSubscription(models.Model):
         feed['ng']         = self.unread_count_negative
         feed['active']     = self.active
         feed['feed_opens'] = self.feed_opens
+        feed['subscribed'] = True
         if classifiers:
             feed['classifiers'] = classifiers
         if not self.active and self.user.profile.is_premium:

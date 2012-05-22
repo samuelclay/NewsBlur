@@ -92,7 +92,7 @@ window.Inflector = {
         else if (s.match(/y$/i)) s = s.replace(/y$/i, 'ies');
         else s = s + 's';
     }
-    if (include_count) s = count + ' ' + s;
+    if (include_count) s = Inflector.commas(count) + ' ' + s;
     return s;
   },
 

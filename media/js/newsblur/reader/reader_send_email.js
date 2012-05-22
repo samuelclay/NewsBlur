@@ -38,7 +38,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('div', { className: 'NB-modal-email-feed' }, [
                   $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
-                  $.make('div', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
+                  $.make('div', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title'))
                 ]),
                 $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),
                 $.make('div', { className: 'NB-modal-email-story-permalink' }, this.story.story_permalink)

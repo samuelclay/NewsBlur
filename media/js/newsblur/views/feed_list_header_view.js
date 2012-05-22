@@ -16,8 +16,8 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
         this.setElement($onpage);
     },
     
-    render: function(skip_count) {
-        if (!skip_count) {
+    render: function() {
+        if (!this.options.skip_count) {
             this.count();
         }
         var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
@@ -115,7 +115,7 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
             $button.tipsy('disable');
         }
 
-        this.render(true);
+        this.render();
 
         if (NEWSBLUR.assets.preference('show_tooltips')) {
             var $button = this.$('.NB-feeds-header-sites');

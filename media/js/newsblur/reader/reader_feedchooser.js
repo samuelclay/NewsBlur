@@ -320,7 +320,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             return;
         }
         
-        var active_feeds = _.any(_.pluck(feeds, 'active'));
+        var active_feeds = feeds.any(function(feed) { return feed.get('active'); });
         if (!active_feeds) {
             // Get feed subscribers
             var min_subscribers = _.last(
@@ -337,21 +337,21 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             _.each(feeds, function(feed, feed_id) {
                 self.add_feed_to_decline(parseInt(feed_id, 10));
             
-                if (feed['subs'] >= min_subscribers) {
+                if (feed.get('subs') >= min_subscribers) {
                     approve_feeds.push(parseInt(feed_id, 10));
                 }
             });
         
             // Approve feeds in subs
             _.each(approve_feeds, function(feed_id) {
-                if (self.model.get_feed(feed_id)['subs'] > min_subscribers &&
+                if (feeds.get(feed_id).get('subs') > min_subscribers &&
                     self.approve_list.length < self.MAX_FEEDS &&
                     !self.model.get_feed(feed_id)['has_exception']) {
                     self.add_feed_to_approve(feed_id);
                 }
             });
             _.each(approve_feeds, function(feed_id) {
-                if (self.model.get_feed(feed_id)['subs'] == min_subscribers &&
+                if (self.model.get_feed(feed_id).get('subs') == min_subscribers &&
                     self.approve_list.length < self.MAX_FEEDS) {
                     self.add_feed_to_approve(feed_id);
                 }
@@ -359,7 +359,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         } else {
             // Get active feeds
             var active_feeds = _.pluck(_.select(feeds, function(feed) {
-                if (feed.active) return true;
+                return feed.get('active');
             }), 'id');
             this.approve_list = active_feeds;
             

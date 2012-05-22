@@ -1,7 +1,8 @@
 NEWSBLUR.Views.Feed = Backbone.View.extend({
     
     options: {
-        depth: 0
+        depth: 0,
+        selected: false
     },
     
     events: {
@@ -10,6 +11,14 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         "click"                          : "open",
         "mouseenter"                     : "add_hover_inverse_to_feed",
         "mouseleave"                     : "remove_hover_inverse_from_feed"
+    },
+    
+    initialize: function() {
+        _.bindAll(this, 'render', 'update_and_render');
+        this.model.bind('change:ps', this.update_and_render);
+        this.model.bind('change:nt', this.update_and_render);
+        this.model.bind('change:ng', this.update_and_render);
+        this.model.bind('change', this.render);
     },
     
     render: function() {
@@ -43,8 +52,8 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         if (feed.get('subscription_user_id') && !feed.get('shared_stories_count')) {
             unread_class += ' NB-feed-inactive';
         }
-        var $feed = _.template('\
-        <<%= list_type %> class="feed <%= unread_class %> <%= exception_class %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
+        var $feed = $(_.template('\
+        <<%= list_type %> class="feed <% if (selected) { %>selected<% } %> <%= unread_class %> <%= exception_class %> <% if (toplevel) { %>NB-toplevel<% } %>" data-id="<%= feed.id %>">\
           <div class="feed_counts">\
             <%= feed_counts_floater %>\
           </div>\
@@ -81,11 +90,20 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
           exception_class     : exception_class,
           toplevel            : this.options.depth == 0,
           list_type           : this.options.type == 'feed' ? 'li' : 'div',
-          empty_on_missing    : empty_on_missing
-        });
-
+          empty_on_missing    : empty_on_missing,
+          selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
+        }));
+        
+        if (this.$el) {
+            this.$el.replaceWith($feed);
+        }
         this.setElement($feed);
+        
         return this;
+    },
+    
+    update_and_render: function() {
+        return this.render();
     },
     
     add_hover_inverse_to_feed: function() {
@@ -121,6 +139,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         e.stopPropagation();
         console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), {
+            feed_id: this.model.id,
             toplevel: this.options.depth == 0
         });
         return false;

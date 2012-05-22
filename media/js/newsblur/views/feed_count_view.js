@@ -1,7 +1,14 @@
 NEWSBLUR.Views.FeedCount = Backbone.View.extend({
     
+    initialize: function() {
+        _.bindAll(this, 'render');
+        this.model.bind('change:ps', this.render);
+        this.model.bind('change:nt', this.render);
+        this.model.bind('change:ng', this.render);
+    },
+    
     render: function() {
-        this.setElement($(this.render_to_string()));
+        $(this.el).html($(this.render_to_string()));
         return this;
     },
     

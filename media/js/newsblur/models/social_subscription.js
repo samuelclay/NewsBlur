@@ -34,6 +34,14 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
         if (title_a > title_b)      return 1;
         else if (title_a < title_b) return -1;
         return 0;
+    },
+    
+    deselect: function() {
+        this.chain().select(function(feed) { 
+            return feed.get('selected'); 
+        }).each(function(feed){ 
+            feed.set('selected', false); 
+        });
     }
     
 });
