@@ -1,7 +1,9 @@
 (function($) {
 
     $(document).ready(function() {
-        NEWSBLUR.paypal_return = new NEWSBLUR.PaypalReturn();
+        if($('.NB-paypal-return').length) {
+            NEWSBLUR.paypal_return = new NEWSBLUR.PaypalReturn();
+        }
     });
 
     NEWSBLUR.PaypalReturn = function() {
@@ -38,7 +40,7 @@
         },
         
         homepage: function() {
-            window.location.href = '/';
+            window.location.href = 'http://' + NEWSBLUR.URLs.domain + '/';
         }
 
     };

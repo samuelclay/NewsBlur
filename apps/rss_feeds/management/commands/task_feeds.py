@@ -47,3 +47,11 @@ class Command(BaseCommand):
             active=True
         ).order_by('?')
         if feeds: Feed.task_feeds(feeds)
+        
+        # feeds = Feed.objects.filter(
+        #     last_update__lte=day,
+        #     active_subscribers__gte=1,
+        #     active=False,
+        #     known_good=True
+        # ).order_by('?')
+        # if feeds: Feed.task_feeds(feeds)

@@ -52,7 +52,7 @@ class MClassifierAuthor(mongo.Document):
 
 class MClassifierFeed(mongo.Document):
     user_id = mongo.IntField()
-    feed_id = mongo.IntField(unique_with='user_id')
+    feed_id = mongo.IntField()
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
     

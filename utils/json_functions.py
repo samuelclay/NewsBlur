@@ -64,7 +64,7 @@ def json_encode(data, *args, **kwargs):
         # see http://code.djangoproject.com/ticket/5868
         elif isinstance(data, Promise):
             ret = force_unicode(data)
-        elif isinstance(data, datetime.datetime):
+        elif isinstance(data, datetime.datetime) or isinstance(data, datetime.date):
             ret = str(data)
         else:
             ret = data
@@ -129,14 +129,13 @@ def json_view(func):
                 request_repr,
                 )
             # print message
+            response = {'result': 'error',
+                        'text': unicode(e)}
+            code = 500
             if not settings.DEBUG:
                 mail_admins(subject, message, fail_silently=True)
-
-                response = {'result': 'error',
-                            'text': unicode(e)}
-                code = 500
             else:
-                raise
+                print '\n'.join(traceback.format_exception(*exc_info))
 
         if isinstance(response, HttpResponseForbidden):
             return response

@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 class ReaderTest(TestCase):
-    fixtures = ['reader.json', 'stories.json', '../../rss_feeds/fixtures/gawker1.json']
+    fixtures = ['subscriptions.json', 'stories.json', '../../rss_feeds/fixtures/gawker1.json']
     
     def setUp(self):
         self.client = Client()

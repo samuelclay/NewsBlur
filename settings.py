@@ -3,6 +3,19 @@ import logging
 import os
 from mongoengine import connect
 import redis
+from utils import jammit
+
+# ===================
+# = Server Settings =
+# ===================
+
+ADMINS       = (
+    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+)
+
+SERVER_EMAIL = 'server@newsblur.com'
+HELLO_EMAIL  = 'hello@newsblur.com'
+NEWSBLUR_URL = 'http://www.newsblur.com'
 
 # ===========================
 # = Directory Declaractions =
@@ -12,6 +25,7 @@ CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
+STATIC_ROOT   = os.path.join(CURRENT_DIR, 'static')
 UTILS_ROOT    = os.path.join(CURRENT_DIR, 'utils')
 VENDOR_ROOT   = os.path.join(CURRENT_DIR, 'vendor')
 LOG_FILE      = os.path.join(CURRENT_DIR, 'logs/newsblur.log')
@@ -25,14 +39,12 @@ if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
-
+    
 # ===================
 # = Global Settings =
 # ===================
 
-ADMINS                = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
-)
+DEBUG                 = False
 TEST_DEBUG            = False
 SEND_BROKEN_LINK_EMAILS = False
 MANAGERS              = ADMINS
@@ -50,7 +62,7 @@ ADMIN_MEDIA_PREFIX    = '/media/admin/'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
-
+DEBUG_ASSETS          = DEBUG
 
 # ===============
 # = Enviornment =
@@ -67,8 +79,6 @@ DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.load_template_source',
-
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -150,143 +160,6 @@ LOGGING = {
     }
 }
 
-# =====================
-# = Media Compression =
-# =====================
-
-COMPRESS_JS = {
-    'all': {
-        'source_filenames': (
-            'js/jquery-1.6.1.js',
-            'js/inflector.js',
-            'js/jquery.json.js',
-            'js/jquery.easing.js',
-            'js/jquery.newsblur.js',
-            'js/jquery.scrollTo.js',
-            'js/jquery.corners.js',
-            'js/jquery.hotkeys.js',
-            'js/jquery.ajaxupload.js',
-            'js/jquery.ajaxmanager.3.js',
-            'js/jquery.simplemodal-1.3.js',
-            'js/jquery.color.js',
-            'js/jquery.rightclick.js',
-            'js/jquery.ui.core.js',
-            'js/jquery.ui.widget.js',
-            'js/jquery.ui.mouse.js',
-            'js/jquery.ui.position.js',
-            'js/jquery.ui.draggable.js',
-            'js/jquery.ui.sortable.js',
-            'js/jquery.ui.slider.js',
-            'js/jquery.ui.autocomplete.js',
-            'js/jquery.ui.progressbar.js',
-            'js/jquery.layout.js',
-            'js/jquery.tinysort.js',
-            'js/jquery.fieldselection.js',
-            'js/jquery.flot.js',
-            'js/jquery.tipsy.js',
-            # 'js/socket.io-client.0.8.7.js',
-            'js/underscore.js',
-            'js/underscore.string.js',
-            'js/newsblur/reader_utils.js',
-            'js/newsblur/assetmodel.js',
-            'js/newsblur/reader.js',
-            'js/newsblur/generate_bookmarklet.js',
-            'js/newsblur/modal.js',
-            'js/newsblur/reader_classifier.js',
-            'js/newsblur/reader_add_feed.js',
-            'js/newsblur/reader_mark_read.js',
-            'js/newsblur/reader_goodies.js',
-            'js/newsblur/reader_preferences.js',
-            'js/newsblur/reader_account.js',
-            'js/newsblur/reader_feedchooser.js',
-            'js/newsblur/reader_statistics.js',
-            'js/newsblur/reader_feed_exception.js',
-            'js/newsblur/reader_keyboard.js',
-            'js/newsblur/reader_recommend_feed.js',
-            'js/newsblur/reader_send_email.js',
-            'js/newsblur/reader_tutorial.js',
-            'js/newsblur/about.js',
-            'js/newsblur/faq.js',
-        ),
-        'output_filename': 'js/all-compressed-?.js'
-    },
-    'mobile': {
-        'source_filenames': (
-            'js/jquery-1.6.1.js',
-            'js/mobile/jquery.mobile-1.0b1.js',
-            'js/jquery.ajaxmanager.3.js',
-            'js/underscore.js',
-            'js/underscore.string.js',
-            'js/inflector.js',
-            'js/jquery.json.js',
-            'js/jquery.easing.js',
-            'js/jquery.newsblur.js',
-            'js/newsblur/reader_utils.js',
-            'js/newsblur/assetmodel.js',
-            'js/mobile/newsblur/mobile_workspace.js',
-        ),
-        'output_filename': 'js/mobile-compressed-?.js',
-    },
-    'paypal': {
-        'source_filenames': (
-            'js/newsblur/paypal_return.js',
-        ),
-        'output_filename': 'js/paypal-compressed-?.js',
-    },
-    'bookmarklet': {
-        'source_filenames': (
-            'js/jquery-1.5.1.min.js',
-            'js/jquery.noConflict.js',
-            'js/jquery.newsblur.js',
-            'js/jquery.tinysort.js',
-            'js/jquery.simplemodal-1.3.js',
-            'js/jquery.corners.js',
-        ),
-        'output_filename': 'js/bookmarklet-compressed-?.js',
-    },
-}
-
-COMPRESS_CSS = {
-    'all': {
-        'source_filenames': (
-            'css/reader.css',
-            'css/modals.css',
-            'css/status.css',
-            'css/jquery-ui/jquery.theme.css',
-            'css/jquery.tipsy.css',
-        ),
-        'output_filename': 'css/all-compressed-?.css'
-    },
-    'mobile': {
-        'source_filenames': (
-            'css/mobile/jquery.mobile-1.0b1.css',
-            'css/mobile/mobile.css',
-        ),
-        'output_filename': 'css/mobile/mobile-compressed-?.css',
-    },
-    'paypal': {
-        'source_filenames': (
-            'css/paypal_return.css',
-        ),
-        'output_filename': 'css/paypal-compressed-?.css',
-    },
-    'bookmarklet': {
-        'source_filenames': (
-            'css/reset.css',
-            'css/modals.css',
-        ),
-        'output_filename': 'css/paypal-compressed-?.css',
-    },
-}
-
-COMPRESS_VERSION = True
-COMPRESS_JS_FILTERS = ['compress.filters.jsmin.JSMinFilter']
-COMPRESS_CSS_FILTERS = []
-
-# YUI_DIR = ''.join([UTILS_ROOT, '/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'])
-# COMPRESS_YUI_BINARY = 'java -jar ' + YUI_DIR
-# COMPRESS_YUI_JS_ARGUMENTS = '--preserve-semi --nomunge --disable-optimizations'
-
 # ==========================
 # = Miscellaneous Settings =
 # ==========================
@@ -306,8 +179,6 @@ SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
-SERVER_EMAIL            = 'server@newsblur.com'
-HELLO_EMAIL             = 'hello@newsblur.com'
 
 # ===========
 # = Logging =
@@ -328,9 +199,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django_extensions',
     'djcelery',
-    # 'seacucumber',
     'django_ses',
-    'compress',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -340,17 +209,27 @@ INSTALLED_APPS = (
     'apps.statistics',
     'apps.static',
     'apps.mobile',
+    'apps.push',
     'south',
     'utils',
     'vendor',
     'vendor.typogrify',
     'vendor.paypal.standard.ipn',
+    'vendor.zebra',
 )
 
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
+    
+# ==========
+# = Stripe =
+# ==========
+
+STRIPE_SECRET = "YOUR-SECRET-API-KEY"
+STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+ZEBRA_ENABLE_APP = True
 
 # ==========
 # = Celery =
@@ -363,6 +242,10 @@ CELERY_ROUTES = {
         "queue": "new_feeds",
         "binding_key": "new_feeds"
     },
+    "push-feeds": {
+        "queue": "push_feeds",
+        "binding_key": "push_feeds"
+    },
     "update-feeds": {
         "queue": "update_feeds",
         "binding_key": "update_feeds"
@@ -374,6 +257,11 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "new_feeds"
     },
+    "push_feeds": {
+        "exchange": "push_feeds",
+        "exchange_type": "direct",
+        "binding_key": "push_feeds"
+    },
     "update_feeds": {
         "exchange": "update_feeds",
         "exchange_type": "direct",
@@ -381,21 +269,17 @@ CELERY_QUEUES = {
     },
 }
 CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND       = "amqplib"
-BROKER_HOST          = "db01.newsblur.com"
-BROKER_PORT          = 5672
-BROKER_USER          = "newsblur"
-BROKER_PASSWORD      = "newsblur"
-BROKER_VHOST         = "newsblurvhost"
+BROKER_BACKEND       = "redis"
+BROKER_URL = "redis://db01:6379/0"
+CELERY_REDIS_HOST          = "db01"
 
-CELERY_RESULT_BACKEND       = "amqp"
-CELERYD_LOG_LEVEL           = 'ERROR'
+CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
-# CELERYD_TASK_TIME_LIMIT   = 12 * 30
+CELERYD_TASK_TIME_LIMIT     = 12 * 30
 CELERY_DISABLE_RATE_LIMITS  = True
 
 # ====================
@@ -462,7 +346,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'db01,db03',
+    'host': 'db02:27017',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
@@ -472,3 +356,8 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 # =========
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+
+JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)

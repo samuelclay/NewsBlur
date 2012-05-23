@@ -1,17 +1,15 @@
-import urllib2, httplib
+import requests
 import re
 import urlparse
 import traceback
 import feedparser
 import time
+import urllib2
+import httplib
+from django.conf import settings
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, mail_feed_error_to_admin
-
-HEADERS = {
-    'User-Agent': 'NewsBlur Page Fetcher - http://www.newsblur.com',
-    'Connection': 'close',
-}
 
 BROKEN_PAGES = [
     'tag:', 
@@ -23,50 +21,89 @@ BROKEN_PAGES = [
 
 class PageImporter(object):
     
-    def __init__(self, url, feed):
-        self.url = url
+    def __init__(self, feed):
         self.feed = feed
+        
+    @property
+    def headers(self):
+        s = requests.session()
+        s.config['keep_alive'] = False
+        return {
+            'User-Agent': 'NewsBlur Page Fetcher (%s subscriber%s) - %s '
+                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                          'Safari/534.48.3)' % (
+                self.feed.num_subscribers,
+                's' if self.feed.num_subscribers != 1 else '',
+                settings.NEWSBLUR_URL
+            ),
+            'Connection': 'close',
+        }
     
     @timelimit(15)
-    def fetch_page(self):
-        if not self.url:
+    def fetch_page(self, urllib_fallback=False, requests_exception=None):
+        feed_link = self.feed.feed_link
+        if not feed_link:
             self.save_no_page()
             return
         
         try:
-            if self.url.startswith('http'):
-                request = urllib2.Request(self.url, headers=HEADERS)
-                response = urllib2.urlopen(request)
-                time.sleep(0.01) # Grrr, GIL.
-                data = response.read()
-            elif any(self.url.startswith(s) for s in BROKEN_PAGES):
+            if feed_link.startswith('www'):
+                self.feed.feed_link = 'http://' + feed_link
+            if feed_link.startswith('http'):
+                if urllib_fallback:
+                    request = urllib2.Request(feed_link, headers=self.headers)
+                    response = urllib2.urlopen(request)
+                    time.sleep(0.01) # Grrr, GIL.
+                    data = response.read()
+                else:
+                    response = requests.get(feed_link, headers=self.headers)
+                    try:
+                        data = response.text
+                    except LookupError:
+                        data = response.content
+            elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
                 return
             else:
-                data = open(self.url, 'r').read()
-            html = self.rewrite_page(data)
-            self.save_page(html)
-        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL), e:
+                try:
+                    data = open(feed_link, 'r').read()
+                except IOError:
+                    self.feed.feed_link = 'http://' + feed_link
+                    self.fetch_page(urllib_fallback=True)
+                    return
+            if data:
+                html = self.rewrite_page(data)
+                self.save_page(html)
+            else:
+                self.save_no_page()
+                return
+        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL,
+                requests.exceptions.ConnectionError), e:
             self.feed.save_page_history(401, "Bad URL", e)
             fp = feedparser.parse(self.feed.feed_address)
-            self.feed.feed_link = fp.feed.get('link', "")
+            feed_link = fp.feed.get('link', "")
             self.feed.save()
         except (urllib2.HTTPError), e:
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
-            return
         except (httplib.IncompleteRead), e:
             self.feed.save_page_history(500, "IncompleteRead", e)
-            return
+        except (requests.exceptions.RequestException, 
+                requests.packages.urllib3.exceptions.HTTPError), e:
+            logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
+            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
             logging.debug(tb)
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
-            mail_feed_error_to_admin(self.feed, e)
-            return
-        
-        self.feed.save_page_history(200, "OK")
+            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            if not urllib_fallback:
+                self.fetch_page(urllib_fallback=True)
+        else:
+            self.feed.save_page_history(200, "OK")
 
     def save_no_page(self):
         self.feed.has_page = False
@@ -113,6 +150,10 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
+            feed_page, created = MFeedPage.objects.get_or_create(feed_id=self.feed.pk, auto_save=True)
             feed_page.page_data = html
-            feed_page.save()
+            if not created:
+                feed_page.save()
+            else:
+                feed_page.save(force_insert=True)
+            return feed_page

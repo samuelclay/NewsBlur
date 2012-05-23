@@ -2,15 +2,29 @@
 
 {% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
 
+{% block extra_head_js %}
+    <script>
+        $(document).ready(function() {
+
+            NEWSBLUR.reader = new NEWSBLUR.Reader();
+
+        });
+    </script>
+
+    {% if user.is_staff %}
+        <script>
+            $(document).ready(function() {
+              $('#add-feature-button').click(function(e) {
+                e.preventDefault();
+                $('#add-feature-form').fadeIn(500);
+              });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 
-<script>
-$(document).ready(function() {
-
-    NEWSBLUR.reader = new NEWSBLUR.Reader();
-
-});
-</script>
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
 <h2 class="NB-splash-heading">- A visual feed reader with intelligence.</h2>
@@ -28,14 +42,6 @@ $(document).ready(function() {
             <div class="NB-features-add">
               <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
             </div>
-            <script>
-            $(document).ready(function() {
-              $('#add-feature-button').click(function(e) {
-                e.preventDefault();
-                $('#add-feature-form').fadeIn(500);
-              });
-            });
-            </script>
           {% endif %}
           <div class="NB-spinner NB-left"></div>
         <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
@@ -274,19 +280,21 @@ $(document).ready(function() {
           <h3 class="NB-module-content-header">
             {% if user.profile.is_premium %}
               <span class="NB-module-content-subtitle">
-                {{ active_count }} site{{ active_count|pluralize }}
+                  {{ active_count }} site{{ active_count|pluralize }}
               </span>
+              <div class="NB-module-content-account-realtime" title=""></div>
               Premium Account
             {% else %}
               <span class="NB-module-content-subtitle">
                 <span class="NB-module-account-feedcount">{{ active_count }}</span> of 64 sites
               </span>
+              <div class="NB-module-content-account-realtime" title=""></div>
               Standard Account
             {% endif %}
           </h3>
           <div class="NB-module-item-title">
             {% if user.profile.is_premium %}
-              
+
             {% else %}
               
               <div class="NB-modal-submit">
@@ -369,7 +377,7 @@ $(document).ready(function() {
                 <a href="/iphone/" class="NB-splash-link">See the free NewsBlur iPhone App</a>
             </div>
           </div>
-          <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
+          <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
             <div class="NB-module-mobile-image">
                 <img src="{{ MEDIA_URL }}/img/mobile/android-icon-blar.png" />
             </div>
@@ -383,6 +391,22 @@ $(document).ready(function() {
             <div class="NB-module-item-title">
                 <span class="NB-raquo">&raquo;</span>
                 <a href="https://market.android.com/details?id=bitwrit.Blar" class="NB-splash-link">Download Blar on the Android Market</a>
+            </div>
+          </div>
+          <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
+            <div class="NB-module-mobile-image">
+                <img src="{{ MEDIA_URL }}/img/mobile/meego-icon-webfeeds.png" />
+            </div>
+            <h3 class="NB-module-content-header">
+                <span class="NB-module-content-subtitle">
+                  User-Built Client
+                </span>
+                <div class="NB-module-mobile-title">Web Feeds</div>
+                <div class="NB-module-mobile-device">Nokia MeeGo</div>
+            </h3>
+            <div class="NB-module-item-title">
+                <span class="NB-raquo">&raquo;</span>
+                <a href="http://projects.developer.nokia.com/feed_reader" class="NB-splash-link">Download Web Feeds on the Nokia Store</a>
             </div>
           </div>
         </div>
@@ -479,14 +503,32 @@ $(document).ready(function() {
           </div>
         </div>
         <ul class="taskbar_nav taskbar_nav_feeds">
-          <li class="task_button task_button_menu NB-task-add" title="Add sites"></li>
-          <li class="task_button task_button_menu NB-task-manage NB-disabled" title="Manage NewsBlur"></li>
+          <li class="task_button task_button_menu NB-task-add">
+              <div class="task_button_background"></div>
+              <div class="NB-task-image"></div>
+          </li>
+          <li class="task_button task_button_menu NB-task-manage NB-disabled">
+              <div class="task_button_background"></div>
+              <div class="NB-task-image"></div>
+          </li>
         </ul>
         <div class="NB-taskbar-intelligence">
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-negative"></div>
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-neutral"></div>
-          <div class="NB-taskbar-intelligence-indicator NB-taskbar-intelligence-positive"></div>
-          <div class="NB-intelligence-slider"></div>
+          <div class="NB-intelligence-slider">
+              <ul class="segmented-control">
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_red.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+                  <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
+                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                  </li>
+              </ul>
+          </div>
         </div>
         <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (u)"></div>
       </div>
@@ -506,6 +548,8 @@ $(document).ready(function() {
           <div class="NB-taskbar">
             <ul class="taskbar_nav taskbar_nav_view">
               <li class="task_button task_button_view task_view_page NB-active">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Original</span>
                 <span class="NB-task-original-return NB-task-title">
                   <div>Return to</div>
@@ -514,21 +558,36 @@ $(document).ready(function() {
                 <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
               </li>
               <li class="task_button task_button_view task_view_feed">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Feed</span>
                 <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
               </li>
               <li class="task_button task_button_view task_view_story">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Story</span>
               </li>
             </ul>
             <ul class="taskbar_nav taskbar_nav_story first">
-              <li class="task_button task_button_story task_story_previous"></li>
+              <li class="task_button task_button_story task_story_previous">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </li>
               <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
                 <span class="NB-task-title">Next Unread</span>
               </li>
-              <li class="task_button task_button_story task_story_next"></li>
+              <li class="task_button task_button_story task_story_next">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </li>
               {% if not user.is_authenticated %}
-                <li class="task_button task_button_signup"></li>
+                <li class="task_button task_button_signup">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+                </li>
               {% endif %}
             </ul>
           </div>

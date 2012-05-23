@@ -18,7 +18,7 @@ from utils import log as logging
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
-
+from zebra.signals import zebra_webhook_customer_subscription_created
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
@@ -32,8 +32,11 @@ class Profile(models.Model):
     hide_mobile       = models.BooleanField(default=False)
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
+    dashboard_date    = models.DateTimeField(default=datetime.datetime.now)
     timezone          = TimeZoneField(default="America/New_York")
     secret_token      = models.CharField(max_length=12, blank=True, null=True)
+    stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
+    stripe_id         = models.CharField(max_length=24, blank=True, null=True)
     
     def __unicode__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
@@ -189,6 +192,11 @@ def paypal_signup(sender, **kwargs):
         pass
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
+
+def stripe_signup(sender, full_json, **kwargs):
+    profile = Profile.objects.get(stripe_id=full_json['data']['object']['customer'])
+    profile.activate_premium()
+zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
 def change_password(user, old_password, new_password):
     user_db = authenticate(username=user.username, password=old_password)

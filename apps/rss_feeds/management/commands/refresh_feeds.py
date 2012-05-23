@@ -1,10 +1,12 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.auth.models import User
+from apps.statistics.models import MStatistics
 from apps.rss_feeds.models import Feed
 from optparse import make_option
 from utils import feed_fetcher
 from utils.management_functions import daemonize
+import django
 import socket
 import datetime
 import redis
@@ -30,7 +32,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['daemonize']:
             daemonize()
-            
+        
+        options['fake'] = bool(MStatistics.get('fake_fetch'))
+        
         settings.LOG_TO_STREAM = True
         now = datetime.datetime.utcnow()
         
@@ -63,18 +67,21 @@ class Command(BaseCommand):
             num_workers = 1
         
         options['compute_scores'] = True
+        options['quick'] = "0"
         
         disp = feed_fetcher.Dispatcher(options, num_workers)        
         
         feeds_queue = []
         for _ in range(num_workers):
             feeds_queue.append([])
-            
+        
         i = 0
         for feed in feeds:
             feeds_queue[i%num_workers].append(feed.pk)
             i += 1
         disp.add_jobs(feeds_queue, i)
+        
+        django.db.connection.close()
         
         print " ---> Fetching %s feeds..." % feeds.count()
         disp.run_jobs()

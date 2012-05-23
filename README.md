@@ -84,7 +84,7 @@ command will automatically do this for you, but Mac OS X needs to have it instal
 
 Not the easiest to get installed. If you are running Mac OS X, you have a few options:
 
- * Use the [Superpack by Chris Fonnesbeck](http://stronginference.com/scipy-superpack/)
+ * Use the [Superpack by Chris Fonnesbeck](http://fonnesbeck.github.com/ScipySuperpack/)
  * Use MacPorts: `sudo port install py26-numpy py26-scipy`
  * Install from source (grueling): [http://www.scipy.org/Download](http://www.scipy.org/Download)
  

@@ -31,11 +31,14 @@ class SQLLogToConsoleMiddleware:
             time = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
             for query in queries:
-                query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
-                query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])
-                query['sql'] = re.sub(r'INSERT', '~FGINSERT', query['sql'])
-                query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
-                query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
-            t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] {{sql.time}}s: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
+                if query.get('mongo'):
+                    query['sql'] = "%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                else:
+                    query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
+                    query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])
+                    query['sql'] = re.sub(r'INSERT', '~FGINSERT', query['sql'])
+                    query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
+                    query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
+            t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
             logging.debug(t.render(Context({'sqllog':queries,'count':len(queries),'time':time})))
         return response

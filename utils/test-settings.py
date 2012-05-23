@@ -15,8 +15,9 @@ MONGO_DB = {
 }      
 
 TEST_DATABASE_NAME = ":memory:"
-
+DAYS_OF_UNREAD = 9999
 TEST_DEBUG = True
+DEBUG = True
 
 # from django.db import connection
 # cursor = connection.cursor()

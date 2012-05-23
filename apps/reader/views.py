@@ -1,5 +1,6 @@
 import datetime
 import time
+import boto
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -48,7 +49,7 @@ SINGLE_DAY = 60*60*24
 @never_cache
 def index(request):
     if request.method == "POST":
-        if request.POST['submit'] == 'login':
+        if request.POST.get('submit') == 'login':
             login_form  = LoginForm(request.POST, prefix='login')
             signup_form = SignupForm(prefix='signup')
         else:
@@ -247,7 +248,7 @@ def load_feeds_flat(request):
         feeds[sub.feed.pk] = sub.canonical(include_favicon=include_favicons)
     
     folders = json.decode(folders.folders)
-    flat_folders = {}
+    flat_folders = {" ": []}
     
     def make_feeds_folder(items, parent_folder="", depth=0):
         for item in items:
@@ -273,62 +274,51 @@ def load_feeds_flat(request):
     data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version=iphone_version)
     return data
 
-@ratelimit(minutes=1, requests=10)
+@ratelimit(minutes=1, requests=20)
 @json.json_view
 def refresh_feeds(request):
-    start = datetime.datetime.utcnow()
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_id')
-    feeds = {}
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    feed_ids = [f for f in feed_ids if f and not f.startswith('river')]
-    if feed_ids:
-        user_subs = user_subs.filter(feed__in=feed_ids)
-    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    favicons_fetching = [int(f) for f in request.REQUEST.getlist('favicons_fetching') if f]
-    feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
+    check_fetch_status = request.REQUEST.get('check_fetch_status')
+    favicons_fetching = request.REQUEST.getlist('favicons_fetching')
+    start = datetime.datetime.utcnow()
+    
+    feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids, 
+                                                       check_fetch_status=check_fetch_status)
 
-    for i, sub in enumerate(user_subs):
-        pk = sub.feed.pk
-        if (sub.needs_unread_recalc or 
-            sub.unread_count_updated < UNREAD_CUTOFF or 
-            sub.oldest_unread_story_date < UNREAD_CUTOFF):
-            sub = sub.calculate_feed_scores(silent=True)
-        if not sub: continue # TODO: Figure out the correct sub and give it a new feed_id
-        feeds[pk] = {
-            'ps': sub.unread_count_positive,
-            'nt': sub.unread_count_neutral,
-            'ng': sub.unread_count_negative,
-        }
-        if sub.feed.has_feed_exception or sub.feed.has_page_exception:
-            feeds[pk]['has_exception'] = True
-            feeds[pk]['exception_type'] = 'feed' if sub.feed.has_feed_exception else 'page'
-            feeds[pk]['feed_address'] = sub.feed.feed_address
-            feeds[pk]['exception_code'] = sub.feed.exception_code
-        if request.REQUEST.get('check_fetch_status', False):
-            feeds[pk]['not_yet_fetched'] = not sub.feed.fetched_once
-            
-        if sub.feed.pk in favicons_fetching and sub.feed.pk in feed_icons:
-            feeds[pk]['favicon'] = feed_icons[sub.feed.pk].data
-            feeds[pk]['favicon_color'] = feed_icons[sub.feed.pk].color
-            feeds[pk]['favicon_fetching'] = sub.feed.favicon_fetching
+    favicons_fetching = [int(f) for f in favicons_fetching if f]
+    feed_icons = dict([(i.feed_id, i) for i in MFeedIcon.objects(feed_id__in=favicons_fetching)])
     
+    for feed_id, feed in feeds.items():
+        if feed_id in favicons_fetching and feed_id in feed_icons:
+            feeds[feed_id]['favicon'] = feed_icons[feed_id].data
+            feeds[feed_id]['favicon_color'] = feed_icons[feed_id].color
+            feeds[feed_id]['favicon_fetching'] = feed.get('favicon_fetching')
+
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    
+    sub_feed_ids = [s.feed_id for s in user_subs]
+
     if favicons_fetching:
-        sub_feed_ids = [s.feed.pk for s in user_subs]
         moved_feed_ids = [f for f in favicons_fetching if f not in sub_feed_ids]
         for moved_feed_id in moved_feed_ids:
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=moved_feed_id)
             if duplicate_feeds and duplicate_feeds[0].feed.pk in feeds:
                 feeds[moved_feed_id] = feeds[duplicate_feeds[0].feed.pk]
                 feeds[moved_feed_id]['dupe_feed_id'] = duplicate_feeds[0].feed.pk
-        
-    if settings.DEBUG or request.REQUEST.get('check_fetch_status'):
+    
+    if check_fetch_status:
+        missing_feed_ids = list(set(feed_ids) - set(sub_feed_ids))
+        if missing_feed_ids:
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id__in=missing_feed_ids)
+            for duplicate_feed in duplicate_feeds:
+                feeds[duplicate_feed.duplicate_feed_id] = {'id': duplicate_feed.feed.pk}
+
+    if settings.DEBUG or check_fetch_status:
         diff = datetime.datetime.utcnow()-start
         timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (user_subs.count(), timediff, request.REQUEST.get('check_fetch_status', False), len(favicons_fetching)))
-    
+        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (
+            len(feeds.keys()), timediff, check_fetch_status, len(favicons_fetching)))
+        
     return {'feeds': feeds}
 
 def refresh_feed(request, feed_id):
@@ -381,7 +371,8 @@ def load_single_feed(request, feed_id):
         story_ids = [story['id'] for story in stories]
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
-                                            story_id__in=story_ids).only('story_id')
+                                            story_id__in=story_ids
+                                            ).only('story_id').hint([('user_id', 1), ('feed_id', 1), ('story_id', 1)])
         starred_stories = MStarredStory.objects(user_id=user.pk, 
                                                 story_feed_id=feed_id, 
                                                 story_guid__in=story_ids).only('story_guid', 'starred_date')
@@ -459,7 +450,7 @@ def load_feed_page(request, feed_id):
     if not data:
         data = "Fetching feed..."
     
-    return HttpResponse(data, mimetype='text/html')
+    return HttpResponse(data, mimetype="text/html; charset=utf-8")
     
 @json.json_view
 def load_starred_stories(request):
@@ -515,7 +506,9 @@ def load_river_stories(request):
     limit = page * limit - read_stories_count
     
     # Read stories to exclude
-    read_stories = MUserStory.objects(user_id=user.pk, feed_id__in=feed_ids).only('story_id')
+    read_stories = MUserStory.objects(user_id=user.pk, 
+                                      feed_id__in=feed_ids
+                                      ).only('story_id').hint([('user_id', 1), ('feed_id', 1), ('story_id', 1)])
     read_stories = [rs.story_id for rs in read_stories]
     
     # Determine mark_as_read dates for all feeds to ignore all stories before this date.
@@ -561,7 +554,7 @@ def load_river_stories(request):
     try:
         mstories = [story.value for story in mstories if story and story.value]
     except OperationFailure, e:
-        raise e
+        return dict(error=str(e), code=-1)
 
     mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, days_to_keep_unreads), 
                                                      story_score(x, days_to_keep_unreads)))
@@ -584,17 +577,20 @@ def load_river_stories(request):
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     
     # Find starred stories
-    try:
+    # try:
+    if found_feed_ids:
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
             story_feed_id__in=found_feed_ids
         ).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) 
                                 for story in starred_stories])
-    except OperationFailure:
-        logging.info(" ***> Starred stories failure")
+    else:
         starred_stories = {}
-    
+    # except OperationFailure:
+    #     logging.info(" ***> Starred stories failure")
+    #     starred_stories = {}
+    # 
     # Intelligence classifiers for all feeds involved
     def sort_by_feed(classifiers):
         feed_classifiers = defaultdict(list)
@@ -602,19 +598,20 @@ def load_river_stories(request):
             feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
     classifiers = {}
-    try:
+    # try:
+    if found_feed_ids:
         classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
         classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
         classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
         classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-    except OperationFailure:
-        logging.info(" ***> Classifiers failure")
-    else:
+
         for feed_id in found_feed_ids:
             classifiers[feed_id] = get_classifiers_for_user(user, feed_id, classifier_feeds[feed_id], 
                                                             classifier_authors[feed_id],
                                                             classifier_titles[feed_id],
                                                             classifier_tags[feed_id])
+    # except OperationFailure:
+    #     logging.info(" ***> Classifiers failure")
     
     # Just need to format stories
     for story in stories:
@@ -742,7 +739,7 @@ def mark_story_as_unread(request):
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
         
-    m = MUserStory.objects(story_id=story_id, user_id=request.user.pk, feed_id=feed_id)
+    m = MUserStory.objects(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
     m.delete()
     
     return data
@@ -927,7 +924,7 @@ def add_feature(request):
 @json.json_view
 def load_features(request):
     user = get_user(request)
-    page = int(request.REQUEST.get('page', 0))
+    page = max(int(request.REQUEST.get('page', 0)), 0)
     logging.user(request, "~FBBrowse features: ~SBPage #%s" % (page+1))
     features = Feature.objects.all()[page*3:(page+1)*3+1].values()
     features = [{
@@ -1065,8 +1062,14 @@ def mark_story_as_starred(request):
                                 if k is not None and v is not None])
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
-        MStarredStory.objects.create(**story_values)
-        logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        starred_story, created = MStarredStory.objects.get_or_create(
+            story_guid=story_values.pop('story_guid'),
+            user_id=story_values.pop('user_id'),
+            defaults=story_values)
+        if created:
+            logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+        else:
+            logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story[0].story_title[:50]))
     else:
         code = -1
     
@@ -1077,7 +1080,7 @@ def mark_story_as_starred(request):
 def mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST['story_id']
-    
+
     starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
     if starred_story:
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story[0].story_title[:50]))
@@ -1094,14 +1097,17 @@ def send_story_email(request):
     message    = 'OK'
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
-    to_address = request.POST['to']
+    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').split(' ')
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
 
-    if not email_re.match(to_address):
+    if not to_addresses:
+        code = -1
+        message = 'Please provide at least one email address.'
+    elif not all(email_re.match(to_address) for to_address in to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
     elif not email_re.match(from_email):
@@ -1120,13 +1126,18 @@ def send_story_email(request):
         subject = subject.replace('\n', ' ')
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % from_address,
-                                         to=[to_address], 
+                                         to=to_addresses, 
                                          cc=['%s <%s>' % (from_name, from_email)],
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
-        msg.send()
-        logging.user(request, '~BMSharing story by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
-                                   (story['story_title'][:50], feed.feed_title[:50]))
+        try:
+            msg.send()
+        except boto.ses.connection.ResponseError, e:
+            code = -1
+            message = "Email error: %s" % str(e)
+        logging.user(request, '~BMSharing story by email to %s recipient%s: ~FY~SB%s~SN~BM~FY/~SB%s' % 
+                              (len(to_addresses), '' if len(to_addresses) == 1 else 's', 
+                               story['story_title'][:50], feed.feed_title[:50]))
         
     return {'code': code, 'message': message}
 

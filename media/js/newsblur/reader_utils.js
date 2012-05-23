@@ -118,6 +118,19 @@ NEWSBLUR.utils = {
         }
     
         return $options;
+    },
+    
+    is_url_iframe_buster: function(url) {
+        // Also change in rss_feeds/models.py.
+        var BROKEN_URLS = [
+            'nytimes.com',
+            'stackoverflow.com',
+            'stackexchange.com',
+            'twitter.com'
+        ];
+        return _.any(BROKEN_URLS, function(broken_url) {
+            return _.includes(url, broken_url);
+        });
     }
   
 };

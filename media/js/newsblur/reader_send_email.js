@@ -44,9 +44,10 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
             $.make('div', { className: 'NB-modal-email-to-container' }, [
               $.make('label', { 'for': 'NB-send-email-to' }, [
                 $.make('span', { className: 'NB-raquo' }, '&raquo;'),
-                ' Recipient\'s email: '
+                ' Recipient\'s emails: '
               ]),
-              $.make('input', { className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value: "" })
+              $.make('input', { className: 'NB-input NB-modal-to', name: 'to', id: 'NB-send-email-to', value: 
+          ($.cookie('NB:email:to') || "") })
             ]),
             $.make('div', { className: 'NB-modal-email-explanation' }, [
                 "Add an optional comment to send with the story. The story will be sent below your comment."
@@ -75,7 +76,7 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', className: 'NB-modal-submit-save NB-modal-submit-green', value: 'Send this story' }),
                     ' or ',
-                    $.make('a', { href: '#', className: 'NB-modal-cancel' }, 'cancel')
+                    $.make('a', { href: '#', className: 'NB-modal-emailclient' }, 'open in an email client')
                 ])
             ])
         ]);
@@ -114,15 +115,49 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
           $save.removeClass('NB-disabled').val('Send this story');
         } else {
           $save.val('Sent!');
+          $.cookie('NB:email:to', $('input[name=to]', this.$modal).val());
           this.close();
         }
     },
     
     error: function(data) {
         var $error = $('.NB-modal-error', this.$modal);
+        var $save = $('input[type=submit]', this.$modal);
         $error.show();
-        $error.text("There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be fixed soon. You should probably send this manually now.");
+        if (!data) {
+            $error.text("There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be fixed soon. You should probably send this manually now.");
+        } else {
+          $('.NB-error', this.$modal).html(data.message).fadeIn(500); 
+        }
+        $save.removeClass('NB-disabled').val('Send this story');
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
+    },
+    
+    open_email_client: function() {
+        var from_name  = $('input[name=from_name]', this.$modal).val();
+        var from_email = $('input[name=from_email]', this.$modal).val();
+        var to         = $('input[name=to]', this.$modal).val();
+        var comments   = $('textarea', this.$modal).val();
+
+        var url = [
+            'mailto:',
+            to,
+            '?subject=',
+            from_name,
+            ' is sharing a story: ',
+            this.story.story_title,
+            '&body=',
+            comments,
+            '%0D%0A%0D%0A--%0D%0A%0D%0A',
+            this.story.story_permalink,
+            '%0D%0A%0D%0A',
+            $(this.story.story_content).text(),
+            '%0D%0A%0D%0A',
+            '--',
+            '%0D%0A%0D%0A',
+            'Shared with NewsBlur.com'
+        ].join('');
+        window.open(url);
     },
     
     // ===========
@@ -136,6 +171,12 @@ NEWSBLUR.ReaderSendEmail.prototype = _.extend({}, NEWSBLUR.Modal.prototype, {
             e.preventDefault();
             
             self.save();
+            return false;
+        });
+        $.targetIs(e, { tagSelector: '.NB-modal-emailclient' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.open_email_client();
             return false;
         });
     }

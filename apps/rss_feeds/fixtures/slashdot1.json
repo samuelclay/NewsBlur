@@ -7,6 +7,7 @@
             "days_to_trim": 90, 
             "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/slashdot1.html", 
             "feed_link_locked": true,  
+            "fetched_once": true,
             "num_subscribers": 1, 
             "active_subscribers": 1, 
             "creation": "2009-01-12", 

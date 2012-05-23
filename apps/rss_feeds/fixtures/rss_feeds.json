@@ -93,6 +93,21 @@
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
+    {
+        "pk": 7,
+        "model": "reader.usersubscription",
+        "fields": {
+            "feed": 7,
+            "active": true,
+            "unread_count_updated": "2009-08-01 00:23:42",
+            "mark_read_date": "2009-07-28 23:17:27",
+            "unread_count_neutral": 0,
+            "unread_count_positive": 0,
+            "unread_count_negative": 0,
+            "user": 1,
+            "last_read_date": "2009-07-28 23:17:27"
+        }
+    },
 
 
 
