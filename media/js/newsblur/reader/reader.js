@@ -5513,15 +5513,12 @@
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
         
-        manage_menu_rename_feed: function(feed, $feed) {
-            var self      = this;
-            var feed_id   = feed || this.active_feed;
-            $feed         = $feed || this.find_feed_in_feed_list(feed_id);
+        manage_menu_rename_feed: function(feed_id) {
+            var feed_id   = feed_id || this.active_feed;
+            var feed = this.model.get_feed(feed_id);
             var new_title = $('.NB-menu-manage-feed-rename-confirm .NB-menu-manage-title').val();
             
-            if (new_title.length <= 0) return this.hide_confirm_rename_menu_item();
-            
-            this.model.rename_feed(feed_id, new_title, function() {});
+            if (new_title.length > 0) feed.rename(new_title);
             this.hide_confirm_rename_menu_item(true);
         },
         

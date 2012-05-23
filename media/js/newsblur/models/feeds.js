@@ -19,6 +19,11 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         view.delete_feed();
     },
     
+    rename: function(new_title) {
+        this.set('feed_title', new_title);
+        NEWSBLUR.assets.rename_feed(this.id, new_title);
+    },
+    
     get_view: function($feed) {
         return _.detect(this.views, function(view) {
             if ($feed) {
