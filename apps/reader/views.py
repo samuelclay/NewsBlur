@@ -169,7 +169,6 @@ def autologin(request, username, secret):
 def load_feeds(request):
     user             = get_user(request)
     feeds            = {}
-    not_yet_fetched  = False
     include_favicons = request.REQUEST.get('include_favicons', False)
     flat             = request.REQUEST.get('flat', False)
     update_counts    = request.REQUEST.get('update_counts', False)
@@ -197,8 +196,6 @@ def load_feeds(request):
         if update_counts:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
-        if feeds[pk].get('not_yet_fetched'):
-            not_yet_fetched = True
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
             sub.feed.count_subscribers()
             sub.feed.schedule_feed_fetch_immediately()
@@ -206,11 +203,6 @@ def load_feeds(request):
             sub.feed.count_subscribers()
             sub.feed.schedule_feed_fetch_immediately()
             
-    if not_yet_fetched:
-        for f in feeds:
-            if 'not_yet_fetched' not in feeds[f]:
-                feeds[f]['not_yet_fetched'] = False
-
     starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {

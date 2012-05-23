@@ -8,6 +8,10 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
     
     is_social: function() {
         return true;
+    },
+    
+    is_feed: function() {
+        return false;
     }
     
 });

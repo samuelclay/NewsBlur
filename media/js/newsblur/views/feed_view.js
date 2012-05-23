@@ -29,15 +29,19 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     },
     
     changed: function(model, options) {
+        var counts_changed = options.changes && _.any(_.keys(options.changes), function(key) { 
+            return _.contains(['ps', 'nt', 'ng'], key);
+        });
         var only_counts_changed = options.changes && !_.any(_.keys(options.changes), function(key) { 
             return !_.contains(['ps', 'nt', 'ng'], key);
         });
         
-        if (only_counts_changed && !options.instant) {
-            this.flash_changes();
+        if (only_counts_changed) {
             this.add_extra_classes();
-        } else if (!only_counts_changed) {
+            if (!options.instant) this.flash_changes();
+        } else {
             this.render();
+            if (!options.instant && counts_changed) this.flash_changes();
         }
     },
     
@@ -93,6 +97,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     extra_classes: function() {
         var feed = this.model;
         var extra_classes = '';
+
         if (feed.get('ps')) {
             extra_classes += ' unread_positive';
         }
@@ -102,17 +107,23 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         if (feed.get('ng')) {
             extra_classes += ' unread_negative';
         }
-        if (feed.get('has_exception') && feed.get('exception_type') == 'feed') {
-            extra_classes += ' NB-feed-exception';
+
+        if (feed.is_feed()) {
+            if (feed.get('has_exception') && feed.get('exception_type') == 'feed') {
+                extra_classes += ' NB-feed-exception';
+            }
+            if (!feed.get('fetched_once') && !feed.get('has_exception')) {
+                extra_classes += ' NB-feed-unfetched';
+            }
+            if (!feed.get('active') && !feed.get('subscription_user_id')) {
+                extra_classes += ' NB-feed-inactive';
+            }
         }
-        if (feed.get('not_yet_fetched') && !feed.get('has_exception')) {
-            extra_classes += ' NB-feed-unfetched';
-        }
-        if (!feed.get('active') && !feed.get('subscription_user_id')) {
-            extra_classes += ' NB-feed-inactive';
-        }
-        if (feed.get('subscription_user_id') && !feed.get('shared_stories_count')) {
-            extra_classes += ' NB-feed-inactive';
+        
+        if (feed.is_social()) {
+            if (feed.get('subscription_user_id') && !feed.get('shared_stories_count')) {
+                extra_classes += ' NB-feed-inactive';
+            }
         }
         return extra_classes;
     },

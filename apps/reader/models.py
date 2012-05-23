@@ -168,7 +168,8 @@ class UserSubscription(models.Model):
                 'id': feed_id,
             }
             if not sub.feed.fetched_once or check_fetch_status:
-                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once
+                feeds[feed_id]['fetched_once'] = sub.feed.fetched_once
+                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once # Legacy. Dammit.
             if sub.feed.favicon_fetching:
                 feeds[feed_id]['favicon_fetching'] = True
             if sub.feed.has_feed_exception or sub.feed.has_page_exception:

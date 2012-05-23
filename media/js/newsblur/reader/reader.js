@@ -502,10 +502,6 @@
         },
         
         find_feed_in_feed_list: function(feed_id) {
-            if (_.contains(this.cache.$feed_in_feed_list, feed_id)) {
-                return this.cache.$feed_in_feed_list[feed_id];
-            }
-            
             var $feed_list = this.$s.$feed_list.parent();
             var $feeds = $([]);
             if (feed_id) {
@@ -918,6 +914,7 @@
                 var scroll = $feed.position().top;
                 var container = $feed_lists.scrollTop();
                 var height = $feed_lists.outerHeight();
+                console.log(["scroll to feed", $feed[0], scroll, container, height, container_offset]);
                 $feed_lists.scrollTop(scroll+container-height/5);
             }    
         },
@@ -5870,10 +5867,14 @@
         force_instafetch_stories: function(feed_id) {
             var self = this;
             feed_id = feed_id || this.active_feed;
-            var $feed = this.find_feed_in_feed_list(feed_id);
-            $feed.addClass('NB-feed-unfetched').removeClass('NB-feed-exception');
+            var feed = this.model.get_feed(feed_id);
+            feed.set({
+                fetched_once: false,
+                has_exception: false
+            });
 
-            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id), this.show_stories_error);
+            this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id),
+                                            this.show_stories_error);
         },
         
         setup_socket_realtime_unread_counts: function(force) {
@@ -5936,7 +5937,7 @@
         setup_feed_refresh: function(new_feeds) {
             var self = this;
             var refresh_interval = this.constants.FEED_REFRESH_INTERVAL;
-            var feed_count = _.size(this.model.feeds);
+            var feed_count = this.model.feeds.size();
             
             if (!NEWSBLUR.Globals.is_premium) {
                 refresh_interval *= 2;
@@ -5981,14 +5982,12 @@
             var $feed = this.find_feed_in_feed_list(feed_id);
             new_feed_id = new_feed_id || feed_id;
 
-            this.force_feeds_refresh(function(feeds) {
-                var $new_feed = $(self.make_feed_title_template(feeds[new_feed_id], 'feed'));
-                if ($feed.hasClass('NB-toplevel')) $new_feed.addClass('NB-toplevel');
-                $feed.replaceWith($new_feed);
+            this.force_feeds_refresh(function() {
+                // Open the feed back up if it is being refreshed and is still open.
                 self.cache.$feed_in_feed_list[feed_id] = null;
                 self.cache.$feed_in_feed_list[new_feed_id] = null;
                 if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
-                    self.open_feed(new_feed_id, {force: true, $feed_link: $new_feed});
+                    self.open_feed(new_feed_id, {force: true});
                 }
             }, true, new_feed_id, this.show_stories_error);
         },
@@ -6014,25 +6013,23 @@
                 delete this.cache.refresh_callback;
             }
             
-            for (var f in updated_feeds) {
-                var feed_id = updated_feeds[f];
-                var feed = this.model.get_feed(feed_id);
-                if (!feed) continue;
-                if (_.string.include(feed_id, 'social:')) {
-                    this.replace_social_feed_in_feedlist(feed_id);
-                } else {
-                    this.replace_feed_in_feedlist(feed_id, {
-                        replace_active_feed: replace_active_feed,
-                        single_feed_id: single_feed_id
-                    });
-                }
-            }
+            // _.each(updated_feeds, _.bind(function(feed_id) {
+            //     var feed = this.model.get_feed(feed_id);
+            //     if (!feed) return;
+            //     // if (_.string.include(feed_id, 'social:')) {
+            //     //     this.replace_social_feed_in_feedlist(feed_id);
+            //     // } else {
+            //     //     this.replace_feed_in_feedlist(feed_id, {
+            //     //         replace_active_feed: replace_active_feed,
+            //     //         single_feed_id: single_feed_id
+            //     //     });
+            //     // }
+            // }, this));
 
             this.flags['refresh_inline_feed_delay'] = false;
+            this.flags['pause_feed_refreshing'] = false;
             this.check_feed_fetch_progress();
             this.count_collapsed_unread_stories();
-
-            this.flags['pause_feed_refreshing'] = false;
         },
         
         replace_feed_in_feedlist: function(feed_id, options) {
@@ -6047,45 +6044,45 @@
                     // this.model.refresh_feed(feed_id, $.rescope(this.post_refresh_active_feed, this));
                     // Set the unread counts to what the client thinks they are, so when
                     // the counts can be updated, they will force a refresh of the feed.
-                    this.model.feeds[feed_id].ps = parseInt($('.unread_count_positive', $feed_on_page).text(), 10);
-                    this.model.feeds[feed_id].nt = parseInt($('.unread_count_neutral', $feed_on_page).text(), 10);
-                    this.model.feeds[feed_id].ng = parseInt($('.unread_count_negative', $feed_on_page).text(), 10);
+                    // this.model.feeds[feed_id].ps = parseInt($('.unread_count_positive', $feed_on_page).text(), 10);
+                    // this.model.feeds[feed_id].nt = parseInt($('.unread_count_neutral', $feed_on_page).text(), 10);
+                    // this.model.feeds[feed_id].ng = parseInt($('.unread_count_negative', $feed_on_page).text(), 10);
                 } else {
-                    if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
-                    $feed_on_page.replaceWith($feed);
-                    this.cache.$feed_in_feed_list[feed_id] = null;
-                    this.mark_feed_as_selected(this.active_feed);
-                    if (!options.single_feed_id) this.recalculate_story_scores(feed_id);
+                    // if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
+                    // $feed_on_page.replaceWith($feed);
+                    // this.cache.$feed_in_feed_list[feed_id] = null;
+                    // this.mark_feed_as_selected(this.active_feed);
+                    // if (!options.single_feed_id) this.recalculate_story_scores(feed_id);
                     this.show_feed_hidden_story_title_indicator();
-                    this.make_content_pane_feed_counter();
+                    // this.make_content_pane_feed_counter();
                 }
             } else {
                 if (!this.flags['has_unfetched_feeds']) {
                     NEWSBLUR.log(['UPDATING', feed.get('feed_title'), $feed, $feed_on_page]);
                 }
-                if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
-                $feed_on_page.replaceWith($feed);
-                this.cache.$feed_in_feed_list[feed_id] = null;
-                (function($feed) {
-                  $feed.css({'backgroundColor': '#D7DDE6'});
-                  $feed.animate({
-                    'backgroundColor': '#F0F076'
-                  }, {
-                    'duration': 800, 
-                    'queue': false, 
-                    'complete': function() {
-                      $feed.animate({'backgroundColor': '#D7DDE6'}, {
-                          'duration': 1000, 
-                          'queue': false, 
-                          'complete': function() {
-                            if ($feed_on_page.hasClass('NB-selected')) {
-                                $feed.addClass('NB-selected');
-                            }
-                          }
-                      });
-                    }
-                  });
-                })($feed);
+                // if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
+                // $feed_on_page.replaceWith($feed);
+                // this.cache.$feed_in_feed_list[feed_id] = null;
+            //     (function($feed) {
+            //       $feed.css({'backgroundColor': '#D7DDE6'});
+            //       $feed.animate({
+            //         'backgroundColor': '#F0F076'
+            //       }, {
+            //         'duration': 800, 
+            //         'queue': false, 
+            //         'complete': function() {
+            //           $feed.animate({'backgroundColor': '#D7DDE6'}, {
+            //               'duration': 1000, 
+            //               'queue': false, 
+            //               'complete': function() {
+            //                 if ($feed_on_page.hasClass('NB-selected')) {
+            //                     $feed.addClass('NB-selected');
+            //                 }
+            //               }
+            //           });
+            //         }
+            //       });
+            //     })($feed);
             }
         },
         
@@ -6094,43 +6091,43 @@
             var $feed = $(this.make_feed_title_template(feed, 'feed', 0));
             var $feed_on_page = this.find_feed_in_feed_list(feed_id);
             if (feed_id == this.active_feed && !this.flags.refresh_inline_feed_delay) {
-                NEWSBLUR.log(['UPDATING INLINE (social)', feed.get('feed_title')]);
-                // Set the unread counts to what the client thinks they are, so when
-                // the counts can be updated, they will force a refresh of the feed.
-                var social_feed = this.model.social_feeds.get(feed_id);
-                social_feed.set('ps', parseInt($('.unread_count_positive', $feed_on_page).text(), 10));
-                social_feed.set('nt', parseInt($('.unread_count_neutral', $feed_on_page).text(), 10));
-                social_feed.set('ng', parseInt($('.unread_count_negative', $feed_on_page).text(), 10));
+                // NEWSBLUR.log(['UPDATING INLINE (social)', feed.get('feed_title')]);
+                // // Set the unread counts to what the client thinks they are, so when
+                // // the counts can be updated, they will force a refresh of the feed.
+                // var social_feed = this.model.social_feeds.get(feed_id);
+                // social_feed.set('ps', parseInt($('.unread_count_positive', $feed_on_page).text(), 10));
+                // social_feed.set('nt', parseInt($('.unread_count_neutral', $feed_on_page).text(), 10));
+                // social_feed.set('ng', parseInt($('.unread_count_negative', $feed_on_page).text(), 10));
             } else {
-                if (!this.flags['has_unfetched_feeds']) {
-                    NEWSBLUR.log(['UPDATING (social)', feed.get('feed_title')]);
-                }
+                // if (!this.flags['has_unfetched_feeds']) {
+                //     NEWSBLUR.log(['UPDATING (social)', feed.get('feed_title')]);
+                // }
                 // If the social feed has no shared stories but is updating, it's because it now does.
                 // But it's only provided in real-time. This is a fallback for polling refreshes.
                 if (!feed.shared_stories_count) this.model.social_feeds.get(feed_id).set('shared_stories_count', 1);
-                if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
-                $feed_on_page.replaceWith($feed);
-                this.cache.$feed_in_feed_list[feed_id] = null;
-                (function($feed) {
-                  $feed.css({'backgroundColor': '#C6D3E6'});
-                  $feed.animate({
-                    'backgroundColor': '#F0F076'
-                  }, {
-                    'duration': 800, 
-                    'queue': false, 
-                    'complete': function() {
-                      $feed.animate({'backgroundColor': '#C6D3E6'}, {
-                          'duration': 1000, 
-                          'queue': false, 
-                          'complete': function() {
-                            if ($feed_on_page.hasClass('NB-selected')) {
-                                $feed.addClass('NB-selected');
-                            }
-                          }
-                      });
-                    }
-                  });
-                })($feed);
+                // if ($feed_on_page.hasClass('NB-toplevel')) $feed.addClass('NB-toplevel');
+                // $feed_on_page.replaceWith($feed);
+                // this.cache.$feed_in_feed_list[feed_id] = null;
+                // (function($feed) {
+                //   $feed.css({'backgroundColor': '#C6D3E6'});
+                //   $feed.animate({
+                //     'backgroundColor': '#F0F076'
+                //   }, {
+                //     'duration': 800, 
+                //     'queue': false, 
+                //     'complete': function() {
+                //       $feed.animate({'backgroundColor': '#C6D3E6'}, {
+                //           'duration': 1000, 
+                //           'queue': false, 
+                //           'complete': function() {
+                //             if ($feed_on_page.hasClass('NB-selected')) {
+                //                 $feed.addClass('NB-selected');
+                //             }
+                //           }
+                //       });
+                //     }
+                //   });
+                // })($feed);
             }
             
         },

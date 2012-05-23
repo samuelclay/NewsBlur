@@ -102,6 +102,8 @@ class Feed(models.Model):
             'updated_seconds_ago': seconds_timesince(self.last_update),
             'subs': self.num_subscribers,
             'is_push': self.is_push,
+            'fetched_once': self.fetched_once,
+            'not_yet_fetched': not self.fetched_once, # Legacy. Doh.
             'favicon_color': self.favicon_color,
             'favicon_fade': self.favicon_fade(),
             'favicon_border': self.favicon_border(),
@@ -116,8 +118,6 @@ class Feed(models.Model):
                 feed['favicon'] = feed_icon.data
             except MFeedIcon.DoesNotExist:
                 pass
-        if not self.fetched_once:
-            feed['not_yet_fetched'] = True
         if self.has_page_exception or self.has_feed_exception:
             feed['has_exception'] = True
             feed['exception_type'] = 'feed' if self.has_feed_exception else 'page'

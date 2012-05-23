@@ -544,14 +544,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     post_refresh_feeds: function(data, callback) {
-        var updated_feeds = [];
-        
         if (!data.feeds) return;
         
         _.each(data.feeds, _.bind(function(feed, feed_id) {
             var existing_feed = this.feeds.get(feed_id);
             if (!existing_feed) return;
             var feed_id = feed.id || feed_id;
+            
             if (feed.id && feed_id != feed.id) {
                 NEWSBLUR.log(['Dupe feed being refreshed', feed_id, feed.id, this.feeds.get(f), feed]);
                 this.feeds.get(feed.id).set(feed);
@@ -560,34 +559,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 (existing_feed.get('has_exception') && !feed['has_exception'])) {
                 existing_feed.set('has_exception', !!feed['has_exception']);
             }
-            existing_feed.set(feed, {silent: true});
             if (feed['favicon'] && existing_feed.get('favicon') != feed['favicon']) {
-                existing_feed.set('favicon', feed['favicon']);
-                existing_feed.set('favicon_color', feed['favicon_color']);
-                existing_feed.set('favicon_fetching', false);
+                existing_feed.set({
+                    'favicon': feed['favicon'],
+                    'favicon_color': feed['favicon_color'],
+                    'favicon_fetching': false
+                });
             }
-
-            if (existing_feed.hasChanged() && !_.contains(updated_feeds, feed.id)) {
-                NEWSBLUR.log(['Different', existing_feed.changedAttributes(), existing_feed.previousAttributes()]);
-                updated_feeds.push(feed_id);
-            }
+            
+            existing_feed.set(feed);
         }, this));
         
         _.each(data.social_feeds, _.bind(function(feed) {
             var social_feed = this.social_feeds.get(feed.id);
             if (!social_feed) return;
             
-            for (var k in feed) {
-                if (social_feed.get(k) != feed[k]) {
-                    social_feed.set(k, feed[k]);
-                }
-            }
-            if (social_feed.hasChanged() && !_.contains(updated_feeds, feed.id)) {
-                updated_feeds.push(feed.id);
-            }
+            social_feed.set(feed);
         }, this));
         
-        callback(updated_feeds);
+        callback && callback();
     },
     
     refresh_feed: function(feed_id, callback) {
@@ -617,7 +607,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     count_unfetched_feeds: function() {
         var counts = this.feeds.reduce(function(counts, feed) {
             if (feed.get('active')) {
-                if (!feed.get('not_yet_fetched') || feed.get('has_exception')) {
+                if (feed.get('fetched_once') || feed.get('has_exception')) {
                     counts['fetched_feeds'] += 1;
                 } else {
                     counts['unfetched_feeds'] += 1;

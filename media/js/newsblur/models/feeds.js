@@ -1,7 +1,20 @@
 NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
+    initialize: function() {
+        _.bindAll(this, 'on_change');
+        this.bind('change', this.on_change);
+    },
+    
+    on_change: function() {
+        NEWSBLUR.log(['Feed Change', this.changedAttributes(), this.previousAttributes()]);
+    },
+    
     is_social: function() {
         return false;
+    },
+    
+    is_feed: function() {
+        return true;
     }
     
 });
