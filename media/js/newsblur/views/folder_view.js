@@ -17,7 +17,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var $feeds = this.collection.map(function(item) {
             var $model;
             if (item.is_feed()) {
-                return new NEWSBLUR.Views.Feed({model: item.feed, type: 'feed', depth: depth}).render().el;
+                var feed_view = new NEWSBLUR.Views.Feed({model: item.feed, type: 'feed', depth: depth}).render();
+                item.feed.views.push(feed_view);
+                return feed_view.el;
             } else {
                 return new NEWSBLUR.Views.Folder({
                     collection: item.folders,

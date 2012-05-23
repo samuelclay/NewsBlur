@@ -100,7 +100,6 @@ NEWSBLUR.utils = {
         var b = parseInt(color.substr(4, 2), 16) / 255.0;
 
         is_light = $.textColor({r: r, g: g, b: b}) != 'white';
-        console.log(["setting is_light", feed.get('feed_title'), is_light]);
         feed.set('is_light', is_light, {silent: true});
         
         return is_light;

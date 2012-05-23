@@ -4,8 +4,16 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
         if (!this.get('page_url')) {
             this.set('page_url', '/social/page/' + this.get('user_id'));
         }
+        
+        _.bindAll(this, 'on_change');
+        this.bind('change', this.on_change);
+        this.views = [];
     },
-    
+
+    on_change: function() {
+        NEWSBLUR.log(['Social Feed Change', this.changedAttributes(), this.previousAttributes()]);
+    },
+
     is_social: function() {
         return true;
     },

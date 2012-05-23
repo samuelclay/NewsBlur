@@ -5,23 +5,24 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     },
     
     initialize: function() {
+        _.bindAll(this, 'selected');
         this.$s = NEWSBLUR.reader.$s;
         
         if (!$('#feed_list').length) return;
         $('.NB-callout-ftux .NB-callout-text').text('Loading feeds...');
         this.$s.$feed_link_loader.css({'display': 'block'});
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function() {
-            console.log(["reset feeds"]);
             this.make_feeds();
             
             // TODO: Refactor this to load after both feeds and social feeds load.
             this.load_router();
         }, this));
         NEWSBLUR.assets.social_feeds.bind('reset', _.bind(function() {
-            console.log(["reset social feeds"]);
             this.make_social_feeds();
         }, this));
         NEWSBLUR.assets.load_feeds();
+        
+        NEWSBLUR.assets.feeds.bind('change:selected', this.selected);
     },
     
     make_feeds: function() {
@@ -80,7 +81,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var $social_feeds = this.$s.$social_feeds;
         var profile = NEWSBLUR.assets.user_profile;
         var $feeds = NEWSBLUR.assets.social_feeds.map(function(feed) {
-            return new NEWSBLUR.Views.Feed({model: feed, type: 'feed', depth: 0}).render().el;
+            var feed_view = new NEWSBLUR.Views.Feed({model: feed, type: 'feed', depth: 0}).render();
+            feed.views.push(feed_view);
+            return feed_view.el;
         });
 
         $social_feeds.empty().css({
@@ -126,6 +129,37 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
         }
+    },
+    
+    // ===========
+    // = Actions =
+    // ===========
+    
+    selected: function(model, value, options) {
+        var feed_view;
+
+        if (options.$feed) {
+            feed_view = _.detect(model.views, function(view) {
+                return view.el == options.$feed[0];
+            });
+        }
+        if (!feed_view) {
+            feed_view = model.views[0];
+        }
+        
+        this.scroll_to_show_selected_feed(feed_view);
+    },
+    
+    scroll_to_show_selected_feed: function(feed_view) {
+        var $feed_lists = this.$s.$feed_lists;
+        var is_feed_visible = $feed_lists.isScrollVisible(feed_view.$el);
+        if (!is_feed_visible) {
+            var container_offset = $feed_lists.position().top;
+            var scroll = feed_view.$el.position().top;
+            var container = $feed_lists.scrollTop();
+            var height = $feed_lists.outerHeight();
+            $feed_lists.scrollTop(scroll+container-height/5);
+        }        
     },
     
     start_sorting: function() {

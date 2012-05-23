@@ -904,21 +904,6 @@
             }    
         },
         
-        scroll_feed_list_to_show_selected_feed: function($feed) {
-            $feed = $feed || this.find_feed_in_feed_list(this.active_feed);
-            if (!$feed || !$feed.length) return;
-            var $feed_lists = this.$s.$feed_lists;
-            var is_feed_visible = $feed_lists.isScrollVisible($feed);
-            if (!is_feed_visible) {
-                var container_offset = $feed_lists.position().top;
-                var scroll = $feed.position().top;
-                var container = $feed_lists.scrollTop();
-                var height = $feed_lists.outerHeight();
-                console.log(["scroll to feed", $feed[0], scroll, container, height, container_offset]);
-                $feed_lists.scrollTop(scroll+container-height/5);
-            }    
-        },
-        
         show_next_feed: function(direction, $current_feed) {
             var $feed_list = this.$s.$feed_list.add(this.$s.$social_feeds);
             var $next_feed = this.get_next_feed(direction, $current_feed);
@@ -1421,7 +1406,6 @@
         
         reset_feed: function() {
             if (this.cache.feed_title_view) {
-                console.log(["removing old view", this.cache.feed_title_view]);
                 this.cache.feed_title_view.destroy();
             }
             
@@ -1531,12 +1515,10 @@
                 $story_titles.data('feed_id', feed.id);
                 this.iframe_scroll = null;
                 this.set_correct_story_view_for_feed(feed.id);
-                $feed_link = options.$feed_link || $('.feed.selected', this.$s.$feed_list).eq(0);
-                feed.set('selected', true);
+                feed.set('selected', true, options);
                 this.make_feed_title_in_stories(feed.id);
                 this.show_feedbar_loading();
                 this.switch_taskbar_view(this.story_view);
-                this.scroll_feed_list_to_show_selected_feed(options.$feed_link);
 
                 _.delay(_.bind(function() {
                     if (!options.delay || feed.id == self.next_feed) {
@@ -1929,7 +1911,6 @@
             this.show_feedbar_loading();
             this.switch_taskbar_view('feed');
             this.setup_mousemove_on_views();
-            this.scroll_feed_list_to_show_selected_feed();
             
             this.show_stories_progress_bar();
             this.model.fetch_social_stories(this.active_feed, feed.get('user_id'), 1, 
@@ -6550,7 +6531,7 @@
             
             if (data.code >= 1) {
                 $bar.progressbar({value: 100});
-                this.load_feeds();
+                NEWSBLUR.assets.load_feeds();
             } else {
                 NEWSBLUR.log(['Import Error!', data]);
                 this.$s.$feed_link_loader.fadeOut(250);

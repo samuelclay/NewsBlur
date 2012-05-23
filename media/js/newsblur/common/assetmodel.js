@@ -11,8 +11,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
         this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
+        this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
-        this.folders = [];
         this.stories = {};
         this.story_keys = {};
         this.queued_read_stories = {};
@@ -273,11 +273,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
         var pre_callback = function(feeds, subscriptions) {
-            NEWSBLUR.log(['subscriptions', feeds, subscriptions]);
             self.flags['favicons_fetching'] = self.feeds.any(function(feed) { return feed.get('favicons_fetching'); });
 
-            self.folders = new NEWSBLUR.Collections.Folders([]);
-            self.folders.parse(subscriptions.folders);
+            self.folders.reset(subscriptions.folders);
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);
@@ -302,7 +300,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             data['include_favicons'] = true;
         }
         
-        if (this.feeds.length) this.feeds.destroy();
+        if (this.feeds.length) this.feeds.remove();
         
         this.feeds.fetch({
             success: pre_callback,

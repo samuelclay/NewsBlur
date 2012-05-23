@@ -24,7 +24,7 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
             this.count();
         }
         var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
-        console.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
+        // console.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
         var $header = _.template('\
             <div class="NB-feeds-header-dashboard">\
                 <div class="NB-feeds-header-right">\

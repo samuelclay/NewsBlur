@@ -10,7 +10,7 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
             this.set('is_folder', true);
             this.set('folder_title', title);
             this.folders = new NEWSBLUR.Collections.Folders([], {title: title});
-            this.folders.parse(children);
+            this.folders.reset(children);
         }
     },
     
@@ -34,11 +34,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
     },
     
-    model: NEWSBLUR.Models.FeedOrFolder,
-    
-    parse: function(models) {
-        this.reset(models);
-    }
+    model: NEWSBLUR.Models.FeedOrFolder
     
 }, {
     

@@ -135,7 +135,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     
     flash_changes: function() {
         var $highlight = this.$('.NB-feed-highlight');
-        console.log(["flash_changes", $highlight, this.el]);
+
         $highlight.css({
             'backgroundColor': '#F0F076',
             'display': 'block'
@@ -177,6 +177,11 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         this.$el.removeClass('NB-hover-inverse');
     },
     
+    // ===========
+    // = Actions =
+    // ===========
+    
+    
     // ==========
     // = Events =
     // ==========
@@ -185,9 +190,9 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         if (NEWSBLUR.hotkeys.command) {
             NEWSBLUR.reader.open_unread_stories_in_tabs(this.id);
         } else if (this.model.is_social()) {
-            NEWSBLUR.reader.open_social_stories(this.model.id, {force: true, $feed_link: this.$el});
+            NEWSBLUR.reader.open_social_stories(this.model.id, {force: true, $feed: this.$el});
         } else {
-            NEWSBLUR.reader.open_feed(this.model.id, {$feed_link: this.$el});
+            NEWSBLUR.reader.open_feed(this.model.id, {$feed: this.$el});
         }
     },
     
