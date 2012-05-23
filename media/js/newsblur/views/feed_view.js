@@ -54,6 +54,12 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
           </div>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
           <span class="feed_title">\
+            <% if (type == "story") { %>\
+                <div class="NB-story-title-indicator">\
+                    <div class="NB-story-title-indicator-count"></div>\
+                    <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                </div>\
+            <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
               <span class="NB-feedbar-train-feed" title="Train Intelligence"></span>\
@@ -131,6 +137,9 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     render_counts: function() {
         this.counts_view = new NEWSBLUR.Views.FeedCount({model: this.model}).render();
         this.$('.feed_counts').html(this.counts_view.el);
+        if (this.options.type == 'story') {
+            this.$('.NB-story-title-indicator-count').html(this.counts_view.$el.clone());
+        }
     },
     
     flash_changes: function() {

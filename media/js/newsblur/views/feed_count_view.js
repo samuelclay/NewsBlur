@@ -4,9 +4,11 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'render');
-        this.model.bind('change:ps', this.render);
-        this.model.bind('change:nt', this.render);
-        this.model.bind('change:ng', this.render);
+        if (!this.options.stale) {
+            this.model.bind('change:ps', this.render);
+            this.model.bind('change:nt', this.render);
+            this.model.bind('change:ng', this.render);
+        }
     },
     
     render: function() {
@@ -17,30 +19,34 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
     render_to_string: function() {
         var feed = this.model;
         var unread_class = "";
-        if (feed.get('ps')) {
+        var counts = feed.attributes;
+
+        if (counts['ps']) {
             unread_class += ' unread_positive';
         }
-        if (feed.get('nt')) {
+        if (counts['nt']) {
             unread_class += ' unread_neutral';
         }
-        if (feed.get("ng")) {
+        if (counts['ng']) {
             unread_class += ' unread_negative';
         }
         
         var $floater = _.template('\
         <div class="<%= unread_class %>">\
-          <span class="unread_count unread_count_positive <% if (feed.get("ps")) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
-            <%= feed.get("ps") %>\
+          <span class="unread_count unread_count_positive <% if (ps) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+            <%= ps %>\
           </span>\
-          <span class="unread_count unread_count_neutral <% if (feed.get("nt")) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
-            <%= feed.get("nt") %>\
+          <span class="unread_count unread_count_neutral <% if (nt) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+            <%= nt %>\
           </span>\
-          <span class="unread_count unread_count_negative <% if (feed.get("ng")) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
-            <%= feed.get("ng") %>\
+          <span class="unread_count unread_count_negative <% if (ng) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
+            <%= ng %>\
           </span>\
         </div>\
         ', {
-          feed         : feed,
+          ps           : counts['ps'],
+          nt           : counts['nt'],
+          ng           : counts['ng'],
           unread_class : unread_class
         });
         

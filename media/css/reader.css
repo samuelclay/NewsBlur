@@ -1189,6 +1189,8 @@ background: transparent;
     color: #F0F0F0;
     cursor: pointer;
     float: right;
+    opacity: 0;
+    display: none;
     margin: 3px 4px 2px 6px;
     font-size: 9px;
     line-height: 15px;
@@ -1202,6 +1204,9 @@ background: transparent;
 
 #story_titles .NB-story-title-indicator:hover {
     background-color: #00609f;
+}
+#story_titles .NB-story-title-indicator .NB-story-title-indicator-count {
+    float: left;
 }
 #story_titles .NB-story-title-indicator.unread_threshold_negative {
   display: none;

@@ -3385,8 +3385,9 @@
                     delayIn: 375
                 });
             }
-            
-            $('.NB-feedbar', $story_titles).replaceWith($feedbar);
+
+            $('.NB-feedbar', $story_titles).remove();
+            $story_titles.prepend($feedbar);
             $('.NB-feedbar-last-updated-date').text(feed.get('updated') ? feed.get('updated') + ' ago' : 'Loading...');
         },
         
@@ -3405,30 +3406,18 @@
                 if (unread_view_name == 'positive') return score <= 0;
                 else if (unread_view_name == 'neutral') return score < 0;
             }, this));
+            if (!hidden_stories) return;
             
-            if (hidden_stories) {
-                if ($indicator.length) {
-                    var $counts = this.make_feed_counts_floater(feed.get('ps'), feed.get('nt'), feed.get('ng'));
-                    $('.feed_counts_floater', $indicator).replaceWith($counts);
-                    $indicator.css({'opacity': 1});
-                } else if (feed) {
-                    $indicator = $.make('div', { className: 'NB-story-title-indicator' }, [
-                        this.make_feed_counts_floater(feed.get('ps'), feed.get('nt'), feed.get('ng')),
-                        $.make('span', { className: 'NB-story-title-indicator-text' }, 'show hidden stories')
-                    ]).css({
-                        'opacity': 0
-                    });
-                    $('.NB-feedbar .feed .feed_title', this.$story_titles).prepend($indicator);
-                    _.delay(function() {
-                        $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
-                    }, 500);
-                }
-            
-                $indicator.removeClass('unread_threshold_positive')
-                          .removeClass('unread_threshold_neutral')
-                          .removeClass('unread_threshold_negative')
-                          .addClass('unread_threshold_'+unread_view_name);
+            $indicator.css({'display': 'block', 'opacity': 0});
+            if (is_feed_load) {
+                _.delay(function() {
+                    $indicator.animate({'opacity': 1}, {'duration': 1000, 'easing': 'easeOutCubic'});
+                }, 500);
             }
+            $indicator.removeClass('unread_threshold_positive')
+                      .removeClass('unread_threshold_neutral')
+                      .removeClass('unread_threshold_negative')
+                      .addClass('unread_threshold_'+unread_view_name);
         },
         
         check_story_titles_last_story: function() {
