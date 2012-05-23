@@ -3499,7 +3499,7 @@
                 $indicator.removeClass('unread_threshold_positive')
                           .removeClass('unread_threshold_neutral')
                           .addClass('unread_threshold_negative');
-                $indicator.animate({'opacity': 0}, {'duration': 500});
+                $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
             }
         },
         
@@ -6823,17 +6823,6 @@
             $.targetIs(e, { tagSelector: '.NB-feeds-header-river' }, function($t, $p){
                 e.preventDefault();
                 self.open_river_stories();
-            });
-            
-            // = Feed Bar =====================================================
-            
-            $.targetIs(e, { tagSelector: '.NB-feed-like' }, function($t, $p){
-                e.preventDefault();
-                self.open_feed_intelligence_modal(1);
-            });
-            $.targetIs(e, { tagSelector: '.NB-feed-dislike' }, function($t, $p){
-                e.preventDefault();
-                self.open_feed_intelligence_modal(-1);
             });
             
             // = Stories ======================================================

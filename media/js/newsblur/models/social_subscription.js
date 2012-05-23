@@ -34,6 +34,13 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
     
     model : NEWSBLUR.Models.SocialSubscription,
     
+    parse: function(models) {
+        _.each(models, function(feed) {
+            feed.selected = false;
+        });
+        return models;
+    },
+    
     comparator: function(a, b) {
         var sort_order = NEWSBLUR.reader.model.preference('feed_order');
         var title_a = a.get('feed_title') || '';
@@ -52,6 +59,10 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
         if (title_a > title_b)      return 1;
         else if (title_a < title_b) return -1;
         return 0;
+    },
+    
+    selected: function() {
+        return this.detect(function(feed) { return feed.get('selected'); });
     },
     
     deselect: function() {

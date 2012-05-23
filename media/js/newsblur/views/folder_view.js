@@ -11,6 +11,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         root: false
     },
     
+    events: {
+        "contextmenu"                    : "show_manage_menu",
+        "click .NB-feedlist-manage-icon" : "show_manage_menu",
+        "click"                          : "open",
+        "mouseenter"                     : "add_hover_inverse",
+        "mouseleave"                     : "remove_hover_inverse"
+    },
+    
     render: function() {
         var depth = this.options.depth;
         this.options.collapsed =  _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
@@ -45,7 +53,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     render_folder: function($feeds) {
         var $folder = _.template('\
         <% if (!root) { %>\
-            <div class="folder_title <% if (depth == 0) { %>NB-toplevel<% } %>">\
+            <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
                 <div class="NB-folder-icon"></div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon"></div>\
@@ -62,6 +70,38 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         });
 
         return $folder;
+    },
+    
+    // ==========
+    // = Events =
+    // ==========
+   
+    open: function(e) {
+        
+    },
+    
+    show_manage_menu: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        NEWSBLUR.reader.show_manage_menu('folder', this.$el, {
+            toplevel: this.options.depth == 0
+        });
+        return false;
+    },
+    
+    add_hover_inverse: function() {
+        if (NEWSBLUR.app.feed_list.is_sorting()) {
+            return;
+        }
+
+        if (this.$el.offset().top > $(window).height() - 314) {
+            this.$el.addClass('NB-hover-inverse');
+        } 
+    },
+    
+    remove_hover_inverse: function() {
+        this.$el.removeClass('NB-hover-inverse');
     }
     
 });

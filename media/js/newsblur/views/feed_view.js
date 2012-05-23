@@ -9,8 +9,8 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         "contextmenu"                    : "show_manage_menu",
         "click .NB-feedlist-manage-icon" : "show_manage_menu",
         "click"                          : "open",
-        "mouseenter"                     : "add_hover_inverse_to_feed",
-        "mouseleave"                     : "remove_hover_inverse_from_feed"
+        "mouseenter"                     : "add_hover_inverse",
+        "mouseleave"                     : "remove_hover_inverse"
     },
     
     initialize: function() {
@@ -172,20 +172,6 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         $(this.el).addClass(extra_classes);
     },
     
-    add_hover_inverse_to_feed: function() {
-        if (NEWSBLUR.app.feed_list.is_sorting()) {
-            return;
-        }
-
-        if (this.$el.offset().top > $(window).height() - 314) {
-            this.$el.addClass('NB-hover-inverse');
-        } 
-    },
-    
-    remove_hover_inverse_from_feed: function() {
-        this.$el.removeClass('NB-hover-inverse');
-    },
-    
     // ===========
     // = Actions =
     // ===========
@@ -196,6 +182,8 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     // ==========
     
     open: function(e) {
+        if (this.options.type != 'feed') return;
+        
         if (NEWSBLUR.hotkeys.command) {
             NEWSBLUR.reader.open_unread_stories_in_tabs(this.id);
         } else if (this.model.is_social()) {
@@ -209,7 +197,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
         // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
-        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), {
+        NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', this.$el, {
             feed_id: this.model.id,
             toplevel: this.options.depth == 0
         });
@@ -223,6 +211,20 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
             NEWSBLUR.reader.reset_feed();
             NEWSBLUR.reader.show_splash_page();
         }
+    },
+    
+    add_hover_inverse: function() {
+        if (NEWSBLUR.app.feed_list.is_sorting()) {
+            return;
+        }
+
+        if (this.$el.offset().top > $(window).height() - 314) {
+            this.$el.addClass('NB-hover-inverse');
+        } 
+    },
+    
+    remove_hover_inverse: function() {
+        this.$el.removeClass('NB-hover-inverse');
     }
 
 });
