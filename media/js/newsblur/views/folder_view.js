@@ -14,10 +14,15 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     render: function() {
         var depth = this.options.depth;
         this.options.collapsed =  _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
-        var $feeds = this.collection.map(function(item) {
+        var $feeds = this.collection.map(_.bind(function(item) {
             var $model;
             if (item.is_feed()) {
-                var feed_view = new NEWSBLUR.Views.Feed({model: item.feed, type: 'feed', depth: depth}).render();
+                var feed_view = new NEWSBLUR.Views.Feed({
+                    model: item.feed, 
+                    type: 'feed', 
+                    depth: depth,
+                    folder_title: this.options.title
+                }).render();
                 item.feed.views.push(feed_view);
                 return feed_view.el;
             } else {
@@ -27,7 +32,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     title: item.get('folder_title')
                 }).render().el;
             }
-        });
+        }, this));
         $feeds.push(this.make('div', { 'class': 'feed NB-empty' }));
 
         var $folder = this.render_folder();

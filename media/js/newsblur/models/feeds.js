@@ -1,13 +1,32 @@
 NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
     initialize: function() {
-        _.bindAll(this, 'on_change');
+        _.bindAll(this, 'on_change', 'delete_feed');
         this.bind('change', this.on_change);
         this.views = [];
     },
     
     on_change: function() {
         // NEWSBLUR.log(['Feed Change', this.changedAttributes(), this.previousAttributes()]);
+    },
+    
+    delete_feed: function(options) {
+        options = options || {};
+        var view = options.view || this.get_view();
+        console.log(["Delete Feed", this, view, view.options.folder_title]);
+        
+        NEWSBLUR.assets.delete_feed(this.id, view.options.folder_title);
+        view.delete_feed();
+    },
+    
+    get_view: function($feed) {
+        return _.detect(this.views, function(view) {
+            if ($feed) {
+                return view.el == $feed.get(0);
+            } else {
+                return true;
+            }
+        });
     },
     
     is_social: function() {
@@ -37,7 +56,14 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     },
     
     parse: function(data) {
+        _.each(data.feeds, function(feed) {
+            feed.selected = false;
+        });
         return data.feeds;
+    },
+    
+    selected: function() {
+        return this.detect(function(feed) { return feed.get('selected'); });
     },
     
     has_chosen_feeds: function() {
@@ -47,9 +73,7 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     },
     
     deselect: function() {
-        this.chain().select(function(feed) { 
-            return feed.get('selected'); 
-        }).each(function(feed){ 
+        this.each(function(feed){ 
             feed.set('selected', false); 
         });
     }

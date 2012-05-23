@@ -5265,18 +5265,12 @@
             $confirm.slideUp(500);
         },
         
-        manage_menu_delete_feed: function(feed, $feed) {
+        manage_menu_delete_feed: function(feed_id, $feed) {
             var self = this;
-            var feed_id = feed || this.active_feed;
-            $feed = $feed || this.find_feed_in_feed_list(feed_id);
-            
-            var in_folder = $feed.parents('li.folder').eq(0).find('.folder_title_text').eq(0).text();
-            var duplicate_feed = this.find_feed_in_feed_list(feed_id).length > 1;
-            
-            this.delete_feed(feed_id, $feed);
-            this.model.delete_feed(feed_id, in_folder, function() {
-                self.delete_feed(feed_id, $feed);
-            }, duplicate_feed);
+            feed_id = feed_id || this.active_feed;
+            var feed = this.model.get_feed(feed_id);
+            var feed_view = feed.get_view($feed);
+            feed.delete_feed({view: feed_view});
         },
         
         show_confirm_unfollow_menu_item: function() {
@@ -5324,17 +5318,6 @@
             this.model.delete_folder(folder, in_folder, feeds, function() {
                 self.delete_folder(folder, $folder);
             });
-        },
-        
-        delete_feed: function(feed_id, $feed) {
-            var self = this;
-            $feed = $feed || this.find_feed_in_feed_list(feed_id);
-            $feed.slideUp(500);
-            
-            if (this.active_feed == parseInt($feed.data('id'), 10)) {
-                this.reset_feed();
-                this.show_splash_page();
-            }
         },
         
         delete_folder: function(folder_name, $folder) {

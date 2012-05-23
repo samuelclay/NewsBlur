@@ -300,8 +300,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             data['include_favicons'] = true;
         }
         
-        if (this.feeds.length) this.feeds.remove();
-        
         this.feeds.fetch({
             success: pre_callback,
             error: error_callback
@@ -703,8 +701,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    delete_feed: function(feed_id, in_folder, callback, duplicate_feed) {
-        if (!duplicate_feed) this.feeds.get(feed_id).destroy();
+    delete_feed: function(feed_id, in_folder, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/delete_feed', {
                 'feed_id': feed_id, 
@@ -782,7 +779,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     move_feed_to_folder: function(feed_id, in_folder, to_folder, callback) {
         var pre_callback = _.bind(function(data) {
-            this.folders = data.folders;
+            this.folders.reset(data.folders);
             return callback();
         }, this);
 
@@ -795,7 +792,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     move_folder_to_folder: function(folder_name, in_folder, to_folder, callback) {
         var pre_callback = _.bind(function(data) {
-            this.folders = data.folders;
+            this.folders.reset(data.folders);
             return callback();
         }, this);
 

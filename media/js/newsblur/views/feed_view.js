@@ -14,7 +14,7 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'render', 'changed');
+        _.bindAll(this, 'render', 'changed', 'delete_feed');
         this.model.bind('change', this.changed);
         
         if (this.model.is_social() && !this.model.get('feed_title')) {
@@ -205,6 +205,15 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
             toplevel: this.options.depth == 0
         });
         return false;
+    },
+    
+    delete_feed: function() {
+        this.$el.slideUp(500);
+        
+        if (this.model.get('selected')) {
+            NEWSBLUR.reader.reset_feed();
+            NEWSBLUR.reader.show_splash_page();
+        }
     }
 
 });
