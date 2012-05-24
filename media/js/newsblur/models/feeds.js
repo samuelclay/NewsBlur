@@ -19,6 +19,27 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         view.delete_feed();
     },
     
+    move_to_folder: function(to_folder, options) {
+        options = options || {};
+        var view = options.view || this.get_view();
+        var in_folder = view.options.folder_title;
+        
+        if (in_folder == to_folder) return false;
+        
+        NEWSBLUR.assets.move_feed_to_folder(this.id, in_folder, to_folder, function() {
+            _.delay(function() {
+                NEWSBLUR.reader.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
+                    'duration': 100, 
+                    'complete': function() {
+                        NEWSBLUR.app.feed_list.make_feeds();
+                    }
+                });
+            }, 250);
+        });
+        
+        return true;
+    },
+    
     rename: function(new_title) {
         this.set('feed_title', new_title);
         NEWSBLUR.assets.rename_feed(this.id, new_title);

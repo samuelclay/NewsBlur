@@ -184,8 +184,8 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     open: function(e) {
         if (this.options.type != 'feed') return;
         
-        if (NEWSBLUR.hotkeys.command) {
-            NEWSBLUR.reader.open_unread_stories_in_tabs(this.id);
+        if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
+            NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
         } else if (this.model.is_social()) {
             NEWSBLUR.reader.open_social_stories(this.model.id, {force: true, $feed: this.$el});
         } else {

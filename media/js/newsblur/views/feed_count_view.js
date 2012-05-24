@@ -61,12 +61,13 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
         var i_width = this.$el.width();
         var o_width = NEWSBLUR.reader.$s.$story_taskbar.width();
         var left = (o_width / 2.0) - (i_width / 2.0);
-        console.log(["center", left, i_width, o_width]);
         this.$el.css({'left': left});
     },
     
     flash: function() {
         var $floater = this.$el;
+        
+        if (!NEWSBLUR.assets.preference('animations')) return;
         
         _.defer(function() {
             $floater.animate({'opacity': 1}, {'duration': 250, 'queue': false});
