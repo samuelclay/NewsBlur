@@ -699,22 +699,6 @@
             return $story;
         },
         
-        get_feed_ids_in_folder: function($folder) {
-            var self = this;
-            $folder = $folder || this.$s.$feed_list;
-            
-            var $feeds = $('.feed:not(.NB-empty)', $folder);
-            var feeds = _.compact(_.map($('.feed:not(.NB-empty)', $folder), function(o) {
-                var feed_id = parseInt($(o).data('id'), 10);
-                if (self.model.get_feed(feed_id) && 
-                    self.model.get_feed(feed_id).active) {
-                  return feed_id;
-                }
-            }));
-            
-            return feeds;
-        },
-        
         compute_story_score: function(story) {
             if (this.active_feed == 'starred') {
                 return 1;
@@ -971,15 +955,6 @@
             }
             
             return $next_feed;
-        },
-        
-        get_current_folder: function() {
-            var $folder = $('.folder.NB-selected', this.$s.$feed_list);
-            if ($folder.length) {
-                return $folder.eq(0);
-            }
-            
-            return this.$s.$feed_list;
         },
         
         navigate_story_titles_to_story: function(story) {
@@ -2453,16 +2428,16 @@
         },
         
         mark_folder_as_read: function(folder_name, $folder) {
-            $folder = $folder || this.get_current_folder();
-            folder_name = folder_name || $('.folder_title_text', $folder).eq(0).text();
-            var feeds = this.get_feed_ids_in_folder($folder);
+            var folder_view = NEWSBLUR.assets.folders.get_view($folder);
+            var feeds = folder_view.model.feed_ids_in_folder($folder);
 
             _.each(feeds, _.bind(function(feed_id) {
                 this.mark_feed_as_read_update_counts(feed_id);
             }, this));
             this.model.mark_feed_as_read(feeds);
             
-            if (_.string.include(this.active_feed, folder_name)) {
+            var active_feed = NEWSBLUR.assets.get_feed(this.active_feed);
+            if (active_feed && _.contains(feeds, active_feed.id)) {
                 $('.story:not(.read)', this.$s.$story_titles).addClass('read');
                 _.each(this.model.stories, _.bind(function(story) {
                     this.mark_story_as_read_in_feed_view(story.id);
