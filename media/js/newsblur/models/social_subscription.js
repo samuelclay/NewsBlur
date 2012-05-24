@@ -66,7 +66,6 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
     },
     
     deselect: function() {
-        console.log(["deselect social"]);
         this.chain().select(function(feed) { 
             return feed.get('selected'); 
         }).each(function(feed){ 

@@ -148,7 +148,6 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     },
     
     select_feed: function() {
-        console.log(["only selected"]);
         this.$el.toggleClass('selected', this.model.get('selected'));
         this.$el.toggleClass('NB-selected', this.model.get('selected'));
     },

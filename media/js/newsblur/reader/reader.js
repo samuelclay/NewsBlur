@@ -1442,7 +1442,6 @@
             this.$s.$starred_header.removeClass('NB-selected');
             this.$s.$river_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
-            console.log(["old active", this.active_feed]);
             this.model.feeds.deselect();
             if (_.string.contains(this.active_feed, 'social:')) {
                 this.model.social_feeds.deselect();
@@ -1525,7 +1524,7 @@
                     var slug = _.string.words(_.string.clean(feed.get('feed_title').replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
                     if (!_.string.include(window.location.pathname, url)) {
-                        console.log(["Navigating to url", url]);
+                        // console.log(["Navigating to url", url]);
                         NEWSBLUR.router.navigate(url);
                     }
                 }
@@ -1906,7 +1905,7 @@
                 var slug = _.string.words(_.string.clean(feed.get('feed_title').replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                 var url = "social/" + feed.get('user_id') + "/" + slug;
                 if (!_.string.include(window.location.pathname, url)) {
-                    console.log(["Navigating to social", url, window.location.pathname]);
+                    // console.log(["Navigating to social", url, window.location.pathname]);
                     NEWSBLUR.router.navigate(url);
                 }
             } else if (!feed.get('feed_title')) {

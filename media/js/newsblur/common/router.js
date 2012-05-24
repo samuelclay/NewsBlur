@@ -25,7 +25,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     site: function(site_id, slug) {
-        console.log(["site", site_id, slug]);
+        // console.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
         var feed = NEWSBLUR.reader.model.get_feed(site_id);
         if (feed) {
@@ -38,7 +38,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     social: function(user_id, slug) {
-        console.log(["router:social", user_id, slug]);
+        // console.log(["router:social", user_id, slug]);
         var feed_id = "social:" + user_id;
         if (NEWSBLUR.reader.model.get_feed(feed_id)) {
             NEWSBLUR.reader.open_social_stories(feed_id, {force: true});

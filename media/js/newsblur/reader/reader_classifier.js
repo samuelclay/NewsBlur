@@ -164,7 +164,7 @@ var classifier_prototype = {
         this.feed_tags = trainer_data['feed_tags'];
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
-        this.feed_publishers = trainer_data['popular_publishers'];
+        this.feed_publishers = new Backbone.Collection(trainer_data['popular_publishers']);
         this.feed.set('num_subscribers', trainer_data['num_subscribers'], {silent: true});
         this.options.feed_loaded = true;
         
@@ -576,7 +576,7 @@ var classifier_prototype = {
     },
     
     make_publishers: function(publishers) {
-        var $publishers = _.map(publishers, _.bind(function(publisher) {
+        var $publishers = publishers.map(_.bind(function(publisher) {
             return this.make_publisher(publisher);
         }, this));
         
@@ -584,8 +584,8 @@ var classifier_prototype = {
     },
         
     make_publisher: function(publisher) {
-        var $publisher = this.make_classifier(_.string.truncate(publisher.feed_title, 50), 
-                                              publisher.id, 'feed', publisher.story_count, publisher);
+        var $publisher = this.make_classifier(_.string.truncate(publisher.get('feed_title'), 50), 
+                                              publisher.id, 'feed', publisher.get('story_count'), publisher);
         return $publisher;
     },
     

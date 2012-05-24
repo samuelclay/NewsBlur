@@ -87,10 +87,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 }
             },
             error: function(e, textStatus, errorThrown) {
-                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
                 if (errorThrown == 'abort') {
                     return;
                 }
+                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
                 
                 if (error_callback) {
                     error_callback();
