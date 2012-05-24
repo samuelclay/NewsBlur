@@ -582,7 +582,7 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if commit_delete:
-          UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
+            UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
           
         return deleted_folder
         

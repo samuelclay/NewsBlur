@@ -35,6 +35,14 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         return view;
     },
     
+    feed_ids_in_folder: function() {
+        if (this.is_feed()) {
+            return this.feed.id;
+        } else if (this.is_folder()) {
+            return this.folders.feed_ids_in_folder();
+        }
+    },
+    
     move_to_folder: function(to_folder, options) {
         options = options || {};
         var view = options.view || this.get_view();
@@ -61,6 +69,14 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         var in_folder = this.collection.options.title;
         NEWSBLUR.assets.rename_folder(folder_title, new_folder_name, in_folder);
         this.set('folder_title', new_folder_name);
+    },
+    
+    delete_folder: function() {
+        var folder_title = this.get('folder_title');
+        var in_folder = this.collection.options.title;
+        var feed_ids_in_folder = this.feed_ids_in_folder();
+        NEWSBLUR.assets.delete_folder(folder_title, in_folder, feed_ids_in_folder);
+        this.trigger('delete');
     }
     
 });
@@ -77,6 +93,12 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     },
     
     model: NEWSBLUR.Models.FeedOrFolder,
+    
+    folders: function() {
+        return this.select(function(item) {
+            return item.is_folder();
+        });
+    },
     
     get_view: function($folder) {
         var view;
@@ -102,6 +124,12 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
             }
         });
         return names;
+    },
+    
+    feed_ids_in_folder: function() {
+        return _.compact(_.flatten(this.map(function(item) {
+            return item.feed_ids_in_folder();
+        })));
     }
     
 }, {

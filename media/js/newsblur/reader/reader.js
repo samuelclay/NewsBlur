@@ -5219,37 +5219,11 @@
         },
         
         
-        manage_menu_delete_folder: function(folder, $folder) {
+        manage_menu_delete_folder: function(folder_title, $folder) {
             var self = this;
-            var in_folder = '';
-            var $parent = $folder.parents('li.folder');
-            var feeds = this.get_feed_ids_in_folder($folder);
-            if ($parent.length) {
-                in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
-            }
+            var folder_view = NEWSBLUR.assets.folders.get_view($folder);
         
-            this.model.delete_folder(folder, in_folder, feeds, function() {
-                self.delete_folder(folder, $folder);
-            });
-        },
-        
-        delete_folder: function(folder_name, $folder) {
-            var self = this;
-            var feeds = this.get_feed_ids_in_folder($folder);
-
-            if ($folder.length) {
-                $folder.slideUp(500);
-            }
-            
-            // If the active feed is under this folder, deselect it.
-            var feed_active = false;
-            _.each(feeds, _.bind(function(feed_id) {
-                if (self.active_feed == feed_id) {
-                    this.reset_feed();
-                    this.show_splash_page();
-                    return false;
-                }
-            }, this));
+            folder_view.model.delete_folder();
         },
         
         // ========================

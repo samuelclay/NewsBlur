@@ -20,10 +20,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'update_title');
+        _.bindAll(this, 'update_title', 'delete_folder');
         if (this.model) {
             // Root folder does not have a model.
             this.model.bind('change:folder_title', this.update_title);
+            this.model.bind('delete', this.delete_folder);
         }
     },
     
@@ -117,6 +118,16 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     remove_hover_inverse: function() {
         this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    delete_folder: function() {
+        this.$el.slideUp(500);
+        
+        var feed_ids_in_folder = this.model.feed_ids_in_folder();
+        if (_.contains(feed_ids_in_folder, NEWSBLUR.reader.active_feed)) {
+            NEWSBLUR.reader.reset_feed();
+            NEWSBLUR.reader.show_splash_page();
+        }
     }
     
 });

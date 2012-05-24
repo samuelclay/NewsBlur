@@ -251,7 +251,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            NEWSBLUR.app.feed_list.fetch();
+            NEWSBLUR.assets.load_feeds();
             _.defer(function() {
               NEWSBLUR.reader.open_add_feed_modal();
             });
