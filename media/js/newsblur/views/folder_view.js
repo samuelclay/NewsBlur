@@ -34,11 +34,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 item.feed.views.push(feed_view);
                 return feed_view.el;
             } else {
-                return new NEWSBLUR.Views.Folder({
+                var folder_view = new NEWSBLUR.Views.Folder({
+                    model: item,
                     collection: item.folders,
                     depth: depth + 1,
                     title: item.get('folder_title')
-                }).render().el;
+                }).render();
+                item.folder_views.push(folder_view);
+                return folder_view.el;
             }
         }, this));
         $feeds.push(this.make('div', { 'class': 'feed NB-empty' }));

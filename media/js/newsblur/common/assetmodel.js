@@ -275,7 +275,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(feeds, subscriptions) {
             self.flags['favicons_fetching'] = self.feeds.any(function(feed) { return feed.get('favicons_fetching'); });
 
-            self.folders.reset(subscriptions.folders);
+            self.folders.reset(_.compact(subscriptions.folders));
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);

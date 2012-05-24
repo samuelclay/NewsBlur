@@ -13,9 +13,9 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     delete_feed: function(options) {
         options = options || {};
         var view = options.view || this.get_view();
-        console.log(["Delete Feed", this, view, view.options.folder_title]);
+        console.log(["Delete Feed", this, view, view.collection.options.title]);
         
-        NEWSBLUR.assets.delete_feed(this.id, view.options.folder_title);
+        NEWSBLUR.assets.delete_feed(this.id, view.collection.options.title);
         view.delete_feed();
     },
     

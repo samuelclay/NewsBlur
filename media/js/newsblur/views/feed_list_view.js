@@ -142,7 +142,6 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         
         if (!model) {
             model = NEWSBLUR.assets.feeds.selected() || NEWSBLUR.assets.social_feeds.selected();
-            console.log(["selected models", model]);
         }
         if (!model || !model.get('selected')) return;
         

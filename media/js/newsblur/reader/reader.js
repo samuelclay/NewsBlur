@@ -5262,9 +5262,14 @@
             var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
             var $select = $('select', $confirm);
-            var feed      = this.model.get_feed(feed_id);
-            var feed_view = feed.get_view($feed);
-            var in_folder = feed_view.options.folder_title;
+            if (_.isNumber(feed_id)) {
+                var feed      = this.model.get_feed(feed_id);
+                var feed_view = feed.get_view($feed);
+                var in_folder = feed_view.options.folder_title;
+            } else {
+                folder_view = NEWSBLUR.assets.folders.get_view($feed);
+                var in_folder = folder_view.collection.options.title;
+            }
 
             $move.addClass('NB-menu-manage-feed-move-cancel');
             $('.NB-menu-manage-title', $move).text('Cancel move');
@@ -5320,18 +5325,12 @@
         },
         
         manage_menu_move_folder: function(folder, $folder) {
-            var self       = this;
-            var in_folder  = '';
-            var $parent    = $folder.parents('li.folder').eq(0);
-            var to_folder = $('.NB-menu-manage-folder-move-confirm select').val();
-            var folder_name = $folder.find('.folder_title_text').eq(0).text();
-            var child_folders = $folder.find('.folder_title_text').map(function() {
-                return $(this).text();
-            }).get();
-
-            if ($parent.length) {
-                in_folder = $parent.find('.folder_title_text').eq(0).text();
-            }
+            var self        = this;
+            var to_folder   = $('.NB-menu-manage-folder-move-confirm select').val();
+            var folder_view = NEWSBLUR.assets.folders.get_view($folder);
+            var in_folder   = folder_view.collection.options.title;
+            var folder_name = folder_view.options.title;
+            var child_folders = folder_view.collection.child_folder_names();
         
             if (to_folder == in_folder || 
                 to_folder == folder_name ||
@@ -5339,20 +5338,13 @@
                 return this.hide_confirm_move_menu_item();
             }
             
-            this.model.move_folder_to_folder(folder, in_folder, to_folder, _.bind(function() {
+            var moved = folder_view.model.move_to_folder(to_folder, {view: folder_view});
+            this.hide_confirm_move_menu_item(moved);
+            if (moved) {
                 _.delay(_.bind(function() {
-                    this.$s.$feed_list.css('opacity', 1).animate({'opacity': 0}, {
-                        'duration': 100, 
-                        'complete': _.bind(function() {
-                            NEWSBLUR.app.feed_list.make_feeds();
-                        }, this)
-                    });
-                }, this), 250);
-                
-                this.hide_manage_menu('folder', $parent, true);
-            }, this));
-            
-            this.hide_confirm_move_menu_item(true);
+                    this.hide_manage_menu('folder', $folder, true);
+                }, this), 500);
+            }
         },
         
         // ========================
