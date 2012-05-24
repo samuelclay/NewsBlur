@@ -88,7 +88,7 @@ NEWSBLUR.utils = {
   
     is_feed_floater_gradient_light: function(feed) {
         if (!feed) return false;
-        var is_light = feed.get('is_light');
+        var is_light = feed.is_light;
         if (!_.isUndefined(is_light)) {
             return is_light;
         }
@@ -100,7 +100,7 @@ NEWSBLUR.utils = {
         var b = parseInt(color.substr(4, 2), 16) / 255.0;
 
         is_light = $.textColor({r: r, g: g, b: b}) != 'white';
-        feed.set('is_light', is_light, {silent: true});
+        feed.is_light = is_light;
         
         return is_light;
     },
@@ -109,19 +109,19 @@ NEWSBLUR.utils = {
         return _.string.include(feed_id, 'social:');
     },
     
-    make_folders: function(model) {
+    make_folders: function(model, selected_folder_title) {
         var folders = model.get_folders();
         var $options = $.make('select', { className: 'NB-folders'});
         
         var $option = $.make('option', { value: '' }, "Top Level");
         $options.append($option);
 
-        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;');
+        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
         
         return $options;
     },
 
-    make_folder_options: function($options, items, depth) {
+    make_folder_options: function($options, items, depth, selected_folder_title) {
         var self = this;
         items.each(function(item) {
             if (item.is_folder()) {
@@ -129,7 +129,10 @@ NEWSBLUR.utils = {
                     value: item.get('folder_title')
                 }, depth + ' ' + item.get('folder_title'));
                 $options.append($option);
-                $options = self.make_folder_options($options, item.folders, depth+'&nbsp;&nbsp;&nbsp;');
+                if (item.get('folder_title') == selected_folder_title) {
+                    $option.attr('selected', true);
+                }
+                $options = self.make_folder_options($options, item.folders, depth+'&nbsp;&nbsp;&nbsp;', selected_folder_title);
             }
         });
     

@@ -368,15 +368,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.stories = data.stories;
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
-                this.active_feed = this.get_feed(feed_id) || {};
-                this.active_feed.set({
-                    feed_title: data.feed_title || this.active_feed.get('feed_title'),
-                    last_update: data.last_update || this.active_feed.get('last_update'),
-                    last_update: data.updated || this.active_feed.get('updated'),
-                    feed_address: data.feed_address || this.active_feed.get('feed_address')
-                }, {silent: true});
-                if (this.active_feed.hasChanged()) {
-                    this.active_feed.change();
+                this.active_feed = this.get_feed(feed_id);
+                if (this.active_feed) {
+                    this.active_feed.set({
+                        feed_title: data.feed_title || this.active_feed.get('feed_title'),
+                        updated: data.updated || this.active_feed.get('updated'),
+                        feed_address: data.feed_address || this.active_feed.get('feed_address')
+                    }, {silent: true});
+                    if (this.active_feed.hasChanged()) {
+                        this.active_feed.change();
+                    }
                 }
                 this.feed_id = feed_id;
                 if (_.string.include(feed_id, ':')) {

@@ -130,6 +130,15 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return _.compact(_.flatten(this.map(function(item) {
             return item.feed_ids_in_folder();
         })));
+    },
+    
+    deselect: function() {
+        this.each(function(item) {
+            if (item.is_folder()) {
+                item.set('selected', false);
+                item.folders.deselect();
+            }
+        });
     }
     
 }, {

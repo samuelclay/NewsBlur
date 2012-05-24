@@ -20,10 +20,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'update_title', 'delete_folder');
+        _.bindAll(this, 'update_title', 'update_selected', 'delete_folder');
         if (this.model) {
             // Root folder does not have a model.
             this.model.bind('change:folder_title', this.update_title);
+            this.model.bind('change:selected', this.update_selected);
             this.model.bind('delete', this.delete_folder);
         }
     },
@@ -86,6 +87,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     update_title: function() {
         this.$('.folder_title_text').html(this.model.get('folder_title'));
+    },
+    
+    update_selected: function() {
+        this.$el.toggleClass('NB-selected', this.model.get('selected'));
     },
     
     // ==========

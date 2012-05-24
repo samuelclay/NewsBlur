@@ -35,7 +35,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
             $.make('div', { className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-fieldset NB-add-add-url NB-modal-submit' }, [
                     $.make('h5', [
-                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model)),
+                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model, this.options.folder_title)),
                         'Add a new site'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -50,7 +50,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-add-add-folder NB-modal-submit' }, [
                     $.make('h5', [
-                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model)),
+                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model, this.options.folder_title)),
                         'Add a new folder'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [

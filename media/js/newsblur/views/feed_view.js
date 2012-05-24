@@ -35,10 +35,15 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         var only_counts_changed = options.changes && !_.any(_.keys(options.changes), function(key) { 
             return !_.contains(['ps', 'nt', 'ng'], key);
         });
+        var only_selected_changed = options.changes && !_.any(_.keys(options.changes), function(key) { 
+            return key != 'selected';
+        });
         
         if (only_counts_changed) {
             this.add_extra_classes();
             if (!options.instant) this.flash_changes();
+        } else if (only_selected_changed) {
+            this.select_feed();
         } else {
             this.render();
             if (!options.instant && counts_changed) this.flash_changes();
@@ -140,6 +145,12 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
         if (this.options.type == 'story') {
             this.$('.NB-story-title-indicator-count').html(this.counts_view.$el.clone());
         }
+    },
+    
+    select_feed: function() {
+        console.log(["only selected"]);
+        this.$el.toggleClass('selected', this.model.get('selected'));
+        this.$el.toggleClass('NB-selected', this.model.get('selected'));
     },
     
     flash_changes: function() {

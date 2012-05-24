@@ -7,7 +7,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     },
     
     on_change: function() {
-        // NEWSBLUR.log(['Feed Change', this.changedAttributes(), this.previousAttributes()]);
+        NEWSBLUR.log(['Feed Change', this.changedAttributes(), this.previousAttributes()]);
     },
     
     delete_feed: function(options) {
