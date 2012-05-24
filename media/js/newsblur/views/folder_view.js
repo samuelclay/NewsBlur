@@ -19,6 +19,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "mouseleave"                     : "remove_hover_inverse"
     },
     
+    initialize: function() {
+        _.bindAll(this, 'update_title');
+        if (this.model) {
+            // Root folder does not have a model.
+            this.model.bind('change:folder_title', this.update_title);
+        }
+    },
+    
     render: function() {
         var depth = this.options.depth;
         this.options.collapsed =  _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
@@ -73,6 +81,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         });
 
         return $folder;
+    },
+    
+    update_title: function() {
+        this.$('.folder_title_text').html(this.model.get('folder_title'));
     },
     
     // ==========

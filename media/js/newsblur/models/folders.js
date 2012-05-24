@@ -54,6 +54,13 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         });
         
         return true;
+    },
+    
+    rename: function(new_folder_name) {
+        var folder_title = this.get('folder_title');
+        var in_folder = this.collection.options.title;
+        NEWSBLUR.assets.rename_folder(folder_title, new_folder_name, in_folder);
+        this.set('folder_title', new_folder_name);
     }
     
 });

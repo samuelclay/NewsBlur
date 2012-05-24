@@ -5412,22 +5412,11 @@
         
         manage_menu_rename_folder: function(folder, $folder) {
             var self      = this;
-            var in_folder = '';
-            var $parent   = $folder.parents('li.folder');
             var new_folder_name = $('.NB-menu-manage-folder-rename-confirm .NB-menu-manage-title').val();
-
-            if (new_folder_name.length <= 0) return this.hide_confirm_rename_menu_item();
+            var folder_view = NEWSBLUR.assets.folders.get_view($folder);
             
-            if ($parent.length) {
-                in_folder = $parent.eq(0).find('.folder_title_text').eq(0).text();
-            }
-        
-            this.model.rename_folder(folder, new_folder_name, in_folder, function() {
-            });
-            $('.folder_title_text', $folder).eq(0).text(new_folder_name);
+            if (new_folder_name.length > 0) folder_view.model.rename(new_folder_name);
             this.hide_confirm_rename_menu_item(true);
-            
-            $('.NB-menu-manage-folder-rename').parents('.NB-menu-manage').data('folder_name', new_folder_name);
         },
         
         // =============================
