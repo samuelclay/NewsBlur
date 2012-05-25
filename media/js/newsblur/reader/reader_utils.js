@@ -2,21 +2,22 @@ NEWSBLUR.utils = {
 
     compute_story_score: function(story) {
       var score = 0;
-      var score_max = Math.max(story.intelligence['title'],
-                               story.intelligence['author'],
-                               story.intelligence['tags']);
-      var score_min = Math.min(story.intelligence['title'],
-                               story.intelligence['author'],
-                               story.intelligence['tags']);
+      var intelligence = story.get('intelligence');
+      var score_max = Math.max(intelligence['title'],
+                               intelligence['author'],
+                               intelligence['tags']);
+      var score_min = Math.min(intelligence['title'],
+                               intelligence['author'],
+                               intelligence['tags']);
       if (score_max > 0) score = score_max;
       else if (score_min < 0) score = score_min;
     
-      if (score == 0) score = story.intelligence['feed'];
+      if (score == 0) score = intelligence['feed'];
     
       return score;
     },
-  
-    generate_gradient: function(feed, type) {
+    
+    generate_gradient: _.memoize(function(feed, type) {
         if (!feed) return '';
         var color = feed.get('favicon_color');
         if (!color) return '';
@@ -25,7 +26,7 @@ NEWSBLUR.utils = {
         var g = parseInt(color.substr(2, 2), 16);
         var b = parseInt(color.substr(4, 2), 16);
         
-        if (type == 'border' || (type == 'shadow' && !this.is_feed_floater_gradient_light(feed))) {
+        if (type == 'border' || (type == 'shadow' && !feed.is_light())) {
             return [
                 (type == 'border' ? '1px solid ' : '') + 'rgb(',
                 [
@@ -84,27 +85,10 @@ NEWSBLUR.utils = {
                 ') 100%)'
             ].join('');
         }
-    },
+    }, function(feed, type) {
+        return "" + feed.id + '-' + type;
+    }),
   
-    is_feed_floater_gradient_light: function(feed) {
-        if (!feed) return false;
-        var is_light = feed.is_light;
-        if (!_.isUndefined(is_light)) {
-            return is_light;
-        }
-        var color = feed.get('favicon_color');
-        if (!color) return false;
-    
-        var r = parseInt(color.substr(0, 2), 16) / 255.0;
-        var g = parseInt(color.substr(2, 2), 16) / 255.0;
-        var b = parseInt(color.substr(4, 2), 16) / 255.0;
-
-        is_light = $.textColor({r: r, g: g, b: b}) != 'white';
-        feed.is_light = is_light;
-        
-        return is_light;
-    },
-    
     is_feed_social: function(feed_id) {
         return _.string.include(feed_id, 'social:');
     },

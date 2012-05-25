@@ -136,6 +136,10 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
                 extra_classes += ' NB-feed-inactive';
             }
         }
+        
+        if (this.options.type == 'story') {
+            extra_classes += ' NB-feedbar';
+        }
         return extra_classes;
     },
     

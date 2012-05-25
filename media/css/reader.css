@@ -978,15 +978,13 @@ background: transparent;
     background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
     border-bottom: 2px solid #404040;
     position: relative;
+    overflow: hidden;
 }
 .NB-story-pane-west #story_titles .NB-feedbar {
     padding-right: 4px;
 }
-#story_titles .NB-feedbar .feed {
-    overflow: hidden;
-}
 
-#story_titles .NB-feedbar .feed .feed_favicon {
+#story_titles .NB-feedbar.feed .feed_favicon {
     margin: 2px 4px 0 2px;
     vertical-align: top;
     float: left;
@@ -994,7 +992,7 @@ background: transparent;
     height: 16px;
 }
 
-#story_titles .NB-feedbar .feed .feed_title {
+#story_titles .NB-feedbar.feed .feed_title {
 /*    float: left;*/
   display: block;
   margin-left: 24px;
@@ -1067,17 +1065,17 @@ background: transparent;
     margin-left: 26px;
 }
 
-#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-manage-feed,
-#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-statistics {
+#story_titles .NB-feedbar:hover .NB-feedbar-manage-feed,
+#story_titles .NB-feedbar:hover .NB-feedbar-statistics {
   display: inline;
 }
 
 /*.NB-view-river #story_titles .NB-feedbar .NB-feedbar-mark-feed-read,*/
-#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-mark-feed-read {
+#story_titles .NB-feedbar:hover .NB-feedbar-mark-feed-read {
     display: block;
 }
 
-#story_titles .NB-feedbar.NB-feedbar-hover .NB-feedbar-last-updated {
+#story_titles .NB-feedbar:hover .NB-feedbar-last-updated {
     display: none;
 }
 
@@ -1085,7 +1083,7 @@ background: transparent;
     background-color: #00609f;
 }
 
-#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar.feed .NB-feedlist-manage-icon {
     opacity: 0;
     display: none;
     position: absolute;
@@ -1097,27 +1095,27 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar .feed:hover .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar.feed:hover .NB-feedlist-manage-icon {
   display: block;
   opacity: 1;
 }
 
-#story_titles .NB-feedbar .feed:hover .feed_favicon {
+#story_titles .NB-feedbar.feed:hover .feed_favicon {
   display: none;
 }
-#story_titles .NB-feedbar .folder_title .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar.folder_title .NB-feedlist-manage-icon {
     background-position: 3px 5px;
 }
 
-#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon:hover {
+#story_titles .NB-feedbar.feed .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_down.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+#story_titles .NB-feedbar.feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_up.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar .feed .feed_counts {
+#story_titles .NB-feedbar.feed .feed_counts {
     width: 200px;
     position: absolute;
     top: -1px;
@@ -1125,11 +1123,11 @@ background: transparent;
     display: none;
 }
 
-#story_titles .NB-feedbar .feed .feed_counts .feed_counts_floater {
+#story_titles .NB-feedbar.feed .feed_counts .feed_counts_floater {
     float: left;
 }
 
-#story_titles .NB-feedbar .feed .feed_counts .unread_count {
+#story_titles .NB-feedbar.feed .feed_counts .unread_count {
     float: right;
 }
 
@@ -1148,10 +1146,6 @@ background: transparent;
     float: right;
 }
 
-#story_titles .NB-feedbar .feed_id {
-    display: none;
-}
-
 #story_titles .NB-feedbar .NB-feed-sentiment {
     position: absolute;
     width: 16px;
@@ -1161,19 +1155,8 @@ background: transparent;
     cursor: pointer;
 }
 
-#story_titles .NB-feedbar.NB-feedbar-hover .NB-feed-sentiment {
+#story_titles .NB-feedbar:hover .NB-feed-sentiment {
     display: block;
-}
-
-
-#story_titles .NB-feedbar .NB-feed-like {
-    right: 24px;
-    background: transparent url('/media/embed/reader/thumbs_up.png') no-repeat 0 0;
-}
-
-#story_titles .NB-feedbar .NB-feed-dislike {
-    right: 4px;
-    background: transparent url('/media/embed/reader/thumbs_down.png') no-repeat 0 -4px;
 }
 
 #story_titles .feed .unread_count.unread_count_full {
@@ -1400,6 +1383,7 @@ background: transparent;
     color: #9D9A95;
     text-shadow: 0 1px 0 #F3F3F3;
     background-color: #E9E9E9;
+    border-radius: 4px;
 }
 #story_titles .story .NB-story-feed {
     display: none;

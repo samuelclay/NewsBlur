@@ -13,8 +13,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
-        this.stories = {};
-        this.story_keys = {};
+        this.stories = new NEWSBLUR.Collections.Stories();
         this.queued_read_stories = {};
         this.classifiers = {};
         this.friends = {};
@@ -365,7 +364,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feeds.add(data.feeds);
             }
             if (data && first_load) {
-                this.stories = data.stories;
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
@@ -380,24 +378,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     }
                 }
                 this.feed_id = feed_id;
+                console.log(["classifiers", data.classifiers, feed_id, this.classifiers]);
                 if (_.string.include(feed_id, ':')) {
                     _.extend(this.classifiers, data.classifiers);
                 } else {
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
                 }
                 this.starred_stories = data.starred_stories;
-                this.story_keys = {};
-                for (var s in data.stories) {
-                    this.story_keys[data.stories[s].id] = true;
-                }
+                this.stories.reset(data.stories);
             } else if (data) {
-                data.stories = _.select(data.stories, function(story) {
-                    if (!self.story_keys[story.id]) {
-                        self.stories.push(story);
-                        self.story_keys[story.id] = true;
-                        return true;
-                    }
-                });
+                this.stories.add(data.stories);
             }
             if (data.user_profiles) {
                 var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
@@ -668,14 +658,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return this.feed_authors;
     },
     
-    get_story: function(story_id, callback) {
+    get_story: function(story_id) {
         var self = this;
-        for (s in this.stories) {
-            if (this.stories[s].id == story_id) {
-                return this.stories[s];
-            }
-        }
-        return null;
+        return this.stories.get(story_id);
     },
     
     get_user: function(user_id) {
