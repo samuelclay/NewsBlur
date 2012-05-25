@@ -2,11 +2,26 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     
     className: 'NB-feed-story',
     
-    initialize: function() {
-        _.bindAll(this, 'toggle_read_status', 'toggle_classes');
-        this.model.bind('change', this.toggle_classes);
-        this.model.bind('change:read_status', this.toggle_read_status);
+    events: {
+        "click .NB-feed-story-content a"        : "click_link_in_story",
+        "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
+        "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon"
     },
+    
+    initialize: function() {
+        _.bindAll(this, 'mouseleave', 'mouseenter');
+        this.model.bind('change', this.toggle_classes, this);
+        this.model.bind('change:read_status', this.toggle_read_status, this);
+        this.model.bind('change:selected', this.toggle_selected, this);
+        
+        // Binding directly instead of using event delegation. Need for speed.
+        this.$el.bind('mouseenter', this.mouseenter);
+        this.$el.bind('mouseleave', this.mouseleave);
+    },
+    
+    // =============
+    // = Rendering =
+    // =============
     
     render: function() {
         this.feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
@@ -51,27 +66,50 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
                         <div class="NB-feed-story-manage-icon"></div>\
                         <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                     </div>\
+                    <% if (story.get("long_parsed_date")) { %>\
+                        <span class="NB-feed-story-date">\
+                            <% if (story.has_modifications()) { %>\
+                                <div class="NB-feed-story-hide-changes" \
+                                     title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %>\
+                                            story modifications">\
+                                </div>\
+                            <% } %>\
+                            <%= story.get("long_parsed_date") %>\
+                        </span>\
+                    <% } %>\
                 </div>\
             </div>\
-            <a href="<%= story.get("story_permalink") %>" class="story_title">\
-                <% if (options.river_stories && feed) { %>\
-                    <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+            <div class="NB-feed-story-content">\
+                <%= story.get("story_content") %>\
+            </div>\
+            <% if (story.get("comment_count") || story.get("share_count")) { %>\
+                <div class="NB-feed-story-comments">\
+                    this.make_story_share_comments(story)\
+                </div>\
+            <% } %>\
+            <div class="NB-feed-story-sideoptions-container">\
+                <div class="NB-sideoption NB-feed-story-train">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title">Train this story</div>\
+                </div>\
+                <div class="NB-sideoption NB-feed-story-save">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
+                </div>\
+                <div class="NB-sideoption NB-feed-story-share">\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
+                </div>\
+                <div class="NB-sideoption-share-wrapper">\
+                    <div class="NB-sideoption-share">\
+                        <div class="NB-sideoption-share-wordcount"></div>\
+                        <div class="NB-sideoption-share-optional">Optional</div>\
+                        <div class="NB-sideoption-share-title">Comments:</div>\
+                        <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
+                        <div class="NB-sideoption-share-save NB-modal-submit-button">Share</div>\
                     </div>\
-                <% } %>\
-                <div class="NB-storytitles-star"></div>\
-                <div class="NB-storytitles-share"></div>\
-                <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
-                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
-                <% if (tag) { %>\
-                    <span class="NB-storytitles-tags">\
-                        <span class="NB-storytitles-tag"><%= tag %></span>\
-                    </span>\
-                <% } %>\
-            </a>\
-            <span class="story_date"><%= story.get("short_parsed_date") %></span>\
-            <div class="NB-story-manage-icon"></div>\
+                </div>\
+            </div>\
         ', {
             story   : this.model,
             feed    : this.options.river_stories && this.feed,
@@ -83,33 +121,6 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         });
         
         return $story_title;
-    },
-    
-    toggle_classes: function() {
-        var story = this.model;
-        var unread_view = NEWSBLUR.assets.preference('unread_view');
-        var score = story.score();
-        
-        this.$el.toggleClass('NB-inverse', this.feed.is_light());
-        this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
-        this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
-        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
-                .addClass('NB-story-'+story.score_name(score));
-                
-        if (unread_view > score) {
-            this.$el.css('display', 'none');
-        }
-
-        if (NEWSBLUR.assets.preference('show_tooltips')) {
-            this.$('.NB-story-sentiment').tipsy({
-                delayIn: 375,
-                gravity: 's'
-            });
-        }
-    },
-    
-    toggle_read_status: function() {
-        this.$el.toggleClass('read', !!this.model.get('read_status'));
     },
     
     generate_gradients: function() {
@@ -134,7 +145,97 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         });
         
         return title;
-    }
-
+    },
     
+    // ============
+    // = Bindings =
+    // ============
+    
+    toggle_classes: function() {
+        var story = this.model;
+        var unread_view = NEWSBLUR.assets.preference('unread_view');
+        var score = story.score();
+        
+        this.$el.toggleClass('NB-inverse', this.feed.is_light());
+        this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
+        this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
+        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
+                .addClass('NB-story-'+story.score_name(score));
+                
+        if (unread_view > score) {
+            this.$el.css('display', 'none');
+        }
+
+        if (NEWSBLUR.assets.preference('show_tooltips')) {
+            this.$('.NB-story-sentiment').tipsy({
+                delayIn: 375,
+                gravity: 's'
+            });
+            this.$('.NB-feed-story-hide-changes').tipsy({
+                delayIn: 375
+            });
+        }
+    },
+    
+    toggle_read_status: function() {
+        this.$el.toggleClass('read', !!this.model.get('read_status'));
+    },
+    
+    toggle_selected: function(model, selected, options) {
+        this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+
+        if (selected && options.click_on_story_title) {
+            NEWSBLUR.app.story_list.scroll_to_selected_story(this);
+        }
+    },
+    
+    // ===========
+    // = Actions =
+    // ===========
+    
+    select_story: function() {
+    },
+    
+    // ==========
+    // = Events =
+    // ==========
+    
+    click_link_in_story: function(e) {
+        e.preventDefault();
+        var href = $(e.currentTarget).attr('href');
+        
+        if (NEWSBLUR.assets.preference('new_window') == 1) {
+            window.open(href, '_blank');
+        } else {
+            window.open(href);
+        }
+    },
+    
+    mouseenter_manage_icon: function() {
+        var menu_height = 270;
+        if (this.$el.offset().top > $(window).height() - menu_height) {
+            this.$el.addClass('NB-hover-inverse');
+        }
+    },
+    
+    mouseleave_manage_icon: function() {
+        this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    mouseenter: function() {
+        if (this.model.get('selected')) return;
+        
+        if (NEWSBLUR.reader.flags['switching_to_feed_view'] ||
+            NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] ||
+            NEWSBLUR.assets.preference('feed_view_single_story')) {
+            return;
+        }
+        
+        this.collection.deselect();
+        this.model.set('selected', true, {'scroll_story_list': true});
+    },
+    
+    mouseleave: function() {
+        
+    }
 });

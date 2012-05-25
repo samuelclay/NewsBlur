@@ -2,10 +2,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     className: 'story NB-story-title',
     
+    events: {
+        "click" : "select_story"
+    },
+    
     initialize: function() {
-        _.bindAll(this, 'toggle_read_status', 'toggle_classes');
-        this.model.bind('change', this.toggle_classes);
-        this.model.bind('change:read_status', this.toggle_read_status);
+        this.model.bind('change', this.toggle_classes, this);
+        this.model.bind('change:read_status', this.toggle_read_status, this);
+        this.model.bind('change:selected', this.toggle_selected, this);
     },
     
     render: function() {
@@ -48,6 +52,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         return $story_title;
     },
     
+    // ============
+    // = Bindings =
+    // ============
+
     toggle_classes: function() {
         var story = this.model;
         var unread_view = NEWSBLUR.assets.preference('unread_view');
@@ -72,6 +80,24 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     toggle_read_status: function() {
         this.$el.toggleClass('read', !!this.model.get('read_status'));
+    },
+    
+    toggle_selected: function(model, selected, options) {
+        this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+        
+        if (selected && options.scroll_story_list) {
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this);
+        }
+    },
+        
+    // ==========
+    // = Events =
+    // ==========
+    
+    select_story: function() {
+        this.collection.deselect();
+        this.model.set('selected', true, {'click_on_story_title': true});
+        NEWSBLUR.app.story_titles.scroll_to_selected_story(this);
     }
         
 });

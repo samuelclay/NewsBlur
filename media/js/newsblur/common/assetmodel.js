@@ -27,7 +27,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.read_stories_river_count = 0;
         this.flags = {
             'favicons_fetching': false,
-            'has_chosen_feeds': false
+            'has_chosen_feeds': false,
+            'no_more_stories': false
         };
 
         this.ajax = {};
@@ -363,7 +364,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (data.feeds) {
                 this.feeds.add(data.feeds);
             }
-            if (data && first_load) {
+            if (data && data.stories && !data.stories.length) {
+                this.flags['no_more_stories'] = true;
+            }
+            if (data && data.stories && first_load) {
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
@@ -378,16 +382,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     }
                 }
                 this.feed_id = feed_id;
-                console.log(["classifiers", data.classifiers, feed_id, this.classifiers]);
+
                 if (_.string.include(feed_id, ':')) {
                     _.extend(this.classifiers, data.classifiers);
                 } else {
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
                 }
                 this.starred_stories = data.starred_stories;
-                this.stories.reset(data.stories);
-            } else if (data) {
-                this.stories.add(data.stories);
+                this.stories.reset(data.stories, {added: data.stories.length});
+            } else if (data && data.stories) {
+                this.stories.add(data.stories, {silent: true});
+                this.stories.trigger('add', {added: data.stories.length});
             }
             if (data.user_profiles) {
                 var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
@@ -450,7 +455,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_social_stories: function(feed_id, user_id, page, callback, error_callback, first_load) {
+    fetch_social_stories: function(feed_id, page, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -458,6 +463,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         };
         
         this.feed_id = feed_id;
+        var user_id = this.get_feed(feed_id).get('user_id');
 
         this.make_request('/social/stories/'+user_id+'/', {
             page: page

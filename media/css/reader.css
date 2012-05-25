@@ -1367,7 +1367,7 @@ background: transparent;
     font-size: 9px;
 }
 
-#story_titles .story.selected .story_title .NB-storytitles-author {
+#story_titles .story.NB-selected .story_title .NB-storytitles-author {
     text-shadow: 1px 1px 0 #E9E9E9;
 }
 
@@ -1417,7 +1417,7 @@ background: transparent;
     width: 100px;
     line-height: 1.3em;
 }
-#story_titles .story.selected .NB-story-feed .feed_title {
+#story_titles .story.NB-selected .NB-story-feed .feed_title {
     text-shadow: 1px 1px 0 #F0F0F0;
 }
 #story_titles .story .story_id {
@@ -1487,10 +1487,10 @@ background: transparent;
     font-size: 9px;
     clear: both;
 }
-#story_titles .story.selected .story_date {
+#story_titles .story.NB-selected .story_date {
     text-shadow: 1px 1px 0 #E6E6E6;
 }
-#story_titles .story.selected {
+#story_titles .story.NB-selected {
     color: #304080;
     border-top: 1px solid #D7DDE6;
     background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
@@ -1502,7 +1502,7 @@ background: transparent;
 #story_titles .NB-story-titles-end-stories-line {
     height: 8px;
     border-top: 1px solid #404040;
-    background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
+    background-color: #dadada;
 }
 
 /* =================== */
@@ -2003,6 +2003,21 @@ background: transparent;
     padding: 12px 0px;
     max-width: 700px;
     min-height: 66px;
+}
+#story_pane .NB-feed-story-content ins {
+    text-decoration: underline;
+    color: #27452D;
+}
+#story_pane .NB-feed-story-content del {
+    display: block;
+    color: #661616;
+}
+.NB-pref-hide-changes #story_pane .NB-feed-story-content ins {
+    text-decoration: none;
+    color: inherit;
+}
+.NB-pref-hide-changes #story_pane .NB-feed-story-content del {
+    display: none;
 }
 #story_pane .NB-feed-story-comments {
     margin: -24px 200px 32px 28px;
