@@ -3602,8 +3602,7 @@
                 });
             } else if (view == 'feed') {
                 if (this.active_story) {
-                    var $feed_story = this.find_story_in_feed_view(this.active_story.id);
-                    this.scroll_to_story_in_story_feed(this.active_story, $feed_story, {skip_scroll: true});
+                    NEWSBLUR.app.story_list.scroll_to_selected_story(this.active_story.story_view, {immediate: true});
                 }
                 
                 $story_pane.animate({
