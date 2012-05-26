@@ -42,6 +42,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     // ===========
     
     scroll_to_selected_story: function(story_view) {
+        NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         this.$el.scrollable().stop();
         this.$el.scrollTo(story_view.$el, { 
             duration: 340,

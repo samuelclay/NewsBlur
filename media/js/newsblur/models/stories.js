@@ -37,17 +37,55 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     active_story: null,
     
     initialize: function() {
-        this.bind('change', this.detect_selected_story);
+        this.bind('change:selected', this.detect_selected_story);
     },
     
     // ===========
     // = Actions =
     // ===========
     
-    deselect: function() {
+    deselect: function(selected_story) {
         this.each(function(story) {
-            story.set('selected', false);
+            if (story != selected_story) {
+                story.set('selected', false);
+            }
         });
+    },
+    
+    mark_read: function(story, options) {
+        options = options || {};
+        var delay = NEWSBLUR.assets.preference('read_story_delay');
+
+        if (options.skip_delay) {
+            delay = 0;
+        } else if (delay == -1) {
+            return;
+        }
+
+        this.last_read_story_id = story.id;
+        clearTimeout(this.read_story_delay);
+        
+        this.read_story_delay = _.delay(_.bind(function() {
+            if (delay || this.last_read_story_id == story.id || delay == 0) {
+                var mark_read_fn = NEWSBLUR.assets.mark_story_as_read;
+                var feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
+                if (feed.is_social()) {
+                    mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
+                }
+                mark_read_fn.call(NEWSBLUR.assets, story.id, story.get('story_feed_id'), function(read) {
+                    NEWSBLUR.reader.update_read_count(story.id, story.get('story_feed_id'), {previously_read: read});
+                });
+                story.set('read_status', 1);
+            }
+        }, this), delay * 1000);
+    },
+    
+    mark_unread: function(story, options) {
+        options = options || {};
+        NEWSBLUR.assets.mark_story_as_unread(story.id, story.get('story_feed_id'), function(read) {
+            NEWSBLUR.reader.update_read_count(story.id, story.get('story_feed_id'));
+        });
+        story.set('read_status', 0);
     },
     
     // ==================
@@ -58,7 +96,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var unread_score = NEWSBLUR.assets.preference('unread_view');
         
         return this.select(function(story) {
-            return story.score() >= unread_view;
+            return story.score() >= unread_score;
         });
     },
     
@@ -74,32 +112,48 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Getters =
     // ===========
     
-    get_next_story: function() {
-        if (!this.active_story) {
-            return this.at(0);
-        }
+    get_next_story: function(direction) {
+        if (direction == -1) return this.get_previous_story();
         
-        var current_index = this.indexOf(this.active_story);
-        return this.at(current_index+1);
+        var visible_stories = this.visible();
+
+        if (!this.active_story) {
+            return visible_stories[0];
+        }
+
+        var current_index = _.indexOf(visible_stories, this.active_story);
+
+        if (current_index+1 <= visible_stories.length) {
+            return visible_stories[current_index+1];
+        }
     },
     
     get_previous_story: function() {
+        var visible_stories = this.visible();
+
         if (!this.active_story) {
-            return this.at(0);
+            return visible_stories[0];
         }
-        
-        var current_index = this.indexOf(this.active_story);
-        return this.at(current_index-1);
+
+        var current_index = _.indexOf(visible_stories, this.active_story);
+
+        if (current_index-1 >= 0) {
+            return visible_stories[current_index-1];
+        }
     },
     
     // ==========
     // = Events =
     // ==========
     
-    detect_selected_story: function() {
-        this.active_story = this.detect(function(story) {
-            return story.get('selected');
-        });
+    detect_selected_story: function(selected_story) {
+        if (selected_story.get('selected')) {
+            this.deselect(selected_story);
+            this.active_story = selected_story;
+            if (!selected_story.get('read_status')) {
+                this.mark_read(selected_story);
+            }
+        }
     }
     
 });

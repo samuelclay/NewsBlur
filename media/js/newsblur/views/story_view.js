@@ -8,7 +8,15 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu",
-        "click .NB-feed-story-manage-icon"      : "show_manage_menu"
+        "click .NB-feed-story-manage-icon"      : "show_manage_menu",
+        "click .NB-sideoption-share-save"       : "mark_story_as_shared",
+        "click .NB-feed-story-hide-changes"     : "hide_story_changes",
+        "click .NB-feed-story-header-title"     : "open_feed",
+        "click .NB-feed-story-tag"              : "save_classifier",
+        "click .NB-feed-story-author"           : "save_classifier",
+        "click .NB-feed-story-train"            : "open_story_trainer",
+        "click .NB-feed-story-save"             : "star_story",
+        "click .NB-feed-story-share"            : "toggle_feed_story_share_dialog"
     },
     
     initialize: function() {
@@ -16,6 +24,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
+        this.model.bind('change:starred', this.toggle_starred, this);
         
         // Binding directly instead of using event delegation. Need for speed.
         this.$el.bind('mouseenter', this.mouseenter);
@@ -36,6 +45,8 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.toggle_classes();
         this.toggle_read_status();
         this.generate_gradients();
+        
+        this.$el.data('story_id', this.model.id).data('feed_id', this.model.get('story_feed_id'));
         
         return this;
     },
@@ -189,7 +200,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     toggle_selected: function(model, selected, options) {
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
 
-        if (selected && options.click_on_story_title) {
+        if (selected && !options.selected_by_scrolling) {
             NEWSBLUR.app.story_list.scroll_to_selected_story(this);
         }
     },
@@ -199,6 +210,46 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     // ===========
     
     select_story: function() {
+    },
+    
+    preserve_classifier_color: function(classifier_type, value, score) {
+        var $tag;
+        this.$('.NB-feed-story-'+classifier_type).each(function() {
+            if ($(this).text() == value) {
+                $tag = $(this);
+                return false;
+            }
+        });
+        $tag.removeClass('NB-score-now-1')
+            .removeClass('NB-score-now--1')
+            .removeClass('NB-score-now-0')
+            .addClass('NB-score-now-'+score)
+            .one('mouseleave', function() {
+                $tag.removeClass('NB-score-now-'+score);
+            });
+            _.defer(function() {
+                $tag.one('mouseenter', function() {
+                    $tag.removeClass('NB-score-now-'+score);
+                });
+            });
+    },
+
+    toggle_starred: function() {
+        var story = this.model;
+        var $sideoption_title = this.$('.NB-feed-story-save .NB-sideoption-title');
+        
+        if (story.get('starred')) {
+            $sideoption_title.text('Saved');
+        } else {
+            $sideoption_title.text('Removed');
+            $sideoption_title.one('mouseleave', function() {
+                _.delay(function() {
+                    if (!story.get('starred')) {
+                        $sideoption_title.text('Save this story');
+                    }
+                }, 200);
+            });        
+        }
     },
     
     // ==========
@@ -236,8 +287,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
             return;
         }
         
-        this.collection.deselect();
-        this.model.set('selected', true, {'scroll_story_list': true});
+        this.model.set('selected', true, {selected_by_scrolling: true});
     },
     
     mouseleave: function() {
@@ -253,6 +303,68 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
             feed_id: this.model.get('story_feed_id')
         });
         return false;
+    },
+    
+    mark_story_as_shared: function() {
+        NEWSBLUR.reader.mark_story_as_shared(this.model.id, {'source': 'sideoption'});
+    },
+    
+    hide_story_changes: function() {
+        var $button = this.$('.NB-feed-story-hide-changes');
+        
+        if (NEWSBLUR.assets.preference('hide_story_changes')) {
+            this.$('ins').css({'text-decoration': 'underline'});
+            this.$('del').css({'display': 'inline'});
+        } else {
+            this.$('ins').css({'text-decoration': 'none'});
+            this.$('del').css({'display': 'none'});
+        }
+        $button.css('opacity', 1).fadeOut(400);
+        $button.tipsy('hide').tipsy('disable');
+    },
+    
+    open_feed: function() {
+        NEWSBLUR.reader.open_feed(this.model.get('story_feed_id'));
+    },
+    
+    save_classifier: function(e) {
+        var $tag = $(e.currentTarget);
+        var classifier_type = $tag.hasClass('NB-feed-story-author') ? 'author' : 'tag';
+        var tag = $tag.text();
+        var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
+        NEWSBLUR.reader.save_classifier(classifier_type, tag, score, feed_id);
+        this.preserve_classifier_color(classifier_type, tag, score);
+    },
+    
+    open_story_trainer: function() {
+        NEWSBLUR.reader.open_story_trainer(this.model.id, this.model.get('story_feed_id'));
+    },
+    
+    star_story: function() {
+        this.model.set('starred', !this.model.get('starred'));
+        if (this.model.get('starred')) {
+            NEWSBLUR.assets.mark_story_as_starred(this.model.id);
+        } else {
+            NEWSBLUR.assets.mark_story_as_unstarred(this.model.id);
+        }
+        NEWSBLUR.reader.update_starred_count();
+    },
+    
+    open_story_in_new_tab: function() {
+        window.open(this.model.get('story_permalink'), '_blank');
+        window.focus();
+    },
+    
+    toggle_feed_story_share_dialog: function() {
+
+            $.targetIs(e, { tagSelector: '.NB-feed-story-share' }, function($t, $p){
+                e.preventDefault();
+                var $story = $t.closest('.NB-feed-story');
+                var feed_id = $story.data('feed_id');
+                var story_id = $story.data('story_id');
+                self.toggle_feed_story_share_dialog(story_id, feed_id);
+            });
     }
+            
 
 });

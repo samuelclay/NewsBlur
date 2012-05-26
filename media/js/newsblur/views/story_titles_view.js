@@ -2,7 +2,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     el: '.NB-story-titles',
     
-    events: {},
+    events: {
+        "click .NB-feed-story-premium-only a" : function() {
+            NEWSBLUR.reader.open_feedchooser_dialog();
+        }
+    },
     
     initialize: function() {
         _.bindAll(this, 'scroll');
@@ -165,7 +169,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     snap_back_scroll_position: function() {
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
-        NEWSBLUR.log(['Snap back pre-autofill', this.post_load_page_scroll_position == $story_titles.scrollTop(), this.pre_load_page_scroll_position, this.post_load_page_scroll_position, $story_titles.scrollTop()]);
         if (this.post_load_page_scroll_position == $story_titles.scrollTop() && this.pre_load_page_scroll_position != null) {
             $story_titles.scrollTo(this.pre_load_page_scroll_position, { 
                 duration: 0,
@@ -180,11 +183,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // = Bindings =
     // ============
     
-    scroll_to_selected_story: function(story_view) {
-        var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_view.$el);
+    scroll_to_selected_story: function(story_title_view) {
+        var story_title_view = story_title_view || this.collection.active_story.story_title_view;
+        var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;
-            var scroll = story_view.$el.position().top;
+            var scroll = story_title_view.$el.position().top;
             var container = NEWSBLUR.reader.$s.$story_titles.scrollTop();
             var height = NEWSBLUR.reader.$s.$story_titles.outerHeight();
             NEWSBLUR.reader.$s.$story_titles.scrollTop(scroll+container-height/5);
