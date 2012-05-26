@@ -25,6 +25,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
         this.model.bind('change:starred', this.toggle_starred, this);
+        this.model.bind('change:intelligence', this.render, this);
         
         // Binding directly instead of using event delegation. Need for speed.
         this.$el.bind('mouseenter', this.mouseenter);
@@ -215,7 +216,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     preserve_classifier_color: function(classifier_type, value, score) {
         var $tag;
         this.$('.NB-feed-story-'+classifier_type).each(function() {
-            if ($(this).text() == value) {
+            if (_.string.trim($(this).text()) == value) {
                 $tag = $(this);
                 return false;
             }
@@ -330,9 +331,9 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     save_classifier: function(e) {
         var $tag = $(e.currentTarget);
         var classifier_type = $tag.hasClass('NB-feed-story-author') ? 'author' : 'tag';
-        var tag = $tag.text();
+        var tag = _.string.trim($tag.text());
         var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
-        NEWSBLUR.reader.save_classifier(classifier_type, tag, score, feed_id);
+        NEWSBLUR.reader.save_classifier(classifier_type, tag, score, this.model.get('story_feed_id'));
         this.preserve_classifier_color(classifier_type, tag, score);
     },
     

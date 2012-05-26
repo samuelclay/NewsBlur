@@ -78,9 +78,9 @@ def save_classifier(request):
                     if content_type == 'feed':
                         if not post_content.startswith('social:'):
                             classifier_dict['feed_id'] = post_content
-                    print classifier_dict
                     # try:
                     classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
+                    print classifier_dict, classifier, created
                     # except OperationError:
                     #     continue
                     if score == 0:

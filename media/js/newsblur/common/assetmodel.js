@@ -1132,7 +1132,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     recalculate_story_scores: function(feed_id) {
         this.stories.each(_.bind(function(story, i) {
             if (story.get('story_feed_id') != feed_id) return;
-            var intelligence = _.extend({}, this.defaults.classifiers);
+            var intelligence = {
+                author: 0,
+                feed: 0,
+                tags: 0,
+                title: 0
+            };
             
             _.each(this.classifiers[feed_id].titles, _.bind(function(classifier_score, classifier_title) {
                 if (story.get('story_title', '').indexOf(classifier_title) != -1) {

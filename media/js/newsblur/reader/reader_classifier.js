@@ -424,32 +424,32 @@ var classifier_prototype = {
         // NEWSBLUR.log(['Make Story', story, feed]);
         
         // HTML entities decoding.
-        story.story_title = $('<div/>').html(story.story_title).text();
+        story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
         
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
-                    (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Title'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                            $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
+                            $.make('input', { type: 'text', value: story_title, className: 'NB-classifier-title-highlight' }),
                             this.make_classifier('<span class="NB-classifier-title-placeholder">Highlight phrases to look for in future stories</span>', '', 'title'),
                             $.make('span',
-                                this.make_user_titles(story.story_title)
+                                this.make_user_titles(story_title)
                             )
                         ])
                     ])),
-                    (story.story_authors && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story.get('story_authors') && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Author'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_authors([story.story_authors])
+                            this.make_authors([story.get('story_authors')])
                         )
                     ])),
-                    (story.story_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story.get('story_tags').length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Categories &amp; Tags'),
                         $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
-                            this.make_tags(story.story_tags)
+                            this.make_tags(story.get('story_tags'))
                         )
                     ])),
                     $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -851,7 +851,7 @@ var classifier_prototype = {
     serialize_classifier: function() {
         var data = {};
         $('.NB-classifier', this.$modal).each(function() {
-            var value = $('.NB-classifier-input-like', this).val();
+            var value = _.string.trim($('.NB-classifier-input-like', this).val());
             if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
                 var name = $('input:checked', this).attr('name');
                 if (!data[name]) data[name] = [];
@@ -886,9 +886,9 @@ var classifier_prototype = {
         $save.addClass('NB-disabled').attr('disabled', true);
         
         this.update_opinions();
+        NEWSBLUR.assets.recalculate_story_scores(feed_id);
         this.model.save_classifier(data, function() {
             if (!keep_modal_open) {
-                NEWSBLUR.reader.recalculate_story_scores(feed_id);
                 NEWSBLUR.reader.force_feeds_refresh(null, true);
                 // NEWSBLUR.reader.force_feed_refresh();
                 // NEWSBLUR.reader.open_feed(self.feed_id, true);

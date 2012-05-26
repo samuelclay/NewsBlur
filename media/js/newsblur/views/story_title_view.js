@@ -15,6 +15,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
         this.model.bind('change:starred', this.toggle_starred, this);
+        this.model.bind('change:intelligence', this.render, this);
         this.model.story_title_view = this;
     },
     

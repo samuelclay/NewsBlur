@@ -388,7 +388,7 @@ def load_single_feed(request, feed_id):
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
     # Get intelligence classifier for user
-    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
     classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
     classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
@@ -900,7 +900,6 @@ def add_url(request):
     code = 0
     url = request.POST['url']
     auto_active = is_true(request.POST.get('auto_active', True))
-    print auto_active
     
     if not url:
         code = -1

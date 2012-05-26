@@ -83,7 +83,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     mark_unread: function(story, options) {
         options = options || {};
         NEWSBLUR.assets.mark_story_as_unread(story.id, story.get('story_feed_id'), function(read) {
-            NEWSBLUR.reader.update_read_count(story.id, story.get('story_feed_id'));
+            NEWSBLUR.reader.update_read_count(story.id, story.get('story_feed_id'), {unread: true});
         });
         story.set('read_status', 0);
     },
@@ -150,6 +150,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         if (selected_story.get('selected')) {
             this.deselect(selected_story);
             this.active_story = selected_story;
+            NEWSBLUR.reader.active_story = selected_story;
             if (!selected_story.get('read_status')) {
                 this.mark_read(selected_story);
             }
