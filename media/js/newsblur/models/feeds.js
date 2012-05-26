@@ -90,6 +90,16 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     
     url: '/reader/feeds',
     
+    active_feed: null,
+    
+    initialize: function() {
+        this.bind('change', this.detect_active_feed);
+    },
+    
+    // ===========
+    // = Actions =
+    // ===========
+    
     fetch: function(options) {
         options = _.extend({
             data: {
@@ -107,6 +117,16 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         return data.feeds;
     },
     
+    deselect: function() {
+        this.each(function(feed){ 
+            feed.set('selected', false); 
+        });
+    },
+    
+    // ==================
+    // = Model Managers =
+    // ==================
+    
     selected: function() {
         return this.detect(function(feed) { return feed.get('selected'); });
     },
@@ -117,9 +137,13 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         });
     },
     
-    deselect: function() {
-        this.each(function(feed){ 
-            feed.set('selected', false); 
+    // ==========
+    // = Events =
+    // ==========
+    
+    detect_active_feed: function() {
+        this.active_feed = this.detect(function(feed) {
+            return feed.get('selected');
         });
     }
     

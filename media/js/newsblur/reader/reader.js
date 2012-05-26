@@ -578,7 +578,7 @@
                 return this.cache.iframe_stories[story.id];
             }
             
-            var title = story.story_title.replace(/&nbsp;|[^a-z0-9-,]/gi, '');
+            var title = story.get('story_title', '').replace(/&nbsp;|[^a-z0-9-,]/gi, '');
                             
             var search_document = function(node, title) {
                 var skip = 0;
@@ -650,7 +650,7 @@
                 }
             });
             
-            // NEWSBLUR.log(['Found stories', $stories.length, $same_size_stories.length, $same_size_stories, story.story_title]);
+            // NEWSBLUR.log(['Found stories', $stories.length, $same_size_stories.length, $same_size_stories, story.get('story_title')]);
             
             // Multiple stories at the same big font size? Determine story title overlap,
             // and choose the smallest difference in title length.
@@ -660,7 +660,7 @@
                 $same_size_stories.each(function() {
                     var $this = $(this);
                     var story_text = $this.text();
-                    var overlap = Math.abs(story_text.length - story.story_title.length);
+                    var overlap = Math.abs(story_text.length - story.get('story_title').length);
                     if (overlap < story_similarity) {
                         story_similarity = overlap;
                         $story = $this;
@@ -967,43 +967,6 @@
                     this.mark_story_as_read(story.id);
                 }
             }
-        },
-        
-        mark_story_as_read_in_feed_view: function(story_id, options) {
-            if (!story_id) return;
-            options = options || {};
-            $story = this.cache.feed_view_stories[story_id] || this.find_story_in_feed_view(story_id);
-            if ($story) {
-                $story.addClass('read');
-            }
-
-            // This block animates the falling of the sentiment bullet. It's neat, 
-            // but it stutters a fast scroll. Hence the delay.
-            //
-            // if (false && options.animate && !$story.hasClass('read')) {
-            //     var $feed_view = this.$s.$feed_view;
-            //     var start = $feed_view.scrollTop();
-            //     (function(start) {
-            //         _.delay(function() {
-            //             $story.addClass('read');
-            //             var end = $feed_view.scrollTop();
-            //             if (end - start > 25) {
-            //                 $('.NB-feed-story-sentiment-animate', $story).remove();
-            //                 return;
-            //             }
-            //             var top = $('.NB-feed-story-header-info', $story).height();
-            //             $('.NB-feed-story-sentiment-animate', $story).addClass('NB-animating').animate({
-            //                 'top': top
-            //             }, {
-            //                 'duration': 550, 
-            //                 'easing': 'easeInOutQuint', 
-            //                 'complete': function() {
-            //                     $(this).remove();
-            //                 }
-            //             });
-            //         }, 20);
-            //     })(start);
-            // }
         },
         
         page_in_story: function(amount, direction) {
@@ -2210,7 +2173,7 @@
                     if (last_story_same_position && parseInt(s, 10) < last_story_index) continue; 
                     var story = stories[s];
                     var $story = this.find_story_in_feed_iframe(story, $iframe);
-                    // NEWSBLUR.log(['Pre-fetching', parseInt(s, 10), last_story_index, last_story_same_position, $story, story.story_title]);
+                    // NEWSBLUR.log(['Pre-fetching', parseInt(s, 10), last_story_index, last_story_same_position, $story, story.get('story_title')]);
                     if (!$story || 
                         !$story.length || 
                         this.flags['iframe_fetching_story_locations'] ||
@@ -2261,7 +2224,7 @@
             if (story && (story['story_feed_id'] == this.active_feed || 
                           "social:" + story['social_user_id'] == this.active_feed)) {
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
-                // NEWSBLUR.log(['Fetching story', s, story.story_title, $story]);
+                // NEWSBLUR.log(['Fetching story', s, story.get('story_title'), $story]);
                 
                 setTimeout(function() {
                     if ((stories.length-1) >= (s+1) 
@@ -2317,7 +2280,7 @@
                 if (skip_delay || this.cache.last_read_story_id == story_id || delay == 0) {
                     var $story_title = this.find_story_in_story_titles(story_id);
                     var story = this.model.get_story(story_id);
-                    var feed_id = story.story_feed_id;
+                    var feed_id = story.get('story_feed_id');
                     var mark_read_fn = this.model.mark_story_as_read;
                     if (NEWSBLUR.utils.is_feed_social(this.active_feed)) {
                         mark_read_fn = this.model.mark_social_story_as_read;
@@ -2326,7 +2289,6 @@
                     mark_read_fn.call(this.model, story_id, feed_id, function(read) {
                         self.update_read_count(story_id, feed_id, {previously_read: read});
                     });
-                    this.mark_story_as_read_in_feed_view(story_id, {'animate': this.story_view == 'feed'});
                 }
             }, this), delay * 1000);
         },
@@ -2385,13 +2347,6 @@
 
             this.model.mark_feed_as_read([feed_id]);
             
-            if (active_feed && _.contains(feeds, active_feed.id)) {
-                $('.story:not(.read)', this.$s.$story_titles).addClass('read');
-                _.each(this.model.stories, _.bind(function(story) {
-                    this.mark_story_as_read_in_feed_view(story.id);
-                }, this));
-            }
-
             // if (this.model.preference('folder_counts')) {
             //     var $feed = this.find_feed_in_feed_list(feed_id);
             //     var $folder_title = $feed.closest('li.folder:visible').children('.folder_title');
@@ -2408,14 +2363,6 @@
                 this.mark_feed_as_read_update_counts(feed_id);
             }, this));
             this.model.mark_feed_as_read(feeds);
-            
-            var active_feed = NEWSBLUR.assets.get_feed(this.active_feed);
-            if (active_feed && _.contains(feeds, active_feed.id)) {
-                $('.story:not(.read)', this.$s.$story_titles).addClass('read');
-                _.each(this.model.stories, _.bind(function(story) {
-                    this.mark_story_as_read_in_feed_view(story.id);
-                }, this));
-            }
         },
         
         mark_feed_as_read_update_counts: function(feed_id) {
@@ -2476,7 +2423,7 @@
                 }
             });
             
-            this.model.mark_story_as_starred(story_id, story.story_feed_id, function() {});
+            this.model.mark_story_as_starred(story_id, function() {});
             this.update_starred_count();
         },
         
@@ -2628,8 +2575,8 @@
             $story_title.addClass('NB-story-shared');
             $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
             $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-            this.model.mark_story_as_shared(story_id, story.story_feed_id, comments, source_user_id, _.bind(function(data) {
-                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'close': true});
+            this.model.mark_story_as_shared(story_id, story.get('story_feed_id'), comments, source_user_id, _.bind(function(data) {
+                this.toggle_feed_story_share_dialog(story_id, story.get('story_feed_id'), {'close': true});
                 this.hide_confirm_story_share_menu_item(true);
                 $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
                 $share_sideoption.text('Shared').closest('.NB-sideoption');
@@ -2682,7 +2629,7 @@
                     $share_button_text.siblings('.NB-error').remove();
                     $share_button_text.after($error.clone());
                 }
-                this.toggle_feed_story_share_dialog(story_id, story.story_feed_id, {'resize_open': true});
+                this.toggle_feed_story_share_dialog(story_id, story.get('story_feed_id'), {'resize_open': true});
             }, this));
             
             this.blur_to_page();
@@ -2712,9 +2659,9 @@
             var instapaper_url = [
               url,
               '?url=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&title=',
-              encodeURIComponent(story.story_title)
+              encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(instapaper_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2726,9 +2673,9 @@
             var readitlater_url = [
               url,
               '?url=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&title=',
-              encodeURIComponent(story.story_title)
+              encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(readitlater_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2740,9 +2687,9 @@
             var tumblr_url = [
               url,
               '?v=3&u=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&t=',
-              encodeURIComponent(story.story_title)
+              encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(tumblr_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2754,9 +2701,9 @@
             var delicious_url = [
               url,
               '?v=6&url=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&title=',
-              encodeURIComponent(story.story_title)
+              encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(delicious_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2768,9 +2715,9 @@
             var readability_url = [
               url,
               '?url=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&title=',
-              encodeURIComponent(story.story_title)
+              encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(readability_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2782,9 +2729,9 @@
             var twitter_url = [
               url,
               '?status=',
-              encodeURIComponent(story.story_title),
+              encodeURIComponent(story.get('story_title')),
               ': ',
-              encodeURIComponent(story.story_permalink)
+              encodeURIComponent(story.get('story_permalink'))
             ].join('');
             window.open(twitter_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2796,9 +2743,9 @@
             var facebook_url = [
               url,
               '&u=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&t=',
-              encodeURIComponent(story.story_title)
+              encodeURIComponent(story.get('story_title'))
             ].join('');
             window.open(facebook_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2810,11 +2757,11 @@
             var pinboard_url = [
               url,
               'url=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&title=',
-              encodeURIComponent(story.story_title),
+              encodeURIComponent(story.get('story_title')),
               '&tags=',
-              encodeURIComponent(story.story_tags.join(', '))
+              encodeURIComponent(story.get('story_tags').join(', '))
             ].join('');
             window.open(pinboard_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2826,11 +2773,11 @@
             var googleplus_url = [
               url,
               '?hl=en&url=',
-              encodeURIComponent(story.story_permalink),
+              encodeURIComponent(story.get('story_permalink')),
               '&title=',
-              encodeURIComponent(story.story_title),
+              encodeURIComponent(story.get('story_title')),
               '&tags=',
-              encodeURIComponent(story.story_tags.join(', '))
+              encodeURIComponent(story.get('story_tags').join(', '))
             ].join('');
             window.open(googleplus_url, '_blank');
             this.mark_story_as_read(story_id, true);
@@ -2892,7 +2839,7 @@
             
             var replace_stories = _.bind(function($story, story_id) {
                 var story = this.model.get_story(story_id);
-                if (story.story_feed_id != feed_id) return;
+                if (story.get('story_feed_id') != feed_id) return;
                 var score = this.compute_story_score(story);
                 $story.removeClass('NB-story-positive')
                       .removeClass('NB-story-neutral')
@@ -2904,8 +2851,8 @@
                 } else if (score < 0) {
                     $story.addClass('NB-story-negative');
                 }
-                NEWSBLUR.log(['story recalculation', story, story.read_status, $story]);
-                // $story.toggleClass('read', !story.read_status);
+                NEWSBLUR.log(['story recalculation', story, story.get('read_status'), $story]);
+                // $story.toggleClass('read', !story.get('read_status'));
                 $('.NB-feed-story-tags', $story).replaceWith(this.make_story_feed_tags(story));
                 $('.NB-feed-story-author', $story).replaceWith(this.make_story_feed_author(story));
                 $('.NB-feed-story-title', $story).replaceWith(this.make_story_feed_title(story));
@@ -3460,43 +3407,6 @@
             return $story_content;
         },
         
-        make_story_feed_title: function(story) {
-            var title = story.story_title;
-            var feed_titles = this.model.classifiers[story.story_feed_id] && 
-                              this.model.classifiers[story.story_feed_id].titles ||
-                              [];
-            
-            _.each(feed_titles, function(score, title_classifier) {
-                if (title.indexOf(title_classifier) != -1) {
-                    title = title.replace(title_classifier, '<span class="NB-score-'+score+'">'+title_classifier+'</span>');
-                }
-            });
-            return $.make('a', { className: 'NB-feed-story-title', href: story.story_permalink }, title);
-        },
-        
-        make_story_feed_author: function(story) {
-            var score = this.model.classifiers[story.story_feed_id] && 
-                        this.model.classifiers[story.story_feed_id].authors[story.story_authors];
-
-            return $.make('div', { 
-                className: 'NB-feed-story-author ' + (!!score && 'NB-score-'+score || '') 
-            }, story.story_authors).data('author', story.story_authors);
-        },
-        
-        make_story_feed_tags: function(story) {
-            var feed_tags = this.model.classifiers[story.story_feed_id] && 
-                            this.model.classifiers[story.story_feed_id].tags ||
-                            {};
-
-            return $.make('div', { className: 'NB-feed-story-tags' }, 
-                _.map(story.story_tags, function(tag) { 
-                    var score = feed_tags[tag];
-                    return $.make('div', { 
-                        className: 'NB-feed-story-tag ' + (!!score && 'NB-score-'+score || '')
-                    }, tag).data('tag', tag); 
-                }));
-        },
-        
         preserve_classifier_color: function($story, classifier_type, value, score) {
             var $t;
             $('.NB-feed-story-'+classifier_type, $story).each(function() {
@@ -3541,7 +3451,7 @@
         show_correct_feed_in_feed_title_floater: function(story) {
             var $story, $header;
             
-            if (story && this.cache.feed_title_floater_feed_id != story.story_feed_id) {
+            if (story && this.cache.feed_title_floater_feed_id != story.get('story_feed_id')) {
                 var $feed_floater = this.$s.$feed_floater;
                 $story = this.find_story_in_feed_view(story.id);
                 $header = $('.NB-feed-story-header-feed', $story);
@@ -3551,15 +3461,15 @@
                 $new_image.after($original_image);
                 
                 if (!$new_header.find('.NB-feed-story-feed').length) {
-                  var feed = this.model.get_feed(story.story_feed_id);
+                  var feed = this.model.get_feed(story.get('story_feed_id'));
                   feed && $new_header.append($.make('div', { className: 'NB-feed-story-feed' }, [
-                    ($original_image.length && $original_image) || $.make('img', { className: 'feed_favicon', src: $.favicon(feed || story.story_feed_id) }),
+                    ($original_image.length && $original_image) || $.make('img', { className: 'feed_favicon', src: $.favicon(feed || story.get('story_feed_id')) }),
                     $.make('span', { className: 'feed_title' }, feed.get('feed_title'))
                   ]));
                 }
                 
                 $feed_floater.empty().append($new_header);
-                this.cache.feed_title_floater_feed_id = story.story_feed_id;
+                this.cache.feed_title_floater_feed_id = story.get('story_feed_id');
                 $feed_floater.width($header.outerWidth());
             } else if (!story) {
                 this.$s.$feed_floater.empty();
@@ -3623,7 +3533,7 @@
                     var story = stories[s];
                     var $story = self.cache.feed_view_stories[story.id];
                     this.determine_feed_view_story_position($story, story);
-                    // NEWSBLUR.log(['Pre-fetching', $story, story.story_title, this.flags.feed_view_images_loaded[story.id]]);
+                    // NEWSBLUR.log(['Pre-fetching', $story, story.get('story_title'), this.flags.feed_view_images_loaded[story.id]]);
                     if (!$story || !$story.length || this.flags['feed_view_positions_calculated']) break;
                 }
             }
@@ -3691,22 +3601,22 @@
             var self = this;
             var $comments = $([]);
             
-            if (story.share_count) {
+            if (story.get('share_count')) {
                 var $public_teaser = $.make('div', { className: 'NB-story-comments-shares-teaser-wrapper' }, [
                     $.make('div', { className: 'NB-story-comments-shares-teaser' }, [
-                        (story.share_count && $.make('div', { className: 'NB-right' }, [
+                        (story.get('share_count') && $.make('div', { className: 'NB-right' }, [
                             'Shared by ',
-                            $.make('b', story.share_count),
+                            $.make('b', story.get('share_count')),
                             ' ',
-                            Inflector.pluralize('person', story.share_count)
+                            Inflector.pluralize('person', story.get('share_count'))
                         ])),
-                        (story.share_count && $.make('span', [
-                            (story.share_count_public && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-public' }, 
-                                _.map(story.shared_by_public, function(user_id) { return self.make_story_share_profile(user_id); })
+                        (story.get('share_count') && $.make('span', [
+                            (story.get('share_count_public') && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-public' }, 
+                                _.map(story.get('shared_by_public'), function(user_id) { return self.make_story_share_profile(user_id); })
                             )),
-                            (story.share_count_friends && $.make('div', { className: 'NB-story-share-label' }, 'Shared by: ')),
-                            (story.share_count_friends && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-friends' }, 
-                                _.map(story.shared_by_friends, function(user_id) { return self.make_story_share_profile(user_id); })
+                            (story.get('share_count_friends') && $.make('div', { className: 'NB-story-share-label' }, 'Shared by: ')),
+                            (story.get('share_count_friends') && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-friends' }, 
+                                _.map(story.get('shared_by_friends'), function(user_id) { return self.make_story_share_profile(user_id); })
                             ))
                         ]))
                     ])
@@ -3714,22 +3624,22 @@
                 $comments.push($public_teaser);
             }
             
-            if (story.comment_count_friends) {
-                _.each(story.comments, _.bind(function(comment) {
+            if (story.get('comment_count_friends')) {
+                _.each(story.get('comments'), _.bind(function(comment) {
                     var $comment = this.make_story_share_comment(comment);
                     $comments.push($comment);
                 }, this));
             }
             
-            if (story.comment_count_public) {
+            if (story.get('comment_count_public')) {
                 var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
                     $.make('div', { className: 'NB-story-comments-public-teaser' }, [
                         'There ',
-                        Inflector.pluralize('is', story.comment_count_public),
+                        Inflector.pluralize('is', story.get('comment_count_public')),
                         ' ',
-                        $.make('b', story.comment_count_public),
+                        $.make('b', story.get('comment_count_public')),
                         ' public ',
-                        Inflector.pluralize('comment', story.comment_count_public)
+                        Inflector.pluralize('comment', story.get('comment_count_public'))
                     ])
                 ]);
                 $comments.push($public_teaser);
@@ -3847,7 +3757,7 @@
             }
             
             $submit.addClass('NB-disabled').text('Posting...');
-            this.model.save_comment_reply(story_id, story.story_feed_id, 
+            this.model.save_comment_reply(story_id, story.get('story_feed_id'), 
                                           comment_user_id, comment_reply, 
                                           original_message,
                                           _.bind(function(data) {
@@ -3886,7 +3796,7 @@
         
         load_public_story_comments: function(story_id) {
             var story = this.model.get_story(story_id);
-            this.model.load_public_story_comments(story_id, story.story_feed_id, _.bind(function(data) {
+            this.model.load_public_story_comments(story_id, story.get('story_feed_id'), _.bind(function(data) {
                 var $comments = $.make('div', { className: 'NB-story-comments-public' });
                 var comments = _.select(data.comments, _.bind(function(comment) {
                     return !_.contains(this.model.user_profile.get('following_user_ids'), comment.user_id);
@@ -4067,15 +3977,15 @@
         
         open_story_in_story_view: function(story, is_temporary) {
             if (!story) story = this.active_story;
-            var feed = this.model.get_feed(story.story_feed_id);
+            var feed = this.model.get_feed(story.get('story_feed_id'));
             if ((feed && feed.get('disabled_page')) || 
-                NEWSBLUR.utils.is_url_iframe_buster(story.story_permalink)) {
+                NEWSBLUR.utils.is_url_iframe_buster(story.get('story_permalink'))) {
                 if (!is_temporary) {
                     this.switch_taskbar_view('feed', 'story');
                 }
             } else {
                 this.switch_taskbar_view('story', is_temporary ? 'story' : false);
-                this.load_story_iframe(story, story.story_feed_id);
+                this.load_story_iframe(story, story.get('story_feed_id'));
             }
         },
         
@@ -4086,8 +3996,8 @@
             var self = this;
             var $story_iframe = this.$s.$story_iframe;
             
-            if ($story_iframe.attr('src') != story.story_permalink) {
-                // NEWSBLUR.log(['load_story_iframe', story.story_permalink, $story_iframe.attr('src')]);
+            if ($story_iframe.attr('src') != story.get('story_permalink')) {
+                // NEWSBLUR.log(['load_story_iframe', story.get('story_permalink'), $story_iframe.attr('src')]);
                 this.unload_story_iframe();
             
                 if (!feed_id) {
@@ -4098,7 +4008,7 @@
             
                 this.flags.iframe_scroll_snap_back_prepared = true;
                 this.iframe_link_attacher_num_links = 0;
-                $story_iframe.removeAttr('src').attr({src: story.story_permalink});
+                $story_iframe.removeAttr('src').attr({src: story.get('story_permalink')});
             }
         },
         
@@ -4437,16 +4347,16 @@
             } else if (type == 'story') {
                 var feed          = this.model.get_feed(feed_id);
                 var story         = this.model.get_story(story_id);
-                var starred_class = story.starred ? ' NB-story-starred ' : '';
-                var starred_title = story.starred ? 'Remove bookmark' : 'Save This Story';
-                var shared_class = story.shared ? ' NB-story-shared ' : '';
-                var shared_title = story.shared ? 'Shared' : 'Share story';
+                var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
+                var starred_title = story.get('starred') ? 'Remove bookmark' : 'Save This Story';
+                var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
+                var shared_title = story.get('shared') ? 'Shared' : 'Share story';
 
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class + shared_class }, [
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-open' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input', value: story.story_permalink }),
+                        $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input', value: story.get('story_permalink') }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Open')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -4454,7 +4364,7 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
-                    (story.read_status && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
+                    (story.get('read_status') && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
                     ])),
@@ -4542,7 +4452,7 @@
                                 $.make('div', { className: 'NB-sideoption-share-wordcount' }),
                                 $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
                                 $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
-                                $.make('textarea', { className: 'NB-sideoption-share-comments' }, story.shared_comments),
+                                $.make('textarea', { className: 'NB-sideoption-share-comments' }, story.get('shared_comments')),
                                 $.make('div', { className: 'NB-menu-manage-story-share-save NB-modal-submit-green NB-modal-submit-button' }, 'Share')
                             ])
                         ])
@@ -4593,16 +4503,16 @@
             // Create menu, size and position it, then attach to the right place.
             var feed_id, inverse, story_id;
             if (type == 'folder') {
-                feed_id = $('.folder_title_text', $item).eq(0).text();
+                feed_id = options.folder_title;
                 inverse = options.inverse || $('.folder_title', $item).hasClass("NB-hover-inverse");
             } else if (type == 'feed') {
                 feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'socialfeed') {
-                feed_id = $item && $item.data('id');
+                feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'story') {
-                story_id = $item.data('story_id');
+                story_id = options.story_id;
                 if ($item.hasClass('NB-hover-inverse')) inverse = true; 
             } else if (type == 'site') {
                 $('.NB-task-manage').tipsy('hide');
@@ -6153,17 +6063,6 @@
             
             // = Stories ======================================================
             
-            var story_prevent_bubbling = false;
-            $.targetIs(e, { tagSelector: '.NB-story-manage-icon' }, function($t, $p) {
-                e.preventDefault();
-                story_prevent_bubbling = true;
-                self.show_manage_menu('story', $t.closest('.story'));
-            });
-            $.targetIs(e, { tagSelector: '.NB-feed-story-manage-icon' }, function($t, $p) {
-                e.preventDefault();
-                story_prevent_bubbling = true;
-                self.show_manage_menu('story', $t.closest('.NB-feed-story'));
-            });
             $.targetIs(e, { tagSelector: '.NB-sideoption-share-save' }, function($t, $p){
                 e.preventDefault();
                 if ($t.hasClass('NB-disabled')) return;
@@ -6183,8 +6082,6 @@
                 var feed = self.model.get_feed(feed_id);
                 self.open_feed(feed_id, {'feed': feed});
             });
-            
-            if (story_prevent_bubbling) return false;
             
             $.targetIs(e, { tagSelector: '.NB-feed-story-tag' }, function($t, $p){
                 e.preventDefault();
@@ -7001,14 +6898,6 @@
             
             // NEWSBLUR.log(['right click', e.button, e, e.target, e.currentTarget]);
             
-            $.targetIs(e, { tagSelector: '.story', childOf: '#story_titles' }, function($t, $p) {
-                e.preventDefault();
-                self.show_manage_menu('story', $t);
-            });
-            $.targetIs(e, { tagSelector: '.NB-feed-story-header', childOf: '#story_pane' }, function($t, $p) {
-                e.preventDefault();
-                self.show_manage_menu('story', $t.closest('.NB-feed-story'));
-            });
             $.targetIs(e, { tagSelector: '.NB-menu-manage' }, function($t, $p) {
                 e.preventDefault();
             });
@@ -7317,9 +7206,9 @@
             $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
                 var story_id = self.active_story.id;
-                if (self.active_story && !self.active_story.read_status) {
+                if (self.active_story && !self.active_story.get('read_status')) {
                     self.mark_story_as_read(story_id, true);
-                } else if (self.active_story && self.active_story.read_status) {
+                } else if (self.active_story && self.active_story.get('read_status')) {
                     self.mark_story_as_unread(story_id);
                 }
             });

@@ -6,11 +6,11 @@ NEWSBLUR.Views.Feed = Backbone.View.extend({
     },
     
     events: {
-        "contextmenu"                    : "show_manage_menu",
-        "click .NB-feedlist-manage-icon" : "show_manage_menu",
-        "click"                          : "open",
-        "mouseenter"                     : "add_hover_inverse",
-        "mouseleave"                     : "remove_hover_inverse"
+        "contextmenu"                           : "show_manage_menu",
+        "click .NB-feedlist-manage-icon"        : "show_manage_menu",
+        "click"                                 : "open",
+        "mouseenter .NB-feedlist-manage-icon"   : "add_hover_inverse",
+        "mouseleave .NB-feedlist-manage-icon"   : "remove_hover_inverse"
     },
     
     initialize: function() {

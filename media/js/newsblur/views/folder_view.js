@@ -106,7 +106,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         e.stopPropagation();
         // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu('folder', this.$el, {
-            toplevel: this.options.depth == 0
+            toplevel: this.options.depth == 0,
+            folder_title: this.options.title
         });
         return false;
     },

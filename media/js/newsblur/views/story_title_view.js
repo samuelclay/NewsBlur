@@ -3,13 +3,18 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     className: 'story NB-story-title',
     
     events: {
-        "click" : "select_story"
+        "click"                             : "select_story",
+        "contextmenu"                       : "show_manage_menu",
+        "click .NB-story-manage-icon"       : "show_manage_menu",
+        "mouseenter .NB-story-manage-icon"  : "mouseenter_manage_icon",
+        "mouseleave .NB-story-manage-icon"  : "mouseleave_manage_icon"
     },
     
     initialize: function() {
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
+        this.model.story_title_view = this;
     },
     
     render: function() {
@@ -98,6 +103,28 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.collection.deselect();
         this.model.set('selected', true, {'click_on_story_title': true});
         NEWSBLUR.app.story_titles.scroll_to_selected_story(this);
+    },
+
+    show_manage_menu: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        NEWSBLUR.reader.show_manage_menu('story', this.$el, {
+            story_id: this.model.id,
+            feed_id: this.model.get('story_feed_id')
+        });
+        return false;
+    },
+    
+    mouseenter_manage_icon: function() {
+        var menu_height = 270;
+        if (this.$el.offset().top > $(window).height() - menu_height) {
+            this.$el.addClass('NB-hover-inverse');
+        }
+    },
+    
+    mouseleave_manage_icon: function() {
+        this.$el.removeClass('NB-hover-inverse');
     }
         
 });

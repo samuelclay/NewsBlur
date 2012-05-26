@@ -34,11 +34,25 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
    
     read_stories: [],
     
+    active_story: null,
+    
+    initialize: function() {
+        this.bind('change', this.detect_selected_story);
+    },
+    
+    // ===========
+    // = Actions =
+    // ===========
+    
     deselect: function() {
         this.each(function(story) {
             story.set('selected', false);
         });
     },
+    
+    // ==================
+    // = Model Managers =
+    // ==================
     
     visible: function() {
         var unread_score = NEWSBLUR.assets.preference('unread_view');
@@ -53,6 +67,38 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         
         return this.select(function(story) {
             return story.score() < unread_view;
+        });
+    },
+    
+    // ===========
+    // = Getters =
+    // ===========
+    
+    get_next_story: function() {
+        if (!this.active_story) {
+            return this.at(0);
+        }
+        
+        var current_index = this.indexOf(this.active_story);
+        return this.at(current_index+1);
+    },
+    
+    get_previous_story: function() {
+        if (!this.active_story) {
+            return this.at(0);
+        }
+        
+        var current_index = this.indexOf(this.active_story);
+        return this.at(current_index-1);
+    },
+    
+    // ==========
+    // = Events =
+    // ==========
+    
+    detect_selected_story: function() {
+        this.active_story = this.detect(function(story) {
+            return story.get('selected');
         });
     }
     

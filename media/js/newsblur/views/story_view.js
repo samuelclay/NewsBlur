@@ -4,8 +4,11 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     
     events: {
         "click .NB-feed-story-content a"        : "click_link_in_story",
+        "click .NB-feed-story-title"            : "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
-        "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon"
+        "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
+        "contextmenu .NB-feed-story-header"     : "show_manage_menu",
+        "click .NB-feed-story-manage-icon"      : "show_manage_menu"
     },
     
     initialize: function() {
@@ -17,6 +20,8 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         // Binding directly instead of using event delegation. Need for speed.
         this.$el.bind('mouseenter', this.mouseenter);
         this.$el.bind('mouseleave', this.mouseleave);
+
+        this.model.story_view = this;
     },
     
     // =============
@@ -237,5 +242,17 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     
     mouseleave: function() {
         
+    },
+
+    show_manage_menu: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        NEWSBLUR.reader.show_manage_menu('story', this.$el, {
+            story_id: this.model.id,
+            feed_id: this.model.get('story_feed_id')
+        });
+        return false;
     }
+
 });

@@ -109,10 +109,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     mark_story_as_read: function(story_id, feed_id, callback) {
         var self = this;
         var story = this.get_story(story_id);
-        var read = story.read_status;
+        var read = story.get('read_status');
         
-        if (!story.read_status) {
-            story.read_status = 1;
+        if (!story.get('read_status')) {
+            story.set('read_status', 1);
             
             if (NEWSBLUR.Globals.is_authenticated) {
                 if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
@@ -138,12 +138,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     mark_social_story_as_read: function(story_id, social_feed_id, callback) {
         var self = this;
         var story = this.get_story(story_id);
-        var feed_id = story.story_feed_id;
+        var feed_id = story.get('story_feed_id');
         var social_user_id = this.social_feeds.get(social_feed_id).get('user_id');
-        var read = story.read_status;
+        var read = story.get('read_status');
 
-        if (!story.read_status) {
-            story.read_status = 1;
+        if (!story.get('read_status')) {
+            story.set('read_status', 1);
             
             if (NEWSBLUR.Globals.is_authenticated) {
                 if (!(social_user_id in this.queued_read_stories)) { 
@@ -173,13 +173,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     mark_story_as_unread: function(story_id, feed_id, callback) {
         var self = this;
         var read = true;
-        
-        for (s in this.stories) {
-            if (this.stories[s].id == story_id) {
-                this.stories[s].read_status = 0;
-                break;
-            }
-        }
+        var story = this.get_story(story_id);
+        story.set('read_status', 0);
 
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/mark_story_as_unread', {
@@ -191,14 +186,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         $.isFunction(callback) && callback();
     },
     
-    mark_story_as_starred: function(story_id, feed_id, callback) {
+    mark_story_as_starred: function(story_id, callback) {
         var self = this;
         this.starred_count += 1;
         var story = this.get_story(story_id);
-        story.starred = true;
+        story.set('starred', true);
         this.make_request('/reader/mark_story_as_starred', {
             story_id: story_id,
-            feed_id:  feed_id
+            feed_id:  story.get('story_feed_id')
         }, callback);
     },
     
@@ -206,7 +201,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         this.starred_count -= 1;
         var story = this.get_story(story_id);
-        story.starred = false;
+        story.set('starred', false);
         this.make_request('/reader/mark_story_as_unstarred', {
             story_id: story_id
         }, callback);
@@ -230,7 +225,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             callback(data);
             var story = this.get_story(story_id);
-            if (story) story.shared_comments = comments;
+            if (story) story.set('shared_comments', comments);
         }, this);
         
         if (NEWSBLUR.Globals.is_authenticated) {
@@ -1135,39 +1130,35 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     recalculate_story_scores: function(feed_id) {
-        _.each(this.stories, _.bind(function(story, i) {
-            if (story.story_feed_id != feed_id) return;
-            this.stories[i].intelligence.title = 0;
+        this.stories.each(_.bind(function(story, i) {
+            if (story.get('story_feed_id') != feed_id) return;
+            var intelligence = _.extend({}, this.defaults.classifiers);
+            
             _.each(this.classifiers[feed_id].titles, _.bind(function(classifier_score, classifier_title) {
-                if (this.stories[i].intelligence.title <= 0 && 
-                    story.story_title && story.story_title.indexOf(classifier_title) != -1) {
-                    this.stories[i].intelligence.title = classifier_score;
+                if (story.get('story_title', '').indexOf(classifier_title) != -1) {
+                    intelligence.title = classifier_score;
                 }
             }, this));
             
-            this.stories[i].intelligence.author = 0;
             _.each(this.classifiers[feed_id].authors, _.bind(function(classifier_score, classifier_author) {
-                if (this.stories[i].intelligence.author <= 0 && 
-                    story.story_authors && story.story_authors.indexOf(classifier_author) != -1) {
-                    this.stories[i].intelligence.author = classifier_score;
+                if (story.get('story_authors', '').indexOf(classifier_author) != -1) {
+                    intelligence.author = classifier_score;
                 }
             }, this));
             
-            this.stories[i].intelligence.tags = 0;
             _.each(this.classifiers[feed_id].tags, _.bind(function(classifier_score, classifier_tag) {
-                if (this.stories[i].intelligence.tags <= 0 && 
-                    story.story_tags && _.contains(story.story_tags, classifier_tag)) {
-                    this.stories[i].intelligence.tags = classifier_score;
+                if (story.get('story_tags') && _.contains(story.get('story_tags'), classifier_tag)) {
+                    intelligence.tags = classifier_score;
                 }
             }, this));
             
-            this.stories[i].intelligence.feed = 0;
             _.each(this.classifiers[feed_id].feeds, _.bind(function(classifier_score, classifier_feed_id) {
-                if (this.stories[i].intelligence.feed <= 0 && 
-                    story.story_feed_id == classifier_feed_id) {
-                    this.stories[i].intelligence.feed = classifier_score;
+                if (story.get('story_feed_id') == classifier_feed_id) {
+                    intelligence.feed = classifier_score;
                 }
             }, this));
+            
+            story.set('intelligence', intelligence);
         }, this));
     }
 
