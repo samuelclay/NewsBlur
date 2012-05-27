@@ -120,23 +120,24 @@ def apply_classifier_feeds(classifiers, feed, social_user_id=None):
 def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier_feeds=None, classifier_authors=None, 
                              classifier_titles=None, classifier_tags=None):
     params = dict(user_id=user.pk)
-    if isinstance(feed_id, int):
-        params['feed_id'] = feed_id
-    elif isinstance(feed_id, list):
+    if isinstance(feed_id, list):
         params['feed_id__in'] = feed_id
+    elif feed_id:
+        params['feed_id'] = feed_id
     if social_user_id:
         params['social_user_id'] = int(social_user_id.replace('social:', ''))
-    elif feed_id:
-        params['social_user_id'] = 0
-    
-    if classifier_feeds is None:
-        classifier_feeds = list(MClassifierFeed.objects(**params))
+    print params
+
     if classifier_authors is None:
         classifier_authors = list(MClassifierAuthor.objects(**params))
     if classifier_titles is None:
         classifier_titles = list(MClassifierTitle.objects(**params))
     if classifier_tags is None:
         classifier_tags = list(MClassifierTag.objects(**params))
+    if classifier_feeds is None:
+        if not social_user_id and feed_id:
+            params['social_user_id'] = 0
+        classifier_feeds = list(MClassifierFeed.objects(**params))
     
     feeds = []
     for f in classifier_feeds:

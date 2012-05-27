@@ -1100,7 +1100,7 @@ def feeds_trainer(request):
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier['classifiers'] = get_classifiers_for_user(user, feed_id=us.feed_id)
+            classifier['classifiers'] = get_classifiers_for_user(user, feed_id=us.feed.pk)
             classifier['feed_id'] = us.feed_id
             classifier['stories_last_month'] = us.feed.stories_last_month
             classifier['num_subscribers'] = us.feed.num_subscribers

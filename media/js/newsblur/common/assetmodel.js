@@ -288,13 +288,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.feeds.trigger('reset');
         };
         
-        var data = {
-            'v': 2
-        };
-        if (NEWSBLUR.Flags['start_import_from_google_reader']) {
-            data['include_favicons'] = true;
-        }
-        
         this.feeds.fetch({
             success: pre_callback,
             error: error_callback

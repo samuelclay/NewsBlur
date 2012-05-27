@@ -101,10 +101,12 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     // ===========
     
     fetch: function(options) {
+        var data = {
+            'v': 2
+        };
+
         options = _.extend({
-            data: {
-                v: 2
-            },
+            data: data,
             silent: true
         }, options);
         return Backbone.Collection.prototype.fetch.call(this, options);
