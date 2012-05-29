@@ -1,5 +1,7 @@
 NEWSBLUR.Views.StoryView = Backbone.View.extend({
     
+    tagName: 'li',
+    
     className: 'NB-feed-story',
     
     events: {
@@ -128,13 +130,13 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
                 </div>\
             </div>\
         ', {
-            story   : this.model,
-            feed    : this.options.river_stories && this.feed,
-            tag     : _.first(this.model.get("story_tags")),
-            title   : this.make_story_title(),
-            authors_score  : this.classifiers.authors[this.model.get('story_authors')],
-            tags_score : this.classifiers.tags,
-            options : this.options
+            story           : this.model,
+            feed            : NEWSBLUR.reader.flags.river_view && this.feed,
+            tag             : _.first(this.model.get("story_tags")),
+            title           : this.make_story_title(),
+            authors_score   : this.classifiers.authors[this.model.get('story_authors')],
+            tags_score      : this.classifiers.tags,
+            options         : this.options
         });
         
         return $story_title;
@@ -142,6 +144,8 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     
     generate_gradients: function() {
         var $header = this.$('.NB-feed-story-header-feed');
+        
+        if (!this.feed) return;
         
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'webkit'));
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'moz'));
@@ -169,11 +173,24 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     // ============
     
     toggle_classes: function() {
+        var changes = this.model.changedAttributes();
+        var onlySelected = changes && _.all(_.keys(changes), function(change) {
+            return _.contains(['selected', 'read'], change);
+        });
+        
+        if (onlySelected) return;
+        
+        if (this.model.changedAttributes()) {
+            console.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
+        }
+        
         var story = this.model;
         var unread_view = NEWSBLUR.assets.preference('unread_view');
         var score = story.score();
         
-        this.$el.toggleClass('NB-inverse', this.feed.is_light());
+        if (this.feed) {
+            this.$el.toggleClass('NB-inverse', this.feed.is_light());
+        }
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
         this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')

@@ -1,4 +1,5 @@
 import mongoengine as mongo
+from collections import defaultdict
 from django.db import models
 from django.contrib.auth.models import User
 from apps.rss_feeds.models import Feed
@@ -125,8 +126,9 @@ def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier
     elif feed_id:
         params['feed_id'] = feed_id
     if social_user_id:
-        params['social_user_id'] = int(social_user_id.replace('social:', ''))
-    print params
+        if isinstance(social_user_id, basestring):
+            social_user_id = int(social_user_id.replace('social:', ''))
+        params['social_user_id'] = social_user_id
 
     if classifier_authors is None:
         classifier_authors = list(MClassifierAuthor.objects(**params))
@@ -154,3 +156,31 @@ def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier
     }
     
     return payload
+    
+def sort_classifiers_by_feed(user, feed_ids=None,
+                             classifier_feeds=None,
+                             classifier_authors=None,
+                             classifier_titles=None,
+                             classifier_tags=None):
+    def sort_by_feed(classifiers):
+        feed_classifiers = defaultdict(list)
+        for classifier in classifiers:
+            feed_classifiers[classifier.feed_id].append(classifier)
+        return feed_classifiers
+    
+    classifiers = {}
+
+    if feed_ids:
+        classifier_feeds   = sort_by_feed(classifier_feeds)
+        classifier_authors = sort_by_feed(classifier_authors)
+        classifier_titles  = sort_by_feed(classifier_titles)
+        classifier_tags    = sort_by_feed(classifier_tags)
+
+        for feed_id in feed_ids:
+            classifiers[feed_id] = get_classifiers_for_user(user, feed_id=feed_id, 
+                                                            classifier_feeds=classifier_feeds[feed_id], 
+                                                            classifier_authors=classifier_authors[feed_id],
+                                                            classifier_titles=classifier_titles[feed_id],
+                                                            classifier_tags=classifier_tags[feed_id])
+    
+    return classifiers

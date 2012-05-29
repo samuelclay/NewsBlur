@@ -110,7 +110,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
     },
     
-    show_loading: function() {
+    show_loading: function(options) {
+        console.log(["show_loading", options]);
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
@@ -129,18 +130,23 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     .animate({'backgroundColor': '#E1EBFF'}, 1050);
         }, 1500);
         
-        this.pre_load_page_scroll_position = $('#story_titles').scrollTop();
-        if (this.pre_load_page_scroll_position > 0) {
-            this.pre_load_page_scroll_position += $feedbar.outerHeight();
+        if (options.show_loading) {
+            this.pre_load_page_scroll_position = $('#story_titles').scrollTop();
+            if (this.pre_load_page_scroll_position > 0) {
+                this.pre_load_page_scroll_position += $feedbar.outerHeight();
+            }
+            $story_titles.scrollTo($feedbar, { 
+                duration: 0,
+                axis: 'y', 
+                easing: 'easeInOutQuint', 
+                offset: 0, 
+                queue: false
+            });
+            this.post_load_page_scroll_position = $('#story_titles').scrollTop();
+        } else {
+            this.pre_load_page_scroll_position = null;
+            this.post_load_page_scroll_position = null;
         }
-        $story_titles.scrollTo($feedbar, { 
-            duration: 0,
-            axis: 'y', 
-            easing: 'easeInOutQuint', 
-            offset: 0, 
-            queue: false
-        });
-        this.post_load_page_scroll_position = $('#story_titles').scrollTop();
     },
     
     end_loading: function() {

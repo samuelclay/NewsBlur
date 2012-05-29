@@ -28,10 +28,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     render_to_string: function() {
+        var is_river = NEWSBLUR.reader.flags.river_view;
         var $story_title = _.template('\
             <div class="NB-storytitles-sentiment"></div>\
             <a href="<%= story.get("story_permalink") %>" class="story_title">\
-                <% if (options.river_stories && feed) { %>\
+                <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
@@ -50,10 +51,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <span class="story_date"><%= story.get("short_parsed_date") %></span>\
             <div class="NB-story-manage-icon"></div>\
         ', {
-            story : this.model,
-            feed  : this.options.river_stories && NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
-            tag   : _.first(this.model.get("story_tags")),
-            options : this.options
+            story    : this.model,
+            feed     : is_river && NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
+            tag      : _.first(this.model.get("story_tags")),
+            options  : this.options
         });
         
         return $story_title;

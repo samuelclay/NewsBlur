@@ -45,9 +45,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // ===========
     
     deselect: function(selected_story) {
-        this.each(function(story) {
-            if (story != selected_story) {
+        this.any(function(story) {
+            if (story.get('selected') && story != selected_story) {
                 story.set('selected', false);
+                return true;
             }
         });
     },

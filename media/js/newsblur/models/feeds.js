@@ -66,7 +66,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     },
     
     is_light: function() {
-        var is_light = this.is_light;
+        var is_light = this._is_light;
         if (!_.isUndefined(is_light)) {
             return is_light;
         }
@@ -78,7 +78,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         var b = parseInt(color.substr(4, 2), 16) / 255.0;
 
         is_light = $.textColor({r: r, g: g, b: b}) != 'white';
-        this.is_light = is_light;
+        this._is_light = is_light;
         return is_light;
     }
     

@@ -18,13 +18,12 @@ from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from mongoengine.queryset import OperationError
 from pymongo.helpers import OperationFailure
-from collections import defaultdict
 from operator import itemgetter
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
-from apps.analyzer.models import get_classifiers_for_user
+from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
@@ -388,10 +387,16 @@ def load_single_feed(request, feed_id):
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
     # Get intelligence classifier for user
+    
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
     classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
     classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+    classifiers = get_classifiers_for_user(user, feed_id=feed_id, 
+                                           classifier_feeds=classifier_feeds, 
+                                           classifier_authors=classifier_authors, 
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
     
     checkpoint1 = time.time()
     
@@ -451,11 +456,6 @@ def load_single_feed(request, feed_id):
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
-    classifiers = get_classifiers_for_user(user, feed_id=feed_id, 
-                                           classifier_feeds=classifier_feeds, 
-                                           classifier_authors=classifier_authors, 
-                                           classifier_titles=classifier_titles,
-                                           classifier_tags=classifier_tags)
     
     if usersub:
         usersub.feed_opens += 1
@@ -641,29 +641,21 @@ def load_river_stories(request):
     # except OperationFailure:
     #     logging.info(" ***> Starred stories failure")
     #     starred_stories = {}
-    # 
+    
     # Intelligence classifiers for all feeds involved
-    def sort_by_feed(classifiers):
-        feed_classifiers = defaultdict(list)
-        for classifier in classifiers:
-            feed_classifiers[classifier.feed_id].append(classifier)
-        return feed_classifiers
-    classifiers = {}
-    # try:
-    if found_feed_ids:
-        classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-        classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-        classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-        classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-
-        for feed_id in found_feed_ids:
-            classifiers[feed_id] = get_classifiers_for_user(user, feed_id=feed_id, 
-                                                            classifier_feeds=classifier_feeds[feed_id], 
-                                                            classifier_authors=classifier_authors[feed_id],
-                                                            classifier_titles=classifier_titles[feed_id],
-                                                            classifier_tags=classifier_tags[feed_id])
-    # except OperationFailure:
-    #     logging.info(" ***> Classifiers failure")
+    classifier_feeds = MClassifierFeed.objects(user_id=user.pk,
+                                               feed_id__in=found_feed_ids)
+    classifier_authors = MClassifierAuthor.objects(user_id=user.pk, 
+                                                   feed_id__in=found_feed_ids)
+    classifier_titles = MClassifierTitle.objects(user_id=user.pk, 
+                                                 feed_id__in=found_feed_ids)
+    classifier_tags = MClassifierTag.objects(user_id=user.pk, 
+                                             feed_id__in=found_feed_ids)
+    classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
+                                           classifier_feeds=classifier_feeds,
+                                           classifier_authors=classifier_authors,
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
     
     # Just need to format stories
     for story in stories:
